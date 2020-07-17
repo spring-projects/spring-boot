@@ -33,8 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class Neo4jProperties {
 
 	/**
-	 * Uri this driver should connect to. The driver supports bolt or neo4j as
-	 * schemes.
+	 * Uri this driver should connect to. The driver supports bolt or neo4j as schemes.
 	 */
 	private URI uri = URI.create("bolt://localhost:7687");
 
@@ -155,8 +154,7 @@ public class Neo4jProperties {
 		private boolean logLeakedSessions = false;
 
 		/**
-		 * Maximum amount of connections in the connection pool towards a single
-		 * database.
+		 * Maximum amount of connections in the connection pool towards a single database.
 		 */
 		private int maxConnectionPoolSize = org.neo4j.driver.internal.async.pool.PoolSettings.DEFAULT_MAX_CONNECTION_POOL_SIZE;
 

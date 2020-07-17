@@ -53,7 +53,8 @@ class Neo4jAutoConfigurationIntegrationTests {
 
 	private final Driver driver;
 
-	@Autowired Neo4jAutoConfigurationIntegrationTests(Driver driver) {
+	@Autowired
+	Neo4jAutoConfigurationIntegrationTests(Driver driver) {
 		this.driver = driver;
 	}
 

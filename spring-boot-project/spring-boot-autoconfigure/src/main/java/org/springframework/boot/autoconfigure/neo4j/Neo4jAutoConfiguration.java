@@ -113,8 +113,7 @@ public class Neo4jAutoConfiguration {
 		builder.withMaxConnectionPoolSize(poolSettings.getMaxConnectionPoolSize());
 		Duration idleTimeBeforeConnectionTest = poolSettings.getIdleTimeBeforeConnectionTest();
 		if (idleTimeBeforeConnectionTest != null) {
-			builder.withConnectionLivenessCheckTimeout(idleTimeBeforeConnectionTest.toMillis(),
-					TimeUnit.MILLISECONDS);
+			builder.withConnectionLivenessCheckTimeout(idleTimeBeforeConnectionTest.toMillis(), TimeUnit.MILLISECONDS);
 		}
 		builder.withMaxConnectionLifetime(poolSettings.getMaxConnectionLifetime().toMillis(), TimeUnit.MILLISECONDS);
 		builder.withConnectionAcquisitionTimeout(poolSettings.getConnectionAcquisitionTimeout().toMillis(),
@@ -135,9 +134,11 @@ public class Neo4jAutoConfiguration {
 		}
 
 		builder.withConnectionTimeout(driverSettings.getConnectionTimeout().toMillis(), TimeUnit.MILLISECONDS);
-		builder.withMaxTransactionRetryTime(driverSettings.getMaxTransactionRetryTime().toMillis(), TimeUnit.MILLISECONDS);
+		builder.withMaxTransactionRetryTime(driverSettings.getMaxTransactionRetryTime().toMillis(),
+				TimeUnit.MILLISECONDS);
 
-		Class<? extends ServerAddressResolver> serverAddressResolverClass = driverSettings.getServerAddressResolverClass();
+		Class<? extends ServerAddressResolver> serverAddressResolverClass = driverSettings
+				.getServerAddressResolverClass();
 		if (serverAddressResolverClass != null) {
 			builder.withResolver(BeanUtils.instantiateClass(serverAddressResolverClass));
 		}
@@ -160,23 +161,22 @@ public class Neo4jAutoConfiguration {
 		Config.TrustStrategy internalRepresentation;
 		Neo4jProperties.TrustSettings.Strategy strategy = trustSettings.getStrategy();
 		switch (strategy) {
-			case TRUST_ALL_CERTIFICATES:
-				internalRepresentation = Config.TrustStrategy.trustAllCertificates();
-				break;
-			case TRUST_SYSTEM_CA_SIGNED_CERTIFICATES:
-				internalRepresentation = Config.TrustStrategy.trustSystemCertificates();
-				break;
-			case TRUST_CUSTOM_CA_SIGNED_CERTIFICATES:
-				File certFile = trustSettings.getCertFile();
-				if (certFile == null || !certFile.isFile()) {
-					throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(),
-							"Configured trust strategy requires a certificate file.");
-				}
-				internalRepresentation = Config.TrustStrategy.trustCustomCertificateSignedBy(certFile);
-				break;
-			default:
+		case TRUST_ALL_CERTIFICATES:
+			internalRepresentation = Config.TrustStrategy.trustAllCertificates();
+			break;
+		case TRUST_SYSTEM_CA_SIGNED_CERTIFICATES:
+			internalRepresentation = Config.TrustStrategy.trustSystemCertificates();
+			break;
+		case TRUST_CUSTOM_CA_SIGNED_CERTIFICATES:
+			File certFile = trustSettings.getCertFile();
+			if (certFile == null || !certFile.isFile()) {
 				throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(),
-						"Unknown strategy.");
+						"Configured trust strategy requires a certificate file.");
+			}
+			internalRepresentation = Config.TrustStrategy.trustCustomCertificateSignedBy(certFile);
+			break;
+		default:
+			throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(), "Unknown strategy.");
 		}
 
 		if (trustSettings.isHostnameVerificationEnabled()) {
@@ -188,4 +188,5 @@ public class Neo4jAutoConfiguration {
 
 		return internalRepresentation;
 	}
+
 }

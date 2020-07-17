@@ -111,8 +111,7 @@ class Neo4jPropertiesTests {
 		PoolSettings poolSettings = driverProperties.getPool();
 		assertThat(poolSettings.isLogLeakedSessions()).isEqualTo(defaultConfig.logLeakedSessions());
 		assertThat(poolSettings.getMaxConnectionPoolSize()).isEqualTo(defaultConfig.maxConnectionPoolSize());
-		assertDuration(poolSettings.getIdleTimeBeforeConnectionTest(),
-				defaultConfig.idleTimeBeforeConnectionTest());
+		assertDuration(poolSettings.getIdleTimeBeforeConnectionTest(), defaultConfig.idleTimeBeforeConnectionTest());
 		assertDuration(poolSettings.getMaxConnectionLifetime(), defaultConfig.maxConnectionLifetimeMillis());
 		assertDuration(poolSettings.getConnectionAcquisitionTimeout(),
 				defaultConfig.connectionAcquisitionTimeoutMillis());
@@ -230,8 +229,7 @@ class Neo4jPropertiesTests {
 	@Test
 	void shouldUseSpringJclLogging() {
 		Neo4jProperties driverProperties = new Neo4jProperties();
-		assertThat(asDriverConfig(driverProperties).logging()).isNotNull()
-				.isInstanceOf(Neo4jSpringJclLogging.class);
+		assertThat(asDriverConfig(driverProperties).logging()).isNotNull().isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
 	@Test
@@ -283,7 +281,7 @@ class Neo4jPropertiesTests {
 
 		assertThatExceptionOfType(InvalidConfigurationPropertyValueException.class)
 				.isThrownBy(() -> toInternalRepresentation(settings)).withMessage(
-				"Property org.neo4j.driver.config.trust-settings with value 'TRUST_CUSTOM_CA_SIGNED_CERTIFICATES' is invalid: Configured trust strategy requires a certificate file.");
+						"Property org.neo4j.driver.config.trust-settings with value 'TRUST_CUSTOM_CA_SIGNED_CERTIFICATES' is invalid: Configured trust strategy requires a certificate file.");
 	}
 
 	@Test
