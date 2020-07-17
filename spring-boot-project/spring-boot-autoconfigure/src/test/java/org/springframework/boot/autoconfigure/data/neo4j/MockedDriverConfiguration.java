@@ -28,6 +28,8 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
 /**
+ * Driver configuration mocked to avoid instantiation of a real driver with connection creation.
+ *
  * @author Michael J. Simons
  */
 @Configuration(proxyBeanMethods = false)

@@ -38,7 +38,7 @@ import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(Driver.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
-@Import({ Neo4jImperativeRepositoriesConfiguration.class, Neo4jReactiveRepositoriesConfiguration.class })
+@Import({ Neo4jRepositoriesConfiguration.class, Neo4jReactiveRepositoriesConfiguration.class })
 public class Neo4jRepositoriesAutoConfiguration {
 
 }

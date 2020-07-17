@@ -55,7 +55,7 @@ import static org.mockito.Mockito.mock;
 class Neo4jDataAutoConfigurationTests {
 
 	@Nested
-	class Neo4jImperativeDataConfigurationTest {
+	class Neo4JDataConfigurationTest {
 
 		private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 				.withPropertyValues("spring.data.neo4j.repositories.type=imperative")

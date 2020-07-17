@@ -30,7 +30,7 @@ import org.springframework.data.repository.config.RepositoryConfigurationExtensi
  * @author Michael Hunger
  * @author Michael J. Simons
  */
-class Neo4jImperativeRepositoriesConfigureRegistrar extends AbstractRepositoryConfigurationSourceSupport {
+class Neo4jRepositoriesConfigureRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
 	protected Class<? extends Annotation> getAnnotation() {
@@ -39,7 +39,7 @@ class Neo4jImperativeRepositoriesConfigureRegistrar extends AbstractRepositoryCo
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return SpringDataNeo4jRxConfiguration.class;
+		return SpringDataNeo4jConfiguration.class;
 	}
 
 	@Override
@@ -48,7 +48,7 @@ class Neo4jImperativeRepositoriesConfigureRegistrar extends AbstractRepositoryCo
 	}
 
 	@EnableNeo4jRepositories
-	private static class SpringDataNeo4jRxConfiguration {
+	private static class SpringDataNeo4jConfiguration {
 
 	}
 

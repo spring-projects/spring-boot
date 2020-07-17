@@ -51,9 +51,9 @@ import org.springframework.transaction.PlatformTransactionManager;
 @ConditionalOnClass({ Neo4jTransactionManager.class, PlatformTransactionManager.class })
 @ConditionalOnRepositoryType(store = "neo4j", type = RepositoryType.IMPERATIVE)
 @AutoConfigureAfter(Neo4jDriverAutoConfiguration.class)
-@AutoConfigureBefore(Neo4jImperativeRepositoriesConfiguration.class)
+@AutoConfigureBefore(Neo4jRepositoriesConfiguration.class)
 @Import(Neo4jDefaultCallbacksRegistrar.class)
-final class Neo4jImperativeDataConfiguration {
+class Neo4jDataConfiguration {
 
 	@Bean("databaseSelectionProvider")
 	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "database")

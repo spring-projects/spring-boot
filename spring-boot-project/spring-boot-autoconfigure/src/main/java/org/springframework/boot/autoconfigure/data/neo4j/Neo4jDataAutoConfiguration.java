@@ -38,7 +38,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j. Automatic
  * configuration of base infrastructure that imports configuration for both imperative and
- * reactive Neo4j repositories. Depends on the configured Neo4j driver.
+ * reactive Neo4j repositories.
  *
  * @author Michael Hunger
  * @author Josh Long
@@ -52,7 +52,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 @ConditionalOnBean(Driver.class)
 @EnableConfigurationProperties(Neo4jDataProperties.class)
 @AutoConfigureBefore(TransactionAutoConfiguration.class)
-@Import({ Neo4jImperativeDataConfiguration.class, Neo4jReactiveDataConfiguration.class })
+@Import({ Neo4jDataConfiguration.class, Neo4jReactiveDataConfiguration.class })
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
@@ -65,11 +65,9 @@ public class Neo4jDataAutoConfiguration {
 	@ConditionalOnMissingBean
 	public Neo4jMappingContext neo4jMappingContext(ApplicationContext applicationContext,
 			Neo4jConversions neo4jConversions) throws ClassNotFoundException {
-
 		Set<Class<?>> initialEntityClasses = new EntityScanner(applicationContext).scan(Node.class);
 		Neo4jMappingContext context = new Neo4jMappingContext(neo4jConversions);
 		context.setInitialEntitySet(initialEntityClasses);
-
 		return context;
 	}
 

@@ -38,7 +38,7 @@ final class Neo4jReactiveRepositoriesConfigureRegistrar extends AbstractReposito
 
 	@Override
 	protected Class<?> getConfiguration() {
-		return Neo4jReactiveRepositoriesConfigureRegistrar.SpringDataNeo4jRxConfiguration.class;
+		return SpringDataNeo4jConfiguration.class;
 	}
 
 	@Override
@@ -47,7 +47,7 @@ final class Neo4jReactiveRepositoriesConfigureRegistrar extends AbstractReposito
 	}
 
 	@EnableReactiveNeo4jRepositories
-	private static class SpringDataNeo4jRxConfiguration {
+	private static class SpringDataNeo4jConfiguration {
 
 	}
 

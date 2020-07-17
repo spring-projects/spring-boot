@@ -33,6 +33,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Test to ensure that the properties get read and applied during the auto-configuration.
+ *
  * @author Michael J. Simons
  */
 @SpringBootTest(properties = "spring.data.neo4j.repositories.type=imperative")

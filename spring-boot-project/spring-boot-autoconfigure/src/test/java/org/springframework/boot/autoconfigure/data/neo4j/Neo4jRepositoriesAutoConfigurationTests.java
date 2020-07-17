@@ -112,19 +112,19 @@ class Neo4jRepositoriesAutoConfigurationTests {
 						.hasSingleBean(ReactiveCountryRepository.class));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableNeo4jRepositories(basePackageClasses = CountryRepository.class)
 	static class WithCustomRepositoryScan {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableReactiveNeo4jRepositories(basePackageClasses = ReactiveCountryRepository.class)
 	static class WithCustomReactiveRepositoryScan {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WithFakeEnabledReactiveNeo4jRepositories {
 
 		@Bean
@@ -140,13 +140,13 @@ class Neo4jRepositoriesAutoConfigurationTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	static class EmptyConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableNeo4jRepositories("foo.bar")
 	@TestAutoConfigurationPackage(Neo4jRepositoriesAutoConfigurationTests.class)
 	static class SortOfInvalidCustomConfiguration {

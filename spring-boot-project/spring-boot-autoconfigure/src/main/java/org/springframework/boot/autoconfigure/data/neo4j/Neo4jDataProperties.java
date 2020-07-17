@@ -29,14 +29,9 @@ import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 public class Neo4jDataProperties {
 
 	/**
-	 * A statically configured database name. This property is only applicable when
-	 * connecting against a 4.0 cluster or server and will lead to errors if used with a
-	 * prior version of Neo4j. Leave this null (the default) to indicate that you like the
-	 * server to decide the default database to use. The database name set here will be
-	 * statically used throughout the lifetime of the application. If you need more
-	 * flexibility you can declare a bean of type {@link DatabaseSelectionProvider} which
-	 * can for example use Spring's Security Context or similar to determine the current
-	 * principal on which you could decide which database to use.
+	 * A statically configured database. This property is only applicable when connecting against
+	 * a 4.0 cluster or server and will lead to errors if used with a prior version of Neo4j.
+	 * Leave this null (the default) to indicate that you like the server to decide the default database to use.
 	 */
 	private String database;
 
