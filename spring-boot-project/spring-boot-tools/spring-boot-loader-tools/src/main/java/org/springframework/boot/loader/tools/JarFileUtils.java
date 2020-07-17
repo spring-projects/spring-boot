@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 
@@ -32,12 +33,18 @@ public abstract class JarFileUtils {
 	 * Determines if a file has an attribute in the JARs manifest.
 	 * @param file the jar file
 	 * @param attribute name of the attribute
+	 * @param acceptableValues list of acceptable values for the attribute
 	 * @return {@code true} if attribute with the given name was found in the JAR
 	 * manifest, {@code false} otherwise
 	 */
-	public static boolean hasManifestAttribute(File file, String attribute) {
+	public static boolean hasManifestAttribute(File file, String attribute, String... acceptableValues) {
 		try (JarFile jarFile = new JarFile(file)) {
-			return jarFile.getManifest().getMainAttributes().containsKey(new Attributes.Name(attribute));
+			Attributes mainAttributes = jarFile.getManifest().getMainAttributes();
+			String value = mainAttributes.getValue(new Attributes.Name(attribute));
+			if (value == null) {
+				return false;
+			}
+			return acceptableValues.length == 0 || Arrays.asList(acceptableValues).contains(value);
 		}
 		catch (Exception ignore) {
 		}

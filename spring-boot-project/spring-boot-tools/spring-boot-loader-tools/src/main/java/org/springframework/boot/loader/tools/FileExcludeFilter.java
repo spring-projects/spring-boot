@@ -38,7 +38,8 @@ public interface FileExcludeFilter {
 	 */
 	FileExcludeFilter DEFAULT = (file) -> {
 		if (SPRING_BOOT_JAR_PATTERN.matcher(file.getName()).matches()) {
-			return JarFileUtils.hasManifestAttribute(file, "Exclude-From-Packaging");
+			return JarFileUtils.hasManifestAttribute(file, "Spring-Boot-Jar-Type", "annotation-processor",
+					"dependencies-starter");
 		}
 		return false;
 	};

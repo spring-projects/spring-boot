@@ -41,28 +41,35 @@ class FileExcludeFilterTests {
 	@Test
 	void defaultFilterExcludesSpringBootStarter() throws IOException {
 		String name = "spring-boot-starter-web-0.1.2.jar";
-		File file = springBootJarFile(name, true);
+		File file = springBootJarFile(name, "dependencies-starter", true);
 		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isTrue();
 	}
 
 	@Test
 	void defaultFilterExcludesSpringBootConfigurationProcessor() throws IOException {
 		String name = "spring-boot-configuration-processor-0.1.2.jar";
-		File file = springBootJarFile(name, true);
+		File file = springBootJarFile(name, "annotation-processor", true);
 		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isTrue();
 	}
 
 	@Test
 	void defaultFilterDoesNotExcludeWithoutManifest() throws IOException {
 		String name = "spring-boot-starter-web-0.1.2.jar";
-		File file = springBootJarFile(name, false);
+		File file = springBootJarFile(name, "dependencies-starter", false);
 		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isFalse();
 	}
 
 	@Test
 	void defaultFilterDoesNotExcludeWithNonMatchingName() throws IOException {
 		String name = "test.jar";
-		File file = springBootJarFile(name, true);
+		File file = springBootJarFile(name, "dependencies-starter", true);
+		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isFalse();
+	}
+
+	@Test
+	void defaultFilterDoesNotExcludeWhenJarTypeDoesNotMatch() throws IOException {
+		String name = "spring-boot-module-0.1.2.jar";
+		File file = springBootJarFile(name, "default-jar-type", true);
 		assertThat(FileExcludeFilter.DEFAULT.isExcluded(file)).isFalse();
 	}
 
@@ -72,7 +79,7 @@ class FileExcludeFilterTests {
 		return file;
 	}
 
-	private File springBootJarFile(String name, boolean withManifest) throws IOException {
+	private File springBootJarFile(String name, String jarType, boolean withManifest) throws IOException {
 		File file = newFile(name);
 		if (withManifest) {
 			try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
@@ -80,7 +87,7 @@ class FileExcludeFilterTests {
 				Manifest manifest = new Manifest();
 				Attributes attributes = manifest.getMainAttributes();
 				attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-				attributes.putValue("Exclude-From-Packaging", name);
+				attributes.putValue("Spring-Boot-Jar-Type", jarType);
 				manifest.write(jar);
 				jar.closeEntry();
 			}

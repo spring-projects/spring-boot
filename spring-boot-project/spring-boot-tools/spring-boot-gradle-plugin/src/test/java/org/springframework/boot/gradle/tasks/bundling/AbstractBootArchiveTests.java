@@ -449,7 +449,7 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 			Manifest manifest = new Manifest();
 			Attributes attributes = manifest.getMainAttributes();
 			attributes.put(Attributes.Name.MANIFEST_VERSION, "1.0");
-			attributes.putValue("Exclude-From-Packaging", name);
+			attributes.putValue("Spring-Boot-Jar-Type", "dependencies-starter");
 			manifest.write(jar);
 			jar.closeEntry();
 		}

@@ -17,6 +17,8 @@
 package org.springframework.boot.build.starters;
 
 import java.io.File;
+import java.util.Map;
+import java.util.TreeMap;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -26,10 +28,10 @@ import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.PluginContainer;
+import org.gradle.api.tasks.bundling.Jar;
 
 import org.springframework.boot.build.ConventionsPlugin;
 import org.springframework.boot.build.DeployedPlugin;
-import org.springframework.boot.build.PackageExcludePlugin;
 import org.springframework.boot.build.classpath.CheckClasspathForConflicts;
 import org.springframework.boot.build.classpath.CheckClasspathForProhibitedDependencies;
 import org.springframework.util.StringUtils;
@@ -41,13 +43,14 @@ import org.springframework.util.StringUtils;
  */
 public class StarterPlugin implements Plugin<Project> {
 
+	private static final String JAR_TYPE = "dependencies-starter";
+
 	@Override
 	public void apply(Project project) {
 		PluginContainer plugins = project.getPlugins();
 		plugins.apply(DeployedPlugin.class);
 		plugins.apply(JavaLibraryPlugin.class);
 		plugins.apply(ConventionsPlugin.class);
-		plugins.apply(PackageExcludePlugin.class);
 		StarterMetadata starterMetadata = project.getTasks().create("starterMetadata", StarterMetadata.class);
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration runtimeClasspath = configurations.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
@@ -59,6 +62,7 @@ public class StarterPlugin implements Plugin<Project> {
 				(artifact) -> artifact.builtBy(starterMetadata));
 		createClasspathConflictsCheck(runtimeClasspath, project);
 		createProhibitedDependenciesCheck(runtimeClasspath, project);
+		configureJarManifest(project);
 	}
 
 	private void createClasspathConflictsCheck(Configuration classpath, Project project) {
@@ -75,6 +79,16 @@ public class StarterPlugin implements Plugin<Project> {
 				CheckClasspathForProhibitedDependencies.class);
 		checkClasspathForProhibitedDependencies.setClasspath(classpath);
 		project.getTasks().getByName(JavaBasePlugin.CHECK_TASK_NAME).dependsOn(checkClasspathForProhibitedDependencies);
+	}
+
+	private void configureJarManifest(Project project) {
+		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
+			jar.manifest((manifest) -> {
+				Map<String, Object> attributes = new TreeMap<>();
+				attributes.put("Spring-Boot-Jar-Type", JAR_TYPE);
+				manifest.attributes(attributes);
+			});
+		}));
 	}
 
 }

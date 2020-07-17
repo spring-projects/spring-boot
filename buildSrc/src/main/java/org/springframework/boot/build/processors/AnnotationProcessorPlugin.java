@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2019-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.build;
+package org.springframework.boot.build.processors;
 
 import java.util.Map;
 import java.util.TreeMap;
@@ -24,19 +24,20 @@ import org.gradle.api.Project;
 import org.gradle.api.tasks.bundling.Jar;
 
 /**
- * Plugin to apply a custom marker attribute to the project's JAR manifest that can be
- * used to filter the mentioned JARs from ending up in packages.
+ * A {@link Plugin} for an annotation processor project.
  *
  * @author Christoph Dreis
  */
-public class PackageExcludePlugin implements Plugin<Project> {
+public class AnnotationProcessorPlugin implements Plugin<Project> {
+
+	private static final String JAR_TYPE = "annotation-processor";
 
 	@Override
 	public void apply(Project project) {
 		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
-				attributes.put("Exclude-From-Packaging", true);
+				attributes.put("Spring-Boot-Jar-Type", JAR_TYPE);
 				manifest.attributes(attributes);
 			});
 		}));
