@@ -14,12 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics.analyzer;
+package org.springframework.boot.liquibase;
+
+import java.io.File;
 
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -35,15 +40,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Sebastiaan Fernandez
  */
-class LiquibaseChangelogMissingFailureAnalyzerTest {
+class LiquibaseChangelogMissingFailureAnalyzerTests {
+
+	@BeforeAll
+	static void configureDerbyLogLocation(@TempDir File temp) {
+		System.setProperty("derby.stream.error.file", new File(temp, "derby.log").getAbsolutePath());
+	}
+
+	@AfterAll
+	static void clearDerbyLogLocation(@TempDir File temp) {
+		System.clearProperty("derby.stream.error.file");
+	}
 
 	@Test
 	void changelogParseExceptionDueToChangelogNotPresent() {
 		FailureAnalysis analysis = performAnalysis();
 		assertThat(analysis.getDescription())
-				.isEqualTo("Liquibase failed to start because no changelog could be found at: "
-						+ "classpath:/db/changelog/db.changelog-master.yaml");
-		assertThat(analysis.getAction()).isEqualTo("Make sure a Liquibase changelog is present at the configured path");
+				.isEqualTo("Liquibase failed to start because no changelog could be found at '"
+						+ "classpath:/db/changelog/db.changelog-master.yaml'.");
+		assertThat(analysis.getAction())
+				.isEqualTo("Make sure a Liquibase changelog is present at the configured path.");
 	}
 
 	private FailureAnalysis performAnalysis() {
@@ -53,11 +69,8 @@ class LiquibaseChangelogMissingFailureAnalyzerTest {
 	}
 
 	private BeanCreationException createFailure() {
-		try {
-			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-			context.register(LiquibaseConfiguration.class);
-			context.refresh();
-			context.close();
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(
+				LiquibaseConfiguration.class)) {
 			return null;
 		}
 		catch (BeanCreationException ex) {
@@ -70,14 +83,13 @@ class LiquibaseChangelogMissingFailureAnalyzerTest {
 
 		@Bean
 		DataSource dataSource() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:test").username("sa").build();
 		}
 
 		@Bean
 		SpringLiquibase springLiquibase(DataSource dataSource) {
 			SpringLiquibase liquibase = new SpringLiquibase();
 			liquibase.setChangeLog("classpath:/db/changelog/db.changelog-master.yaml");
-			liquibase.setShouldRun(true);
 			liquibase.setDataSource(dataSource);
 			return liquibase;
 		}
