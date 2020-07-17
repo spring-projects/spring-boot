@@ -31,6 +31,7 @@ import org.springframework.context.annotation.Import;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Tadaya Tsuyukubo
  * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -38,7 +39,7 @@ import org.springframework.context.annotation.Import;
 @AutoConfigureBefore(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(R2dbcProperties.class)
 @Import({ ConnectionFactoryConfigurations.Pool.class, ConnectionFactoryConfigurations.Generic.class,
-		ConnectionFactoryDependentConfiguration.class })
+		ConnectionFactoryConfigurations.Proxy.class, ConnectionFactoryDependentConfiguration.class })
 public class R2dbcAutoConfiguration {
 
 }

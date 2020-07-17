@@ -1602,6 +1602,12 @@
       "defaultValue": "local"
     },
     {
+      "name": "spring.r2dbc.proxy.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to proxy the ConnectionFactory if necessary.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.rabbitmq.address-shuffle-mode",
       "defaultValue": "none"
     },
