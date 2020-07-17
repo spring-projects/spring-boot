@@ -304,13 +304,6 @@ bom {
 			]
 		}
 	}
-	library("Exec Maven Plugin", "1.6.0") {
-		group("org.codehaus.mojo") {
-			plugins = [
-				"exec-maven-plugin"
-			]
-		}
-	}
 	library("Flyway", "6.5.0") {
 		group("org.flywaydb") {
 			modules = [
