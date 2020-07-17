@@ -17,8 +17,6 @@
 package org.springframework.boot.autoconfigure.web.embedded;
 
 import java.time.Duration;
-import java.util.Objects;
-import java.util.stream.Stream;
 
 import io.netty.channel.ChannelOption;
 
@@ -62,13 +60,7 @@ public class NettyWebServerFactoryCustomizer
 		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
 		propertyMapper.from(nettyProperties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
-		if (Stream
-				.of(this.serverProperties.getMaxHttpHeaderSize(), nettyProperties.getH2cMaxContentLength(),
-						nettyProperties.getMaxChunkSize(), nettyProperties.getMaxInitialLineLength(),
-						nettyProperties.getValidateHeaders(), nettyProperties.getInitialBufferSize())
-				.anyMatch(Objects::nonNull)) {
-			customizeRequestDecoder(factory, propertyMapper);
-		}
+		customizeRequestDecoder(factory, propertyMapper);
 	}
 
 	private boolean getOrDeduceUseForwardHeaders() {
@@ -77,6 +69,11 @@ public class NettyWebServerFactoryCustomizer
 			return platform != null && platform.isUsingForwardHeaders();
 		}
 		return this.serverProperties.getForwardHeadersStrategy().equals(ServerProperties.ForwardHeadersStrategy.NATIVE);
+	}
+
+	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
+		factory.addServerCustomizers((httpServer) -> httpServer.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
+				(int) connectionTimeout.toMillis()));
 	}
 
 	private void customizeRequestDecoder(NettyReactiveWebServerFactory factory, PropertyMapper propertyMapper) {
@@ -95,15 +92,10 @@ public class NettyWebServerFactoryCustomizer
 							.h2cMaxContentLength((int) h2cMaxContentLength.toBytes()));
 			propertyMapper.from(nettyProperties.getInitialBufferSize()).whenNonNull().to(
 					(initialBufferSize) -> httpRequestDecoderSpec.initialBufferSize((int) initialBufferSize.toBytes()));
-			propertyMapper.from(nettyProperties.getValidateHeaders()).whenNonNull()
+			propertyMapper.from(nettyProperties.isValidateHeaders()).whenNonNull()
 					.to(httpRequestDecoderSpec::validateHeaders);
 			return httpRequestDecoderSpec;
 		}));
-	}
-
-	private void customizeConnectionTimeout(NettyReactiveWebServerFactory factory, Duration connectionTimeout) {
-		factory.addServerCustomizers((httpServer) -> httpServer.option(ChannelOption.CONNECT_TIMEOUT_MILLIS,
-				(int) connectionTimeout.toMillis()));
 	}
 
 }

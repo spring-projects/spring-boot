@@ -110,9 +110,9 @@ class NettyWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void setHttpRequestDecoder() {
+	void configureHttpRequestDecoder() {
 		ServerProperties.Netty nettyProperties = this.serverProperties.getNetty();
-		nettyProperties.setValidateHeaders(true);
+		nettyProperties.setValidateHeaders(false);
 		nettyProperties.setInitialBufferSize(DataSize.ofBytes(512));
 		nettyProperties.setH2cMaxContentLength(DataSize.ofKilobytes(1));
 		nettyProperties.setMaxChunkSize(DataSize.ofKilobytes(16));
@@ -123,19 +123,11 @@ class NettyWebServerFactoryCustomizerTests {
 		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getValue();
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		HttpRequestDecoderSpec decoder = httpServer.configuration().decoder();
-		assertThat(decoder.validateHeaders()).isTrue();
+		assertThat(decoder.validateHeaders()).isFalse();
 		assertThat(decoder.initialBufferSize()).isEqualTo(nettyProperties.getInitialBufferSize().toBytes());
 		assertThat(decoder.h2cMaxContentLength()).isEqualTo(nettyProperties.getH2cMaxContentLength().toBytes());
 		assertThat(decoder.maxChunkSize()).isEqualTo(nettyProperties.getMaxChunkSize().toBytes());
 		assertThat(decoder.maxInitialLineLength()).isEqualTo(nettyProperties.getMaxInitialLineLength().toBytes());
-	}
-
-	@Test
-	void shouldNotSetAnyHttpRequestDecoderProperties() {
-		this.serverProperties.setMaxHttpHeaderSize(null);
-		NettyReactiveWebServerFactory factory = mock(NettyReactiveWebServerFactory.class);
-		this.customizer.customize(factory);
-		verify(factory, never()).addServerCustomizers(this.customizerCaptor.capture());
 	}
 
 	private void verifyConnectionTimeout(NettyReactiveWebServerFactory factory, Integer expected) {
@@ -143,8 +135,8 @@ class NettyWebServerFactoryCustomizerTests {
 			verify(factory, never()).addServerCustomizers(any(NettyServerCustomizer.class));
 			return;
 		}
-		verify(factory, times(1)).addServerCustomizers(this.customizerCaptor.capture());
-		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getValue();
+		verify(factory, times(2)).addServerCustomizers(this.customizerCaptor.capture());
+		NettyServerCustomizer serverCustomizer = this.customizerCaptor.getAllValues().get(0);
 		HttpServer httpServer = serverCustomizer.apply(HttpServer.create());
 		Map<ChannelOption<?>, ?> options = httpServer.configuration().options();
 		assertThat(options.get(ChannelOption.CONNECT_TIMEOUT_MILLIS)).isEqualTo(expected);
