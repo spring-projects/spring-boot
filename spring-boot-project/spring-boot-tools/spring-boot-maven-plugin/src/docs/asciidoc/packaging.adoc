@@ -357,7 +357,7 @@ Again, if you are using `spring-boot-starter-parent`, this can be simplified as 
 
 [[repackage-example-custom-name]]
 ==== Custom Name
-If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, simply use the standard `finalName`, as shown in the following example:
+If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, use the standard `finalName`, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----

@@ -8,7 +8,7 @@ https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#production
 covers the features in more detail.
 
 == Enabling the Actuator
-The simplest way to enable the features is to add a dependency to the
+The recommended way to enable the features is to add a dependency to the
 `spring-boot-starter-actuator` '`Starter`'. To add the actuator to a Maven-based project,
 add the following '`Starter`' dependency:
 
