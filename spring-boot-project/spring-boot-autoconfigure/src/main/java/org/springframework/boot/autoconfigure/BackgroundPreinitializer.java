@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,11 +63,19 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 
+	private static final boolean ENABLED;
+
+	static {
+		ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
+				&& Runtime.getRuntime().availableProcessors() > 1;
+	}
+
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (!Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
-				&& event instanceof ApplicationStartingEvent && multipleProcessors()
-				&& preinitializationStarted.compareAndSet(false, true)) {
+		if (!ENABLED) {
+			return;
+		}
+		if (event instanceof ApplicationStartingEvent && preinitializationStarted.compareAndSet(false, true)) {
 			performPreinitialization();
 		}
 		if ((event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent)
@@ -79,10 +87,6 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 				Thread.currentThread().interrupt();
 			}
 		}
-	}
-
-	private boolean multipleProcessors() {
-		return Runtime.getRuntime().availableProcessors() > 1;
 	}
 
 	private void performPreinitialization() {
