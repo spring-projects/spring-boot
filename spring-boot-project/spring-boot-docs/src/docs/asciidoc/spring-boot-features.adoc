@@ -338,7 +338,7 @@ The context can be injected by implementing `ApplicationContextAware` or, if the
 [[boot-features-web-environment]]
 === Web Environment
 A `SpringApplication` attempts to create the right type of `ApplicationContext` on your behalf.
-The algorithm used to determine a `WebApplicationType` is fairly simple:
+The algorithm used to determine a `WebApplicationType` is the following:
 
 * If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is used
 * If Spring MVC is not present and Spring WebFlux is present, an `AnnotationConfigReactiveWebServerApplicationContext` is used
@@ -387,7 +387,7 @@ This lets you also inject single application arguments by using the `@Value` ann
 If you need to run some specific code once the `SpringApplication` has started, you can implement the `ApplicationRunner` or `CommandLineRunner` interfaces.
 Both interfaces work in the same way and offer a single `run` method, which is called just before `SpringApplication.run(...)` completes.
 
-The `CommandLineRunner` interfaces provides access to application arguments as a simple string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
+The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
 
 [source,java,indent=0]
@@ -785,7 +785,7 @@ If the `development`, `production` and `eu-central` profiles are *not* enabled, 
 
 [NOTE]
 ====
-`spring.profiles` can therefore contain a simple profile name (for example `production`) or a profile expression.
+`spring.profiles` can therefore contain a profile name (for example `production`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
 Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
 ====
@@ -1474,7 +1474,7 @@ The following units are supported with the simple format:
 * `w` for weeks
 * `d` for days
 
-NOTE: The `java.time.Period` type never actually stores the number of weeks, it is simply a shortcut that means "`7 days`".
+NOTE: The `java.time.Period` type never actually stores the number of weeks, it is a shortcut that means "`7 days`".
 
 
 
@@ -2061,7 +2061,7 @@ If you attempt to do so, making changes to the configuration file results in an 
 The `<springProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
 Profile sections are supported anywhere within the `<configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
-The `<springProfile>` tag can contain a simple profile name (for example `staging`) or a profile expression.
+The `<springProfile>` tag can contain a profile name (for example `staging`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
 Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
 The following listing shows three sample profiles:
@@ -2180,7 +2180,7 @@ If you have not yet developed a Spring Boot web application, you can follow the 
 
 [[boot-features-spring-mvc]]
 === The "`Spring Web MVC Framework`"
-The {spring-framework-docs}/web.html#mvc[Spring Web MVC framework] (often referred to as simply "`Spring MVC`") is a rich "`model view controller`" web framework.
+The {spring-framework-docs}/web.html#mvc[Spring Web MVC framework] (often referred to as "`Spring MVC`") is a rich "`model view controller`" web framework.
 Spring MVC lets you create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
@@ -2430,7 +2430,7 @@ If you understand the caveats and would still like your application to use suffi
 	spring.mvc.pathmatch.use-suffix-pattern=true
 ----
 
-Alternatively, rather than open all suffix patterns, it's more secure to just support registered suffix patterns:
+Alternatively, rather than open all suffix patterns, it's more secure to only support registered suffix patterns:
 
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -3393,7 +3393,7 @@ https://oauth.net/2/[OAuth2] is a widely used authorization framework that is su
 
 [[boot-features-security-oauth2-client]]
 ==== Client
-If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to make it easy to set up an OAuth2/Open ID Connect clients.
+If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up an OAuth2/Open ID Connect clients.
 This configuration makes use of the properties under `OAuth2ClientProperties`.
 The same properties are applicable to both servlet and reactive applications.
 
@@ -3532,7 +3532,7 @@ Until then, you can use the `spring-security-oauth2-autoconfigure` module to eas
 
 [[boot-features-security-saml2-relying-party]]
 ==== Relying Party
-If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to make it easy to set up a SAML 2.0 Relying Party.
+If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
 This configuration makes use of the properties under `Saml2RelyingPartyProperties`.
 
 A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
@@ -3753,8 +3753,8 @@ The `spring-boot-starter-data-jpa` POM provides a quick way to get started.
 It provides the following key dependencies:
 
 * Hibernate: One of the most popular JPA implementations.
-* Spring Data JPA: Makes it easy to implement JPA-based repositories.
-* Spring ORMs: Core ORM support from the Spring Framework.
+* Spring Data JPA: Helps you to implement JPA-based repositories.
+* Spring ORM: Core ORM support from the Spring Framework.
 
 TIP: We do not go into too many details of JPA or {spring-data}[Spring Data] here.
 You can follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing Data with JPA`"] guide from https://spring.io and read the {spring-data-jpa}[Spring Data JPA] and https://hibernate.org/orm/documentation/[Hibernate] reference documentation.
@@ -4941,7 +4941,7 @@ Spring Boot auto-configures the cache infrastructure as long as caching support 
 
 NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section] of the Spring Framework reference for more details.
 
-In a nutshell, adding caching to an operation of your service is as easy as adding the relevant annotation to its method, as shown in the following example:
+In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -5695,12 +5695,12 @@ Spring Boot auto-configures the required `KafkaStreamsConfiguration` bean as lon
 
 Enabling Kafka Streams means that the application id and bootstrap servers must be set.
 The former can be configured using `spring.kafka.streams.application-id`, defaulting to `spring.application.name` if not set.
-The latter can be set globally or specifically overridden just for streams.
+The latter can be set globally or specifically overridden only for streams.
 
 Several additional properties are available using dedicated properties; other arbitrary Kafka properties can be set using the `spring.kafka.streams.properties` namespace.
 See also <<boot-features-kafka-extra-props>> for more information.
 
-To use the factory bean, simply wire `StreamsBuilder` into your `@Bean` as shown in the following example:
+To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -5936,7 +5936,7 @@ For instance, the following service triggers the validation of the first argumen
 
 [[boot-features-email]]
 == Sending Email
-The Spring Framework provides an easy abstraction for sending email by using the `JavaMailSender` interface, and Spring Boot provides auto-configuration for it as well as a starter module.
+The Spring Framework provides an abstraction for sending email by using the `JavaMailSender` interface, and Spring Boot provides auto-configuration for it as well as a starter module.
 
 TIP: See the {spring-framework-docs}/integration.html#mail[reference documentation] for a detailed explanation of how you can use `JavaMailSender`.
 
@@ -7372,7 +7372,7 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 [[boot-features-testing-spring-boot-applications-testing-auto-configured-additional-auto-config]]
 ==== Additional Auto-configuration and Slicing
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
-Additional auto-configurations can be added by creating a custom `@AutoConfigure...` annotation or simply by adding `@ImportAutoConfiguration` to the test as shown in the following example:
+Additional auto-configurations can be added by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -7935,7 +7935,7 @@ Make sure that configuration keys are documented by adding field javadoc for eac
 	}
 ----
 
-NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
 Here are some rules we follow internally to make sure descriptions are consistent:
 
