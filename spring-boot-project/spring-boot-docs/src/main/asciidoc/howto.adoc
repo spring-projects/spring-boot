@@ -38,7 +38,7 @@ The following example registers `ProjectConstraintViolationFailureAnalyzer`:
 	com.example.ProjectConstraintViolationFailureAnalyzer
 ----
 
-NOTE: If you need access to the `BeanFactory` or the `Environment`, your `FailureAnalyzer` can simply implement `BeanFactoryAware` or `EnvironmentAware` respectively.
+NOTE: If you need access to the `BeanFactory` or the `Environment`, your `FailureAnalyzer` can implement `BeanFactoryAware` or `EnvironmentAware` respectively.
 
 
 
@@ -415,7 +415,7 @@ Many Spring Boot starters include default embedded containers.
 * For reactive stack applications, the `spring-boot-starter-webflux` includes  Reactor Netty by including `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`, `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
 
 When switching to a different HTTP server, you need to exclude the default dependencies in addition to including the one you need.
-Spring Boot provides separate starters for HTTP servers to help make this process as easy as possible.
+To help with this process, Spring Boot provides a separate starter for each of the supported HTTP servers.
 
 The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
 
@@ -1029,7 +1029,7 @@ The `ObjectMapper` (or `XmlMapper` for Jackson XML converter) instance (created 
 Spring Boot also has some features to make it easier to customize this behavior.
 
 You can configure the `ObjectMapper` and `XmlMapper` instances by using the environment.
-Jackson provides an extensive suite of simple on/off features that can be used to configure various aspects of its processing.
+Jackson provides an extensive suite of on/off features that can be used to configure various aspects of its processing.
 These features are described in six enums (in Jackson) that map onto properties in the environment:
 
 |===
@@ -1290,7 +1290,7 @@ This ensures efficient sharing of resources for the server receiving requests an
 == Logging
 Spring Boot has no mandatory logging dependency, except for the Commons Logging API, which is typically provided by Spring Framework's `spring-jcl` module.
 To use https://logback.qos.ch[Logback], you need to include it and `spring-jcl` on the classpath.
-The simplest way to do that is through the starters, which all depend on `spring-boot-starter-logging`.
+The recommended way to do that is through the starters, which all depend on `spring-boot-starter-logging`.
 For a web application, you need only `spring-boot-starter-web`, since it depends transitively on the logging starter.
 If you use Maven, the following dependency adds logging for you:
 
@@ -1405,7 +1405,7 @@ Spring Boot supports https://logging.apache.org/log4j/2.x/[Log4j 2] for logging 
 If you use the starters for assembling dependencies, you have to exclude Logback and then include log4j 2 instead.
 If you do not use the starters, you need to provide (at least) `spring-jcl` in addition to Log4j 2.
 
-The simplest path is probably through the starters, even though it requires some jiggling with excludes.
+The recommended path is through the starters, even though it requires some jiggling with excludes.
 The following example shows how to set up the starters in Maven:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -1739,8 +1739,7 @@ See {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguratio
 Hibernate {hibernate-docs}#caching[second-level cache] can be configured for a range of cache providers.
 Rather than configuring Hibernate to lookup the cache provider again, it is better to provide the one that is available in the context whenever possible.
 
-If you're using JCache, this is pretty easy.
-First, make sure that `org.hibernate:hibernate-jcache` is available on the classpath.
+To do this with JCache, first make sure that `org.hibernate:hibernate-jcache` is available on the classpath.
 Then, add a `HibernatePropertiesCustomizer` bean as shown in the following example:
 
 [source,java,indent=0]
@@ -1771,10 +1770,9 @@ Spring Boot auto-configuration switches off its entity manager in the presence o
 
 [[howto-use-two-entity-managers]]
 === Use Two EntityManagers
-Even if the default `EntityManagerFactory` works fine, you need to define a new one.
-Otherwise, the presence of the second bean of that type switches off the default.
-To make it easy to do, you can use the convenient `EntityManagerBuilder` provided by Spring Boot.
-Alternatively, you can just the `LocalContainerEntityManagerFactoryBean` directly from Spring ORM, as shown in the following example:
+Even if the default `EntityManagerFactory` works fine, you need to define a new one, otherwise the presence of the second bean of that type switches off the default.
+You can use the `EntityManagerBuilder` provided by Spring Boot to help you to create one.
+Alternatively, you can use the `LocalContainerEntityManagerFactoryBean` directly from Spring ORM, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -2216,7 +2214,7 @@ Overriding the error page with your own depends on the templating technology tha
 For example, if you use Thymeleaf, you can add an `error.html` template.
 If you use FreeMarker, you can add an `error.ftlh` template.
 In general, you need a `View` that resolves with a name of `error` or a `@Controller` that handles the `/error` path.
-Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be a simple way of doing that.
+Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
 See {spring-boot-autoconfigure-module-code}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
 See also the section on "`<<spring-boot-features.adoc#boot-features-error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
@@ -2774,8 +2772,7 @@ This means that, in addition to being deployable to a servlet container, you can
 
 [[howto-convert-an-existing-application-to-spring-boot]]
 === Convert an Existing Application to Spring Boot
-For a non-web application, it should be easy to convert an existing Spring application to a Spring Boot application.
-To do so, throw away the code that creates your `ApplicationContext` and replace it with calls to `SpringApplication` or `SpringApplicationBuilder`.
+To convert an existing non-web Spring application to a Spring Boot application, replace the code that creates your `ApplicationContext` and replace it with calls to `SpringApplication` or `SpringApplicationBuilder`.
 Spring MVC web applications are generally amenable to first creating a deployable war application and then migrating it later to an executable war or jar.
 See the https://spring.io/guides/gs/convert-jar-to-war/[Getting Started Guide on Converting a jar to a war].
 
@@ -2810,7 +2807,7 @@ If you have other features in your application (for instance, using other servle
 * A `@Bean` of type `Servlet` or `ServletRegistrationBean` installs that bean in the container as if it were a `<servlet/>` and `<servlet-mapping/>` in `web.xml`.
 * A `@Bean` of type `Filter` or `FilterRegistrationBean` behaves similarly (as a `<filter/>` and `<filter-mapping/>`).
 * An `ApplicationContext` in an XML file can be added through an `@ImportResource` in your `Application`.
-  Alternatively, simple cases where annotation configuration is heavily used already can be recreated in a few lines as `@Bean` definitions.
+  Alternatively, cases where annotation configuration is heavily used already can be recreated in a few lines as `@Bean` definitions.
 
 Once the war file is working, you can make it executable by adding a `main` method to your `Application`, as shown in the following example:
 
@@ -2914,7 +2911,7 @@ You can do so by adding a `WEB-INF/weblogic.xml` file with the following content
 === Use Jedis Instead of Lettuce
 By default, the Spring Boot starter (`spring-boot-starter-data-redis`) uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
 You need to exclude that dependency and include the https://github.com/xetorthio/jedis/[Jedis] one instead.
-Spring Boot manages these dependencies to help make this process as easy as possible.
+Spring Boot manages both of these dependencies so you can switch to Jedis without specifying a version.
 
 The following example shows how to do so in Maven:
 

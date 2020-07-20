@@ -2,7 +2,7 @@
 :docs: https://docs.spring.io/spring-boot/docs/current-SNAPSHOT/reference
 :github: https://github.com/spring-projects/spring-boot
 
-Spring Boot makes it easy to create Spring-powered, production-grade applications and
+Spring Boot helps you to create Spring-powered, production-grade applications and
 services with absolute minimum fuss. It takes an opinionated view of the Spring platform
 so that new and existing users can quickly get to the bits they need.
 
@@ -161,7 +161,7 @@ There are a number of modules in Spring Boot, here is a quick overview:
 The main library providing features that support the other parts of Spring Boot,
 these include:
 
-* The `SpringApplication` class, providing static convenience methods that make it easy
+* The `SpringApplication` class, providing static convenience methods that can be used
 to write a stand-alone Spring Application. Its sole job is to create and refresh an
 appropriate Spring `ApplicationContext`
 * Embedded web applications with a choice of container (Tomcat, Jetty or Undertow)
@@ -188,14 +188,14 @@ Starters are a set of convenient dependency descriptors that you can include in
 your application. You get a one-stop-shop for all the Spring and related technology
 that you need without having to hunt through sample code and copy paste loads of
 dependency descriptors. For example, if you want to get started using Spring and JPA for
-database access just include the `spring-boot-starter-data-jpa` dependency in your
+database access include the `spring-boot-starter-data-jpa` dependency in your
 project, and you are good to go.
 
 
 
 === spring-boot-cli
-The Spring command line application compiles and runs Groovy source, making it super
-easy to write the absolute minimum of code to get an application running. Spring CLI
+The Spring command line application compiles and runs Groovy source, allowing you to
+write the absolute minimum of code to get an application running. Spring CLI
 can also watch files, automatically recompiling and restarting when they change.
 
 
@@ -256,7 +256,7 @@ The https://spring.io/[spring.io] site contains several guides that show how to 
 Boot step-by-step:
 
 * https://spring.io/guides/gs/spring-boot/[Building an Application with Spring Boot] is a
-  very basic guide that shows you how to create a simple application, run it and add some
+  very basic guide that shows you how to create an application, run it and add some
   management services.
 * https://spring.io/guides/gs/actuator-service/[Building a RESTful Web Service with Spring
   Boot Actuator] is a guide to creating a REST web service and also shows how the server

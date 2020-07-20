@@ -1,7 +1,7 @@
 = Contributing to Spring Boot
 
 Spring Boot is released under the Apache 2.0 license. If you would like to contribute
-something, or simply want to hack on the code this document should help you get started.
+something, or want to hack on the code this document should help you get started.
 
 
 
@@ -54,7 +54,7 @@ added after the original pull request but before a merge.
   `./mvnw io.spring.javaformat:spring-javaformat-maven-plugin:apply`.
 * The build includes checkstyle rules for many of our code conventions. Run
   `./mvnw validate` if you want to check you changes are compliant.
-* Make sure all new `.java` files to have a simple Javadoc class comment with at least an
+* Make sure all new `.java` files have a Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
   for.
 * Add the ASF license header comment to all new `.java` files (copy from existing files

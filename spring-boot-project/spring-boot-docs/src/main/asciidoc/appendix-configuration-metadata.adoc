@@ -14,7 +14,7 @@ However, it is possible to <<configuration-metadata-additional-metadata,write pa
 [[configuration-metadata-format]]
 == Metadata Format
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
-They use a simple JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
+They use a JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
 
 [source,json,indent=0]
 ----
@@ -762,7 +762,7 @@ This dependency ensures that the additional metadata is available when the annot
 The processor picks up both classes and methods that are annotated with `@ConfigurationProperties`.
 The Javadoc for field values within configuration classes is used to populate the `description` attribute.
 
-NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
 If the class has a single constructor with at least one parameters, one property is created per constructor parameter.
 Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection types (that is detected even if only a getter is present).

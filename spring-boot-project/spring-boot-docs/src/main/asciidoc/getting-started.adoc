@@ -11,7 +11,7 @@ We then walk you through building your first Spring Boot application, discussing
 
 [[getting-started-introducing-spring-boot]]
 == Introducing Spring Boot
-Spring Boot makes it easy to create stand-alone, production-grade Spring-based Applications that you can run.
+Spring Boot helps you to create stand-alone, production-grade Spring-based Applications that you can run.
 We take an opinionated view of the Spring platform and third-party libraries, so that you can get started with minimum fuss.
 Most Spring Boot applications need very little Spring configuration.
 
@@ -251,7 +251,7 @@ Get SDKMAN! from https://sdkman.io and install Spring Boot by using the followin
 	Spring Boot v{spring-boot-version}
 ----
 
-If you develop features for the CLI and want easy access to the version you built, use the following commands:
+If you develop features for the CLI and want access to the version you built, use the following commands:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -415,7 +415,7 @@ If you manually installed the CLI, follow the <<getting-started-manual-cli-insta
 
 [[getting-started-first-application]]
 == Developing Your First Spring Boot Application
-This section describes how to develop a simple "`Hello World!`" web application that highlights some of Spring Boot's key features.
+This section describes how to develop a small "`Hello World!`" web application that highlights some of Spring Boot's key features.
 We use Maven to build this project, since most IDEs support it.
 
 [TIP]
@@ -625,7 +625,7 @@ Spring Boot still does its best to auto-configure your application.
 [[getting-started-first-application-main-method]]
 ==== The "`main`" Method
 The final part of our application is the `main` method.
-This is just a standard method that follows the Java convention for an application entry point.
+This is a standard method that follows the Java convention for an application entry point.
 Our main method delegates to Spring Boot's `SpringApplication` class by calling `run`.
 `SpringApplication` bootstraps our application, starting Spring, which, in turn, starts the auto-configured Tomcat web server.
 We need to pass `Example.class` as an argument to the `run` method to tell `SpringApplication` which is the primary Spring component.

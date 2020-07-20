@@ -78,7 +78,7 @@ It minimizes divergence between development and production environments.
 
 Ideally, your application, like a Spring Boot executable jar, has everything that it needs to run packaged within it.
 
-In this section, we look at what it takes to get the <<getting-started.adoc#getting-started-first-application, simple application that we developed>> in the "`Getting Started`" section up and running in the Cloud.
+In this section, we look at what it takes to get the <<getting-started.adoc#getting-started-first-application, application that we developed>> in the "`Getting Started`" section up and running in the Cloud.
 
 
 
@@ -278,7 +278,7 @@ The options include:
 * AWS Container Registry
 
 Each has different features and pricing models.
-In this document, we describe only the simplest option: AWS Elastic Beanstalk.
+In this document, we describe to approach using AWS Elastic Beanstalk.
 
 
 
@@ -450,7 +450,7 @@ Then deploy with `mvn appengine:deploy` (if you need to authenticate first, the 
 == Installing Spring Boot Applications
 In addition to running Spring Boot applications by using `java -jar`, it is also possible to make fully executable applications for Unix systems.
 A fully executable jar can be executed like any other executable binary or it can be <<deployment-service,registered with `init.d` or `systemd`>>.
-This makes it very easy to install and manage Spring Boot applications in common production environments.
+This helps when installing and managing Spring Boot applications in common production environments.
 
 CAUTION: Fully executable jars work by embedding an extra script at the front of the file.
 Currently, some tools do not accept this format, so you may not always be able to use this technique.
@@ -800,7 +800,7 @@ The following environment properties are supported with the default script:
 | The explicit location of the jar file, in case the script is being used to launch a jar that it is not actually embedded.
 
 | `DEBUG`
-| If not empty, sets the `-x` flag on the shell process, making it easy to see the logic in the script.
+| If not empty, sets the `-x` flag on the shell process, allowing you to see the logic in the script.
 
 | `STOP_WAIT_TIME`
 | The time in seconds to wait when stopping the application before forcing a shutdown (`60` by default).

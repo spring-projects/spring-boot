@@ -11,7 +11,7 @@ Auditing, health, and metrics gathering can also be automatically applied to you
 [[production-ready-enabling]]
 == Enabling Production-ready Features
 The {spring-boot-code}/spring-boot-project/spring-boot-actuator[`spring-boot-actuator`] module provides all of Spring Boot's production-ready features.
-The simplest way to enable the features is to add a dependency to the `spring-boot-starter-actuator` '`Starter`'.
+The recommended way to enable the features is to add a dependency on the `spring-boot-starter-actuator` '`Starter`'.
 
 .Definition of Actuator
 ****
@@ -2009,7 +2009,7 @@ You can also add any number of `tag=KEY:VALUE` query parameters to the end of th
 ====
 The reported measurements are the _sum_ of the statistics of all meters matching the meter name and any tags that have been applied.
 So in the example above, the returned "Value" statistic is the sum of the maximum memory footprints of "Code Cache", "Compressed Class Space", and "Metaspace" areas of the heap.
-If you just wanted to see the maximum size for the "Metaspace", you could add an additional `tag=id:Metaspace`, i.e. `/actuator/metrics/jvm.memory.max?tag=area:nonheap&tag=id:Metaspace`.
+If you only wanted to see the maximum size for the "Metaspace", you could add an additional `tag=id:Metaspace`, i.e. `/actuator/metrics/jvm.memory.max?tag=area:nonheap&tag=id:Metaspace`.
 ====
 
 
