@@ -45,6 +45,7 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
+ * @author Sebastien Deleuze
  * @since 1.3.0
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
@@ -67,6 +68,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 
 	static {
 		ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
+				&& System.getProperty("org.graalvm.nativeimage.imagecode") == null
 				&& Runtime.getRuntime().availableProcessors() > 1;
 	}
 
