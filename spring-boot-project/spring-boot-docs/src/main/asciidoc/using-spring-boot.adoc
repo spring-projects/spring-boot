@@ -423,7 +423,7 @@ The actual contents of those classes, such as nested configuration classes or be
 [[using-boot-spring-beans-and-dependency-injection]]
 == Spring Beans and Dependency Injection
 You are free to use any of the standard Spring Framework techniques to define your beans and their injected dependencies.
-For simplicity, we often find that using `@ComponentScan` (to find your beans) and using `@Autowired` (to do constructor injection) works well.
+We often find that using `@ComponentScan` (to find your beans) and using `@Autowired` (to do constructor injection) works well.
 
 If you structure your code as suggested above (locating your application class in a root package), you can add `@ComponentScan` without any arguments.
 All of your application components (`@Component`, `@Service`, `@Repository`, `@Controller` etc.) are automatically registered as Spring Beans.
@@ -538,7 +538,7 @@ In this example, `Application` is just like any other Spring Boot application ex
 [[using-boot-running-your-application]]
 == Running Your Application
 One of the biggest advantages of packaging your application as a jar and using an embedded HTTP server is that you can run your application as you would any other.
-Debugging Spring Boot applications is also easy.
+The sample applies to debugging Spring Boot applications.
 You do not need any special IDE plugins or extensions.
 
 NOTE: This section only covers jar based packaging.
@@ -548,7 +548,7 @@ If you choose to package your application as a war file, you should refer to you
 
 [[using-boot-running-from-an-ide]]
 === Running from an IDE
-You can run a Spring Boot application from your IDE as a simple Java application.
+You can run a Spring Boot application from your IDE as a Java application.
 However, you first need to import your project.
 Import steps vary depending on your IDE and build system.
 Most IDEs can import Maven projects directly.
@@ -624,7 +624,7 @@ You might also want to use the `JAVA_OPTS` operating system environment variable
 
 [[using-boot-hot-swapping]]
 === Hot Swapping
-Since Spring Boot applications are just plain Java applications, JVM hot-swapping should work out of the box.
+Since Spring Boot applications are plain Java applications, JVM hot-swapping should work out of the box.
 JVM hot swapping is somewhat limited with the bytecode that it can replace.
 For a more complete solution, https://jrebel.com/software/jrebel/[JRebel] can be used.
 

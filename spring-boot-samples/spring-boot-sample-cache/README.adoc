@@ -13,7 +13,7 @@ abstraction is supported by many caching libraries, including:
 * Simple provider based on `ConcurrentHashMap`
 * Generic provider based on `org.springframework.Cache` bean definition(s)
 
-The sample defines a simple `CountryService` that caches countries by ISO code. When
+The sample defines a `CountryService` that caches countries by ISO code. When
 the application starts a client invokes the service with a random code every 500ms.
 You can look at the `/metrics` endpoint to review the cache statistics if your chosen
 caching provider is supported.
@@ -22,7 +22,7 @@ caching provider is supported.
 
 == Using the JSR-107 annotations
 The sample uses Spring's cache annotation. If you want to use the JSR-107 annotations
-instead, simply add the `javax.cache:cache-api` dependency to the project. No further
+instead, add the `javax.cache:cache-api` dependency to the project. No further
 configuration is necessary.
 
 NOTE: You can use the JSR-107 annotations with _any_ cache provider; a JSR-107
@@ -61,7 +61,7 @@ of the library that you want to use.
 
 
 === EhCache 2.x
-Simply add the `net.sf.ehcache:ehcache` dependency to the project. Since there is a
+Add the `net.sf.ehcache:ehcache` dependency to the project. Since there is a
 default `ehcache.xml` configuration file at the root of the classpath,
 it is automatically used to configure the underlying `CacheManager`.
 Note that EhCache 3 uses a different format and doesn't default to `ehcache.xml`
@@ -118,7 +118,7 @@ TIP: Run sample cache application using Redis with
 
 
 === Caffeine
-Simply add the `com.github.ben-manes.caffeine:caffeine` dependency to enable support
+Add the `com.github.ben-manes.caffeine:caffeine` dependency to enable support
 for Caffeine. You can customize how caches are created in different ways, see
 `application.properties` for an example and the documentation for more details.
 

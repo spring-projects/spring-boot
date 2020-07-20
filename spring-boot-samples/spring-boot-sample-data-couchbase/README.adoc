@@ -1,6 +1,6 @@
 = Spring Boot Couchbase Sample
 
-This sample demonstrates how you can store a simple document using Spring Data Couchbase.
+This sample demonstrates how you can store a document using Spring Data Couchbase.
 
 The sample expects couchbase to run on your machine with a bucket named `default` and
 no password. You can customize these settings in `application.properties`.

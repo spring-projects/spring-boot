@@ -4,7 +4,7 @@
 When you apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin, Spring Boot's plugin will automatically <<reacting-to-other-plugins-dependency-management,import the `spring-boot-dependencies` bom>> from the version of Spring Boot that you are using.
 This provides a similar dependency management experience to the one that's enjoyed by Maven users.
 For example, it allows you to omit version numbers when declaring dependencies that are managed in the bom.
-To make use of this functionality, simply declare dependencies in the usual way but omit the version number:
+To make use of this functionality, declare dependencies in the usual way but omit the version number:
 
 [source,groovy,indent=0,subs="verbatim",role="primary"]
 .Groovy

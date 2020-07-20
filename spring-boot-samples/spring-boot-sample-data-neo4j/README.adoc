@@ -1,6 +1,6 @@
 = Spring Boot Neo4j Sample
 
-This sample demonstrates the integration of Neo4j with a simple entity. It
+This sample demonstrates the integration of Neo4j with an entity. It
 expects a Neo4j instance running on `localhost`. If your neo4j instance
 requires authentication, update `application.properties` with your credentials:
 
