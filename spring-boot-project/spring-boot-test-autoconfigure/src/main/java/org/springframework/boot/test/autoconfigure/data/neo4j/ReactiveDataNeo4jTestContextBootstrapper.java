@@ -27,7 +27,7 @@ import org.springframework.test.context.TestContextBootstrapper;
  *
  * @author Michael J. Simons
  */
-final class ReactiveDataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+class ReactiveDataNeo4jTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {

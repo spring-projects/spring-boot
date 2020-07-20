@@ -30,7 +30,7 @@ import org.springframework.context.annotation.Configuration;
  * @author Michael J. Simons
  */
 @Configuration(proxyBeanMethods = false)
-final class ReactiveCapableNeo4jVersionAssertion implements InitializingBean {
+class ReactiveCapableNeo4jVersionAssertion implements InitializingBean {
 
 	private final Driver driver;
 
