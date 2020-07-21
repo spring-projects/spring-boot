@@ -48,6 +48,12 @@
       ]
     },
     {
+      "name": "management.endpoint.health.probes.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable liveness and readiness probes.",
+      "defaultValue": false
+    },
+    {
       "name": "management.endpoint.health.show-details",
       "defaultValue": "never"
     },
@@ -169,6 +175,12 @@
       "defaultValue": true
     },
     {
+      "name": "management.health.livenessstate.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable liveness state health check.",
+      "defaultValue": false
+    },
+    {
       "name": "management.health.mail.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Mail health check.",
@@ -196,13 +208,22 @@
       "name": "management.health.probes.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable liveness and readiness probes.",
-      "defaultValue": false
+      "defaultValue": false,
+      "deprecation": {
+        "replacement": "management.endpoint.health.probes.enabled"
+      }
     },
     {
       "name": "management.health.rabbit.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable RabbitMQ health check.",
       "defaultValue": true
+    },
+    {
+      "name": "management.health.readynessstate.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable readiness state health check.",
+      "defaultValue": false
     },
     {
       "name": "management.health.redis.enabled",
