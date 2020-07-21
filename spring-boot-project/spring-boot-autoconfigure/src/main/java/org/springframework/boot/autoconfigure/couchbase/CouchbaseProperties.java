@@ -117,7 +117,7 @@ public class CouchbaseProperties {
 		 * Length of time an HTTP connection may remain idle before it is closed and
 		 * removed from the pool.
 		 */
-		private Duration idleHttpConnectionTimeout = Duration.ofSeconds(30);
+		private Duration idleHttpConnectionTimeout = Duration.ofMillis(4500);
 
 		public int getMinEndpoints() {
 			return this.minEndpoints;
