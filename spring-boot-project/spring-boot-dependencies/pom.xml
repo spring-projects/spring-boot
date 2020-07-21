@@ -75,7 +75,7 @@
 		<hibernate.version>5.4.18.Final</hibernate.version>
 		<hibernate-validator.version>6.0.20.Final</hibernate-validator.version>
 		<hikaricp.version>3.4.5</hikaricp.version>
-		<hsqldb.version>2.5.0</hsqldb.version>
+		<hsqldb.version>2.5.1</hsqldb.version>
 		<htmlunit.version>2.36.0</htmlunit.version>
 		<httpasyncclient.version>4.1.4</httpasyncclient.version>
 		<httpclient.version>4.5.12</httpclient.version>
