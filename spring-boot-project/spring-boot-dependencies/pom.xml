@@ -92,7 +92,7 @@
 		<jakarta-json-bind.version>1.0.2</jakarta-json-bind.version>
 		<jakarta-mail.version>1.6.5</jakarta-mail.version>
 		<jakarta-persistence.version>2.2.3</jakarta-persistence.version>
-		<jakarta-servlet.version>4.0.3</jakarta-servlet.version>
+		<jakarta-servlet.version>4.0.4</jakarta-servlet.version>
 		<jakarta-servlet-jsp.version>2.3.5</jakarta-servlet-jsp.version>
 		<jakarta-servlet-jsp-jstl.version>1.2.7</jakarta-servlet-jsp-jstl.version>
 		<jakarta-transaction.version>1.3.3</jakarta-transaction.version>
