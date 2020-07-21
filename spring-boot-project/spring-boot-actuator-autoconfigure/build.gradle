@@ -147,14 +147,6 @@ dependencies {
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
 }
 
-compileJava {
-	options.compilerArgs << "-parameters"
-}
-
-compileTestJava {
-	options.compilerArgs << "-parameters"
-}
-
 test {
 	outputs.dir("${buildDir}/generated-snippets")
 }
