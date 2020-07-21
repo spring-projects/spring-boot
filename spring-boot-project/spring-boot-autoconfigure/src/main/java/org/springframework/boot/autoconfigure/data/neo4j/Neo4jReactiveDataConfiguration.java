@@ -52,14 +52,13 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @AutoConfigureAfter(Neo4jDriverAutoConfiguration.class)
 @AutoConfigureBefore(Neo4jReactiveRepositoriesConfiguration.class)
 @Import(Neo4jDefaultReactiveCallbacksRegistrar.class)
-final class Neo4jReactiveDataConfiguration {
+class Neo4jReactiveDataConfiguration {
 
 	@Bean("reactiveDatabaseSelectionProvider")
 	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "database")
 	@ConditionalOnMissingBean
 	@Order(-30)
 	ReactiveDatabaseSelectionProvider staticDatabaseSelectionProvider(Neo4jDataProperties dataProperties) {
-
 		return ReactiveDatabaseSelectionProvider.createStaticDatabaseSelectionProvider(dataProperties.getDatabase());
 	}
 
@@ -67,7 +66,6 @@ final class Neo4jReactiveDataConfiguration {
 	@ConditionalOnMissingBean
 	@Order(-20)
 	ReactiveDatabaseSelectionProvider defaultSelectionProvider() {
-
 		return ReactiveDatabaseSelectionProvider.getDefaultSelectionProvider();
 	}
 
@@ -81,7 +79,6 @@ final class Neo4jReactiveDataConfiguration {
 	@ConditionalOnMissingBean(ReactiveNeo4jOperations.class)
 	ReactiveNeo4jTemplate neo4jTemplate(ReactiveNeo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext,
 			ReactiveDatabaseSelectionProvider databaseNameProvider) {
-
 		return new ReactiveNeo4jTemplate(neo4jClient, neo4jMappingContext, databaseNameProvider);
 	}
 
@@ -89,7 +86,6 @@ final class Neo4jReactiveDataConfiguration {
 	@ConditionalOnMissingBean(ReactiveTransactionManager.class)
 	ReactiveTransactionManager transactionManager(Driver driver,
 			ReactiveDatabaseSelectionProvider databaseNameProvider) {
-
 		return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
 	}
 

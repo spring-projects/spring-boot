@@ -60,7 +60,6 @@ class Neo4jDataConfiguration {
 	@ConditionalOnMissingBean
 	@Order(-30)
 	DatabaseSelectionProvider staticDatabaseSelectionProvider(Neo4jDataProperties dataProperties) {
-
 		return DatabaseSelectionProvider.createStaticDatabaseSelectionProvider(dataProperties.getDatabase());
 	}
 
@@ -68,7 +67,6 @@ class Neo4jDataConfiguration {
 	@ConditionalOnMissingBean
 	@Order(-20)
 	DatabaseSelectionProvider defaultSelectionProvider() {
-
 		return DatabaseSelectionProvider.getDefaultSelectionProvider();
 	}
 
@@ -82,7 +80,6 @@ class Neo4jDataConfiguration {
 	@ConditionalOnMissingBean(Neo4jOperations.class)
 	Neo4jTemplate neo4jTemplate(Neo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext,
 			DatabaseSelectionProvider databaseNameProvider) {
-
 		return new Neo4jTemplate(neo4jClient, neo4jMappingContext, databaseNameProvider);
 	}
 
@@ -90,10 +87,8 @@ class Neo4jDataConfiguration {
 	@ConditionalOnMissingBean(PlatformTransactionManager.class)
 	Neo4jTransactionManager transactionManager(Driver driver, DatabaseSelectionProvider databaseNameProvider,
 			ObjectProvider<TransactionManagerCustomizers> optionalCustomizers) {
-
-		final Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(driver, databaseNameProvider);
+		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(driver, databaseNameProvider);
 		optionalCustomizers.ifAvailable((customizer) -> customizer.customize(transactionManager));
-
 		return transactionManager;
 	}
 

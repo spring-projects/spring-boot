@@ -44,7 +44,6 @@ class ReactiveCapableNeo4jVersionAssertion implements InitializingBean {
 
 	@Override
 	public void afterPropertiesSet() {
-
 		ServerVersion version = ServerVersion.version(this.driver);
 		if (version.lessThan(ServerVersion.v4_0_0)) {
 			throw new Neo4jVersionMismatchException(ERROR_MESSAGE, ServerVersion.v4_0_0.toString(), version.toString());
