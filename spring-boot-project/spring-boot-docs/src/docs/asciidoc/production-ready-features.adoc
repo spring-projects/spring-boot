@@ -924,7 +924,7 @@ NOTE: `<actuator-port>` should be set to the port that the actuator endpoints ar
 It could be the main web server port, or a separate management port if the `"management.server.port"` property has been set.
 
 These health groups are only enabled automatically if the application is <<deployment.adoc#cloud-deployment-kubernetes,running in a Kubernetes environment>>.
-You can enable them in any environment using the configprop:management.health.probes.enabled[] configuration property.
+You can enable them in any environment using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mention the `"startupProbe"` as a possible solution.
 The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fails until all startup tasks are done, see <<production-ready-features.adoc#production-ready-kubernetes-probes-lifecycle,how Probes behave during the application lifecycle>>.
