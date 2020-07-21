@@ -83,8 +83,8 @@ public class HttpExchangeTracer {
 
 	}
 
-	private <T> T getIfIncluded(Include include, Supplier<T> valueSupplier) {
-		return this.includes.contains(include) ? valueSupplier.get() : null;
+	private <T> T getIfIncluded(Supplier<T> valueSupplier) {
+		return this.includes.contains(Include.REMOTE_ADDRESS) ? valueSupplier.get() : null;
 	}
 
 	private <T> void setIfIncluded(Include include, Supplier<T> supplier, Consumer<T> consumer) {
@@ -144,7 +144,7 @@ public class HttpExchangeTracer {
 
 		@Override
 		public String getRemoteAddress() {
-			return getIfIncluded(Include.REMOTE_ADDRESS, this.delegate::getRemoteAddress);
+			return getIfIncluded(this.delegate::getRemoteAddress);
 		}
 
 	}

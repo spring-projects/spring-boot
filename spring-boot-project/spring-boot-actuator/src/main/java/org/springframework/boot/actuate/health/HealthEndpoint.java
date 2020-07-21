@@ -52,17 +52,17 @@ public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, Hea
 
 	@ReadOperation
 	public HealthComponent health() {
-		HealthComponent health = health(ApiVersion.V3, EMPTY_PATH);
+		HealthComponent health = health(EMPTY_PATH);
 		return (health != null) ? health : DEFAULT_HEALTH;
 	}
 
 	@ReadOperation
 	public HealthComponent healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
-		return health(ApiVersion.V3, path);
+		return health(path);
 	}
 
-	private HealthComponent health(ApiVersion apiVersion, String... path) {
-		HealthResult<HealthComponent> result = getHealth(apiVersion, SecurityContext.NONE, true, path);
+	private HealthComponent health(String... path) {
+		HealthResult<HealthComponent> result = getHealth(ApiVersion.V3, SecurityContext.NONE, true, path);
 		return (result != null) ? result.getHealth() : null;
 	}
 
