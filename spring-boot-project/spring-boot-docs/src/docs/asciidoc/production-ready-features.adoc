@@ -712,6 +712,20 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
 
+Additional `HealthIndicators` are available but not enabled by default;
+developers can use their configuration property to activate them:
+
+[cols="4,6"]
+|===
+| Name | Description
+
+| {spring-boot-actuator-module-code}/availability/LivenessStateHealthIndicator.java[`LivenessStateHealthIndicator`]
+| Checks the liveness state of the application.
+
+| {spring-boot-actuator-module-code}/availability/ReadinessStateHealthIndicator.java[`ReadinessStateHealthIndicator`]
+| Checks the readiness state of the application.
+|===
+
 
 
 ==== Writing Custom HealthIndicators
