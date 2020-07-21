@@ -443,7 +443,7 @@ bom {
 			]
 		}
 	}
-	library("HSQLDB", "2.5.0") {
+	library("HSQLDB", "2.5.1") {
 		group("org.hsqldb") {
 			modules = [
 				"hsqldb"
