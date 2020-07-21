@@ -180,14 +180,32 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
+		errorAttributes.put("message", getMessage(webRequest, error));
+	}
+
+	/**
+	 * Returns the message to be included as the value of the {@code message} error
+	 * attribute. By default the returned message is the first of the following that is
+	 * not empty:
+	 * <ol>
+	 * <li>Value of the {@link RequestDispatcher#ERROR_MESSAGE} request attribute.
+	 * <li>Message of the given {@code error}.
+	 * <li>{@code No message available}.
+	 * </ol>
+	 * @param webRequest current request
+	 * @param error current error, if any
+	 * @return message to include in the error attributes
+	 * @since 2.4.0
+	 */
+	protected String getMessage(WebRequest webRequest, Throwable error) {
 		Object message = getAttribute(webRequest, RequestDispatcher.ERROR_MESSAGE);
-		if (StringUtils.isEmpty(message) && error != null) {
-			message = error.getMessage();
+		if (!StringUtils.isEmpty(message)) {
+			return message.toString();
 		}
-		if (StringUtils.isEmpty(message)) {
-			message = "No message available";
+		if (error != null && !StringUtils.isEmpty(error.getMessage())) {
+			return error.getMessage();
 		}
-		errorAttributes.put("message", message);
+		return "No message available";
 	}
 
 	private void addBindingResultErrorMessage(Map<String, Object> errorAttributes, BindingResult result) {
