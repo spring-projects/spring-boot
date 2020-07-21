@@ -158,7 +158,7 @@
 		<mongo-driver-reactivestreams.version>1.12.0</mongo-driver-reactivestreams.version>
 		<mongodb.version>3.11.2</mongodb.version>
 		<mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
-		<mysql.version>8.0.20</mysql.version>
+		<mysql.version>8.0.21</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.2.11</neo4j-ogm.version>
 		<netty.version>4.1.51.Final</netty.version>
