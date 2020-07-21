@@ -82,14 +82,6 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-compileJava {
-	options.compilerArgs << "-parameters"
-}
-
-compileTestJava {
-	options.compilerArgs << "-parameters"
-}
-
 test {
 	include "**/*Tests.class"
 }

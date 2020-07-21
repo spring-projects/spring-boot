@@ -89,11 +89,3 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }
-
-compileJava {
-	options.compilerArgs << "-parameters"
-}
-
-compileTestJava {
-	options.compilerArgs << "-parameters"
-}
