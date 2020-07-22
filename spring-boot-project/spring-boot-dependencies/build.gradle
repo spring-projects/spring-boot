@@ -363,6 +363,9 @@ bom {
 		}
 	}
 	library("Groovy", "2.5.12") {
+		prohibit("[2.5.13,2.5.14)") {
+			because "regression with @Log"
+		}
 		group("org.codehaus.groovy") {
 			imports = [
 				"groovy-bom"
