@@ -944,6 +944,9 @@ bom {
 					exclude group: "ch.qos.logback", module: "logback-classic"
 				}
 			]
+			plugins = [
+				"liquibase-maven-plugin"
+			]
 		}
 	}
 	library("Log4j2", "2.13.3") {
