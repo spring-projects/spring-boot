@@ -1711,6 +1711,27 @@ For example, when an application with the following properties is run by using t
 
 
 
+[[boot-features-profiles-groups]]
+=== Profile Groups
+Occasionally the profiles that you define and use in your application are too fine-grained and become cumbersome to use.
+For example, you might have `proddb` and `prodmq` profiles that you use to enable database and messaging features independently.
+
+To help with this, Spring Boot lets you define profile groups.
+A profile group allows you to define a logical name for a related group of profiles.
+
+For example, we can create a `production` group that consists of our `proddb` and `prodmq` profiles.
+
+[source,yaml,indent=0]
+----
+	spring.profiles.group.production:
+	  - proddb
+	  - prodmq
+----
+
+Our application can now be started using `--spring.profiles.active=production` to active the `production`, `proddb` and `prodmq` profiles in one hit.
+
+
+
 [[boot-features-programmatically-setting-profiles]]
 === Programmatically Setting Profiles
 You can programmatically set active profiles by calling `SpringApplication.setAdditionalProfiles(...)` before your application runs.

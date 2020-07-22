@@ -263,6 +263,17 @@ class ProfilesTests {
 	}
 
 	@Test
+	void iteratorWithProfileGroups() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "e,f");
+		environment.setProperty("spring.profiles.group.e", "x,y");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles).containsExactly("a", "e", "x", "y", "f", "b", "c");
+	}
+
+	@Test
 	void iteratorWithProfileGroupsAndNoActive() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.profiles.group.a", "e,f");
@@ -270,6 +281,62 @@ class ProfilesTests {
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
 		assertThat(profiles).containsExactly("default");
+	}
+
+	@Test
+	void iteratorWithProfileGroupsForDefault() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.group.default", "e,f");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles).containsExactly("default", "e", "f");
+	}
+
+	@Test
+	void getAcceptedWithProfileGroups() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "e,f");
+		environment.setProperty("spring.profiles.group.e", "x,y");
+		environment.setDefaultProfiles("g", "h", "i");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getAccepted()).containsExactly("a", "e", "x", "y", "f", "b", "c");
+	}
+
+	@Test
+	void getAcceptedWhenNoActiveAndDefaultWithGroups() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setDefaultProfiles("d", "e", "f");
+		environment.setProperty("spring.profiles.group.e", "x,y");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getAccepted()).containsExactly("d", "e", "x", "y", "f");
+	}
+
+	@Test
+	void isAcceptedWithGroupsReturnsTrue() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "e,f");
+		environment.setProperty("spring.profiles.group.e", "x,y");
+		environment.setDefaultProfiles("g", "h", "i");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.isAccepted("a")).isTrue();
+		assertThat(profiles.isAccepted("e")).isTrue();
+		assertThat(profiles.isAccepted("g")).isFalse();
+	}
+
+	@Test
+	void isAcceptedWhenNoActiveAndDefaultWithGroupsContainsProfileReturnsTrue() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setDefaultProfiles("d", "e", "f");
+		environment.setProperty("spring.profiles.group.e", "x,y");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.isAccepted("d")).isTrue();
+		assertThat(profiles.isAccepted("x")).isTrue();
 	}
 
 }

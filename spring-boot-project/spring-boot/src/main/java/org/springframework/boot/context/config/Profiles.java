@@ -28,11 +28,15 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
 
+import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.core.ResolvableType;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,9 +49,14 @@ import org.springframework.util.StringUtils;
  */
 public class Profiles implements Iterable<String> {
 
+	private static final Bindable<MultiValueMap<String, String>> STRING_STRINGS_MAP = Bindable
+			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
+
 	private static final Set<String> UNSET_ACTIVE = Collections.emptySet();
 
 	private static final Set<String> UNSET_DEFAULT = Collections.singleton("default");
+
+	private final MultiValueMap<String, String> groups;
 
 	private final List<String> activeProfiles;
 
@@ -63,6 +72,7 @@ public class Profiles implements Iterable<String> {
 	 * @param additionalProfiles and additional active profiles
 	 */
 	Profiles(Environment environment, Binder binder, Collection<String> additionalProfiles) {
+		this.groups = binder.bind("spring.profiles.group", STRING_STRINGS_MAP).orElseGet(LinkedMultiValueMap::new);
 		this.activeProfiles = asUniqueItemList(get(environment, binder, environment::getActiveProfiles,
 				AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, UNSET_ACTIVE), additionalProfiles);
 		this.defaultProfiles = asUniqueItemList(get(environment, binder, environment::getDefaultProfiles,
@@ -94,7 +104,9 @@ public class Profiles implements Iterable<String> {
 		asReversedList((!activeProfiles.isEmpty()) ? activeProfiles : defaultProfiles).forEach(stack::push);
 		Set<String> acceptedProfiles = new LinkedHashSet<>();
 		while (!stack.isEmpty()) {
-			acceptedProfiles.add(stack.pop());
+			String current = stack.pop();
+			acceptedProfiles.add(current);
+			asReversedList(this.groups.get(current)).forEach(stack::push);
 		}
 		return asUniqueItemList(StringUtils.toStringArray(acceptedProfiles));
 	}
