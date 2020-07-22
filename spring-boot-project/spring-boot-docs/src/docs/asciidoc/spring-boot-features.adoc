@@ -441,32 +441,37 @@ TIP: If you want to know on which HTTP port the application is running, get the 
 [[boot-features-external-config]]
 == Externalized Configuration
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
-You can use properties files, YAML files, environment variables, and command-line arguments to externalize configuration.
+You can use a variety of external configuration sources, include Java properties files, YAML files, environment variables, and command-line arguments.
+
 Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<boot-features-external-config-typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values.
-Properties are considered in the following order:
+Properties are considered in the following order (with values from lower items overriding earlier ones):
 
-. <<using-spring-boot.adoc#using-boot-devtools-globalsettings,Devtools global settings properties>> in the `$HOME/.config/spring-boot` directory when devtools is active.
-. {spring-framework-api}/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
-. `properties` attribute on your tests.
-  Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test annotations for testing a particular slice of your application>>.
-. Command line arguments.
-. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
-. `ServletConfig` init parameters.
-. `ServletContext` init parameters.
-. JNDI attributes from `java:comp/env`.
-. Java System properties (`System.getProperties()`).
-. OS environment variables.
-. A `RandomValuePropertySource` that has properties only in `+random.*+`.
-. <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
-. <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
-. <<boot-features-external-config-application-property-files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
-. <<boot-features-external-config-application-property-files,Application properties>> packaged inside your jar (`application.properties` and YAML variants).
+. Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
-. Default properties (specified by setting `SpringApplication.setDefaultProperties`).
+. Config data (such as `application.properties` files)
+. A `RandomValuePropertySource` that has properties only in `+random.*+`.
+. OS environment variables.
+. Java System properties (`System.getProperties()`).
+. JNDI attributes from `java:comp/env`.
+. `ServletContext` init parameters.
+. `ServletConfig` init parameters.
+. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
+. Command line arguments.
+. `properties` attribute on your tests.
+  Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test annotations for testing a particular slice of your application>>.
+. {spring-framework-api}/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
+. <<using-spring-boot.adoc#using-boot-devtools-globalsettings,Devtools global settings properties>> in the `$HOME/.config/spring-boot` directory when devtools is active.
+
+Config data files are considered in the following order:
+
+. <<boot-features-external-config-files,Application properties>> packaged inside your jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-files-profile-specific,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
+. <<boot-features-external-config-files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-files-profile-specific,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
@@ -478,10 +483,10 @@ To provide a concrete example, suppose you develop a `@Component` that uses a `n
 	@Component
 	public class MyBean {
 
-	    @Value("${name}")
-	    private String name;
+		@Value("${name}")
+		private String name;
 
-	    // ...
+		// ...
 
 	}
 ----
@@ -490,24 +495,25 @@ On your application classpath (for example, inside your jar) you can have an `ap
 When running in a new environment, an `application.properties` file can be provided outside of your jar that overrides the `name`.
 For one-off testing, you can launch with a specific command line switch (for example, `java -jar app.jar --name="Spring"`).
 
-Spring Boot also supports wildcard locations when loading configuration files.
-By default, a wildcard location of `config/*/` outside of your jar is supported.
-Wildcard locations are also supported when specifying `spring.config.additional-location` and `spring.config.location`.
 
-Wildcard locations are particularly useful in an environment such as Kubernetes when there are multiple sources of config properties.
-For example, if you have some Redis configuration and some MySQL configuration, you might want to keep those two pieces of configuration separate, while requiring that both those are present in an `application.properties` that the app can bind to.
-This might result in two separate `application.properties` files mounted at different locations such as `/config/redis/application.properties` and `/config/mysql/application.properties`.
-In such a case, having a wildcard location of `config/*/`, will result in both files being processed.
 
-NOTE: A wildcard location must contain only one `*` and end with `*/` for search locations that are directories or `*/<filename>` for search locations that are files.
-Locations with wildcards are sorted alphabetically based on the absolute path of the file names.
+[[boot-features-external-config-command-line-args]]
+=== Accessing Command Line Properties
+By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
+As mentioned previously, command line properties always take precedence over file based property sources.
+
+If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
+
 
 
 [[boot-features-external-config-application-json]]
-[TIP]
-====
-The `SPRING_APPLICATION_JSON` properties can be supplied on the command line with an environment variable.
-For example, you could use the following line in a UN{asterisk}X shell:
+=== JSON Application Properties
+Environment variables and system properties often have restrictions that mean some property names cannot be used.
+To help with this, Spring Boot allows you to encode a block of properties into a single JSON structure.
+
+When your application starts, any `spring.application.json` or `SPRING_APPLICATION_JSON` properties will be parsed and added to the `Environment`.
+
+For example, the `SPRING_APPLICATION_JSON` property can be supplied on the command line in a UN{asterisk}X shell as an environment variable:
 
 [indent=0]
 ----
@@ -515,22 +521,356 @@ For example, you could use the following line in a UN{asterisk}X shell:
 ----
 
 In the preceding example, you end up with `acme.name=test` in the Spring `Environment`.
-You can also supply the JSON as `spring.application.json` in a System property, as shown in the following example:
+
+The same JSON can also be provided as a system property:
 
 [indent=0]
 ----
-	$ java -Dspring.application.json='{"name":"test"}' -jar myapp.jar
+	$ java -Dspring.application.json='{"acme":{"name":"test"}}' -jar myapp.jar
 ----
 
-You can also supply the JSON by using a command line argument, as shown in the following example:
+Or you could supply the JSON by using a command line argument:
 
 [indent=0]
 ----
-	$ java -jar myapp.jar --spring.application.json='{"name":"test"}'
+	$ java -jar myapp.jar --spring.application.json='{"acme":{"name":"test"}}'
 ----
 
-You can also supply the JSON as a JNDI variable, as follows: `java:comp/env/spring.application.json`.
+If you are deploying to a classic Application Server, you could also use a JNDI variable named `java:comp/env/spring.application.json`.
+
+
+
+[[boot-features-external-config-application-property-files]]
+[[boot-features-external-config-files]]
+=== External Application Properties
+Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
+
+. The classpath root
+. The classpath `/config` package
+. The current directory
+. The `/config` subdirectory in the current directory
+. Immediate child directories of the `/config` subdirectory
+
+The list is ordered by precedence (with values from lower items overriding earlier ones).
+Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
+
+If you do not like `application` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
+You can also refer to an explicit location by using the `spring.config.location` environment property (which is a comma-separated list of directory locations or file paths).
+The following example shows how to specify a different file name:
+
+[indent=0]
+----
+	$ java -jar myproject.jar --spring.config.name=myproject
+----
+
+The following example shows how to specify two locations:
+
+[indent=0]
+----
+	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
+----
+
+WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
+They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
+
+If `spring.config.location` contains directories (as opposed to files), they should end in `/` (at runtime they will be appended with the names generated from `spring.config.name` before being loaded).
+Files specified in `spring.config.location` are used as-is.
+
+When multiple locations are specified, the later ones can override the values of earlier ones.
+
+Locations configured by using `spring.config.location` replace the default locations.
+For example, if `spring.config.location` is configured with the value `classpath:/custom-config/,file:./custom-config/`, the complete set of locations considered is:
+
+. `classpath:custom-config/`
+. `file:./custom-config/`
+
+If you prefer to add addition locations, rather than replacing them, you can use `spring.config.additional-location`.
+Properties loaded from additional locations can override those in the default locations.
+For example, if `spring.config.additional-location` is configured with the value `classpath:/custom-config/,file:./custom-config/`, the complete the complete set of locations considered is:
+
+. `classpath:/`
+. `classpath:/config/`
+. `file:./`
+. `file:./config/*/`
+. `file:./config/`
+. `classpath:custom-config/`
+. `file:./custom-config/`
+
+This search ordering lets you specify default values in one configuration file and then selectively override those values in another.
+You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
+These default values can then be overridden at runtime with a different file located in one of the custom locations.
+
+NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
+See <<boot-features-external-config-relaxed-binding-from-environment-variables>> for details.
+
+NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
+
+
+
+[[boot-features-external-config-files-wildcards]]
+==== Wildcard Locations
+If a config file location includes the `{asterisk}` character for the last path segment, it is considered a wildcard location.
+Wildcards are expanded when the config is loaded so that immediate subdirectories are are also checked.
+Wildcard locations are particularly useful in an environment such as Kubernetes when there are multiple sources of config properties.
+
+For example, if you have some Redis configuration and some MySQL configuration, you might want to keep those two pieces of configuration separate, while requiring that both those are present in an `application.properties` file.
+This might result in two separate `application.properties` files mounted at different locations such as `/config/redis/application.properties` and `/config/mysql/application.properties`.
+In such a case, having a wildcard location of `config/*/`, will result in both files being processed.
+
+By default, Spring Boot includes `config/*/` in the default search locations.
+The means that all subdirectories of the `/config` directory outside of your jar will be searched.
+
+You can use wildcard locations yourself with the `spring.config.location` and `spring.config.additional-location` properties.
+
+NOTE: A wildcard location must contain only one `{asterisk}` and end with `{asterisk}/` for search locations that are directories or `*/<filename>` for search locations that are files.
+Locations with wildcards are sorted alphabetically based on the absolute path of the file names.
+
+TIP: Wildcard locations only work with external directories.
+You cannot use a wildcard in a `classpath:` location.
+
+
+
+[[boot-features-external-config-files-profile-specific]]
+==== Profile Specific Files[[boot-features-external-config-profile-specific-properties]]
+As well as `application` property files, Spring Boot will also attempt to load profile-specific files using the naming convention `application-\{profile}`.
+For example, if your application activates a profile named `prod` and uses YAML files, then both `application.yml` and `application-prod.yml` will be considered.
+
+Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones.
+If several profiles are specified, a last-wins strategy applies.
+For example, if profiles `prod,live` are specified by the configprop:spring.profiles.active[] property, values in `application-prod.properties` can be overridden by those in `application-live.properties`.
+
+The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set.
+In other words, if no profiles are explicitly activated, then properties from `application-default` are considered.
+
+NOTE: Properties files are only ever loaded once.
+If you've already directly <<boot-features-external-config-files-importing,imported>> a profile specific property files then it won't be imported a second time.
+
+
+
+[[boot-features-external-config-files-importing]]
+==== Importing Additional Data
+Application properties may import further config data from other locations using the `spring.config.import` property.
+Imports are processed as they are discovered, and are treated as an additional documents inserted immediately below the one that declares the import.
+
+For example, you might have the following in your classpath `application.properties` file:
+
+[source,properties,indent=0]
+----
+	spring.application.name=myapp
+	spring.config.import=file:./dev.properties
+----
+
+This will trigger the import of a `dev.properties` file in current directory (if such a file exists).
+Values from the imported `dev.properties` will take precedence over the file that triggered the import.
+In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
+
+Several locations can be specified under a single `spring.config.import` key.
+Locations will be processed in the order that they are defined, with later imports taking precedence.
+
+[TIP]
 ====
+Spring Boot includes pluggable API that allows various different location addresses to be supported.
+By default you can import Java Properties and YAML.
+
+Third-party jars can offer support for additional technologies (there's no requirement for files to be local).
+For example, you can imagine config data being from external stores such as Consul, Apache ZooKeeper or Netflix Archaius.
+
+If you want to support your own locations, see the `ConfigDataLocationResolver` and `ConfigDataLoader` classes in the `org.springframework.boot.context.config` package.
+====
+
+
+
+[[boot-features-external-config-placeholders-in-properties]]
+==== Property Placeholders
+The values in `application.properties` and `application.yml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties).
+The standard `$\{name}` property-placeholder syntax can be used anywhere within a value.
+
+For example, the following `application.properties` file will set `app.description` to "`MyApp is a Spring Boot application`":
+
+[source,properties,indent=0]
+----
+	app.name=MyApp
+	app.description=${app.name} is a Spring Boot application
+----
+
+TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
+See the _<<howto.adoc#howto-use-short-command-line-arguments>>_ how-to for details.
+
+
+
+[[boot-features-external-config-files-multi-document]]
+==== Working with Multi-Document Files
+Spring Boot allows you to split a single physical file into multiple logical documents which are each added independently.
+Documents are processed in order, from top to bottom.
+Later documents can override the properties defined in earlier ones.
+
+For `application.yml` files, the standard YAML multi-document syntax is used.
+Three consecutive hyphens represent the end of one document, and the start of the next.
+
+For example, the following file has two logical documents:
+
+[source,yaml,indent=0]
+----
+	spring.application.name: MyApp
+	---
+	spring.config.activate.on-cloud-platform: kubernetes
+	spring.application.name: MyCloudApp
+----
+
+For `appliation.properties` files a special `#---` comment is used to mark the document splits:
+
+[source,properties,indent=0]
+----
+	spring.application.name=MyApp
+	#---
+	spring.config.activate.on-cloud-platform=kubernetes
+	spring.application.name=MyCloudApp
+----
+
+NOTE: Property file separators must not have any leading or trailing whitespace and must have exactly three hypen characters.
+
+TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
+See the <<boot-features-external-config-file-activation-properties, next section>> for details.
+
+
+
+[[boot-features-external-config-file-activation-properties]]
+==== Activation Properties
+It's sometimes useful to only activate a given get of properties when certain conditions are met.
+For example, you might have properties that are only relevant when a specific profile is active.
+
+You can conditionally active a properties document using `spring.config.activate.*`.
+
+The following activation properties are available:
+
+.activation properties
+[cols="1,4"]
+|===
+| Property | Note
+
+| `on-profile`
+| A profile expression that must match for the document to be active.
+
+| `on-cloud-platform`
+| The `CloudPlatform` that must be detected for the document to be active.
+|===
+
+For example, the following specifies that the second document is only active when running on Kubernetes, and only when either the "`prod`" or "`staging`" profiles are active:
+
+[source,properties,indent=0]
+----
+	myprop=always-set
+	#---
+	spring.config.activate.on-cloud-platform=kubernetes
+	spring.config.activate.on-profile=prod | staging
+	myotherprop=sometimes-set
+----
+
+
+
+[[boot-features-encrypting-properties]]
+=== Encrypting Properties
+Spring Boot does not provide any built in support for encrypting property values, however, it does provide the hook points necessary to modify values contained in the Spring `Environment`.
+The `EnvironmentPostProcessor` interface allows you to manipulate the `Environment` before the application starts.
+See <<howto.adoc#howto-customize-the-environment-or-application-context>> for details.
+
+If you're looking for a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
+
+
+
+[[boot-features-external-config-yaml]]
+=== Working with YAML
+https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
+The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
+
+NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
+
+
+
+==== Mapping YAML to Properties
+YAML documents need to be converted from their hierarchical format to a flat structure that can be used with the Spring `Environment`.
+For example, consider the following YAML document:
+
+[source,yaml,indent=0]
+----
+	environments:
+	  dev:
+	    url: https://dev.example.com
+	    name: Developer Setup
+	  prod:
+	    url: https://another.example.com
+	    name: My Cool App
+----
+
+In order to access these properties from the `Environment`, they would be flattened as follows:
+
+[source,properties,indent=0]
+----
+	environments.dev.url=https://dev.example.com
+	environments.dev.name=Developer Setup
+	environments.prod.url=https://another.example.com
+	environments.prod.name=My Cool App
+----
+
+Likewise, YAML lists also need to be flattened.
+They are represented as property keys with `[index]` dereferencers.
+For example, consider the following YAML:
+
+[source,yaml,indent=0]
+----
+	 my:
+	  servers:
+	  - dev.example.com
+	  - another.example.com
+----
+
+The preceding example would be transformed into these properties:
+
+[source,properties,indent=0]
+----
+	my.servers[0]=dev.example.com
+	my.servers[1]=another.example.com
+----
+
+TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
+For more details see the "`<<boot-features-external-config-typesafe-configuration-properties>>`" section below.
+
+
+
+[[boot-features-external-config-loading-yaml]]
+[[boot-features-external-config-exposing-yaml-to-spring]]
+==== Directly Loading YAML
+Spring Framework provides two convenient classes that can be used to load YAML documents.
+The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
+
+You can also use the `YamlPropertySourceLoader` class if you want to load YAML as a Spring `PropertySource`.
+
+
+
+[[boot-features-external-config-yaml-shortcomings]]
+==== YAML Shortcomings
+YAML files cannot be loaded by using the `@PropertySource` annotation.
+So, in the case that you need to load values that way, you need to use a properties file.
+
+Using the multi-document YAML syntax in profile-specific YAML files can lead to unexpected behavior.
+For example, consider the following config in a file:
+
+.application-dev.yml
+[source,yaml,indent=0]
+----
+	server.port: 8000
+	---
+	spring.config.activate.on-profile: "!test"
+	mypassword: "secret"
+----
+
+If you run the application with the argument `--spring.profiles.active=dev` you might expect `mypassword` to be set to "`secret`", but this is not the case.
+
+The nested document will be filtered because the main file is named `application-dev.yml`.
+It is already considered to be profile-specific, and nested documents will be ignored.
+
+TIP: We recommend that you don't mix profile-specific YAML files and multiple YAML documents.
+Stick to using only one of them.
 
 
 
@@ -551,305 +891,6 @@ It can produce integers, longs, uuids, or strings, as shown in the following exa
 
 The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any character and `value,max` are integers.
 If `max` is provided, then `value` is the minimum value and `max` is the maximum value (exclusive).
-
-
-
-[[boot-features-external-config-command-line-args]]
-=== Accessing Command Line Properties
-By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
-As mentioned previously, command line properties always take precedence over other property sources.
-
-If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
-
-
-
-[[boot-features-external-config-application-property-files]]
-=== Application Property Files
-`SpringApplication` loads properties from `application.properties` files in the following locations and adds them to the Spring `Environment`:
-
-. A `/config` subdirectory of the current directory
-. The current directory
-. A classpath `/config` package
-. The classpath root
-
-The list is ordered by precedence (properties defined in locations higher in the list override those defined in lower locations).
-
-NOTE: You can also <<boot-features-external-config-yaml, use YAML ('.yml') files>> as an alternative to '.properties'.
-
-If you do not like `application.properties` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
-You can also refer to an explicit location by using the `spring.config.location` environment property (which is a comma-separated list of directory locations or file paths).
-The following example shows how to specify a different file name:
-
-[indent=0]
-----
-	$ java -jar myproject.jar --spring.config.name=myproject
-----
-
-The following example shows how to specify two locations:
-
-[indent=0]
-----
-	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
-----
-
-WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
-They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
-
-If `spring.config.location` contains directories (as opposed to files), they should end in `/` (and, at runtime, be appended with the names generated from `spring.config.name` before being loaded, including profile-specific file names).
-Files specified in `spring.config.location` are used as-is, with no support for profile-specific variants, and are overridden by any profile-specific properties.
-
-Config locations are searched in reverse order.
-By default, the configured locations are `classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/`.
-The resulting search order is the following:
-
-. `file:./config/`
-. `file:./config/*/`
-. `file:./`
-. `classpath:/config/`
-. `classpath:/`
-
-When custom config locations are configured by using `spring.config.location`, they replace the default locations.
-For example, if `spring.config.location` is configured with the value `classpath:/custom-config/,file:./custom-config/`, the search order becomes the following:
-
-. `file:./custom-config/`
-. `classpath:custom-config/`
-
-Alternatively, when custom config locations are configured by using `spring.config.additional-location`, they are used in addition to the default locations.
-Additional locations are searched before the default locations.
-For example, if additional locations of `classpath:/custom-config/,file:./custom-config/` are configured, the search order becomes the following:
-
-. `file:./custom-config/`
-. `classpath:custom-config/`
-. `file:./config/`
-. `file:./config/*/`
-. `file:./`
-. `classpath:/config/`
-. `classpath:/`
-
-This search ordering lets you specify default values in one configuration file and then selectively override those values in another.
-You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
-These default values can then be overridden at runtime with a different file located in one of the custom locations.
-
-NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
-See <<boot-features-external-config-relaxed-binding-from-environment-variables>> for details.
-
-NOTE: If your application runs in a container, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
-
-
-
-[[boot-features-external-config-profile-specific-properties]]
-=== Profile-specific Properties
-In addition to `application.properties` files, profile-specific properties can also be defined by using the following naming convention: `application-\{profile}.properties`.
-The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set.
-In other words, if no profiles are explicitly activated, then properties from `application-default.properties` are loaded.
-
-Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones, whether or not the profile-specific files are inside or outside your packaged jar.
-
-If several profiles are specified, a last-wins strategy applies.
-For example, profiles specified by the configprop:spring.profiles.active[] property are added after those configured through the `SpringApplication` API and therefore take precedence.
-
-NOTE: If you have specified any files in configprop:spring.config.location[], profile-specific variants of those files are not considered.
-Use directories in configprop:spring.config.location[] if you want to also use profile-specific properties.
-
-
-
-[[boot-features-external-config-placeholders-in-properties]]
-=== Placeholders in Properties
-The values in `application.properties` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties).
-
-[source,properties,indent=0]
-----
-	app.name=MyApp
-	app.description=${app.name} is a Spring Boot application
-----
-
-TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
-See the _<<howto.adoc#howto-use-short-command-line-arguments>>_ how-to for details.
-
-
-
-[[boot-features-encrypting-properties]]
-=== Encrypting Properties
-Spring Boot does not provide any built in support for encrypting property values, however, it does provide the hook points necessary to modify values contained in the Spring `Environment`.
-The `EnvironmentPostProcessor` interface allows you to manipulate the `Environment` before the application starts.
-See <<howto.adoc#howto-customize-the-environment-or-application-context>> for details.
-
-If you're looking for a secure way to store credentials and passwords, the https://cloud.spring.io/spring-cloud-vault/[Spring Cloud Vault] project provides support for storing externalized configuration in https://www.vaultproject.io/[HashiCorp Vault].
-
-
-
-[[boot-features-external-config-yaml]]
-=== Using YAML Instead of Properties
-https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
-The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
-
-NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
-
-
-
-[[boot-features-external-config-loading-yaml]]
-==== Loading YAML
-Spring Framework provides two convenient classes that can be used to load YAML documents.
-The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
-
-For example, consider the following YAML document:
-
-[source,yaml,indent=0]
-----
-	environments:
-		dev:
-			url: https://dev.example.com
-			name: Developer Setup
-		prod:
-			url: https://another.example.com
-			name: My Cool App
-----
-
-The preceding example would be transformed into the following properties:
-
-[source,properties,indent=0]
-----
-	environments.dev.url=https://dev.example.com
-	environments.dev.name=Developer Setup
-	environments.prod.url=https://another.example.com
-	environments.prod.name=My Cool App
-----
-
-YAML lists are represented as property keys with `[index]` dereferencers.
-For example, consider the following YAML:
-
-[source,yaml,indent=0]
-----
-	 my:
-		servers:
-			- dev.example.com
-			- another.example.com
-----
-
-The preceding example would be transformed into these properties:
-
-[source,properties,indent=0]
-----
-	my.servers[0]=dev.example.com
-	my.servers[1]=another.example.com
-----
-
-To bind to properties like that by using Spring Boot's `Binder` utilities (which is what `@ConfigurationProperties` does), you need to have a property in the target bean of type `java.util.List` (or `Set`) and you either need to provide a setter or initialize it with a mutable value.
-For example, the following example binds to the properties shown previously:
-
-[source,java,indent=0]
-----
-	@ConfigurationProperties(prefix="my")
-	public class Config {
-
-		private List<String> servers = new ArrayList<String>();
-
-		public List<String> getServers() {
-			return this.servers;
-		}
-	}
-----
-
-
-
-[[boot-features-external-config-exposing-yaml-to-spring]]
-==== Exposing YAML as Properties in the Spring Environment
-The `YamlPropertySourceLoader` class can be used to expose YAML as a `PropertySource` in the Spring `Environment`.
-Doing so lets you use the `@Value` annotation with placeholders syntax to access YAML properties.
-
-
-
-[[boot-features-external-config-multi-profile-yaml]]
-==== Multi-profile YAML Documents
-You can specify multiple profile-specific YAML documents in a single file by using a `spring.profiles` key to indicate when the document applies, as shown in the following example:
-
-[source,yaml,indent=0]
-----
-	server:
-		address: 192.168.1.100
-	---
-	spring:
-		profiles: development
-	server:
-		address: 127.0.0.1
-	---
-	spring:
-		profiles: production & eu-central
-	server:
-		address: 192.168.1.120
-----
-
-In the preceding example, if the `development` profile is active, the configprop:server.address[] property is `127.0.0.1`.
-Similarly, if the `production` *and* `eu-central` profiles are active, the configprop:server.address[] property is `192.168.1.120`.
-If the `development`, `production` and `eu-central` profiles are *not* enabled, then the value for the property is `192.168.1.100`.
-
-[NOTE]
-====
-`spring.profiles` can therefore contain a profile name (for example `production`) or a profile expression.
-A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
-Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
-====
-
-If none are explicitly active when the application context starts, the default profiles are activated.
-So, in the following YAML, we set a value for `spring.security.user.password` that is available *only* in the "default" profile:
-
-[source,yaml,indent=0]
-----
-	server:
-	  port: 8000
-	---
-	spring:
-	  profiles: default
-	  security:
-	    user:
-	      password: weak
-----
-
-Whereas, in the following example, the password is always set because it is not attached to any profile, and it would have to be explicitly reset in all other profiles as necessary:
-
-[source,yaml,indent=0]
-----
-	server:
-	  port: 8000
-	spring:
-	  security:
-	    user:
-	      password: weak
-----
-
-Spring profiles designated by using the `spring.profiles` element may optionally be negated by using the `!` character.
-If both negated and non-negated profiles are specified for a single document, at least one non-negated profile must match, and no negated profiles may match.
-
-
-
-[[boot-features-external-config-yaml-shortcomings]]
-==== YAML Shortcomings
-YAML files cannot be loaded by using the `@PropertySource` annotation.
-So, in the case that you need to load values that way, you need to use a properties file.
-
-Using the multi YAML document syntax in profile-specific YAML files can lead to unexpected behavior.
-For example, consider the following config in a file:
-
-.application-dev.yml
-[source,yaml,indent=0]
-----
-	server:
-	  port: 8000
-	---
-	spring:
-	  profiles: "!test"
-	  security:
-	    user:
-	      password: "secret"
-----
-
-If you run the application with the argument `--spring.profiles.active=dev` you might expect `security.user.password` to be set to "`secret`", but this is not the case.
-
-The nested document will be filtered because the main file is named `application-dev.yml`.
-It is already considered to be profile-specific, and nested documents will be ignored.
-
-TIP: We recommend that you don't mix profile-specific YAML files and multiple YAML documents.
-Stick to using only one of them.
 
 
 
@@ -1134,7 +1175,7 @@ To work with `@ConfigurationProperties` beans, you can inject them in the same w
 
 		@Autowired
 		public MyService(AcmeProperties properties) {
-		    this.properties = properties;
+			this.properties = properties;
 		}
 
 	 	//...
@@ -1611,7 +1652,7 @@ This will allow Spring Boot to use the same logic as it does when relaxed bindin
 For example, `@Value("{demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
 If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
 
-Finally, while you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-application-property-files,application property files>>.
+Finally, while you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-files,application property files>>.
 
 
 
@@ -1652,26 +1693,21 @@ You could also specify it on the command line by using the following switch: `--
 The configprop:spring.profiles.active[] property follows the same ordering rules as other properties: The highest `PropertySource` wins.
 This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
 
-Sometimes, it is useful to have profile-specific properties that *add* to the active profiles rather than replace them.
+Sometimes, it is useful to have properties that *add* to the active profiles rather than replace them.
 The configprop:spring.profiles.include[] property can be used to unconditionally add active profiles.
 The `SpringApplication` entry point also has a Java API for setting additional profiles (that is, on top of those activated by the configprop:spring.profiles.active[] property).
 See the `setAdditionalProfiles()` method in {spring-boot-module-api}/SpringApplication.html[SpringApplication].
 
-For example, when an application with the following properties is run by using the switch, `--spring.profiles.active=prod`, the `proddb` and `prodmq` profiles are also activated:
+For example, when an application with the following properties is run by using the switch, `--spring.profiles.active=custom`, the `other` and `extra` profiles are still activated:
 
 [source,yaml,indent=0]
 ----
 	---
 	my.property: fromyamlfile
-	---
-	spring.profiles: prod
 	spring.profiles.include:
-	  - proddb
-	  - prodmq
+	  - other
+	  - extra
 ----
-
-NOTE: Remember that the `spring.profiles` property can be defined in a YAML document to determine when this particular document is included in the configuration.
-See <<howto.adoc#howto-change-configuration-depending-on-the-environment>> for more details.
 
 
 
@@ -1685,7 +1721,7 @@ It is also possible to activate profiles by using Spring's `ConfigurableEnvironm
 [[boot-features-profile-specific-configuration]]
 === Profile-specific Configuration Files
 Profile-specific variants of both `application.properties` (or `application.yml`) and files referenced through `@ConfigurationProperties` are considered as files and loaded.
-See "<<boot-features-external-config-profile-specific-properties>>" for details.
+See "<<boot-features-external-config-files-profile-specific>>" for details.
 
 
 

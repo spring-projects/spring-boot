@@ -351,38 +351,28 @@ See "`<<spring-boot-features.adoc#boot-features-profiles>>`" in the "`Spring Boo
 
 [[howto-change-configuration-depending-on-the-environment]]
 === Change Configuration Depending on the Environment
-A YAML file is actually a sequence of documents separated by `---` lines, and each document is parsed separately to a flattened map.
+Spring Boot supports multi-document YAML and Properties files (see <<spring-boot-features#boot-features-external-config-files-multi-document>> for details) which can be activated conditionally based on the active profiles.
 
-If a YAML document contains a `spring.profiles` key, then the profiles value (a comma-separated list of profiles) is fed into the Spring `Environment.acceptsProfiles()` method.
-If any of those profiles is active, that document is included in the final merge (otherwise, it is not), as shown in the following example:
+If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
+If the profile expression matches then that document is included in the final merge (otherwise, it is not), as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	server:
-		port: 9000
+	server.port: 9000
 	---
-
-	spring:
-		profiles: development
-	server:
-		port: 9001
-
+	spring.config.activate.on-profile: development
+	server.port: 9001
 	---
-
-	spring:
-		profiles: production
-	server:
-		port: 0
+	spring.config.activate.on-profile: production
+	server.port: 0
 ----
 
 In the preceding example, the default port is 9000.
 However, if the Spring profile called '`development`' is active, then the port is 9001.
 If '`production`' is active, then the port is 0.
 
-NOTE: The YAML documents are merged in the order in which they are encountered.
+NOTE: The documents are merged in the order in which they are encountered.
 Later values override earlier values.
-
-To do the same thing with properties files, you can use `application-$\{profile}.properties` to specify profile-specific values.
 
 
 

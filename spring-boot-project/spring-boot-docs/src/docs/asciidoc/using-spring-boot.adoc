@@ -789,8 +789,8 @@ This allows you to share the devtools global configuration with applications tha
 ====
 Profiles are not supported in devtools properties/yaml files.
 
-Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-profile-specific-properties, profile-specific configuration files>>.
-Profile specific filenames (of the form `spring-boot-devtools-<profile>.properties`) and `spring.profile` sub-documents in YAML files are not supported.
+Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<spring-boot-features.adoc#boot-features-external-config-files-profile-specific, profile-specific configuration files>>.
+Profile specific filenames (of the form `spring-boot-devtools-<profile>.properties`) and `spring.config.activate.on-profile` documents in both YAML and Properties files are not supported.
 ====
 
 
