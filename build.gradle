@@ -17,7 +17,7 @@ allprojects {
 
 	repositories {
 		mavenCentral()
-		if (!version.endsWith('RELEASE')) {
+		if (version.contains('-')) {
 			maven { url "https://repo.spring.io/milestone" }
 		}
 		if (version.endsWith('-SNAPSHOT')) {
