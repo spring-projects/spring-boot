@@ -5,8 +5,6 @@
         <url>https://ge.spring.io</url>
     </server>
     <buildScan>
-        <publish>ALWAYS</publish>
-        <captureGoalInputFiles>true</captureGoalInputFiles>
         <publishIfAuthenticated>true</publishIfAuthenticated>
     </buildScan>
     <buildCache>

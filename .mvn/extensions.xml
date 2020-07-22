@@ -2,12 +2,11 @@
     <extension>
         <groupId>com.gradle</groupId>
         <artifactId>gradle-enterprise-maven-extension</artifactId>
-        <version>1.5.2</version>
+        <version>1.5.3</version>
     </extension>
     <extension>
-        <groupId>com.gradle</groupId>
-        <artifactId>common-custom-user-data-maven-extension</artifactId>
-        <!-- TODO Use Spring Boot custom user data maven extension with custom values for CI and obfuscating IP address. -->
-        <version>1.1</version>
+        <groupId>io.spring.ge.conventions</groupId>
+        <artifactId>gradle-enterprise-conventions-maven-extension</artifactId>
+        <version>0.0.5</version>
     </extension>
 </extensions>
