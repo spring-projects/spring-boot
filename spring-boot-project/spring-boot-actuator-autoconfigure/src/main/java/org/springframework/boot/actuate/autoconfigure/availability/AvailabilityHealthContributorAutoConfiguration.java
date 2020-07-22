@@ -31,7 +31,6 @@ import org.springframework.context.annotation.Configuration;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
  * {@link AvailabilityStateHealthIndicator}.
- * vailabilityHealthContributorAutoConfigurationTests
  *
  * @author Brian Clozel
  * @since 2.3.2
