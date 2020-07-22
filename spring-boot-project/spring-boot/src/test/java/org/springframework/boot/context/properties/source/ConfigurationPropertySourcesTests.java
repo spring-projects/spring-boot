@@ -59,7 +59,7 @@ class ConfigurationPropertySourcesTests {
 	}
 
 	@Test
-	void attachShouldReAttachInMergedSetup() {
+	void attachShouldReattachInMergedSetup() {
 		ConfigurableEnvironment parent = new StandardEnvironment();
 		ConfigurationPropertySources.attach(parent);
 		ConfigurableEnvironment child = new StandardEnvironment();

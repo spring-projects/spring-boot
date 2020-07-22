@@ -59,6 +59,6 @@ org.springframework.boot.diagnostics.analyzer.InvalidConfigurationPropertyValueF
 org.springframework.boot.diagnostics.analyzer.PatternParseFailureAnalyzer,\
 org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
 
-# FailureAnalysisReporters
+# Failure Analysis Reporters
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
 org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter
