@@ -16,6 +16,10 @@ bomr:
         versions:
           # Switches to Jarkarta EE API dependencies resulting in duplicate classes
           - '[2.3.2,2.4)'
+      - project: groovy
+        versions:
+          # Regression with @Log
+          - '[2.5.13,2.5.14)'
       - project: saaj-impl
         versions:
           # Switches to Jarkarta EE API dependencies resulting in duplicate classes
