@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,11 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.LineNumberReader;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.function.BooleanSupplier;
 
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginTrackedValue;
@@ -59,7 +62,7 @@ class OriginTrackedPropertiesLoader {
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	Map<String, OriginTrackedValue> load() throws IOException {
+	List<Document> load() throws IOException {
 		return load(true);
 	}
 
@@ -70,18 +73,30 @@ class OriginTrackedPropertiesLoader {
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
-	Map<String, OriginTrackedValue> load(boolean expandLists) throws IOException {
+	List<Document> load(boolean expandLists) throws IOException {
+		List<Document> result = new ArrayList<>();
+		Document document = new Document();
 		try (CharacterReader reader = new CharacterReader(this.resource)) {
-			Map<String, OriginTrackedValue> result = new LinkedHashMap<>();
 			StringBuilder buffer = new StringBuilder();
 			while (reader.read()) {
+				if (reader.getCharacter() == '#') {
+					if (isNewDocument(reader)) {
+						if (!document.isEmpty()) {
+							result.add(document);
+						}
+						document = new Document();
+					}
+					else {
+						reader.skipComment();
+					}
+				}
 				String key = loadKey(buffer, reader).trim();
 				if (expandLists && key.endsWith("[]")) {
 					key = key.substring(0, key.length() - 2);
 					int index = 0;
 					do {
 						OriginTrackedValue value = loadValue(buffer, reader, true);
-						put(result, key + "[" + (index++) + "]", value);
+						document.put(key + "[" + (index++) + "]", value);
 						if (!reader.isEndOfLine()) {
 							reader.read();
 						}
@@ -90,17 +105,15 @@ class OriginTrackedPropertiesLoader {
 				}
 				else {
 					OriginTrackedValue value = loadValue(buffer, reader, false);
-					put(result, key, value);
+					document.put(key, value);
 				}
 			}
-			return result;
-		}
-	}
 
-	private void put(Map<String, OriginTrackedValue> result, String key, OriginTrackedValue value) {
-		if (!key.isEmpty()) {
-			result.put(key, value);
 		}
+		if (!document.isEmpty() && !result.contains(document)) {
+			result.add(document);
+		}
+		return result;
 	}
 
 	private String loadKey(StringBuilder buffer, CharacterReader reader) throws IOException {
@@ -134,6 +147,20 @@ class OriginTrackedPropertiesLoader {
 		}
 		Origin origin = new TextResourceOrigin(this.resource, location);
 		return OriginTrackedValue.of(buffer.toString(), origin);
+	}
+
+	boolean isNewDocument(CharacterReader reader) throws IOException {
+		boolean result = reader.isPoundCharacter();
+		result = result && readAndExpect(reader, reader::isHyphenCharacter);
+		result = result && readAndExpect(reader, reader::isHyphenCharacter);
+		result = result && readAndExpect(reader, reader::isHyphenCharacter);
+		result = result && readAndExpect(reader, reader::isEndOfLine);
+		return result;
+	}
+
+	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
+		reader.read();
+		return check.getAsBoolean();
 	}
 
 	/**
@@ -173,7 +200,9 @@ class OriginTrackedPropertiesLoader {
 			if (this.columnNumber == 0) {
 				skipLeadingWhitespace();
 				if (!wrappedLine) {
-					skipComment();
+					if (this.character == '!') {
+						skipComment();
+					}
 				}
 			}
 			if (this.character == '\\') {
@@ -194,13 +223,10 @@ class OriginTrackedPropertiesLoader {
 		}
 
 		private void skipComment() throws IOException {
-			if (this.character == '#' || this.character == '!') {
-				while (this.character != '\n' && this.character != -1) {
-					this.character = this.reader.read();
-				}
-				this.columnNumber = -1;
-				read();
+			while (this.character != '\n' && this.character != -1) {
+				this.character = this.reader.read();
 			}
+			this.columnNumber = -1;
 		}
 
 		private void readEscaped() throws IOException {
@@ -263,6 +289,37 @@ class OriginTrackedPropertiesLoader {
 
 		Location getLocation() {
 			return new Location(this.reader.getLineNumber(), this.columnNumber);
+		}
+
+		boolean isPoundCharacter() {
+			return this.character == '#';
+		}
+
+		boolean isHyphenCharacter() {
+			return this.character == '-';
+		}
+
+	}
+
+	/**
+	 * A single document within the properties file.
+	 */
+	static class Document {
+
+		private final Map<String, OriginTrackedValue> values = new LinkedHashMap<>();
+
+		void put(String key, OriginTrackedValue value) {
+			if (!key.isEmpty()) {
+				this.values.put(key, value);
+			}
+		}
+
+		boolean isEmpty() {
+			return this.values.isEmpty();
+		}
+
+		Map<String, OriginTrackedValue> asMap() {
+			return this.values;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,6 +46,39 @@ class PropertiesPropertySourceLoaderTests {
 				new ClassPathResource("test-properties.properties", getClass()));
 		PropertySource<?> source = loaded.get(0);
 		assertThat(source.getProperty("test")).isEqualTo("properties");
+	}
+
+	@Test
+	void loadMultiDocumentPropertiesWithSeparatorAtTheBeginningofFile() throws Exception {
+		List<PropertySource<?>> loaded = this.loader.load("test.properties",
+				new ClassPathResource("multi-document-properties-2.properties", getClass()));
+		assertThat(loaded.size()).isEqualTo(2);
+		PropertySource<?> source1 = loaded.get(0);
+		PropertySource<?> source2 = loaded.get(1);
+		assertThat(source1.getProperty("blah")).isEqualTo("hello world");
+		assertThat(source2.getProperty("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	void loadMultiDocumentProperties() throws Exception {
+		List<PropertySource<?>> loaded = this.loader.load("test.properties",
+				new ClassPathResource("multi-document-properties.properties", getClass()));
+		assertThat(loaded.size()).isEqualTo(2);
+		PropertySource<?> source1 = loaded.get(0);
+		PropertySource<?> source2 = loaded.get(1);
+		assertThat(source1.getProperty("blah")).isEqualTo("hello world");
+		assertThat(source2.getProperty("foo")).isEqualTo("bar");
+	}
+
+	@Test
+	void loadMultiDocumentPropertiesWithEmptyDocument() throws Exception {
+		List<PropertySource<?>> loaded = this.loader.load("test.properties",
+				new ClassPathResource("multi-document-properties-empty.properties", getClass()));
+		assertThat(loaded.size()).isEqualTo(2);
+		PropertySource<?> source1 = loaded.get(0);
+		PropertySource<?> source2 = loaded.get(1);
+		assertThat(source1.getProperty("blah")).isEqualTo("hello world");
+		assertThat(source2.getProperty("foo")).isEqualTo("bar");
 	}
 
 	@Test
