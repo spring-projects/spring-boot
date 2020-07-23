@@ -33,6 +33,7 @@ import org.springframework.boot.devtools.restart.RestartInitializer;
 import org.springframework.boot.devtools.restart.RestartScopeInitializer;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener;
+import org.springframework.boot.env.EnvironmentPostProcessorsFactory;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.io.ClassPathResource;
@@ -72,7 +73,8 @@ public final class RemoteSpringApplication {
 	private Collection<ApplicationListener<?>> getListeners() {
 		List<ApplicationListener<?>> listeners = new ArrayList<>();
 		listeners.add(new AnsiOutputApplicationListener());
-		listeners.add(new EnvironmentPostProcessorApplicationListener(ConfigDataEnvironmentPostProcessor.class));
+		listeners.add(new EnvironmentPostProcessorApplicationListener(
+				EnvironmentPostProcessorsFactory.singleton(ConfigDataEnvironmentPostProcessor::new)));
 		listeners.add(new ClasspathLoggingApplicationListener());
 		listeners.add(new LoggingApplicationListener());
 		listeners.add(new RemoteUrlPropertyExtractor());
