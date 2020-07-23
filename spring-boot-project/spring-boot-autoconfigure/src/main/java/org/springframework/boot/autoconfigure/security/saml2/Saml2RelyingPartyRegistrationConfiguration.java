@@ -80,6 +80,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		builder.assertingPartyDetails((details) -> details
 				.verificationX509Credentials((credentials) -> properties.getIdentityprovider().getVerification()
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
+		builder.entityId(properties.getRelyingPartyEntityId());
 		return builder.build();
 	}
 

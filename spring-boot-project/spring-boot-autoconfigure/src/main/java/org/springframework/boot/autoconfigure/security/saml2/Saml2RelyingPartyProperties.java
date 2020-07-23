@@ -50,12 +50,31 @@ public class Saml2RelyingPartyProperties {
 	 */
 	public static class Registration {
 
+		/**
+		 * Relying party's EntityID.
+		 *
+		 * This value may contain a number of placeholders. They are: baseUrl,
+		 * registrationId, baseScheme, baseHost, and basePort.
+		 *
+		 * The default value is
+		 * {baseUrl}/saml2/service-provider-metadata/{registrationId}.
+		 */
+		private String relyingPartyEntityId = "{baseUrl}/saml2/service-provider-metadata/{registrationId}";
+
 		private final Signing signing = new Signing();
 
 		/**
 		 * Remote SAML Identity Provider.
 		 */
 		private Identityprovider identityprovider = new Identityprovider();
+
+		public String getRelyingPartyEntityId() {
+			return this.relyingPartyEntityId;
+		}
+
+		public void setRelyingPartyEntityId(String entityId) {
+			this.relyingPartyEntityId = entityId;
+		}
 
 		public Signing getSigning() {
 			return this.signing;
