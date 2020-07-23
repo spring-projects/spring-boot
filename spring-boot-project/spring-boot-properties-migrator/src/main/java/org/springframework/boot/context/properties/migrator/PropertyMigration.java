@@ -127,10 +127,8 @@ class PropertyMigration {
 				return String.format("Reason: Replacement key '%s' uses an incompatible target type",
 						deprecation.getReplacement());
 			}
-			else {
-				return String.format("Reason: No metadata found for replacement key '%s'",
-						deprecation.getReplacement());
-			}
+			return String.format("Reason: No metadata found for replacement key '%s'",
+					deprecation.getReplacement());
 		}
 		return "Reason: none";
 	}
