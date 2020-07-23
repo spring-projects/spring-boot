@@ -12,10 +12,6 @@ bomr:
         versions:
           # 10.15 requires Java 9
           - '[10.15,)'
-      - project: groovy
-        versions:
-          # Regression with @Log
-          - '[2.5.13,2.5.14)'
   verify:
     ignored-dependencies:
       # Avoid conflicting transitive requirements for
