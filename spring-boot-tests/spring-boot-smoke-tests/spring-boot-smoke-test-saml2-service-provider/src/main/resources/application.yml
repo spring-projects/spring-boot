@@ -15,6 +15,7 @@ spring:
               entity-id: simplesaml
               singlesignon:
                 url: https://simplesaml-for-spring-saml/SSOService.php
+            relying-party-entity-id: "{baseUrl}/saml2/simple-relying-party"
           okta:
             signing:
               credentials:

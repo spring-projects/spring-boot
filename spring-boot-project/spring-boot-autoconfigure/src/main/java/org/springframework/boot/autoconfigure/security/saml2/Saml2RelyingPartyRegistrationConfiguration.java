@@ -78,6 +78,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 				(details) -> details.binding(properties.getIdentityprovider().getSinglesignon().getBinding()));
 		builder.providerDetails((details) -> details.signAuthNRequest(signRequest));
 		builder.credentials((credentials) -> credentials.addAll(asCredentials(properties)));
+		builder.entityId(properties.getRelyingPartyEntityId());
 		return builder.build();
 	}
 

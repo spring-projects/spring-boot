@@ -25,6 +25,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.Saml2MessageBinding;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,6 +86,20 @@ class Saml2RelyingPartyPropertiesTests {
 		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
 		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
 				.isSignRequest()).isEqualTo(true);
+	}
+
+	@Test
+	void customizeRelyingPartyEntityId() {
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.relying-party-entity-id",
+				"{baseUrl}/saml2/custom-entity-id");
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getRelyingPartyEntityId())
+				.isEqualTo("{baseUrl}/saml2/custom-entity-id");
+	}
+
+	@Test
+	void customizeRelyingPartyEntityIdDefaultsToServiceProviderMetadata() {
+		assertThat(RelyingPartyRegistration.withRegistrationId("id")).extracting("entityId")
+				.isEqualTo(new Saml2RelyingPartyProperties.Registration().getRelyingPartyEntityId());
 	}
 
 	private void bind(String name, String value) {

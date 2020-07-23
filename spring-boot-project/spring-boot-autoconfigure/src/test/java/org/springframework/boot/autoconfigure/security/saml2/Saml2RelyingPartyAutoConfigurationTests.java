@@ -90,6 +90,7 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 			assertThat(registration.getProviderDetails().isSignAuthNRequest()).isEqualTo(false);
 			assertThat(registration.getSigningCredentials()).isNotNull();
 			assertThat(registration.getVerificationCredentials()).isNotNull();
+			assertThat(registration.getEntityId()).isEqualTo("{baseUrl}/saml2/foo-entity-id");
 		});
 	}
 
@@ -147,7 +148,8 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
 				PREFIX + ".foo.identityprovider.singlesignon.sign-request=false",
 				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
-				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
+				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location",
+				PREFIX + ".foo.relying-party-entity-id={baseUrl}/saml2/foo-entity-id" };
 	}
 
 	private boolean hasFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
