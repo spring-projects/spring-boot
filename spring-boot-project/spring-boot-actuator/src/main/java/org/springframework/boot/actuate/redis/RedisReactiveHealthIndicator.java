@@ -40,6 +40,8 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 
+	private static final String REDIS_VERSION_PROPERTY = "redis_version";
+
 	private final ReactiveRedisConnectionFactory connectionFactory;
 
 	public RedisReactiveHealthIndicator(ReactiveRedisConnectionFactory connectionFactory) {
@@ -59,11 +61,9 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 					.onErrorResume((ex) -> Mono.just(down(builder, ex)))
 					.flatMap((health) -> clusterConnection.closeLater().thenReturn(health));
 		}
-		else {
-			return connection.serverCommands().info().map((info) -> up(builder, info))
-					.onErrorResume((ex) -> Mono.just(down(builder, ex)))
-					.flatMap((health) -> connection.closeLater().thenReturn(health));
-		}
+		return connection.serverCommands().info().map((info) -> up(builder, info))
+				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
+				.flatMap((health) -> connection.closeLater().thenReturn(health));
 	}
 
 	private Mono<ReactiveRedisConnection> getConnection() {
@@ -72,14 +72,13 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	}
 
 	private Health up(Health.Builder builder, Properties info) {
-		return builder.up()
-				.withDetail(RedisHealthIndicator.VERSION, info.getProperty(RedisHealthIndicator.REDIS_VERSION)).build();
+		return builder.up().withDetail("version", info.getProperty(REDIS_VERSION_PROPERTY)).build();
 	}
 
 	private Health up(Health.Builder builder, ClusterInfo clusterInfo) {
-		return builder.up().withDetail(RedisHealthIndicator.CLUSTER_SIZE, clusterInfo.getClusterSize())
-				.withDetail(RedisHealthIndicator.SLOTS_UP, clusterInfo.getSlotsOk())
-				.withDetail(RedisHealthIndicator.SLOTS_FAIL, clusterInfo.getSlotsFail()).build();
+		return builder.up().withDetail("cluster_size", clusterInfo.getClusterSize())
+				.withDetail("slots_up", clusterInfo.getSlotsOk()).withDetail("slots_fail", clusterInfo.getSlotsFail())
+				.build();
 	}
 
 	private Health down(Health.Builder builder, Throwable cause) {
