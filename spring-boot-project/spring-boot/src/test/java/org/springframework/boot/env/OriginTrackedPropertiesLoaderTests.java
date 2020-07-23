@@ -41,13 +41,13 @@ class OriginTrackedPropertiesLoaderTests {
 
 	private ClassPathResource resource;
 
-	private List<Document> documentes;
+	private List<Document> documents;
 
 	@BeforeEach
 	void setUp() throws Exception {
 		String path = "test-properties.properties";
 		this.resource = new ClassPathResource(path, getClass());
-		this.documentes = new OriginTrackedPropertiesLoader(this.resource).load();
+		this.documents = new OriginTrackedPropertiesLoader(this.resource).load();
 	}
 
 	@Test
@@ -257,7 +257,7 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	private OriginTrackedValue getFromFirst(String key) {
-		return this.documentes.get(0).asMap().get(key);
+		return this.documents.get(0).asMap().get(key);
 	}
 
 	private Object getValue(OriginTrackedValue value) {

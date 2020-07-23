@@ -759,7 +759,7 @@ For example, the following file has two logical documents:
 	spring.application.name: MyCloudApp
 ----
 
-For `appliation.properties` files a special `#---` comment is used to mark the document splits:
+For `application.properties` files a special `#---` comment is used to mark the document splits:
 
 [source,properties,indent=0]
 ----
@@ -3148,7 +3148,7 @@ If a Servlet filter wraps the request, it should be configured with an order tha
 TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<boot-features-custom-log-groups,logging group>> (`logging.level.web=debug`).
 Details of the registered filters, including their order and URL patterns, will then be logged at startup.
 
-WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifectyle.
+WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifecycle.
 If you need to register a `Filter` that interacts with other beans, consider using a {spring-boot-module-api}/web/servlet/DelegatingFilterProxyRegistrationBean.html[`DelegatingFilterProxyRegistrationBean`] instead.
 
 

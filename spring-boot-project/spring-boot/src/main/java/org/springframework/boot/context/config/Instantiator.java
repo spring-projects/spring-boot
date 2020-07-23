@@ -51,7 +51,7 @@ class Instantiator<T> {
 	/**
 	 * Create a new {@link Instantiator} instance for the given type.
 	 * @param type the type to instantiate
-	 * @param availableParameters consumer used to register avaiable parameters
+	 * @param availableParameters consumer used to register available parameters
 	 */
 	Instantiator(Class<?> type, Consumer<AvailableParameters> availableParameters) {
 		this.type = type;

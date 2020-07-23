@@ -129,7 +129,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
-	void emptyDocumentes() {
+	void emptyDocuments() {
 		this.loader = new OriginTrackedYamlLoader(new ClassPathResource("test-empty-yaml.yml", getClass()));
 		List<Map<String, Object>> loaded = this.loader.load();
 		assertThat(loaded).isEmpty();
