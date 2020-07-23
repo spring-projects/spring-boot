@@ -16,8 +16,6 @@
 
 package org.springframework.boot.actuate.redis;
 
-import java.util.Properties;
-
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -38,9 +36,7 @@ import org.springframework.util.Assert;
  */
 public class RedisHealthIndicator extends AbstractHealthIndicator {
 
-	static final String VERSION = "version";
-
-	static final String REDIS_VERSION = "redis_version";
+	private static final String REDIS_VERSION_PROPERTY = "redis_version";
 
 	private final RedisConnectionFactory redisConnectionFactory;
 
@@ -54,19 +50,23 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		RedisConnection connection = RedisConnectionUtils.getConnection(this.redisConnectionFactory);
 		try {
-			if (connection instanceof RedisClusterConnection) {
-				ClusterInfo clusterInfo = ((RedisClusterConnection) connection).clusterGetClusterInfo();
-				builder.up().withDetail("cluster_size", clusterInfo.getClusterSize())
-						.withDetail("slots_up", clusterInfo.getSlotsOk())
-						.withDetail("slots_fail", clusterInfo.getSlotsFail());
-			}
-			else {
-				Properties info = connection.info();
-				builder.up().withDetail(VERSION, info.getProperty(REDIS_VERSION));
-			}
+			doHealthCheck(builder, connection);
 		}
 		finally {
 			RedisConnectionUtils.releaseConnection(connection, this.redisConnectionFactory, false);
+		}
+	}
+
+	private void doHealthCheck(Health.Builder builder, RedisConnection connection) {
+		if (connection instanceof RedisClusterConnection) {
+			ClusterInfo clusterInfo = ((RedisClusterConnection) connection).clusterGetClusterInfo();
+			builder.up().withDetail("cluster_size", clusterInfo.getClusterSize())
+					.withDetail("slots_up", clusterInfo.getSlotsOk())
+					.withDetail("slots_fail", clusterInfo.getSlotsFail());
+		}
+		else {
+			String version = connection.info().getProperty(REDIS_VERSION_PROPERTY);
+			builder.up().withDetail("version", version);
 		}
 	}
 
