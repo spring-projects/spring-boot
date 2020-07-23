@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 
+	private static final String REDIS_VERSION_PROPERTY = "redis_version";
+
 	private final ReactiveRedisConnectionFactory connectionFactory;
 
 	public RedisReactiveHealthIndicator(ReactiveRedisConnectionFactory connectionFactory) {
@@ -52,8 +54,8 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	}
 
 	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
-		return connection.serverCommands().info()
-				.map((info) -> up(builder, info, (connection instanceof ReactiveRedisClusterConnection)))
+		boolean isClusterConnection = connection instanceof ReactiveRedisClusterConnection;
+		return connection.serverCommands().info().map((info) -> up(builder, info, isClusterConnection))
 				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
 				.flatMap((health) -> connection.closeLater().thenReturn(health));
 	}
@@ -64,24 +66,22 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 	}
 
 	private Health up(Health.Builder builder, Properties info, boolean isClusterConnection) {
-		if (isClusterConnection) {
-			return builder.up().withDetail(RedisHealthIndicator.VERSION, getClusterVersionProperty(info)).build();
-		}
-		else {
-			return builder.up()
-					.withDetail(RedisHealthIndicator.VERSION, info.getProperty(RedisHealthIndicator.REDIS_VERSION))
-					.build();
-		}
-	}
-
-	private Object getClusterVersionProperty(Properties info) {
-		return info.keySet().stream().map(String.class::cast)
-				.filter((key) -> key.endsWith(RedisHealthIndicator.REDIS_VERSION)).findFirst().map(info::get)
-				.orElse("");
+		String version = isClusterConnection ? getClusterVersionProperty(info)
+				: info.getProperty(REDIS_VERSION_PROPERTY);
+		return builder.up().withDetail("version", version).build();
 	}
 
 	private Health down(Health.Builder builder, Throwable cause) {
 		return builder.down(cause).build();
+	}
+
+	private String getClusterVersionProperty(Properties info) {
+		for (String propertyName : info.stringPropertyNames()) {
+			if (propertyName.endsWith(REDIS_VERSION_PROPERTY)) {
+				return info.getProperty(propertyName);
+			}
+		}
+		return "";
 	}
 
 }
