@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.NestingKind;
 import javax.lang.model.element.TypeElement;
@@ -76,7 +77,7 @@ class PropertyDescriptorResolver {
 			TypeElementMembers members, ExecutableElement constructor) {
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
 		constructor.getParameters().forEach((parameter) -> {
-			String name = parameter.getSimpleName().toString();
+			String name = getParameterName(parameter);
 			TypeMirror propertyType = parameter.asType();
 			ExecutableElement getter = members.getPublicGetter(name, propertyType);
 			ExecutableElement setter = members.getPublicSetter(name, propertyType);
@@ -85,6 +86,14 @@ class PropertyDescriptorResolver {
 					propertyType, field, getter, setter));
 		});
 		return candidates.values().stream();
+	}
+
+	private String getParameterName(VariableElement parameter) {
+		AnnotationMirror nameAnnotation = this.environment.getNameAnnotation(parameter);
+		if (nameAnnotation != null) {
+			return (String) this.environment.getAnnotationElementValues(nameAnnotation).get("value");
+		}
+		return parameter.getSimpleName().toString();
 	}
 
 	Stream<PropertyDescriptor<?>> resolveJavaBeanProperties(TypeElement type, ExecutableElement factoryMethod,

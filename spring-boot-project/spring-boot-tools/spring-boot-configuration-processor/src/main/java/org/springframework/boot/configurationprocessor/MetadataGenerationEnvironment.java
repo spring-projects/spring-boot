@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,10 +95,12 @@ class MetadataGenerationEnvironment {
 
 	private final String readOperationAnnotation;
 
+	private final String nameAnnotation;
+
 	MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
 			String nestedConfigurationPropertyAnnotation, String deprecatedConfigurationPropertyAnnotation,
 			String constructorBindingAnnotation, String defaultValueAnnotation, String endpointAnnotation,
-			String readOperationAnnotation) {
+			String readOperationAnnotation, String nameAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -110,6 +112,7 @@ class MetadataGenerationEnvironment {
 		this.defaultValueAnnotation = defaultValueAnnotation;
 		this.endpointAnnotation = endpointAnnotation;
 		this.readOperationAnnotation = readOperationAnnotation;
+		this.nameAnnotation = nameAnnotation;
 	}
 
 	private static FieldValuesParser resolveFieldValuesParser(ProcessingEnvironment env) {
@@ -273,6 +276,10 @@ class MetadataGenerationEnvironment {
 
 	AnnotationMirror getReadOperationAnnotation(Element element) {
 		return getAnnotation(element, this.readOperationAnnotation);
+	}
+
+	AnnotationMirror getNameAnnotation(Element element) {
+		return getAnnotation(element, this.nameAnnotation);
 	}
 
 	boolean hasNullableAnnotation(Element element) {

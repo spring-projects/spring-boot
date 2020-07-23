@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.configurationprocessor.test.RoundEnvironmentTest
 import org.springframework.boot.configurationprocessor.test.TestableAnnotationProcessor;
 import org.springframework.boot.configurationsample.immutable.ImmutableClassConstructorBindingProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableMultiConstructorProperties;
+import org.springframework.boot.configurationsample.immutable.ImmutableNameAnnotationProperties;
 import org.springframework.boot.configurationsample.immutable.ImmutableSimpleProperties;
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
@@ -142,6 +143,12 @@ class PropertyDescriptorResolverTests {
 		process(TwoConstructorsExample.class, propertyNames((stream) -> assertThat(stream).containsExactly("name")));
 		process(TwoConstructorsExample.class,
 				properties((stream) -> assertThat(stream).element(0).isInstanceOf(JavaBeanPropertyDescriptor.class)));
+	}
+
+	@Test
+	void propertiesWithNameAnnotationParameter() throws IOException {
+		process(ImmutableNameAnnotationProperties.class,
+				propertyNames((stream) -> assertThat(stream).containsExactly("import")));
 	}
 
 	private BiConsumer<TypeElement, MetadataGenerationEnvironment> properties(

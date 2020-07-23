@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,6 +81,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	static final String READ_OPERATION_ANNOTATION = "org.springframework.boot.actuate."
 			+ "endpoint.annotation.ReadOperation";
 
+	static final String NAME_ANNOTATION = "org.springframework.boot.context.properties.bind.Name";
+
 	private static final Set<String> SUPPORTED_OPTIONS = Collections
 			.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
 
@@ -118,6 +120,10 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return READ_OPERATION_ANNOTATION;
 	}
 
+	protected String nameAnnotation() {
+		return NAME_ANNOTATION;
+	}
+
 	@Override
 	public SourceVersion getSupportedSourceVersion() {
 		return SourceVersion.latestSupported();
@@ -136,7 +142,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
 				nestedConfigurationPropertyAnnotation(), deprecatedConfigurationPropertyAnnotation(),
 				constructorBindingAnnotation(), defaultValueAnnotation(), endpointAnnotation(),
-				readOperationAnnotation());
+				readOperationAnnotation(), nameAnnotation());
 	}
 
 	@Override
