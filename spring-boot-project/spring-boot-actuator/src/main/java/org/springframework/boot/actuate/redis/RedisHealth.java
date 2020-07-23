@@ -28,7 +28,10 @@ import org.springframework.data.redis.connection.ClusterInfo;
  *
  * @author Phillip Webb
  */
-class RedisHealth {
+final class RedisHealth {
+
+	private RedisHealth() {
+	}
 
 	static Builder up(Health.Builder builder, Properties info) {
 		builder.withDetail("version", info.getProperty("redis_version"));

@@ -41,7 +41,7 @@ public interface ApplicationContextFactory {
 	 * A default {@link ApplicationContextFactory} implementation that will create an
 	 * appropriate context for the {@link WebApplicationType}.
 	 */
-	static ApplicationContextFactory DEFAULT = (webApplicationType) -> {
+	ApplicationContextFactory DEFAULT = (webApplicationType) -> {
 		try {
 			switch (webApplicationType) {
 			case SERVLET:
