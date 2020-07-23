@@ -153,7 +153,7 @@ public abstract class ResourceUtils {
 				return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 			}
 			if (location.startsWith(FILE_URL_PREFIX)) {
-					return this.files.getResource(location);
+				return this.files.getResource(location);
 			}
 			try {
 				// Try to parse the location as a URL...
