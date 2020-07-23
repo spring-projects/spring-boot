@@ -193,7 +193,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	@Override
 	public void onApplicationEvent(ApplicationEvent event) {
 		throw new IllegalStateException(
-				"ConfigFileApplicationListener is deprected and can only be used as an EnvironmentPostProcessor");
+				"ConfigFileApplicationListener is deprecated and can only be used as an EnvironmentPostProcessor");
 	}
 
 	@Override

@@ -198,7 +198,7 @@ class ConfigDataEnvironment {
 
 	private ConfigDataEnvironmentContributors processWithoutProfiles(ConfigDataEnvironmentContributors contributors,
 			ConfigDataImporter importer, ConfigDataActivationContext activationContext) {
-		this.logger.trace("Processing config data environment contributors with intial activation context");
+		this.logger.trace("Processing config data environment contributors with initial activation context");
 		return contributors.withProcessedImports(importer, activationContext);
 	}
 
@@ -245,7 +245,7 @@ class ConfigDataEnvironment {
 		}
 		DefaultPropertiesPropertySource.moveToEnd(propertySources);
 		Profiles profiles = activationContext.getProfiles();
-		this.logger.trace(LogMessage.format("Setting default profies: %s", profiles.getDefault()));
+		this.logger.trace(LogMessage.format("Setting default profiles: %s", profiles.getDefault()));
 		this.environment.setDefaultProfiles(StringUtils.toStringArray(profiles.getDefault()));
 		this.logger.trace(LogMessage.format("Setting active profiles: %s", profiles.getActive()));
 		this.environment.setActiveProfiles(StringUtils.toStringArray(profiles.getActive()));

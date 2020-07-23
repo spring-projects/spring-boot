@@ -43,7 +43,7 @@ class ConfigDataImporter {
 	/**
 	 * Create a new {@link ConfigDataImporter} instance.
 	 * @param resolvers the config data location resolvers
-	 * @param loaders the condif data loaders
+	 * @param loaders the config data loaders
 	 */
 	ConfigDataImporter(ConfigDataLocationResolvers resolvers, ConfigDataLoaders loaders) {
 		this.resolvers = resolvers;
@@ -65,7 +65,7 @@ class ConfigDataImporter {
 			return load(this.resolvers.resolveAll(locationResolverContext, locations, profiles));
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("IO errorload imports from " + locations, ex);
+			throw new IllegalStateException("IO error on loading imports from " + locations, ex);
 		}
 	}
 
