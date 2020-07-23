@@ -76,7 +76,7 @@ public class ZipFileTarArchive implements TarArchive {
 
 	private void assertArchiveHasEntries(File jarFile) {
 		try (ZipFile zipFile = new ZipFile(jarFile)) {
-			Assert.state(zipFile.getEntries().hasMoreElements(), "File '" + jarFile.toString()
+			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "File '" + jarFile
 					+ "' is not compatible with buildpacks; ensure jar file is valid and launch script is not enabled");
 		}
 		catch (IOException ex) {

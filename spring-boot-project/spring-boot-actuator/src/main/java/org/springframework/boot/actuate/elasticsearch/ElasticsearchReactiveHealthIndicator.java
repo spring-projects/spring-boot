@@ -23,8 +23,11 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsearchClient;
+import org.springframework.web.reactive.function.client.ClientResponse;
+import org.springframework.web.reactive.function.client.WebClient;
 
 /**
  * {@link HealthIndicator} for an Elasticsearch cluster using a
@@ -50,28 +53,28 @@ public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealth
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		return this.client.execute((callback) -> callback.get().uri("/_cluster/health/").exchange())
-				.flatMap((response) -> {
-					if (response.statusCode().is2xxSuccessful()) {
-						return response.bodyToMono(STRING_OBJECT_MAP).map((body) -> {
-							String status = (String) body.get("status");
-							if (RED_STATUS.equals(status)) {
-								builder.outOfService();
-							}
-							else {
-								builder.up();
-							}
-							builder.withDetails(body);
-							return builder.build();
-						});
-					}
-					else {
-						builder.down();
-						builder.withDetail("statusCode", response.rawStatusCode());
-						builder.withDetail("reasonPhrase", response.statusCode().getReasonPhrase());
-						return response.releaseBody().thenReturn(builder.build());
-					}
-				});
+		return this.client.execute(this::getHealth).flatMap((response) -> doHealthCheck(builder, response));
+	}
+
+	private Mono<ClientResponse> getHealth(WebClient webClient) {
+		return webClient.get().uri("/_cluster/health/").exchange();
+	}
+
+	private Mono<Health> doHealthCheck(Health.Builder builder, ClientResponse response) {
+		if (response.statusCode().is2xxSuccessful()) {
+			return response.bodyToMono(STRING_OBJECT_MAP).map((body) -> getHealth(builder, body));
+		}
+		builder.down();
+		builder.withDetail("statusCode", response.rawStatusCode());
+		builder.withDetail("reasonPhrase", response.statusCode().getReasonPhrase());
+		return response.releaseBody().thenReturn(builder.build());
+	}
+
+	private Health getHealth(Health.Builder builder, Map<String, Object> body) {
+		String status = (String) body.get("status");
+		builder.status(RED_STATUS.equals(status) ? Status.OUT_OF_SERVICE : Status.UP);
+		builder.withDetails(body);
+		return builder.build();
 	}
 
 }
