@@ -245,7 +245,7 @@ public class SpringApplication {
 
 	private boolean lazyInitialization = false;
 
-	private ApplicationContextFactory applicationContextFactory = new DefaultApplicationContextFactory();
+	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -1150,7 +1150,7 @@ public class SpringApplication {
 	@Deprecated
 	public void setApplicationContextClass(Class<? extends ConfigurableApplicationContext> applicationContextClass) {
 		this.webApplicationType = WebApplicationType.deduceFromApplicationContext(applicationContextClass);
-		this.applicationContextFactory = ApplicationContextFactory.forContextClass(applicationContextClass);
+		this.applicationContextFactory = ApplicationContextFactory.ofContextClass(applicationContextClass);
 	}
 
 	/**
@@ -1164,7 +1164,8 @@ public class SpringApplication {
 	 * @since 2.4.0
 	 */
 	public void setApplicationContextFactory(ApplicationContextFactory applicationContextFactory) {
-		this.applicationContextFactory = applicationContextFactory;
+		this.applicationContextFactory = (applicationContextFactory != null) ? applicationContextFactory
+				: ApplicationContextFactory.DEFAULT;
 	}
 
 	/**
@@ -1307,28 +1308,6 @@ public class SpringApplication {
 		List<E> list = new ArrayList<>(elements);
 		list.sort(AnnotationAwareOrderComparator.INSTANCE);
 		return new LinkedHashSet<>(list);
-	}
-
-	private static final class DefaultApplicationContextFactory implements ApplicationContextFactory {
-
-		@Override
-		public ConfigurableApplicationContext create(WebApplicationType webApplicationType) {
-			try {
-				switch (webApplicationType) {
-				case SERVLET:
-					return new AnnotationConfigServletWebServerApplicationContext();
-				case REACTIVE:
-					return new AnnotationConfigReactiveWebServerApplicationContext();
-				default:
-					return new AnnotationConfigApplicationContext();
-				}
-			}
-			catch (Exception ex) {
-				throw new IllegalStateException(
-						"Unable create a default ApplicationContext, please specify an ApplicationContextFactory", ex);
-			}
-		}
-
 	}
 
 }

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -111,7 +112,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			application.setWebApplicationType(WebApplicationType.REACTIVE);
 			if (!isEmbeddedWebEnvironment(config)) {
 				application.setApplicationContextFactory(
-						(webApplicationType) -> new GenericReactiveWebApplicationContext());
+						ApplicationContextFactory.of(GenericReactiveWebApplicationContext::new));
 			}
 		}
 		else {

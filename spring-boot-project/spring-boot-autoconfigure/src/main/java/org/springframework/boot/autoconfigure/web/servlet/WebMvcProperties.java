@@ -243,11 +243,11 @@ public class WebMvcProperties {
 				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
 						"spring.mvc.pathmatch.use-suffix-pattern");
 			}
-			else if (this.getPathmatch().isUseRegisteredSuffixPattern()) {
+			if (this.getPathmatch().isUseRegisteredSuffixPattern()) {
 				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
 						"spring.mvc.pathmatch.use-registered-suffix-pattern");
 			}
-			else if (!this.getServlet().getServletMapping().equals("/")) {
+			if (!this.getServlet().getServletMapping().equals("/")) {
 				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
 						"spring.mvc.servlet.path");
 			}

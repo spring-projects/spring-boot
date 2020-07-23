@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.redis;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.data.redis.connection.ClusterInfo;
 import org.springframework.data.redis.connection.RedisClusterConnection;
 import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -36,8 +35,6 @@ import org.springframework.util.Assert;
  * @since 2.0.0
  */
 public class RedisHealthIndicator extends AbstractHealthIndicator {
-
-	private static final String REDIS_VERSION_PROPERTY = "redis_version";
 
 	private final RedisConnectionFactory redisConnectionFactory;
 
@@ -60,14 +57,10 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 
 	private void doHealthCheck(Health.Builder builder, RedisConnection connection) {
 		if (connection instanceof RedisClusterConnection) {
-			ClusterInfo clusterInfo = ((RedisClusterConnection) connection).clusterGetClusterInfo();
-			builder.up().withDetail("cluster_size", clusterInfo.getClusterSize())
-					.withDetail("slots_up", clusterInfo.getSlotsOk())
-					.withDetail("slots_fail", clusterInfo.getSlotsFail());
+			RedisHealth.up(builder, ((RedisClusterConnection) connection).clusterGetClusterInfo());
 		}
 		else {
-			String version = connection.info().getProperty(REDIS_VERSION_PROPERTY);
-			builder.up().withDetail("version", version);
+			RedisHealth.up(builder, connection.info());
 		}
 	}
 
