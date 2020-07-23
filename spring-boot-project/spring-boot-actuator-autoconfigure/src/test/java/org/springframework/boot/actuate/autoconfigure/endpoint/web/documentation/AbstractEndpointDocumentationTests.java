@@ -77,13 +77,11 @@ public abstract class AbstractEndpointDocumentationTests {
 				Object target = payload;
 				Map<Object, Object> parent = null;
 				for (String key : keys) {
-					if (target instanceof Map) {
-						parent = (Map<Object, Object>) target;
-						target = parent.get(key);
-					}
-					else {
+					if (!(target instanceof Map)) {
 						throw new IllegalStateException();
 					}
+					parent = (Map<Object, Object>) target;
+					target = parent.get(key);
 				}
 				if (target instanceof Map) {
 					parent.put(keys[keys.length - 1], select((Map<String, Object>) target, filter));

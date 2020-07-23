@@ -404,9 +404,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				return Arrays.stream(bindConstructor.getParameters())
 						.anyMatch((parameter) -> parameter.getName().equals(writer.getName()));
 			}
-			else {
-				return isReadable(beanDesc, writer);
-			}
+			return isReadable(beanDesc, writer);
 		}
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {
