@@ -78,7 +78,7 @@ class ConfigDataLoaders {
 
 	/**
 	 * Load {@link ConfigData} using the first appropriate {@link ConfigDataLoader}.
-	 * @param <L> the condig data location type
+	 * @param <L> the config data location type
 	 * @param location the location to load
 	 * @return the loaded {@link ConfigData}
 	 * @throws IOException on IO error
