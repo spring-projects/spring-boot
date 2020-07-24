@@ -185,6 +185,7 @@ org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExe
 # Spring Test ContextCustomizerFactories
 org.springframework.test.context.ContextCustomizerFactory=\
 org.springframework.boot.test.autoconfigure.OverrideAutoConfigurationContextCustomizerFactory,\
+org.springframework.boot.test.autoconfigure.actuate.metrics.MetricsExportContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.filter.TypeExcludeFiltersContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.properties.PropertyMappingContextCustomizerFactory,\
 org.springframework.boot.test.autoconfigure.web.servlet.WebDriverContextCustomizerFactory

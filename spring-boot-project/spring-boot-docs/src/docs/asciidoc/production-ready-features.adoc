@@ -1428,6 +1428,13 @@ For example, to disable Datadog:
 	management.metrics.export.datadog.enabled=false
 ----
 
+You can also disable all registries unless stated otherwise by the registry-specific property, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	management.metrics.export.defaults.enabled=false
+----
+
 Spring Boot will also add any auto-configured registries to the global static composite registry on the `Metrics` class unless you explicitly tell it not to:
 
 [source,properties,indent=0,configprops]

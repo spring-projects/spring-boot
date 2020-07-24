@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,18 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.restdocs;
+package org.springframework.boot.test.autoconfigure.actuate.metrics;
 
-import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
+import org.springframework.boot.SpringBootConfiguration;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 
 /**
- * Test application used with {@link AutoConfigureRestDocs @AutoConfigureRestDocs} tests.
+ * Example {@link SpringBootApplication @SpringBootApplication} for use with
+ * {@link AutoConfigureMetrics @AutoConfigureMetrics} tests.
  *
- * @author Andy Wilkinson
+ * @author Chris Bono
  */
-@SpringBootApplication(exclude = { SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class })
-public class RestDocsTestApplication {
+@SpringBootConfiguration
+@EnableAutoConfiguration
+class AutoConfigureMetricsSpringBootApplication {
 
 }
