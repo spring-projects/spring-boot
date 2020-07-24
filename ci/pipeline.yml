@@ -8,10 +8,16 @@ anchors:
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((milestone))
+  gradle-enterprise-task-params: &gradle-enterprise-task-params
+    GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
+    GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
+    GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
   build-project-task-params: &build-project-task-params
     privileged: true
     timeout: ((task-timeout))
     file: git-repo/ci/tasks/build-project.yml
+    params:
+      <<: *gradle-enterprise-task-params
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
     GITHUB_ORGANIZATION: spring-projects
@@ -273,14 +279,20 @@ jobs:
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
         timeout: ((task-timeout))
+        params:
+          <<: *gradle-enterprise-task-params
       - task: build-integration-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
+        params:
+          <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
+        params:
+          <<: *gradle-enterprise-task-params
     on_failure:
       do:
       - put: repo-status-build
@@ -360,14 +372,20 @@ jobs:
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
         timeout: ((task-timeout))
+        params:
+          <<: *gradle-enterprise-task-params
       - task: build-integration-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
+        params:
+          <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
+        params:
+          <<: *gradle-enterprise-task-params
     on_failure:
       do:
       - put: repo-status-jdk11-build
@@ -391,23 +409,27 @@ jobs:
       params: { state: "pending", commit: "git-repo" }
     - do:
         - task: build-project
-          privileged: true
-          timeout: ((task-timeout))
           image: spring-boot-jdk14-ci-image
-          file: git-repo/ci/tasks/build-project.yml
+          <<: *build-project-task-params
         - in_parallel:
             - task: build-smoke-tests
               timeout: ((task-timeout))
               image: spring-boot-jdk14-ci-image
               file: git-repo/ci/tasks/build-smoke-tests.yml
+              params:
+                <<: *gradle-enterprise-task-params
             - task: build-integration-tests
               timeout: ((task-timeout))
               image: spring-boot-jdk14-ci-image
               file: git-repo/ci/tasks/build-integration-tests.yml
+              params:
+                <<: *gradle-enterprise-task-params
             - task: build-deployment-tests
               timeout: ((task-timeout))
               image: spring-boot-jdk14-ci-image
               file: git-repo/ci/tasks/build-deployment-tests.yml
+              params:
+                <<: *gradle-enterprise-task-params
       on_failure:
         do:
           - put: repo-status-jdk14-build
@@ -434,6 +456,8 @@ jobs:
         tags:
         - WIN64
         timeout: ((task-timeout))
+        params:
+          <<: *gradle-enterprise-task-params
       on_failure:
         do:
           - put: slack-alert
@@ -453,6 +477,7 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: M
+      GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
@@ -471,6 +496,7 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RC
+      GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
@@ -489,6 +515,7 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RELEASE
+      GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
