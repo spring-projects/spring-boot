@@ -74,6 +74,38 @@ class ConditionalOnAnnotationTests {
 		).run(context -> assertThat(context).doesNotHaveBean("exampleBean4"));
 	}
 
+	@Test
+	void testMultipleAnnotationsWhenPresentForAND() {
+		this.contextRunner.withUserConfiguration(
+				MultipleAnnotationsSpringBootConfiguration.class,
+				MultipleAnnotationsConfiguration.class
+		).run(context -> this.hasBean(context, "exampleBean5"));
+	}
+
+	@Test
+	void testMultipleAnnotationsWhenPresentForOR() {
+		this.contextRunner.withUserConfiguration(
+				MultipleAnnotationsSpringBootConfiguration.class,
+				MultipleAnnotationsConfiguration.class
+		).run(context -> this.hasBean(context, "exampleBean6"));
+	}
+
+	@Test
+	void testMultipleAnnotationsWhenNotPresentForAND() {
+		this.contextRunner.withUserConfiguration(
+				MultipleAnnotationsSpringBootConfiguration.class,
+				MultipleAnnotationsConfiguration.class
+		).run(context -> assertThat(context).doesNotHaveBean("exampleBean7"));
+	}
+
+	@Test
+	void testMultipleAnnotationsWhenNotPresentForOR() {
+		this.contextRunner.withUserConfiguration(
+				MultipleAnnotationsSpringBootConfiguration.class,
+				MultipleAnnotationsConfiguration.class
+		).run(context -> this.hasBean(context, "exampleBean8"));
+	}
+
 	private void hasBean(AssertableApplicationContext context, String beanName) {
 		assertThat(context).hasBean(beanName);
 		assertThat(context.getBean(beanName).toString().equals(beanName));
@@ -85,6 +117,12 @@ class ConditionalOnAnnotationTests {
 	@Configuration
 	@TestAnnotation
 	static class DefaultSpringBootConfiguration {
+	}
+
+	@Configuration
+	@TestAnnotation
+	@SampleAnnotation
+	static class MultipleAnnotationsSpringBootConfiguration {
 	}
 
 	@Configuration
@@ -123,6 +161,48 @@ class ConditionalOnAnnotationTests {
 		}
 	}
 
+
+	@Configuration
+	static class MultipleAnnotationsConfiguration {
+
+		@Bean
+		@ConditionalOnAnnotation(
+				value = { TestAnnotation.class, SampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.AND
+		)
+		ExampleBean exampleBean5() {
+			return new ExampleBean("exampleBean5");
+		}
+
+		@Bean
+		@ConditionalOnAnnotation(
+				value = { TestAnnotation.class, SampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.OR
+		)
+		ExampleBean exampleBean6() {
+			return new ExampleBean("exampleBean6");
+		}
+
+		@Bean
+		@ConditionalOnAnnotation(
+				value = { TestAnnotation.class, ExampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.AND
+		)
+		ExampleBean exampleBean7() {
+			return new ExampleBean("exampleBean7");
+		}
+
+		@Bean
+		@ConditionalOnAnnotation(
+				value = { TestAnnotation.class, ExampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.OR
+		)
+		ExampleBean exampleBean8() {
+			return new ExampleBean("exampleBean8");
+		}
+	}
+
+
 	static class ExampleBean {
 
 		private final String value;
@@ -150,5 +230,11 @@ class ConditionalOnAnnotationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface SampleAnnotation {
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface ExampleAnnotation {
 	}
 }
