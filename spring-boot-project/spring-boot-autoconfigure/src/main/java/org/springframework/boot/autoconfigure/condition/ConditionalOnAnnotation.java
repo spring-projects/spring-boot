@@ -5,7 +5,11 @@ import org.springframework.context.annotation.Conditional;
 import java.lang.annotation.*;
 
 /**
- * Indicates the Annotation class(es) which need to be checked on the main boot class annotated with @SpringBootApplication.
+ * Indicates the Annotation class(es) which need to be checked on the main boot class
+ * annotated with @SpringBootApplication. @ConditionalOnAnnotation annotation should work on
+ * any @Configuration class, but the order of loading is not guaranteed. So annotating at @SpringBootApplication
+ * main class makes sure this bean is loaded by the time the condition is evaluated.
+ *
  * Usage Examples:
  *  1.	@ConditionalOnAnnotation(EnableAsync.class)
  *  2.	@ConditionalOnAnnotation({ EnableAsync.class, EnableCaching.class })
