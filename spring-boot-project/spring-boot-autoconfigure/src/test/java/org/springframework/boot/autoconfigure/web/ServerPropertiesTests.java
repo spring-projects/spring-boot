@@ -542,7 +542,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void nettyMaxInitialLineLenghtMatchesHttpDecoderSpecDefault() {
+	void nettyMaxInitialLineLengthMatchesHttpDecoderSpecDefault() {
 		assertThat(this.properties.getNetty().getMaxInitialLineLength().toBytes())
 				.isEqualTo(HttpDecoderSpec.DEFAULT_MAX_INITIAL_LINE_LENGTH);
 	}
