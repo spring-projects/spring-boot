@@ -88,6 +88,9 @@
 									<addTestClassPath>true</addTestClassPath>
 									<skipInvocation>${skipTests}</skipInvocation>
 									<streamLogs>true</streamLogs>
+									<properties>
+										<scan>false</scan>
+									</properties>
 								</configuration>
 							</execution>
 						</executions>

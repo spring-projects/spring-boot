@@ -1,0 +1,25 @@
+<gradleEnterprise
+        xmlns="https://www.gradle.com/gradle-enterprise-maven" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation="https://www.gradle.com/gradle-enterprise-maven https://www.gradle.com/schema/gradle-enterprise-maven.xsd">
+	<server>
+		<url>https://ge.spring.io</url>
+	</server>
+	<buildScan>
+		<publishIfAuthenticated>true</publishIfAuthenticated>
+	</buildScan>
+	<buildCache>
+		<local>
+			<enabled>true</enabled>
+		</local>
+		<remote>
+			<enabled>true</enabled>
+			<storeEnabled><![CDATA[#{env['GRADLE_ENTERPRISE_CACHE_USERNAME'] != null && env['GRADLE_ENTERPRISE_CACHE_USERNAME'] != null}]]></storeEnabled>
+			<server>
+				<credentials>
+					<username>${env.GRADLE_ENTERPRISE_CACHE_USERNAME}</username>
+					<password>${env.GRADLE_ENTERPRISE_CACHE_PASSWORD}</password>
+				</credentials>
+			</server>
+		</remote>
+	</buildCache>
+</gradleEnterprise>
