@@ -139,7 +139,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 			}
 			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
 			if (properties.getAuthEnabled()) {
-				pushgateway.setConnectionFactory(new BasicAuthHttpConnectionFactory(properties.getAuthUsername(), properties.getAuthPassword()));
+				pushgateway.setConnectionFactory(new BasicAuthHttpConnectionFactory(properties.getAuthusername(), properties.getAuthpassword()));
 			}
 			return pushGateway;
 		}

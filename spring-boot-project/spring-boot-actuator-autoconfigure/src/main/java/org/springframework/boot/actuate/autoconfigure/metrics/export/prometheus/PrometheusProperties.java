@@ -122,14 +122,14 @@ public class PrometheusProperties {
 		private Boolean authEnabled = false;
 
 		/**
-		 * Basic Auth Username.
+		 * Prometheus Pushgateway basic-auth username.
 		 */
-		private String authUsername;
+		private String authusername;
 
 		/**
-		 * Basic Auth Password.
+		 * Prometheus Pushgateway basic-auth password.
 		 */
-		private String authPassword;
+		private String authpassword;
 
 		/**
 		 * Operation that should be performed on shutdown.
@@ -192,13 +192,21 @@ public class PrometheusProperties {
 			this.authEnabled = authEnabled;
 		}
 
-		public String getAuthUsername() { return authUsername; }
+		public String getAuthusername() {
+			return authusername;
+		}
 
-		public void setAuthUsername(String authUsername) { this.authUsername = authUsername; }
+		public void setAuthusername(String authusername) {
+			this.authusername = authusername;
+		}
 
-		public String getAuthPassword() { return authPassword; }
+		public String getAuthpassword() {
+			return authpassword;
+		}
 
-		public void setAuthPassword(String authPassword) { this.authPassword = authPassword; }
+		public void setAuthpassword(String authpassword) {
+			this.authpassword = authpassword;
+		}
 	}
 
 }
