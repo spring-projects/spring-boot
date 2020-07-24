@@ -101,8 +101,13 @@ public class BintrayService {
 		try {
 			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
 				logger.debug("Checking bintray");
-				PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
-				return hasPublishedAll(published, requiredDigests);
+				try {
+					PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
+					return hasPublishedAll(published, requiredDigests);
+				}
+				catch (HttpClientErrorException.NotFound ex) {
+					return false;
+				}
 			});
 		}
 		catch (ConditionTimeoutException ex) {
