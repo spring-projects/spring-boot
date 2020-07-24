@@ -45,7 +45,7 @@ org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
 org.springframework.boot.env.EnvironmentPostProcessor=\
 org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor,\
 org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor,\
-org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor
+org.springframework.boot.env.RandomValuePropertySourceEnvironmentPostProcessor,\
 org.springframework.boot.env.SpringApplicationJsonEnvironmentPostProcessor,\
 org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor,\
 org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor
