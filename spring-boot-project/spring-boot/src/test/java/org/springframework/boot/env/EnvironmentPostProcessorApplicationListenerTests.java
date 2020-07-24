@@ -64,22 +64,22 @@ class EnvironmentPostProcessorApplicationListenerTests {
 	}
 
 	@Test
-	void supporteEventTypeWhenApplicationEnvironmentPreparedEventReturnsTrue() {
+	void supportsEventTypeWhenApplicationEnvironmentPreparedEventReturnsTrue() {
 		assertThat(this.listener.supportsEventType(ApplicationEnvironmentPreparedEvent.class)).isTrue();
 	}
 
 	@Test
-	void supporteEventTypeWhenApplicationPreparedEventReturnsTrue() {
+	void supportsEventTypeWhenApplicationPreparedEventReturnsTrue() {
 		assertThat(this.listener.supportsEventType(ApplicationPreparedEvent.class)).isTrue();
 	}
 
 	@Test
-	void supporteEventTypeWhenApplicationFailedEventReturnsTrue() {
+	void supportsEventTypeWhenApplicationFailedEventReturnsTrue() {
 		assertThat(this.listener.supportsEventType(ApplicationFailedEvent.class)).isTrue();
 	}
 
 	@Test
-	void supporteEventTypeWhenOtherEventReturnsFalse() {
+	void supportsEventTypeWhenOtherEventReturnsFalse() {
 		assertThat(this.listener.supportsEventType(ApplicationStartingEvent.class)).isFalse();
 	}
 
