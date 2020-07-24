@@ -16,14 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
+import io.micrometer.prometheus.HistogramFlavor;
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
-
-import io.micrometer.prometheus.HistogramFlavor;
-
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
@@ -85,7 +84,6 @@ public class PrometheusProperties {
 	public Pushgateway getPushgateway() {
 		return this.pushgateway;
 	}
-
 
 
 	/**
@@ -194,21 +192,13 @@ public class PrometheusProperties {
 			this.authEnabled = authEnabled;
 		}
 
-		public String getAuthUsername() {
-			return authUsername;
-		}
+		public String getAuthUsername() { return authUsername; }
 
-		public void setAuthUsername(String authUsername) {
-			this.authUsername = authUsername;
-		}
+		public void setAuthUsername(String authUsername) { this.authUsername = authUsername; }
 
-		public String getAuthPassword() {
-			return authPassword;
-		}
+		public String getAuthPassword() { return authPassword; }
 
-		public void setAuthPassword(String authPassword) {
-			this.authPassword = authPassword;
-		}
+		public void setAuthPassword(String authPassword) { this.authPassword = authPassword; }
 	}
 
 }
