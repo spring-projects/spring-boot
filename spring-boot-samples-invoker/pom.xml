@@ -29,6 +29,9 @@
 					<pomIncludes>
 						<pomInclude>pom.xml</pomInclude>
 					</pomIncludes>
+					<properties>
+						<scan>false</scan>
+					</properties>
 				</configuration>
 				<executions>
 					<execution>

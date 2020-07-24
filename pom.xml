@@ -250,5 +250,38 @@
 				</plugin>
 			</plugins>
 		</pluginManagement>
+		<plugins>
+			<plugin>
+				<groupId>com.gradle</groupId>
+				<artifactId>gradle-enterprise-maven-extension</artifactId>
+				<version>1.5.2</version>
+				<configuration>
+					<gradleEnterprise>
+						<plugins>
+							<plugin>
+								<artifactId>maven-checkstyle-plugin</artifactId>
+								<inputs>
+									<fileSets>
+										<fileSet>
+											<name>allowlist</name>
+											<paths>
+												<path>${main.basedir}/src/checkstyle</path>
+											</paths>
+											<normalization>RELATIVE_PATH</normalization>
+										</fileSet>
+									</fileSets>
+									<properties>
+										<property>
+											<name>propertyExpansion</name>
+											<value>ignoredValue</value>
+										</property>
+									</properties>
+								</inputs>
+							</plugin>
+						</plugins>
+					</gradleEnterprise>
+				</configuration>
+			</plugin>
+		</plugins>
 	</build>
 </project>
