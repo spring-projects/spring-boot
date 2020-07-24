@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,9 +84,7 @@ class ArtifactoryServiceTests {
 
 	@Test
 	void promoteWhenSuccessful() {
-		this.server
-				.expect(requestTo(
-						"https://repo.spring.io/api/build/promote/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
 				.andExpect(method(HttpMethod.POST))
 				.andExpect(content().json(
 						"{\"status\": \"staged\", \"sourceRepo\": \"libs-staging-local\", \"targetRepo\": \"libs-milestone-local\"}"))
@@ -99,11 +97,9 @@ class ArtifactoryServiceTests {
 
 	@Test
 	void promoteWhenArtifactsAlreadyPromoted() {
-		this.server
-				.expect(requestTo(
-						"https://repo.spring.io/api/build/promote/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
 				.andRespond(withStatus(HttpStatus.CONFLICT));
-		this.server.expect(requestTo("https://repo.spring.io/api/build/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/example-build/example-build-1"))
 				.andRespond(withJsonFrom("build-info-response.json"));
 		this.service.promote("libs-release-local", getReleaseInfo());
 		this.server.verify();
@@ -111,11 +107,9 @@ class ArtifactoryServiceTests {
 
 	@Test
 	void promoteWhenCheckForArtifactsAlreadyPromotedFails() {
-		this.server
-				.expect(requestTo(
-						"https://repo.spring.io/api/build/promote/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
 				.andRespond(withStatus(HttpStatus.CONFLICT));
-		this.server.expect(requestTo("https://repo.spring.io/api/build/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/example-build/example-build-1"))
 				.andRespond(withStatus(HttpStatus.FORBIDDEN));
 		assertThatExceptionOfType(HttpClientErrorException.class)
 				.isThrownBy(() -> this.service.promote("libs-release-local", getReleaseInfo()));
@@ -124,11 +118,9 @@ class ArtifactoryServiceTests {
 
 	@Test
 	void promoteWhenPromotionFails() {
-		this.server
-				.expect(requestTo(
-						"https://repo.spring.io/api/build/promote/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
 				.andRespond(withStatus(HttpStatus.CONFLICT));
-		this.server.expect(requestTo("https://repo.spring.io/api/build/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/example-build/example-build-1"))
 				.andRespond(withJsonFrom("staged-build-info-response.json"));
 		assertThatExceptionOfType(HttpClientErrorException.class)
 				.isThrownBy(() -> this.service.promote("libs-release-local", getReleaseInfo()));
@@ -158,9 +150,7 @@ class ArtifactoryServiceTests {
 	@Test
 	void distributeWhenFailure() throws Exception {
 		ReleaseInfo releaseInfo = getReleaseInfo();
-		this.server
-				.expect(requestTo(
-						"https://repo.spring.io/api/build/distribute/" + "example-build" + "/" + "example-build-1"))
+		this.server.expect(requestTo("https://repo.spring.io/api/build/distribute/example-build/example-build-1"))
 				.andExpect(method(HttpMethod.POST))
 				.andExpect(content().json(
 						"{\"sourceRepos\": [\"libs-release-local\"], \"targetRepo\" : \"spring-distributions\", \"async\":\"true\"}"))
