@@ -9,7 +9,3 @@ bintray:
 sonatype:
   user-token: sonatype-user
   password-token: sonatype-password
-distribute:
-  optional-deployments:
-  - '.*\.zip'
-  - 'spring-boot-project-\d\.\d\.\d(?:\.RELEASE)?\.pom'
