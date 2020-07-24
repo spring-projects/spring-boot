@@ -16,19 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.time.Duration;
-import java.util.Map;
-
 import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -50,15 +45,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.time.Duration;
+import java.util.Map;
+
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Prometheus.
  *
- * @since 2.0.0
  * @author Jon Schneider
  * @author David J. M. Karlsen
+ * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class})
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(PrometheusMeterRegistry.class)
@@ -75,7 +75,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public PrometheusMeterRegistry prometheusMeterRegistry(PrometheusConfig prometheusConfig,
-			CollectorRegistry collectorRegistry, Clock clock) {
+														   CollectorRegistry collectorRegistry, Clock clock) {
 		return new PrometheusMeterRegistry(prometheusConfig, collectorRegistry, clock);
 	}
 
@@ -118,7 +118,7 @@ public class PrometheusMetricsExportAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		public PrometheusPushGatewayManager prometheusPushGatewayManager(CollectorRegistry collectorRegistry,
-				PrometheusProperties prometheusProperties, Environment environment) {
+																		 PrometheusProperties prometheusProperties, Environment environment) {
 			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
 			Duration pushRate = properties.getPushRate();
 			String job = getJob(properties, environment);
@@ -129,14 +129,19 @@ public class PrometheusMetricsExportAutoConfiguration {
 		}
 
 		private PushGateway getPushGateway(String url) {
+			PushGateway pushGateway = null;
 			try {
-				return new PushGateway(new URL(url));
-			}
-			catch (MalformedURLException ex) {
+				pushGateway = new PushGateway(new URL(url));
+			} catch (MalformedURLException ex) {
 				logger.warn(LogMessage
 						.format("Invalid PushGateway base url '%s': update your configuration to a valid URL", url));
-				return new PushGateway(url);
+				pushGateway = new PushGateway(url);
 			}
+			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
+			if (properties.getAuthEnabled()) {
+				pushgateway.setConnectionFactory(new BasicAuthHttpConnectionFactory(properties.getAuthusername(), properties.getAuthpassword()));
+			}
+			return pushGateway;
 		}
 
 		private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {
