@@ -8308,7 +8308,7 @@ If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testi
 
 [[boot-features-container-images]]
 == Building Container Images
-Spring Boot applications can be containerized either by <<boot-features-container-images-docker,packaging them into Docker images>>, or by <<boot-features-container-images-buildpacks,using Buildpacks to create docker compatible container images that you can run anywhere>>.
+Spring Boot applications can be containerized either by <<boot-features-container-images-docker,packaging them into Docker images>>, or by <<boot-features-container-images-buildpacks,using Buildpacks to create Docker compatible container images that you can run anywhere>>.
 
 
 
