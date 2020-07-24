@@ -86,6 +86,8 @@ public class PrometheusProperties {
 		return this.pushgateway;
 	}
 
+
+
 	/**
 	 * Configuration options for push-based interaction with Prometheus.
 	 */
@@ -115,6 +117,21 @@ public class PrometheusProperties {
 		 * Grouping key for the pushed metrics.
 		 */
 		private Map<String, String> groupingKey = new HashMap<>();
+
+		/**
+		 * Enable publishing via a Prometheus Pushgateway with Basic Auth.
+		 */
+		private Boolean authEnabled = false;
+
+		/**
+		 * Basic Auth Username.
+		 */
+		private String authUsername;
+
+		/**
+		 * Basic Auth Password.
+		 */
+		private String authPassword;
 
 		/**
 		 * Operation that should be performed on shutdown.
@@ -169,6 +186,29 @@ public class PrometheusProperties {
 			this.shutdownOperation = shutdownOperation;
 		}
 
+		public Boolean getAuthEnabled() {
+			return this.authEnabled;
+		}
+
+		public void setAuthEnabled(Boolean authEnabled) {
+			this.authEnabled = authEnabled;
+		}
+
+		public String getAuthUsername() {
+			return authUsername;
+		}
+
+		public void setAuthUsername(String authUsername) {
+			this.authUsername = authUsername;
+		}
+
+		public String getAuthPassword() {
+			return authPassword;
+		}
+
+		public void setAuthPassword(String authPassword) {
+			this.authPassword = authPassword;
+		}
 	}
 
 }

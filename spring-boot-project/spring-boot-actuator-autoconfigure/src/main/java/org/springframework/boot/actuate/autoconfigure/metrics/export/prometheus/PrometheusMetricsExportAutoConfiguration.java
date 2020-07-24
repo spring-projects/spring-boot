@@ -26,6 +26,7 @@ import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.PushGateway;
+import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -129,14 +130,20 @@ public class PrometheusMetricsExportAutoConfiguration {
 		}
 
 		private PushGateway getPushGateway(String url) {
+			PushGateway pushGateway = null;
 			try {
-				return new PushGateway(new URL(url));
+				pushGateway = new PushGateway(new URL(url));
 			}
 			catch (MalformedURLException ex) {
 				logger.warn(LogMessage
 						.format("Invalid PushGateway base url '%s': update your configuration to a valid URL", url));
-				return new PushGateway(url);
+				pushGateway = new PushGateway(url);
 			}
+			PrometheusProperties.Pushgateway properties = prometheusProperties.getPushgateway();
+			if(properties.getAuthEnabled()){
+				pushgateway.setConnectionFactory(new BasicAuthHttpConnectionFactory(properties.getAuthUsername(), properties.getAuthPassword()));
+			}
+			return pushGateway;
 		}
 
 		private String getJob(PrometheusProperties.Pushgateway properties, Environment environment) {
