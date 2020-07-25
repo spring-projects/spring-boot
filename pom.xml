@@ -378,13 +378,17 @@
 						</lifecycleMappingMetadata>
 					</configuration>
 				</plugin>
+				<plugin>
+					<groupId>com.gradle</groupId>
+					<artifactId>gradle-enterprise-maven-extension</artifactId>
+					<version>1.5.3</version>
+				</plugin>
 			</plugins>
 		</pluginManagement>
 		<plugins>
 			<plugin>
 				<groupId>com.gradle</groupId>
 				<artifactId>gradle-enterprise-maven-extension</artifactId>
-				<version>1.5.3</version>
 				<configuration>
 					<gradleEnterprise>
 						<plugins>

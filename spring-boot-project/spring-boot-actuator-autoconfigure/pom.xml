@@ -862,4 +862,56 @@
 			</build>
 		</profile>
 	</profiles>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>com.gradle</groupId>
+				<artifactId>gradle-enterprise-maven-extension</artifactId>
+				<configuration>
+					<gradleEnterprise>
+						<plugins>
+							<plugin>
+								<artifactId>maven-surefire-plugin</artifactId>
+								<executions>
+									<execution>
+										<id>default-test</id>
+										<outputs>
+											<directories>
+												<directory>
+													<name>generated-snippets</name>
+													<path>${project.basedir}/target/generated-snippets</path>
+												</directory>
+											</directories>
+										</outputs>
+									</execution>
+								</executions>
+							</plugin>
+							<plugin>
+								<artifactId>asciidoctor-maven-plugin</artifactId>
+								<executions>
+									<execution>
+										<id>generate-html-documentation</id>
+										<inputs>
+											<fileSets>
+												<fileSet>
+													<name>generated-snippets</name>
+													<paths>
+														<path>${project.basedir}/target/generated-snippets</path>
+													</paths>
+													<includes>
+														<include>**/*</include>
+													</includes>
+													<normalization>RELATIVE_PATH</normalization>
+												</fileSet>
+											</fileSets>
+										</inputs>
+									</execution>
+								</executions>
+							</plugin>
+						</plugins>
+					</gradleEnterprise>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
 </project>
