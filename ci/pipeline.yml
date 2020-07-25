@@ -17,6 +17,7 @@ anchors:
     timeout: ((task-timeout))
     file: git-repo/ci/tasks/build-project.yml
     params:
+      BRANCH: ((branch))
       <<: *gradle-enterprise-task-params
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
@@ -280,18 +281,21 @@ jobs:
         file: git-repo/ci/tasks/build-smoke-tests.yml
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-integration-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
     on_failure:
       do:
@@ -373,18 +377,21 @@ jobs:
         file: git-repo/ci/tasks/build-smoke-tests.yml
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-integration-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
     on_failure:
       do:
@@ -417,18 +424,21 @@ jobs:
               image: spring-boot-jdk14-ci-image
               file: git-repo/ci/tasks/build-smoke-tests.yml
               params:
+                BRANCH: ((branch))
                 <<: *gradle-enterprise-task-params
             - task: build-integration-tests
               timeout: ((task-timeout))
               image: spring-boot-jdk14-ci-image
               file: git-repo/ci/tasks/build-integration-tests.yml
               params:
+                BRANCH: ((branch))
                 <<: *gradle-enterprise-task-params
             - task: build-deployment-tests
               timeout: ((task-timeout))
               image: spring-boot-jdk14-ci-image
               file: git-repo/ci/tasks/build-deployment-tests.yml
               params:
+                BRANCH: ((branch))
                 <<: *gradle-enterprise-task-params
       on_failure:
         do:
@@ -457,6 +467,7 @@ jobs:
         - WIN64
         timeout: ((task-timeout))
         params:
+          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       on_failure:
         do:
