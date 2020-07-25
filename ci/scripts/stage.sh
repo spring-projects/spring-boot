@@ -35,10 +35,10 @@ git add pom.xml > /dev/null
 git commit -m"Release v$stageVersion" > /dev/null
 git tag -a "v$stageVersion" -m"Release v$stageVersion" > /dev/null
 
-run_maven -f spring-boot-project/pom.xml clean deploy -U -Dfull -DaltDeploymentRepository=distribution::default::file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false
-run_maven -f spring-boot-samples/pom.xml clean install -U -Dfull -Drepository=file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false
-run_maven -f spring-boot-tests/spring-boot-integration-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false
-run_maven -f spring-boot-tests/spring-boot-deployment-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false
+run_maven -f spring-boot-project/pom.xml clean deploy -U -Dfull -DaltDeploymentRepository=distribution::default::file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false -Duser.name=concourse
+run_maven -f spring-boot-samples/pom.xml clean install -U -Dfull -Drepository=file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false -Duser.name=concourse
+run_maven -f spring-boot-tests/spring-boot-integration-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false -Duser.name=concourse
+run_maven -f spring-boot-tests/spring-boot-deployment-tests/pom.xml clean install -U -Dfull -Drepository=file://${repository} -Dgradle.cache.local.enabled=false -Dgradle.cache.remote.enabled=false -Duser.name=concourse
 
 git reset --hard HEAD^ > /dev/null
 if [[ $nextVersion != $snapshotVersion ]]; then

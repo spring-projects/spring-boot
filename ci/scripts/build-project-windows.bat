@@ -3,4 +3,4 @@ SET PATH=%PATH%;C:\Program Files\Git\usr\bin
 cd git-repo
 
 echo ".\mvnw clean install" > build.log
-.\mvnw clean install -U >> build.log 2>&1 || (sleep 1 && tail -n 3000 build.log && exit 1)
+.\mvnw clean install -U  -Duser.name=concourse >> build.log 2>&1 || (sleep 1 && tail -n 3000 build.log && exit 1)
