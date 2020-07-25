@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.springframework.context.annotation.Conditional;
-
 import java.lang.annotation.Annotation;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
+
+import org.springframework.context.annotation.Conditional;
 
 /**
  * Indicates the Annotation class(es) which need to be checked on the main boot class

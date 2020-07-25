@@ -16,15 +16,16 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Annotation;
+import java.util.Map;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
-
-import java.lang.annotation.Annotation;
-import java.util.Map;
 
 /**
  * {@link Condition} that checks for the presence or absence of specific annotations.
@@ -34,9 +35,9 @@ import java.util.Map;
  */
 public class OnAnnotationCondition extends AbstractAnnotationCondition {
 
-	private final Log log = LogFactory.getLog(getClass());
-
 	private static final String CONDITION_TYPE_ATTRIBUTE = "conditionType";
+
+	private final Log log = LogFactory.getLog(getClass());
 
 	@Override
 	public Class<? extends Annotation> annotationClass() {
@@ -49,7 +50,7 @@ public class OnAnnotationCondition extends AbstractAnnotationCondition {
 		final Class<? extends Annotation>[] annotatedClasses = getValue(metadata);
 
 		if (ArrayUtils.isEmpty(annotatedClasses)) {
-			log.warn("@ConditionalOnAnnotation should be annotated with "
+			this.log.warn("@ConditionalOnAnnotation should be annotated with "
 					+ "minimum 1 Annotation type classes. Making the condition as true.");
 			return true;
 		}

@@ -16,13 +16,18 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-
-import java.lang.annotation.*;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,13 +45,13 @@ class ConditionalOnAnnotationTests {
 	@Test
 	void testAnnotationAtConfigurationWhenPresent() {
 		this.contextRunner.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfiguration.class,
-				MyAppConfiguration.class).run(context -> this.hasBean(context, "exampleBean1"));
+				MyAppConfiguration.class).run((context) -> this.hasBean(context, "exampleBean1"));
 	}
 
 	@Test
 	void testAnnotationAtBeanWhenPresent() {
 		this.contextRunner.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfiguration.class,
-				MyAppConfiguration.class).run(context -> this.hasBean(context, "exampleBean2"));
+				MyAppConfiguration.class).run((context) -> this.hasBean(context, "exampleBean2"));
 	}
 
 	@Test
@@ -54,7 +59,7 @@ class ConditionalOnAnnotationTests {
 		this.contextRunner
 				.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfigurationNotPresent.class,
 						MyAppConfigurationNotPresent.class)
-				.run(context -> assertThat(context).doesNotHaveBean("exampleBean3"));
+				.run((context) -> assertThat(context).doesNotHaveBean("exampleBean3"));
 	}
 
 	@Test
@@ -62,19 +67,19 @@ class ConditionalOnAnnotationTests {
 		this.contextRunner
 				.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfigurationNotPresent.class,
 						MyAppConfigurationNotPresent.class)
-				.run(context -> assertThat(context).doesNotHaveBean("exampleBean4"));
+				.run((context) -> assertThat(context).doesNotHaveBean("exampleBean4"));
 	}
 
 	@Test
 	void testMultipleAnnotationsWhenPresentForAND() {
 		this.contextRunner.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
-				MultipleAnnotationsConfiguration.class).run(context -> this.hasBean(context, "exampleBean5"));
+				MultipleAnnotationsConfiguration.class).run((context) -> this.hasBean(context, "exampleBean5"));
 	}
 
 	@Test
 	void testMultipleAnnotationsWhenPresentForOR() {
 		this.contextRunner.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
-				MultipleAnnotationsConfiguration.class).run(context -> this.hasBean(context, "exampleBean6"));
+				MultipleAnnotationsConfiguration.class).run((context) -> this.hasBean(context, "exampleBean6"));
 	}
 
 	@Test
@@ -82,13 +87,13 @@ class ConditionalOnAnnotationTests {
 		this.contextRunner
 				.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
 						MultipleAnnotationsConfiguration.class)
-				.run(context -> assertThat(context).doesNotHaveBean("exampleBean7"));
+				.run((context) -> assertThat(context).doesNotHaveBean("exampleBean7"));
 	}
 
 	@Test
 	void testMultipleAnnotationsWhenNotPresentForOR() {
 		this.contextRunner.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
-				MultipleAnnotationsConfiguration.class).run(context -> this.hasBean(context, "exampleBean8"));
+				MultipleAnnotationsConfiguration.class).run((context) -> this.hasBean(context, "exampleBean8"));
 	}
 
 	private void hasBean(AssertableApplicationContext context, String beanName) {
@@ -97,6 +102,27 @@ class ConditionalOnAnnotationTests {
 	}
 
 	// Configurations
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface TestAnnotation {
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface SampleAnnotation {
+
+	}
+
+	@Target(ElementType.TYPE)
+	@Retention(RetentionPolicy.RUNTIME)
+	@Documented
+	@interface ExampleAnnotation {
+
+	}
 
 	@Configuration
 	@TestAnnotation
@@ -143,6 +169,8 @@ class ConditionalOnAnnotationTests {
 		}
 
 	}
+
+	// Annotations
 
 	@Configuration
 	static class MyAppConfigurationNotPresent {
@@ -200,29 +228,6 @@ class ConditionalOnAnnotationTests {
 		public String toString() {
 			return this.value;
 		}
-
-	}
-
-	// Annotations
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@interface TestAnnotation {
-
-	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@interface SampleAnnotation {
-
-	}
-
-	@Target(ElementType.TYPE)
-	@Retention(RetentionPolicy.RUNTIME)
-	@Documented
-	@interface ExampleAnnotation {
 
 	}
 

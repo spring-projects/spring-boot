@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.springframework.context.annotation.Condition;
-import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.type.AnnotatedTypeMetadata;
-
 import java.lang.annotation.Annotation;
 import java.util.Map;
 import java.util.Objects;
+
+import org.springframework.context.annotation.Condition;
+import org.springframework.context.annotation.ConditionContext;
+import org.springframework.core.type.AnnotatedTypeMetadata;
 
 /**
  * Abstract base class for annotation conditions.
