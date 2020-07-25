@@ -18,7 +18,6 @@ import java.lang.annotation.*;
  *
  * This Annotation will be useful when making a AutoConfiguration class as conditional.
  *
- * <p>
  * When placed on a {@code @Configuration} class, the configuration takes place only when
  * the specified annotation is present on main spring boot class.
  *
@@ -32,10 +31,8 @@ import java.lang.annotation.*;
  *         ...
  *     }
  * }</pre>
- * <p>
  *
  *
- * <p>
  * When placed on a {@code @Bean} method, the bean is created only when the specified
  * annotation is present on main spring boot class.
  *
@@ -49,7 +46,6 @@ import java.lang.annotation.*;
  *         ...
  *     }
  * }</pre>
- * <p>
  *
  * @author Vimalraj Chandra Sekaran (Github: rajvimalc)
  * @since 2.3.2
@@ -61,6 +57,7 @@ public @interface ConditionalOnAnnotation {
 
 	/**
 	 * Minimum 1 Annotation type class should be provided.
+	 * @return the classes that must be present
 	 */
 	Class<? extends Annotation>[] value();
 
@@ -68,6 +65,7 @@ public @interface ConditionalOnAnnotation {
 	 * When ConditionType is OR, the condition is true when any one of the annotations
 	 * mentioned is present. When ConditionType is AND, the condition is true when all of
 	 * the annotations mentioned are present.
+	 * @return the ConditionType to be evaluated
 	 */
 	ConditionType conditionType() default ConditionType.OR;
 
