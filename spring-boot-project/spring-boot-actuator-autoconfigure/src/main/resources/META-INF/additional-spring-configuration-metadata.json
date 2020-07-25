@@ -220,7 +220,7 @@
       "defaultValue": true
     },
     {
-      "name": "management.health.readynessstate.enabled",
+      "name": "management.health.readinessstate.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable readiness state health check.",
       "defaultValue": false
