@@ -48,7 +48,7 @@ class LiquibaseChangelogMissingFailureAnalyzerTests {
 	}
 
 	@AfterAll
-	static void clearDerbyLogLocation(@TempDir File temp) {
+	static void clearDerbyLogLocation() {
 		System.clearProperty("derby.stream.error.file");
 	}
 
