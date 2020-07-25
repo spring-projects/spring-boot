@@ -1,8 +1,25 @@
+/*
+ * Copyright 2012-2019 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.boot.autoconfigure.condition;
 
 import org.apache.commons.lang3.ArrayUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.springframework.context.annotation.Condition;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 
@@ -10,12 +27,14 @@ import java.lang.annotation.Annotation;
 import java.util.Map;
 
 /**
+ * {@link Condition} that checks for the presence or absence of specific annotations.
+ *
  * @author Vimalraj Chandra Sekaran (Github: rajvimalc)
- * @since 2.3.2
+ * @since 2.4.0
  */
-class OnAnnotationCondition extends AbstractAnnotationCondition {
+public class OnAnnotationCondition extends AbstractAnnotationCondition {
 
-	private static final Logger log = LoggerFactory.getLogger(OnAnnotationCondition.class);
+	private final Log log = LogFactory.getLog(getClass());
 
 	private static final String CONDITION_TYPE_ATTRIBUTE = "conditionType";
 
@@ -37,8 +56,8 @@ class OnAnnotationCondition extends AbstractAnnotationCondition {
 
 		final ConditionalOnAnnotation.ConditionType conditionType = getAttribute(metadata, CONDITION_TYPE_ATTRIBUTE);
 
-		return conditionType == ConditionalOnAnnotation.ConditionType.OR ? onOrConditionType(context, annotatedClasses)
-				: onAndConditionType(context, annotatedClasses);
+		return (conditionType == ConditionalOnAnnotation.ConditionType.OR)
+				? onOrConditionType(context, annotatedClasses) : onAndConditionType(context, annotatedClasses);
 	}
 
 	protected boolean onOrConditionType(ConditionContext context, Class<? extends Annotation>[] annotatedClasses) {
