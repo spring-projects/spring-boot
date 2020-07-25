@@ -6,23 +6,21 @@ import java.lang.annotation.*;
 
 /**
  * Indicates the Annotation class(es) which need to be checked on the main boot class
- * annotated with @SpringBootApplication. @ConditionalOnAnnotation annotation should work on
- * any @Configuration class, but the order of loading is not guaranteed. So annotating at @SpringBootApplication
- * main class makes sure this bean is loaded by the time the condition is evaluated.
+ * annotated with @SpringBootApplication. @ConditionalOnAnnotation annotation should work
+ * on any @Configuration class, but the order of loading is not guaranteed. So annotating
+ * at @SpringBootApplication main class makes sure this bean is loaded by the time the
+ * condition is evaluated.
  *
- * Usage Examples:
- *  1.	@ConditionalOnAnnotation(EnableAsync.class)
- *  2.	@ConditionalOnAnnotation({ EnableAsync.class, EnableCaching.class })
- *  3.	@ConditionalOnAnnotation(
- *  		value = { EnableAsync.class, EnableCaching.class },
- *  		conditionType = ConditionalOnAnnotation.ConditionType.AND
- *  	)
+ * Usage Examples: 1. @ConditionalOnAnnotation(EnableAsync.class)
+ * 2. @ConditionalOnAnnotation({ EnableAsync.class, EnableCaching.class })
+ * 3. @ConditionalOnAnnotation( value = { EnableAsync.class, EnableCaching.class },
+ * conditionType = ConditionalOnAnnotation.ConditionType.AND )
  *
  * This Annotation will be useful when making a AutoConfiguration class as conditional.
  *
  * <p>
- * When placed on a {@code @Configuration} class, the configuration takes place only when the specified annotation
- * is present on main spring boot class.
+ * When placed on a {@code @Configuration} class, the configuration takes place only when
+ * the specified annotation is present on main spring boot class.
  *
  * <pre class="code">
  * &#064;Configuration
@@ -38,8 +36,8 @@ import java.lang.annotation.*;
  *
  *
  * <p>
- * When placed on a {@code @Bean} method, the bean is created only when the specified annotation is present
- * on main spring boot class.
+ * When placed on a {@code @Bean} method, the bean is created only when the specified
+ * annotation is present on main spring boot class.
  *
  * <pre class="code">
  * &#064;Configuration
@@ -61,18 +59,22 @@ import java.lang.annotation.*;
 @Conditional(OnAnnotationCondition.class)
 public @interface ConditionalOnAnnotation {
 
-    /**
-     * Minimum 1 Annotation type class should be provided.
-     */
-    Class<? extends Annotation>[] value();
+	/**
+	 * Minimum 1 Annotation type class should be provided.
+	 */
+	Class<? extends Annotation>[] value();
 
-    /**
-     * When ConditionType is OR, the condition is true when any one of the annotations mentioned is present.
-     * When ConditionType is AND, the condition is true when all of the annotations mentioned are present.
-     */
-    ConditionType conditionType() default ConditionType.OR;
+	/**
+	 * When ConditionType is OR, the condition is true when any one of the annotations
+	 * mentioned is present. When ConditionType is AND, the condition is true when all of
+	 * the annotations mentioned are present.
+	 */
+	ConditionType conditionType() default ConditionType.OR;
 
-    enum ConditionType {
-        OR, AND
-    }
+	enum ConditionType {
+
+		OR, AND
+
+	}
+
 }

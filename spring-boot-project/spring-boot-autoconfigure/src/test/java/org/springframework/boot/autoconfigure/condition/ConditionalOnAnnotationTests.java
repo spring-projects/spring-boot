@@ -35,75 +35,60 @@ class ConditionalOnAnnotationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner();
 
-
 	// Tests
 
 	@Test
 	void testAnnotationAtConfigurationWhenPresent() {
-		this.contextRunner.withUserConfiguration(
-				DefaultSpringBootConfiguration.class,
-				MyAutoConfiguration.class,
-				MyAppConfiguration.class
-		).run(context -> this.hasBean(context, "exampleBean1"));
+		this.contextRunner.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfiguration.class,
+				MyAppConfiguration.class).run(context -> this.hasBean(context, "exampleBean1"));
 	}
 
 	@Test
 	void testAnnotationAtBeanWhenPresent() {
-		this.contextRunner.withUserConfiguration(
-				DefaultSpringBootConfiguration.class,
-				MyAutoConfiguration.class,
-				MyAppConfiguration.class
-		).run(context -> this.hasBean(context, "exampleBean2"));
+		this.contextRunner.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfiguration.class,
+				MyAppConfiguration.class).run(context -> this.hasBean(context, "exampleBean2"));
 	}
 
 	@Test
 	void testAnnotationAtConfigurationWhenNotPresent() {
-		this.contextRunner.withUserConfiguration(
-				DefaultSpringBootConfiguration.class,
-				MyAutoConfigurationNotPresent.class,
-				MyAppConfigurationNotPresent.class
-		).run(context -> assertThat(context).doesNotHaveBean("exampleBean3"));
+		this.contextRunner
+				.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfigurationNotPresent.class,
+						MyAppConfigurationNotPresent.class)
+				.run(context -> assertThat(context).doesNotHaveBean("exampleBean3"));
 	}
 
 	@Test
 	void testAnnotationAtBeanWhenNotPresent() {
-		this.contextRunner.withUserConfiguration(
-				DefaultSpringBootConfiguration.class,
-				MyAutoConfigurationNotPresent.class,
-				MyAppConfigurationNotPresent.class
-		).run(context -> assertThat(context).doesNotHaveBean("exampleBean4"));
+		this.contextRunner
+				.withUserConfiguration(DefaultSpringBootConfiguration.class, MyAutoConfigurationNotPresent.class,
+						MyAppConfigurationNotPresent.class)
+				.run(context -> assertThat(context).doesNotHaveBean("exampleBean4"));
 	}
 
 	@Test
 	void testMultipleAnnotationsWhenPresentForAND() {
-		this.contextRunner.withUserConfiguration(
-				MultipleAnnotationsSpringBootConfiguration.class,
-				MultipleAnnotationsConfiguration.class
-		).run(context -> this.hasBean(context, "exampleBean5"));
+		this.contextRunner.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
+				MultipleAnnotationsConfiguration.class).run(context -> this.hasBean(context, "exampleBean5"));
 	}
 
 	@Test
 	void testMultipleAnnotationsWhenPresentForOR() {
-		this.contextRunner.withUserConfiguration(
-				MultipleAnnotationsSpringBootConfiguration.class,
-				MultipleAnnotationsConfiguration.class
-		).run(context -> this.hasBean(context, "exampleBean6"));
+		this.contextRunner.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
+				MultipleAnnotationsConfiguration.class).run(context -> this.hasBean(context, "exampleBean6"));
 	}
 
 	@Test
 	void testMultipleAnnotationsWhenNotPresentForAND() {
-		this.contextRunner.withUserConfiguration(
-				MultipleAnnotationsSpringBootConfiguration.class,
-				MultipleAnnotationsConfiguration.class
-		).run(context -> assertThat(context).doesNotHaveBean("exampleBean7"));
+		this.contextRunner
+				.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
+						MultipleAnnotationsConfiguration.class)
+				.run(context -> assertThat(context).doesNotHaveBean("exampleBean7"));
 	}
 
 	@Test
 	void testMultipleAnnotationsWhenNotPresentForOR() {
-		this.contextRunner.withUserConfiguration(
-				MultipleAnnotationsSpringBootConfiguration.class,
-				MultipleAnnotationsConfiguration.class
-		).run(context -> this.hasBean(context, "exampleBean8"));
+		this.contextRunner.withUserConfiguration(MultipleAnnotationsSpringBootConfiguration.class,
+				MultipleAnnotationsConfiguration.class).run(context -> this.hasBean(context, "exampleBean8"));
 	}
 
 	private void hasBean(AssertableApplicationContext context, String beanName) {
@@ -111,97 +96,97 @@ class ConditionalOnAnnotationTests {
 		assertThat(context.getBean(beanName).toString().equals(beanName));
 	}
 
-
 	// Configurations
 
 	@Configuration
 	@TestAnnotation
 	static class DefaultSpringBootConfiguration {
+
 	}
 
 	@Configuration
 	@TestAnnotation
 	@SampleAnnotation
 	static class MultipleAnnotationsSpringBootConfiguration {
+
 	}
 
 	@Configuration
 	@ConditionalOnAnnotation(TestAnnotation.class)
 	static class MyAutoConfiguration {
+
 		@Bean
 		ExampleBean exampleBean1() {
 			return new ExampleBean("exampleBean1");
 		}
+
 	}
 
 	@Configuration
 	static class MyAppConfiguration {
+
 		@Bean
 		@ConditionalOnAnnotation(TestAnnotation.class)
 		ExampleBean exampleBean2() {
 			return new ExampleBean("exampleBean2");
 		}
+
 	}
 
 	@Configuration
 	@ConditionalOnAnnotation(SampleAnnotation.class)
 	static class MyAutoConfigurationNotPresent {
+
 		@Bean
 		ExampleBean exampleBean3() {
 			return new ExampleBean("exampleBean3");
 		}
+
 	}
 
 	@Configuration
 	static class MyAppConfigurationNotPresent {
+
 		@Bean
 		@ConditionalOnAnnotation(SampleAnnotation.class)
 		ExampleBean exampleBean4() {
 			return new ExampleBean("exampleBean4");
 		}
-	}
 
+	}
 
 	@Configuration
 	static class MultipleAnnotationsConfiguration {
 
 		@Bean
-		@ConditionalOnAnnotation(
-				value = { TestAnnotation.class, SampleAnnotation.class },
-				conditionType = ConditionalOnAnnotation.ConditionType.AND
-		)
+		@ConditionalOnAnnotation(value = { TestAnnotation.class, SampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.AND)
 		ExampleBean exampleBean5() {
 			return new ExampleBean("exampleBean5");
 		}
 
 		@Bean
-		@ConditionalOnAnnotation(
-				value = { TestAnnotation.class, SampleAnnotation.class },
-				conditionType = ConditionalOnAnnotation.ConditionType.OR
-		)
+		@ConditionalOnAnnotation(value = { TestAnnotation.class, SampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.OR)
 		ExampleBean exampleBean6() {
 			return new ExampleBean("exampleBean6");
 		}
 
 		@Bean
-		@ConditionalOnAnnotation(
-				value = { TestAnnotation.class, ExampleAnnotation.class },
-				conditionType = ConditionalOnAnnotation.ConditionType.AND
-		)
+		@ConditionalOnAnnotation(value = { TestAnnotation.class, ExampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.AND)
 		ExampleBean exampleBean7() {
 			return new ExampleBean("exampleBean7");
 		}
 
 		@Bean
-		@ConditionalOnAnnotation(
-				value = { TestAnnotation.class, ExampleAnnotation.class },
-				conditionType = ConditionalOnAnnotation.ConditionType.OR
-		)
+		@ConditionalOnAnnotation(value = { TestAnnotation.class, ExampleAnnotation.class },
+				conditionType = ConditionalOnAnnotation.ConditionType.OR)
 		ExampleBean exampleBean8() {
 			return new ExampleBean("exampleBean8");
 		}
-	}
 
+	}
 
 	static class ExampleBean {
 
@@ -215,8 +200,8 @@ class ConditionalOnAnnotationTests {
 		public String toString() {
 			return this.value;
 		}
-	}
 
+	}
 
 	// Annotations
 
@@ -224,17 +209,21 @@ class ConditionalOnAnnotationTests {
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface TestAnnotation {
+
 	}
 
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface SampleAnnotation {
+
 	}
 
 	@Target(ElementType.TYPE)
 	@Retention(RetentionPolicy.RUNTIME)
 	@Documented
 	@interface ExampleAnnotation {
+
 	}
+
 }

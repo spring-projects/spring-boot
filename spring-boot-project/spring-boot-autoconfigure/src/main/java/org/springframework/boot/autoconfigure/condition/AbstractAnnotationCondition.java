@@ -14,32 +14,34 @@ import java.util.Objects;
  */
 abstract class AbstractAnnotationCondition implements Condition {
 
-    protected static final String VALUE_ATTRIBUTE = "value";
+	protected static final String VALUE_ATTRIBUTE = "value";
 
-    private Map<String, Object> attributes;
+	private Map<String, Object> attributes;
 
-    protected abstract Class<? extends Annotation> annotationClass();
+	protected abstract Class<? extends Annotation> annotationClass();
 
-    protected Map<String, Object> getAnnotationAttributes(AnnotatedTypeMetadata metadata) {
-        if (attributes == null) {
-            final Map<String, Object> attributes = metadata.getAnnotationAttributes(annotationClass().getName());
-            assert attributes != null;
-            this.attributes = attributes;
-        }
-        return attributes;
-    }
+	protected Map<String, Object> getAnnotationAttributes(AnnotatedTypeMetadata metadata) {
+		if (attributes == null) {
+			final Map<String, Object> attributes = metadata.getAnnotationAttributes(annotationClass().getName());
+			assert attributes != null;
+			this.attributes = attributes;
+		}
+		return attributes;
+	}
 
-    @SuppressWarnings("unchecked")
-    protected <T> T getAttribute(AnnotatedTypeMetadata metadata, String attributeName) {
-        return (T) getAnnotationAttributes(metadata).get(attributeName);
-    }
+	@SuppressWarnings("unchecked")
+	protected <T> T getAttribute(AnnotatedTypeMetadata metadata, String attributeName) {
+		return (T) getAnnotationAttributes(metadata).get(attributeName);
+	}
 
-    @SuppressWarnings("unchecked")
-    protected <T> T getValue(AnnotatedTypeMetadata metadata) {
-        return (T) getAttribute(metadata, VALUE_ATTRIBUTE);
-    }
+	@SuppressWarnings("unchecked")
+	protected <T> T getValue(AnnotatedTypeMetadata metadata) {
+		return (T) getAttribute(metadata, VALUE_ATTRIBUTE);
+	}
 
-    protected Map<String, Object> getBeansWithAnnotation(ConditionContext context, Class<? extends Annotation> annotationClass) {
-        return Objects.requireNonNull(context.getBeanFactory()).getBeansWithAnnotation(annotationClass);
-    }
+	protected Map<String, Object> getBeansWithAnnotation(ConditionContext context,
+			Class<? extends Annotation> annotationClass) {
+		return Objects.requireNonNull(context.getBeanFactory()).getBeansWithAnnotation(annotationClass);
+	}
+
 }
