@@ -138,6 +138,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			if (refreshProperties.isAdaptive()) {
 				refreshBuilder.enableAllAdaptiveRefreshTriggers();
 			}
+			if (refreshProperties.isDynamicSources() != null) {
+				refreshBuilder.dynamicRefreshSources(refreshProperties.isDynamicSources());
+			}
 			return builder.topologyRefreshOptions(refreshBuilder.build());
 		}
 		return ClientOptions.builder();
