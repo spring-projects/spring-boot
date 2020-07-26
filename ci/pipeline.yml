@@ -12,12 +12,13 @@ anchors:
     GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
     GRADLE_ENTERPRISE_CACHE_USERNAME: ((gradle_enterprise_cache_user.username))
     GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
+    BRANCH: ((branch))
+    CI: true
   build-project-task-params: &build-project-task-params
     privileged: true
     timeout: ((task-timeout))
     file: git-repo/ci/tasks/build-project.yml
     params:
-      BRANCH: ((branch))
       <<: *gradle-enterprise-task-params
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
@@ -253,21 +254,18 @@ jobs:
         file: git-repo/ci/tasks/build-samples.yml
         timeout: ((task-timeout))
         params:
-          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-integration-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
-          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
         image: spring-boot-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
-          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
     on_failure:
       do:
@@ -349,21 +347,18 @@ jobs:
         file: git-repo/ci/tasks/build-samples.yml
         timeout: ((task-timeout))
         params:
-          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-integration-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
-          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
         image: spring-boot-jdk11-ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
-          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
     on_failure:
       do:
@@ -392,7 +387,6 @@ jobs:
         - WIN64
         timeout: ((task-timeout))
         params:
-          BRANCH: ((branch))
           <<: *gradle-enterprise-task-params
       on_failure:
         do:
@@ -414,6 +408,8 @@ jobs:
     params:
       RELEASE_TYPE: M
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
+      BRANCH: ((branch))
+      CI: true
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
@@ -433,6 +429,8 @@ jobs:
     params:
       RELEASE_TYPE: RC
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
+      BRANCH: ((branch))
+      CI: true
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
@@ -452,6 +450,8 @@ jobs:
     params:
       RELEASE_TYPE: RELEASE
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
+      BRANCH: ((branch))
+      CI: true
   - put: artifactory-repo
     params:
       <<: *artifactory-repo-put-params
