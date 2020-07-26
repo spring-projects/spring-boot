@@ -27,7 +27,7 @@ import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.Cache
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
@@ -61,7 +61,7 @@ import org.springframework.util.Assert;
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")
 @EnableConfigurationProperties(CacheProperties.class)
-@AutoConfigureAfter({ CouchbaseAutoConfiguration.class, HazelcastAutoConfiguration.class,
+@AutoConfigureAfter({ CouchbaseDataAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class, RedisAutoConfiguration.class })
 @Import({ CacheConfigurationImportSelector.class, CacheManagerEntityManagerFactoryDependsOnPostProcessor.class })
 public class CacheAutoConfiguration {
