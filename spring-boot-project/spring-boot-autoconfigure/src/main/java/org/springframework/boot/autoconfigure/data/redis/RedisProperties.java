@@ -410,6 +410,13 @@ public class RedisProperties {
 				 */
 				private boolean adaptive;
 
+				/**
+				 * Whether discovered nodes should be used as the source for the cluster
+				 * topology. When set to {@literal false}, only the initial seed nodes
+				 * will be used as sources for topology discovery.
+				 */
+				private Boolean dynamicSources = null;
+
 				public Duration getPeriod() {
 					return this.period;
 				}
@@ -424,6 +431,14 @@ public class RedisProperties {
 
 				public void setAdaptive(boolean adaptive) {
 					this.adaptive = adaptive;
+				}
+
+				public Boolean isDynamicSources() {
+					return this.dynamicSources;
+				}
+
+				public void setDynamicSources(Boolean dynamicSources) {
+					this.dynamicSources = dynamicSources;
 				}
 
 			}

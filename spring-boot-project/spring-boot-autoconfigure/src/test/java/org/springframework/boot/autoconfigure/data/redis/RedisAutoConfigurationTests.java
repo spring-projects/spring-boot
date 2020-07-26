@@ -25,6 +25,7 @@ import java.util.stream.Collectors;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
+import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
@@ -310,6 +311,36 @@ class RedisAutoConfigurationTests {
 	void testRedisConfigurationWithClusterRefreshPeriodHasNoEffectWithNonClusteredConfiguration() {
 		this.contextRunner.withPropertyValues("spring.redis.cluster.refresh.period=30s").run(assertClientOptions(
 				ClientOptions.class, (options) -> assertThat(options.getClass()).isEqualTo(ClientOptions.class)));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterDynamicSourcesEnabled() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.redis.lettuce.cluster.refresh.dynamic-sources=true")
+				.run(assertClientOptions(ClusterClientOptions.class,
+						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
+								.isTrue()));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterDynamicSourcesDisabled() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.redis.lettuce.cluster.refresh.dynamic-sources=false")
+				.run(assertClientOptions(ClusterClientOptions.class,
+						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
+								.isFalse()));
+	}
+
+	@Test
+	void testRedisConfigurationWithClusterDynamicSourcesUnspecifiedUsesDefault() {
+		this.contextRunner
+				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
+						"spring.redis.lettuce.cluster.refresh.dynamic-sources=")
+				.run(assertClientOptions(ClusterClientOptions.class,
+						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
+								.isEqualTo(ClusterTopologyRefreshOptions.DEFAULT_DYNAMIC_REFRESH_SOURCES)));
 	}
 
 	private <T extends ClientOptions> ContextConsumer<AssertableApplicationContext> assertClientOptions(
