@@ -23,9 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.validation.Configuration;
 import javax.validation.Validation;
 
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
@@ -77,7 +77,8 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 		if (!ENABLED) {
 			return;
 		}
-		if (event instanceof ApplicationStartingEvent && preinitializationStarted.compareAndSet(false, true)) {
+		if (event instanceof ApplicationEnvironmentPreparedEvent
+				&& preinitializationStarted.compareAndSet(false, true)) {
 			performPreinitialization();
 		}
 		if ((event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent)
