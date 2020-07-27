@@ -3962,6 +3962,10 @@ For example, you might declare the following settings in your `application.prope
 If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDbFactory`.
 Both `com.mongodb.MongoClient` and `com.mongodb.client.MongoClient` are supported.
 
+The auto-configured `MongoClient` is created using `MongoClientSettings`.
+To fine-tune its configuration, declare one or more `MongoClientSettingsBuilderCustomizer` beans.
+Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
+
 NOTE: If you use the Mongo 3.0 Java driver, `spring.data.mongodb.host` and `spring.data.mongodb.port` are not supported.
 In such cases, `spring.data.mongodb.uri` should be used to provide all of the configuration.
 
