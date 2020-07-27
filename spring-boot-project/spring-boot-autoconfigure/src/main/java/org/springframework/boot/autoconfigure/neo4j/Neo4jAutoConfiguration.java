@@ -19,20 +19,25 @@ package org.springframework.boot.autoconfigure.neo4j;
 import java.io.File;
 import java.net.URI;
 import java.time.Duration;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import org.neo4j.driver.AuthToken;
 import org.neo4j.driver.AuthTokens;
 import org.neo4j.driver.Config;
+import org.neo4j.driver.Config.TrustStrategy;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.GraphDatabase;
 import org.neo4j.driver.internal.Scheme;
-import org.neo4j.driver.net.ServerAddressResolver;
 
-import org.springframework.beans.BeanUtils;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Pool;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Security;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
@@ -40,9 +45,10 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
 /**
- * Automatic configuration of Neo4j's Java Driver.
+ * {@link EnableAutoConfiguration Auto-configuration} for Neo4j.
  *
  * @author Michael J. Simons
+ * @author Stephane Nicoll
  * @since 2.4.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -51,14 +57,16 @@ import org.springframework.util.StringUtils;
 public class Neo4jAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean(Driver.class)
-	Driver neo4jDriver(Neo4jProperties properties) {
-		AuthToken authToken = asAuthToken(properties.getAuthentication());
-		Config config = asDriverConfig(properties);
+	@ConditionalOnMissingBean
+	public Driver neo4jDriver(Neo4jProperties properties,
+			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
+		AuthToken authToken = mapAuthToken(properties.getAuthentication());
+		Config config = mapDriverConfig(properties,
+				configBuilderCustomizers.orderedStream().collect(Collectors.toList()));
 		return GraphDatabase.driver(properties.getUri(), authToken, config);
 	}
 
-	static AuthToken asAuthToken(Neo4jProperties.Authentication authentication) {
+	AuthToken mapAuthToken(Neo4jProperties.Authentication authentication) {
 		String username = authentication.getUsername();
 		String password = authentication.getPassword();
 		String kerberosTicket = authentication.getKerberosTicket();
@@ -69,33 +77,30 @@ public class Neo4jAutoConfiguration {
 		boolean hasKerberosTicket = StringUtils.hasText(kerberosTicket);
 
 		if (hasUsername && hasKerberosTicket) {
-			throw new InvalidConfigurationPropertyValueException("org.neo4j.driver.authentication",
-					"username=" + username + ",kerberos-ticket=" + kerberosTicket,
-					"Cannot specify both username and kerberos ticket.");
+			throw new IllegalStateException(String.format(
+					"Cannot specify both username ('%s') and kerberos ticket ('%s')", username, kerberosTicket));
 		}
-
 		if (hasUsername && hasPassword) {
 			return AuthTokens.basic(username, password, realm);
 		}
-
 		if (hasKerberosTicket) {
 			return AuthTokens.kerberos(kerberosTicket);
 		}
-
 		return AuthTokens.none();
 	}
 
-	static Config asDriverConfig(Neo4jProperties properties) {
+	Config mapDriverConfig(Neo4jProperties properties, List<ConfigBuilderCustomizer> customizers) {
 		Config.ConfigBuilder builder = Config.builder();
-		applyTo(builder, properties.getPool());
+		configurePoolSettings(builder, properties.getPool());
 		URI uri = properties.getUri();
 		String scheme = (uri != null) ? uri.getScheme() : "bolt";
-		applyTo(builder, properties.getConfig(), isSimpleScheme(scheme));
-
-		return builder.withLogging(new Neo4jSpringJclLogging()).build();
+		configureDriverSettings(builder, properties, isSimpleScheme(scheme));
+		builder.withLogging(new Neo4jSpringJclLogging());
+		customizers.forEach((customizer) -> customizer.customize(builder));
+		return builder.build();
 	}
 
-	static boolean isSimpleScheme(String scheme) {
+	private boolean isSimpleScheme(String scheme) {
 		String lowerCaseScheme = scheme.toLowerCase(Locale.ENGLISH);
 		try {
 			Scheme.validateScheme(lowerCaseScheme);
@@ -103,24 +108,22 @@ public class Neo4jAutoConfiguration {
 		catch (IllegalArgumentException ex) {
 			throw new IllegalArgumentException(String.format("'%s' is not a supported scheme.", scheme));
 		}
-
 		return lowerCaseScheme.equals("bolt") || lowerCaseScheme.equals("neo4j");
 	}
 
-	private static void applyTo(Config.ConfigBuilder builder, Neo4jProperties.PoolSettings poolSettings) {
-		if (poolSettings.isLogLeakedSessions()) {
+	private void configurePoolSettings(Config.ConfigBuilder builder, Pool pool) {
+		if (pool.isLogLeakedSessions()) {
 			builder.withLeakedSessionsLogging();
 		}
-		builder.withMaxConnectionPoolSize(poolSettings.getMaxConnectionPoolSize());
-		Duration idleTimeBeforeConnectionTest = poolSettings.getIdleTimeBeforeConnectionTest();
+		builder.withMaxConnectionPoolSize(pool.getMaxConnectionPoolSize());
+		Duration idleTimeBeforeConnectionTest = pool.getIdleTimeBeforeConnectionTest();
 		if (idleTimeBeforeConnectionTest != null) {
 			builder.withConnectionLivenessCheckTimeout(idleTimeBeforeConnectionTest.toMillis(), TimeUnit.MILLISECONDS);
 		}
-		builder.withMaxConnectionLifetime(poolSettings.getMaxConnectionLifetime().toMillis(), TimeUnit.MILLISECONDS);
-		builder.withConnectionAcquisitionTimeout(poolSettings.getConnectionAcquisitionTimeout().toMillis(),
+		builder.withMaxConnectionLifetime(pool.getMaxConnectionLifetime().toMillis(), TimeUnit.MILLISECONDS);
+		builder.withConnectionAcquisitionTimeout(pool.getConnectionAcquisitionTimeout().toMillis(),
 				TimeUnit.MILLISECONDS);
-
-		if (poolSettings.isMetricsEnabled()) {
+		if (pool.isMetricsEnabled()) {
 			builder.withDriverMetrics();
 		}
 		else {
@@ -128,66 +131,56 @@ public class Neo4jAutoConfiguration {
 		}
 	}
 
-	private static void applyTo(Config.ConfigBuilder builder, Neo4jProperties.DriverSettings driverSettings,
+	private void configureDriverSettings(Config.ConfigBuilder builder, Neo4jProperties properties,
 			boolean withEncryptionAndTrustSettings) {
 		if (withEncryptionAndTrustSettings) {
-			applyEncryptionAndTrustSettings(builder, driverSettings);
+			applyEncryptionAndTrustSettings(builder, properties.getSecurity());
 		}
-
-		builder.withConnectionTimeout(driverSettings.getConnectionTimeout().toMillis(), TimeUnit.MILLISECONDS);
-		builder.withMaxTransactionRetryTime(driverSettings.getMaxTransactionRetryTime().toMillis(),
-				TimeUnit.MILLISECONDS);
-
-		Class<? extends ServerAddressResolver> serverAddressResolverClass = driverSettings
-				.getServerAddressResolverClass();
-		if (serverAddressResolverClass != null) {
-			builder.withResolver(BeanUtils.instantiateClass(serverAddressResolverClass));
-		}
+		builder.withConnectionTimeout(properties.getConnectionTimeout().toMillis(), TimeUnit.MILLISECONDS);
+		builder.withMaxTransactionRetryTime(properties.getMaxTransactionRetryTime().toMillis(), TimeUnit.MILLISECONDS);
 	}
 
-	private static void applyEncryptionAndTrustSettings(Config.ConfigBuilder builder,
-			Neo4jProperties.DriverSettings driverSettings) {
-		if (driverSettings.isEncrypted()) {
+	private void applyEncryptionAndTrustSettings(Config.ConfigBuilder builder,
+			Neo4jProperties.Security securityProperties) {
+		if (securityProperties.isEncrypted()) {
 			builder.withEncryption();
 		}
 		else {
 			builder.withoutEncryption();
 		}
-		builder.withTrustStrategy(toInternalRepresentation(driverSettings.getTrustSettings()));
+		builder.withTrustStrategy(mapTrustStrategy(securityProperties));
 	}
 
-	static Config.TrustStrategy toInternalRepresentation(Neo4jProperties.TrustSettings trustSettings) {
-		String propertyName = "org.neo4j.driver.config.trust-settings";
+	private Config.TrustStrategy mapTrustStrategy(Neo4jProperties.Security securityProperties) {
+		String propertyName = "spring.neo4j.security.trust-strategy";
+		Security.TrustStrategy strategy = securityProperties.getTrustStrategy();
+		TrustStrategy trustStrategy = createTrustStrategy(securityProperties, propertyName, strategy);
+		if (securityProperties.isHostnameVerificationEnabled()) {
+			trustStrategy.withHostnameVerification();
+		}
+		else {
+			trustStrategy.withoutHostnameVerification();
+		}
+		return trustStrategy;
+	}
 
-		Config.TrustStrategy internalRepresentation;
-		Neo4jProperties.TrustSettings.Strategy strategy = trustSettings.getStrategy();
+	private TrustStrategy createTrustStrategy(Neo4jProperties.Security securityProperties, String propertyName,
+			Security.TrustStrategy strategy) {
 		switch (strategy) {
 		case TRUST_ALL_CERTIFICATES:
-			internalRepresentation = Config.TrustStrategy.trustAllCertificates();
-			break;
+			return TrustStrategy.trustAllCertificates();
 		case TRUST_SYSTEM_CA_SIGNED_CERTIFICATES:
-			internalRepresentation = Config.TrustStrategy.trustSystemCertificates();
-			break;
+			return TrustStrategy.trustSystemCertificates();
 		case TRUST_CUSTOM_CA_SIGNED_CERTIFICATES:
-			File certFile = trustSettings.getCertFile();
+			File certFile = securityProperties.getCertFile();
 			if (certFile == null || !certFile.isFile()) {
 				throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(),
 						"Configured trust strategy requires a certificate file.");
 			}
-			internalRepresentation = Config.TrustStrategy.trustCustomCertificateSignedBy(certFile);
-			break;
+			return TrustStrategy.trustCustomCertificateSignedBy(certFile);
 		default:
 			throw new InvalidConfigurationPropertyValueException(propertyName, strategy.name(), "Unknown strategy.");
 		}
-
-		if (trustSettings.isHostnameVerificationEnabled()) {
-			internalRepresentation.withHostnameVerification();
-		}
-		else {
-			internalRepresentation.withoutHostnameVerification();
-		}
-
-		return internalRepresentation;
 	}
 
 }

@@ -16,22 +16,23 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
-import java.util.Collections;
-import java.util.Set;
-
-import org.neo4j.driver.net.ServerAddress;
-import org.neo4j.driver.net.ServerAddressResolver;
+import org.neo4j.driver.Config;
+import org.neo4j.driver.Config.ConfigBuilder;
 
 /**
- * Resolver used only for configuration tests.
+ * Callback interface that can be implemented by beans wishing to customize the
+ * {@link Config} via a {@link ConfigBuilder} whilst retaining default auto-configuration.
  *
- * @author Michael J. Simons
+ * @author Stephane Nicoll
+ * @since 2.4.0
  */
-class TestServerAddressResolver implements ServerAddressResolver {
+@FunctionalInterface
+public interface ConfigBuilderCustomizer {
 
-	@Override
-	public Set<ServerAddress> resolve(ServerAddress address) {
-		return Collections.emptySet();
-	}
+	/**
+	 * Customize the {@link ConfigBuilder}.
+	 * @param configBuilder the {@link ConfigBuilder} to customize
+	 */
+	void customize(ConfigBuilder configBuilder);
 
 }

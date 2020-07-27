@@ -20,38 +20,38 @@ import java.io.File;
 import java.net.URI;
 import java.time.Duration;
 
-import org.neo4j.driver.net.ServerAddressResolver;
-
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * Used to configure an instance of the {@link org.neo4j.driver.Driver Neo4j-Java-Driver}.
+ * Configuration properties for Neo4j.
  *
  * @author Michael J. Simons
+ * @author Stephane Nicoll
  * @since 2.4.0
  */
 @ConfigurationProperties(prefix = "spring.neo4j")
 public class Neo4jProperties {
 
 	/**
-	 * Uri this driver should connect to. The driver supports bolt or neo4j as schemes.
+	 * URI used by the driver.
 	 */
 	private URI uri = URI.create("bolt://localhost:7687");
 
 	/**
-	 * Authentication the driver is supposed to use. Maybe null.
+	 * Timeout for borrowing connections from the pool.
 	 */
-	private Authentication authentication = new Authentication();
+	private Duration connectionTimeout = Duration.ofSeconds(30);
 
 	/**
-	 * Configuration of the connection pool.
+	 * Maximum time transactions are allowed to retry.
 	 */
-	private PoolSettings pool = new PoolSettings();
+	private Duration maxTransactionRetryTime = Duration.ofSeconds(30);
 
-	/**
-	 * Detailed configuration of the driver.
-	 */
-	private DriverSettings config = new DriverSettings();
+	private final Authentication authentication = new Authentication();
+
+	private final Pool pool = new Pool();
+
+	private final Security security = new Security();
 
 	public URI getUri() {
 		return this.uri;
@@ -61,39 +61,43 @@ public class Neo4jProperties {
 		this.uri = uri;
 	}
 
+	public Duration getConnectionTimeout() {
+		return this.connectionTimeout;
+	}
+
+	public void setConnectionTimeout(Duration connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	public Duration getMaxTransactionRetryTime() {
+		return this.maxTransactionRetryTime;
+	}
+
+	public void setMaxTransactionRetryTime(Duration maxTransactionRetryTime) {
+		this.maxTransactionRetryTime = maxTransactionRetryTime;
+	}
+
 	public Authentication getAuthentication() {
 		return this.authentication;
 	}
 
-	public void setAuthentication(Authentication authentication) {
-		this.authentication = authentication;
-	}
-
-	public PoolSettings getPool() {
+	public Pool getPool() {
 		return this.pool;
 	}
 
-	public void setPool(PoolSettings pool) {
-		this.pool = pool;
-	}
-
-	public DriverSettings getConfig() {
-		return this.config;
-	}
-
-	public void setConfig(DriverSettings config) {
-		this.config = config;
+	public Security getSecurity() {
+		return this.security;
 	}
 
 	public static class Authentication {
 
 		/**
-		 * Login of the user connecting to the database.
+		 * Login user of the server.
 		 */
 		private String username;
 
 		/**
-		 * Password of the user connecting to the database.
+		 * Login password of the server.
 		 */
 		private String password;
 
@@ -142,26 +146,26 @@ public class Neo4jProperties {
 
 	}
 
-	public static class PoolSettings {
+	public static class Pool {
 
 		/**
-		 * Flag, if metrics are enabled.
+		 * Whether to enable metrics.
 		 */
 		private boolean metricsEnabled = false;
 
 		/**
-		 * Flag, if leaked sessions logging is enabled.
+		 * Whether to log leaked sessions.
 		 */
 		private boolean logLeakedSessions = false;
 
 		/**
 		 * Maximum amount of connections in the connection pool towards a single database.
 		 */
-		private int maxConnectionPoolSize = org.neo4j.driver.internal.async.pool.PoolSettings.DEFAULT_MAX_CONNECTION_POOL_SIZE;
+		private int maxConnectionPoolSize = 100;
 
 		/**
-		 * Pooled connections that have been idle in the pool for longer than this timeout
-		 * will be tested before they are used again.
+		 * Pooled connections that have been idle in the pool for longer than this
+		 * threshold will be tested before they are used again.
 		 */
 		private Duration idleTimeBeforeConnectionTest;
 
@@ -169,15 +173,13 @@ public class Neo4jProperties {
 		 * Pooled connections older than this threshold will be closed and removed from
 		 * the pool.
 		 */
-		private Duration maxConnectionLifetime = Duration
-				.ofMillis(org.neo4j.driver.internal.async.pool.PoolSettings.DEFAULT_MAX_CONNECTION_LIFETIME);
+		private Duration maxConnectionLifetime = Duration.ofHours(1);
 
 		/**
 		 * Acquisition of new connections will be attempted for at most configured
 		 * timeout.
 		 */
-		private Duration connectionAcquisitionTimeout = Duration
-				.ofMillis(org.neo4j.driver.internal.async.pool.PoolSettings.DEFAULT_CONNECTION_ACQUISITION_TIMEOUT);
+		private Duration connectionAcquisitionTimeout = Duration.ofSeconds(60);
 
 		public boolean isLogLeakedSessions() {
 			return this.logLeakedSessions;
@@ -229,35 +231,27 @@ public class Neo4jProperties {
 
 	}
 
-	public static class DriverSettings {
+	public static class Security {
 
 		/**
-		 * Flag, if the driver should use encrypted traffic.
+		 * Whether the driver should use encrypted traffic.
 		 */
 		private boolean encrypted = false;
 
 		/**
-		 * Specify how to determine the authenticity of an encryption certificate provided
-		 * by the Neo4j instance we are connecting to.
+		 * Trust strategy to use.
 		 */
-		private TrustSettings trustSettings = new TrustSettings();
+		private TrustStrategy trustStrategy = TrustStrategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES;
 
 		/**
-		 * Specify socket connection timeout.
+		 * Path to the file that holds the trusted certificates.
 		 */
-		private Duration connectionTimeout = Duration.ofSeconds(30);
+		private File certFile;
 
 		/**
-		 * Specify the maximum time transactions are allowed to retry.
+		 * Whether hostname verification is required.
 		 */
-		private Duration maxTransactionRetryTime = Duration
-				.ofMillis(org.neo4j.driver.internal.retry.RetrySettings.DEFAULT.maxRetryTimeMs());
-
-		/**
-		 * Specify a custom server address resolver used by the routing driver to resolve
-		 * the initial address used to create the driver.
-		 */
-		private Class<? extends ServerAddressResolver> serverAddressResolverClass;
+		private boolean hostnameVerificationEnabled = true;
 
 		public boolean isEncrypted() {
 			return this.encrypted;
@@ -267,73 +261,12 @@ public class Neo4jProperties {
 			this.encrypted = encrypted;
 		}
 
-		public TrustSettings getTrustSettings() {
-			return this.trustSettings;
+		public TrustStrategy getTrustStrategy() {
+			return this.trustStrategy;
 		}
 
-		public void setTrustSettings(TrustSettings trustSettings) {
-			this.trustSettings = trustSettings;
-		}
-
-		public Duration getConnectionTimeout() {
-			return this.connectionTimeout;
-		}
-
-		public void setConnectionTimeout(Duration connectionTimeout) {
-			this.connectionTimeout = connectionTimeout;
-		}
-
-		public Duration getMaxTransactionRetryTime() {
-			return this.maxTransactionRetryTime;
-		}
-
-		public void setMaxTransactionRetryTime(Duration maxTransactionRetryTime) {
-			this.maxTransactionRetryTime = maxTransactionRetryTime;
-		}
-
-		public Class<? extends ServerAddressResolver> getServerAddressResolverClass() {
-			return this.serverAddressResolverClass;
-		}
-
-		public void setServerAddressResolverClass(Class<? extends ServerAddressResolver> serverAddressResolverClass) {
-			this.serverAddressResolverClass = serverAddressResolverClass;
-		}
-
-	}
-
-	public static class TrustSettings {
-
-		public enum Strategy {
-
-			TRUST_ALL_CERTIFICATES,
-
-			TRUST_CUSTOM_CA_SIGNED_CERTIFICATES,
-
-			TRUST_SYSTEM_CA_SIGNED_CERTIFICATES
-
-		}
-
-		/**
-		 * Configures the strategy to use use.
-		 */
-		private Strategy strategy = Strategy.TRUST_SYSTEM_CA_SIGNED_CERTIFICATES;
-
-		/**
-		 * File of the certificate to use.
-		 */
-		private File certFile;
-
-		/**
-		 * Flag, if hostname verification is used.
-		 */
-		private boolean hostnameVerificationEnabled = false;
-
-		public Strategy getStrategy() {
-			return this.strategy;
-		}
-
-		public void setStrategy(Strategy strategy) {
-			this.strategy = strategy;
+		public void setTrustStrategy(TrustStrategy trustStrategy) {
+			this.trustStrategy = trustStrategy;
 		}
 
 		public File getCertFile() {
@@ -350,6 +283,25 @@ public class Neo4jProperties {
 
 		public void setHostnameVerificationEnabled(boolean hostnameVerificationEnabled) {
 			this.hostnameVerificationEnabled = hostnameVerificationEnabled;
+		}
+
+		public enum TrustStrategy {
+
+			/**
+			 * Trust all certificates.
+			 */
+			TRUST_ALL_CERTIFICATES,
+
+			/**
+			 * Trust certificates that are signed by a trusted certificate.
+			 */
+			TRUST_CUSTOM_CA_SIGNED_CERTIFICATES,
+
+			/**
+			 * Trust certificates that can be verified through the local system store.
+			 */
+			TRUST_SYSTEM_CA_SIGNED_CERTIFICATES
+
 		}
 
 	}

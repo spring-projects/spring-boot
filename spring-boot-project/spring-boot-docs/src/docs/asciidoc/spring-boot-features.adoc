@@ -4495,20 +4495,20 @@ Spring Boot offers several conveniences for working with Neo4j, including the `s
 
 [[boot-features-connecting-to-neo4j]]
 ==== Connecting to a Neo4j Database
-To access a Neo4j server, you can inject an auto-configured `org.neo4j.ogm.session.Session`.
+To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Driver`.
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
-The following example shows how to inject a Neo4j `Session`:
+The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
 
 [source,java,indent=0]
 ----
 	@Component
 	public class MyBean {
 
-		private final Session session;
+		private final Driver driver;
 
 		@Autowired
-		public MyBean(Session session) {
-			this.session = session;
+		public MyBean(Driver driver) {
+			this.driver = driver;
 		}
 
 		// ...
@@ -4516,16 +4516,19 @@ The following example shows how to inject a Neo4j `Session`:
 	}
 ----
 
-You can configure the uri and credentials to use by setting the `spring.data.neo4j.*` properties, as shown in the following example:
+You can configure various aspects of the driver using `spring.neo4j.*` properties.
+The following example shows how to configure the uri and credentials to use:
 
 [source,properties,indent=0,configprops]
 ----
-	spring.data.neo4j.uri=bolt://my-server:7687
-	spring.data.neo4j.username=neo4j
-	spring.data.neo4j.password=secret
+	spring.neo4j.uri=bolt://my-server:7687
+	spring.neo4j.authentication.username=neo4j
+	spring.neo4j.authentication.password=secret
 ----
 
-You can take full control over the session creation by adding either an `org.neo4j.ogm.config.Configuration` bean or an `org.neo4j.ogm.session.SessionFactory` bean.
+The auto-configured `Driver` is created using `ConfigBuilder`.
+To fine-tune its configuration, declare one or more `ConfigBuilderCustomizer` beans.
+Each will be called in order with the `ConfigBuilder` that is used to build the `Driver`.
 
 
 

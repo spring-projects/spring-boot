@@ -34,7 +34,6 @@ import org.springframework.boot.build.context.properties.DocumentOptions.Builder
  * {@link Task} used to document auto-configuration classes.
  *
  * @author Andy Wilkinson
- * @author Michael J. Simons
  */
 public class DocumentConfigurationProperties extends DefaultTask {
 

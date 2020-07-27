@@ -35,14 +35,17 @@ import org.springframework.test.context.DynamicPropertySource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
+ * Integration tests for {@link Neo4jAutoConfiguration}.
+ *
  * @author Michael J. Simons
+ * @author Stephane Nicoll
  */
 @SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
 class Neo4jAutoConfigurationIntegrationTests {
 
 	@Container
-	private static Neo4jContainer<?> neo4jServer = new Neo4jContainer<>("neo4j:4.0");
+	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>("neo4j:4.0");
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
@@ -51,16 +54,11 @@ class Neo4jAutoConfigurationIntegrationTests {
 		registry.add("spring.neo4j.authentication.password", neo4jServer::getAdminPassword);
 	}
 
-	private final Driver driver;
-
 	@Autowired
-	Neo4jAutoConfigurationIntegrationTests(Driver driver) {
-		this.driver = driver;
-	}
+	private Driver driver;
 
 	@Test
-	void ensureDriverIsOpen() {
-
+	void driverCanHandleRequest() {
 		try (Session session = this.driver.session(); Transaction tx = session.beginTransaction()) {
 			Result statementResult = tx.run("MATCH (n:Thing) RETURN n LIMIT 1");
 			assertThat(statementResult.hasNext()).isFalse();

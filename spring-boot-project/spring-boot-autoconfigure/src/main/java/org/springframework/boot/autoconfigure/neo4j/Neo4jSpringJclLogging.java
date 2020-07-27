@@ -37,7 +37,6 @@ class Neo4jSpringJclLogging implements Logging {
 
 	@Override
 	public Logger getLog(String name) {
-
 		String requestedLog = name;
 		if (!requestedLog.startsWith(AUTOMATIC_PREFIX)) {
 			requestedLog = AUTOMATIC_PREFIX + name;
@@ -46,7 +45,7 @@ class Neo4jSpringJclLogging implements Logging {
 		return new SpringJclLogger(springJclLog);
 	}
 
-	static final class SpringJclLogger implements Logger {
+	private static final class SpringJclLogger implements Logger {
 
 		private final Log delegate;
 
