@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.servlet;
 
 import java.io.IOException;
 
+import com.fasterxml.jackson.databind.module.SimpleModule;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -57,6 +58,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
 	}
 
 	@Test
@@ -71,6 +73,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
 	}
 
 	@Test
@@ -85,6 +88,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isTrue();
 		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isTrue();
+		assertThat(excludes(filter, ExampleModule.class)).isTrue();
 	}
 
 	@Test
@@ -98,6 +102,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleService.class)).isTrue();
 		assertThat(excludes(filter, ExampleRepository.class)).isFalse();
 		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
 	}
 
 	@Test
@@ -112,6 +117,7 @@ class WebMvcTypeExcludeFilterTests {
 		assertThat(excludes(filter, ExampleRepository.class)).isTrue();
 		assertThat(excludes(filter, ExampleWebSecurityConfigurer.class)).isFalse();
 		assertThat(excludes(filter, ExampleHandlerInterceptor.class)).isFalse();
+		assertThat(excludes(filter, ExampleModule.class)).isFalse();
 	}
 
 	private boolean excludes(WebMvcTypeExcludeFilter filter, Class<?> type) throws IOException {
@@ -182,6 +188,10 @@ class WebMvcTypeExcludeFilterTests {
 	}
 
 	static class ExampleHandlerInterceptor implements HandlerInterceptor {
+
+	}
+
+	static class ExampleModule extends SimpleModule {
 
 	}
 
