@@ -65,6 +65,10 @@ class TaskExecutorBuilderTests {
 		Duration period = Duration.ofMinutes(1);
 		ThreadPoolTaskExecutor executor = this.builder.awaitTerminationPeriod(period).build();
 		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationMillis", period.toMillis());
+
+		period = Duration.ofMillis(50);
+		executor = this.builder.awaitTerminationPeriod(period).build();
+		assertThat(executor).hasFieldOrPropertyWithValue("awaitTerminationMillis", period.toMillis());
 	}
 
 	@Test

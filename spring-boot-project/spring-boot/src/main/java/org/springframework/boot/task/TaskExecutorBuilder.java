@@ -308,7 +308,7 @@ public class TaskExecutorBuilder {
 		map.from(this.keepAlive).asInt(Duration::getSeconds).to(taskExecutor::setKeepAliveSeconds);
 		map.from(this.allowCoreThreadTimeOut).to(taskExecutor::setAllowCoreThreadTimeOut);
 		map.from(this.awaitTermination).to(taskExecutor::setWaitForTasksToCompleteOnShutdown);
-		map.from(this.awaitTerminationPeriod).asInt(Duration::getSeconds).to(taskExecutor::setAwaitTerminationSeconds);
+		map.from(this.awaitTerminationPeriod).as(Duration::toMillis).to(taskExecutor::setAwaitTerminationMillis);
 		map.from(this.threadNamePrefix).whenHasText().to(taskExecutor::setThreadNamePrefix);
 		map.from(this.taskDecorator).to(taskExecutor::setTaskDecorator);
 		if (!CollectionUtils.isEmpty(this.customizers)) {
