@@ -597,6 +597,8 @@ They must be defined as an environment property (typically an OS environment var
 
 If `spring.config.location` contains directories (as opposed to files), they should end in `/` (and, at runtime, be appended with the names generated from `spring.config.name` before being loaded, including profile-specific file names).
 Files specified in `spring.config.location` are used as-is, with no support for profile-specific variants, and are overridden by any profile-specific properties.
+Whether specified directly or contained in a directory, configuration files must include a file extension in their name.
+Typical extensions that are supported out-of-the-box are `.properties`, `.yaml`, and `.yml`.
 
 Config locations are searched in reverse order.
 By default, the configured locations are `classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/`.
