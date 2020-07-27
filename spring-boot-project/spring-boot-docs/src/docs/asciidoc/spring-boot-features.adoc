@@ -4262,6 +4262,10 @@ For example, you might declare the following settings in your `application.prope
 
 If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
 
+The auto-configured `MongoClient` is created using `MongoClientSettings`.
+To fine-tune its configuration, declare one or more `MongoClientSettingsBuilderCustomizer` beans.
+Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
+
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
 
