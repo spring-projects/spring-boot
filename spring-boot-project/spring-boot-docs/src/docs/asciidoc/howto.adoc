@@ -1436,12 +1436,7 @@ And the following example shows one way to set up the starters in Gradle:
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
-<<<<<<< HEAD:spring-boot-project/spring-boot-docs/src/docs/asciidoc/howto.adoc
-		implementation 'org.springframework.boot:spring-boot-starter-web'
-		implementation 'org.springframework.boot:spring-boot-starter-log4j2'
-=======
 		compile 'org.springframework.boot:spring-boot-starter-web'
->>>>>>> 2.2.x:spring-boot-project/spring-boot-docs/src/main/asciidoc/howto.adoc
 	}
 
 	configurations.all {
