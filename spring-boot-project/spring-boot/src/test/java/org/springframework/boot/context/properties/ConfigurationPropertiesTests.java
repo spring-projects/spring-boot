@@ -171,6 +171,14 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	void givenIgnoreUnknownFieldsFalseAndIgnoreInvalidFieldsTrueWhenThereAreUnknownFieldsThenBindingShouldFail() {
+		removeSystemProperties();
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class).isThrownBy(
+				() -> load(IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueConfiguration.class, "name=foo", "bar=baz"))
+				.withCauseInstanceOf(BindException.class);
+	}
+
+	@Test
 	void loadWhenHasIgnoreInvalidFieldsTrueAndInvalidFieldsShouldBind() {
 		load(IgnoreInvalidFieldsFalseProperties.class, "com.example.bar=spam");
 		IgnoreInvalidFieldsFalseProperties bean = this.context.getBean(IgnoreInvalidFieldsFalseProperties.class);
@@ -970,6 +978,12 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueProperties.class)
+	static class IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(PrefixProperties.class)
 	static class PrefixConfiguration {
 
@@ -1413,6 +1427,11 @@ class ConfigurationPropertiesTests {
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
 	static class IgnoreUnknownFieldsFalseProperties extends BasicProperties {
+
+	}
+
+	@ConfigurationProperties(ignoreUnknownFields = false, ignoreInvalidFields = true)
+	static class IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueProperties extends BasicProperties {
 
 	}
 
