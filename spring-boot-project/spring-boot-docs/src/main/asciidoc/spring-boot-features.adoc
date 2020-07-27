@@ -949,6 +949,10 @@ You cannot use constructor binding with beans that are created by the regular Sp
 
 TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
+NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
+As such, it is not well-suited to configuration property injection.
+For consistency with properties of other types, if you do declare an `Optional` property and it has no value, `null` rather than an empty `Optional` will be bound.
+
 
 
 [[boot-features-external-config-enabling]]
