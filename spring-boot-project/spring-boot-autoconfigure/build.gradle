@@ -180,6 +180,7 @@ dependencies {
 	testImplementation("org.testcontainers:couchbase")
 	testImplementation("org.testcontainers:elasticsearch")
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
 	testImplementation("org.yaml:snakeyaml")
 

@@ -80,8 +80,8 @@ public class DocumentConfigurationProperties extends DefaultTask {
 				.addSection("security").withKeyPrefixes("spring.security", "spring.ldap", "spring.session")
 				.addSection("data-migration").withKeyPrefixes("spring.flyway", "spring.liquibase").addSection("data")
 				.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2", "spring.influx",
-						"spring.mongodb", "spring.redis", "spring.dao", "spring.data", "spring.datasource",
-						"spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
+						"spring.mongodb", "spring.neo4j", "spring.redis", "spring.dao", "spring.data",
+						"spring.datasource", "spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
 				.addOverride("spring.datasource.dbcp2",
 						"Commons DBCP2 specific settings bound to an instance of DBCP2's BasicDataSource")
 				.addOverride("spring.datasource.tomcat",
