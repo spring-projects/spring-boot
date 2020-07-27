@@ -414,7 +414,7 @@ Many Spring Boot starters include default embedded containers.
 * For servlet stack applications, the `spring-boot-starter-web` includes Tomcat by including `spring-boot-starter-tomcat`, but you can use `spring-boot-starter-jetty` or `spring-boot-starter-undertow` instead.
 * For reactive stack applications, the `spring-boot-starter-webflux` includes  Reactor Netty by including `spring-boot-starter-reactor-netty`, but you can use `spring-boot-starter-tomcat`, `spring-boot-starter-jetty`, or `spring-boot-starter-undertow` instead.
 
-When switching to a different HTTP server, you need to exclude the default dependencies in addition to including the one you need.
+When switching to a different HTTP server, you need to swap the default dependencies for those that you need instead.
 To help with this process, Spring Boot provides a separate starter for each of the supported HTTP servers.
 
 The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
@@ -444,19 +444,20 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 
 NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2.0, Jetty 9.4 does not support Servlet 4.0.
 
-The following Gradle example shows how to exclude Netty and include Undertow for Spring WebFlux:
+The following Gradle example shows how to use Undertow in place of Reactor Netty for Spring WebFlux:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	configurations {
-		// exclude Reactor Netty
-		compile.exclude module: 'spring-boot-starter-reactor-netty'
+	configurations.all {
+		resolutionStrategy.dependencySubstitution.all { dependency ->
+			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-reactor-netty') {
+				dependency.useTarget("org.springframework.boot:spring-boot-starter-undertow:$dependency.requested.version", 'Use Undertow instead of Reactor Netty')
+			}
+		}
 	}
 
 	dependencies {
 		compile 'org.springframework.boot:spring-boot-starter-webflux'
-		// Use Undertow instead
-		compile 'org.springframework.boot:spring-boot-starter-undertow'
 		// ...
 	}
 ----
@@ -1405,7 +1406,7 @@ Spring Boot supports https://logging.apache.org/log4j/2.x/[Log4j 2] for logging 
 If you use the starters for assembling dependencies, you have to exclude Logback and then include log4j 2 instead.
 If you do not use the starters, you need to provide (at least) `spring-jcl` in addition to Log4j 2.
 
-The recommended path is through the starters, even though it requires some jiggling with excludes.
+The recommended path is through the starters, even though it requires some jiggling.
 The following example shows how to set up the starters in Maven:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -1436,14 +1437,16 @@ And the following example shows one way to set up the starters in Gradle:
 ----
 	dependencies {
 		compile 'org.springframework.boot:spring-boot-starter-web'
-		compile 'org.springframework.boot:spring-boot-starter-log4j2'
 	}
 
-	configurations {
-		all {
-			exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	configurations.all {
+		resolutionStrategy.dependencySubstitution.all { dependency ->
+			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-logging') {
+				dependency.useTarget("org.springframework.boot:spring-boot-starter-log4j2:$dependency.requested.version", 'Use Log4j2 instead of Logback')
+			}
 		}
 	}
+}
 ----
 
 NOTE: The Log4j starters gather together the dependencies for common logging requirements (such as having Tomcat use `java.util.logging` but configuring the output using Log4j 2).
