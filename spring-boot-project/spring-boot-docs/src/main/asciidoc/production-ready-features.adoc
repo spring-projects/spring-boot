@@ -669,7 +669,7 @@ The following `HealthIndicators` are auto-configured by Spring Boot when appropr
 | {spring-boot-actuator-module-code}/jdbc/DataSourceHealthIndicator.java[`DataSourceHealthIndicator`]
 | Checks that a connection to `DataSource` can be obtained.
 
-| {spring-boot-actuator-module-code}/elasticsearch/ElasticSearchRestHealthContributorAutoConfiguration.java[`ElasticSearchRestHealthContributorAutoConfiguration`]
+| {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchRestHealthIndicator.java[`ElasticsearchRestHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
 | {spring-boot-actuator-module-code}/hazelcast/HazelcastHealthIndicator.java[`HazelcastHealthIndicator`]
