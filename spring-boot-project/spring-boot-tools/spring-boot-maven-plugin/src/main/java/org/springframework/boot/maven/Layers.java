@@ -26,7 +26,7 @@ import java.io.File;
  */
 public class Layers {
 
-	private boolean enabled;
+	private boolean enabled = true;
 
 	private boolean includeLayerTools = true;
 

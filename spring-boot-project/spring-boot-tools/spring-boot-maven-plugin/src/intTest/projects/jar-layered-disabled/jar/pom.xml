@@ -21,6 +21,11 @@
 						<goals>
 							<goal>repackage</goal>
 						</goals>
+						<configuration>
+							<layers>
+								<enabled>false</enabled>
+							</layers>
+						</configuration>
 					</execution>
 				</executions>
 			</plugin>

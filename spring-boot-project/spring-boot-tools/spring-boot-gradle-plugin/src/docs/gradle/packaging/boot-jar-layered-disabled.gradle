@@ -9,6 +9,8 @@ bootJar {
 
 // tag::layered[]
 bootJar {
-	layered()
+	layered {
+		enabled = false
+	}
 }
 // end::layered[]

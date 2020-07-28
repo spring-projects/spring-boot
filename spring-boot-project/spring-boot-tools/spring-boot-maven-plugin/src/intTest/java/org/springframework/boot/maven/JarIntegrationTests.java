@@ -297,7 +297,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenJarIsRepackagedWithLayersEnabledTheJarContainsTheLayersIndex(MavenBuild mavenBuild) {
+	void repackagedJarContainsTheLayersIndexByDefault(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-layered").execute((project) -> {
 			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
@@ -317,12 +317,25 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenJarIsRepackagedWithTheLayersDisabledDoesNotContainLayersIndex(MavenBuild mavenBuild) {
+		mavenBuild.project("jar-layered-disabled").execute((project) -> {
+			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-release")
+					.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot")
+					.doesNotHaveEntryWithName("BOOT-INF/layers.idx")
+					.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
+		});
+	}
+
+	@TestTemplate
 	void whenJarIsRepackagedWithTheLayersEnabledAndLayerToolsExcluded(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-layered-no-layer-tools").execute((project) -> {
 			File repackaged = new File(project, "jar/target/jar-layered-0.0.1.BUILD-SNAPSHOT.jar");
 			assertThat(jar(repackaged)).hasEntryWithNameStartingWith("BOOT-INF/classes/")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-release")
 					.hasEntryWithNameStartingWith("BOOT-INF/lib/jar-snapshot")
+					.hasEntryWithNameStartingWith("BOOT-INF/layers.idx")
 					.doesNotHaveEntryWithNameStartingWith("BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName());
 		});
 	}

@@ -52,6 +52,8 @@ public class LayeredSpec {
 
 	private boolean includeLayerTools = true;
 
+	private boolean enabled = true;
+
 	private ApplicationSpec application = new ApplicationSpec();
 
 	private DependenciesSpec dependencies = new DependenciesSpec();
@@ -78,6 +80,24 @@ public class LayeredSpec {
 	 */
 	public void setIncludeLayerTools(boolean includeLayerTools) {
 		this.includeLayerTools = includeLayerTools;
+	}
+
+	/**
+	 * Returns whether the layers.idx should be included in the jar.
+	 * @return whether the layers.idx should be included
+	 */
+	@Input
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	/**
+	 * Sets whether the layers.idx should be included in the jar.
+	 * @param enabled {@code true} layers.idx should be included in the jar, otherwise
+	 * {@code false}
+	 */
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
 	}
 
 	/**

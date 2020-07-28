@@ -10,9 +10,10 @@ bootJar {
 			properties 'prop' : project.hasProperty('launchScriptProperty') ? launchScriptProperty : 'default'
 		}
 	}
-	if (project.hasProperty('layered') && project.getProperty('layered')) {
+	if (project.hasProperty('customizeLayered') && project.getProperty('customizeLayered')) {
 		layered {
 			includeLayerTools = project.hasProperty('excludeTools') && project.getProperty('excludeTools') ? false : true
+			enabled = project.hasProperty('disableLayers') && project.getProperty('disableLayers') ? false : true
 		}
 	}
 }

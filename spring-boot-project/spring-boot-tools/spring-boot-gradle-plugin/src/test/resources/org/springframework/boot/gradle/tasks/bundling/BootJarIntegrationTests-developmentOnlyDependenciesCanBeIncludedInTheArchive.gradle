@@ -19,3 +19,9 @@ dependencies {
 bootJar {
 	classpath configurations.developmentOnly
 }
+
+bootJar {
+	layered {
+		enabled = false
+	}
+}

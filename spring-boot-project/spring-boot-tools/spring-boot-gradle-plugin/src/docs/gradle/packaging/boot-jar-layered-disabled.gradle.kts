@@ -11,6 +11,8 @@ tasks.getByName<BootJar>("bootJar") {
 
 // tag::layered[]
 tasks.getByName<BootJar>("bootJar") {
-	layered()
+	layered {
+		isEnabled = false
+	}
 }
 // end::layered[]

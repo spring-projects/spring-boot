@@ -168,16 +168,23 @@ public abstract class Packager {
 	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
 		Assert.notNull(libraries, "Libraries must not be null");
 		WritableLibraries writeableLibraries = new WritableLibraries(libraries);
-		if (this.layers != null) {
+		if (isLayersEnabled()) {
 			writer = new LayerTrackingEntryWriter(writer);
 		}
 		writer.writeManifest(buildManifest(sourceJar));
 		writeLoaderClasses(writer);
 		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
 		writeableLibraries.write(writer);
-		if (this.layers != null) {
+		if (isLayersEnabled()) {
 			writeLayerIndex(writer);
 		}
+	}
+
+	private boolean isLayersEnabled() {
+		if (!(getLayout() instanceof Layouts.Jar)) {
+			return false;
+		}
+		return this.layers != null;
 	}
 
 	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
@@ -332,7 +339,7 @@ public abstract class Packager {
 		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getRepackagedClassesLocation());
 		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
 		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
-		if (this.layers != null) {
+		if (isLayersEnabled()) {
 			putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layout.getLayersIndexFileLocation());
 		}
 	}
@@ -465,7 +472,7 @@ public abstract class Packager {
 					addLibrary(library);
 				}
 			});
-			if (Packager.this.layers != null && Packager.this.includeRelevantJarModeJars) {
+			if (isLayersEnabled() && Packager.this.includeRelevantJarModeJars) {
 				addLibrary(JarModeLibrary.LAYER_TOOLS);
 			}
 		}

@@ -80,7 +80,20 @@ A repackaged jar contains the application's classes and dependencies in `BOOT-IN
 For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular repackaged jars, but include an additional meta-data file that describes each layer.
-To use this feature, the layering feature must be enabled:
+
+By default, the following layers are defined:
+
+* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
+* `spring-boot-loader` for the jar loader classes.
+* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
+* `application` for application classes and resources.
+
+The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
+The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
+Content that is least likely to change should be added first, followed by layers that are more likely to change.
+
+The repackaged jar includes the `layers.idx` file by default.
+To disable this feature, you can do so in the following manner:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -93,7 +106,7 @@ To use this feature, the layering feature must be enabled:
 					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
-							<enabled>true</enabled>
+							<enabled>false</enabled>
 						</layers>
 					</configuration>
 				</plugin>
@@ -101,17 +114,6 @@ To use this feature, the layering feature must be enabled:
 		</build>
 	</project>
 ----
-
-By default, the following layers are defined:
-
-* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
-* `spring-boot-loader` for the jar loader classes.
-* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
-* `application` for application classes and resources.
-
-The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
-The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
-Content that is least likely to change should be added first, followed by layers that are more likely to change.
 
 
 
@@ -531,7 +533,7 @@ This example excludes any artifact belonging to the `com.foo` group:
 
 [[repackage-layered-jars-tools]]
 ==== Layered Jar Tools
-When you create a layered jar, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 
@@ -546,7 +548,6 @@ If you wish to exclude this dependency, you can do so in the following manner:
 					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
-							<enabled>true</enabled>
 							<includeLayerTools>false</includeLayerTools>
 						</layers>
 					</configuration>

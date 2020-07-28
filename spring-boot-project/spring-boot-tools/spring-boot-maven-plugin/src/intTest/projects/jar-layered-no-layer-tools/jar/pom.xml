@@ -23,7 +23,6 @@
 						</goals>
 						<configuration>
 							<layers>
-								<enabled>true</enabled>
 								<includeLayerTools>false</includeLayerTools>
 							</layers>
 						</configuration>

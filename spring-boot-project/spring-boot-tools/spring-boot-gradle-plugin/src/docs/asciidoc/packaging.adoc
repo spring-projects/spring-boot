@@ -275,19 +275,6 @@ By default, the `bootJar` task builds an archive that contains the application's
 For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular boot packaged jars, but include an additional meta-data file that describes each layer.
-To use this feature, the layering feature must be enabled:
-
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
-----
-include::../gradle/packaging/boot-jar-layered.gradle[tags=layered]
-----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
-----
-include::../gradle/packaging/boot-jar-layered.gradle.kts[tags=layered]
-----
 
 By default, the following layers are defined:
 
@@ -300,7 +287,21 @@ The layers order is important as it determines how likely previous layers can be
 The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
 Content that is least likely to change should be added first, followed by layers that are more likely to change.
 
-When you create a layered jar, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+To disable this feature, you can do so in the following manner:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered-disabled.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
+----
+
+When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 

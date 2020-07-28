@@ -180,16 +180,14 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootJarLayered() throws IOException {
-		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-layered").build("bootJar");
+	void bootJarLayeredDisabled() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-layered-disabled").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
-			assertThat(entry).isNotNull();
-			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
-					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isNotEmpty();
+			assertThat(entry).isNull();
 		}
 	}
 

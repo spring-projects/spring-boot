@@ -135,7 +135,10 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 			getLog().info("Layout: " + this.layout);
 			packager.setLayout(this.layout.layout());
 		}
-		if (this.layers != null && this.layers.isEnabled()) {
+		if (this.layers == null) {
+			packager.setLayers(IMPLICIT_LAYERS);
+		}
+		else if (this.layers.isEnabled()) {
 			packager.setLayers((this.layers.getConfiguration() != null)
 					? getCustomLayers(this.layers.getConfiguration()) : IMPLICIT_LAYERS);
 			packager.setIncludeRelevantJarModeJars(this.layers.isIncludeLayerTools());

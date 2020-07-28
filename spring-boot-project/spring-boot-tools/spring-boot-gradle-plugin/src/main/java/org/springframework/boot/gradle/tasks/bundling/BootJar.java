@@ -64,7 +64,7 @@ public class BootJar extends Jar implements BootArchive {
 
 	private FileCollection classpath;
 
-	private LayeredSpec layered;
+	private LayeredSpec layered = new LayeredSpec();
 
 	/**
 	 * Creates a new {@code BootJar} task.
@@ -98,13 +98,17 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void copy() {
 		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_DIRECTORY, LIB_DIRECTORY,
-				CLASSPATH_INDEX, (this.layered != null) ? LAYERS_INDEX : null);
+				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX);
 		super.copy();
+	}
+
+	private boolean isLayeredDisabled() {
+		return this.layered != null && !this.layered.isEnabled();
 	}
 
 	@Override
 	protected CopyAction createCopyAction() {
-		if (this.layered != null) {
+		if (!isLayeredDisabled()) {
 			JavaPluginConvention javaPluginConvention = getProject().getConvention()
 					.findPlugin(JavaPluginConvention.class);
 			Iterable<SourceSet> sourceSets = (javaPluginConvention != null) ? javaPluginConvention.getSourceSets()
