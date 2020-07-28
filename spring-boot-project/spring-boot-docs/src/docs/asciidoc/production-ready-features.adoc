@@ -856,6 +856,9 @@ The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
 | {spring-boot-actuator-module-code}/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
 | Checks that a Mongo database is up.
 
+| {spring-boot-actuator-module-code}/neo4j/Neo4jReactiveHealthIndicator.java[`Neo4jReactiveHealthIndicator`]
+| Checks that a Neo4j database is up.
+
 | {spring-boot-actuator-module-code}/redis/RedisReactiveHealthIndicator.java[`RedisReactiveHealthIndicator`]
 | Checks that a Redis server is up.
 |===

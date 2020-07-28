@@ -16,102 +16,101 @@
 
 package org.springframework.boot.actuate.neo4j;
 
-import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.Mock;
-import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.boot.actuate.health.Status;
-import reactor.core.publisher.Mono;
-import reactor.test.StepVerifier;
-
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.junit.jupiter.api.Test;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.SessionConfig;
+import org.neo4j.driver.Values;
 import org.neo4j.driver.exceptions.ServiceUnavailableException;
 import org.neo4j.driver.exceptions.SessionExpiredException;
 import org.neo4j.driver.reactive.RxResult;
 import org.neo4j.driver.reactive.RxSession;
+import org.neo4j.driver.summary.ResultSummary;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
+
+import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.when;
 
 /**
+ * Tests for {@link Neo4jReactiveHealthIndicator}.
+ *
  * @author Michael J. Simons
+ * @author Stephane Nicoll
  */
-@ExtendWith(MockitoExtension.class)
-class Neo4jReactiveHealthIndicatorTest extends Neo4jHealthIndicatorTestBase {
-
-	@Mock
-	private RxSession session;
-
-	@Mock
-	private RxResult statementResult;
+class Neo4jReactiveHealthIndicatorTest {
 
 	@Test
 	void neo4jIsUp() {
-
-		prepareSharedMocks();
-		when(statementResult.records()).thenReturn(Mono.just(record));
-		when(statementResult.consume()).thenReturn(Mono.just(resultSummary));
-		when(session.run(anyString())).thenReturn(statementResult);
-
-		when(driver.rxSession(any(SessionConfig.class))).thenReturn(session);
-
+		ResultSummary resultSummary = ResultSummaryMock.createResultSummary("4711", "My Home", "test");
+		Driver driver = mockDriver(resultSummary, "ultimate collectors edition");
 		Neo4jReactiveHealthIndicator healthIndicator = new Neo4jReactiveHealthIndicator(driver);
-		healthIndicator.health().as(StepVerifier::create).consumeNextWith(health -> {
+		healthIndicator.health().as(StepVerifier::create).consumeNextWith((health) -> {
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsEntry("server", "4711@Zu Hause");
+			assertThat(health.getDetails()).containsEntry("server", "4711@My Home");
 			assertThat(health.getDetails()).containsEntry("edition", "ultimate collectors edition");
 		}).verifyComplete();
-
-		verify(session).close();
-		verifyNoMoreInteractions(driver, session, statementResult, resultSummary, serverInfo, databaseInfo);
 	}
 
 	@Test
-	void neo4jSessionIsExpiredOnce() {
-
-		AtomicInteger cnt = new AtomicInteger(0);
-
-		prepareSharedMocks();
-		when(statementResult.records()).thenReturn(Mono.just(record));
-		when(statementResult.consume()).thenReturn(Mono.just(resultSummary));
-		when(session.run(anyString())).thenAnswer(invocation -> {
-			if (cnt.compareAndSet(0, 1)) {
+	void neo4jIsUpWithOneSessionExpiredException() {
+		ResultSummary resultSummary = ResultSummaryMock.createResultSummary("4711", "My Home", "");
+		RxSession session = mock(RxSession.class);
+		RxResult statementResult = mockStatementResult(resultSummary, "some edition");
+		AtomicInteger count = new AtomicInteger(0);
+		given(session.run(anyString())).will((invocation) -> {
+			if (count.compareAndSet(0, 1)) {
 				throw new SessionExpiredException("Session expired");
 			}
 			return statementResult;
 		});
-		when(driver.rxSession(any(SessionConfig.class))).thenReturn(session);
-
+		Driver driver = mock(Driver.class);
+		given(driver.rxSession(any(SessionConfig.class))).willReturn(session);
 		Neo4jReactiveHealthIndicator healthIndicator = new Neo4jReactiveHealthIndicator(driver);
-		healthIndicator.health().as(StepVerifier::create).consumeNextWith(health -> {
+		healthIndicator.health().as(StepVerifier::create).consumeNextWith((health) -> {
 			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsEntry("server", "4711@Zu Hause");
-			assertThat(health.getDetails()).containsEntry("edition", "ultimate collectors edition");
+			assertThat(health.getDetails()).containsEntry("server", "4711@My Home");
+			assertThat(health.getDetails()).containsEntry("edition", "some edition");
 		}).verifyComplete();
-
 		verify(session, times(2)).close();
-		verifyNoMoreInteractions(driver, session, statementResult, resultSummary, serverInfo, databaseInfo);
 	}
 
 	@Test
-	void neo4jSessionIsDown() {
-
-		when(driver.rxSession(any(SessionConfig.class))).thenThrow(ServiceUnavailableException.class);
-
+	void neo4jIsDown() {
+		Driver driver = mock(Driver.class);
+		given(driver.rxSession(any(SessionConfig.class))).willThrow(ServiceUnavailableException.class);
 		Neo4jReactiveHealthIndicator healthIndicator = new Neo4jReactiveHealthIndicator(driver);
-		healthIndicator.health().as(StepVerifier::create).consumeNextWith(health -> {
+		healthIndicator.health().as(StepVerifier::create).consumeNextWith((health) -> {
 			assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 			assertThat(health.getDetails()).containsKeys("error");
 		}).verifyComplete();
+	}
 
-		verifyNoMoreInteractions(driver, session, statementResult, resultSummary, serverInfo, databaseInfo);
+	private RxResult mockStatementResult(ResultSummary resultSummary, String edition) {
+		Record record = mock(Record.class);
+		given(record.get("edition")).willReturn(Values.value(edition));
+		RxResult statementResult = mock(RxResult.class);
+		given(statementResult.records()).willReturn(Mono.just(record));
+		given(statementResult.consume()).willReturn(Mono.just(resultSummary));
+		return statementResult;
+	}
+
+	private Driver mockDriver(ResultSummary resultSummary, String edition) {
+		RxResult statementResult = mockStatementResult(resultSummary, edition);
+		RxSession session = mock(RxSession.class);
+		given(session.run(anyString())).willReturn(statementResult);
+		Driver driver = mock(Driver.class);
+		given(driver.rxSession(any(SessionConfig.class))).willReturn(session);
+		return driver;
 	}
 
 }
