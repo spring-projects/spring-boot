@@ -115,6 +115,16 @@ class ProfilesTests {
 	}
 
 	@Test
+	void getActiveWithProfileGroups() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "d,e");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getActive()).containsExactly("a", "d", "e", "b", "c");
+	}
+
+	@Test
 	void getActiveWhenHasAdditionalIncludesAdditional() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.profiles.active", "a,b,c");
@@ -187,6 +197,16 @@ class ProfilesTests {
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
 		assertThat(profiles.getDefault()).containsExactly("a", "b", "c");
+	}
+
+	@Test
+	void getDefaultWithProfileGroups() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.default", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "d,e");
+		Binder binder = Binder.get(environment);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getDefault()).containsExactly("a", "d", "e", "b", "c");
 	}
 
 	@Test

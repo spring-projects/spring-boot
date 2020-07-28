@@ -175,6 +175,15 @@ class ConfigDataEnvironmentTests {
 	}
 
 	@Test
+	void processAndApplySetsActiveProfilesAndProfileGroups(TestInfo info) {
+		this.environment.setProperty("spring.config.location", getConfigLocation(info));
+		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.environment,
+				this.resourceLoader, this.additionalProfiles);
+		configDataEnvironment.processAndApply();
+		assertThat(this.environment.getActiveProfiles()).containsExactly("one", "four", "five", "two", "three");
+	}
+
+	@Test
 	@Disabled("Disabled until spring.profiles suppport is dropped")
 	void processAndApplyWhenHasInvalidPropertyThrowsException() {
 		this.environment.setProperty("spring.profile", "a");

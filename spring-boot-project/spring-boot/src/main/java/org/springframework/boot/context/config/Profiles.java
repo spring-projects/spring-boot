@@ -62,8 +62,6 @@ public class Profiles implements Iterable<String> {
 
 	private final List<String> defaultProfiles;
 
-	private final List<String> acceptedProfiles;
-
 	/**
 	 * Create a new {@link Profiles} instance based on the {@link Environment} and
 	 * {@link Binder}.
@@ -73,11 +71,19 @@ public class Profiles implements Iterable<String> {
 	 */
 	Profiles(Environment environment, Binder binder, Collection<String> additionalProfiles) {
 		this.groups = binder.bind("spring.profiles.group", STRING_STRINGS_MAP).orElseGet(LinkedMultiValueMap::new);
-		this.activeProfiles = asUniqueItemList(get(environment, binder, environment::getActiveProfiles,
+		this.activeProfiles = expandProfiles(getActivatedProfiles(environment, binder, additionalProfiles));
+		this.defaultProfiles = expandProfiles(getDefaultProfiles(environment, binder));
+	}
+
+	private List<String> getActivatedProfiles(Environment environment, Binder binder,
+			Collection<String> additionalProfiles) {
+		return asUniqueItemList(get(environment, binder, environment::getActiveProfiles,
 				AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, UNSET_ACTIVE), additionalProfiles);
-		this.defaultProfiles = asUniqueItemList(get(environment, binder, environment::getDefaultProfiles,
+	}
+
+	private List<String> getDefaultProfiles(Environment environment, Binder binder) {
+		return asUniqueItemList(get(environment, binder, environment::getDefaultProfiles,
 				AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, UNSET_DEFAULT));
-		this.acceptedProfiles = expandAcceptedProfiles(this.activeProfiles, this.defaultProfiles);
 	}
 
 	private String[] get(Environment environment, Binder binder, Supplier<String[]> supplier, String propertyName,
@@ -99,16 +105,16 @@ public class Profiles implements Iterable<String> {
 		return !propertyProfiles.equals(profiles);
 	}
 
-	private List<String> expandAcceptedProfiles(List<String> activeProfiles, List<String> defaultProfiles) {
+	private List<String> expandProfiles(List<String> profiles) {
 		Deque<String> stack = new ArrayDeque<>();
-		asReversedList((!activeProfiles.isEmpty()) ? activeProfiles : defaultProfiles).forEach(stack::push);
-		Set<String> acceptedProfiles = new LinkedHashSet<>();
+		asReversedList(profiles).forEach(stack::push);
+		Set<String> expandedProfiles = new LinkedHashSet<>();
 		while (!stack.isEmpty()) {
 			String current = stack.pop();
-			acceptedProfiles.add(current);
+			expandedProfiles.add(current);
 			asReversedList(this.groups.get(current)).forEach(stack::push);
 		}
-		return asUniqueItemList(StringUtils.toStringArray(acceptedProfiles));
+		return asUniqueItemList(StringUtils.toStringArray(expandedProfiles));
 	}
 
 	private List<String> asReversedList(List<String> list) {
@@ -161,7 +167,7 @@ public class Profiles implements Iterable<String> {
 	 * @return the accepted profiles
 	 */
 	public List<String> getAccepted() {
-		return this.acceptedProfiles;
+		return (!this.activeProfiles.isEmpty()) ? this.activeProfiles : this.defaultProfiles;
 	}
 
 	/**
@@ -170,7 +176,7 @@ public class Profiles implements Iterable<String> {
 	 * @return if the profile is active
 	 */
 	public boolean isAccepted(String profile) {
-		return this.acceptedProfiles.contains(profile);
+		return getAccepted().contains(profile);
 	}
 
 	@Override
