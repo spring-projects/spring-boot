@@ -399,7 +399,7 @@ To run in App Engine, you can create a project in the UI first, which sets up a 
 Add a Java app to the project and leave it empty and then use the https://cloud.google.com/sdk/install[Google Cloud SDK] to push your Spring Boot app into that slot from the command line or CI build.
 
 App Engine Standard requires you to use WAR packaging.
-Follow https://github.com/GoogleCloudPlatform/getting-started-java/blob/master/appengine-standard-java8/springboot-appengine-standard/README.md[these steps] to deploy App Engine Standard application to Google Cloud.
+Follow https://github.com/GoogleCloudPlatform/java-docs-samples/tree/master/appengine-java8/springboot-helloworld/README.md[these steps] to deploy App Engine Standard application to Google Cloud.
 
 Alternatively, App Engine Flex requires you to create an `app.yaml` file to describe the resources your app requires.
 Normally, you put this file in `src/main/appengine`, and it should resemble the following file:
