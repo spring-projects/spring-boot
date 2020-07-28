@@ -881,6 +881,13 @@ For example, to create a group that includes only database indicators you can de
 
 You can then check the result by hitting `http://localhost:8080/actuator/health/custom`.
 
+Similarly, to create a group that excludes the database indicators from the group and includes all the other indicators, you can define the following:
+
+[source,properties,indent=0,configprops]
+----
+	management.endpoint.health.group.custom.exclude=db
+----
+
 By default groups will inherit the same `StatusAggregator` and `HttpCodeStatusMapper` settings as the system health, however, these can also be defined on a per-group basis.
 It's also possible to override the `show-details` and `roles` properties if required:
 
