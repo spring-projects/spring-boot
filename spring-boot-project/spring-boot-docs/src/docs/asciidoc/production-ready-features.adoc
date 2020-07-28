@@ -850,6 +850,9 @@ The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
+| {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchReactiveHealthIndicator.java[`ElasticsearchReactiveHealthIndicator`]
+| Checks that an Elasticsearch cluster is up.
+
 | {spring-boot-actuator-module-code}/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
 | Checks that a Mongo database is up.
 
