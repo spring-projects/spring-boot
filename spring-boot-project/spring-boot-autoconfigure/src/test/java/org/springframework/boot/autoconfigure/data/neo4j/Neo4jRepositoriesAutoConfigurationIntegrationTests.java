@@ -20,7 +20,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jDriverAutoConfiguration;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
@@ -67,7 +67,7 @@ public class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Configuration
 	@EnableNeo4jRepositories(basePackageClasses = CountryRepository.class)
-	@ImportAutoConfiguration({ Neo4jDriverAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
+	@ImportAutoConfiguration({ Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
 			Neo4jRepositoriesAutoConfiguration.class })
 	static class TestConfiguration {
 

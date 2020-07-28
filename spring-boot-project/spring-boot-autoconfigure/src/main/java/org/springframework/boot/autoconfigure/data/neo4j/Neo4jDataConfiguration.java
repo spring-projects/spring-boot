@@ -17,21 +17,19 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.neo4j.driver.Driver;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.ConditionalOnRepositoryType;
 import org.springframework.boot.autoconfigure.data.RepositoryType;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jDriverAutoConfiguration;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
+import org.springframework.core.env.Environment;
 import org.springframework.data.neo4j.config.Neo4jDefaultCallbacksRegistrar;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
@@ -50,23 +48,18 @@ import org.springframework.transaction.PlatformTransactionManager;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Neo4jTransactionManager.class, PlatformTransactionManager.class })
 @ConditionalOnRepositoryType(store = "neo4j", type = RepositoryType.IMPERATIVE)
-@AutoConfigureAfter(Neo4jDriverAutoConfiguration.class)
+@AutoConfigureAfter(Neo4jAutoConfiguration.class)
 @AutoConfigureBefore(Neo4jRepositoriesConfiguration.class)
 @Import(Neo4jDefaultCallbacksRegistrar.class)
 class Neo4jDataConfiguration {
 
 	@Bean("databaseSelectionProvider")
-	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "database")
 	@ConditionalOnMissingBean
-	@Order(-30)
-	DatabaseSelectionProvider staticDatabaseSelectionProvider(Neo4jDataProperties dataProperties) {
-		return DatabaseSelectionProvider.createStaticDatabaseSelectionProvider(dataProperties.getDatabase());
-	}
-
-	@Bean("databaseSelectionProvider")
-	@ConditionalOnMissingBean
-	@Order(-20)
-	DatabaseSelectionProvider defaultSelectionProvider() {
+	DatabaseSelectionProvider defaultSelectionProvider(Environment environment) {
+		String database = environment.getProperty("spring.data.neo4j.database");
+		if (database != null) {
+			return DatabaseSelectionProvider.createStaticDatabaseSelectionProvider(database);
+		}
 		return DatabaseSelectionProvider.getDefaultSelectionProvider();
 	}
 

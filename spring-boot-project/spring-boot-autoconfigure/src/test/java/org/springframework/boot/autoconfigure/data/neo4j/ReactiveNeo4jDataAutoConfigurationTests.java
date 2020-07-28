@@ -26,7 +26,7 @@ import reactor.test.StepVerifier;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Driver;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jDriverAutoConfiguration;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -48,8 +48,8 @@ class ReactiveNeo4jDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.data.neo4j.repositories.type=reactive")
-			.withUserConfiguration(MockedDriverConfiguration.class).withConfiguration(
-					AutoConfigurations.of(Neo4jDriverAutoConfiguration.class, Neo4jDataAutoConfiguration.class));
+			.withUserConfiguration(MockedDriverConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class));
 
 	@Test
 	void shouldProvideConversions() {
@@ -62,8 +62,7 @@ class ReactiveNeo4jDataAutoConfigurationTests {
 			assertThat(ctx).hasSingleBean(ReactiveDatabaseSelectionProvider.class);
 			ReactiveDatabaseSelectionProvider databaseNameProvider = ctx
 					.getBean(ReactiveDatabaseSelectionProvider.class);
-			assertThat(databaseNameProvider)
-					.isSameAs(ReactiveDatabaseSelectionProvider.getDefaultSelectionProvider());
+			assertThat(databaseNameProvider).isSameAs(ReactiveDatabaseSelectionProvider.getDefaultSelectionProvider());
 		});
 	}
 
@@ -85,8 +84,7 @@ class ReactiveNeo4jDataAutoConfigurationTests {
 					assertThat(ctx).hasSingleBean(ReactiveDatabaseSelectionProvider.class);
 					ReactiveDatabaseSelectionProvider databaseNameProvider = ctx
 							.getBean(ReactiveDatabaseSelectionProvider.class);
-					StepVerifier
-							.create(databaseNameProvider.getDatabaseSelection().map(DatabaseSelection::getValue))
+					StepVerifier.create(databaseNameProvider.getDatabaseSelection().map(DatabaseSelection::getValue))
 							.expectNext("whatever").expectComplete();
 				});
 	}
@@ -101,7 +99,6 @@ class ReactiveNeo4jDataAutoConfigurationTests {
 						.doesNotHaveBean(ReactiveNeo4jTransactionManager.class));
 	}
 
-
 	@Test
 	void shouldCreateNewReactiveNeo4jClient() {
 		contextRunner.run(ctx -> assertThat(ctx).hasSingleBean(ReactiveNeo4jClient.class));
@@ -110,10 +107,8 @@ class ReactiveNeo4jDataAutoConfigurationTests {
 	@Test
 	void shouldNotReplaceExistingReactiveNeo4jClient() {
 		contextRunner.withUserConfiguration(ConfigurationWithExistingReactiveClient.class)
-				.run(ctx -> assertThat(ctx).hasSingleBean(ReactiveNeo4jClient.class)
-						.hasBean("myCustomReactiveClient"));
+				.run(ctx -> assertThat(ctx).hasSingleBean(ReactiveNeo4jClient.class).hasBean("myCustomReactiveClient"));
 	}
-
 
 	@Test
 	void shouldCreateNewNeo4jTemplate() {
@@ -132,9 +127,8 @@ class ReactiveNeo4jDataAutoConfigurationTests {
 
 	@Test
 	void shouldNotReplaceExistingNeo4jTemplate() {
-		contextRunner.withUserConfiguration(ConfigurationWithExistingReactiveTemplate.class)
-				.run(ctx -> assertThat(ctx).hasSingleBean(ReactiveNeo4jOperations.class)
-						.hasBean("myCustomReactiveOperations"));
+		contextRunner.withUserConfiguration(ConfigurationWithExistingReactiveTemplate.class).run(ctx -> assertThat(ctx)
+				.hasSingleBean(ReactiveNeo4jOperations.class).hasBean("myCustomReactiveOperations"));
 	}
 
 	@Test
@@ -159,7 +153,6 @@ class ReactiveNeo4jDataAutoConfigurationTests {
 				.run(ctx -> assertThat(ctx).hasSingleBean(ReactiveTransactionManager.class)
 						.hasBean("myCustomReactiveTransactionManager"));
 	}
-
 
 	@Configuration
 	static class ConfigurationWithExistingReactiveClient {

@@ -22,7 +22,7 @@ import static org.mockito.Mockito.*;
 import org.junit.jupiter.api.Test;
 import org.neo4j.driver.Driver;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jDriverAutoConfiguration;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -44,8 +44,8 @@ class Neo4jDataAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withPropertyValues("spring.data.neo4j.repositories.type=imperative")
-			.withUserConfiguration(MockedDriverConfiguration.class).withConfiguration(
-					AutoConfigurations.of(Neo4jDriverAutoConfiguration.class, Neo4jDataAutoConfiguration.class));
+			.withUserConfiguration(MockedDriverConfiguration.class)
+			.withConfiguration(AutoConfigurations.of(Neo4jAutoConfiguration.class, Neo4jDataAutoConfiguration.class));
 
 	@Test
 	void shouldProvideConversions() {
@@ -101,20 +101,18 @@ class Neo4jDataAutoConfigurationTests {
 				.run(ctx -> assertThat(ctx).hasSingleBean(Neo4jClient.class).hasBean("myCustomClient"));
 	}
 
-
 	@Test
 	void shouldCreateNewNeo4jTemplate() {
-		contextRunner.withUserConfiguration(ConfigurationWithExistingDatabaseSelectionProvider.class)
-				.run(ctx -> {
-					assertThat(ctx).hasSingleBean(Neo4jTemplate.class);
+		contextRunner.withUserConfiguration(ConfigurationWithExistingDatabaseSelectionProvider.class).run(ctx -> {
+			assertThat(ctx).hasSingleBean(Neo4jTemplate.class);
 
-					// Verify that the template uses the provided database name
-					// provider
-					Neo4jTemplate template = ctx.getBean(Neo4jTemplate.class);
-					DatabaseSelectionProvider provider = (DatabaseSelectionProvider) ReflectionTestUtils
-							.getField(template, "databaseSelectionProvider");
-					assertThat(provider).isSameAs(ctx.getBean(DatabaseSelectionProvider.class));
-				});
+			// Verify that the template uses the provided database name
+			// provider
+			Neo4jTemplate template = ctx.getBean(Neo4jTemplate.class);
+			DatabaseSelectionProvider provider = (DatabaseSelectionProvider) ReflectionTestUtils.getField(template,
+					"databaseSelectionProvider");
+			assertThat(provider).isSameAs(ctx.getBean(DatabaseSelectionProvider.class));
+		});
 	}
 
 	@Test
@@ -125,17 +123,16 @@ class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	void shouldCreateNewTransactionManager() {
-		contextRunner.withUserConfiguration(ConfigurationWithExistingDatabaseSelectionProvider.class)
-				.run(ctx -> {
-					assertThat(ctx).hasSingleBean(Neo4jTransactionManager.class);
+		contextRunner.withUserConfiguration(ConfigurationWithExistingDatabaseSelectionProvider.class).run(ctx -> {
+			assertThat(ctx).hasSingleBean(Neo4jTransactionManager.class);
 
-					// Verify that the transaction manager uses the provided
-					// database name provider
-					Neo4jTransactionManager transactionManager = ctx.getBean(Neo4jTransactionManager.class);
-					DatabaseSelectionProvider provider = (DatabaseSelectionProvider) ReflectionTestUtils
-							.getField(transactionManager, "databaseSelectionProvider");
-					assertThat(provider).isSameAs(ctx.getBean(DatabaseSelectionProvider.class));
-				});
+			// Verify that the transaction manager uses the provided
+			// database name provider
+			Neo4jTransactionManager transactionManager = ctx.getBean(Neo4jTransactionManager.class);
+			DatabaseSelectionProvider provider = (DatabaseSelectionProvider) ReflectionTestUtils
+					.getField(transactionManager, "databaseSelectionProvider");
+			assertThat(provider).isSameAs(ctx.getBean(DatabaseSelectionProvider.class));
+		});
 	}
 
 	@Test

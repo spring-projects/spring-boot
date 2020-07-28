@@ -22,7 +22,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
-import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -49,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Michael J. Simons
  * @since 2.4.0
  */
-@ReactiveDataNeo4jTest
+@DataNeo4jTest
 @Testcontainers(disabledWithoutDocker = true)
 class ReactiveDataNeo4jIntegrationTests {
 
@@ -74,7 +73,7 @@ class ReactiveDataNeo4jIntegrationTests {
 	@Test
 	void testTemplate() {
 
-		Mono.just(new ExampleGraph("Look, new @ReactiveDataNeo4jTest!")).flatMap(neo4jTemplate::save)
+		Mono.just(new ExampleGraph("Look, new @DataNeo4jTest with reactive!")).flatMap(neo4jTemplate::save)
 				.as(StepVerifier::create).expectNextCount(1).verifyComplete();
 
 		try (Session session = driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build())) {

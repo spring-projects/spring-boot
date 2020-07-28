@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.data.ConditionalOnRepositoryType;
 import org.springframework.boot.autoconfigure.data.RepositoryType;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jDriverAutoConfiguration;
+import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -49,7 +49,7 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ ReactiveNeo4jTransactionManager.class, ReactiveTransactionManager.class, Flux.class })
 @ConditionalOnRepositoryType(store = "neo4j", type = RepositoryType.REACTIVE)
-@AutoConfigureAfter(Neo4jDriverAutoConfiguration.class)
+@AutoConfigureAfter(Neo4jAutoConfiguration.class)
 @AutoConfigureBefore(Neo4jReactiveRepositoriesConfiguration.class)
 @Import(Neo4jDefaultReactiveCallbacksRegistrar.class)
 class Neo4jReactiveDataConfiguration {
