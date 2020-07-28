@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,31 @@
 
 package org.springframework.boot.docs.actuate.metrics;
 
-import io.micrometer.core.instrument.Counter;
-import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.binder.MeterBinder;
 
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Bean;
 
 /**
- * Example to show manual usage of {@link MeterRegistry}.
+ * Example to show configuration of a custom {@link MeterBinder}.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-// tag::example[]
-@Component
-public class SampleBean {
+public class SampleMeterBinderConfiguration {
 
-	private final Counter counter;
-
-	public SampleBean(MeterRegistry registry) {
-		this.counter = registry.counter("received.messages");
+	// tag::example[]
+	@Bean
+	MeterBinder queueSize(Queue queue) {
+		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
 	}
+	// end::example[]
 
-	public void handleMessage(String message) {
-		this.counter.increment();
-		// handle message implementation
+	static class Queue {
+
+		int size() {
+			return 5;
+		}
+
 	}
 
 }
-// end::example[]
