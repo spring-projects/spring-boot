@@ -13,6 +13,7 @@ dependencies {
 
 	optional("com.datastax.oss:java-driver-core")
 	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
