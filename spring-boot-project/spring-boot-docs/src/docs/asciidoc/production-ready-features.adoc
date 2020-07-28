@@ -720,10 +720,10 @@ developers can use their configuration property to activate them:
 | Name | Description
 
 | {spring-boot-actuator-module-code}/availability/LivenessStateHealthIndicator.java[`LivenessStateHealthIndicator`]
-| Checks the liveness state of the application.
+| Checks the liveness state of the application. Enabled by `management.health.livenessstate.enabled` property.
 
 | {spring-boot-actuator-module-code}/availability/ReadinessStateHealthIndicator.java[`ReadinessStateHealthIndicator`]
-| Checks the readiness state of the application.
+| Checks the readiness state of the application. Enabled by `management.health.readinessstate.enabled` property.
 |===
 
 
