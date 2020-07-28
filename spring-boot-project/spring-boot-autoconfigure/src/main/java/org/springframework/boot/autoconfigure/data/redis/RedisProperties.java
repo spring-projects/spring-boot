@@ -412,10 +412,10 @@ public class RedisProperties {
 
 				/**
 				 * Whether discovered nodes should be used as the source for the cluster
-				 * topology. When set to {@literal false}, only the initial seed nodes
+				 * topology. When set to false, only the initial seed nodes
 				 * will be used as sources for topology discovery.
 				 */
-				private Boolean dynamicSources = null;
+				private Boolean dynamicSources;
 
 				public Duration getPeriod() {
 					return this.period;
