@@ -25,6 +25,7 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import java.util.Optional;
 
 /**
  * Base endpoint element condition. An element can be disabled globally via the
@@ -50,11 +51,8 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 		AnnotationAttributes annotationAttributes = AnnotationAttributes
 				.fromMap(metadata.getAnnotationAttributes(this.annotationType.getName()));
 		String endpointName = annotationAttributes.getString("value");
-		ConditionOutcome outcome = getEndpointOutcome(context, endpointName);
-		if (outcome != null) {
-			return outcome;
-		}
-		return getDefaultEndpointsOutcome(context);
+		Optional<ConditionOutcome> outcome = Optional.ofNullable(getEndpointOutcome(context, endpointName));
+		return outcome.isPresent() ? outcome : getDefaultEndpointsOutcome(context);
 	}
 
 	protected ConditionOutcome getEndpointOutcome(ConditionContext context, String endpointName) {
