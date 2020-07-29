@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
@@ -51,6 +50,7 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Stephane Nicoll
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 public class DispatcherServletsMappingDescriptionProvider implements MappingDescriptionProvider {
 
 	private static final List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> descriptionProviders;
@@ -171,8 +171,8 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 
 	}
 
-	private static final class DelegatingHandlerMappingDescriptionProvider
-			implements HandlerMappingDescriptionProvider<DelegatingHandlerMapping> {
+	private static final class DelegatingHandlerMappingDescriptionProvider implements
+			HandlerMappingDescriptionProvider<org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping> {
 
 		private final List<HandlerMappingDescriptionProvider<?>> descriptionProviders;
 
@@ -182,12 +182,13 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		}
 
 		@Override
-		public Class<DelegatingHandlerMapping> getMappingClass() {
-			return DelegatingHandlerMapping.class;
+		public Class<org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping> getMappingClass() {
+			return org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping.class;
 		}
 
 		@Override
-		public List<DispatcherServletMappingDescription> describe(DelegatingHandlerMapping handlerMapping) {
+		public List<DispatcherServletMappingDescription> describe(
+				org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping handlerMapping) {
 			List<DispatcherServletMappingDescription> descriptions = new ArrayList<>();
 			for (HandlerMapping delegate : handlerMapping.getDelegates()) {
 				descriptions.addAll(
