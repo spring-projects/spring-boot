@@ -45,13 +45,13 @@ class DataNeo4jTestWithIncludeFilterIntegrationTests {
 	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication()
 			.withStartupTimeout(Duration.ofMinutes(10));
 
-	@Autowired
-	private ExampleService service;
-
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
+		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 	}
+
+	@Autowired
+	private ExampleService service;
 
 	@Test
 	void testService() {

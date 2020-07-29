@@ -14,36 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.neo4j.country;
+package org.springframework.boot.autoconfigure.data.neo4j;
 
-import java.io.Serializable;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
+/**
+ * Configuration properties for Spring Data Neo4j.
+ *
+ * @author Michael J. Simons
+ * @since 2.4.0
+ */
+@ConfigurationProperties(prefix = "spring.data.neo4j")
+public class Neo4jDataProperties {
 
-@Node
-public class Country implements Serializable {
+	/**
+	 * Database name to use. By default, the server decides the default database to use.
+	 */
+	private String database;
 
-	private static final long serialVersionUID = 1L;
-
-	@Id
-	@GeneratedValue
-	private Long id;
-
-	private String name;
-
-	public Country(String name) {
-		this.name = name;
+	public String getDatabase() {
+		return this.database;
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	@Override
-	public String toString() {
-		return getName();
+	public void setDatabase(String database) {
+		this.database = database;
 	}
 
 }

@@ -44,13 +44,13 @@ class DataNeo4jTestPropertiesIntegrationTests {
 	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication()
 			.withStartupTimeout(Duration.ofMinutes(10));
 
-	@Autowired
-	private Environment environment;
-
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
-		registry.add("spring.data.neo4j.uri", neo4j::getBoltUrl);
+		registry.add("spring.neo4j.uri", neo4j::getBoltUrl);
 	}
+
+	@Autowired
+	private Environment environment;
 
 	@Test
 	void environmentWithNewProfile() {

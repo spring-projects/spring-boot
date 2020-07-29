@@ -22,30 +22,30 @@ import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
+import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
-import org.springframework.data.neo4j.core.Neo4jTemplate;
+import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Integration test for {@link DataNeo4jTest @DataNeo4jTest}.
+ * Integration tests for the reactive SDN/RX Neo4j test slice.
  *
- * @author Eddú Meléndez
- * @author Stephane Nicoll
- * @author Michael Simons
+ * @author Michael J. Simons
+ * @since 2.4.0
  */
 @DataNeo4jTest
 @Testcontainers(disabledWithoutDocker = true)
-class DataNeo4jTestIntegrationTests {
+class DataNeo4jTestReactiveIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication()
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:4.0").withoutAuthentication()
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
@@ -54,21 +54,19 @@ class DataNeo4jTestIntegrationTests {
 	}
 
 	@Autowired
-	private Neo4jTemplate neo4jTemplate;
+	private ReactiveNeo4jTemplate neo4jTemplate;
 
 	@Autowired
-	private ExampleRepository exampleRepository;
+	private ExampleReactiveRepository exampleRepository;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
 	void testRepository() {
-		ExampleGraph exampleGraph = new ExampleGraph("Look, new @DataNeo4jTest!");
-		assertThat(exampleGraph.getId()).isNull();
-		ExampleGraph savedGraph = this.exampleRepository.save(exampleGraph);
-		assertThat(savedGraph.getId()).isNotNull();
-		assertThat(this.neo4jTemplate.count(ExampleGraph.class)).isEqualTo(1);
+		Mono.just(new ExampleGraph("Look, new @DataNeo4jTest with reactive!")).flatMap(this.exampleRepository::save)
+				.as(StepVerifier::create).expectNextCount(1).verifyComplete();
+		StepVerifier.create(this.neo4jTemplate.count(ExampleGraph.class)).expectNext(1L).verifyComplete();
 	}
 
 	@Test
