@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -149,17 +150,22 @@ class ConfigurationPropertySourcesTests {
 
 	@Test // gh-21416
 	void descendantOfPropertyAccessWhenMutableWithCacheShouldBePerformant() {
-		StandardEnvironment environment = createPerformanceTestEnvironment(true);
-		Iterable<ConfigurationPropertySource> sources = ConfigurationPropertySources.get(environment);
-		ConfigurationPropertyName missing = ConfigurationPropertyName.of("missing");
-		long start = System.nanoTime();
-		for (int i = 0; i < 1000; i++) {
-			for (ConfigurationPropertySource source : sources) {
-				assertThat(source.containsDescendantOf(missing)).isEqualTo(ConfigurationPropertyState.ABSENT);
+		Function<StandardEnvironment, Long> descendantOfPerformance = (environment) -> {
+			Iterable<ConfigurationPropertySource> sources = ConfigurationPropertySources.get(environment);
+			ConfigurationPropertyName missing = ConfigurationPropertyName.of("missing");
+			long start = System.nanoTime();
+			for (int i = 0; i < 1000; i++) {
+				for (ConfigurationPropertySource source : sources) {
+					assertThat(source.containsDescendantOf(missing)).isEqualTo(ConfigurationPropertyState.ABSENT);
+				}
 			}
-		}
-		long total = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
-		assertThat(total).isLessThan(1000);
+			return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - start);
+		};
+		StandardEnvironment environment = createPerformanceTestEnvironment(false);
+		long baseline = descendantOfPerformance.apply(environment);
+		ConfigurationPropertyCaching.get(environment).enable();
+		long cached = descendantOfPerformance.apply(environment);
+		assertThat(cached).isLessThan(baseline / 2);
 	}
 
 	private long testPropertySourcePerformance(boolean immutable) {
