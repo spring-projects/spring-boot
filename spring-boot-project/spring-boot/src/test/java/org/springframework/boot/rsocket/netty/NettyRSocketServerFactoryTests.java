@@ -76,7 +76,7 @@ class NettyRSocketServerFactoryTests {
 			}
 		}
 		if (this.requester != null) {
-			this.requester.rsocket().dispose();
+			this.requester.rsocketClient().dispose();
 		}
 	}
 
@@ -166,13 +166,13 @@ class NettyRSocketServerFactoryTests {
 	private RSocketRequester createRSocketTcpClient() {
 		Assertions.assertThat(this.server).isNotNull();
 		InetSocketAddress address = this.server.address();
-		return createRSocketRequesterBuilder().connectTcp(address.getHostString(), address.getPort()).block();
+		return createRSocketRequesterBuilder().tcp(address.getHostString(), address.getPort());
 	}
 
 	private RSocketRequester createRSocketWebSocketClient() {
 		Assertions.assertThat(this.server).isNotNull();
 		InetSocketAddress address = this.server.address();
-		return createRSocketRequesterBuilder().connect(WebsocketClientTransport.create(address)).block();
+		return createRSocketRequesterBuilder().transport(WebsocketClientTransport.create(address));
 	}
 
 	private RSocketRequester.Builder createRSocketRequesterBuilder() {

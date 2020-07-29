@@ -87,7 +87,7 @@ class RSocketWebSocketNettyRouteProviderTests {
 		int port = server.getPort();
 		RSocketRequester.Builder builder = context.getBean(RSocketRequester.Builder.class);
 		return builder.dataMimeType(MediaType.APPLICATION_CBOR)
-				.connectWebSocket(URI.create("ws://localhost:" + port + "/rsocket")).block();
+				.websocket(URI.create("ws://localhost:" + port + "/rsocket"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
