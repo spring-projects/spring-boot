@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,16 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.mockito.Mockito;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.SessionConfig;
 import org.neo4j.driver.types.TypeSystem;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.when;
 
 /**
  * Driver configuration mocked to avoid instantiation of a real driver with connection
@@ -41,8 +41,8 @@ class MockedDriverConfiguration {
 		Driver driver = mock(Driver.class);
 		TypeSystem typeSystem = mock(TypeSystem.class);
 		Session session = mock(Session.class);
-		when(driver.defaultTypeSystem()).thenReturn(typeSystem);
-		when(driver.session(Mockito.any(SessionConfig.class))).thenReturn(session);
+		given(driver.defaultTypeSystem()).willReturn(typeSystem);
+		given(driver.session(Mockito.any(SessionConfig.class))).willReturn(session);
 		return driver;
 	}
 

@@ -20,42 +20,52 @@ import java.util.Set;
 
 import org.neo4j.driver.Driver;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.domain.EntityScanner;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
+import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.data.neo4j.config.Neo4jDefaultCallbacksRegistrar;
+import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
+import org.springframework.data.neo4j.core.Neo4jClient;
+import org.springframework.data.neo4j.core.Neo4jOperations;
+import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.core.convert.Neo4jConversions;
 import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
+import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
+import org.springframework.transaction.PlatformTransactionManager;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j. Automatic
- * configuration of base infrastructure that imports configuration for both imperative and
- * reactive Neo4j repositories.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j.
  *
  * @author Michael Hunger
  * @author Josh Long
  * @author Vince Bickers
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @author Michael J Simons
+ * @author Michael J. Simons
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnBean(Driver.class)
+@ConditionalOnClass({ Driver.class, Neo4jTransactionManager.class, PlatformTransactionManager.class })
 @EnableConfigurationProperties(Neo4jDataProperties.class)
-@AutoConfigureAfter(Neo4jAutoConfiguration.class)
+@ConditionalOnBean(Driver.class)
 @AutoConfigureBefore(TransactionAutoConfiguration.class)
-@Import({ Neo4jDataConfiguration.class, Neo4jReactiveDataConfiguration.class })
+@AutoConfigureAfter(Neo4jAutoConfiguration.class)
+@Import(Neo4jDefaultCallbacksRegistrar.class)
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
@@ -72,6 +82,36 @@ public class Neo4jDataAutoConfiguration {
 		Neo4jMappingContext context = new Neo4jMappingContext(neo4jConversions);
 		context.setInitialEntitySet(initialEntityClasses);
 		return context;
+	}
+
+	@Bean
+	@ConditionalOnMissingBean
+	public DatabaseSelectionProvider databaseSelectionProvider(Neo4jDataProperties properties) {
+		String database = properties.getDatabase();
+		return (database != null) ? DatabaseSelectionProvider.createStaticDatabaseSelectionProvider(database)
+				: DatabaseSelectionProvider.getDefaultSelectionProvider();
+	}
+
+	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
+	@ConditionalOnMissingBean
+	public Neo4jClient neo4jClient(Driver driver) {
+		return Neo4jClient.create(driver);
+	}
+
+	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
+	@ConditionalOnMissingBean(Neo4jOperations.class)
+	public Neo4jTemplate neo4jTemplate(Neo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext,
+			DatabaseSelectionProvider databaseNameProvider) {
+		return new Neo4jTemplate(neo4jClient, neo4jMappingContext, databaseNameProvider);
+	}
+
+	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
+	@ConditionalOnMissingBean(PlatformTransactionManager.class)
+	public Neo4jTransactionManager transactionManager(Driver driver, DatabaseSelectionProvider databaseNameProvider,
+			ObjectProvider<TransactionManagerCustomizers> optionalCustomizers) {
+		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(driver, databaseNameProvider);
+		optionalCustomizers.ifAvailable((customizer) -> customizer.customize(transactionManager));
+		return transactionManager;
 	}
 
 }

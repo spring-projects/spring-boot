@@ -16,30 +16,22 @@
 
 package org.springframework.boot.test.autoconfigure.data.neo4j;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.ApplicationContext;
-import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
-import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
-import org.springframework.test.context.DynamicPropertyRegistry;
-import org.springframework.test.context.DynamicPropertySource;
-import org.springframework.transaction.PlatformTransactionManager;
-import org.springframework.transaction.ReactiveTransactionManager;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
-import java.time.Duration;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationContext;
+import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
-import org.neo4j.driver.AccessMode;
-import org.neo4j.driver.Driver;
-import org.neo4j.driver.Session;
-import org.neo4j.driver.SessionConfig;
-
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
@@ -50,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  */
 @DataNeo4jTest
 @Testcontainers(disabledWithoutDocker = true)
-class ReactiveDataNeo4jIntegrationTests {
+class DataNeo4jTestReactiveIntegrationTests {
 
 	@Container
 	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:4.0").withoutAuthentication()
@@ -62,39 +54,25 @@ class ReactiveDataNeo4jIntegrationTests {
 	}
 
 	@Autowired
-	private Driver driver;
+	private ReactiveNeo4jTemplate neo4jTemplate;
 
 	@Autowired
-	private ReactiveNeo4jTemplate neo4jTemplate;
+	private ExampleReactiveRepository exampleRepository;
 
 	@Autowired
 	private ApplicationContext applicationContext;
 
 	@Test
-	void testTemplate() {
-
-		Mono.just(new ExampleGraph("Look, new @DataNeo4jTest with reactive!")).flatMap(neo4jTemplate::save)
+	void testRepository() {
+		Mono.just(new ExampleGraph("Look, new @DataNeo4jTest with reactive!")).flatMap(this.exampleRepository::save)
 				.as(StepVerifier::create).expectNextCount(1).verifyComplete();
-
-		try (Session session = driver.session(SessionConfig.builder().withDefaultAccessMode(AccessMode.READ).build())) {
-			long cnt = session.run("MATCH (n:ExampleGraph) RETURN count(n) as cnt").single().get("cnt").asLong();
-			assertThat(cnt).isEqualTo(1L);
-		}
+		StepVerifier.create(this.neo4jTemplate.count(ExampleGraph.class)).expectNext(1L).verifyComplete();
 	}
 
 	@Test
 	void didNotInjectExampleService() {
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
 				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
-	}
-
-	@Test
-	void didProvideOnlyReactiveTransactionManager() {
-
-		assertThat(this.applicationContext.getBean(ReactiveTransactionManager.class))
-				.isInstanceOf(ReactiveNeo4jTransactionManager.class);
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.applicationContext.getBean(PlatformTransactionManager.class));
 	}
 
 }

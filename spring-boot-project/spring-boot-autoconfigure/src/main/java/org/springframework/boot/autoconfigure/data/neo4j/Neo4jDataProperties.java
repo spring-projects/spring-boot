@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 
 /**
  * Configuration properties for Spring Data Neo4j.
@@ -29,10 +28,7 @@ import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 public class Neo4jDataProperties {
 
 	/**
-	 * A statically configured database. This property is only applicable when connecting
-	 * against a 4.0 cluster or server and will lead to errors if used with a prior
-	 * version of Neo4j. Leave this null (the default) to indicate that you like the
-	 * server to decide the default database to use.
+	 * Database name to use. By default, the server decides the default database to use.
 	 */
 	private String database;
 

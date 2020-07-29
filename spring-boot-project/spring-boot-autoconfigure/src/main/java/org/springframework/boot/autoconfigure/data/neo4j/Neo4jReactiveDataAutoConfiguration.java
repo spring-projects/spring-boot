@@ -20,17 +20,13 @@ import org.neo4j.driver.Driver;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.data.ConditionalOnRepositoryType;
-import org.springframework.boot.autoconfigure.data.RepositoryType;
-import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.annotation.Order;
 import org.springframework.data.neo4j.config.Neo4jDefaultReactiveCallbacksRegistrar;
 import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
@@ -42,49 +38,45 @@ import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryC
 import org.springframework.transaction.ReactiveTransactionManager;
 
 /**
- * Internal configuration for the reactive Neo4j client.
+ * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's reactive Neo4j
+ * support.
  *
  * @author Michael J. Simons
+ * @author Stephane Nicoll
+ * @since 2.4.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ ReactiveNeo4jTransactionManager.class, ReactiveTransactionManager.class, Flux.class })
-@ConditionalOnRepositoryType(store = "neo4j", type = RepositoryType.REACTIVE)
-@AutoConfigureAfter(Neo4jAutoConfiguration.class)
-@AutoConfigureBefore(Neo4jReactiveRepositoriesConfiguration.class)
+@ConditionalOnClass({ Driver.class, ReactiveNeo4jTransactionManager.class, ReactiveTransactionManager.class,
+		Flux.class })
+@ConditionalOnBean(Driver.class)
+@AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
 @Import(Neo4jDefaultReactiveCallbacksRegistrar.class)
-class Neo4jReactiveDataConfiguration {
+public class Neo4jReactiveDataAutoConfiguration {
 
-	@Bean("reactiveDatabaseSelectionProvider")
-	@ConditionalOnProperty(prefix = "spring.data.neo4j", name = "database")
+	@Bean
 	@ConditionalOnMissingBean
-	@Order(-30)
-	ReactiveDatabaseSelectionProvider staticDatabaseSelectionProvider(Neo4jDataProperties dataProperties) {
-		return ReactiveDatabaseSelectionProvider.createStaticDatabaseSelectionProvider(dataProperties.getDatabase());
-	}
-
-	@Bean("reactiveDatabaseSelectionProvider")
-	@ConditionalOnMissingBean
-	@Order(-20)
-	ReactiveDatabaseSelectionProvider defaultSelectionProvider() {
-		return ReactiveDatabaseSelectionProvider.getDefaultSelectionProvider();
+	public ReactiveDatabaseSelectionProvider reactiveDatabaseSelectionProvider(Neo4jDataProperties dataProperties) {
+		String database = dataProperties.getDatabase();
+		return (database != null) ? ReactiveDatabaseSelectionProvider.createStaticDatabaseSelectionProvider(database)
+				: ReactiveDatabaseSelectionProvider.getDefaultSelectionProvider();
 	}
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
 	@ConditionalOnMissingBean
-	ReactiveNeo4jClient neo4jClient(Driver driver) {
+	public ReactiveNeo4jClient reactiveNeo4jClient(Driver driver) {
 		return ReactiveNeo4jClient.create(driver);
 	}
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
 	@ConditionalOnMissingBean(ReactiveNeo4jOperations.class)
-	ReactiveNeo4jTemplate neo4jTemplate(ReactiveNeo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext,
-			ReactiveDatabaseSelectionProvider databaseNameProvider) {
+	public ReactiveNeo4jTemplate reactiveNeo4jTemplate(ReactiveNeo4jClient neo4jClient,
+			Neo4jMappingContext neo4jMappingContext, ReactiveDatabaseSelectionProvider databaseNameProvider) {
 		return new ReactiveNeo4jTemplate(neo4jClient, neo4jMappingContext, databaseNameProvider);
 	}
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
 	@ConditionalOnMissingBean(ReactiveTransactionManager.class)
-	ReactiveTransactionManager transactionManager(Driver driver,
+	public ReactiveTransactionManager reactiveTransactionManager(Driver driver,
 			ReactiveDatabaseSelectionProvider databaseNameProvider) {
 		return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
 	}

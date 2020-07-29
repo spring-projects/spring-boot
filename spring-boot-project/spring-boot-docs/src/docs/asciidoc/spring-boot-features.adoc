@@ -4532,47 +4532,6 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 
 
 
-[[boot-features-connecting-to-neo4j-embedded]]
-==== Using the Embedded Mode
-If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application, Spring Boot automatically configures an in-process embedded instance of Neo4j that does not persist any data when your application shuts down.
-
-NOTE: As the embedded Neo4j OGM  driver  does not provide the Neo4j kernel itself, you have to declare `org.neo4j:neo4j` as dependency yourself.
-Refer to https://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the Neo4j OGM documentation] for a list of compatible versions.
-
-The embedded driver takes precedence over the other drivers when there are multiple drivers on the classpath.
-You can explicitly disable the embedded mode by setting `spring.data.neo4j.embedded.enabled=false`.
-
-<<boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test,Data Neo4j Tests>> automatically make use of an embedded Neo4j instance if the embedded driver and Neo4j kernel are on the classpath as described above.
-
-NOTE: You can enable persistence for the embedded mode by providing a path to a database file in your configuration, e.g. `spring.data.neo4j.uri=file://var/tmp/graph.db`.
-
-
-
-[[boot-features-neo4j-ogm-native-types]]
-==== Using Native Types
-Neo4j-OGM can map some types, like those in `java.time.*`, to `String`-based properties or to one of the native types that Neo4j provides.
-For backwards compatibility reasons the default for Neo4j-OGM is to use a `String`-based representation.
-To use native types, add a dependency on either `org.neo4j:neo4j-ogm-bolt-native-types` or `org.neo4j:neo4j-ogm-embedded-native-types`, and configure the configprop:spring.data.neo4j.use-native-types[] property as shown in the following example:
-
-[source,properties,indent=0,configprops]
-----
-	spring.data.neo4j.use-native-types=true
-----
-
-
-
-[[boot-features-neo4j-ogm-session]]
-==== Neo4jSession
-By default, if you are running a web application, the session is bound to the thread for the entire processing of the request (that is, it uses the "Open Session in View" pattern).
-If you do not want this behavior, add the following line to your `application.properties` file:
-
-[source,properties,indent=0,configprops]
-----
-	spring.data.neo4j.open-in-view=false
-----
-
-
-
 [[boot-features-spring-data-neo4j-repositories]]
 ==== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.

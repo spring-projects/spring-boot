@@ -17,6 +17,10 @@
 package org.springframework.boot.autoconfigure.data.neo4j;
 
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.Neo4jContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
@@ -26,9 +30,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -37,32 +38,26 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Michael J. Simons
  */
-@SpringBootTest(properties = "spring.data.neo4j.repositories.type=imperative")
+@SpringBootTest
 @Testcontainers(disabledWithoutDocker = true)
 public class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
-	private static Neo4jContainer<?> neo4jServer = new Neo4jContainer<>("neo4j:4.0");
+	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>("neo4j:4.0");
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
-
 		registry.add("spring.neo4j.uri", neo4jServer::getBoltUrl);
 		registry.add("spring.neo4j.authentication.username", () -> "neo4j");
 		registry.add("spring.neo4j.authentication.password", neo4jServer::getAdminPassword);
 	}
 
-	private final CountryRepository countryRepository;
-
 	@Autowired
-	Neo4jRepositoriesAutoConfigurationIntegrationTests(CountryRepository countryRepository) {
-		this.countryRepository = countryRepository;
-	}
+	private CountryRepository countryRepository;
 
 	@Test
 	void ensureRepositoryIsReady() {
-
-		assertThat(countryRepository.count()).isEqualTo(0);
+		assertThat(this.countryRepository.count()).isEqualTo(0);
 	}
 
 	@Configuration

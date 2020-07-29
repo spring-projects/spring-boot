@@ -51,7 +51,6 @@ import org.springframework.core.annotation.AliasFor;
  * annotation.
  *
  * @author Phillip Webb
- * @author Michael J. Simons
  * @since 1.4.0
  * @see EntityScanPackages
  */
