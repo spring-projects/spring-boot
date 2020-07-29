@@ -153,6 +153,7 @@ dependencies {
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("commons-fileupload:commons-fileupload")
 	testImplementation("com.atomikos:transactions-jms")
+	testImplementation("com.ibm.db2:jcc")
 	testImplementation("com.jayway.jsonpath:json-path")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
