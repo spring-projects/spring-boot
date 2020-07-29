@@ -56,7 +56,11 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.convert.DataSizeUnit;
+import org.springframework.boot.convert.DurationFormat;
+import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.convert.PeriodFormat;
+import org.springframework.boot.convert.PeriodStyle;
 import org.springframework.boot.convert.PeriodUnit;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -781,13 +785,16 @@ class ConfigurationPropertiesTests {
 		source.put("test.duration", "12");
 		source.put("test.size", "13");
 		source.put("test.period", "14");
+		source.put("test.formattedDuration", "15d");
+		source.put("test.formattedPeriod", "16y");
 		sources.addLast(new MapPropertySource("test", source));
 		load(ConstructorParameterWithUnitConfiguration.class);
 		ConstructorParameterWithUnitProperties bean = this.context
 				.getBean(ConstructorParameterWithUnitProperties.class);
 		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
 		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(13));
-		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(14));
+		assertThat(bean.getFormattedDuration()).isEqualTo(Duration.ofDays(15));
+		assertThat(bean.getFormattedPeriod()).isEqualTo(Period.ofYears(16));
 	}
 
 	@Test
@@ -1985,12 +1992,20 @@ class ConfigurationPropertiesTests {
 
 		private final Period period;
 
+		private final Duration formattedDuration;
+
+		private final Period formattedPeriod;
+
 		ConstructorParameterWithUnitProperties(@DefaultValue("2") @DurationUnit(ChronoUnit.DAYS) Duration duration,
 				@DefaultValue("3") @DataSizeUnit(DataUnit.MEGABYTES) DataSize size,
-				@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period) {
+				@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period,
+				@DefaultValue("5") @DurationFormat(DurationStyle.SIMPLE) Duration formattedDuration,
+				@DefaultValue("6") @PeriodFormat(PeriodStyle.SIMPLE) Period formattedPeriod) {
 			this.size = size;
 			this.duration = duration;
 			this.period = period;
+			this.formattedDuration = formattedDuration;
+			this.formattedPeriod = formattedPeriod;
 		}
 
 		Duration getDuration() {
@@ -2003,6 +2018,14 @@ class ConfigurationPropertiesTests {
 
 		Period getPeriod() {
 			return this.period;
+		}
+
+		public Duration getFormattedDuration() {
+			return this.formattedDuration;
+		}
+
+		public Period getFormattedPeriod() {
+			return this.formattedPeriod;
 		}
 
 	}
