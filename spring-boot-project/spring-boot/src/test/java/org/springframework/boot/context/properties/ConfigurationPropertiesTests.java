@@ -785,16 +785,13 @@ class ConfigurationPropertiesTests {
 		source.put("test.duration", "12");
 		source.put("test.size", "13");
 		source.put("test.period", "14");
-		source.put("test.formattedDuration", "15d");
-		source.put("test.formattedPeriod", "16y");
 		sources.addLast(new MapPropertySource("test", source));
 		load(ConstructorParameterWithUnitConfiguration.class);
 		ConstructorParameterWithUnitProperties bean = this.context
 				.getBean(ConstructorParameterWithUnitProperties.class);
 		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
 		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(13));
-		assertThat(bean.getFormattedDuration()).isEqualTo(Duration.ofDays(15));
-		assertThat(bean.getFormattedPeriod()).isEqualTo(Period.ofYears(16));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(14));
 	}
 
 	@Test
@@ -813,6 +810,53 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
 		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(3));
 		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(4));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithCustomDataFormatShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "12d");
+		source.put("test.period", "13y");
+		sources.addLast(new MapPropertySource("test", source));
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+				.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(13));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomDurationFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+				});
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomPeriodFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.period", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).satisfies((ex) -> {
+					assertThat(ex).hasCauseInstanceOf(BindException.class);
+				});
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithDefaultDataFormatShouldBind() {
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+				.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(3));
 	}
 
 	@Test
@@ -1992,20 +2036,12 @@ class ConfigurationPropertiesTests {
 
 		private final Period period;
 
-		private final Duration formattedDuration;
-
-		private final Period formattedPeriod;
-
 		ConstructorParameterWithUnitProperties(@DefaultValue("2") @DurationUnit(ChronoUnit.DAYS) Duration duration,
 				@DefaultValue("3") @DataSizeUnit(DataUnit.MEGABYTES) DataSize size,
-				@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period,
-				@DefaultValue("5") @DurationFormat(DurationStyle.SIMPLE) Duration formattedDuration,
-				@DefaultValue("6") @PeriodFormat(PeriodStyle.SIMPLE) Period formattedPeriod) {
+				@DefaultValue("4") @PeriodUnit(ChronoUnit.YEARS) Period period) {
 			this.size = size;
 			this.duration = duration;
 			this.period = period;
-			this.formattedDuration = formattedDuration;
-			this.formattedPeriod = formattedPeriod;
 		}
 
 		Duration getDuration() {
@@ -2020,12 +2056,29 @@ class ConfigurationPropertiesTests {
 			return this.period;
 		}
 
-		Duration getFormattedDuration() {
-			return this.formattedDuration;
+	}
+
+	@ConstructorBinding
+	@ConfigurationProperties(prefix = "test")
+	static class ConstructorParameterWithFormatProperties {
+
+		private final Duration duration;
+
+		private final Period period;
+
+		ConstructorParameterWithFormatProperties(
+				@DefaultValue("2d") @DurationFormat(DurationStyle.SIMPLE) Duration duration,
+				@DefaultValue("3y") @PeriodFormat(PeriodStyle.SIMPLE) Period period) {
+			this.duration = duration;
+			this.period = period;
 		}
 
-		Period getFormattedPeriod() {
-			return this.formattedPeriod;
+		Duration getDuration() {
+			return this.duration;
+		}
+
+		Period getPeriod() {
+			return this.period;
 		}
 
 	}
@@ -2055,6 +2108,11 @@ class ConfigurationPropertiesTests {
 
 	@EnableConfigurationProperties(ConstructorParameterWithUnitProperties.class)
 	static class ConstructorParameterWithUnitConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterWithFormatProperties.class)
+	static class ConstructorParameterWithFormatConfiguration {
 
 	}
 
