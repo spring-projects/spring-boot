@@ -38,7 +38,11 @@ public class AtomikosConnectionFactoryBean extends com.atomikos.jms.AtomikosConn
 
 	@Override
 	public void setBeanName(String name) {
+	    if(name != null ){
 		this.beanName = name;
+		}else{
+		this.beanName = '';
+		}
 	}
 
 	@Override
