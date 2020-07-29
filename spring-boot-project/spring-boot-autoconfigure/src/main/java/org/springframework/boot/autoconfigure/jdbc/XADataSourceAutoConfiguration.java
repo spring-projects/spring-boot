@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,8 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.autoconfigure.jdbc;
+
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
@@ -28,6 +30,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties.DataSourceBeanCreationException;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -102,11 +105,17 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties) {
-		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
-		source.put("user", dataSourceProperties.determineUsername());
-		source.put("password", dataSourceProperties.determinePassword());
-		source.put("url", dataSourceProperties.determineUrl());
-		source.putAll(dataSourceProperties.getXa().getProperties());
+		Map<Object, Object> properties = new HashMap<Object, Object>();
+		properties.putAll(dataSourceProperties.getXa().getProperties());
+		properties.computeIfAbsent("user", (key) -> dataSourceProperties.determineUsername());
+		properties.computeIfAbsent("password", (key) -> dataSourceProperties.determinePassword());
+		try {
+			properties.computeIfAbsent("url", (key) -> dataSourceProperties.determineUrl());
+		}
+		catch (DataSourceBeanCreationException ex) {
+			// Continue as not all XA DataSource's require a URL
+		}
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource(properties);
 		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
 		aliases.addAliases("user", "username");
 		return source.withAliases(aliases);
