@@ -2020,11 +2020,11 @@ class ConfigurationPropertiesTests {
 			return this.period;
 		}
 
-		public Duration getFormattedDuration() {
+		Duration getFormattedDuration() {
 			return this.formattedDuration;
 		}
 
-		public Period getFormattedPeriod() {
+		Period getFormattedPeriod() {
 			return this.formattedPeriod;
 		}
 
