@@ -62,7 +62,7 @@ public class LiquibaseEndpoint {
 		while (target != null) {
 			Map<String, LiquibaseBean> liquibaseBeans = new HashMap<>();
 			DatabaseFactory factory = DatabaseFactory.getInstance();
-			this.context.getBeansOfType(SpringLiquibase.class)
+			target.getBeansOfType(SpringLiquibase.class)
 					.forEach((name, liquibase) -> liquibaseBeans.put(name, createReport(liquibase, factory)));
 			ApplicationContext parent = target.getParent();
 			contextBeans.put(target.getId(),
