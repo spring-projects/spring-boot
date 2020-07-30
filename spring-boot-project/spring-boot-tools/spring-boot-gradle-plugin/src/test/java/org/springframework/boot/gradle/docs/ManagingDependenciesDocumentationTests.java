@@ -63,4 +63,17 @@ class ManagingDependenciesDocumentationTests {
 										.contains("org.springframework.boot:spring-boot-starter TEST-SNAPSHOT"));
 	}
 
+	@TestTemplate
+	void configurePlatform() {
+		assertThat(this.gradleBuild.script("src/docs/gradle/managing-dependencies/configure-platform")
+				.build("dependencies", "--configuration", "compileClasspath").getOutput())
+						.contains("org.springframework.boot:spring-boot-starter ");
+	}
+
+	@TestTemplate
+	void customManagedVersionsWithPlatform() {
+		assertThat(this.gradleBuild.script("src/docs/gradle/managing-dependencies/custom-version-with-platform")
+				.build("dependencies", "--configuration", "compileClasspath").getOutput()).contains("1.7.20");
+	}
+
 }
