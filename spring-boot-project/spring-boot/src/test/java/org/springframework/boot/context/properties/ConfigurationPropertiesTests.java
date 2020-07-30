@@ -833,9 +833,8 @@ class ConfigurationPropertiesTests {
 		source.put("test.duration", "P12D");
 		sources.addLast(new MapPropertySource("test", source));
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).satisfies((ex) -> {
-					assertThat(ex).hasCauseInstanceOf(BindException.class);
-				});
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isInstanceOf(BindException.class);
 	}
 
 	@Test
@@ -845,9 +844,8 @@ class ConfigurationPropertiesTests {
 		source.put("test.period", "P12D");
 		sources.addLast(new MapPropertySource("test", source));
 		assertThatExceptionOfType(Exception.class)
-				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).satisfies((ex) -> {
-					assertThat(ex).hasCauseInstanceOf(BindException.class);
-				});
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isInstanceOf(BindException.class);
 	}
 
 	@Test
