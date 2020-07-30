@@ -17,9 +17,12 @@
 package org.springframework.boot.web.servlet.support;
 
 import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Map;
 import java.util.Vector;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -37,6 +40,7 @@ import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -119,6 +123,28 @@ class SpringBootServletInitializerTests {
 			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
 					.createRootApplicationContext(servletContext)) {
 				assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+			}
+		});
+		try {
+			webServer.start();
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void errorPageFilterIsRegisteredForRequestAndAsyncDispatch() {
+		WebServer webServer = new UndertowServletWebServerFactory(0).getWebServer((servletContext) -> {
+			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+					.createRootApplicationContext(servletContext)) {
+				Map<String, FilterRegistrationBean> registrations = context
+						.getBeansOfType(FilterRegistrationBean.class);
+				assertThat(registrations).hasSize(1);
+				FilterRegistrationBean errorPageFilterRegistration = registrations.get("errorPageFilterRegistration");
+				assertThat(errorPageFilterRegistration).hasFieldOrPropertyWithValue("dispatcherTypes",
+						EnumSet.of(DispatcherType.ASYNC, DispatcherType.REQUEST));
 			}
 		});
 		try {
@@ -234,6 +260,11 @@ class SpringBootServletInitializerTests {
 		WithErrorPageFilterNotRegistered() {
 			setRegisterErrorPageFilter(false);
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class WithErrorPageFilter extends SpringBootServletInitializer {
 
 	}
 
