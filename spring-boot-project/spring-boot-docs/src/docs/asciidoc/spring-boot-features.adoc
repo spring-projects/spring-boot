@@ -4185,7 +4185,8 @@ The following examples shows how to set some PostgreSQL connection options:
 	}
 ----
 
-When a `ConnectionFactory` bean is available, the regular jdbc `DataSource` auto-configuration backs off.
+When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
+If you want to retain the JDBC `DataSource` auto-configuration, and are comfortable with the risk of using the blocking JDBC API in a reactive application, add `@Import(DataSourceAutoConfiguration.class)` on a `@Configuration` class in your application to re-enable it.
 
 
 
