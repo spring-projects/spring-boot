@@ -1341,6 +1341,8 @@ These are:
 * `d` for days
 
 The default unit is milliseconds and can be overridden using `@DurationUnit` as illustrated in the sample above.
+Note that `@DurationUnit` is only supported with JavaBean-style property binding using getters and setters.
+It is not supported with constructor binding.
 
 TIP: If you are upgrading from a previous version that is using `Long` to express the duration, make sure to define the unit (using `@DurationUnit`) if it isn't milliseconds alongside the switch to `Duration`.
 Doing so gives a transparent upgrade path while supporting a much richer format.
