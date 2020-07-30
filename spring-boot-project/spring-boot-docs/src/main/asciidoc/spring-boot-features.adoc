@@ -6903,7 +6903,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-mock-mvc]]
 ===== Auto-configured Spring REST Docs Tests with Mock MVC
-`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs.
+`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0]
@@ -6973,7 +6973,7 @@ The following example shows a `RestDocumentationResultHandler` being defined:
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-web-test-client]]
 ===== Auto-configured Spring REST Docs Tests with WebTestClient
-`@AutoConfigureRestDocs` can also be used with `WebTestClient`.
+`@AutoConfigureRestDocs` can also be used with `WebTestClient` when testing reactive web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0]
