@@ -56,7 +56,11 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.convert.DataSizeUnit;
+import org.springframework.boot.convert.DurationFormat;
+import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.convert.PeriodFormat;
+import org.springframework.boot.convert.PeriodStyle;
 import org.springframework.boot.convert.PeriodUnit;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -806,6 +810,51 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
 		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(3));
 		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(4));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithCustomDataFormatShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "12d");
+		source.put("test.period", "13y");
+		sources.addLast(new MapPropertySource("test", source));
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+				.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(13));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomDurationFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomPeriodFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.period", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithDefaultDataFormatShouldBind() {
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+				.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(3));
 	}
 
 	@Test
@@ -2009,6 +2058,31 @@ class ConfigurationPropertiesTests {
 
 	@ConstructorBinding
 	@ConfigurationProperties(prefix = "test")
+	static class ConstructorParameterWithFormatProperties {
+
+		private final Duration duration;
+
+		private final Period period;
+
+		ConstructorParameterWithFormatProperties(
+				@DefaultValue("2d") @DurationFormat(DurationStyle.SIMPLE) Duration duration,
+				@DefaultValue("3y") @PeriodFormat(PeriodStyle.SIMPLE) Period period) {
+			this.duration = duration;
+			this.period = period;
+		}
+
+		Duration getDuration() {
+			return this.duration;
+		}
+
+		Period getPeriod() {
+			return this.period;
+		}
+
+	}
+
+	@ConstructorBinding
+	@ConfigurationProperties(prefix = "test")
 	@Validated
 	static class ConstructorParameterValidatedProperties {
 
@@ -2032,6 +2106,11 @@ class ConfigurationPropertiesTests {
 
 	@EnableConfigurationProperties(ConstructorParameterWithUnitProperties.class)
 	static class ConstructorParameterWithUnitConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterWithFormatProperties.class)
+	static class ConstructorParameterWithFormatConfiguration {
 
 	}
 
