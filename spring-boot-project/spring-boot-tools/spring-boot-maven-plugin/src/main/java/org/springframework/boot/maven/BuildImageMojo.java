@@ -164,7 +164,11 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	private TarArchive getApplicationContent(Owner owner, Libraries libraries) {
-		ImagePackager packager = getConfiguredPackager(() -> new ImagePackager(getJarFile()));
+		File jarFile = getJarFile();
+		if (jarFile.exists()) {
+			return TarArchive.fromZip(jarFile, owner);
+		}
+		ImagePackager packager = getConfiguredPackager(() -> new ImagePackager(jarFile));
 		return new PackagedTarArchive(owner, libraries, packager);
 	}
 
