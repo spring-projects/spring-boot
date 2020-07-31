@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
 import java.util.Collections;
 import java.util.List;
 
@@ -80,8 +81,8 @@ public class ResourceConfigDataLocationResolverTests {
 		String location = "file:src/test/resources/configdata/properties/application.properties";
 		List<ResourceConfigDataLocation> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(1);
-		assertThat(locations).extracting(Object::toString)
-				.containsExactly("file [src/test/resources/configdata/properties/application.properties]");
+		assertThat(locations).extracting(Object::toString).containsExactly(
+				filePath("src", "test", "resources", "configdata", "properties", "application.properties"));
 	}
 
 	@Test
@@ -131,9 +132,9 @@ public class ResourceConfigDataLocationResolverTests {
 		List<ResourceConfigDataLocation> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(3);
 		assertThat(locations).extracting(Object::toString)
-				.contains("file [src/test/resources/config/1-first/testproperties.properties]")
-				.contains("file [src/test/resources/config/2-second/testproperties.properties]")
-				.doesNotContain("file [src/test/resources/config/nested/3-third/testproperties.properties]");
+				.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
+				.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
+				.doesNotContain(filePath("src", "test", "resources", "config", "3-third", "testproperties.properties"));
 	}
 
 	@Test
@@ -143,9 +144,9 @@ public class ResourceConfigDataLocationResolverTests {
 		this.resolver = new ResourceConfigDataLocationResolver(null, this.environmentBinder, this.resourceLoader);
 		List<ResourceConfigDataLocation> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations).extracting(Object::toString).containsExactly(
-				"file [src/test/resources/config/0-empty/testproperties.properties]",
-				"file [src/test/resources/config/1-first/testproperties.properties]",
-				"file [src/test/resources/config/2-second/testproperties.properties]");
+				filePath("src", "test", "resources", "config", "0-empty", "testproperties.properties"),
+				filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"),
+				filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"));
 	}
 
 	@Test
@@ -154,9 +155,10 @@ public class ResourceConfigDataLocationResolverTests {
 		List<ResourceConfigDataLocation> locations = this.resolver.resolve(this.context, location);
 		assertThat(locations.size()).isEqualTo(3);
 		assertThat(locations).extracting(Object::toString)
-				.contains("file [src/test/resources/config/1-first/testproperties.properties]")
-				.contains("file [src/test/resources/config/2-second/testproperties.properties]")
-				.doesNotContain("file [src/test/resources/config/nested/3-third/testproperties.properties]");
+				.contains(filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"))
+				.contains(filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"))
+				.doesNotContain(filePath("src", "test", "resources", "config", "nested", "3-third",
+						"testproperties.properties"));
 	}
 
 	@Test
@@ -225,6 +227,10 @@ public class ResourceConfigDataLocationResolverTests {
 		List<ResourceConfigDataLocation> locations = this.resolver.resolveProfileSpecific(this.context, location,
 				profiles);
 		assertThat(locations).isEmpty();
+	}
+
+	private String filePath(String... components) {
+		return "file [" + String.join(File.separator, components) + "]";
 	}
 
 }

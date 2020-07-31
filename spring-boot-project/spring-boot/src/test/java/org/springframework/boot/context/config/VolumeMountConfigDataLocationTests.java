@@ -16,6 +16,8 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -52,7 +54,7 @@ public class VolumeMountConfigDataLocationTests {
 	@Test
 	void toStringReturnsDescriptiveString() {
 		VolumeMountConfigDataLocation location = new VolumeMountConfigDataLocation("/etc/config");
-		assertThat(location.toString()).isEqualTo("volume mount [/etc/config]");
+		assertThat(location.toString()).isEqualTo("volume mount [" + new File("/etc/config").getAbsolutePath() + "]");
 	}
 
 }

@@ -16,19 +16,15 @@
 
 package org.springframework.boot.liquibase;
 
-import java.io.File;
-
 import javax.sql.DataSource;
 
 import liquibase.integration.spring.SpringLiquibase;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,17 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Sebastiaan Fernandez
  */
+@ClassPathExclusions("derby-*")
 class LiquibaseChangelogMissingFailureAnalyzerTests {
-
-	@BeforeAll
-	static void configureDerbyLogLocation(@TempDir File temp) {
-		System.setProperty("derby.stream.error.file", new File(temp, "derby.log").getAbsolutePath());
-	}
-
-	@AfterAll
-	static void clearDerbyLogLocation() {
-		System.clearProperty("derby.stream.error.file");
-	}
 
 	@Test
 	void changelogParseExceptionDueToChangelogNotPresent() {

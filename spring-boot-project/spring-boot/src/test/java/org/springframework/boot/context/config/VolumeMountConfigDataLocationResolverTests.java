@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
@@ -50,7 +51,8 @@ class VolumeMountConfigDataLocationResolverTests {
 	void resolveReturnsConfigVolumeMountLocation() {
 		List<VolumeMountConfigDataLocation> locations = this.resolver.resolve(this.context, "volumemount:/etc/config");
 		assertThat(locations.size()).isEqualTo(1);
-		assertThat(locations).extracting(Object::toString).containsExactly("volume mount [/etc/config]");
+		assertThat(locations).extracting(Object::toString)
+				.containsExactly("volume mount [" + new File("/etc/config").getAbsolutePath() + "]");
 	}
 
 }
