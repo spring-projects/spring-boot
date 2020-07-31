@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.util.Collections;
+import java.util.List;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.boot.web.servlet.WebListenerRegistrar;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.core.Ordered;
 
@@ -37,8 +41,16 @@ public class ServletWebServerFactoryCustomizer
 
 	private final ServerProperties serverProperties;
 
+	private final Iterable<WebListenerRegistrar> webListenerRegistrars;
+
 	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
+		this(serverProperties, Collections.emptyList());
+	}
+
+	public ServletWebServerFactoryCustomizer(ServerProperties serverProperties,
+			List<WebListenerRegistrar> webListenerRegistrars) {
 		this.serverProperties = serverProperties;
+		this.webListenerRegistrars = webListenerRegistrars;
 	}
 
 	@Override
@@ -62,6 +74,9 @@ public class ServletWebServerFactoryCustomizer
 		map.from(this.serverProperties::getServerHeader).to(factory::setServerHeader);
 		map.from(this.serverProperties.getServlet()::getContextParameters).to(factory::setInitParameters);
 		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
+		for (WebListenerRegistrar registrar : this.webListenerRegistrars) {
+			registrar.register(factory);
+		}
 	}
 
 }

@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.EventListener;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -47,6 +48,7 @@ import io.undertow.server.session.SessionManager;
 import io.undertow.servlet.Servlets;
 import io.undertow.servlet.api.DeploymentInfo;
 import io.undertow.servlet.api.DeploymentManager;
+import io.undertow.servlet.api.ListenerInfo;
 import io.undertow.servlet.api.MimeMapping;
 import io.undertow.servlet.api.ServletContainerInitializerInfo;
 import io.undertow.servlet.api.ServletStackTraces;
@@ -330,6 +332,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		deployment.setEagerFilterInit(this.eagerFilterInit);
 		deployment.setPreservePathOnForward(this.preservePathOnForward);
 		configureMimeMappings(deployment);
+		configureWebListeners(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
 		}
@@ -348,6 +351,22 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		int sessionTimeout = (isZeroOrLess(timeoutDuration) ? -1 : (int) timeoutDuration.getSeconds());
 		sessionManager.setDefaultSessionTimeout(sessionTimeout);
 		return manager;
+	}
+
+	private void configureWebListeners(DeploymentInfo deployment) {
+		for (String className : getWebListenerClassNames()) {
+			try {
+				deployment.addListener(new ListenerInfo(loadWebListenerClass(className)));
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException("Failed to load web listener class '" + className + "'", ex);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<? extends EventListener> loadWebListenerClass(String className) throws ClassNotFoundException {
+		return (Class<? extends EventListener>) getServletClassLoader().loadClass(className);
 	}
 
 	private boolean isZeroOrLess(Duration timeoutDuration) {

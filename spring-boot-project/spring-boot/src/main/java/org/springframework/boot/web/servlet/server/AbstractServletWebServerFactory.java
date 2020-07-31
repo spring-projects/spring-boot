@@ -23,6 +23,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
@@ -80,6 +81,8 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 	private final DocumentRoot documentRoot = new DocumentRoot(this.logger);
 
 	private final StaticResourceJars staticResourceJars = new StaticResourceJars();
+
+	private final Set<String> webListenerClassNames = new HashSet<String>();
 
 	/**
 	 * Create a new {@link AbstractServletWebServerFactory} instance.
@@ -281,6 +284,15 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	protected final File getValidSessionStoreDir(boolean mkdirs) {
 		return this.session.getSessionStoreDirectory().getValidDirectory(mkdirs);
+	}
+
+	@Override
+	public void addWebListeners(String... webListenerClassNames) {
+		this.webListenerClassNames.addAll(Arrays.asList(webListenerClassNames));
+	}
+
+	protected final Set<String> getWebListenerClassNames() {
+		return this.webListenerClassNames;
 	}
 
 	/**
