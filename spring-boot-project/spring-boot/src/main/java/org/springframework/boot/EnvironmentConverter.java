@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -85,20 +85,17 @@ final class EnvironmentConverter {
 		return result;
 	}
 
-	private StandardEnvironment createEnvironment(
-			Class<? extends StandardEnvironment> type) {
+	private StandardEnvironment createEnvironment(Class<? extends StandardEnvironment> type) {
 		try {
-			return type.newInstance();
+			return type.getDeclaredConstructor().newInstance();
 		}
 		catch (Exception ex) {
 			return new StandardEnvironment();
 		}
 	}
 
-	private void copyPropertySources(ConfigurableEnvironment source,
-			StandardEnvironment target) {
-		removePropertySources(target.getPropertySources(),
-				isServletEnvironment(target.getClass(), this.classLoader));
+	private void copyPropertySources(ConfigurableEnvironment source, StandardEnvironment target) {
+		removePropertySources(target.getPropertySources(), isServletEnvironment(target.getClass(), this.classLoader));
 		for (PropertySource<?> propertySource : source.getPropertySources()) {
 			if (!SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(propertySource.getName())) {
 				target.getPropertySources().addLast(propertySource);
@@ -106,11 +103,9 @@ final class EnvironmentConverter {
 		}
 	}
 
-	private boolean isServletEnvironment(Class<?> conversionType,
-			ClassLoader classLoader) {
+	private boolean isServletEnvironment(Class<?> conversionType, ClassLoader classLoader) {
 		try {
-			Class<?> webEnvironmentClass = ClassUtils
-					.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
+			Class<?> webEnvironmentClass = ClassUtils.forName(CONFIGURABLE_WEB_ENVIRONMENT_CLASS, classLoader);
 			return webEnvironmentClass.isAssignableFrom(conversionType);
 		}
 		catch (Throwable ex) {
@@ -118,15 +113,13 @@ final class EnvironmentConverter {
 		}
 	}
 
-	private void removePropertySources(MutablePropertySources propertySources,
-			boolean isServletEnvironment) {
+	private void removePropertySources(MutablePropertySources propertySources, boolean isServletEnvironment) {
 		Set<String> names = new HashSet<>();
 		for (PropertySource<?> propertySource : propertySources) {
 			names.add(propertySource.getName());
 		}
 		for (String name : names) {
-			if (!isServletEnvironment
-					|| !SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(name)) {
+			if (!isServletEnvironment || !SERVLET_ENVIRONMENT_SOURCE_NAMES.contains(name)) {
 				propertySources.remove(name);
 			}
 		}

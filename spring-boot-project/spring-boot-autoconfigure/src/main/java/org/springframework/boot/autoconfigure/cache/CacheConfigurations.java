@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,20 +50,19 @@ final class CacheConfigurations {
 	private CacheConfigurations() {
 	}
 
-	public static String getConfigurationClass(CacheType cacheType) {
+	static String getConfigurationClass(CacheType cacheType) {
 		Class<?> configurationClass = MAPPINGS.get(cacheType);
 		Assert.state(configurationClass != null, () -> "Unknown cache type " + cacheType);
 		return configurationClass.getName();
 	}
 
-	public static CacheType getType(String configurationClassName) {
+	static CacheType getType(String configurationClassName) {
 		for (Map.Entry<CacheType, Class<?>> entry : MAPPINGS.entrySet()) {
 			if (entry.getValue().getName().equals(configurationClassName)) {
 				return entry.getKey();
 			}
 		}
-		throw new IllegalStateException(
-				"Unknown configuration class " + configurationClassName);
+		throw new IllegalStateException("Unknown configuration class " + configurationClassName);
 	}
 
 }

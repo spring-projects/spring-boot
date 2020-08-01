@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,9 +25,9 @@ import java.lang.annotation.Target;
 import org.springframework.context.annotation.Conditional;
 
 /**
- * {@link Conditional} that checks whether or not a default health indicator is enabled.
- * Matches if the value of the {@code management.health.<name>.enabled} property is
- * {@code true}. Otherwise, matches if the value of the
+ * {@link Conditional @Conditional} that checks whether or not a default health indicator
+ * is enabled. Matches if the value of the {@code management.health.<name>.enabled}
+ * property is {@code true}. Otherwise, matches if the value of the
  * {@code management.health.defaults.enabled} property is {@code true} or if it is not
  * configured.
  *

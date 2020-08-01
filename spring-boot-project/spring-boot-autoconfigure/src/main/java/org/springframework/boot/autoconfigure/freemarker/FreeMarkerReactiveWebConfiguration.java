@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ import org.springframework.web.reactive.result.view.freemarker.FreeMarkerViewRes
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @AutoConfigureAfter(WebFluxAutoConfiguration.class)
 class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration {
@@ -44,22 +44,21 @@ class FreeMarkerReactiveWebConfiguration extends AbstractFreeMarkerConfiguration
 
 	@Bean
 	@ConditionalOnMissingBean(FreeMarkerConfig.class)
-	public FreeMarkerConfigurer freeMarkerConfigurer() {
+	FreeMarkerConfigurer freeMarkerConfigurer() {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
 		applyProperties(configurer);
 		return configurer;
 	}
 
 	@Bean
-	public freemarker.template.Configuration freeMarkerConfiguration(
-			FreeMarkerConfig configurer) {
+	freemarker.template.Configuration freeMarkerConfiguration(FreeMarkerConfig configurer) {
 		return configurer.getConfiguration();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(name = "freeMarkerViewResolver")
 	@ConditionalOnProperty(name = "spring.freemarker.enabled", matchIfMissing = true)
-	public FreeMarkerViewResolver freeMarkerViewResolver() {
+	FreeMarkerViewResolver freeMarkerViewResolver() {
 		FreeMarkerViewResolver resolver = new FreeMarkerViewResolver();
 		resolver.setPrefix(getProperties().getPrefix());
 		resolver.setSuffix(getProperties().getSuffix());

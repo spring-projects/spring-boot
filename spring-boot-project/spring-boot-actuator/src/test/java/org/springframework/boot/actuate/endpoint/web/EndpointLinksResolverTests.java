@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.assertj.core.api.Condition;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -37,28 +37,26 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class EndpointLinksResolverTests {
+class EndpointLinksResolverTests {
 
 	@Test
-	public void linkResolutionWithTrailingSlashStripsSlashOnSelfLink() {
+	void linkResolutionWithTrailingSlashStripsSlashOnSelfLink() {
 		Map<String, Link> links = new EndpointLinksResolver(Collections.emptyList())
 				.resolveLinks("https://api.example.com/actuator/");
 		assertThat(links).hasSize(1);
-		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/actuator"));
+		assertThat(links).hasEntrySatisfying("self", linkWithHref("https://api.example.com/actuator"));
 	}
 
 	@Test
-	public void linkResolutionWithoutTrailingSlash() {
+	void linkResolutionWithoutTrailingSlash() {
 		Map<String, Link> links = new EndpointLinksResolver(Collections.emptyList())
 				.resolveLinks("https://api.example.com/actuator");
 		assertThat(links).hasSize(1);
-		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/actuator"));
+		assertThat(links).hasEntrySatisfying("self", linkWithHref("https://api.example.com/actuator"));
 	}
 
 	@Test
-	public void resolvedLinksContainsALinkForEachWebEndpointOperation() {
+	void resolvedLinksContainsALinkForEachWebEndpointOperation() {
 		List<WebOperation> operations = new ArrayList<>();
 		operations.add(operationWithPath("/alpha", "alpha"));
 		operations.add(operationWithPath("/alpha/{name}", "alpha-name"));
@@ -67,54 +65,46 @@ public class EndpointLinksResolverTests {
 		given(endpoint.isEnableByDefault()).willReturn(true);
 		given(endpoint.getOperations()).willReturn(operations);
 		String requestUrl = "https://api.example.com/actuator";
-		Map<String, Link> links = new EndpointLinksResolver(
-				Collections.singletonList(endpoint)).resolveLinks(requestUrl);
+		Map<String, Link> links = new EndpointLinksResolver(Collections.singletonList(endpoint))
+				.resolveLinks(requestUrl);
 		assertThat(links).hasSize(3);
-		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/actuator"));
-		assertThat(links).hasEntrySatisfying("alpha",
-				linkWithHref("https://api.example.com/actuator/alpha"));
+		assertThat(links).hasEntrySatisfying("self", linkWithHref("https://api.example.com/actuator"));
+		assertThat(links).hasEntrySatisfying("alpha", linkWithHref("https://api.example.com/actuator/alpha"));
 		assertThat(links).hasEntrySatisfying("alpha-name",
 				linkWithHref("https://api.example.com/actuator/alpha/{name}"));
 	}
 
 	@Test
-	public void resolvedLinksContainsALinkForServletEndpoint() {
+	void resolvedLinksContainsALinkForServletEndpoint() {
 		ExposableServletEndpoint servletEndpoint = mock(ExposableServletEndpoint.class);
 		given(servletEndpoint.getEndpointId()).willReturn(EndpointId.of("alpha"));
 		given(servletEndpoint.isEnableByDefault()).willReturn(true);
 		given(servletEndpoint.getRootPath()).willReturn("alpha");
 		String requestUrl = "https://api.example.com/actuator";
-		Map<String, Link> links = new EndpointLinksResolver(
-				Collections.singletonList(servletEndpoint)).resolveLinks(requestUrl);
+		Map<String, Link> links = new EndpointLinksResolver(Collections.singletonList(servletEndpoint))
+				.resolveLinks(requestUrl);
 		assertThat(links).hasSize(2);
-		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/actuator"));
-		assertThat(links).hasEntrySatisfying("alpha",
-				linkWithHref("https://api.example.com/actuator/alpha"));
+		assertThat(links).hasEntrySatisfying("self", linkWithHref("https://api.example.com/actuator"));
+		assertThat(links).hasEntrySatisfying("alpha", linkWithHref("https://api.example.com/actuator/alpha"));
 	}
 
 	@Test
-	public void resolvedLinksContainsALinkForControllerEndpoint() {
-		ExposableControllerEndpoint controllerEndpoint = mock(
-				ExposableControllerEndpoint.class);
+	void resolvedLinksContainsALinkForControllerEndpoint() {
+		ExposableControllerEndpoint controllerEndpoint = mock(ExposableControllerEndpoint.class);
 		given(controllerEndpoint.getEndpointId()).willReturn(EndpointId.of("alpha"));
 		given(controllerEndpoint.isEnableByDefault()).willReturn(true);
 		given(controllerEndpoint.getRootPath()).willReturn("alpha");
 		String requestUrl = "https://api.example.com/actuator";
-		Map<String, Link> links = new EndpointLinksResolver(
-				Collections.singletonList(controllerEndpoint)).resolveLinks(requestUrl);
+		Map<String, Link> links = new EndpointLinksResolver(Collections.singletonList(controllerEndpoint))
+				.resolveLinks(requestUrl);
 		assertThat(links).hasSize(2);
-		assertThat(links).hasEntrySatisfying("self",
-				linkWithHref("https://api.example.com/actuator"));
-		assertThat(links).hasEntrySatisfying("alpha",
-				linkWithHref("https://api.example.com/actuator/alpha"));
+		assertThat(links).hasEntrySatisfying("self", linkWithHref("https://api.example.com/actuator"));
+		assertThat(links).hasEntrySatisfying("alpha", linkWithHref("https://api.example.com/actuator/alpha"));
 	}
 
 	private WebOperation operationWithPath(String path, String id) {
-		WebOperationRequestPredicate predicate = new WebOperationRequestPredicate(path,
-				WebEndpointHttpMethod.GET, Collections.emptyList(),
-				Collections.emptyList());
+		WebOperationRequestPredicate predicate = new WebOperationRequestPredicate(path, WebEndpointHttpMethod.GET,
+				Collections.emptyList(), Collections.emptyList());
 		WebOperation operation = mock(WebOperation.class);
 		given(operation.getId()).willReturn(id);
 		given(operation.getType()).willReturn(OperationType.READ);
@@ -123,8 +113,7 @@ public class EndpointLinksResolverTests {
 	}
 
 	private Condition<Link> linkWithHref(String href) {
-		return new Condition<>((link) -> href.equals(link.getHref()),
-				"Link with href '%s'", href);
+		return new Condition<>((link) -> href.equals(link.getHref()), "Link with href '%s'", href);
 	}
 
 }

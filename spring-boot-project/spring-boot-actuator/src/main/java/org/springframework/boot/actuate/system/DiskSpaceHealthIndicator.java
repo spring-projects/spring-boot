@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,6 +25,7 @@ import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.unit.DataSize;
 
 /**
@@ -62,15 +63,12 @@ public class DiskSpaceHealthIndicator extends AbstractHealthIndicator {
 			builder.up();
 		}
 		else {
-			logger.warn(String.format(
-					"Free disk space below threshold. "
-							+ "Available: %d bytes (threshold: %s)",
+			logger.warn(LogMessage.format("Free disk space below threshold. Available: %d bytes (threshold: %s)",
 					diskFreeInBytes, this.threshold));
 			builder.down();
 		}
-		builder.withDetail("total", this.path.getTotalSpace())
-				.withDetail("free", diskFreeInBytes)
-				.withDetail("threshold", this.threshold.toBytes());
+		builder.withDetail("total", this.path.getTotalSpace()).withDetail("free", diskFreeInBytes)
+				.withDetail("threshold", this.threshold.toBytes()).withDetail("exists", this.path.exists());
 	}
 
 }

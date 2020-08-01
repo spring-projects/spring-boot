@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.flyway;
 
 import java.util.Arrays;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
@@ -29,25 +29,23 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Anand Shastri
  */
-public class FlywayMigrationScriptMissingFailureAnalyzerTests {
+class FlywayMigrationScriptMissingFailureAnalyzerTests {
 
 	@Test
-	public void analysisForMissingScriptLocation() {
+	void analysisForMissingScriptLocation() {
 		FailureAnalysis failureAnalysis = performAnalysis();
-		assertThat(failureAnalysis.getDescription())
-				.contains("no migration scripts location is configured");
-		assertThat(failureAnalysis.getAction())
-				.contains("Check your Flyway configuration");
+		assertThat(failureAnalysis.getDescription()).contains("no migration scripts location is configured");
+		assertThat(failureAnalysis.getAction()).contains("Check your Flyway configuration");
 	}
 
 	@Test
-	public void analysisForScriptLocationsNotFound() {
+	void analysisForScriptLocationsNotFound() {
 		FailureAnalysis failureAnalysis = performAnalysis("classpath:db/migration");
-		assertThat(failureAnalysis.getDescription()).contains(
-				"none of the following migration scripts locations could be found")
+		assertThat(failureAnalysis.getDescription())
+				.contains("none of the following migration scripts locations could be found")
 				.contains("classpath:db/migration");
-		assertThat(failureAnalysis.getAction()).contains(
-				"Review the locations above or check your Flyway configuration");
+		assertThat(failureAnalysis.getAction())
+				.contains("Review the locations above or check your Flyway configuration");
 	}
 
 	private FailureAnalysis performAnalysis(String... locations) {

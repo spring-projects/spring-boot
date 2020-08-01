@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.web.embedded.netty;
 
 import java.security.NoSuchProviderException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerException;
@@ -31,43 +31,38 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Andy Wilkinson
  * @author Raheela Aslam
  */
-public class SslServerCustomizerTests {
+class SslServerCustomizerTests {
 
 	@Test
-	public void keyStoreProviderIsUsedWhenCreatingKeyStore() throws Exception {
+	void keyStoreProviderIsUsedWhenCreatingKeyStore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
 		ssl.setKeyStoreProvider("com.example.KeyStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
 				.withCauseInstanceOf(NoSuchProviderException.class)
 				.withMessageContaining("com.example.KeyStoreProvider");
 	}
 
 	@Test
-	public void trustStoreProviderIsUsedWhenCreatingTrustStore() throws Exception {
+	void trustStoreProviderIsUsedWhenCreatingTrustStore() throws Exception {
 		Ssl ssl = new Ssl();
 		ssl.setTrustStorePassword("password");
 		ssl.setTrustStore("src/test/resources/test.jks");
 		ssl.setTrustStoreProvider("com.example.TrustStoreProvider");
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> customizer.getTrustManagerFactory(ssl, null))
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getTrustManagerFactory(ssl, null))
 				.withCauseInstanceOf(NoSuchProviderException.class)
 				.withMessageContaining("com.example.TrustStoreProvider");
 	}
 
 	@Test
-	public void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException()
-			throws Exception {
+	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() throws Exception {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
-		assertThatIllegalStateException()
-				.isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
-				.withCauseInstanceOf(WebServerException.class)
-				.withMessageContaining("Could not load key store 'null'");
+		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))
+				.withCauseInstanceOf(WebServerException.class).withMessageContaining("Could not load key store 'null'");
 	}
 
 }

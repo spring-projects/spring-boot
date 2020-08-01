@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,11 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.health;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry;
-import org.springframework.boot.actuate.health.HealthAggregator;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
-import org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry;
 import org.springframework.core.ResolvableType;
 
 /**
@@ -33,26 +29,28 @@ import org.springframework.core.ResolvableType;
  * @param <S> the bean source type
  * @author Stephane Nicoll
  * @since 2.0.0
+ * @deprecated since 2.2.0 in favor of
+ * {@link CompositeReactiveHealthContributorConfiguration}
  */
+@Deprecated
 public abstract class CompositeReactiveHealthIndicatorConfiguration<H extends ReactiveHealthIndicator, S> {
 
 	@Autowired
-	private HealthAggregator healthAggregator;
+	private org.springframework.boot.actuate.health.HealthAggregator healthAggregator;
 
 	protected ReactiveHealthIndicator createHealthIndicator(Map<String, S> beans) {
 		if (beans.size() == 1) {
 			return createHealthIndicator(beans.values().iterator().next());
 		}
-		ReactiveHealthIndicatorRegistry registry = new DefaultReactiveHealthIndicatorRegistry();
-		beans.forEach(
-				(name, source) -> registry.register(name, createHealthIndicator(source)));
-		return new CompositeReactiveHealthIndicator(this.healthAggregator, registry);
+		org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry registry = new org.springframework.boot.actuate.health.DefaultReactiveHealthIndicatorRegistry();
+		beans.forEach((name, source) -> registry.register(name, createHealthIndicator(source)));
+		return new org.springframework.boot.actuate.health.CompositeReactiveHealthIndicator(this.healthAggregator,
+				registry);
 	}
 
 	@SuppressWarnings("unchecked")
 	protected H createHealthIndicator(S source) {
-		Class<?>[] generics = ResolvableType
-				.forClass(CompositeReactiveHealthIndicatorConfiguration.class, getClass())
+		Class<?>[] generics = ResolvableType.forClass(CompositeReactiveHealthIndicatorConfiguration.class, getClass())
 				.resolveGenerics();
 		Class<H> indicatorClass = (Class<H>) generics[0];
 		Class<S> sourceClass = (Class<S>) generics[1];
@@ -60,8 +58,8 @@ public abstract class CompositeReactiveHealthIndicatorConfiguration<H extends Re
 			return indicatorClass.getConstructor(sourceClass).newInstance(source);
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to create indicator " + indicatorClass
-					+ " for source " + sourceClass, ex);
+			throw new IllegalStateException(
+					"Unable to create indicator " + indicatorClass + " for source " + sourceClass, ex);
 		}
 	}
 

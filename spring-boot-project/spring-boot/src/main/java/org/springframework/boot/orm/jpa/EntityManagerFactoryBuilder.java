@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -66,8 +66,8 @@ public class EntityManagerFactoryBuilder {
 	 * @param persistenceUnitManager optional source of persistence unit information (can
 	 * be null)
 	 */
-	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager) {
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
+			PersistenceUnitManager persistenceUnitManager) {
 		this(jpaVendorAdapter, jpaProperties, persistenceUnitManager, null);
 	}
 
@@ -82,9 +82,8 @@ public class EntityManagerFactoryBuilder {
 	 * fallback (can be null)
 	 * @since 1.4.1
 	 */
-	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter,
-			Map<String, ?> jpaProperties, PersistenceUnitManager persistenceUnitManager,
-			URL persistenceUnitRootLocation) {
+	public EntityManagerFactoryBuilder(JpaVendorAdapter jpaVendorAdapter, Map<String, ?> jpaProperties,
+			PersistenceUnitManager persistenceUnitManager, URL persistenceUnitRootLocation) {
 		this.jpaVendorAdapter = jpaVendorAdapter;
 		this.persistenceUnitManager = persistenceUnitManager;
 		this.jpaProperties = new LinkedHashMap<>(jpaProperties);
@@ -206,14 +205,13 @@ public class EntityManagerFactoryBuilder {
 		public LocalContainerEntityManagerFactoryBean build() {
 			LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = new LocalContainerEntityManagerFactoryBean();
 			if (EntityManagerFactoryBuilder.this.persistenceUnitManager != null) {
-				entityManagerFactoryBean.setPersistenceUnitManager(
-						EntityManagerFactoryBuilder.this.persistenceUnitManager);
+				entityManagerFactoryBean
+						.setPersistenceUnitManager(EntityManagerFactoryBuilder.this.persistenceUnitManager);
 			}
 			if (this.persistenceUnit != null) {
 				entityManagerFactoryBean.setPersistenceUnitName(this.persistenceUnit);
 			}
-			entityManagerFactoryBean.setJpaVendorAdapter(
-					EntityManagerFactoryBuilder.this.jpaVendorAdapter);
+			entityManagerFactoryBean.setJpaVendorAdapter(EntityManagerFactoryBuilder.this.jpaVendorAdapter);
 
 			if (this.jta) {
 				entityManagerFactoryBean.setJtaDataSource(this.dataSource);
@@ -222,20 +220,17 @@ public class EntityManagerFactoryBuilder {
 				entityManagerFactoryBean.setDataSource(this.dataSource);
 			}
 			entityManagerFactoryBean.setPackagesToScan(this.packagesToScan);
-			entityManagerFactoryBean.getJpaPropertyMap()
-					.putAll(EntityManagerFactoryBuilder.this.jpaProperties);
+			entityManagerFactoryBean.getJpaPropertyMap().putAll(EntityManagerFactoryBuilder.this.jpaProperties);
 			entityManagerFactoryBean.getJpaPropertyMap().putAll(this.properties);
 			if (!ObjectUtils.isEmpty(this.mappingResources)) {
 				entityManagerFactoryBean.setMappingResources(this.mappingResources);
 			}
 			URL rootLocation = EntityManagerFactoryBuilder.this.persistenceUnitRootLocation;
 			if (rootLocation != null) {
-				entityManagerFactoryBean
-						.setPersistenceUnitRootLocation(rootLocation.toString());
+				entityManagerFactoryBean.setPersistenceUnitRootLocation(rootLocation.toString());
 			}
 			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
-				entityManagerFactoryBean.setBootstrapExecutor(
-						EntityManagerFactoryBuilder.this.bootstrapExecutor);
+				entityManagerFactoryBean.setBootstrapExecutor(EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
 			return entityManagerFactoryBean;
 		}

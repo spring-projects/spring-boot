@@ -1,0 +1,79 @@
+:numbered!:
+[appendix]
+[[common-application-properties]]
+= Common Application properties
+include::attributes.adoc[]
+
+Various properties can be specified inside your `application.properties` file, inside your `application.yml` file, or as command line switches.
+This appendix provides a list of common Spring Boot properties and references to the underlying classes that consume them.
+
+TIP: Spring Boot provides various conversion mechanism with advanced value formatting, make sure to review <<spring-boot-features.adoc#boot-features-external-config-conversion, the properties conversion section>>.
+
+NOTE: Property contributions can come from additional jar files on your classpath, so you should not consider this an exhaustive list.
+Also, you can define your own properties.
+
+
+
+== Core properties
+
+include::config-docs/core.adoc[]
+
+== Cache properties
+
+include::config-docs/cache.adoc[]
+
+== Mail properties
+
+include::config-docs/mail.adoc[]
+
+== JSON properties
+
+include::config-docs/json.adoc[]
+
+== Data properties
+
+include::config-docs/data.adoc[]
+
+== Transaction properties
+
+include::config-docs/transaction.adoc[]
+
+== Data migration properties
+
+include::config-docs/data-migration.adoc[]
+
+== Integration properties
+
+include::config-docs/integration.adoc[]
+
+== Web properties
+
+include::config-docs/web.adoc[]
+
+== Templating properties
+
+include::config-docs/templating.adoc[]
+
+== Server properties
+
+include::config-docs/server.adoc[]
+
+== Security properties
+
+include::config-docs/security.adoc[]
+
+== RSocket properties
+
+include::config-docs/rsocket.adoc[]
+
+== Actuator properties
+
+include::config-docs/actuator.adoc[]
+
+== Devtools properties
+
+include::config-docs/devtools.adoc[]
+
+== Testing properties
+
+include::config-docs/testing.adoc[]

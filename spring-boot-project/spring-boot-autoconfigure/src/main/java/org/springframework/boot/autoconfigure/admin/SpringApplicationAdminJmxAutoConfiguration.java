@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,9 +39,10 @@ import org.springframework.jmx.export.MBeanExporter;
  * @since 1.3.0
  * @see SpringApplicationAdminMXBean
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true", matchIfMissing = false)
+@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true",
+		matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {
 
 	/**
@@ -58,8 +59,7 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar(
-			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment)
-			throws MalformedObjectNameException {
+			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment) throws MalformedObjectNameException {
 		String jmxName = environment.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);
 		if (mbeanExporters != null) { // Make sure to not register that MBean twice
 			for (MBeanExporter mbeanExporter : mbeanExporters) {

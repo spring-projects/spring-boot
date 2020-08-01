@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,8 +17,9 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -29,9 +30,8 @@ import org.springframework.core.type.AnnotationMetadata;
  *
  * @author Stephane Nicoll
  */
-@Configuration
-@Import({ DataSourceInitializerInvoker.class,
-		DataSourceInitializationConfiguration.Registrar.class })
+@Configuration(proxyBeanMethods = false)
+@Import({ DataSourceInitializerInvoker.class, DataSourceInitializationConfiguration.Registrar.class })
 class DataSourceInitializationConfiguration {
 
 	/**
@@ -47,8 +47,10 @@ class DataSourceInitializationConfiguration {
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 				BeanDefinitionRegistry registry) {
 			if (!registry.containsBeanDefinition(BEAN_NAME)) {
-				GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-				beanDefinition.setBeanClass(DataSourceInitializerPostProcessor.class);
+				AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
+						.genericBeanDefinition(DataSourceInitializerPostProcessor.class,
+								DataSourceInitializerPostProcessor::new)
+						.getBeanDefinition();
 				beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 				// We don't need this one to be post processed otherwise it can cause a
 				// cascade of bean instantiation that we would rather avoid.

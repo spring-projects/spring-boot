@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,8 @@ import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.ObjectProvider;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -38,8 +40,9 @@ import org.springframework.kafka.config.StreamsBuilderFactoryBean;
  *
  * @author Gary Russell
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(StreamsBuilder.class)
 @ConditionalOnBean(name = KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME)
 class KafkaStreamsAnnotationDrivenConfiguration {
@@ -52,13 +55,12 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 	@ConditionalOnMissingBean
 	@Bean(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_CONFIG_BEAN_NAME)
-	public KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
+	KafkaStreamsConfiguration defaultKafkaStreamsConfig(Environment environment) {
 		Map<String, Object> streamsProperties = this.properties.buildStreamsProperties();
 		if (this.properties.getStreams().getApplicationId() == null) {
 			String applicationName = environment.getProperty("spring.application.name");
 			if (applicationName == null) {
-				throw new InvalidConfigurationPropertyValueException(
-						"spring.kafka.streams.application-id", null,
+				throw new InvalidConfigurationPropertyValueException("spring.kafka.streams.application-id", null,
 						"This property is mandatory and fallback 'spring.application.name' is not set either.");
 			}
 			streamsProperties.put(StreamsConfig.APPLICATION_ID_CONFIG, applicationName);
@@ -67,8 +69,10 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 	}
 
 	@Bean
-	public KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
-			StreamsBuilderFactoryBean factoryBean) {
+	KafkaStreamsFactoryBeanConfigurer kafkaStreamsFactoryBeanConfigurer(
+			@Qualifier(KafkaStreamsDefaultConfiguration.DEFAULT_STREAMS_BUILDER_BEAN_NAME) StreamsBuilderFactoryBean factoryBean,
+			ObjectProvider<StreamsBuilderFactoryBeanCustomizer> customizers) {
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(factoryBean));
 		return new KafkaStreamsFactoryBeanConfigurer(this.properties, factoryBean);
 	}
 
@@ -79,8 +83,7 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 
 		private final StreamsBuilderFactoryBean factoryBean;
 
-		KafkaStreamsFactoryBeanConfigurer(KafkaProperties properties,
-				StreamsBuilderFactoryBean factoryBean) {
+		KafkaStreamsFactoryBeanConfigurer(KafkaProperties properties, StreamsBuilderFactoryBean factoryBean) {
 			this.properties = properties;
 			this.factoryBean = factoryBean;
 		}

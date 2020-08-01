@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,16 +46,15 @@ import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
 
 /**
- * JTA Configuration for <A href="http://www.atomikos.com/">Atomikos</a>.
+ * JTA Configuration for <A href="https://www.atomikos.com/">Atomikos</a>.
  *
  * @author Josh Long
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
- * @since 1.2.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties({ AtomikosProperties.class, JtaProperties.class })
 @ConditionalOnClass({ JtaTransactionManager.class, UserTransactionManager.class })
 @ConditionalOnMissingBean(PlatformTransactionManager.class)
@@ -63,15 +62,13 @@ class AtomikosJtaConfiguration {
 
 	@Bean(initMethod = "init", destroyMethod = "shutdownWait")
 	@ConditionalOnMissingBean(UserTransactionService.class)
-	public UserTransactionServiceImp userTransactionService(
-			AtomikosProperties atomikosProperties, JtaProperties jtaProperties) {
+	UserTransactionServiceImp userTransactionService(AtomikosProperties atomikosProperties,
+			JtaProperties jtaProperties) {
 		Properties properties = new Properties();
 		if (StringUtils.hasText(jtaProperties.getTransactionManagerId())) {
-			properties.setProperty("com.atomikos.icatch.tm_unique_name",
-					jtaProperties.getTransactionManagerId());
+			properties.setProperty("com.atomikos.icatch.tm_unique_name", jtaProperties.getTransactionManagerId());
 		}
-		properties.setProperty("com.atomikos.icatch.log_base_dir",
-				getLogBaseDir(jtaProperties));
+		properties.setProperty("com.atomikos.icatch.log_base_dir", getLogBaseDir(jtaProperties));
 		properties.putAll(atomikosProperties.asProperties());
 		return new UserTransactionServiceImp(properties);
 	}
@@ -85,9 +82,8 @@ class AtomikosJtaConfiguration {
 	}
 
 	@Bean(initMethod = "init", destroyMethod = "close")
-	@ConditionalOnMissingBean
-	public UserTransactionManager atomikosTransactionManager(
-			UserTransactionService userTransactionService) throws Exception {
+	@ConditionalOnMissingBean(TransactionManager.class)
+	UserTransactionManager atomikosTransactionManager(UserTransactionService userTransactionService) throws Exception {
 		UserTransactionManager manager = new UserTransactionManager();
 		manager.setStartupTransactionService(false);
 		manager.setForceShutdown(true);
@@ -96,34 +92,31 @@ class AtomikosJtaConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(XADataSourceWrapper.class)
-	public AtomikosXADataSourceWrapper xaDataSourceWrapper() {
+	AtomikosXADataSourceWrapper xaDataSourceWrapper() {
 		return new AtomikosXADataSourceWrapper();
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public static AtomikosDependsOnBeanFactoryPostProcessor atomikosDependsOnBeanFactoryPostProcessor() {
+	static AtomikosDependsOnBeanFactoryPostProcessor atomikosDependsOnBeanFactoryPostProcessor() {
 		return new AtomikosDependsOnBeanFactoryPostProcessor();
 	}
 
 	@Bean
-	public JtaTransactionManager transactionManager(UserTransaction userTransaction,
-			TransactionManager transactionManager,
+	JtaTransactionManager transactionManager(UserTransaction userTransaction, TransactionManager transactionManager,
 			ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(
-				userTransaction, transactionManager);
-		transactionManagerCustomizers.ifAvailable(
-				(customizers) -> customizers.customize(jtaTransactionManager));
+		JtaTransactionManager jtaTransactionManager = new JtaTransactionManager(userTransaction, transactionManager);
+		transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(jtaTransactionManager));
 		return jtaTransactionManager;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Message.class)
 	static class AtomikosJtaJmsConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(XAConnectionFactoryWrapper.class)
-		public AtomikosXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
+		AtomikosXAConnectionFactoryWrapper xaConnectionFactoryWrapper() {
 			return new AtomikosXAConnectionFactoryWrapper();
 		}
 

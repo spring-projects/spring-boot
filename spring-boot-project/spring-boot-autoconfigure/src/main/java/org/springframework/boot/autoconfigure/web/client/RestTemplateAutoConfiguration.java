@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web.client;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -32,9 +34,11 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConf
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
+import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -44,26 +48,33 @@ import org.springframework.web.client.RestTemplate;
  * @author Phillip Webb
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(HttpMessageConvertersAutoConfiguration.class)
 @ConditionalOnClass(RestTemplate.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
 public class RestTemplateAutoConfiguration {
 
 	@Bean
+	@Lazy
 	@ConditionalOnMissingBean
-	public RestTemplateBuilder restTemplateBuilder(
-			ObjectProvider<HttpMessageConverters> messageConverters,
-			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers) {
+	public RestTemplateBuilder restTemplateBuilder(ObjectProvider<HttpMessageConverters> messageConverters,
+			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers,
+			ObjectProvider<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		HttpMessageConverters converters = messageConverters.getIfUnique();
 		if (converters != null) {
 			builder = builder.messageConverters(converters.getConverters());
 		}
-		List<RestTemplateCustomizer> customizers = restTemplateCustomizers.orderedStream()
-				.collect(Collectors.toList());
+		builder = addCustomizers(builder, restTemplateCustomizers, RestTemplateBuilder::customizers);
+		builder = addCustomizers(builder, restTemplateRequestCustomizers, RestTemplateBuilder::requestCustomizers);
+		return builder;
+	}
+
+	private <T> RestTemplateBuilder addCustomizers(RestTemplateBuilder builder, ObjectProvider<T> objectProvider,
+			BiFunction<RestTemplateBuilder, Collection<T>, RestTemplateBuilder> method) {
+		List<T> customizers = objectProvider.orderedStream().collect(Collectors.toList());
 		if (!customizers.isEmpty()) {
-			builder = builder.customizers(customizers);
+			return method.apply(builder, customizers);
 		}
 		return builder;
 	}

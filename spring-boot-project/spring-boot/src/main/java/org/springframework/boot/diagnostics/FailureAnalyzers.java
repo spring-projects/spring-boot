@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.EnvironmentAware;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
@@ -67,33 +68,29 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 	}
 
 	private List<FailureAnalyzer> loadFailureAnalyzers(ClassLoader classLoader) {
-		List<String> analyzerNames = SpringFactoriesLoader
-				.loadFactoryNames(FailureAnalyzer.class, classLoader);
+		List<String> analyzerNames = SpringFactoriesLoader.loadFactoryNames(FailureAnalyzer.class, classLoader);
 		List<FailureAnalyzer> analyzers = new ArrayList<>();
 		for (String analyzerName : analyzerNames) {
 			try {
-				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader)
-						.getDeclaredConstructor();
+				Constructor<?> constructor = ClassUtils.forName(analyzerName, classLoader).getDeclaredConstructor();
 				ReflectionUtils.makeAccessible(constructor);
 				analyzers.add((FailureAnalyzer) constructor.newInstance());
 			}
 			catch (Throwable ex) {
-				logger.trace("Failed to load " + analyzerName, ex);
+				logger.trace(LogMessage.format("Failed to load %s", analyzerName), ex);
 			}
 		}
 		AnnotationAwareOrderComparator.sort(analyzers);
 		return analyzers;
 	}
 
-	private void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers,
-			ConfigurableApplicationContext context) {
+	private void prepareFailureAnalyzers(List<FailureAnalyzer> analyzers, ConfigurableApplicationContext context) {
 		for (FailureAnalyzer analyzer : analyzers) {
 			prepareAnalyzer(context, analyzer);
 		}
 	}
 
-	private void prepareAnalyzer(ConfigurableApplicationContext context,
-			FailureAnalyzer analyzer) {
+	private void prepareAnalyzer(ConfigurableApplicationContext context, FailureAnalyzer analyzer) {
 		if (analyzer instanceof BeanFactoryAware) {
 			((BeanFactoryAware) analyzer).setBeanFactory(context.getBeanFactory());
 		}
@@ -117,15 +114,15 @@ final class FailureAnalyzers implements SpringBootExceptionReporter {
 				}
 			}
 			catch (Throwable ex) {
-				logger.debug("FailureAnalyzer " + analyzer + " failed", ex);
+				logger.debug(LogMessage.format("FailureAnalyzer %s failed", analyzer), ex);
 			}
 		}
 		return null;
 	}
 
 	private boolean report(FailureAnalysis analysis, ClassLoader classLoader) {
-		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader
-				.loadFactories(FailureAnalysisReporter.class, classLoader);
+		List<FailureAnalysisReporter> reporters = SpringFactoriesLoader.loadFactories(FailureAnalysisReporter.class,
+				classLoader);
 		if (analysis == null || reporters.isEmpty()) {
 			return false;
 		}

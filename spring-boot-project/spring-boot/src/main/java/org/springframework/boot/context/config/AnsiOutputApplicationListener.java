@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,6 +20,7 @@ import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -39,17 +40,15 @@ public class AnsiOutputApplicationListener
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
-		Binder.get(environment)
-				.bind("spring.output.ansi.enabled", AnsiOutput.Enabled.class)
+		Binder.get(environment).bind("spring.output.ansi.enabled", AnsiOutput.Enabled.class)
 				.ifBound(AnsiOutput::setEnabled);
-		AnsiOutput.setConsoleAvailable(environment
-				.getProperty("spring.output.ansi.console-available", Boolean.class));
+		AnsiOutput.setConsoleAvailable(environment.getProperty("spring.output.ansi.console-available", Boolean.class));
 	}
 
 	@Override
 	public int getOrder() {
-		// Apply after ConfigFileApplicationListener has called EnvironmentPostProcessors
-		return ConfigFileApplicationListener.DEFAULT_ORDER + 1;
+		// Apply after EnvironmentPostProcessorApplicationListener
+		return EnvironmentPostProcessorApplicationListener.DEFAULT_ORDER + 1;
 	}
 
 }

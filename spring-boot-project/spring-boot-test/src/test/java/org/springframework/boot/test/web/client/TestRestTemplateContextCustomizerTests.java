@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.web.client;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -36,21 +36,16 @@ import static org.mockito.Mockito.mock;
  *
  * @author Andy Wilkinson
  */
-public class TestRestTemplateContextCustomizerTests {
+class TestRestTemplateContextCustomizerTests {
 
 	@Test
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void whenContextIsNotABeanDefinitionRegistryTestRestTemplateIsRegistered() {
-		new ApplicationContextRunner(TestApplicationContext::new)
-				.withInitializer((context) -> {
-					MergedContextConfiguration configuration = mock(
-							MergedContextConfiguration.class);
-					given(configuration.getTestClass())
-							.willReturn((Class) TestClass.class);
-					new TestRestTemplateContextCustomizer().customizeContext(context,
-							configuration);
-				}).run((context) -> assertThat(context)
-						.hasSingleBean(TestRestTemplate.class));
+	void whenContextIsNotABeanDefinitionRegistryTestRestTemplateIsRegistered() {
+		new ApplicationContextRunner(TestApplicationContext::new).withInitializer((context) -> {
+			MergedContextConfiguration configuration = mock(MergedContextConfiguration.class);
+			given(configuration.getTestClass()).willReturn((Class) TestClass.class);
+			new TestRestTemplateContextCustomizer().customizeContext(context, configuration);
+		}).run((context) -> assertThat(context).hasSingleBean(TestRestTemplate.class));
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -58,7 +53,7 @@ public class TestRestTemplateContextCustomizerTests {
 
 	}
 
-	private static class TestApplicationContext extends AbstractApplicationContext {
+	static class TestApplicationContext extends AbstractApplicationContext {
 
 		private final ConfigurableListableBeanFactory beanFactory = new DefaultListableBeanFactory();
 
@@ -72,8 +67,7 @@ public class TestRestTemplateContextCustomizerTests {
 		}
 
 		@Override
-		public ConfigurableListableBeanFactory getBeanFactory()
-				throws IllegalStateException {
+		public ConfigurableListableBeanFactory getBeanFactory() throws IllegalStateException {
 			return this.beanFactory;
 		}
 

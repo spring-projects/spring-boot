@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.autoconfigure.security.jpa;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -37,23 +36,18 @@ import org.springframework.test.context.ContextConfiguration;
  *
  * @author Dave Syer
  */
-
 @ContextConfiguration(classes = JpaUserDetailsTests.Main.class, loader = SpringBootContextLoader.class)
 @DirtiesContext
-public class JpaUserDetailsTests {
+class JpaUserDetailsTests {
 
 	@Test
-	public void contextLoads() {
-	}
-
-	public static void main(String[] args) {
-		SpringApplication.run(Main.class, args);
+	void contextLoads() {
 	}
 
 	@Import({ EmbeddedDataSourceConfiguration.class, DataSourceAutoConfiguration.class,
-			HibernateJpaAutoConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, SecurityAutoConfiguration.class })
-	public static class Main {
+			HibernateJpaAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			SecurityAutoConfiguration.class })
+	static class Main {
 
 	}
 

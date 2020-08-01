@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,6 +34,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Greg Turnquist
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class SourceOptions {
 
@@ -103,8 +104,7 @@ public class SourceOptions {
 				}
 			}
 		}
-		this.args = Collections.unmodifiableList(
-				nonOptionArguments.subList(sourceArgCount, nonOptionArguments.size()));
+		this.args = Collections.unmodifiableList(nonOptionArguments.subList(sourceArgCount, nonOptionArguments.size()));
 		Assert.isTrue(!sources.isEmpty(), "Please specify at least one file");
 		this.sources = Collections.unmodifiableList(sources);
 	}

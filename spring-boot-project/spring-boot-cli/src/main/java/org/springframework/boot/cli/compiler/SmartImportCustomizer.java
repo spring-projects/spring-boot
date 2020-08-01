@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,7 +25,6 @@ import org.codehaus.groovy.control.customizers.ImportCustomizer;
  * class with the same name is not already explicitly imported.
  *
  * @author Dave Syer
- * @since 1.1
  */
 class SmartImportCustomizer extends ImportCustomizer {
 
@@ -37,8 +36,7 @@ class SmartImportCustomizer extends ImportCustomizer {
 
 	@Override
 	public ImportCustomizer addImport(String alias, String className) {
-		if (this.source.getAST()
-				.getImport(ClassHelper.make(className).getNameWithoutPackage()) == null) {
+		if (this.source.getAST().getImport(ClassHelper.make(className).getNameWithoutPackage()) == null) {
 			super.addImport(alias, className);
 		}
 		return this;
@@ -47,8 +45,7 @@ class SmartImportCustomizer extends ImportCustomizer {
 	@Override
 	public ImportCustomizer addImports(String... imports) {
 		for (String alias : imports) {
-			if (this.source.getAST()
-					.getImport(ClassHelper.make(alias).getNameWithoutPackage()) == null) {
+			if (this.source.getAST().getImport(ClassHelper.make(alias).getNameWithoutPackage()) == null) {
 				super.addImports(alias);
 			}
 		}

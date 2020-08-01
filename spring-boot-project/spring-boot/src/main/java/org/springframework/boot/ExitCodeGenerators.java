@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,14 +36,13 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 
 	private List<ExitCodeGenerator> generators = new ArrayList<>();
 
-	public void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
+	void addAll(Throwable exception, ExitCodeExceptionMapper... mappers) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mappers, "Mappers must not be null");
 		addAll(exception, Arrays.asList(mappers));
 	}
 
-	public void addAll(Throwable exception,
-			Iterable<? extends ExitCodeExceptionMapper> mappers) {
+	void addAll(Throwable exception, Iterable<? extends ExitCodeExceptionMapper> mappers) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mappers, "Mappers must not be null");
 		for (ExitCodeExceptionMapper mapper : mappers) {
@@ -51,25 +50,25 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 		}
 	}
 
-	public void add(Throwable exception, ExitCodeExceptionMapper mapper) {
+	void add(Throwable exception, ExitCodeExceptionMapper mapper) {
 		Assert.notNull(exception, "Exception must not be null");
 		Assert.notNull(mapper, "Mapper must not be null");
 		add(new MappedExitCodeGenerator(exception, mapper));
 	}
 
-	public void addAll(ExitCodeGenerator... generators) {
+	void addAll(ExitCodeGenerator... generators) {
 		Assert.notNull(generators, "Generators must not be null");
 		addAll(Arrays.asList(generators));
 	}
 
-	public void addAll(Iterable<? extends ExitCodeGenerator> generators) {
+	void addAll(Iterable<? extends ExitCodeGenerator> generators) {
 		Assert.notNull(generators, "Generators must not be null");
 		for (ExitCodeGenerator generator : generators) {
 			add(generator);
 		}
 	}
 
-	public void add(ExitCodeGenerator generator) {
+	void add(ExitCodeGenerator generator) {
 		Assert.notNull(generator, "Generator must not be null");
 		this.generators.add(generator);
 	}
@@ -83,7 +82,7 @@ class ExitCodeGenerators implements Iterable<ExitCodeGenerator> {
 	 * Get the final exit code that should be returned based on all contained generators.
 	 * @return the final exit code.
 	 */
-	public int getExitCode() {
+	int getExitCode() {
 		int exitCode = 0;
 		for (ExitCodeGenerator generator : this.generators) {
 			try {

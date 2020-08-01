@@ -3,6 +3,8 @@ platform: linux
 inputs:
 - name: git-repo
 - name: artifactory-repo
+outputs:
+- name: version
 params:
   BINTRAY_REPO:
   BINTRAY_SUBJECT:

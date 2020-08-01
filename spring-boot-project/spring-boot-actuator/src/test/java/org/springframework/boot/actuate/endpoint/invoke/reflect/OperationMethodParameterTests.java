@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.endpoint.invoke.reflect;
 
 import java.lang.reflect.Method;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.lang.Nullable;
 import org.springframework.util.ReflectionUtils;
@@ -30,36 +30,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class OperationMethodParameterTests {
+class OperationMethodParameterTests {
 
-	private Method method = ReflectionUtils.findMethod(getClass(), "example",
-			String.class, String.class);
+	private Method method = ReflectionUtils.findMethod(getClass(), "example", String.class, String.class);
 
 	@Test
-	public void getNameShouldReturnName() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name",
-				this.method.getParameters()[0]);
+	void getNameShouldReturnName() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name", this.method.getParameters()[0]);
 		assertThat(parameter.getName()).isEqualTo("name");
 	}
 
 	@Test
-	public void getTypeShouldReturnType() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name",
-				this.method.getParameters()[0]);
+	void getTypeShouldReturnType() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name", this.method.getParameters()[0]);
 		assertThat(parameter.getType()).isEqualTo(String.class);
 	}
 
 	@Test
-	public void isMandatoryWhenNoAnnotationShouldReturnTrue() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name",
-				this.method.getParameters()[0]);
+	void isMandatoryWhenNoAnnotationShouldReturnTrue() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name", this.method.getParameters()[0]);
 		assertThat(parameter.isMandatory()).isTrue();
 	}
 
 	@Test
-	public void isMandatoryWhenNullableAnnotationShouldReturnFalse() {
-		OperationMethodParameter parameter = new OperationMethodParameter("name",
-				this.method.getParameters()[1]);
+	void isMandatoryWhenNullableAnnotationShouldReturnFalse() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name", this.method.getParameters()[1]);
 		assertThat(parameter.isMandatory()).isFalse();
 	}
 

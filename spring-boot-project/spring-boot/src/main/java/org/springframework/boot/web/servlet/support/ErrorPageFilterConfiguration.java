@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.web.servlet.support;
 
+import javax.servlet.DispatcherType;
+
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -24,12 +27,19 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author Andy Wilkinson
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 class ErrorPageFilterConfiguration {
 
 	@Bean
-	public ErrorPageFilter errorPageFilter() {
+	ErrorPageFilter errorPageFilter() {
 		return new ErrorPageFilter();
+	}
+
+	@Bean
+	FilterRegistrationBean<ErrorPageFilter> errorPageFilterRegistration(ErrorPageFilter filter) {
+		FilterRegistrationBean<ErrorPageFilter> registration = new FilterRegistrationBean<>(filter);
+		registration.setDispatcherTypes(DispatcherType.REQUEST, DispatcherType.ASYNC);
+		return registration;
 	}
 
 }

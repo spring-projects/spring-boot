@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,7 @@ package org.springframework.boot.loader.tools;
  * custom loader classes.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see Layouts
  * @see RepackagingLayout
  * @see CustomLoaderLayout
@@ -38,9 +39,22 @@ public interface Layout {
 	 * Returns the destination path for a given library.
 	 * @param libraryName the name of the library (excluding any path)
 	 * @param scope the scope of the library
+	 * @return the location of the library relative to the root of the archive (should end
+	 * with '/') or {@code null} if the library should not be included.
+	 */
+	default String getLibraryLocation(String libraryName, LibraryScope scope) {
+		return getLibraryDestination(libraryName, scope);
+	}
+
+	/**
+	 * Returns the destination path for a given library.
+	 * @param libraryName the name of the library (excluding any path)
+	 * @param scope the scope of the library
 	 * @return the destination relative to the root of the archive (should end with '/')
 	 * or {@code null} if the library should not be included.
+	 * @deprecated since 2.3.0 in favor of {@link #getLibraryLocation}
 	 */
+	@Deprecated
 	String getLibraryDestination(String libraryName, LibraryScope scope);
 
 	/**

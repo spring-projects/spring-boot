@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,6 +36,7 @@ import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class DependencyCustomizer {
 
@@ -70,12 +71,10 @@ public class DependencyCustomizer {
 
 	public String getVersion(String artifactId) {
 		return getVersion(artifactId, "");
-
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
-		String version = this.dependencyResolutionContext.getArtifactCoordinatesResolver()
-				.getVersion(artifactId);
+		String version = this.dependencyResolutionContext.getArtifactCoordinatesResolver().getVersion(artifactId);
 		if (version == null) {
 			version = defaultVersion;
 		}
@@ -94,7 +93,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(className);
+						Class.forName(className, false, DependencyCustomizer.this.loader);
 					}
 					catch (Exception ex) {
 						return true;
@@ -117,7 +116,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(className);
+						Class.forName(className, false, DependencyCustomizer.this.loader);
 						return false;
 					}
 					catch (Exception ex) {
@@ -144,7 +143,6 @@ public class DependencyCustomizer {
 						if (DependencyCustomizer.this.loader.getResource(path) == null) {
 							return false;
 						}
-						return true;
 					}
 					catch (Exception ex) {
 						// swallow exception and continue
@@ -167,10 +165,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String path : paths) {
 					try {
-						if (DependencyCustomizer.this.loader.getResource(path) != null) {
-							return true;
-						}
-						return false;
+						return DependencyCustomizer.this.loader.getResource(path) != null;
 					}
 					catch (Exception ex) {
 						// swallow exception and continue
@@ -219,22 +214,19 @@ public class DependencyCustomizer {
 	 * otherwise {@code false}
 	 * @return this {@link DependencyCustomizer} for continued use
 	 */
-	public DependencyCustomizer add(String module, String classifier, String type,
-			boolean transitive) {
+	public DependencyCustomizer add(String module, String classifier, String type, boolean transitive) {
 		if (canAdd()) {
 			ArtifactCoordinatesResolver artifactCoordinatesResolver = this.dependencyResolutionContext
 					.getArtifactCoordinatesResolver();
-			this.classNode.addAnnotation(
-					createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
-							artifactCoordinatesResolver.getArtifactId(module),
-							artifactCoordinatesResolver.getVersion(module), classifier,
-							type, transitive));
+			this.classNode.addAnnotation(createGrabAnnotation(artifactCoordinatesResolver.getGroupId(module),
+					artifactCoordinatesResolver.getArtifactId(module), artifactCoordinatesResolver.getVersion(module),
+					classifier, type, transitive));
 		}
 		return this;
 	}
 
-	private AnnotationNode createGrabAnnotation(String group, String module,
-			String version, String classifier, String type, boolean transitive) {
+	private AnnotationNode createGrabAnnotation(String group, String module, String version, String classifier,
+			String type, boolean transitive) {
 		AnnotationNode annotationNode = new AnnotationNode(new ClassNode(Grab.class));
 		annotationNode.addMember("group", new ConstantExpression(group));
 		annotationNode.addMember("module", new ConstantExpression(module));

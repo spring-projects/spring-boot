@@ -3,7 +3,7 @@ package org.test
 import java.util.concurrent.CountDownLatch
 
 @Log
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableRabbit
 class RabbitExample implements CommandLineRunner {
 
@@ -25,8 +25,8 @@ class RabbitExample implements CommandLineRunner {
 	}
 
 	@Bean
-	Queue queue() {
-		new Queue("spring-boot", false)
+	org.springframework.amqp.core.Queue queue() {
+		new org.springframework.amqp.core.Queue("spring-boot", false)
 	}
 
 }

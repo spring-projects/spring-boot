@@ -1,7 +1,0 @@
-spring:
-  security:
-    oauth2:
-      resource:
-        jwt:
-        # To run the application, replace this with a valid JWK Set URI
-          jwk-set-uri: https://example.com/oauth2/default/v1/keys

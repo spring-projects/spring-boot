@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,25 +20,22 @@ import javax.sql.DataSource;
 
 import org.jooq.DSLContext;
 import org.jooq.SQLDialect;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
-import org.springframework.test.context.junit4.SpringRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for {@link JooqTest}.
+ * Integration tests for {@link JooqTest @JooqTest}.
  *
  * @author Stephane Nicoll
  */
-@RunWith(SpringRunner.class)
 @JooqTest
 @AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.H2)
-public class JooqTestWithAutoConfigureTestDatabaseIntegrationTests {
+class JooqTestWithAutoConfigureTestDatabaseIntegrationTests {
 
 	@Autowired
 	private DSLContext dsl;
@@ -47,9 +44,8 @@ public class JooqTestWithAutoConfigureTestDatabaseIntegrationTests {
 	private DataSource dataSource;
 
 	@Test
-	public void replacesAutoConfiguredDataSource() throws Exception {
-		String product = this.dataSource.getConnection().getMetaData()
-				.getDatabaseProductName();
+	void replacesAutoConfiguredDataSource() throws Exception {
+		String product = this.dataSource.getConnection().getMetaData().getDatabaseProductName();
 		assertThat(product).startsWith("H2");
 		assertThat(this.dsl.configuration().dialect()).isEqualTo(SQLDialect.H2);
 	}

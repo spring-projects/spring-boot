@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,7 @@ import org.springframework.util.MultiValueMap;
  * @since 2.0.0
  * @see ConfigurationPropertySource#withAliases(ConfigurationPropertyNameAliases)
  */
-public final class ConfigurationPropertyNameAliases
-		implements Iterable<ConfigurationPropertyName> {
+public final class ConfigurationPropertyNameAliases implements Iterable<ConfigurationPropertyName> {
 
 	private final MultiValueMap<ConfigurationPropertyName, ConfigurationPropertyName> aliases = new LinkedMultiValueMap<>();
 
@@ -46,8 +45,7 @@ public final class ConfigurationPropertyNameAliases
 		addAliases(name, aliases);
 	}
 
-	public ConfigurationPropertyNameAliases(ConfigurationPropertyName name,
-			ConfigurationPropertyName... aliases) {
+	public ConfigurationPropertyNameAliases(ConfigurationPropertyName name, ConfigurationPropertyName... aliases) {
 		addAliases(name, aliases);
 	}
 
@@ -55,12 +53,10 @@ public final class ConfigurationPropertyNameAliases
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(aliases, "Aliases must not be null");
 		addAliases(ConfigurationPropertyName.of(name),
-				Arrays.stream(aliases).map(ConfigurationPropertyName::of)
-						.toArray(ConfigurationPropertyName[]::new));
+				Arrays.stream(aliases).map(ConfigurationPropertyName::of).toArray(ConfigurationPropertyName[]::new));
 	}
 
-	public void addAliases(ConfigurationPropertyName name,
-			ConfigurationPropertyName... aliases) {
+	public void addAliases(ConfigurationPropertyName name, ConfigurationPropertyName... aliases) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(aliases, "Aliases must not be null");
 		this.aliases.addAll(name, Arrays.asList(aliases));
@@ -71,8 +67,7 @@ public final class ConfigurationPropertyNameAliases
 	}
 
 	public ConfigurationPropertyName getNameForAlias(ConfigurationPropertyName alias) {
-		return this.aliases.entrySet().stream()
-				.filter((e) -> e.getValue().contains(alias)).map(Map.Entry::getKey)
+		return this.aliases.entrySet().stream().filter((e) -> e.getValue().contains(alias)).map(Map.Entry::getKey)
 				.findFirst().orElse(null);
 	}
 

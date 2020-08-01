@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,14 +33,14 @@ import java.util.concurrent.atomic.AtomicInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
- * A <a href="http://livereload.com">livereload</a> server.
+ * A <a href="https://github.com/livereload">livereload</a> server.
  *
  * @author Phillip Webb
  * @since 1.3.0
- * @see <a href="http://livereload.com">livereload.com</a>
  */
 public class LiveReloadServer {
 
@@ -53,8 +53,7 @@ public class LiveReloadServer {
 
 	private static final int READ_TIMEOUT = (int) TimeUnit.SECONDS.toMillis(4);
 
-	private final ExecutorService executor = Executors
-			.newCachedThreadPool(new WorkerThreadFactory());
+	private final ExecutorService executor = Executors.newCachedThreadPool(new WorkerThreadFactory());
 
 	private final List<Connection> connections = new ArrayList<>();
 
@@ -111,7 +110,7 @@ public class LiveReloadServer {
 	public int start() throws IOException {
 		synchronized (this.monitor) {
 			Assert.state(!isStarted(), "Server already started");
-			logger.debug("Starting live reload server on port " + this.port);
+			logger.debug(LogMessage.format("Starting live reload server on port %s", this.port));
 			this.serverSocket = new ServerSocket(this.port);
 			int localPort = this.serverSocket.getLocalPort();
 			this.listenThread = this.threadFactory.newThread(this::acceptConnections);
@@ -233,8 +232,8 @@ public class LiveReloadServer {
 	 * @return a connection
 	 * @throws IOException in case of I/O errors
 	 */
-	protected Connection createConnection(Socket socket, InputStream inputStream,
-			OutputStream outputStream) throws IOException {
+	protected Connection createConnection(Socket socket, InputStream inputStream, OutputStream outputStream)
+			throws IOException {
 		return new Connection(socket, inputStream, outputStream);
 	}
 
@@ -272,8 +271,7 @@ public class LiveReloadServer {
 		private void handle() throws Exception {
 			try {
 				try (OutputStream outputStream = this.socket.getOutputStream()) {
-					Connection connection = createConnection(this.socket,
-							this.inputStream, outputStream);
+					Connection connection = createConnection(this.socket, this.inputStream, outputStream);
 					runConnection(connection);
 				}
 				finally {
@@ -285,7 +283,7 @@ public class LiveReloadServer {
 			}
 		}
 
-		private void runConnection(Connection connection) throws IOException, Exception {
+		private void runConnection(Connection connection) throws Exception {
 			try {
 				addConnection(connection);
 				connection.run();

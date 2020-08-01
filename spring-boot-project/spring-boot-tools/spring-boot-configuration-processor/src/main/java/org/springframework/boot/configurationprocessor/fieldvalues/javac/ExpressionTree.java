@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -25,46 +25,39 @@ import java.util.List;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class ExpressionTree extends ReflectionWrapper {
 
 	private final Class<?> literalTreeType = findClass("com.sun.source.tree.LiteralTree");
 
-	private final Method literalValueMethod = findMethod(this.literalTreeType,
-			"getValue");
+	private final Method literalValueMethod = findMethod(this.literalTreeType, "getValue");
 
-	private final Class<?> methodInvocationTreeType = findClass(
-			"com.sun.source.tree.MethodInvocationTree");
+	private final Class<?> methodInvocationTreeType = findClass("com.sun.source.tree.MethodInvocationTree");
 
-	private final Method methodInvocationArgumentsMethod = findMethod(
-			this.methodInvocationTreeType, "getArguments");
+	private final Method methodInvocationArgumentsMethod = findMethod(this.methodInvocationTreeType, "getArguments");
 
-	private final Class<?> newArrayTreeType = findClass(
-			"com.sun.source.tree.NewArrayTree");
+	private final Class<?> newArrayTreeType = findClass("com.sun.source.tree.NewArrayTree");
 
-	private final Method arrayValueMethod = findMethod(this.newArrayTreeType,
-			"getInitializers");
+	private final Method arrayValueMethod = findMethod(this.newArrayTreeType, "getInitializers");
 
 	ExpressionTree(Object instance) {
 		super("com.sun.source.tree.ExpressionTree", instance);
 	}
 
-	public String getKind() throws Exception {
+	String getKind() throws Exception {
 		return findMethod("getKind").invoke(getInstance()).toString();
 	}
 
-	public Object getLiteralValue() throws Exception {
+	Object getLiteralValue() throws Exception {
 		if (this.literalTreeType.isAssignableFrom(getInstance().getClass())) {
 			return this.literalValueMethod.invoke(getInstance());
 		}
 		return null;
 	}
 
-	public Object getFactoryValue() throws Exception {
+	Object getFactoryValue() throws Exception {
 		if (this.methodInvocationTreeType.isAssignableFrom(getInstance().getClass())) {
-			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod
-					.invoke(getInstance());
+			List<?> arguments = (List<?>) this.methodInvocationArgumentsMethod.invoke(getInstance());
 			if (arguments.size() == 1) {
 				return new ExpressionTree(arguments.get(0)).getLiteralValue();
 			}
@@ -72,7 +65,7 @@ class ExpressionTree extends ReflectionWrapper {
 		return null;
 	}
 
-	public List<? extends ExpressionTree> getArrayExpression() throws Exception {
+	List<? extends ExpressionTree> getArrayExpression() throws Exception {
 		if (this.newArrayTreeType.isAssignableFrom(getInstance().getClass())) {
 			List<?> elements = (List<?>) this.arrayValueMethod.invoke(getInstance());
 			List<ExpressionTree> result = new ArrayList<>();

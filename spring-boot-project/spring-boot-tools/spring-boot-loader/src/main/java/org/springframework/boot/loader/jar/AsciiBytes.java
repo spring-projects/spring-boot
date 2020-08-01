@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -77,11 +77,11 @@ final class AsciiBytes {
 		this.length = length;
 	}
 
-	public int length() {
+	int length() {
 		return this.length;
 	}
 
-	public boolean startsWith(AsciiBytes prefix) {
+	boolean startsWith(AsciiBytes prefix) {
 		if (this == prefix) {
 			return true;
 		}
@@ -96,7 +96,7 @@ final class AsciiBytes {
 		return true;
 	}
 
-	public boolean endsWith(AsciiBytes postfix) {
+	boolean endsWith(AsciiBytes postfix) {
 		if (this == postfix) {
 			return true;
 		}
@@ -104,19 +104,19 @@ final class AsciiBytes {
 			return false;
 		}
 		for (int i = 0; i < postfix.length; i++) {
-			if (this.bytes[this.offset + (this.length - 1)
-					- i] != postfix.bytes[postfix.offset + (postfix.length - 1) - i]) {
+			if (this.bytes[this.offset + (this.length - 1) - i] != postfix.bytes[postfix.offset + (postfix.length - 1)
+					- i]) {
 				return false;
 			}
 		}
 		return true;
 	}
 
-	public AsciiBytes substring(int beginIndex) {
+	AsciiBytes substring(int beginIndex) {
 		return substring(beginIndex, this.length);
 	}
 
-	public AsciiBytes substring(int beginIndex, int endIndex) {
+	AsciiBytes substring(int beginIndex, int endIndex) {
 		int length = endIndex - beginIndex;
 		if (this.offset + length > this.bytes.length) {
 			throw new IndexOutOfBoundsException();
@@ -124,7 +124,7 @@ final class AsciiBytes {
 		return new AsciiBytes(this.bytes, this.offset + beginIndex, length);
 	}
 
-	public boolean matches(CharSequence name, char suffix) {
+	boolean matches(CharSequence name, char suffix) {
 		int charIndex = 0;
 		int nameLen = name.length();
 		int totalLen = nameLen + ((suffix != 0) ? 1 : 0);
@@ -229,8 +229,7 @@ final class AsciiBytes {
 				this.string = EMPTY_STRING;
 			}
 			else {
-				this.string = new String(this.bytes, this.offset, this.length,
-						StandardCharsets.UTF_8);
+				this.string = new String(this.bytes, this.offset, this.length, StandardCharsets.UTF_8);
 			}
 		}
 		return this.string;
@@ -240,7 +239,7 @@ final class AsciiBytes {
 		return new String(bytes, StandardCharsets.UTF_8);
 	}
 
-	public static int hashCode(CharSequence charSequence) {
+	static int hashCode(CharSequence charSequence) {
 		// We're compatible with String's hashCode()
 		if (charSequence instanceof StringSequence) {
 			// ... but save making an unnecessary String for StringSequence
@@ -249,7 +248,7 @@ final class AsciiBytes {
 		return charSequence.toString().hashCode();
 	}
 
-	public static int hashCode(int hash, char suffix) {
+	static int hashCode(int hash, char suffix) {
 		return (suffix != 0) ? (31 * hash + suffix) : hash;
 	}
 

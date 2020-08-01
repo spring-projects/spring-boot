@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,7 @@ import java.util.List;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.core.ResolvableType;
 
@@ -32,24 +32,23 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
+class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 	@Test
-	public void initFieldsWhenTestIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
+	void initFieldsWhenTestIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> GsonTester.initFields(null, new GsonBuilder().create()))
 				.withMessageContaining("TestInstance must not be null");
 	}
 
 	@Test
-	public void initFieldsWhenMarshallerIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
+	void initFieldsWhenMarshallerIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> GsonTester.initFields(new InitFieldsTestClass(), (Gson) null))
 				.withMessageContaining("Marshaller must not be null");
 	}
 
 	@Test
-	public void initFieldsShouldSetNullFields() {
+	void initFieldsShouldSetNullFields() {
 		InitFieldsTestClass test = new InitFieldsTestClass();
 		assertThat(test.test).isNull();
 		assertThat(test.base).isNull();
@@ -61,8 +60,7 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 	}
 
 	@Override
-	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass,
-			ResolvableType type) {
+	protected AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type) {
 		return new GsonTester<>(resourceLoadClass, type, new GsonBuilder().create());
 	}
 
@@ -70,9 +68,8 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public GsonTester<ExampleObject> base;
 
-		public GsonTester<ExampleObject> baseSet = new GsonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new GsonBuilder().create());
+		public GsonTester<ExampleObject> baseSet = new GsonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());
 
 	}
 
@@ -80,9 +77,8 @@ public class GsonTesterTests extends AbstractJsonMarshalTesterTests {
 
 		public GsonTester<List<ExampleObject>> test;
 
-		public GsonTester<ExampleObject> testSet = new GsonTester<>(
-				InitFieldsBaseClass.class, ResolvableType.forClass(ExampleObject.class),
-				new GsonBuilder().create());
+		public GsonTester<ExampleObject> testSet = new GsonTester<>(InitFieldsBaseClass.class,
+				ResolvableType.forClass(ExampleObject.class), new GsonBuilder().create());
 
 	}
 

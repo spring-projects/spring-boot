@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,11 +30,15 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * @author Jon Schneider
  * @author Phillip Webb
  */
-class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProperties>
-		implements GangliaConfig {
+class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProperties> implements GangliaConfig {
 
 	GangliaPropertiesConfigAdapter(GangliaProperties properties) {
 		super(properties);
+	}
+
+	@Override
+	public String prefix() {
+		return "management.metrics.export.ganglia";
 	}
 
 	@Override
@@ -53,26 +57,25 @@ class GangliaPropertiesConfigAdapter extends PropertiesConfigAdapter<GangliaProp
 	}
 
 	@Override
+	@Deprecated
 	public TimeUnit rateUnits() {
 		return get(GangliaProperties::getRateUnits, GangliaConfig.super::rateUnits);
 	}
 
 	@Override
 	public TimeUnit durationUnits() {
-		return get(GangliaProperties::getDurationUnits,
-				GangliaConfig.super::durationUnits);
+		return get(GangliaProperties::getDurationUnits, GangliaConfig.super::durationUnits);
 	}
 
 	@Override
+	@Deprecated
 	public String protocolVersion() {
-		return get(GangliaProperties::getProtocolVersion,
-				GangliaConfig.super::protocolVersion);
+		return get(GangliaProperties::getProtocolVersion, GangliaConfig.super::protocolVersion);
 	}
 
 	@Override
 	public GMetric.UDPAddressingMode addressingMode() {
-		return get(GangliaProperties::getAddressingMode,
-				GangliaConfig.super::addressingMode);
+		return get(GangliaProperties::getAddressingMode, GangliaConfig.super::addressingMode);
 	}
 
 	@Override

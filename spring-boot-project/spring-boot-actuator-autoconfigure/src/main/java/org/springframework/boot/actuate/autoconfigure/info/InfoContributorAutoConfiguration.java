@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,7 +42,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(ProjectInfoAutoConfiguration.class)
 @EnableConfigurationProperties(InfoContributorProperties.class)
 public class InfoContributorAutoConfiguration {
@@ -55,8 +55,7 @@ public class InfoContributorAutoConfiguration {
 	@Bean
 	@ConditionalOnEnabledInfoContributor("env")
 	@Order(DEFAULT_ORDER)
-	public EnvironmentInfoContributor envInfoContributor(
-			ConfigurableEnvironment environment) {
+	public EnvironmentInfoContributor envInfoContributor(ConfigurableEnvironment environment) {
 		return new EnvironmentInfoContributor(environment);
 	}
 
@@ -67,8 +66,7 @@ public class InfoContributorAutoConfiguration {
 	@Order(DEFAULT_ORDER)
 	public GitInfoContributor gitInfoContributor(GitProperties gitProperties,
 			InfoContributorProperties infoContributorProperties) {
-		return new GitInfoContributor(gitProperties,
-				infoContributorProperties.getGit().getMode());
+		return new GitInfoContributor(gitProperties, infoContributorProperties.getGit().getMode());
 	}
 
 	@Bean

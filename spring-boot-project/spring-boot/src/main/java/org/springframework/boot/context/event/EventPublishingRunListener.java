@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,6 +21,9 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
+import org.springframework.boot.availability.AvailabilityChangeEvent;
+import org.springframework.boot.availability.LivenessState;
+import org.springframework.boot.availability.ReadinessState;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -41,6 +44,8 @@ import org.springframework.util.ErrorHandler;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
+ * @author Brian Clozel
+ * @since 1.0.0
  */
 public class EventPublishingRunListener implements SpringApplicationRunListener, Ordered {
 
@@ -66,20 +71,19 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	@Override
 	public void starting() {
-		this.initialMulticaster.multicastEvent(
-				new ApplicationStartingEvent(this.application, this.args));
+		this.initialMulticaster.multicastEvent(new ApplicationStartingEvent(this.application, this.args));
 	}
 
 	@Override
 	public void environmentPrepared(ConfigurableEnvironment environment) {
-		this.initialMulticaster.multicastEvent(new ApplicationEnvironmentPreparedEvent(
-				this.application, this.args, environment));
+		this.initialMulticaster
+				.multicastEvent(new ApplicationEnvironmentPreparedEvent(this.application, this.args, environment));
 	}
 
 	@Override
 	public void contextPrepared(ConfigurableApplicationContext context) {
-		this.initialMulticaster.multicastEvent(new ApplicationContextInitializedEvent(
-				this.application, this.args, context));
+		this.initialMulticaster
+				.multicastEvent(new ApplicationContextInitializedEvent(this.application, this.args, context));
 	}
 
 	@Override
@@ -90,26 +94,24 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 			}
 			context.addApplicationListener(listener);
 		}
-		this.initialMulticaster.multicastEvent(
-				new ApplicationPreparedEvent(this.application, this.args, context));
+		this.initialMulticaster.multicastEvent(new ApplicationPreparedEvent(this.application, this.args, context));
 	}
 
 	@Override
 	public void started(ConfigurableApplicationContext context) {
-		context.publishEvent(
-				new ApplicationStartedEvent(this.application, this.args, context));
+		context.publishEvent(new ApplicationStartedEvent(this.application, this.args, context));
+		AvailabilityChangeEvent.publish(context, LivenessState.CORRECT);
 	}
 
 	@Override
 	public void running(ConfigurableApplicationContext context) {
-		context.publishEvent(
-				new ApplicationReadyEvent(this.application, this.args, context));
+		context.publishEvent(new ApplicationReadyEvent(this.application, this.args, context));
+		AvailabilityChangeEvent.publish(context, ReadinessState.ACCEPTING_TRAFFIC);
 	}
 
 	@Override
 	public void failed(ConfigurableApplicationContext context, Throwable exception) {
-		ApplicationFailedEvent event = new ApplicationFailedEvent(this.application,
-				this.args, context, exception);
+		ApplicationFailedEvent event = new ApplicationFailedEvent(this.application, this.args, context, exception);
 		if (context != null && context.isActive()) {
 			// Listeners have been registered to the application context so we should
 			// use it at this point if we can
@@ -131,7 +133,7 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 
 	private static class LoggingErrorHandler implements ErrorHandler {
 
-		private static Log logger = LogFactory.getLog(EventPublishingRunListener.class);
+		private static final Log logger = LogFactory.getLog(EventPublishingRunListener.class);
 
 		@Override
 		public void handleError(Throwable throwable) {

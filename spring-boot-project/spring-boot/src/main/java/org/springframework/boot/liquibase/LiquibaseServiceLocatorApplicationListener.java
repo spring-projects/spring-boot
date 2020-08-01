@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,12 +31,11 @@ import org.springframework.util.ClassUtils;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @since 1.0.0
  */
-public class LiquibaseServiceLocatorApplicationListener
-		implements ApplicationListener<ApplicationStartingEvent> {
+public class LiquibaseServiceLocatorApplicationListener implements ApplicationListener<ApplicationStartingEvent> {
 
-	private static final Log logger = LogFactory
-			.getLog(LiquibaseServiceLocatorApplicationListener.class);
+	private static final Log logger = LogFactory.getLog(LiquibaseServiceLocatorApplicationListener.class);
 
 	@Override
 	public void onApplicationEvent(ApplicationStartingEvent event) {
@@ -51,7 +50,7 @@ public class LiquibaseServiceLocatorApplicationListener
 	 */
 	private static class LiquibasePresent {
 
-		public void replaceServiceLocator() {
+		void replaceServiceLocator() {
 			CustomResolverServiceLocator customResolverServiceLocator = new CustomResolverServiceLocator(
 					new SpringPackageScanClassResolver(logger));
 			ServiceLocator.setInstance(customResolverServiceLocator);

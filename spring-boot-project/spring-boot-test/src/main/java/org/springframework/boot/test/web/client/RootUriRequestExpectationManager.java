@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,7 +41,7 @@ import org.springframework.web.util.UriTemplateHandler;
  * {@link RequestExpectationManager} that strips the specified root URI from the request
  * before verification. Can be used to simply test declarations when all REST calls start
  * the same way. For example: <pre class="code">
- * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("http://example.com").build();
+ * RestTemplate restTemplate = new RestTemplateBuilder().rootUri("https://example.com").build();
  * MockRestServiceServer server = RootUriRequestExpectationManager.bindTo(restTemplate);
  * server.expect(requestTo("/hello")).andRespond(withSuccess());
  * restTemplate.getForEntity("/hello", String.class);
@@ -59,8 +59,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 
 	private final RequestExpectationManager expectationManager;
 
-	public RootUriRequestExpectationManager(String rootUri,
-			RequestExpectationManager expectationManager) {
+	public RootUriRequestExpectationManager(String rootUri, RequestExpectationManager expectationManager) {
 		Assert.notNull(rootUri, "RootUri must not be null");
 		Assert.notNull(expectationManager, "ExpectationManager must not be null");
 		this.rootUri = rootUri;
@@ -68,14 +67,12 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	}
 
 	@Override
-	public ResponseActions expectRequest(ExpectedCount count,
-			RequestMatcher requestMatcher) {
+	public ResponseActions expectRequest(ExpectedCount count, RequestMatcher requestMatcher) {
 		return this.expectationManager.expectRequest(count, requestMatcher);
 	}
 
 	@Override
-	public ClientHttpResponse validateRequest(ClientHttpRequest request)
-			throws IOException {
+	public ClientHttpResponse validateRequest(ClientHttpRequest request) throws IOException {
 		String uri = request.getURI().toString();
 		if (uri.startsWith(this.rootUri)) {
 			request = replaceURI(request, uri.substring(this.rootUri.length()));
@@ -87,15 +84,14 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 			String message = ex.getMessage();
 			String prefix = "Request URI expected:</";
 			if (message != null && message.startsWith(prefix)) {
-				throw new AssertionError("Request URI expected:<" + this.rootUri
-						+ message.substring(prefix.length() - 1));
+				throw new AssertionError(
+						"Request URI expected:<" + this.rootUri + message.substring(prefix.length() - 1));
 			}
 			throw ex;
 		}
 	}
 
-	private ClientHttpRequest replaceURI(ClientHttpRequest request,
-			String replacementUri) {
+	private ClientHttpRequest replaceURI(ClientHttpRequest request, String replacementUri) {
 		URI uri;
 		try {
 			uri = new URI(replacementUri);
@@ -157,8 +153,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 		Assert.notNull(restTemplate, "RestTemplate must not be null");
 		UriTemplateHandler templateHandler = restTemplate.getUriTemplateHandler();
 		if (templateHandler instanceof RootUriTemplateHandler) {
-			return new RootUriRequestExpectationManager(
-					((RootUriTemplateHandler) templateHandler).getRootUri(),
+			return new RootUriRequestExpectationManager(((RootUriTemplateHandler) templateHandler).getRootUri(),
 					expectationManager);
 		}
 		return expectationManager;
@@ -167,8 +162,7 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	/**
 	 * {@link ClientHttpRequest} wrapper to replace the request URI.
 	 */
-	private static class ReplaceUriClientHttpRequest extends HttpRequestWrapper
-			implements ClientHttpRequest {
+	private static class ReplaceUriClientHttpRequest extends HttpRequestWrapper implements ClientHttpRequest {
 
 		private final URI uri;
 

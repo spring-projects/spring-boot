@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,7 +34,7 @@ import org.apache.maven.shared.artifact.filter.collection.FilterArtifacts;
  *
  * @author Stephane Nicoll
  * @author David Turanski
- * @since 1.1
+ * @since 1.1.0
  */
 public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
@@ -42,7 +42,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * Collection of artifact definitions to include. The {@link Include} element defines
 	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
 	 * {@code classifier} property.
-	 * @since 1.2
+	 * @since 1.2.0
 	 */
 	@Parameter(property = "spring-boot.includes")
 	private List<Include> includes;
@@ -51,14 +51,14 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
 	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
 	 * {@code classifier} property.
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.excludes")
 	private List<Exclude> excludes;
 
 	/**
 	 * Comma separated list of groupId names to exclude (exact match).
-	 * @since 1.1
+	 * @since 1.1.0
 	 */
 	@Parameter(property = "spring-boot.excludeGroupIds", defaultValue = "")
 	private String excludeGroupIds;
@@ -75,8 +75,8 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		this.excludeGroupIds = excludeGroupIds;
 	}
 
-	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies,
-			FilterArtifacts filters) throws MojoExecutionException {
+	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
+			throws MojoExecutionException {
 		try {
 			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);
 			filtered.retainAll(filters.filter(dependencies));
@@ -97,8 +97,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		for (ArtifactsFilter additionalFilter : additionalFilters) {
 			filters.addFilter(additionalFilter);
 		}
-		filters.addFilter(
-				new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
+		filters.addFilter(new MatchingGroupIdFilter(cleanFilterConfig(this.excludeGroupIds)));
 		if (this.includes != null && !this.includes.isEmpty()) {
 			filters.addFilter(new IncludeFilter(this.includes));
 		}

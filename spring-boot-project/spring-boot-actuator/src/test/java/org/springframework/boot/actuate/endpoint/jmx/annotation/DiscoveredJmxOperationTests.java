@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -45,47 +45,44 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class DiscoveredJmxOperationTests {
+class DiscoveredJmxOperationTests {
 
 	@Test
-	public void getNameShouldReturnMethodName() {
+	void getNameShouldReturnMethodName() {
 		DiscoveredJmxOperation operation = getOperation("getEnum");
 		assertThat(operation.getName()).isEqualTo("getEnum");
 	}
 
 	@Test
-	public void getOutputTypeShouldReturnJmxType() {
+	void getOutputTypeShouldReturnJmxType() {
 		assertThat(getOperation("getEnum").getOutputType()).isEqualTo(String.class);
 		assertThat(getOperation("getDate").getOutputType()).isEqualTo(String.class);
 		assertThat(getOperation("getInstant").getOutputType()).isEqualTo(String.class);
 		assertThat(getOperation("getInteger").getOutputType()).isEqualTo(Integer.class);
 		assertThat(getOperation("getVoid").getOutputType()).isEqualTo(void.class);
-		assertThat(getOperation("getApplicationContext").getOutputType())
-				.isEqualTo(Object.class);
+		assertThat(getOperation("getApplicationContext").getOutputType()).isEqualTo(Object.class);
 	}
 
 	@Test
-	public void getDescriptionWhenHasManagedOperationDescriptionShouldUseValueFromAnnotation() {
-		DiscoveredJmxOperation operation = getOperation(
-				"withManagedOperationDescription");
+	void getDescriptionWhenHasManagedOperationDescriptionShouldUseValueFromAnnotation() {
+		DiscoveredJmxOperation operation = getOperation("withManagedOperationDescription");
 		assertThat(operation.getDescription()).isEqualTo("fromannotation");
 	}
 
 	@Test
-	public void getDescriptionWhenHasNoManagedOperationShouldGenerateDescription() {
+	void getDescriptionWhenHasNoManagedOperationShouldGenerateDescription() {
 		DiscoveredJmxOperation operation = getOperation("getEnum");
-		assertThat(operation.getDescription())
-				.isEqualTo("Invoke getEnum for endpoint test");
+		assertThat(operation.getDescription()).isEqualTo("Invoke getEnum for endpoint test");
 	}
 
 	@Test
-	public void getParametersWhenHasNoParametersShouldReturnEmptyList() {
+	void getParametersWhenHasNoParametersShouldReturnEmptyList() {
 		DiscoveredJmxOperation operation = getOperation("getEnum");
 		assertThat(operation.getParameters()).isEmpty();
 	}
 
 	@Test
-	public void getParametersShouldReturnJmxTypes() {
+	void getParametersShouldReturnJmxTypes() {
 		DiscoveredJmxOperation operation = getOperation("params");
 		List<JmxOperationParameter> parameters = operation.getParameters();
 		assertThat(parameters.get(0).getType()).isEqualTo(String.class);
@@ -96,7 +93,7 @@ public class DiscoveredJmxOperationTests {
 	}
 
 	@Test
-	public void getParametersWhenHasManagedOperationParameterShouldUseValuesFromAnnotation() {
+	void getParametersWhenHasManagedOperationParameterShouldUseValuesFromAnnotation() {
 		DiscoveredJmxOperation operation = getOperation("withManagedOperationParameters");
 		List<JmxOperationParameter> parameters = operation.getParameters();
 		assertThat(parameters.get(0).getName()).isEqualTo("a1");
@@ -106,7 +103,7 @@ public class DiscoveredJmxOperationTests {
 	}
 
 	@Test
-	public void getParametersWhenHasNoManagedOperationParameterShouldDeducedValuesName() {
+	void getParametersWhenHasNoManagedOperationParameterShouldDeducedValuesName() {
 		DiscoveredJmxOperation operation = getOperation("params");
 		List<JmxOperationParameter> parameters = operation.getParameters();
 		assertThat(parameters.get(0).getName()).isEqualTo("enumParam");
@@ -125,17 +122,14 @@ public class DiscoveredJmxOperationTests {
 		Method method = findMethod(methodName);
 		AnnotationAttributes annotationAttributes = new AnnotationAttributes();
 		annotationAttributes.put("produces", "application/xml");
-		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method,
-				OperationType.READ, annotationAttributes);
-		DiscoveredJmxOperation operation = new DiscoveredJmxOperation(
-				EndpointId.of("test"), operationMethod, mock(OperationInvoker.class));
-		return operation;
+		DiscoveredOperationMethod operationMethod = new DiscoveredOperationMethod(method, OperationType.READ,
+				annotationAttributes);
+		return new DiscoveredJmxOperation(EndpointId.of("test"), operationMethod, mock(OperationInvoker.class));
 	}
 
 	private Method findMethod(String methodName) {
 		Map<String, Method> methods = new HashMap<>();
-		ReflectionUtils.doWithMethods(Example.class,
-				(method) -> methods.put(method.getName(), method));
+		ReflectionUtils.doWithMethods(Example.class, (method) -> methods.put(method.getName(), method));
 		return methods.get(methodName);
 	}
 
@@ -153,14 +147,13 @@ public class DiscoveredJmxOperationTests {
 
 		ApplicationContext getApplicationContext();
 
-		Object params(OperationType enumParam, Date dateParam, Instant instantParam,
-				Integer integerParam, ApplicationContext applicationContextParam);
+		Object params(OperationType enumParam, Date dateParam, Instant instantParam, Integer integerParam,
+				ApplicationContext applicationContextParam);
 
 		@ManagedOperation(description = "fromannotation")
 		Object withManagedOperationDescription();
 
-		@ManagedOperationParameters({
-				@ManagedOperationParameter(name = "a1", description = "d1"),
+		@ManagedOperationParameters({ @ManagedOperationParameter(name = "a1", description = "d1"),
 				@ManagedOperationParameter(name = "a2", description = "d2") })
 		Object withManagedOperationParameters(Object one, Object two);
 

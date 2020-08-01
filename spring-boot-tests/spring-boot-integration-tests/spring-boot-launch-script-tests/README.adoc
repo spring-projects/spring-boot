@@ -31,7 +31,7 @@ Next, add your user to the `docker` group. For example:
 $ sudo usermod -a -G docker awilkinson
 ----
 
-You may need to log out and back in again for this change to take affect and for your
+You may need to log out and back in again for this change to take effect and for your
 user to be able to connect to the daemon.
 
 

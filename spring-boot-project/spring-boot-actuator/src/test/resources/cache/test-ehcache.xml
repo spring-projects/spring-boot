@@ -1,6 +1,0 @@
-<ehcache>
-	<diskStore path="java.io.tmpdir"/>
-	<defaultCache/>
-	<cache name="books" maxEntriesLocalHeap="50"/>
-	<cache name="players" maxEntriesLocalHeap="50"/>
-</ehcache>

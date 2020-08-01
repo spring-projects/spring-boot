@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -35,7 +35,7 @@ import com.fasterxml.jackson.databind.ser.BeanSerializerFactory;
 import com.fasterxml.jackson.databind.ser.BeanSerializerModifier;
 import com.fasterxml.jackson.databind.ser.SerializerFactory;
 import org.apache.tomcat.jdbc.pool.DataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.core.convert.ConversionService;
@@ -50,10 +50,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Dave Syer
  */
-public class DataSourceJsonSerializationTests {
+class DataSourceJsonSerializationTests {
 
 	@Test
-	public void serializerFactory() throws Exception {
+	void serializerFactory() throws Exception {
 		DataSource dataSource = new DataSource();
 		SerializerFactory factory = BeanSerializerFactory.instance
 				.withSerializerModifier(new GenericSerializerModifier());
@@ -64,7 +64,7 @@ public class DataSourceJsonSerializationTests {
 	}
 
 	@Test
-	public void serializerWithMixin() throws Exception {
+	void serializerWithMixin() throws Exception {
 		DataSource dataSource = new DataSource();
 		ObjectMapper mapper = new ObjectMapper();
 		mapper.addMixIn(DataSource.class, DataSourceJson.class);
@@ -74,26 +74,22 @@ public class DataSourceJsonSerializationTests {
 	}
 
 	@JsonSerialize(using = TomcatDataSourceSerializer.class)
-	protected interface DataSourceJson {
+	interface DataSourceJson {
 
 	}
 
-	protected static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
+	static class TomcatDataSourceSerializer extends JsonSerializer<DataSource> {
 
 		private ConversionService conversionService = new DefaultConversionService();
 
 		@Override
-		public void serialize(DataSource value, JsonGenerator jgen,
-				SerializerProvider provider) throws IOException {
+		public void serialize(DataSource value, JsonGenerator jgen, SerializerProvider provider) throws IOException {
 			jgen.writeStartObject();
-			for (PropertyDescriptor property : BeanUtils
-					.getPropertyDescriptors(DataSource.class)) {
+			for (PropertyDescriptor property : BeanUtils.getPropertyDescriptors(DataSource.class)) {
 				Method reader = property.getReadMethod();
 				if (reader != null && property.getWriteMethod() != null
-						&& this.conversionService.canConvert(String.class,
-								property.getPropertyType())) {
-					jgen.writeObjectField(property.getName(),
-							ReflectionUtils.invokeMethod(reader, value));
+						&& this.conversionService.canConvert(String.class, property.getPropertyType())) {
+					jgen.writeObjectField(property.getName(), ReflectionUtils.invokeMethod(reader, value));
 				}
 			}
 			jgen.writeEndObject();
@@ -101,20 +97,18 @@ public class DataSourceJsonSerializationTests {
 
 	}
 
-	protected static class GenericSerializerModifier extends BeanSerializerModifier {
+	static class GenericSerializerModifier extends BeanSerializerModifier {
 
 		private ConversionService conversionService = new DefaultConversionService();
 
 		@Override
-		public List<BeanPropertyWriter> changeProperties(SerializationConfig config,
-				BeanDescription beanDesc, List<BeanPropertyWriter> beanProperties) {
+		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
+				List<BeanPropertyWriter> beanProperties) {
 			List<BeanPropertyWriter> result = new ArrayList<>();
 			for (BeanPropertyWriter writer : beanProperties) {
-				AnnotatedMethod setter = beanDesc.findMethod(
-						"set" + StringUtils.capitalize(writer.getName()),
+				AnnotatedMethod setter = beanDesc.findMethod("set" + StringUtils.capitalize(writer.getName()),
 						new Class<?>[] { writer.getType().getRawClass() });
-				if (setter != null && this.conversionService.canConvert(String.class,
-						writer.getType().getRawClass())) {
+				if (setter != null && this.conversionService.canConvert(String.class, writer.getType().getRawClass())) {
 					result.add(writer);
 				}
 			}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,7 +23,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Bean friendly variant of
- * <a href="http://www.atomikos.com/Documentation/JtaProperties">Atomikos configuration
+ * <a href="https://www.atomikos.com/Documentation/JtaProperties">Atomikos configuration
  * properties</a>. Allows for setter based configuration and is amiable to relaxed data
  * binding.
  *
@@ -191,10 +191,10 @@ public class AtomikosProperties {
 	 * address. If you plan to run more than one transaction manager against one database
 	 * you must set this property to a unique value or you might run into duplicate
 	 * transaction ID (XID) problems that can be quite subtle (example:
-	 * {@literal http://fogbugz.atomikos.com/default.asp?community.6.2225.7}). If multiple
-	 * instances need to use the same properties file then the easiest way to ensure
-	 * uniqueness for this property is by referencing a system property specified at VM
-	 * startup.
+	 * {@literal https://fogbugz.atomikos.com/default.asp?community.6.2225.7}). If
+	 * multiple instances need to use the same properties file then the easiest way to
+	 * ensure uniqueness for this property is by referencing a system property specified
+	 * at VM startup.
 	 * @param uniqueName the unique name
 	 */
 	public void setTransactionManagerUniqueName(String uniqueName) {
@@ -335,15 +335,13 @@ public class AtomikosProperties {
 		set(properties, "serial_jta_transactions", isSerialJtaTransactions());
 		set(properties, "allow_subtransactions", isAllowSubTransactions());
 		set(properties, "force_shutdown_on_vm_exit", isForceShutdownOnVmExit());
-		set(properties, "default_max_wait_time_on_shutdown",
-				getDefaultMaxWaitTimeOnShutdown());
+		set(properties, "default_max_wait_time_on_shutdown", getDefaultMaxWaitTimeOnShutdown());
 		set(properties, "log_base_name", getLogBaseName());
 		set(properties, "log_base_dir", getLogBaseDir());
 		set(properties, "checkpoint_interval", getCheckpointInterval());
 		set(properties, "threaded_2pc", isThreadedTwoPhaseCommit());
 		Recovery recovery = getRecovery();
-		set(properties, "forget_orphaned_log_entries_delay",
-				recovery.getForgetOrphanedLogEntriesDelay());
+		set(properties, "forget_orphaned_log_entries_delay", recovery.getForgetOrphanedLogEntriesDelay());
 		set(properties, "recovery_delay", recovery.getDelay());
 		set(properties, "oltp_max_retries", recovery.getMaxRetries());
 		set(properties, "oltp_retry_interval", recovery.getRetryInterval());
@@ -394,8 +392,7 @@ public class AtomikosProperties {
 			return this.forgetOrphanedLogEntriesDelay;
 		}
 
-		public void setForgetOrphanedLogEntriesDelay(
-				Duration forgetOrphanedLogEntriesDelay) {
+		public void setForgetOrphanedLogEntriesDelay(Duration forgetOrphanedLogEntriesDelay) {
 			this.forgetOrphanedLogEntriesDelay = forgetOrphanedLogEntriesDelay;
 		}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,8 +32,7 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
  * @author Phillip Webb
  * @since 1.3.0
  */
-public class SpringApplicationWebApplicationInitializer
-		extends SpringBootServletInitializer {
+public class SpringApplicationWebApplicationInitializer extends SpringBootServletInitializer {
 
 	/**
 	 * The entry containing the source class.
@@ -73,10 +72,9 @@ public class SpringApplicationWebApplicationInitializer
 			ClassLoader classLoader = Thread.currentThread().getContextClassLoader();
 			Class<?>[] sourceClasses = new Class<?>[this.sources.length];
 			for (int i = 0; i < this.sources.length; i++) {
-				sourceClasses[i] = classLoader.loadClass(this.sources[i]);
+				sourceClasses[i] = Class.forName(this.sources[i], false, classLoader);
 			}
-			return builder.sources(sourceClasses)
-					.properties("spring.groovy.template.check-template-location=false");
+			return builder.sources(sourceClasses).properties("spring.groovy.template.check-template-location=false");
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException(ex);

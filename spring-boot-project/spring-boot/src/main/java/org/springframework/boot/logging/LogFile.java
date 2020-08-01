@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -40,22 +40,6 @@ public class LogFile {
 	/**
 	 * The name of the Spring property that contains the name of the log file. Names can
 	 * be an exact location or relative to the current directory.
-	 * @deprecated since 2.2.0 in favor of {@link #FILE_NAME_PROPERTY}
-	 */
-	@Deprecated
-	public static final String FILE_PROPERTY = "logging.file";
-
-	/**
-	 * The name of the Spring property that contains the directory where log files are
-	 * written.
-	 * @deprecated since 2.2.0 in favor of {@link #FILE_PATH_PROPERTY}
-	 */
-	@Deprecated
-	public static final String PATH_PROPERTY = "logging.path";
-
-	/**
-	 * The name of the Spring property that contains the name of the log file. Names can
-	 * be an exact location or relative to the current directory.
 	 * @since 2.2.0
 	 */
 	public static final String FILE_NAME_PROPERTY = "logging.file.name";
@@ -85,8 +69,7 @@ public class LogFile {
 	 * @param path a reference to the logging path to use if {@code file} is not specified
 	 */
 	LogFile(String file, String path) {
-		Assert.isTrue(StringUtils.hasLength(file) || StringUtils.hasLength(path),
-				"File or Path must not be empty");
+		Assert.isTrue(StringUtils.hasLength(file) || StringUtils.hasLength(path), "File or Path must not be empty");
 		this.file = file;
 		this.path = path;
 	}
@@ -129,23 +112,12 @@ public class LogFile {
 	 * suitable properties
 	 */
 	public static LogFile get(PropertyResolver propertyResolver) {
-		String file = getLogFileProperty(propertyResolver, FILE_NAME_PROPERTY,
-				FILE_PROPERTY);
-		String path = getLogFileProperty(propertyResolver, FILE_PATH_PROPERTY,
-				PATH_PROPERTY);
+		String file = propertyResolver.getProperty(FILE_NAME_PROPERTY);
+		String path = propertyResolver.getProperty(FILE_PATH_PROPERTY);
 		if (StringUtils.hasLength(file) || StringUtils.hasLength(path)) {
 			return new LogFile(file, path);
 		}
 		return null;
-	}
-
-	private static String getLogFileProperty(PropertyResolver propertyResolver,
-			String propertyName, String deprecatedPropertyName) {
-		String property = propertyResolver.getProperty(propertyName);
-		if (property != null) {
-			return property;
-		}
-		return propertyResolver.getProperty(deprecatedPropertyName);
 	}
 
 }

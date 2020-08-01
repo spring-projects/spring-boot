@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,8 +37,7 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical LDAP test. Can be used when a test focuses <strong>only</strong> on LDAP
+ * Annotation that can be used for an LDAP test that focuses <strong>only</strong> on LDAP
  * components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
@@ -46,6 +45,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * <p>
  * By default, tests annotated with {@code @DataLdapTest} will use an embedded in-memory
  * LDAP process (if available).
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Eddú Meléndez
  * @author Artsiom Yudovin

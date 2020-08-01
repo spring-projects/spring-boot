@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,7 +46,6 @@ import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.style.ToStringCreator;
 import org.springframework.core.type.AnnotationMetadata;
-import org.springframework.core.type.StandardAnnotationMetadata;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.util.ReflectionUtils;
@@ -76,24 +75,20 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
 		BeanDefinitionRegistry registry = getBeanDefinitionRegistry(context);
-		AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(
-				registry);
+		AnnotatedBeanDefinitionReader reader = new AnnotatedBeanDefinitionReader(registry);
 		registerCleanupPostProcessor(registry, reader);
 		registerImportsConfiguration(registry, reader);
 	}
 
-	private void registerCleanupPostProcessor(BeanDefinitionRegistry registry,
-			AnnotatedBeanDefinitionReader reader) {
-		BeanDefinition definition = registerBean(registry, reader,
-				ImportsCleanupPostProcessor.BEAN_NAME, ImportsCleanupPostProcessor.class);
-		definition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-				this.testClass);
+	private void registerCleanupPostProcessor(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader) {
+		BeanDefinition definition = registerBean(registry, reader, ImportsCleanupPostProcessor.BEAN_NAME,
+				ImportsCleanupPostProcessor.class);
+		definition.getConstructorArgumentValues().addIndexedArgumentValue(0, this.testClass);
 	}
 
-	private void registerImportsConfiguration(BeanDefinitionRegistry registry,
-			AnnotatedBeanDefinitionReader reader) {
-		BeanDefinition definition = registerBean(registry, reader,
-				ImportsConfiguration.BEAN_NAME, ImportsConfiguration.class);
+	private void registerImportsConfiguration(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader) {
+		BeanDefinition definition = registerBean(registry, reader, ImportsConfiguration.BEAN_NAME,
+				ImportsConfiguration.class);
 		definition.setAttribute(TEST_CLASS_ATTRIBUTE, this.testClass);
 	}
 
@@ -102,15 +97,13 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return (BeanDefinitionRegistry) context;
 		}
 		if (context instanceof AbstractApplicationContext) {
-			return (BeanDefinitionRegistry) ((AbstractApplicationContext) context)
-					.getBeanFactory();
+			return (BeanDefinitionRegistry) ((AbstractApplicationContext) context).getBeanFactory();
 		}
 		throw new IllegalStateException("Could not locate BeanDefinitionRegistry");
 	}
 
-	@SuppressWarnings("unchecked")
-	private BeanDefinition registerBean(BeanDefinitionRegistry registry,
-			AnnotatedBeanDefinitionReader reader, String beanName, Class<?> type) {
+	private BeanDefinition registerBean(BeanDefinitionRegistry registry, AnnotatedBeanDefinitionReader reader,
+			String beanName, Class<?> type) {
 		reader.registerBean(type, beanName);
 		return registry.getBeanDefinition(beanName);
 	}
@@ -139,9 +132,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	}
 
 	/**
-	 * {@link Configuration} registered to trigger the {@link ImportsSelector}.
+	 * {@link Configuration @Configuration} registered to trigger the
+	 * {@link ImportsSelector}.
 	 */
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@Import(ImportsSelector.class)
 	static class ImportsConfiguration {
 
@@ -166,12 +160,9 @@ class ImportsContextCustomizer implements ContextCustomizer {
 
 		@Override
 		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
-			BeanDefinition definition = this.beanFactory
-					.getBeanDefinition(ImportsConfiguration.BEAN_NAME);
-			Object testClass = (definition != null)
-					? definition.getAttribute(TEST_CLASS_ATTRIBUTE) : null;
-			return (testClass != null) ? new String[] { ((Class<?>) testClass).getName() }
-					: NO_IMPORTS;
+			BeanDefinition definition = this.beanFactory.getBeanDefinition(ImportsConfiguration.BEAN_NAME);
+			Object testClass = (definition != null) ? definition.getAttribute(TEST_CLASS_ATTRIBUTE) : null;
+			return (testClass != null) ? new String[] { ((Class<?>) testClass).getName() } : NO_IMPORTS;
 		}
 
 	}
@@ -181,8 +172,7 @@ class ImportsContextCustomizer implements ContextCustomizer {
 	 * added to load imports.
 	 */
 	@Order(Ordered.LOWEST_PRECEDENCE)
-	static class ImportsCleanupPostProcessor
-			implements BeanDefinitionRegistryPostProcessor {
+	static class ImportsCleanupPostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 		static final String BEAN_NAME = ImportsCleanupPostProcessor.class.getName();
 
@@ -193,13 +183,11 @@ class ImportsContextCustomizer implements ContextCustomizer {
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			try {
 				String[] names = registry.getBeanDefinitionNames();
 				for (String name : names) {
@@ -244,12 +232,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			Set<Class<?>> seen = new HashSet<>();
 			collectClassAnnotations(testClass, annotations, seen);
 			Set<Object> determinedImports = determineImports(annotations, testClass);
-			this.key = Collections.unmodifiableSet(
-					(determinedImports != null) ? determinedImports : annotations);
+			this.key = Collections.unmodifiableSet((determinedImports != null) ? determinedImports : annotations);
 		}
 
-		private void collectClassAnnotations(Class<?> classType,
-				Set<Annotation> annotations, Set<Class<?>> seen) {
+		private void collectClassAnnotations(Class<?> classType, Set<Annotation> annotations, Set<Class<?>> seen) {
 			if (seen.add(classType)) {
 				collectElementAnnotations(classType, annotations, seen);
 				for (Class<?> interfaceType : classType.getInterfaces()) {
@@ -261,13 +247,12 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			}
 		}
 
-		private void collectElementAnnotations(AnnotatedElement element,
-				Set<Annotation> annotations, Set<Class<?>> seen) {
+		private void collectElementAnnotations(AnnotatedElement element, Set<Annotation> annotations,
+				Set<Class<?>> seen) {
 			for (Annotation annotation : element.getDeclaredAnnotations()) {
 				if (!isIgnoredAnnotation(annotation)) {
 					annotations.add(annotation);
-					collectClassAnnotations(annotation.annotationType(), annotations,
-							seen);
+					collectClassAnnotations(annotation.annotationType(), annotations, seen);
 				}
 			}
 		}
@@ -281,15 +266,12 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return false;
 		}
 
-		private Set<Object> determineImports(Set<Annotation> annotations,
-				Class<?> testClass) {
+		private Set<Object> determineImports(Set<Annotation> annotations, Class<?> testClass) {
 			Set<Object> determinedImports = new LinkedHashSet<>();
-			AnnotationMetadata testClassMetadata = new StandardAnnotationMetadata(
-					testClass);
+			AnnotationMetadata testClassMetadata = AnnotationMetadata.introspect(testClass);
 			for (Annotation annotation : annotations) {
 				for (Class<?> source : getImports(annotation)) {
-					Set<Object> determinedSourceImports = determineImports(source,
-							testClassMetadata);
+					Set<Object> determinedSourceImports = determineImports(source, testClassMetadata);
 					if (determinedSourceImports == null) {
 						return null;
 					}
@@ -306,12 +288,10 @@ class ImportsContextCustomizer implements ContextCustomizer {
 			return NO_IMPORTS;
 		}
 
-		private Set<Object> determineImports(Class<?> source,
-				AnnotationMetadata metadata) {
+		private Set<Object> determineImports(Class<?> source, AnnotationMetadata metadata) {
 			if (DeterminableImports.class.isAssignableFrom(source)) {
 				// We can determine the imports
-				return ((DeterminableImports) instantiate(source))
-						.determineImports(metadata);
+				return ((DeterminableImports) instantiate(source)).determineImports(metadata);
 			}
 			if (ImportSelector.class.isAssignableFrom(source)
 					|| ImportBeanDefinitionRegistrar.class.isAssignableFrom(source)) {
@@ -331,17 +311,14 @@ class ImportsContextCustomizer implements ContextCustomizer {
 				return (T) constructor.newInstance();
 			}
 			catch (Throwable ex) {
-				throw new IllegalStateException(
-						"Unable to instantiate DeterminableImportSelector "
-								+ source.getName(),
+				throw new IllegalStateException("Unable to instantiate DeterminableImportSelector " + source.getName(),
 						ex);
 			}
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			return (obj != null && getClass() == obj.getClass()
-					&& this.key.equals(((ContextCustomizerKey) obj).key));
+			return (obj != null && getClass() == obj.getClass() && this.key.equals(((ContextCustomizerKey) obj).key));
 		}
 
 		@Override

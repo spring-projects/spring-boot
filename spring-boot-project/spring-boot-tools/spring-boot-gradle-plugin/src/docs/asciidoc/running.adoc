@@ -1,0 +1,115 @@
+[[running-your-application]]
+== Running your Application with Gradle
+To run your application without first building an archive use the `bootRun` task:
+
+[source,bash,indent=0,subs="verbatim"]
+----
+	$ ./gradlew bootRun
+----
+
+The `bootRun` task is an instance of {boot-run-javadoc}[`BootRun`] which is a `JavaExec` subclass.
+As such, all of the {gradle-dsl}/org.gradle.api.tasks.JavaExec.html[usual configuration options] for executing a Java process in Gradle are available to you.
+The task is automatically configured to use the runtime classpath of the main source set.
+
+By default, the main class will be configured automatically by looking for a class with a `public static void main(String[])` method in directories on the task's classpath.
+
+The main class can also be configured explicitly using the task's `main` property:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/boot-run-main.gradle[tags=main]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/boot-run-main.gradle.kts[tags=main]
+----
+
+Alternatively, the main class name can be configured project-wide using the `mainClassName` property of the Spring Boot DSL:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/spring-boot-dsl-main-class-name.gradle[tags=main-class]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/spring-boot-dsl-main-class-name.gradle.kts[tags=main-class]
+----
+
+By default, `bootRun` will configure the JVM to optimize its launch for faster startup during development.
+This behavior can be disabled by using the `optimizedLaunch` property, as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/boot-run-disable-optimized-launch.gradle[tags=launch]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/boot-run-disable-optimized-launch.gradle.kts[tags=launch]
+----
+
+If the {application-plugin}[`application` plugin] has been applied, its `mainClassName` property must be configured and can be used for the same purpose:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/application-plugin-main-class-name.gradle[tags=main-class]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/application-plugin-main-class-name.gradle.kts[tags=main-class]
+----
+
+
+
+[[running-your-application-passing-arguments]]
+=== Passing Arguments to your Application
+Like all `JavaExec` tasks, arguments can be passed into `bootRun` from the command line using `--args='<arguments>'` when using Gradle 4.9 or later.
+For example, to run your application with a profile named `dev` active the following command can be used:
+
+[source,bash,indent=0,subs="verbatim"]
+----
+	$ ./gradlew bootRun --args='--spring.profiles.active=dev'
+----
+
+See {gradle-api}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.String-[the javadoc for `JavaExec.setArgsString`] for further details.
+
+
+
+[[running-your-application-passing-system-properties]]
+=== Passing System properties to your application
+Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
+The values can be parameterized and passed as properties on the command line using the `-P` flag.
+
+See {gradle-api}/org/gradle/api/tasks/JavaExec.html#systemProperty-java.lang.String-java.lang.Object-[the javadoc for `JavaExec.systemProperty`] for further details.
+
+
+
+[[running-your-application-reloading-resources]]
+=== Reloading Resources
+If devtools has been added to your project it will automatically monitor your application for changes.
+Alternatively, you can configure `bootRun` such that your application's static resources are loaded from their source location:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/boot-run-source-resources.gradle[tags=source-resources]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/boot-run-source-resources.gradle.kts[tags=source-resources]
+----
+
+This makes them reloadable in the live application which can be helpful at development time.

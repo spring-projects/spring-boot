@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 package org.springframework.boot.loader;
 
 import org.springframework.boot.loader.archive.Archive;
+import org.springframework.boot.loader.archive.Archive.Entry;
 
 /**
  * {@link Launcher} for WAR based archives. This launcher for standard WAR archives.
@@ -25,16 +26,9 @@ import org.springframework.boot.loader.archive.Archive;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @since 1.0.0
  */
 public class WarLauncher extends ExecutableArchiveLauncher {
-
-	private static final String WEB_INF = "WEB-INF/";
-
-	private static final String WEB_INF_CLASSES = WEB_INF + "classes/";
-
-	private static final String WEB_INF_LIB = WEB_INF + "lib/";
-
-	private static final String WEB_INF_LIB_PROVIDED = WEB_INF + "lib-provided/";
 
 	public WarLauncher() {
 	}
@@ -44,14 +38,21 @@ public class WarLauncher extends ExecutableArchiveLauncher {
 	}
 
 	@Override
+	protected boolean isPostProcessingClassPathArchives() {
+		return false;
+	}
+
+	@Override
+	protected boolean isSearchCandidate(Entry entry) {
+		return entry.getName().startsWith("WEB-INF/");
+	}
+
+	@Override
 	public boolean isNestedArchive(Archive.Entry entry) {
 		if (entry.isDirectory()) {
-			return entry.getName().equals(WEB_INF_CLASSES);
+			return entry.getName().equals("WEB-INF/classes/");
 		}
-		else {
-			return entry.getName().startsWith(WEB_INF_LIB)
-					|| entry.getName().startsWith(WEB_INF_LIB_PROVIDED);
-		}
+		return entry.getName().startsWith("WEB-INF/lib/") || entry.getName().startsWith("WEB-INF/lib-provided/");
 	}
 
 	public static void main(String[] args) throws Exception {

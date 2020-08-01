@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,7 +20,9 @@ import javax.ws.rs.ApplicationPath;
 import org.glassfish.jersey.server.ResourceConfig;
 
 import org.springframework.boot.autoconfigure.jersey.JerseyProperties;
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.StringUtils;
 
 /**
@@ -28,6 +30,7 @@ import org.springframework.util.StringUtils;
  * {@link JerseyProperties} or the {@code @ApplicationPath} annotation.
  *
  * @author Madhura Bhave
+ * @since 2.1.0
  */
 public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 
@@ -49,16 +52,9 @@ public class DefaultJerseyApplicationPath implements JerseyApplicationPath {
 		if (StringUtils.hasLength(this.applicationPath)) {
 			return this.applicationPath;
 		}
-		return findApplicationPath(AnnotationUtils.findAnnotation(
-				this.config.getApplication().getClass(), ApplicationPath.class));
-	}
-
-	private static String findApplicationPath(ApplicationPath annotation) {
 		// Jersey doesn't like to be the default servlet, so map to /* as a fallback
-		if (annotation == null) {
-			return "/*";
-		}
-		return annotation.value();
+		return MergedAnnotations.from(this.config.getApplication().getClass(), SearchStrategy.TYPE_HIERARCHY)
+				.get(ApplicationPath.class).getValue(MergedAnnotation.VALUE, String.class).orElse("/*");
 	}
 
 }

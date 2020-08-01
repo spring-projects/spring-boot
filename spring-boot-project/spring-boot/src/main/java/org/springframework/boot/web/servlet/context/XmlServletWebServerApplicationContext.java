@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -32,13 +32,13 @@ import org.springframework.web.context.support.XmlWebApplicationContext;
  * bean definitions via an extra XML file.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see #setNamespace
  * @see #setConfigLocations
  * @see ServletWebServerApplicationContext
  * @see XmlWebApplicationContext
  */
-public class XmlServletWebServerApplicationContext
-		extends ServletWebServerApplicationContext {
+public class XmlServletWebServerApplicationContext extends ServletWebServerApplicationContext {
 
 	private final XmlBeanDefinitionReader reader = new XmlBeanDefinitionReader(this);
 
@@ -47,7 +47,7 @@ public class XmlServletWebServerApplicationContext
 	 * {@linkplain #load loaded} and then manually {@link #refresh refreshed}.
 	 */
 	public XmlServletWebServerApplicationContext() {
-		this.reader.setEnvironment(this.getEnvironment());
+		this.reader.setEnvironment(getEnvironment());
 	}
 
 	/**
@@ -79,8 +79,7 @@ public class XmlServletWebServerApplicationContext
 	 * specified resource name
 	 * @param resourceNames relatively-qualified names of resources to load
 	 */
-	public XmlServletWebServerApplicationContext(Class<?> relativeClass,
-			String... resourceNames) {
+	public XmlServletWebServerApplicationContext(Class<?> relativeClass, String... resourceNames) {
 		load(relativeClass, resourceNames);
 		refresh();
 	}
@@ -102,7 +101,7 @@ public class XmlServletWebServerApplicationContext
 	@Override
 	public void setEnvironment(ConfigurableEnvironment environment) {
 		super.setEnvironment(environment);
-		this.reader.setEnvironment(this.getEnvironment());
+		this.reader.setEnvironment(getEnvironment());
 	}
 
 	/**

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,10 +29,17 @@ import org.springframework.core.annotation.AliasFor;
  * {@code @Bean} method in a {@code @Configuration} class if you want to bind and validate
  * some external Properties (e.g. from a .properties file).
  * <p>
+ * Binding is either performed by calling setters on the annotated class or, if
+ * {@link ConstructorBinding @ConstructorBinding} is in use, by binding to the constructor
+ * parameters.
+ * <p>
  * Note that contrary to {@code @Value}, SpEL expressions are not evaluated since property
  * values are externalized.
  *
  * @author Dave Syer
+ * @since 1.0.0
+ * @see ConfigurationPropertiesScan
+ * @see ConstructorBinding
  * @see ConfigurationPropertiesBindingPostProcessor
  * @see EnableConfigurationProperties
  */
@@ -42,19 +49,19 @@ import org.springframework.core.annotation.AliasFor;
 public @interface ConfigurationProperties {
 
 	/**
-	 * The name prefix of the properties that are valid to bind to this object. Synonym
-	 * for {@link #prefix()}. A valid prefix is defined by one or more words separated
-	 * with dots (e.g. {@code "acme.system.feature"}).
-	 * @return the name prefix of the properties to bind
+	 * The prefix of the properties that are valid to bind to this object. Synonym for
+	 * {@link #prefix()}. A valid prefix is defined by one or more words separated with
+	 * dots (e.g. {@code "acme.system.feature"}).
+	 * @return the prefix of the properties to bind
 	 */
 	@AliasFor("prefix")
 	String value() default "";
 
 	/**
-	 * The name prefix of the properties that are valid to bind to this object. Synonym
-	 * for {@link #value()}. A valid prefix is defined by one or more words separated with
+	 * The prefix of the properties that are valid to bind to this object. Synonym for
+	 * {@link #value()}. A valid prefix is defined by one or more words separated with
 	 * dots (e.g. {@code "acme.system.feature"}).
-	 * @return the name prefix of the properties to bind
+	 * @return the prefix of the properties to bind
 	 */
 	@AliasFor("value")
 	String prefix() default "";

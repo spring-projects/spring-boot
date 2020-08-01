@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -102,24 +102,21 @@ class JSON {
 		return null;
 	}
 
-	public static JSONException typeMismatch(Object indexOrName, Object actual,
-			String requiredType) throws JSONException {
+	public static JSONException typeMismatch(Object indexOrName, Object actual, String requiredType)
+			throws JSONException {
 		if (actual == null) {
 			throw new JSONException("Value at " + indexOrName + " is null.");
 		}
-		throw new JSONException("Value " + actual + " at " + indexOrName + " of type "
-				+ actual.getClass().getName() + " cannot be converted to "
-				+ requiredType);
+		throw new JSONException("Value " + actual + " at " + indexOrName + " of type " + actual.getClass().getName()
+				+ " cannot be converted to " + requiredType);
 	}
 
-	public static JSONException typeMismatch(Object actual, String requiredType)
-			throws JSONException {
+	public static JSONException typeMismatch(Object actual, String requiredType) throws JSONException {
 		if (actual == null) {
 			throw new JSONException("Value is null.");
 		}
-		throw new JSONException(
-				"Value " + actual + " of type " + actual.getClass().getName()
-						+ " cannot be converted to " + requiredType);
+		throw new JSONException("Value " + actual + " of type " + actual.getClass().getName()
+				+ " cannot be converted to " + requiredType);
 	}
 
 }

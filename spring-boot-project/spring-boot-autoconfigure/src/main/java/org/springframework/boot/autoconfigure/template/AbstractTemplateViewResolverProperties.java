@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,13 @@ import org.springframework.util.Assert;
 import org.springframework.web.servlet.view.AbstractTemplateViewResolver;
 
 /**
- * Base class for {@link ConfigurationProperties} of a
+ * Base class for {@link ConfigurationProperties @ConfigurationProperties} of a
  * {@link AbstractTemplateViewResolver}.
  *
  * @author Andy Wilkinson
  * @since 1.1.0
  */
-public abstract class AbstractTemplateViewResolverProperties
-		extends AbstractViewResolverProperties {
+public abstract class AbstractTemplateViewResolverProperties extends AbstractViewResolverProperties {
 
 	/**
 	 * Prefix that gets prepended to view names when building a URL.
@@ -76,8 +75,7 @@ public abstract class AbstractTemplateViewResolverProperties
 	 */
 	private boolean allowSessionOverride = false;
 
-	protected AbstractTemplateViewResolverProperties(String defaultPrefix,
-			String defaultSuffix) {
+	protected AbstractTemplateViewResolverProperties(String defaultPrefix, String defaultSuffix) {
 		this.prefix = defaultPrefix;
 		this.suffix = defaultSuffix;
 	}
@@ -154,8 +152,7 @@ public abstract class AbstractTemplateViewResolverProperties
 	 */
 	public void applyToMvcViewResolver(Object viewResolver) {
 		Assert.isInstanceOf(AbstractTemplateViewResolver.class, viewResolver,
-				"ViewResolver is not an instance of AbstractTemplateViewResolver :"
-						+ viewResolver);
+				"ViewResolver is not an instance of AbstractTemplateViewResolver :" + viewResolver);
 		AbstractTemplateViewResolver resolver = (AbstractTemplateViewResolver) viewResolver;
 		resolver.setPrefix(getPrefix());
 		resolver.setSuffix(getSuffix());

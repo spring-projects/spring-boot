@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,18 +43,20 @@ import org.springframework.util.Assert;
  *
  * @param <C> the application context type
  * @author Phillip Webb
+ * @since 2.0.0
  * @see AssertableApplicationContext
  * @see AssertableWebApplicationContext
  * @see AssertableReactiveWebApplicationContext
  * @see ApplicationContextAssert
  */
-public interface ApplicationContextAssertProvider<C extends ApplicationContext> extends
-		ApplicationContext, AssertProvider<ApplicationContextAssert<C>>, Closeable {
+public interface ApplicationContextAssertProvider<C extends ApplicationContext>
+		extends ApplicationContext, AssertProvider<ApplicationContextAssert<C>>, Closeable {
 
 	/**
 	 * Return an assert for AspectJ.
 	 * @return an AspectJ assert
-	 * @deprecated use standard AssertJ {@code assertThat(context)...} calls instead.
+	 * @deprecated to prevent accidental use. Prefer standard AssertJ
+	 * {@code assertThat(context)...} calls instead.
 	 */
 	@Deprecated
 	@Override
@@ -100,17 +102,15 @@ public interface ApplicationContextAssertProvider<C extends ApplicationContext> 
 	 * @return a {@link ApplicationContextAssertProvider} instance
 	 */
 	@SuppressWarnings("unchecked")
-	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(
-			Class<T> type, Class<? extends C> contextType,
-			Supplier<? extends C> contextSupplier) {
+	static <T extends ApplicationContextAssertProvider<C>, C extends ApplicationContext> T get(Class<T> type,
+			Class<? extends C> contextType, Supplier<? extends C> contextSupplier) {
 		Assert.notNull(type, "Type must not be null");
 		Assert.isTrue(type.isInterface(), "Type must be an interface");
 		Assert.notNull(contextType, "ContextType must not be null");
 		Assert.isTrue(contextType.isInterface(), "ContextType must be an interface");
 		Class<?>[] interfaces = { type, contextType };
-		return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(),
-				interfaces, new AssertProviderApplicationContextInvocationHandler(
-						contextType, contextSupplier));
+		return (T) Proxy.newProxyInstance(Thread.currentThread().getContextClassLoader(), interfaces,
+				new AssertProviderApplicationContextInvocationHandler(contextType, contextSupplier));
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -34,8 +34,7 @@ import org.apache.commons.logging.Log;
  */
 class DocumentRoot {
 
-	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public",
-			"static" };
+	private static final String[] COMMON_DOC_ROOTS = { "src/main/webapp", "public", "static" };
 
 	private final Log logger;
 
@@ -45,11 +44,11 @@ class DocumentRoot {
 		this.logger = logger;
 	}
 
-	public File getDirectory() {
+	File getDirectory() {
 		return this.directory;
 	}
 
-	public void setDirectory(File directory) {
+	void setDirectory(File directory) {
 		this.directory = directory;
 	}
 
@@ -58,7 +57,7 @@ class DocumentRoot {
 	 * warning and returning {@code null} otherwise.
 	 * @return the valid document root
 	 */
-	public final File getValidDirectory() {
+	final File getValidDirectory() {
 		File file = this.directory;
 		file = (file != null) ? file : getWarFileDocumentRoot();
 		file = (file != null) ? file : getExplodedWarFileDocumentRoot();
@@ -121,14 +120,13 @@ class DocumentRoot {
 		}
 	}
 
-	public final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
+	final File getExplodedWarFileDocumentRoot(File codeSourceFile) {
 		if (this.logger.isDebugEnabled()) {
 			this.logger.debug("Code archive: " + codeSourceFile);
 		}
 		if (codeSourceFile != null && codeSourceFile.exists()) {
 			String path = codeSourceFile.getAbsolutePath();
-			int webInfPathIndex = path
-					.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
+			int webInfPathIndex = path.indexOf(File.separatorChar + "WEB-INF" + File.separatorChar);
 			if (webInfPathIndex >= 0) {
 				path = path.substring(0, webInfPathIndex);
 				return new File(path);

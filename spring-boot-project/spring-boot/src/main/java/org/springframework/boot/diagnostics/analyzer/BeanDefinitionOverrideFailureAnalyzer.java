@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -29,26 +29,28 @@ import org.springframework.boot.diagnostics.FailureAnalysis;
  *
  * @author Andy Wilkinson
  */
-class BeanDefinitionOverrideFailureAnalyzer
-		extends AbstractFailureAnalyzer<BeanDefinitionOverrideException> {
+class BeanDefinitionOverrideFailureAnalyzer extends AbstractFailureAnalyzer<BeanDefinitionOverrideException> {
 
 	private static final String ACTION = "Consider renaming one of the beans or enabling "
 			+ "overriding by setting spring.main.allow-bean-definition-overriding=true";
 
 	@Override
-	protected FailureAnalysis analyze(Throwable rootFailure,
-			BeanDefinitionOverrideException cause) {
+	protected FailureAnalysis analyze(Throwable rootFailure, BeanDefinitionOverrideException cause) {
 		return new FailureAnalysis(getDescription(cause), ACTION, cause);
 	}
 
 	private String getDescription(BeanDefinitionOverrideException ex) {
 		StringWriter description = new StringWriter();
 		PrintWriter printer = new PrintWriter(description);
-		printer.printf(
-				"The bean '%s', defined in %s, could not be registered. A bean with that "
-						+ "name has already been defined in %s and overriding is disabled.",
-				ex.getBeanName(), ex.getBeanDefinition().getResourceDescription(),
-				ex.getExistingDefinition().getResourceDescription());
+		printer.printf("The bean '%s'", ex.getBeanName());
+		if (ex.getBeanDefinition().getResourceDescription() != null) {
+			printer.printf(", defined in %s,", ex.getBeanDefinition().getResourceDescription());
+		}
+		printer.printf(" could not be registered. A bean with that name has already been defined ");
+		if (ex.getExistingDefinition().getResourceDescription() != null) {
+			printer.printf("in %s ", ex.getExistingDefinition().getResourceDescription());
+		}
+		printer.printf("and overriding is disabled.");
 		return description.toString();
 	}
 

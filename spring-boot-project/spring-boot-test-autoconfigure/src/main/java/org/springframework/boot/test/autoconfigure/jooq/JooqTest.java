@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,6 +28,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
+import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.context.annotation.ComponentScan.Filter;
@@ -38,9 +39,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.transaction.annotation.Transactional;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical jOOQ test. Can be used when a test focuses <strong>only</strong> on
- * jOOQ-based components.
+ * Annotation for a jOOQ test that focuses <strong>only</strong> on jOOQ-based components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to jOOQ tests.
@@ -49,6 +48,9 @@ import org.springframework.transaction.annotation.Transactional;
  * want to replace any explicit or usually auto-configured DataSource by an embedded
  * in-memory database, the {@link AutoConfigureTestDatabase @AutoConfigureTestDatabase}
  * annotation can be used to override these settings.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Michael Simons
  * @author Stephane Nicoll
@@ -64,6 +66,7 @@ import org.springframework.transaction.annotation.Transactional;
 @OverrideAutoConfiguration(enabled = false)
 @TypeExcludeFilters(JooqTypeExcludeFilter.class)
 @Transactional
+@AutoConfigureCache
 @AutoConfigureJooq
 @ImportAutoConfiguration
 public @interface JooqTest {

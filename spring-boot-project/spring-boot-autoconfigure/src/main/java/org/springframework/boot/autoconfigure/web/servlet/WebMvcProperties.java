@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,6 +22,8 @@ import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -34,7 +36,7 @@ import org.springframework.validation.DefaultMessageCodesResolver;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Brian Clozel
- * @since 1.1
+ * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.mvc")
 public class WebMvcProperties {
@@ -55,10 +57,7 @@ public class WebMvcProperties {
 	 */
 	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
-	/**
-	 * Date format to use. For instance, `dd/MM/yyyy`.
-	 */
-	private String dateFormat;
+	private final Format format = new Format();
 
 	/**
 	 * Whether to dispatch TRACE requests to the FrameworkServlet doService method.
@@ -77,10 +76,21 @@ public class WebMvcProperties {
 	private boolean ignoreDefaultModelOnRedirect = true;
 
 	/**
+	 * Whether to publish a ServletRequestHandledEvent at the end of each request.
+	 */
+	private boolean publishRequestHandledEvents = true;
+
+	/**
 	 * Whether a "NoHandlerFoundException" should be thrown if no Handler was found to
 	 * process a request.
 	 */
 	private boolean throwExceptionIfNoHandlerFound = false;
+
+	/**
+	 * Whether logging of (potentially sensitive) request details at DEBUG and TRACE level
+	 * is allowed.
+	 */
+	private boolean logRequestDetails;
 
 	/**
 	 * Whether to enable warn logging of exceptions resolved by a
@@ -107,8 +117,7 @@ public class WebMvcProperties {
 		return this.messageCodesResolverFormat;
 	}
 
-	public void setMessageCodesResolverFormat(
-			DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
+	public void setMessageCodesResolverFormat(DefaultMessageCodesResolver.Format messageCodesResolverFormat) {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
@@ -128,12 +137,19 @@ public class WebMvcProperties {
 		this.localeResolver = localeResolver;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.mvc.format.date")
 	public String getDateFormat() {
-		return this.dateFormat;
+		return this.format.getDate();
 	}
 
+	@Deprecated
 	public void setDateFormat(String dateFormat) {
-		this.dateFormat = dateFormat;
+		this.format.setDate(dateFormat);
+	}
+
+	public Format getFormat() {
+		return this.format;
 	}
 
 	public boolean isIgnoreDefaultModelOnRedirect() {
@@ -144,13 +160,28 @@ public class WebMvcProperties {
 		this.ignoreDefaultModelOnRedirect = ignoreDefaultModelOnRedirect;
 	}
 
+	public boolean isPublishRequestHandledEvents() {
+		return this.publishRequestHandledEvents;
+	}
+
+	public void setPublishRequestHandledEvents(boolean publishRequestHandledEvents) {
+		this.publishRequestHandledEvents = publishRequestHandledEvents;
+	}
+
 	public boolean isThrowExceptionIfNoHandlerFound() {
 		return this.throwExceptionIfNoHandlerFound;
 	}
 
-	public void setThrowExceptionIfNoHandlerFound(
-			boolean throwExceptionIfNoHandlerFound) {
+	public void setThrowExceptionIfNoHandlerFound(boolean throwExceptionIfNoHandlerFound) {
 		this.throwExceptionIfNoHandlerFound = throwExceptionIfNoHandlerFound;
+	}
+
+	public boolean isLogRequestDetails() {
+		return this.logRequestDetails;
+	}
+
+	public void setLogRequestDetails(boolean logRequestDetails) {
+		this.logRequestDetails = logRequestDetails;
 	}
 
 	public boolean isLogResolvedException() {
@@ -205,12 +236,29 @@ public class WebMvcProperties {
 		return this.pathmatch;
 	}
 
+	@SuppressWarnings("deprecation")
+	public void checkConfiguration() {
+		if (this.getPathmatch().getMatchingStrategy() == MatchingStrategy.PATH_PATTERN_PARSER) {
+			if (this.getPathmatch().isUseSuffixPattern()) {
+				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
+						"spring.mvc.pathmatch.use-suffix-pattern");
+			}
+			if (this.getPathmatch().isUseRegisteredSuffixPattern()) {
+				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
+						"spring.mvc.pathmatch.use-registered-suffix-pattern");
+			}
+			if (!this.getServlet().getServletMapping().equals("/")) {
+				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
+						"spring.mvc.servlet.path");
+			}
+		}
+	}
+
 	public static class Async {
 
 		/**
 		 * Amount of time before asynchronous request handling times out. If this value is
-		 * not set, the default timeout of the underlying implementation is used, e.g. 10
-		 * seconds on Tomcat with Servlet 3.
+		 * not set, the default timeout of the underlying implementation is used.
 		 */
 		private Duration requestTimeout;
 
@@ -227,7 +275,8 @@ public class WebMvcProperties {
 	public static class Servlet {
 
 		/**
-		 * Path of the dispatcher servlet.
+		 * Path of the dispatcher servlet. Setting a custom value for this property is not
+		 * compatible with the PathPatternParser matching strategy.
 		 */
 		private String path = "/";
 
@@ -342,10 +391,14 @@ public class WebMvcProperties {
 		 */
 		private String parameterName;
 
+		@DeprecatedConfigurationProperty(
+				reason = "Use of path extensions for request mapping and for content negotiation is discouraged.")
+		@Deprecated
 		public boolean isFavorPathExtension() {
 			return this.favorPathExtension;
 		}
 
+		@Deprecated
 		public void setFavorPathExtension(boolean favorPathExtension) {
 			this.favorPathExtension = favorPathExtension;
 		}
@@ -379,8 +432,14 @@ public class WebMvcProperties {
 	public static class Pathmatch {
 
 		/**
+		 * Choice of strategy for matching request paths against registered mappings.
+		 */
+		private MatchingStrategy matchingStrategy = MatchingStrategy.ANT_PATH_MATCHER;
+
+		/**
 		 * Whether to use suffix pattern match (".*") when matching patterns to requests.
-		 * If enabled a method mapped to "/users" also matches to "/users.*".
+		 * If enabled a method mapped to "/users" also matches to "/users.*". Enabling
+		 * this option is not compatible with the PathPatternParser matching strategy.
 		 */
 		private boolean useSuffixPattern = false;
 
@@ -388,25 +447,99 @@ public class WebMvcProperties {
 		 * Whether suffix pattern matching should work only against extensions registered
 		 * with "spring.mvc.contentnegotiation.media-types.*". This is generally
 		 * recommended to reduce ambiguity and to avoid issues such as when a "." appears
-		 * in the path for other reasons.
+		 * in the path for other reasons. Enabling this option is not compatible with the
+		 * PathPatternParser matching strategy.
 		 */
 		private boolean useRegisteredSuffixPattern = false;
 
+		public MatchingStrategy getMatchingStrategy() {
+			return this.matchingStrategy;
+		}
+
+		public void setMatchingStrategy(MatchingStrategy matchingStrategy) {
+			this.matchingStrategy = matchingStrategy;
+		}
+
+		@DeprecatedConfigurationProperty(
+				reason = "Use of path extensions for request mapping and for content negotiation is discouraged.")
+		@Deprecated
 		public boolean isUseSuffixPattern() {
 			return this.useSuffixPattern;
 		}
 
+		@Deprecated
 		public void setUseSuffixPattern(boolean useSuffixPattern) {
 			this.useSuffixPattern = useSuffixPattern;
 		}
 
+		@DeprecatedConfigurationProperty(
+				reason = "Use of path extensions for request mapping and for content negotiation is discouraged.")
+		@Deprecated
 		public boolean isUseRegisteredSuffixPattern() {
 			return this.useRegisteredSuffixPattern;
 		}
 
+		@Deprecated
 		public void setUseRegisteredSuffixPattern(boolean useRegisteredSuffixPattern) {
 			this.useRegisteredSuffixPattern = useRegisteredSuffixPattern;
 		}
+
+	}
+
+	public static class Format {
+
+		/**
+		 * Date format to use, for example `dd/MM/yyyy`.
+		 */
+		private String date;
+
+		/**
+		 * Time format to use, for example `HH:mm:ss`.
+		 */
+		private String time;
+
+		/**
+		 * Date-time format to use, for example `yyyy-MM-dd HH:mm:ss`.
+		 */
+		private String dateTime;
+
+		public String getDate() {
+			return this.date;
+		}
+
+		public void setDate(String date) {
+			this.date = date;
+		}
+
+		public String getTime() {
+			return this.time;
+		}
+
+		public void setTime(String time) {
+			this.time = time;
+		}
+
+		public String getDateTime() {
+			return this.dateTime;
+		}
+
+		public void setDateTime(String dateTime) {
+			this.dateTime = dateTime;
+		}
+
+	}
+
+	public enum MatchingStrategy {
+
+		/**
+		 * Use the {@code AntPathMatcher} implementation.
+		 */
+		ANT_PATH_MATCHER,
+
+		/**
+		 * Use the {@code PathPatternParser} implementation.
+		 */
+		PATH_PATTERN_PARSER
 
 	}
 

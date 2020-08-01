@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,18 +18,17 @@ package org.springframework.boot.configurationprocessor.fieldvalues.javac;
 
 import javax.annotation.processing.ProcessingEnvironment;
 
+import org.opentest4j.TestAbortedException;
+
 import org.springframework.boot.configurationprocessor.fieldvalues.AbstractFieldValuesProcessorTests;
 import org.springframework.boot.configurationprocessor.fieldvalues.FieldValuesParser;
-
-import static org.junit.Assume.assumeNoException;
 
 /**
  * Tests for {@link JavaCompilerFieldValuesParser}.
  *
  * @author Phillip Webb
  */
-public class JavaCompilerFieldValuesProcessorTests
-		extends AbstractFieldValuesProcessorTests {
+public class JavaCompilerFieldValuesProcessorTests extends AbstractFieldValuesProcessorTests {
 
 	@Override
 	protected FieldValuesParser createProcessor(ProcessingEnvironment env) {
@@ -37,8 +36,7 @@ public class JavaCompilerFieldValuesProcessorTests
 			return new JavaCompilerFieldValuesParser(env);
 		}
 		catch (Throwable ex) {
-			assumeNoException(ex);
-			throw new IllegalStateException();
+			throw new TestAbortedException();
 		}
 	}
 

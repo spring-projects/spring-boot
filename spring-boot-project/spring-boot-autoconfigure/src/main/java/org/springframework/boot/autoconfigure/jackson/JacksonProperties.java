@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,12 +50,6 @@ public class JacksonProperties {
 	private String dateFormat;
 
 	/**
-	 * Joda date time format string. If not configured, "date-format" is used as a
-	 * fallback if it is configured with a format string.
-	 */
-	private String jodaDateTimeFormat;
-
-	/**
 	 * One of the constants on Jackson's PropertyNamingStrategy. Can also be a
 	 * fully-qualified class name of a PropertyNamingStrategy subclass.
 	 */
@@ -65,20 +59,17 @@ public class JacksonProperties {
 	 * Jackson visibility thresholds that can be used to limit which methods (and fields)
 	 * are auto-detected.
 	 */
-	private final Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(
-			PropertyAccessor.class);
+	private final Map<PropertyAccessor, JsonAutoDetect.Visibility> visibility = new EnumMap<>(PropertyAccessor.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are serialized.
 	 */
-	private final Map<SerializationFeature, Boolean> serialization = new EnumMap<>(
-			SerializationFeature.class);
+	private final Map<SerializationFeature, Boolean> serialization = new EnumMap<>(SerializationFeature.class);
 
 	/**
 	 * Jackson on/off features that affect the way Java objects are deserialized.
 	 */
-	private final Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(
-			DeserializationFeature.class);
+	private final Map<DeserializationFeature, Boolean> deserialization = new EnumMap<>(DeserializationFeature.class);
 
 	/**
 	 * Jackson general purpose on/off features.
@@ -88,14 +79,12 @@ public class JacksonProperties {
 	/**
 	 * Jackson on/off features for parsers.
 	 */
-	private final Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(
-			JsonParser.Feature.class);
+	private final Map<JsonParser.Feature, Boolean> parser = new EnumMap<>(JsonParser.Feature.class);
 
 	/**
 	 * Jackson on/off features for generators.
 	 */
-	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(
-			JsonGenerator.Feature.class);
+	private final Map<JsonGenerator.Feature, Boolean> generator = new EnumMap<>(JsonGenerator.Feature.class);
 
 	/**
 	 * Controls the inclusion of properties during serialization. Configured with one of
@@ -120,14 +109,6 @@ public class JacksonProperties {
 
 	public void setDateFormat(String dateFormat) {
 		this.dateFormat = dateFormat;
-	}
-
-	public String getJodaDateTimeFormat() {
-		return this.jodaDateTimeFormat;
-	}
-
-	public void setJodaDateTimeFormat(String jodaDataTimeFormat) {
-		this.jodaDateTimeFormat = jodaDataTimeFormat;
 	}
 
 	public String getPropertyNamingStrategy() {
@@ -166,8 +147,7 @@ public class JacksonProperties {
 		return this.defaultPropertyInclusion;
 	}
 
-	public void setDefaultPropertyInclusion(
-			JsonInclude.Include defaultPropertyInclusion) {
+	public void setDefaultPropertyInclusion(JsonInclude.Include defaultPropertyInclusion) {
 		this.defaultPropertyInclusion = defaultPropertyInclusion;
 	}
 

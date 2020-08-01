@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,5 +46,19 @@ public interface WebServer {
 	 * @return the port (or -1 if none)
 	 */
 	int getPort();
+
+	/**
+	 * Initiates a graceful shutdown of the web server. Handling of new requests is
+	 * prevented and the given {@code callback} is invoked at the end of the attempt. The
+	 * attempt can be explicitly ended by invoking {@link #stop}. The default
+	 * implementation invokes the callback immediately with
+	 * {@link GracefulShutdownResult#IMMEDIATE}, i.e. no attempt is made at a graceful
+	 * shutdown.
+	 * @param callback the callback to invoke when the graceful shutdown completes
+	 * @since 2.3.0
+	 */
+	default void shutDownGracefully(GracefulShutdownCallback callback) {
+		callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+	}
 
 }

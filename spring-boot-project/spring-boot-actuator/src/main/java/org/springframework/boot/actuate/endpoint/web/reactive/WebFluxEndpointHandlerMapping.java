@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -41,8 +41,7 @@ import org.springframework.web.util.UriComponentsBuilder;
  * @author Brian Clozel
  * @since 2.0.0
  */
-public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping
-		implements InitializingBean {
+public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandlerMapping implements InitializingBean {
 
 	private final EndpointLinksResolver linksResolver;
 
@@ -54,12 +53,12 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 * @param linksResolver resolver for determining links to available endpoints
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
-	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
+	public WebFluxEndpointHandlerMapping(EndpointMapping endpointMapping, Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			EndpointLinksResolver linksResolver) {
-		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
+			EndpointLinksResolver linksResolver, boolean shouldRegisterLinksMapping) {
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping);
 		this.linksResolver = linksResolver;
 		setOrder(-100);
 	}
@@ -77,12 +76,10 @@ public class WebFluxEndpointHandlerMapping extends AbstractWebFluxEndpointHandle
 		@Override
 		@ResponseBody
 		public Map<String, Map<String, Link>> links(ServerWebExchange exchange) {
-			String requestUri = UriComponentsBuilder
-					.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
+			String requestUri = UriComponentsBuilder.fromUri(exchange.getRequest().getURI()).replaceQuery(null)
 					.toUriString();
 			return Collections.singletonMap("_links",
-					WebFluxEndpointHandlerMapping.this.linksResolver
-							.resolveLinks(requestUri));
+					WebFluxEndpointHandlerMapping.this.linksResolver.resolveLinks(requestUri));
 		}
 
 		@Override

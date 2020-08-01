@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,6 +33,7 @@ import org.springframework.util.StringUtils;
  * Main class used to run {@link Command}s.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  * @see #addCommand(Command)
  * @see CommandRunner#runAndHandleErrors(String[])
  */
@@ -148,8 +149,7 @@ public class CommandRunner implements Iterable<Command> {
 	public Command findCommand(String name) {
 		for (Command candidate : this.commands) {
 			String candidateName = candidate.getName();
-			if (candidateName.equals(name) || (isOptionCommand(candidate)
-					&& ("--" + candidateName).equals(name))) {
+			if (candidateName.equals(name) || (isOptionCommand(candidate) && ("--" + candidateName).equals(name))) {
 				return candidate;
 			}
 		}
@@ -188,9 +188,9 @@ public class CommandRunner implements Iterable<Command> {
 		List<String> rtn = new ArrayList<>(args.length);
 		boolean appArgsDetected = false;
 		for (String arg : args) {
-			// Allow apps to have a -d argument
+			// Allow apps to have a --debug argument
 			appArgsDetected |= "--".equals(arg);
-			if (("-d".equals(arg) || "--debug".equals(arg)) && !appArgsDetected) {
+			if ("--debug".equals(arg) && !appArgsDetected) {
 				continue;
 			}
 			rtn.add(arg);
@@ -252,8 +252,7 @@ public class CommandRunner implements Iterable<Command> {
 		if (options.contains(CommandException.Option.SHOW_USAGE)) {
 			showUsage();
 		}
-		if (debug || couldNotShowMessage
-				|| options.contains(CommandException.Option.STACK_TRACE)) {
+		if (debug || couldNotShowMessage || options.contains(CommandException.Option.STACK_TRACE)) {
 			printStackTrace(ex);
 		}
 		return 1;
@@ -280,19 +279,16 @@ public class CommandRunner implements Iterable<Command> {
 				String usageHelp = command.getUsageHelp();
 				String description = command.getDescription();
 				Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", command.getName(),
-						(usageHelp != null) ? usageHelp : "",
-						(description != null) ? description : ""));
+						(usageHelp != null) ? usageHelp : "", (description != null) ? description : ""));
 			}
 		}
 		Log.info("");
 		Log.info("Common options:");
-		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "-d, --debug",
-				"Verbose mode",
+		Log.info(String.format("%n  %1$s %2$-15s%n    %3$s", "--debug", "Verbose mode",
 				"Print additional status information for the command you are running"));
 		Log.info("");
 		Log.info("");
-		Log.info("See '" + this.name
-				+ "help <command>' for more information on a specific command.");
+		Log.info("See '" + this.name + "help <command>' for more information on a specific command.");
 	}
 
 	protected void printStackTrace(Exception ex) {

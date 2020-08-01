@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,11 +30,13 @@ import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
@@ -50,38 +52,33 @@ import org.springframework.http.converter.StringHttpMessageConverter;
  * @author Sebastien Deleuze
  * @author Stephane Nicoll
  * @author Eddú Meléndez
+ * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(HttpMessageConverter.class)
 @Conditional(NotReactiveWebApplicationCondition.class)
-@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class,
-		JsonbAutoConfiguration.class })
-@Import({ JacksonHttpMessageConvertersConfiguration.class,
-		GsonHttpMessageConvertersConfiguration.class,
+@AutoConfigureAfter({ GsonAutoConfiguration.class, JacksonAutoConfiguration.class, JsonbAutoConfiguration.class })
+@Import({ JacksonHttpMessageConvertersConfiguration.class, GsonHttpMessageConvertersConfiguration.class,
 		JsonbHttpMessageConvertersConfiguration.class })
 public class HttpMessageConvertersAutoConfiguration {
 
-	static final String PREFERRED_MAPPER_PROPERTY = "spring.http.converters.preferred-json-mapper";
+	static final String PREFERRED_MAPPER_PROPERTY = "spring.mvc.converters.preferred-json-mapper";
 
 	@Bean
 	@ConditionalOnMissingBean
-	public HttpMessageConverters messageConverters(
-			ObjectProvider<HttpMessageConverter<?>> converters) {
-		return new HttpMessageConverters(
-				converters.orderedStream().collect(Collectors.toList()));
+	public HttpMessageConverters messageConverters(ObjectProvider<HttpMessageConverter<?>> converters) {
+		return new HttpMessageConverters(converters.orderedStream().collect(Collectors.toList()));
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(StringHttpMessageConverter.class)
-	@EnableConfigurationProperties(HttpProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public StringHttpMessageConverter stringHttpMessageConverter(
-				HttpProperties httpProperties) {
-			StringHttpMessageConverter converter = new StringHttpMessageConverter(
-					httpProperties.getEncoding().getCharset());
+		public StringHttpMessageConverter stringHttpMessageConverter(Environment environment) {
+			Encoding encoding = Binder.get(environment).bindOrCreate("server.servlet.encoding", Encoding.class);
+			StringHttpMessageConverter converter = new StringHttpMessageConverter(encoding.getCharset());
 			converter.setWriteAcceptCharset(false);
 			return converter;
 		}

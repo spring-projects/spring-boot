@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,6 +17,7 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 
@@ -35,6 +36,13 @@ public interface ConfigurableJettyWebServerFactory extends ConfigurableWebServer
 	 * @param acceptors the number of acceptor threads to use
 	 */
 	void setAcceptors(int acceptors);
+
+	/**
+	 * Set the {@link ThreadPool} that should be used by the {@link Server}. If set to
+	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
+	 * @param threadPool the ThreadPool to be used
+	 */
+	void setThreadPool(ThreadPool threadPool);
 
 	/**
 	 * Set the number of selector threads to use.

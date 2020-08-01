@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,7 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,17 +30,16 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Madhura Bhave
  */
-public class MapConfigurationPropertySourceTests {
+class MapConfigurationPropertySourceTests {
 
 	@Test
-	public void createWhenMapIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new MapConfigurationPropertySource(null))
+	void createWhenMapIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new MapConfigurationPropertySource(null))
 				.withMessageContaining("Map must not be null");
 	}
 
 	@Test
-	public void createWhenMapHasEntriesShouldAdaptMap() {
+	void createWhenMapHasEntriesShouldAdaptMap() {
 		Map<Object, Object> map = new LinkedHashMap<>();
 		map.put("foo.BAR", "spring");
 		map.put(ConfigurationPropertyName.of("foo.baz"), "boot");
@@ -50,14 +49,14 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void putAllWhenMapIsNullShouldThrowException() {
+	void putAllWhenMapIsNullShouldThrowException() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		assertThatIllegalArgumentException().isThrownBy(() -> source.putAll(null))
 				.withMessageContaining("Map must not be null");
 	}
 
 	@Test
-	public void putAllShouldPutEntries() {
+	void putAllShouldPutEntries() {
 		Map<Object, Object> map = new LinkedHashMap<>();
 		map.put("foo.BAR", "spring");
 		map.put("foo.baz", "boot");
@@ -68,14 +67,14 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void putShouldPutEntry() {
+	void putShouldPutEntry() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.bar", "baz");
 		assertThat(getValue(source, "foo.bar")).isEqualTo("baz");
 	}
 
 	@Test
-	public void getConfigurationPropertyShouldGetFromMemory() {
+	void getConfigurationPropertyShouldGetFromMemory() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.bar", "baz");
 		assertThat(getValue(source, "foo.bar")).isEqualTo("baz");
@@ -84,29 +83,26 @@ public class MapConfigurationPropertySourceTests {
 	}
 
 	@Test
-	public void iteratorShouldGetFromMemory() {
+	void iteratorShouldGetFromMemory() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.iterator()).containsExactly(
-				ConfigurationPropertyName.of("foo.bar"),
+		assertThat(source.iterator()).toIterable().containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.baz"));
 	}
 
 	@Test
-	public void streamShouldGetFromMemory() {
+	void streamShouldGetFromMemory() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("foo.BAR", "spring");
 		source.put("foo.baz", "boot");
-		assertThat(source.stream()).containsExactly(
-				ConfigurationPropertyName.of("foo.bar"),
+		assertThat(source.stream()).containsExactly(ConfigurationPropertyName.of("foo.bar"),
 				ConfigurationPropertyName.of("foo.baz"));
 
 	}
 
 	private Object getValue(ConfigurationPropertySource source, String name) {
-		ConfigurationProperty property = source
-				.getConfigurationProperty(ConfigurationPropertyName.of(name));
+		ConfigurationProperty property = source.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property != null) ? property.getValue() : null;
 	}
 

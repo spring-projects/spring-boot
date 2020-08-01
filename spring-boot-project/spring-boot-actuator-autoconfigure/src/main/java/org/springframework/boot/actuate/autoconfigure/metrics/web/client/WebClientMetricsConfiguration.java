@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.web.client;
 import io.micrometer.core.instrument.MeterRegistry;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties.Web.Client.ClientRequest;
 import org.springframework.boot.actuate.metrics.web.reactive.client.DefaultWebClientExchangeTagsProvider;
 import org.springframework.boot.actuate.metrics.web.reactive.client.MetricsWebClientCustomizer;
 import org.springframework.boot.actuate.metrics.web.reactive.client.WebClientExchangeTagsProvider;
@@ -34,22 +35,22 @@ import org.springframework.web.reactive.function.client.WebClient;
  * @author Brian Clozel
  * @author Stephane Nicoll
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(WebClient.class)
 class WebClientMetricsConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public WebClientExchangeTagsProvider defaultWebClientExchangeTagsProvider() {
+	WebClientExchangeTagsProvider defaultWebClientExchangeTagsProvider() {
 		return new DefaultWebClientExchangeTagsProvider();
 	}
 
 	@Bean
-	public MetricsWebClientCustomizer metricsWebClientCustomizer(
-			MeterRegistry meterRegistry, WebClientExchangeTagsProvider tagsProvider,
-			MetricsProperties properties) {
-		return new MetricsWebClientCustomizer(meterRegistry, tagsProvider,
-				properties.getWeb().getClient().getRequestsMetricName());
+	MetricsWebClientCustomizer metricsWebClientCustomizer(MeterRegistry meterRegistry,
+			WebClientExchangeTagsProvider tagsProvider, MetricsProperties properties) {
+		ClientRequest request = properties.getWeb().getClient().getRequest();
+		return new MetricsWebClientCustomizer(meterRegistry, tagsProvider, request.getMetricName(),
+				request.getAutotime());
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,10 +23,11 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheConfigurationImportSelector;
+import org.springframework.boot.autoconfigure.cache.CacheAutoConfiguration.CacheManagerEntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.couchbase.CouchbaseAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.couchbase.CouchbaseDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
@@ -46,7 +47,8 @@ import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for the cache abstraction. Creates a
- * {@link CacheManager} if necessary when caching is enabled via {@link EnableCaching}.
+ * {@link CacheManager} if necessary when caching is enabled via
+ * {@link EnableCaching @EnableCaching}.
  * <p>
  * Cache store can be auto-detected or specified explicitly via configuration.
  *
@@ -54,37 +56,34 @@ import org.springframework.util.Assert;
  * @since 1.3.0
  * @see EnableCaching
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(CacheManager.class)
 @ConditionalOnBean(CacheAspectSupport.class)
 @ConditionalOnMissingBean(value = CacheManager.class, name = "cacheResolver")
 @EnableConfigurationProperties(CacheProperties.class)
-@AutoConfigureAfter({ CouchbaseAutoConfiguration.class, HazelcastAutoConfiguration.class,
+@AutoConfigureAfter({ CouchbaseDataAutoConfiguration.class, HazelcastAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class, RedisAutoConfiguration.class })
-@Import(CacheConfigurationImportSelector.class)
+@Import({ CacheConfigurationImportSelector.class, CacheManagerEntityManagerFactoryDependsOnPostProcessor.class })
 public class CacheAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public CacheManagerCustomizers cacheManagerCustomizers(
-			ObjectProvider<CacheManagerCustomizer<?>> customizers) {
-		return new CacheManagerCustomizers(
-				customizers.orderedStream().collect(Collectors.toList()));
+	public CacheManagerCustomizers cacheManagerCustomizers(ObjectProvider<CacheManagerCustomizer<?>> customizers) {
+		return new CacheManagerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean
-	public CacheManagerValidator cacheAutoConfigurationValidator(
-			CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
+	public CacheManagerValidator cacheAutoConfigurationValidator(CacheProperties cacheProperties,
+			ObjectProvider<CacheManager> cacheManager) {
 		return new CacheManagerValidator(cacheProperties, cacheManager);
 	}
 
-	@Configuration
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	protected static class CacheManagerJpaDependencyConfiguration
+	static class CacheManagerEntityManagerFactoryDependsOnPostProcessor
 			extends EntityManagerFactoryDependsOnPostProcessor {
 
-		public CacheManagerJpaDependencyConfiguration() {
+		CacheManagerEntityManagerFactoryDependsOnPostProcessor() {
 			super("cacheManager");
 		}
 
@@ -100,8 +99,7 @@ public class CacheAutoConfiguration {
 
 		private final ObjectProvider<CacheManager> cacheManager;
 
-		CacheManagerValidator(CacheProperties cacheProperties,
-				ObjectProvider<CacheManager> cacheManager) {
+		CacheManagerValidator(CacheProperties cacheProperties, ObjectProvider<CacheManager> cacheManager) {
 			this.cacheProperties = cacheProperties;
 			this.cacheManager = cacheManager;
 		}
@@ -109,9 +107,8 @@ public class CacheAutoConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			Assert.notNull(this.cacheManager.getIfAvailable(),
-					() -> "No cache manager could "
-							+ "be auto-configured, check your configuration (caching "
-							+ "type is '" + this.cacheProperties.getType() + "')");
+					() -> "No cache manager could be auto-configured, check your configuration (caching type is '"
+							+ this.cacheProperties.getType() + "')");
 		}
 
 	}

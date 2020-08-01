@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -46,28 +46,23 @@ final class WelcomePageHandlerMapping extends AbstractUrlHandlerMapping {
 
 	private static final Log logger = LogFactory.getLog(WelcomePageHandlerMapping.class);
 
-	private static final List<MediaType> MEDIA_TYPES_ALL = Collections
-			.singletonList(MediaType.ALL);
+	private static final List<MediaType> MEDIA_TYPES_ALL = Collections.singletonList(MediaType.ALL);
 
 	WelcomePageHandlerMapping(TemplateAvailabilityProviders templateAvailabilityProviders,
-			ApplicationContext applicationContext, Optional<Resource> welcomePage,
-			String staticPathPattern) {
+			ApplicationContext applicationContext, Optional<Resource> welcomePage, String staticPathPattern) {
 		if (welcomePage.isPresent() && "/**".equals(staticPathPattern)) {
 			logger.info("Adding welcome page: " + welcomePage.get());
 			setRootViewName("forward:index.html");
 		}
-		else if (welcomeTemplateExists(templateAvailabilityProviders,
-				applicationContext)) {
+		else if (welcomeTemplateExists(templateAvailabilityProviders, applicationContext)) {
 			logger.info("Adding welcome page template: index");
 			setRootViewName("index");
 		}
 	}
 
-	private boolean welcomeTemplateExists(
-			TemplateAvailabilityProviders templateAvailabilityProviders,
+	private boolean welcomeTemplateExists(TemplateAvailabilityProviders templateAvailabilityProviders,
 			ApplicationContext applicationContext) {
-		return templateAvailabilityProviders.getProvider("index",
-				applicationContext) != null;
+		return templateAvailabilityProviders.getProvider("index", applicationContext) != null;
 	}
 
 	private void setRootViewName(String viewName) {

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,24 +50,24 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * {@link org.springframework.data.jpa.repository.JpaRepository} configured.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
- * using the {@link org.springframework.data.jpa.repository.config.EnableJpaRepositories}
- * annotation.
+ * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
  * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
  *
  * @author Phillip Webb
  * @author Josh Long
+ * @author Scott Frederick
+ * @since 1.0.0
  * @see EnableJpaRepositories
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnBean(DataSource.class)
 @ConditionalOnClass(JpaRepository.class)
-@ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class,
-		JpaRepositoryConfigExtension.class })
-@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true", matchIfMissing = true)
-@Import(JpaRepositoriesAutoConfigureRegistrar.class)
-@AutoConfigureAfter({ HibernateJpaAutoConfiguration.class,
-		TaskExecutionAutoConfiguration.class })
+@ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
+@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true",
+		matchIfMissing = true)
+@Import(JpaRepositoriesRegistrar.class)
+@AutoConfigureAfter({ HibernateJpaAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
 
 	@Bean
@@ -75,21 +75,18 @@ public class JpaRepositoriesAutoConfiguration {
 	public EntityManagerFactoryBuilderCustomizer entityManagerFactoryBootstrapExecutorCustomizer(
 			Map<String, AsyncTaskExecutor> taskExecutors) {
 		return (builder) -> {
-			AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(
-					taskExecutors);
+			AsyncTaskExecutor bootstrapExecutor = determineBootstrapExecutor(taskExecutors);
 			if (bootstrapExecutor != null) {
 				builder.setBootstrapExecutor(bootstrapExecutor);
 			}
 		};
 	}
 
-	private AsyncTaskExecutor determineBootstrapExecutor(
-			Map<String, AsyncTaskExecutor> taskExecutors) {
+	private AsyncTaskExecutor determineBootstrapExecutor(Map<String, AsyncTaskExecutor> taskExecutors) {
 		if (taskExecutors.size() == 1) {
 			return taskExecutors.values().iterator().next();
 		}
-		return taskExecutors
-				.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
+		return taskExecutors.get(TaskExecutionAutoConfiguration.APPLICATION_TASK_EXECUTOR_BEAN_NAME);
 	}
 
 	private static final class BootstrapExecutorCondition extends AnyNestedCondition {
@@ -98,12 +95,14 @@ public class JpaRepositoriesAutoConfiguration {
 			super(ConfigurationPhase.REGISTER_BEAN);
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "deferred", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode",
+				havingValue = "deferred", matchIfMissing = true)
 		static class DeferredBootstrapMode {
 
 		}
 
-		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy", matchIfMissing = false)
+		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy",
+				matchIfMissing = false)
 		static class LazyBootstrapMode {
 
 		}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,20 +36,18 @@ import org.springframework.mock.web.MockServletContext;
  */
 public class SpringBootMockServletContext extends MockServletContext {
 
-	private static final String[] SPRING_BOOT_RESOURCE_LOCATIONS = new String[] {
-			"classpath:META-INF/resources", "classpath:resources", "classpath:static",
-			"classpath:public" };
+	private static final String[] SPRING_BOOT_RESOURCE_LOCATIONS = new String[] { "classpath:META-INF/resources",
+			"classpath:resources", "classpath:static", "classpath:public" };
 
 	private final ResourceLoader resourceLoader;
 
-	private File emptyRootFolder;
+	private File emptyRootDirectory;
 
 	public SpringBootMockServletContext(String resourceBasePath) {
 		this(resourceBasePath, new FileSystemResourceLoader());
 	}
 
-	public SpringBootMockServletContext(String resourceBasePath,
-			ResourceLoader resourceLoader) {
+	public SpringBootMockServletContext(String resourceBasePath, ResourceLoader resourceLoader) {
 		super(resourceBasePath, resourceLoader);
 		this.resourceLoader = resourceLoader;
 	}
@@ -93,16 +91,16 @@ public class SpringBootMockServletContext extends MockServletContext {
 			// Liquibase assumes that "/" always exists, if we don't have a directory
 			// use a temporary location.
 			try {
-				if (this.emptyRootFolder == null) {
+				if (this.emptyRootDirectory == null) {
 					synchronized (this) {
-						File tempFolder = File.createTempFile("spr", "servlet");
-						tempFolder.delete();
-						tempFolder.mkdirs();
-						tempFolder.deleteOnExit();
-						this.emptyRootFolder = tempFolder;
+						File tempDirectory = File.createTempFile("spr", "servlet");
+						tempDirectory.delete();
+						tempDirectory.mkdirs();
+						tempDirectory.deleteOnExit();
+						this.emptyRootDirectory = tempDirectory;
 					}
 				}
-				return this.emptyRootFolder.toURI().toURL();
+				return this.emptyRootDirectory.toURI().toURL();
 			}
 			catch (IOException ex) {
 				// Ignore

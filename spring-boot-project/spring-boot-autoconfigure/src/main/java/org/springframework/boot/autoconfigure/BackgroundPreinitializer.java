@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.validation.Configuration;
 import javax.validation.Validation;
 
-import org.apache.catalina.mbeans.MBeanFactory;
-
+import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
-import org.springframework.boot.context.event.ApplicationStartingEvent;
 import org.springframework.boot.context.event.SpringApplicationEvent;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.context.ApplicationListener;
@@ -47,11 +45,11 @@ import org.springframework.http.converter.support.AllEncompassingFormHttpMessage
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Artsiom Yudovin
+ * @author Sebastien Deleuze
  * @since 1.3.0
  */
 @Order(LoggingApplicationListener.DEFAULT_ORDER + 1)
-public class BackgroundPreinitializer
-		implements ApplicationListener<SpringApplicationEvent> {
+public class BackgroundPreinitializer implements ApplicationListener<SpringApplicationEvent> {
 
 	/**
 	 * System property that instructs Spring Boot how to run pre initialization. When the
@@ -62,20 +60,28 @@ public class BackgroundPreinitializer
 	 */
 	public static final String IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME = "spring.backgroundpreinitializer.ignore";
 
-	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(
-			false);
+	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(false);
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 
+	private static final boolean ENABLED;
+
+	static {
+		ENABLED = !Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
+				&& System.getProperty("org.graalvm.nativeimage.imagecode") == null
+				&& Runtime.getRuntime().availableProcessors() > 1;
+	}
+
 	@Override
 	public void onApplicationEvent(SpringApplicationEvent event) {
-		if (!Boolean.getBoolean(IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME)
-				&& event instanceof ApplicationStartingEvent && multipleProcessors()
+		if (!ENABLED) {
+			return;
+		}
+		if (event instanceof ApplicationEnvironmentPreparedEvent
 				&& preinitializationStarted.compareAndSet(false, true)) {
 			performPreinitialization();
 		}
-		if ((event instanceof ApplicationReadyEvent
-				|| event instanceof ApplicationFailedEvent)
+		if ((event instanceof ApplicationReadyEvent || event instanceof ApplicationFailedEvent)
 				&& preinitializationStarted.get()) {
 			try {
 				preinitializationComplete.await();
@@ -84,10 +90,6 @@ public class BackgroundPreinitializer
 				Thread.currentThread().interrupt();
 			}
 		}
-	}
-
-	private boolean multipleProcessors() {
-		return Runtime.getRuntime().availableProcessors() > 1;
 	}
 
 	private void performPreinitialization() {
@@ -99,7 +101,6 @@ public class BackgroundPreinitializer
 					runSafely(new ConversionServiceInitializer());
 					runSafely(new ValidationInitializer());
 					runSafely(new MessageConverterInitializer());
-					runSafely(new MBeanFactoryInitializer());
 					runSafely(new JacksonInitializer());
 					runSafely(new CharsetInitializer());
 					preinitializationComplete.countDown();
@@ -133,18 +134,6 @@ public class BackgroundPreinitializer
 		@Override
 		public void run() {
 			new AllEncompassingFormHttpMessageConverter();
-		}
-
-	}
-
-	/**
-	 * Early initializer to load Tomcat MBean XML.
-	 */
-	private static class MBeanFactoryInitializer implements Runnable {
-
-		@Override
-		public void run() {
-			new MBeanFactory();
 		}
 
 	}

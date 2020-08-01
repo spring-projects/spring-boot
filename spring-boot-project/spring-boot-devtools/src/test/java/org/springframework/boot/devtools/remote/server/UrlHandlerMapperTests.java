@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,7 +18,7 @@ package org.springframework.boot.devtools.remote.server;
 
 import javax.servlet.http.HttpServletRequest;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
@@ -34,33 +34,30 @@ import static org.mockito.Mockito.mock;
  * @author Rob Winch
  * @author Phillip Webb
  */
-public class UrlHandlerMapperTests {
+class UrlHandlerMapperTests {
 
 	private Handler handler = mock(Handler.class);
 
 	@Test
-	public void requestUriMustNotBeNull() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
+	void requestUriMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper(null, this.handler))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void requestUriMustNotBeEmpty() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new UrlHandlerMapper("", this.handler))
+	void requestUriMustNotBeEmpty() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("", this.handler))
 				.withMessageContaining("URL must not be empty");
 	}
 
 	@Test
-	public void requestUrlMustStartWithSlash() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
+	void requestUrlMustStartWithSlash() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new UrlHandlerMapper("tunnel", this.handler))
 				.withMessageContaining("URL must start with '/'");
 	}
 
 	@Test
-	public void handlesMatchedUrl() {
+	void handlesMatchedUrl() {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
 		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
@@ -68,10 +65,9 @@ public class UrlHandlerMapperTests {
 	}
 
 	@Test
-	public void ignoresDifferentUrl() {
+	void ignoresDifferentUrl() {
 		UrlHandlerMapper mapper = new UrlHandlerMapper("/tunnel", this.handler);
-		HttpServletRequest servletRequest = new MockHttpServletRequest("GET",
-				"/tunnel/other");
+		HttpServletRequest servletRequest = new MockHttpServletRequest("GET", "/tunnel/other");
 		ServerHttpRequest request = new ServletServerHttpRequest(servletRequest);
 		assertThat(mapper.getHandler(request)).isNull();
 	}

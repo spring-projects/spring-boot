@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -36,6 +36,7 @@ import org.springframework.boot.cli.util.Log;
  * Internal {@link Command} used for 'help' requests.
  *
  * @author Phillip Webb
+ * @since 1.0.0
  */
 public class HelpCommand extends AbstractCommand {
 
@@ -94,12 +95,11 @@ public class HelpCommand extends AbstractCommand {
 		String commandName = args[0];
 		for (Command command : this.commandRunner) {
 			if (command.getName().equals(commandName)) {
-				Log.info(this.commandRunner.getName() + command.getName() + " - "
-						+ command.getDescription());
+				Log.info(this.commandRunner.getName() + command.getName() + " - " + command.getDescription());
 				Log.info("");
 				if (command.getUsageHelp() != null) {
-					Log.info("usage: " + this.commandRunner.getName() + command.getName()
-							+ " " + command.getUsageHelp());
+					Log.info("usage: " + this.commandRunner.getName() + command.getName() + " "
+							+ command.getUsageHelp());
 					Log.info("");
 				}
 				if (command.getHelp() != null) {

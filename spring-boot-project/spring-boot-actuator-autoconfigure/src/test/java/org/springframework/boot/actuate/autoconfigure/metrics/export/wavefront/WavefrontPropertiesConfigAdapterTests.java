@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,9 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront;
 
 import java.net.URI;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapterTests;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.PushRegistryPropertiesConfigAdapterTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,8 +29,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class WavefrontPropertiesConfigAdapterTests extends
-		StepRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
+class WavefrontPropertiesConfigAdapterTests
+		extends PushRegistryPropertiesConfigAdapterTests<WavefrontProperties, WavefrontPropertiesConfigAdapter> {
 
 	@Override
 	protected WavefrontProperties createProperties() {
@@ -38,35 +38,33 @@ public class WavefrontPropertiesConfigAdapterTests extends
 	}
 
 	@Override
-	protected WavefrontPropertiesConfigAdapter createConfigAdapter(
-			WavefrontProperties properties) {
+	protected WavefrontPropertiesConfigAdapter createConfigAdapter(WavefrontProperties properties) {
 		return new WavefrontPropertiesConfigAdapter(properties);
 	}
 
 	@Test
-	public void whenPropertiesUriIsSetAdapterUriReturnsIt() {
+	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setUri(URI.create("https://wavefront.example.com"));
-		assertThat(createConfigAdapter(properties).uri())
-				.isEqualTo("https://wavefront.example.com");
+		assertThat(createConfigAdapter(properties).uri()).isEqualTo("https://wavefront.example.com");
 	}
 
 	@Test
-	public void whenPropertiesSourceIsSetAdapterSourceReturnsIt() {
+	void whenPropertiesSourceIsSetAdapterSourceReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setSource("test");
 		assertThat(createConfigAdapter(properties).source()).isEqualTo("test");
 	}
 
 	@Test
-	public void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
+	void whenPropertiesApiTokenIsSetAdapterApiTokenReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setApiToken("ABC123");
 		assertThat(createConfigAdapter(properties).apiToken()).isEqualTo("ABC123");
 	}
 
 	@Test
-	public void whenPropertiesGlobalPrefixIsSetAdapterGlobalPrefixReturnsIt() {
+	void whenPropertiesGlobalPrefixIsSetAdapterGlobalPrefixReturnsIt() {
 		WavefrontProperties properties = createProperties();
 		properties.setGlobalPrefix("test");
 		assertThat(createConfigAdapter(properties).globalPrefix()).isEqualTo("test");

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,8 +20,8 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TreeMap;
 
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
@@ -41,24 +41,21 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class ConfigurationPropertiesBindHandlerAdvisorTests {
+class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 	private AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 
-	@After
-	public void cleanup() {
+	@AfterEach
+	void cleanup() {
 		this.context.close();
 	}
 
 	@Test
-	public void loadWithoutConfigurationPropertiesBindHandlerAdvisor() {
-		load(WithoutConfigurationPropertiesBindHandlerAdvisor.class,
-				"foo.bar.default.content-type=text/plain",
-				"foo.bar.bindings.input.destination=d1",
-				"foo.bar.bindings.input.content-type=text/xml",
+	void loadWithoutConfigurationPropertiesBindHandlerAdvisor() {
+		load(WithoutConfigurationPropertiesBindHandlerAdvisor.class, "foo.bar.default.content-type=text/plain",
+				"foo.bar.bindings.input.destination=d1", "foo.bar.bindings.input.content-type=text/xml",
 				"foo.bar.bindings.output.destination=d2");
-		BindingServiceProperties properties = this.context
-				.getBean(BindingServiceProperties.class);
+		BindingServiceProperties properties = this.context.getBean(BindingServiceProperties.class);
 		BindingProperties input = properties.getBindings().get("input");
 		assertThat(input.getDestination()).isEqualTo("d1");
 		assertThat(input.getContentType()).isEqualTo("text/xml");
@@ -68,14 +65,11 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 	}
 
 	@Test
-	public void loadWithConfigurationPropertiesBindHandlerAdvisor() {
-		load(WithConfigurationPropertiesBindHandlerAdvisor.class,
-				"foo.bar.default.content-type=text/plain",
-				"foo.bar.bindings.input.destination=d1",
-				"foo.bar.bindings.input.content-type=text/xml",
+	void loadWithConfigurationPropertiesBindHandlerAdvisor() {
+		load(WithConfigurationPropertiesBindHandlerAdvisor.class, "foo.bar.default.content-type=text/plain",
+				"foo.bar.bindings.input.destination=d1", "foo.bar.bindings.input.content-type=text/xml",
 				"foo.bar.bindings.output.destination=d2");
-		BindingServiceProperties properties = this.context
-				.getBean(BindingServiceProperties.class);
+		BindingServiceProperties properties = this.context.getBean(BindingServiceProperties.class);
 		BindingProperties input = properties.getBindings().get("input");
 		assertThat(input.getDestination()).isEqualTo("d1");
 		assertThat(input.getContentType()).isEqualTo("text/xml");
@@ -84,27 +78,24 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 		assertThat(output.getContentType()).isEqualTo("text/plain");
 	}
 
-	private AnnotationConfigApplicationContext load(Class<?> configuration,
-			String... inlinedProperties) {
+	private AnnotationConfigApplicationContext load(Class<?> configuration, String... inlinedProperties) {
 		return load(new Class<?>[] { configuration }, inlinedProperties);
 	}
 
-	private AnnotationConfigApplicationContext load(Class<?>[] configuration,
-			String... inlinedProperties) {
+	private AnnotationConfigApplicationContext load(Class<?>[] configuration, String... inlinedProperties) {
 		this.context.register(configuration);
-		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				inlinedProperties);
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context, inlinedProperties);
 		this.context.refresh();
 		return this.context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(BindingServiceProperties.class)
 	static class WithoutConfigurationPropertiesBindHandlerAdvisor {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(BindingServiceProperties.class)
 	@Import(DefaultValuesConfigurationPropertiesBindHandlerAdvisor.class)
 	static class WithConfigurationPropertiesBindHandlerAdvisor {
@@ -133,8 +124,7 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 		}
 
 		@Override
-		public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target,
-				BindContext context) {
+		public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
 			ConfigurationPropertyName defaultName = getDefaultName(name);
 			if (defaultName != null) {
 				BindResult<T> result = context.getBinder().bind(defaultName, target);
@@ -143,16 +133,13 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 				}
 			}
 			return super.onStart(name, target, context);
-
 		}
 
 		private ConfigurationPropertyName getDefaultName(ConfigurationPropertyName name) {
-			for (Map.Entry<ConfigurationPropertyName, ConfigurationPropertyName> mapping : this.mappings
-					.entrySet()) {
+			for (Map.Entry<ConfigurationPropertyName, ConfigurationPropertyName> mapping : this.mappings.entrySet()) {
 				ConfigurationPropertyName from = mapping.getKey();
 				ConfigurationPropertyName to = mapping.getValue();
-				if (name.getNumberOfElements() == from.getNumberOfElements() + 1
-						&& from.isParentOf(name)) {
+				if (name.getNumberOfElements() == from.getNumberOfElements() + 1 && from.isParentOf(name)) {
 					return to;
 				}
 			}
@@ -166,7 +153,7 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 		private Map<String, BindingProperties> bindings = new TreeMap<>();
 
-		public Map<String, BindingProperties> getBindings() {
+		Map<String, BindingProperties> getBindings() {
 			return this.bindings;
 		}
 
@@ -178,19 +165,19 @@ public class ConfigurationPropertiesBindHandlerAdvisorTests {
 
 		private String contentType = "application/json";
 
-		public String getDestination() {
+		String getDestination() {
 			return this.destination;
 		}
 
-		public void setDestination(String destination) {
+		void setDestination(String destination) {
 			this.destination = destination;
 		}
 
-		public String getContentType() {
+		String getContentType() {
 			return this.contentType;
 		}
 
-		public void setContentType(String contentType) {
+		void setContentType(String contentType) {
 			this.contentType = contentType;
 		}
 

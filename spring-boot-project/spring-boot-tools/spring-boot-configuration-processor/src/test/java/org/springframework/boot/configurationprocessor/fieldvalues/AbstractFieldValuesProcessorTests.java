@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor.fieldvalues;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
@@ -29,9 +30,8 @@ import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.TypeElement;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationsample.fieldvalues.FieldValues;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
@@ -46,15 +46,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public abstract class AbstractFieldValuesProcessorTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	protected abstract FieldValuesParser createProcessor(ProcessingEnvironment env);
 
 	@Test
-	public void getFieldValues() throws Exception {
+	void getFieldValues() throws Exception {
 		TestProcessor processor = new TestProcessor();
-		TestCompiler compiler = new TestCompiler(this.temporaryFolder);
+		TestCompiler compiler = new TestCompiler(this.tempDir);
 		compiler.getTask(FieldValues.class).call(processor);
 		Map<String, Object> values = processor.getValues();
 		assertThat(values.get("string")).isEqualTo("1");
@@ -84,8 +84,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("stringArrayNone")).isNull();
 		assertThat(values.get("stringEmptyArray")).isEqualTo(new Object[0]);
 		assertThat(values.get("stringArrayConst")).isEqualTo(new Object[] { "OK", "KO" });
-		assertThat(values.get("stringArrayConstElements"))
-				.isEqualTo(new Object[] { "c" });
+		assertThat(values.get("stringArrayConstElements")).isEqualTo(new Object[] { "c" });
 		assertThat(values.get("integerArray")).isEqualTo(new Object[] { 42, 24 });
 		assertThat(values.get("unknownArray")).isNull();
 		assertThat(values.get("durationNone")).isNull();
@@ -101,10 +100,14 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("dataSizeMegabytes")).isEqualTo("20MB");
 		assertThat(values.get("dataSizeGigabytes")).isEqualTo("30GB");
 		assertThat(values.get("dataSizeTerabytes")).isEqualTo("40TB");
+		assertThat(values.get("periodNone")).isNull();
+		assertThat(values.get("periodDays")).isEqualTo("3d");
+		assertThat(values.get("periodWeeks")).isEqualTo("2w");
+		assertThat(values.get("periodMonths")).isEqualTo("10m");
+		assertThat(values.get("periodYears")).isEqualTo("15y");
 	}
 
-	@SupportedAnnotationTypes({
-			"org.springframework.boot.configurationsample.ConfigurationProperties" })
+	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })
 	@SupportedSourceVersion(SourceVersion.RELEASE_6)
 	private class TestProcessor extends AbstractProcessor {
 
@@ -118,14 +121,12 @@ public abstract class AbstractFieldValuesProcessorTests {
 		}
 
 		@Override
-		public boolean process(Set<? extends TypeElement> annotations,
-				RoundEnvironment roundEnv) {
+		public boolean process(Set<? extends TypeElement> annotations, RoundEnvironment roundEnv) {
 			for (TypeElement annotation : annotations) {
 				for (Element element : roundEnv.getElementsAnnotatedWith(annotation)) {
 					if (element instanceof TypeElement) {
 						try {
-							this.values.putAll(
-									this.processor.getFieldValues((TypeElement) element));
+							this.values.putAll(this.processor.getFieldValues((TypeElement) element));
 						}
 						catch (Exception ex) {
 							throw new IllegalStateException(ex);
@@ -136,7 +137,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 			return false;
 		}
 
-		public Map<String, Object> getValues() {
+		Map<String, Object> getValues() {
 			return this.values;
 		}
 

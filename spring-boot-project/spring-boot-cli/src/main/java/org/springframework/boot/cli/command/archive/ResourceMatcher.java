@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,11 +42,11 @@ import org.springframework.util.StringUtils;
  */
 class ResourceMatcher {
 
-	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**",
-			"static/**", "templates/**", "META-INF/**", "*" };
+	private static final String[] DEFAULT_INCLUDES = { "public/**", "resources/**", "static/**", "templates/**",
+			"META-INF/**", "*" };
 
-	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**",
-			"target/**", "**/*.jar", "**/*.groovy" };
+	private static final String[] DEFAULT_EXCLUDES = { ".*", "repository/**", "build/**", "target/**", "**/*.jar",
+			"**/*.groovy" };
 
 	private final AntPathMatcher pathMatcher = new AntPathMatcher();
 
@@ -59,30 +59,30 @@ class ResourceMatcher {
 		this.excludes = getOptions(excludes, DEFAULT_EXCLUDES);
 	}
 
-	public List<MatchedResource> find(List<File> roots) throws IOException {
+	List<MatchedResource> find(List<File> roots) throws IOException {
 		List<MatchedResource> matchedResources = new ArrayList<>();
 		for (File root : roots) {
 			if (root.isFile()) {
 				matchedResources.add(new MatchedResource(root));
 			}
 			else {
-				matchedResources.addAll(findInFolder(root));
+				matchedResources.addAll(findInDirectory(root));
 			}
 		}
 		return matchedResources;
 	}
 
-	private List<MatchedResource> findInFolder(File folder) throws IOException {
+	private List<MatchedResource> findInDirectory(File directory) throws IOException {
 		List<MatchedResource> matchedResources = new ArrayList<>();
 
 		PathMatchingResourcePatternResolver resolver = new PathMatchingResourcePatternResolver(
-				new FolderResourceLoader(folder));
+				new DirectoryResourceLoader(directory));
 
 		for (String include : this.includes) {
 			for (Resource candidate : resolver.getResources(include)) {
 				File file = candidate.getFile();
 				if (file.isFile()) {
-					MatchedResource matchedResource = new MatchedResource(folder, file);
+					MatchedResource matchedResource = new MatchedResource(directory, file);
 					if (!isExcluded(matchedResource)) {
 						matchedResources.add(matchedResource);
 					}
@@ -130,31 +130,31 @@ class ResourceMatcher {
 	}
 
 	/**
-	 * {@link ResourceLoader} to get load resource from a folder.
+	 * {@link ResourceLoader} to get load resource from a directory.
 	 */
-	private static class FolderResourceLoader extends DefaultResourceLoader {
+	private static class DirectoryResourceLoader extends DefaultResourceLoader {
 
-		private final File rootFolder;
+		private final File rootDirectory;
 
-		FolderResourceLoader(File root) throws MalformedURLException {
-			super(new FolderClassLoader(root));
-			this.rootFolder = root;
+		DirectoryResourceLoader(File root) throws MalformedURLException {
+			super(new DirectoryClassLoader(root));
+			this.rootDirectory = root;
 		}
 
 		@Override
 		protected Resource getResourceByPath(String path) {
-			return new FileSystemResource(new File(this.rootFolder, path));
+			return new FileSystemResource(new File(this.rootDirectory, path));
 		}
 
 	}
 
 	/**
-	 * {@link ClassLoader} backed by a folder.
+	 * {@link ClassLoader} backed by a directory.
 	 */
-	private static class FolderClassLoader extends URLClassLoader {
+	private static class DirectoryClassLoader extends URLClassLoader {
 
-		FolderClassLoader(File rootFolder) throws MalformedURLException {
-			super(new URL[] { rootFolder.toURI().toURL() });
+		DirectoryClassLoader(File rootDirectory) throws MalformedURLException {
+			super(new URL[] { rootDirectory.toURI().toURL() });
 		}
 
 		@Override
@@ -186,9 +186,10 @@ class ResourceMatcher {
 			this.root = this.name.endsWith(".jar");
 		}
 
-		private MatchedResource(File rootFolder, File file) {
-			this.name = StringUtils.cleanPath(file.getAbsolutePath()
-					.substring(rootFolder.getAbsolutePath().length() + 1));
+		private MatchedResource(File rootDirectory, File file) {
+			String filePath = file.getAbsolutePath();
+			String rootDirectoryPath = rootDirectory.getAbsolutePath();
+			this.name = StringUtils.cleanPath(filePath.substring(rootDirectoryPath.length() + 1));
 			this.file = file;
 			this.root = false;
 		}

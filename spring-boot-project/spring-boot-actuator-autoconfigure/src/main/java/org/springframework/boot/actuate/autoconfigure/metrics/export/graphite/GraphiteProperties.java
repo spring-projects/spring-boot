@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,9 +22,11 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.graphite.GraphiteProtocol;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.ObjectUtils;
 
 /**
- * {@link ConfigurationProperties} for configuring Graphite metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Graphite
+ * metrics export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
@@ -69,8 +71,14 @@ public class GraphiteProperties {
 	private GraphiteProtocol protocol = GraphiteProtocol.PICKLED;
 
 	/**
-	 * For the default naming convention, turn the specified tag keys into part of the
-	 * metric prefix.
+	 * Whether Graphite tags should be used, as opposed to a hierarchical naming
+	 * convention. Enabled by default unless "tagsAsPrefix" is set.
+	 */
+	private Boolean graphiteTagsEnabled;
+
+	/**
+	 * For the hierarchical naming convention, turn the specified tag keys into part of
+	 * the metric prefix. Ignored if "graphiteTagsEnabled" is true.
 	 */
 	private String[] tagsAsPrefix = new String[0];
 
@@ -128,6 +136,14 @@ public class GraphiteProperties {
 
 	public void setProtocol(GraphiteProtocol protocol) {
 		this.protocol = protocol;
+	}
+
+	public Boolean getGraphiteTagsEnabled() {
+		return (this.graphiteTagsEnabled != null) ? this.graphiteTagsEnabled : ObjectUtils.isEmpty(this.tagsAsPrefix);
+	}
+
+	public void setGraphiteTagsEnabled(Boolean graphiteTagsEnabled) {
+		this.graphiteTagsEnabled = graphiteTagsEnabled;
 	}
 
 	public String[] getTagsAsPrefix() {

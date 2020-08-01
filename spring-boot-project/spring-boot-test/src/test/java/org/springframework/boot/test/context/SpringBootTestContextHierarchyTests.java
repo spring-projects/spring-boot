@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.test.context;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.context.SpringBootTestContextHierarchyTests.ChildConfiguration;
 import org.springframework.boot.test.context.SpringBootTestContextHierarchyTests.ParentConfiguration;
@@ -26,21 +26,22 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextHierarchy;
 
 /**
- * Tests for {@link SpringBootTest} and {@link ContextHierarchy}.
+ * Tests for {@link SpringBootTest @SpringBootTest} and
+ * {@link ContextHierarchy @ContextHierarchy}.
  *
  * @author Andy Wilkinson
  */
 @SpringBootTest
 @ContextHierarchy({ @ContextConfiguration(classes = ParentConfiguration.class),
 		@ContextConfiguration(classes = ChildConfiguration.class) })
-public class SpringBootTestContextHierarchyTests {
+class SpringBootTestContextHierarchyTests {
 
 	@Test
-	public void contextLoads() {
+	void contextLoads() {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ParentConfiguration {
 
 		@Bean
@@ -50,7 +51,7 @@ public class SpringBootTestContextHierarchyTests {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class ChildConfiguration {
 
 		ChildConfiguration(MyBean myBean) {

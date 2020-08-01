@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,11 +20,14 @@ import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
+import io.micrometer.prometheus.HistogramFlavor;
+
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring metrics export to Prometheus.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
+ * to Prometheus.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
@@ -46,6 +49,11 @@ public class PrometheusProperties {
 	private final Pushgateway pushgateway = new Pushgateway();
 
 	/**
+	 * Histogram type for backing DistributionSummary and Timer.
+	 */
+	private HistogramFlavor histogramFlavor = HistogramFlavor.Prometheus;
+
+	/**
 	 * Step size (i.e. reporting frequency) to use.
 	 */
 	private Duration step = Duration.ofMinutes(1);
@@ -56,6 +64,14 @@ public class PrometheusProperties {
 
 	public void setDescriptions(boolean descriptions) {
 		this.descriptions = descriptions;
+	}
+
+	public HistogramFlavor getHistogramFlavor() {
+		return this.histogramFlavor;
+	}
+
+	public void setHistogramFlavor(HistogramFlavor histogramFlavor) {
+		this.histogramFlavor = histogramFlavor;
 	}
 
 	public Duration getStep() {
@@ -83,7 +99,7 @@ public class PrometheusProperties {
 		/**
 		 * Base URL for the Pushgateway.
 		 */
-		private String baseUrl = "localhost:9091";
+		private String baseUrl = "http://localhost:9091";
 
 		/**
 		 * Frequency with which to push metrics.

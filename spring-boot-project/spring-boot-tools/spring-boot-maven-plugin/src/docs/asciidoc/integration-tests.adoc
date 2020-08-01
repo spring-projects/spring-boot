@@ -1,0 +1,179 @@
+[[integration-tests]]
+== Running Integration Tests
+While you may start your Spring Boot application very easily from your test (or test suite) itself, it may be desirable to handle that in the build itself.
+To make sure that the lifecycle of your Spring Boot application is properly managed around your integration tests, you can use the `start` and `stop` goals, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<version>{gradle-project-version}</version>
+			<executions>
+				<execution>
+					<id>pre-integration-test</id>
+					<goals>
+						<goal>start</goal>
+					</goals>
+				</execution>
+				<execution>
+					<id>post-integration-test</id>
+					<goals>
+						<goal>stop</goal>
+					</goals>
+				</execution>
+			</executions>
+		</plugin>
+	</plugins>
+</build>
+----
+
+Such setup can now use the https://maven.apache.org/surefire/maven-failsafe-plugin[failsafe-plugin] to run your integration tests as you would expect.
+
+You could also configure a more advanced setup to skip the integration tests when a specific property has been set, see <<integration-tests-example-skip,the dedicated example>>.
+
+include::goals/start.adoc[leveloffset=+1]
+
+include::goals/stop.adoc[leveloffset=+1]
+
+
+
+[[integration-tests-example]]
+=== Examples
+
+
+
+[[integration-tests-example-random-port]]
+==== Random Port for Integration Tests
+One nice feature of the Spring Boot test integration is that it can allocate a free port for the web application.
+When the `start` goal of the plugin is used, the Spring Boot application is started separately, making it difficult to pass the actual port to the integration test itself.
+
+The example below showcases how you could achieve the same feature using the https://www.mojohaus.org/build-helper-maven-plugin[Build Helper Maven Plugin]:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.codehaus.mojo</groupId>
+					<artifactId>build-helper-maven-plugin</artifactId>
+					<version>{build-helper-maven-plugin-version}</version>
+					<executions>
+						<execution>
+							<id>reserve-tomcat-port</id>
+							<goals>
+								<goal>reserve-network-port</goal>
+							</goals>
+							<phase>process-resources</phase>
+							<configuration>
+								<portNames>
+									<portName>tomcat.http.port</portName>
+								</portNames>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<executions>
+						<execution>
+							<id>pre-integration-test</id>
+							<goals>
+								<goal>start</goal>
+							</goals>
+							<configuration>
+								<arguments>
+									<argument>--server.port=${tomcat.http.port}</argument>
+								</arguments>
+							</configuration>
+						</execution>
+						<execution>
+							<id>post-integration-test</id>
+							<goals>
+								<goal>stop</goal>
+							</goals>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>{maven-failsafe-plugin-version}</version>
+					<configuration>
+						<systemPropertyVariables>
+							<test.server.port>${tomcat.http.port}</test.server.port>
+						</systemPropertyVariables>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+You can now retrieve the `test.server.port` system property in any of your integration test to create a proper `URL` to the server.
+
+
+
+[[integration-tests-example-skip]]
+==== Skip Integration Tests
+The `skip` property allows to skip the execution of the Spring Boot maven plugin altogether.
+
+This example shows how you can skip integration tests with a command-line property and still make sure that the `repackage` goal runs:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<properties>
+			<skip.it>false</skip.it>
+		</properties>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<executions>
+						<execution>
+							<id>pre-integration-test</id>
+							<goals>
+								<goal>start</goal>
+							</goals>
+							<configuration>
+								<skip>${skip.it}</skip>
+							</configuration>
+						</execution>
+						<execution>
+							<id>post-integration-test</id>
+							<goals>
+								<goal>stop</goal>
+							</goals>
+							<configuration>
+								<skip>${skip.it}</skip>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+				<plugin>
+					<groupId>org.apache.maven.plugins</groupId>
+					<artifactId>maven-failsafe-plugin</artifactId>
+					<version>{maven-failsafe-plugin-version}</version>
+					<configuration>
+						<skip>${skip.it}</skip>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+By default, the integration tests will run but this setup allows you to easily disable them on the command-line as follows:
+
+[indent=0]
+----
+	$ mvn verify -Dskip.it=true
+----

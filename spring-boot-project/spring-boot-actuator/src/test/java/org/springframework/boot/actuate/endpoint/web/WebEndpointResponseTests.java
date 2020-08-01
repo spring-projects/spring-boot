@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,31 +25,31 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-public class WebEndpointResponseTests {
+class WebEndpointResponseTests {
 
 	@Test
-	public void createWithNoParamsShouldReturn200() {
+	void createWithNoParamsShouldReturn200() {
 		WebEndpointResponse<Object> response = new WebEndpointResponse<>();
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getBody()).isNull();
 	}
 
 	@Test
-	public void createWithStatusShouldReturnStatus() {
+	void createWithStatusShouldReturnStatus() {
 		WebEndpointResponse<Object> response = new WebEndpointResponse<>(404);
 		assertThat(response.getStatus()).isEqualTo(404);
 		assertThat(response.getBody()).isNull();
 	}
 
 	@Test
-	public void createWithBodyShouldReturnBody() {
+	void createWithBodyShouldReturnBody() {
 		WebEndpointResponse<Object> response = new WebEndpointResponse<>("body");
 		assertThat(response.getStatus()).isEqualTo(200);
 		assertThat(response.getBody()).isEqualTo("body");
 	}
 
 	@Test
-	public void createWithBodyAndStatusShouldReturnStatusAndBody() {
+	void createWithBodyAndStatusShouldReturnStatusAndBody() {
 		WebEndpointResponse<Object> response = new WebEndpointResponse<>("body", 500);
 		assertThat(response.getStatus()).isEqualTo(500);
 		assertThat(response.getBody()).isEqualTo("body");

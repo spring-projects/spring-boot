@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,13 +31,15 @@ import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 
-import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.MergedAnnotationCollectors;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.HandlerInterceptor;
 
 /**
  * A {@link HandlerInterceptor} that supports Micrometer's long task timers configured on
- * a handler using {@link Timed} with {@link Timed#longTask()} set to {@code true}.
+ * a handler using {@link Timed @Timed} with {@link Timed#longTask() longTask} set to
+ * {@code true}.
  *
  * @author Andy Wilkinson
  * @since 2.0.7
@@ -55,15 +57,14 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	 * @param registry the registry
 	 * @param tagsProvider the tags provider
 	 */
-	public LongTaskTimingHandlerInterceptor(MeterRegistry registry,
-			WebMvcTagsProvider tagsProvider) {
+	public LongTaskTimingHandlerInterceptor(MeterRegistry registry, WebMvcTagsProvider tagsProvider) {
 		this.registry = registry;
 		this.tagsProvider = tagsProvider;
 	}
 
 	@Override
-	public boolean preHandle(HttpServletRequest request, HttpServletResponse response,
-			Object handler) throws Exception {
+	public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler)
+			throws Exception {
 		LongTaskTimingContext timingContext = LongTaskTimingContext.get(request);
 		if (timingContext == null) {
 			startAndAttachTimingContext(request, handler);
@@ -72,8 +73,8 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	@Override
-	public void afterCompletion(HttpServletRequest request, HttpServletResponse response,
-			Object handler, Exception ex) throws Exception {
+	public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex)
+			throws Exception {
 		if (!request.isAsyncStarted()) {
 			stopLongTaskTimers(LongTaskTimingContext.get(request));
 		}
@@ -81,15 +82,13 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 
 	private void startAndAttachTimingContext(HttpServletRequest request, Object handler) {
 		Set<Timed> annotations = getTimedAnnotations(handler);
-		Collection<LongTaskTimer.Sample> longTaskTimerSamples = getLongTaskTimerSamples(
-				request, handler, annotations);
-		LongTaskTimingContext timingContext = new LongTaskTimingContext(
-				longTaskTimerSamples);
+		Collection<LongTaskTimer.Sample> longTaskTimerSamples = getLongTaskTimerSamples(request, handler, annotations);
+		LongTaskTimingContext timingContext = new LongTaskTimingContext(longTaskTimerSamples);
 		timingContext.attachTo(request);
 	}
 
-	private Collection<LongTaskTimer.Sample> getLongTaskTimerSamples(
-			HttpServletRequest request, Object handler, Set<Timed> annotations) {
+	private Collection<LongTaskTimer.Sample> getLongTaskTimerSamples(HttpServletRequest request, Object handler,
+			Set<Timed> annotations) {
 		List<LongTaskTimer.Sample> samples = new ArrayList<>();
 		annotations.stream().filter(Timed::longTask).forEach((annotation) -> {
 			Iterable<Tag> tags = this.tagsProvider.getLongRequestTags(request, handler);
@@ -116,7 +115,8 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	}
 
 	private Set<Timed> findTimedAnnotations(AnnotatedElement element) {
-		return AnnotationUtils.getDeclaredRepeatableAnnotations(element, Timed.class);
+		return MergedAnnotations.from(element).stream(Timed.class)
+				.collect(MergedAnnotationCollectors.toAnnotationSet());
 	}
 
 	private void stopLongTaskTimers(LongTaskTimingContext timingContext) {

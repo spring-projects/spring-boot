@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,8 +30,8 @@ import org.springframework.core.Ordered;
  * @author Yunkun Huang
  * @since 2.0.0
  */
-public class ReactiveWebServerFactoryCustomizer implements
-		WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, Ordered {
+public class ReactiveWebServerFactoryCustomizer
+		implements WebServerFactoryCustomizer<ConfigurableReactiveWebServerFactory>, Ordered {
 
 	private final ServerProperties serverProperties;
 
@@ -52,6 +52,7 @@ public class ReactiveWebServerFactoryCustomizer implements
 		map.from(this.serverProperties::getSsl).to(factory::setSsl);
 		map.from(this.serverProperties::getCompression).to(factory::setCompression);
 		map.from(this.serverProperties::getHttp2).to(factory::setHttp2);
+		map.from(this.serverProperties.getShutdown()).to(factory::setShutdown);
 	}
 
 }

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -20,16 +20,19 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 import org.apache.tomcat.websocket.WsWebSocketContainer;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Ignore;
-import org.junit.Test;
+import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.socket.CloseStatus;
@@ -43,6 +46,10 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
+import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.is;
+import static org.hamcrest.Matchers.not;
 
 /**
  * Tests for {@link LiveReloadServer}.
@@ -50,7 +57,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-public class LiveReloadServerTests {
+class LiveReloadServerTests {
 
 	private static final String HANDSHAKE = "{command: 'hello', "
 			+ "protocols: ['http://livereload.com/protocols/official-7']}";
@@ -59,20 +66,20 @@ public class LiveReloadServerTests {
 
 	private MonitoredLiveReloadServer server;
 
-	@Before
-	public void setUp() throws Exception {
+	@BeforeEach
+	void setUp() throws Exception {
 		this.server = new MonitoredLiveReloadServer(0);
 		this.port = this.server.start();
 	}
 
-	@After
-	public void tearDown() throws Exception {
+	@AfterEach
+	void tearDown() throws Exception {
 		this.server.stop();
 	}
 
 	@Test
-	@Ignore
-	public void servesLivereloadJs() throws Exception {
+	@Disabled
+	void servesLivereloadJs() throws Exception {
 		RestTemplate template = new RestTemplate();
 		URI uri = new URI("http://localhost:" + this.port + "/livereload.js");
 		String script = template.getForObject(uri, String.class);
@@ -80,27 +87,25 @@ public class LiveReloadServerTests {
 	}
 
 	@Test
-	public void triggerReload() throws Exception {
+	void triggerReload() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.triggerReload();
-		Thread.sleep(200);
-		this.server.stop();
-		assertThat(handler.getMessages().get(0))
-				.contains("http://livereload.com/protocols/official-7");
-		assertThat(handler.getMessages().get(1)).contains("command\":\"reload\"");
+		List<String> messages = await().atMost(Duration.ofSeconds(10)).until(handler::getMessages,
+				(msgs) -> msgs.size() == 2);
+		assertThat(messages.get(0)).contains("http://livereload.com/protocols/official-7");
+		assertThat(messages.get(1)).contains("command\":\"reload\"");
+
 	}
 
 	@Test
-	public void pingPong() throws Exception {
+	void pingPong() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.sendMessage(new PingMessage());
-		Thread.sleep(200);
-		assertThat(handler.getPongCount()).isEqualTo(1);
-		this.server.stop();
+		await().atMost(Duration.ofSeconds(10)).until(handler::getPongCount, is(1));
 	}
 
 	@Test
-	public void clientClose() throws Exception {
+	void clientClose() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.close();
 		awaitClosedException();
@@ -108,19 +113,16 @@ public class LiveReloadServerTests {
 	}
 
 	private void awaitClosedException() throws InterruptedException {
-		long startTime = System.currentTimeMillis();
-		while (this.server.getClosedExceptions().isEmpty()
-				&& System.currentTimeMillis() - startTime < 10000) {
-			Thread.sleep(100);
-		}
+		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(this.server::getClosedExceptions, is(not(empty())));
 	}
 
 	@Test
-	public void serverClose() throws Exception {
+	void serverClose() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.stop();
-		Thread.sleep(200);
-		assertThat(handler.getCloseStatus().getCode()).isEqualTo(1006);
+		CloseStatus closeStatus = await().atMost(Duration.ofSeconds(10)).until(handler::getCloseStatus,
+				Objects::nonNull);
+		assertThat(closeStatus.getCode()).isEqualTo(1006);
 	}
 
 	private LiveReloadWebSocketHandler connect() throws Exception {
@@ -132,28 +134,9 @@ public class LiveReloadServerTests {
 	}
 
 	/**
-	 * Useful main method for manual testing against a real browser.
-	 * @param args main args
-	 * @throws IOException in case of I/O errors
-	 */
-	public static void main(String[] args) throws IOException {
-		LiveReloadServer server = new LiveReloadServer();
-		server.start();
-		while (true) {
-			try {
-				Thread.sleep(1000);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-			server.triggerReload();
-		}
-	}
-
-	/**
 	 * {@link LiveReloadServer} with additional monitoring.
 	 */
-	private static class MonitoredLiveReloadServer extends LiveReloadServer {
+	static class MonitoredLiveReloadServer extends LiveReloadServer {
 
 		private final List<ConnectionClosedException> closedExceptions = new ArrayList<>();
 
@@ -164,12 +147,12 @@ public class LiveReloadServerTests {
 		}
 
 		@Override
-		protected Connection createConnection(java.net.Socket socket,
-				InputStream inputStream, OutputStream outputStream) throws IOException {
+		protected Connection createConnection(java.net.Socket socket, InputStream inputStream,
+				OutputStream outputStream) throws IOException {
 			return new MonitoredConnection(socket, inputStream, outputStream);
 		}
 
-		public List<ConnectionClosedException> getClosedExceptions() {
+		List<ConnectionClosedException> getClosedExceptions() {
 			synchronized (this.monitor) {
 				return new ArrayList<>(this.closedExceptions);
 			}
@@ -177,8 +160,8 @@ public class LiveReloadServerTests {
 
 		private class MonitoredConnection extends Connection {
 
-			MonitoredConnection(java.net.Socket socket, InputStream inputStream,
-					OutputStream outputStream) throws IOException {
+			MonitoredConnection(java.net.Socket socket, InputStream inputStream, OutputStream outputStream)
+					throws IOException {
 				super(socket, inputStream, outputStream);
 			}
 
@@ -199,7 +182,7 @@ public class LiveReloadServerTests {
 
 	}
 
-	private static class LiveReloadWebSocketHandler extends TextWebSocketHandler {
+	static class LiveReloadWebSocketHandler extends TextWebSocketHandler {
 
 		private WebSocketSession session;
 
@@ -212,14 +195,13 @@ public class LiveReloadServerTests {
 		private CloseStatus closeStatus;
 
 		@Override
-		public void afterConnectionEstablished(WebSocketSession session)
-				throws Exception {
+		public void afterConnectionEstablished(WebSocketSession session) throws Exception {
 			this.session = session;
 			session.sendMessage(new TextMessage(HANDSHAKE));
 			this.helloLatch.countDown();
 		}
 
-		public void awaitHello() throws InterruptedException {
+		void awaitHello() throws InterruptedException {
 			this.helloLatch.await(1, TimeUnit.MINUTES);
 			Thread.sleep(200);
 		}
@@ -242,23 +224,23 @@ public class LiveReloadServerTests {
 			this.closeStatus = status;
 		}
 
-		public void sendMessage(WebSocketMessage<?> message) throws IOException {
+		void sendMessage(WebSocketMessage<?> message) throws IOException {
 			this.session.sendMessage(message);
 		}
 
-		public void close() throws IOException {
+		void close() throws IOException {
 			this.session.close();
 		}
 
-		public List<String> getMessages() {
+		List<String> getMessages() {
 			return this.messages;
 		}
 
-		public int getPongCount() {
+		int getPongCount() {
 			return this.pongCount;
 		}
 
-		public CloseStatus getCloseStatus() {
+		CloseStatus getCloseStatus() {
 			return this.closeStatus;
 		}
 

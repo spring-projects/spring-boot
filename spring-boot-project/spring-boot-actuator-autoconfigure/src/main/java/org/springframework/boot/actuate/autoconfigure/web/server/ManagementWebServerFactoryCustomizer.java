@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,7 +28,6 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.util.LambdaSafe;
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
-import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -50,6 +49,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	private final Class<? extends WebServerFactoryCustomizer<?>>[] customizerClasses;
 
 	@SafeVarargs
+	@SuppressWarnings("varargs")
 	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
 			Class<? extends WebServerFactoryCustomizer<?>>... customizerClasses) {
 		this.beanFactory = beanFactory;
@@ -64,22 +64,20 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	@Override
 	public final void customize(T factory) {
 		ManagementServerProperties managementServerProperties = BeanFactoryUtils
-				.beanOfTypeIncludingAncestors(this.beanFactory,
-						ManagementServerProperties.class);
+				.beanOfTypeIncludingAncestors(this.beanFactory, ManagementServerProperties.class);
 		// Customize as per the parent context first (so e.g. the access logs go to
 		// the same place)
 		customizeSameAsParentContext(factory);
 		// Then reset the error pages
 		factory.setErrorPages(Collections.emptySet());
 		// and add the management-specific bits
-		ServerProperties serverProperties = BeanFactoryUtils
-				.beanOfTypeIncludingAncestors(this.beanFactory, ServerProperties.class);
+		ServerProperties serverProperties = BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
+				ServerProperties.class);
 		customize(factory, managementServerProperties, serverProperties);
 	}
 
 	private void customizeSameAsParentContext(T factory) {
-		List<WebServerFactoryCustomizer<?>> customizers = Arrays
-				.stream(this.customizerClasses).map(this::getCustomizer)
+		List<WebServerFactoryCustomizer<?>> customizers = Arrays.stream(this.customizerClasses).map(this::getCustomizer)
 				.filter(Objects::nonNull).collect(Collectors.toList());
 		invokeCustomizers(factory, customizers);
 	}
@@ -87,8 +85,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	private WebServerFactoryCustomizer<?> getCustomizer(
 			Class<? extends WebServerFactoryCustomizer<?>> customizerClass) {
 		try {
-			return BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory,
-					customizerClass);
+			return BeanFactoryUtils.beanOfTypeIncludingAncestors(this.beanFactory, customizerClass);
 		}
 		catch (NoSuchBeanDefinitionException ex) {
 			return null;
@@ -96,14 +93,12 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	}
 
 	@SuppressWarnings("unchecked")
-	private void invokeCustomizers(T factory,
-			List<WebServerFactoryCustomizer<?>> customizers) {
+	private void invokeCustomizers(T factory, List<WebServerFactoryCustomizer<?>> customizers) {
 		LambdaSafe.callbacks(WebServerFactoryCustomizer.class, customizers, factory)
 				.invoke((customizer) -> customizer.customize(factory));
 	}
 
-	protected void customize(T factory,
-			ManagementServerProperties managementServerProperties,
+	protected void customize(T factory, ManagementServerProperties managementServerProperties,
 			ServerProperties serverProperties) {
 		factory.setPort(managementServerProperties.getPort());
 		Ssl ssl = managementServerProperties.getSsl();
@@ -112,7 +107,6 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 		}
 		factory.setServerHeader(serverProperties.getServerHeader());
 		factory.setAddress(managementServerProperties.getAddress());
-		factory.addErrorPages(new ErrorPage(serverProperties.getError().getPath()));
 	}
 
 }

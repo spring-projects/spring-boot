@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -51,8 +52,7 @@ public class FlywayProperties {
 	 * Locations of migrations scripts. Can contain the special "{vendor}" placeholder to
 	 * use vendor-specific locations.
 	 */
-	private List<String> locations = new ArrayList<>(
-			Collections.singletonList("classpath:db/migration"));
+	private List<String> locations = new ArrayList<>(Collections.singletonList("classpath:db/migration"));
 
 	/**
 	 * Encoding of SQL migrations.
@@ -65,14 +65,32 @@ public class FlywayProperties {
 	private int connectRetries;
 
 	/**
+	 * Default schema name managed by Flyway (case-sensitive).
+	 */
+	private String defaultSchema;
+
+	/**
 	 * Scheme names managed by Flyway (case-sensitive).
 	 */
 	private List<String> schemas = new ArrayList<>();
 
 	/**
-	 * Name of the schema schema history table that will be used by Flyway.
+	 * Whether Flyway should attempt to create the schemas specified in the schemas
+	 * property.
+	 */
+	private boolean createSchemas = true;
+
+	/**
+	 * Name of the schema history table that will be used by Flyway.
 	 */
 	private String table = "flyway_schema_history";
+
+	/**
+	 * Tablespace in which the schema history table is created. Ignored when using a
+	 * database that does not support tablespaces. Defaults to the default tablespace of
+	 * the connection used by Flyway.
+	 */
+	private String tablespace;
 
 	/**
 	 * Description to tag an existing schema with when applying a baseline.
@@ -117,8 +135,7 @@ public class FlywayProperties {
 	/**
 	 * File name suffix for SQL migrations.
 	 */
-	private List<String> sqlMigrationSuffixes = new ArrayList<>(
-			Collections.singleton(".sql"));
+	private List<String> sqlMigrationSuffixes = new ArrayList<>(Collections.singleton(".sql"));
 
 	/**
 	 * File name separator for SQL migrations.
@@ -220,9 +237,61 @@ public class FlywayProperties {
 	private boolean skipDefaultResolvers;
 
 	/**
+	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
+	 * naming convention.
+	 */
+	private boolean validateMigrationNaming = false;
+
+	/**
 	 * Whether to automatically call validate when performing a migration.
 	 */
 	private boolean validateOnMigrate = true;
+
+	/**
+	 * Whether to batch SQL statements when executing them. Requires Flyway Pro or Flyway
+	 * Enterprise.
+	 */
+	private Boolean batch;
+
+	/**
+	 * File to which the SQL statements of a migration dry run should be output. Requires
+	 * Flyway Pro or Flyway Enterprise.
+	 */
+	private File dryRunOutput;
+
+	/**
+	 * Rules for the built-in error handling to override specific SQL states and error
+	 * codes. Requires Flyway Pro or Flyway Enterprise.
+	 */
+	private String[] errorOverrides;
+
+	/**
+	 * Licence key for Flyway Pro or Flyway Enterprise.
+	 */
+	private String licenseKey;
+
+	/**
+	 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Pro or
+	 * Flyway Enterprise.
+	 */
+	private Boolean oracleSqlplus;
+
+	/**
+	 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
+	 * SQL*Plus statement is encountered. Requires Flyway Pro or Flyway Enterprise.
+	 */
+	private Boolean oracleSqlplusWarn;
+
+	/**
+	 * Whether to stream SQL migrations when executing them. Requires Flyway Pro or Flyway
+	 * Enterprise.
+	 */
+	private Boolean stream;
+
+	/**
+	 * File name prefix for undo SQL migrations. Requires Flyway Pro or Flyway Enterprise.
+	 */
+	private String undoSqlMigrationPrefix;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -264,6 +333,14 @@ public class FlywayProperties {
 		this.connectRetries = connectRetries;
 	}
 
+	public String getDefaultSchema() {
+		return this.defaultSchema;
+	}
+
+	public void setDefaultSchema(String defaultSchema) {
+		this.defaultSchema = defaultSchema;
+	}
+
 	public List<String> getSchemas() {
 		return this.schemas;
 	}
@@ -272,12 +349,28 @@ public class FlywayProperties {
 		this.schemas = schemas;
 	}
 
+	public boolean isCreateSchemas() {
+		return this.createSchemas;
+	}
+
+	public void setCreateSchemas(boolean createSchemas) {
+		this.createSchemas = createSchemas;
+	}
+
 	public String getTable() {
 		return this.table;
 	}
 
 	public void setTable(String table) {
 		this.table = table;
+	}
+
+	public String getTablespace() {
+		return this.tablespace;
+	}
+
+	public void setTablespace(String tablespace) {
+		this.tablespace = tablespace;
 	}
 
 	public String getBaselineDescription() {
@@ -508,12 +601,84 @@ public class FlywayProperties {
 		this.skipDefaultResolvers = skipDefaultResolvers;
 	}
 
+	public boolean isValidateMigrationNaming() {
+		return this.validateMigrationNaming;
+	}
+
+	public void setValidateMigrationNaming(boolean validateMigrationNaming) {
+		this.validateMigrationNaming = validateMigrationNaming;
+	}
+
 	public boolean isValidateOnMigrate() {
 		return this.validateOnMigrate;
 	}
 
 	public void setValidateOnMigrate(boolean validateOnMigrate) {
 		this.validateOnMigrate = validateOnMigrate;
+	}
+
+	public Boolean getBatch() {
+		return this.batch;
+	}
+
+	public void setBatch(Boolean batch) {
+		this.batch = batch;
+	}
+
+	public File getDryRunOutput() {
+		return this.dryRunOutput;
+	}
+
+	public void setDryRunOutput(File dryRunOutput) {
+		this.dryRunOutput = dryRunOutput;
+	}
+
+	public String[] getErrorOverrides() {
+		return this.errorOverrides;
+	}
+
+	public void setErrorOverrides(String[] errorOverrides) {
+		this.errorOverrides = errorOverrides;
+	}
+
+	public String getLicenseKey() {
+		return this.licenseKey;
+	}
+
+	public void setLicenseKey(String licenseKey) {
+		this.licenseKey = licenseKey;
+	}
+
+	public Boolean getOracleSqlplus() {
+		return this.oracleSqlplus;
+	}
+
+	public void setOracleSqlplus(Boolean oracleSqlplus) {
+		this.oracleSqlplus = oracleSqlplus;
+	}
+
+	public Boolean getOracleSqlplusWarn() {
+		return this.oracleSqlplusWarn;
+	}
+
+	public void setOracleSqlplusWarn(Boolean oracleSqlplusWarn) {
+		this.oracleSqlplusWarn = oracleSqlplusWarn;
+	}
+
+	public Boolean getStream() {
+		return this.stream;
+	}
+
+	public void setStream(Boolean stream) {
+		this.stream = stream;
+	}
+
+	public String getUndoSqlMigrationPrefix() {
+		return this.undoSqlMigrationPrefix;
+	}
+
+	public void setUndoSqlMigrationPrefix(String undoSqlMigrationPrefix) {
+		this.undoSqlMigrationPrefix = undoSqlMigrationPrefix;
 	}
 
 }

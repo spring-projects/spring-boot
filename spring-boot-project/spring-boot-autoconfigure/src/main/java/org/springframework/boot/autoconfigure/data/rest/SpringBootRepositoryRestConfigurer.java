@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,6 +23,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
 
 /**
  * A {@code RepositoryRestConfigurer} that applies configuration items from the
@@ -43,7 +44,13 @@ class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 	private RepositoryRestProperties properties;
 
 	@Override
+	@SuppressWarnings("deprecation")
 	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
+		configureRepositoryRestConfiguration(config, null);
+	}
+
+	@Override
+	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
 		this.properties.applyTo(config);
 	}
 

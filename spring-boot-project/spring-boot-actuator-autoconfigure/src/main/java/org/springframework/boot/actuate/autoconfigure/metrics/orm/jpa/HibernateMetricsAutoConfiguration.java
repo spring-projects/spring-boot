@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -45,30 +45,27 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @since 2.1.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 		SimpleMetricsExportAutoConfiguration.class })
-@ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class,
-		MeterRegistry.class })
+@ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
 public class HibernateMetricsAutoConfiguration {
 
 	private static final String ENTITY_MANAGER_FACTORY_SUFFIX = "entityManagerFactory";
 
 	@Autowired
-	public void bindEntityManagerFactoriesToRegistry(
-			Map<String, EntityManagerFactory> entityManagerFactories,
+	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
 			MeterRegistry registry) {
-		entityManagerFactories.forEach((name,
-				factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
+		entityManagerFactories.forEach((name, factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
 	}
 
-	private void bindEntityManagerFactoryToRegistry(String beanName,
-			EntityManagerFactory entityManagerFactory, MeterRegistry registry) {
+	private void bindEntityManagerFactoryToRegistry(String beanName, EntityManagerFactory entityManagerFactory,
+			MeterRegistry registry) {
 		String entityManagerFactoryName = getEntityManagerFactoryName(beanName);
 		try {
-			new HibernateMetrics(entityManagerFactory.unwrap(SessionFactory.class),
-					entityManagerFactoryName, Collections.emptyList()).bindTo(registry);
+			new HibernateMetrics(entityManagerFactory.unwrap(SessionFactory.class), entityManagerFactoryName,
+					Collections.emptyList()).bindTo(registry);
 		}
 		catch (PersistenceException ex) {
 			// Continue
@@ -81,10 +78,9 @@ public class HibernateMetricsAutoConfiguration {
 	 * @return a name for the given entity manager factory
 	 */
 	private String getEntityManagerFactoryName(String beanName) {
-		if (beanName.length() > ENTITY_MANAGER_FACTORY_SUFFIX.length() && StringUtils
-				.endsWithIgnoreCase(beanName, ENTITY_MANAGER_FACTORY_SUFFIX)) {
-			return beanName.substring(0,
-					beanName.length() - ENTITY_MANAGER_FACTORY_SUFFIX.length());
+		if (beanName.length() > ENTITY_MANAGER_FACTORY_SUFFIX.length()
+				&& StringUtils.endsWithIgnoreCase(beanName, ENTITY_MANAGER_FACTORY_SUFFIX)) {
+			return beanName.substring(0, beanName.length() - ENTITY_MANAGER_FACTORY_SUFFIX.length());
 		}
 		return beanName;
 	}

@@ -1,0 +1,11 @@
+<layers xmlns="http://www.springframework.org/schema/boot/layers"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
+					  https://www.springframework.org/schema/boot/layers/layers-2.3.xsd">
+	<dependencies>
+		<into layer="my-deps" />
+	</dependencies>
+	<layerOrder>
+		<layer>my-deps</layer>
+	</layerOrder>
+</layers>

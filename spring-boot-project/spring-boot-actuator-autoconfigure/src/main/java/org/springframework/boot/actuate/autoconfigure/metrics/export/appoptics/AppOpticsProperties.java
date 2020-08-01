@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,7 +22,8 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring AppOptics metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring AppOptics
+ * metrics export.
  *
  * @author Stephane Nicoll
  * @since 2.1.0
@@ -44,6 +45,12 @@ public class AppOpticsProperties extends StepRegistryProperties {
 	 * Tag that will be mapped to "@host" when shipping metrics to AppOptics.
 	 */
 	private String hostTag = "instance";
+
+	/**
+	 * Whether to ship a floored time, useful when sending measurements from multiple
+	 * hosts to align them on a given time boundary.
+	 */
+	private boolean floorTimes;
 
 	/**
 	 * Number of measurements per request to use for this backend. If more measurements
@@ -78,6 +85,14 @@ public class AppOpticsProperties extends StepRegistryProperties {
 
 	public void setHostTag(String hostTag) {
 		this.hostTag = hostTag;
+	}
+
+	public boolean isFloorTimes() {
+		return this.floorTimes;
+	}
+
+	public void setFloorTimes(boolean floorTimes) {
+		this.floorTimes = floorTimes;
 	}
 
 	@Override

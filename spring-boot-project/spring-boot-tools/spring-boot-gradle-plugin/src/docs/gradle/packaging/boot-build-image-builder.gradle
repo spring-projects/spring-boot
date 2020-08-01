@@ -1,0 +1,15 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::builder[]
+bootBuildImage {
+	builder = "mine/java-cnb-builder"
+	runImage = "mine/java-cnb-run"
+}
+// end::builder[]

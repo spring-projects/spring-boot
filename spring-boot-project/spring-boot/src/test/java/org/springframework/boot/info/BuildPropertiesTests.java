@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.Properties;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -30,24 +30,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
-public class BuildPropertiesTests {
+class BuildPropertiesTests {
 
 	@Test
-	public void basicInfo() {
+	void basicInfo() {
 		Instant instant = Instant.now();
-		BuildProperties properties = new BuildProperties(createProperties("com.example",
-				"demo", "0.0.1", DateTimeFormatter.ISO_INSTANT.format(instant)));
+		BuildProperties properties = new BuildProperties(
+				createProperties("com.example", "demo", "0.0.1", DateTimeFormatter.ISO_INSTANT.format(instant)));
 		assertThat(properties.getGroup()).isEqualTo("com.example");
 		assertThat(properties.getArtifact()).isEqualTo("demo");
 		assertThat(properties.getVersion()).isEqualTo("0.0.1");
-		assertThat(properties.getTime())
-				.isEqualTo(instant.truncatedTo(ChronoUnit.MILLIS));
-		assertThat(properties.get("time"))
-				.isEqualTo(String.valueOf(instant.toEpochMilli()));
+		assertThat(properties.getTime()).isEqualTo(instant.truncatedTo(ChronoUnit.MILLIS));
+		assertThat(properties.get("time")).isEqualTo(String.valueOf(instant.toEpochMilli()));
 	}
 
 	@Test
-	public void noInfo() {
+	void noInfo() {
 		BuildProperties properties = new BuildProperties(new Properties());
 		assertThat(properties.getGroup()).isNull();
 		assertThat(properties.getArtifact()).isNull();
@@ -55,8 +53,7 @@ public class BuildPropertiesTests {
 		assertThat(properties.getTime()).isNull();
 	}
 
-	private static Properties createProperties(String group, String artifact,
-			String version, String buildTime) {
+	private static Properties createProperties(String group, String artifact, String version, String buildTime) {
 		Properties properties = new Properties();
 		properties.put("group", group);
 		properties.put("artifact", artifact);

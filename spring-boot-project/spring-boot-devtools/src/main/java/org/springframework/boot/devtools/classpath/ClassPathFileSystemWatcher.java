@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,15 +28,14 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.util.Assert;
 
 /**
- * Encapsulates a {@link FileSystemWatcher} to watch the local classpath folders for
+ * Encapsulates a {@link FileSystemWatcher} to watch the local classpath directories for
  * changes.
  *
  * @author Phillip Webb
  * @since 1.3.0
  * @see ClassPathFileChangeListener
  */
-public class ClassPathFileSystemWatcher
-		implements InitializingBean, DisposableBean, ApplicationContextAware {
+public class ClassPathFileSystemWatcher implements InitializingBean, DisposableBean, ApplicationContextAware {
 
 	private final FileSystemWatcher fileSystemWatcher;
 
@@ -55,12 +54,11 @@ public class ClassPathFileSystemWatcher
 	 */
 	public ClassPathFileSystemWatcher(FileSystemWatcherFactory fileSystemWatcherFactory,
 			ClassPathRestartStrategy restartStrategy, URL[] urls) {
-		Assert.notNull(fileSystemWatcherFactory,
-				"FileSystemWatcherFactory must not be null");
+		Assert.notNull(fileSystemWatcherFactory, "FileSystemWatcherFactory must not be null");
 		Assert.notNull(urls, "Urls must not be null");
 		this.fileSystemWatcher = fileSystemWatcherFactory.getFileSystemWatcher();
 		this.restartStrategy = restartStrategy;
-		this.fileSystemWatcher.addSourceFolders(new ClassPathFolders(urls));
+		this.fileSystemWatcher.addSourceDirectories(new ClassPathDirectories(urls));
 	}
 
 	/**
@@ -72,8 +70,7 @@ public class ClassPathFileSystemWatcher
 	}
 
 	@Override
-	public void setApplicationContext(ApplicationContext applicationContext)
-			throws BeansException {
+	public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
 		this.applicationContext = applicationContext;
 	}
 
@@ -84,8 +81,8 @@ public class ClassPathFileSystemWatcher
 			if (this.stopWatcherOnRestart) {
 				watcherToStop = this.fileSystemWatcher;
 			}
-			this.fileSystemWatcher.addListener(new ClassPathFileChangeListener(
-					this.applicationContext, this.restartStrategy, watcherToStop));
+			this.fileSystemWatcher.addListener(
+					new ClassPathFileChangeListener(this.applicationContext, this.restartStrategy, watcherToStop));
 		}
 		this.fileSystemWatcher.start();
 	}

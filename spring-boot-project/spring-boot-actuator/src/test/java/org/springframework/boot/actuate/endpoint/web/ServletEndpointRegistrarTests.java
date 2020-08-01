@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -26,8 +26,8 @@ import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-public class ServletEndpointRegistrarTests {
+class ServletEndpointRegistrarTests {
 
 	@Mock
 	private ServletContext servletContext;
@@ -60,84 +60,68 @@ public class ServletEndpointRegistrarTests {
 	@Captor
 	private ArgumentCaptor<Servlet> servlet;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addServlet(any(String.class), any(Servlet.class)))
-				.willReturn(this.dynamic);
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
 	}
 
 	@Test
-	public void createWhenServletEndpointsIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ServletEndpointRegistrar(null, null))
+	void createWhenServletEndpointsIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ServletEndpointRegistrar(null, null))
 				.withMessageContaining("ServletEndpoints must not be null");
 	}
 
 	@Test
-	public void onStartupShouldRegisterServlets() throws ServletException {
+	void onStartupShouldRegisterServlets() throws ServletException {
 		assertBasePath(null, "/test/*");
 	}
 
 	@Test
-	public void onStartupWhenHasBasePathShouldIncludeBasePath() throws ServletException {
+	void onStartupWhenHasBasePathShouldIncludeBasePath() throws ServletException {
 		assertBasePath("/actuator", "/actuator/test/*");
 	}
 
 	@Test
-	public void onStartupWhenHasEmptyBasePathShouldPrefixWithSlash()
-			throws ServletException {
+	void onStartupWhenHasEmptyBasePathShouldPrefixWithSlash() throws ServletException {
 		assertBasePath("", "/test/*");
 	}
 
 	@Test
-	public void onStartupWhenHasRootBasePathShouldNotAddDuplicateSlash()
-			throws ServletException {
+	void onStartupWhenHasRootBasePathShouldNotAddDuplicateSlash() throws ServletException {
 		assertBasePath("/", "/test/*");
 	}
 
-	private void assertBasePath(String basePath, String expectedMapping)
-			throws ServletException {
-		ExposableServletEndpoint endpoint = mockEndpoint(
-				new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath,
-				Collections.singleton(endpoint));
+	private void assertBasePath(String basePath, String expectedMapping) throws ServletException {
+		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath, Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
-		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"),
-				this.servlet.capture());
+		verify(this.servletContext).addServlet(eq("test-actuator-endpoint"), this.servlet.capture());
 		assertThat(this.servlet.getValue()).isInstanceOf(TestServlet.class);
 		verify(this.dynamic).addMapping(expectedMapping);
 	}
 
 	@Test
-	public void onStartupWhenHasInitParametersShouldRegisterInitParameters()
-			throws Exception {
+	void onStartupWhenHasInitParametersShouldRegisterInitParameters() throws Exception {
 		ExposableServletEndpoint endpoint = mockEndpoint(
 				new EndpointServlet(TestServlet.class).withInitParameter("a", "b"));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
-				Collections.singleton(endpoint));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setInitParameters(Collections.singletonMap("a", "b"));
 	}
 
 	@Test
-	public void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup()
-			throws Exception {
-		ExposableServletEndpoint endpoint = mockEndpoint(
-				new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
-				Collections.singleton(endpoint));
+	void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup() throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setLoadOnStartup(7);
 	}
 
 	@Test
-	public void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue()
-			throws Exception {
-		ExposableServletEndpoint endpoint = mockEndpoint(
-				new EndpointServlet(TestServlet.class));
-		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator",
-				Collections.singleton(endpoint));
+	void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue() throws Exception {
+		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
+		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
 		verify(this.dynamic).setLoadOnStartup(-1);
 	}
@@ -150,7 +134,7 @@ public class ServletEndpointRegistrarTests {
 		return endpoint;
 	}
 
-	public static class TestServlet extends GenericServlet {
+	static class TestServlet extends GenericServlet {
 
 		@Override
 		public void service(ServletRequest req, ServletResponse res) {

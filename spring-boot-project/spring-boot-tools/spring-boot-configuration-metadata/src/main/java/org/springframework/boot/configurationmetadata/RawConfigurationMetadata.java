@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,13 +17,13 @@
 package org.springframework.boot.configurationmetadata;
 
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 /**
  * A raw metadata structure. Used to initialize a {@link ConfigurationMetadataRepository}.
  *
  * @author Stephane Nicoll
- * @since 1.3.0
  */
 class RawConfigurationMetadata {
 
@@ -33,8 +33,7 @@ class RawConfigurationMetadata {
 
 	private final List<ConfigurationMetadataHint> hints;
 
-	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources,
-			List<ConfigurationMetadataItem> items,
+	RawConfigurationMetadata(List<ConfigurationMetadataSource> sources, List<ConfigurationMetadataItem> items,
 			List<ConfigurationMetadataHint> hints) {
 		this.sources = new ArrayList<>(sources);
 		this.items = new ArrayList<>(items);
@@ -44,24 +43,25 @@ class RawConfigurationMetadata {
 		}
 	}
 
-	public List<ConfigurationMetadataSource> getSources() {
+	List<ConfigurationMetadataSource> getSources() {
 		return this.sources;
 	}
 
-	public ConfigurationMetadataSource getSource(String type) {
-		for (ConfigurationMetadataSource source : this.sources) {
-			if (type.equals(source.getType())) {
-				return source;
-			}
+	ConfigurationMetadataSource getSource(ConfigurationMetadataItem item) {
+		if (item.getSourceType() == null) {
+			return null;
 		}
-		return null;
+		return this.sources.stream()
+				.filter((candidate) -> item.getSourceType().equals(candidate.getType())
+						&& item.getId().startsWith(candidate.getGroupId()))
+				.max(Comparator.comparingInt((candidate) -> candidate.getGroupId().length())).orElse(null);
 	}
 
-	public List<ConfigurationMetadataItem> getItems() {
+	List<ConfigurationMetadataItem> getItems() {
 		return this.items;
 	}
 
-	public List<ConfigurationMetadataHint> getHints() {
+	List<ConfigurationMetadataHint> getHints() {
 		return this.hints;
 	}
 
@@ -72,10 +72,7 @@ class RawConfigurationMetadata {
 	 */
 	private void resolveName(ConfigurationMetadataItem item) {
 		item.setName(item.getId()); // fallback
-		if (item.getSourceType() == null) {
-			return;
-		}
-		ConfigurationMetadataSource source = getSource(item.getSourceType());
+		ConfigurationMetadataSource source = getSource(item);
 		if (source != null) {
 			String groupId = source.getGroupId();
 			String dottedPrefix = groupId + ".";

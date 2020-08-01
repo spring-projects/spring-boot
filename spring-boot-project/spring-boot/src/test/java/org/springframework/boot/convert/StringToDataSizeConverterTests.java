@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,9 @@
 
 package org.springframework.boot.convert;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.junit.runners.Parameterized;
-import org.junit.runners.Parameterized.Parameters;
+import java.util.stream.Stream;
+
+import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
@@ -35,91 +34,79 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Stephane Nicoll
  */
-@RunWith(Parameterized.class)
-public class StringToDataSizeConverterTests {
+class StringToDataSizeConverterTests {
 
-	private final ConversionService conversionService;
-
-	public StringToDataSizeConverterTests(String name,
-			ConversionService conversionService) {
-		this.conversionService = conversionService;
+	@ConversionServiceTest
+	void convertWhenSimpleBytesShouldReturnDataSize(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10B")).isEqualTo(DataSize.ofBytes(10));
+		assertThat(convert(conversionService, "+10B")).isEqualTo(DataSize.ofBytes(10));
+		assertThat(convert(conversionService, "-10B")).isEqualTo(DataSize.ofBytes(-10));
 	}
 
-	@Test
-	public void convertWhenSimpleBytesShouldReturnDataSize() {
-		assertThat(convert("10B")).isEqualTo(DataSize.ofBytes(10));
-		assertThat(convert("+10B")).isEqualTo(DataSize.ofBytes(10));
-		assertThat(convert("-10B")).isEqualTo(DataSize.ofBytes(-10));
+	@ConversionServiceTest
+	void convertWhenSimpleKilobytesShouldReturnDataSize(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10KB")).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(conversionService, "+10KB")).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(conversionService, "-10KB")).isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
-	@Test
-	public void convertWhenSimpleKilobytesShouldReturnDataSize() {
-		assertThat(convert("10KB")).isEqualTo(DataSize.ofKilobytes(10));
-		assertThat(convert("+10KB")).isEqualTo(DataSize.ofKilobytes(10));
-		assertThat(convert("-10KB")).isEqualTo(DataSize.ofKilobytes(-10));
+	@ConversionServiceTest
+	void convertWhenSimpleMegabytesShouldReturnDataSize(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10MB")).isEqualTo(DataSize.ofMegabytes(10));
+		assertThat(convert(conversionService, "+10MB")).isEqualTo(DataSize.ofMegabytes(10));
+		assertThat(convert(conversionService, "-10MB")).isEqualTo(DataSize.ofMegabytes(-10));
 	}
 
-	@Test
-	public void convertWhenSimpleMegabytesShouldReturnDataSize() {
-		assertThat(convert("10MB")).isEqualTo(DataSize.ofMegabytes(10));
-		assertThat(convert("+10MB")).isEqualTo(DataSize.ofMegabytes(10));
-		assertThat(convert("-10MB")).isEqualTo(DataSize.ofMegabytes(-10));
+	@ConversionServiceTest
+	void convertWhenSimpleGigabytesShouldReturnDataSize(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10GB")).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(convert(conversionService, "+10GB")).isEqualTo(DataSize.ofGigabytes(10));
+		assertThat(convert(conversionService, "-10GB")).isEqualTo(DataSize.ofGigabytes(-10));
 	}
 
-	@Test
-	public void convertWhenSimpleGigabytesShouldReturnDataSize() {
-		assertThat(convert("10GB")).isEqualTo(DataSize.ofGigabytes(10));
-		assertThat(convert("+10GB")).isEqualTo(DataSize.ofGigabytes(10));
-		assertThat(convert("-10GB")).isEqualTo(DataSize.ofGigabytes(-10));
+	@ConversionServiceTest
+	void convertWhenSimpleTerabytesShouldReturnDataSize(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10TB")).isEqualTo(DataSize.ofTerabytes(10));
+		assertThat(convert(conversionService, "+10TB")).isEqualTo(DataSize.ofTerabytes(10));
+		assertThat(convert(conversionService, "-10TB")).isEqualTo(DataSize.ofTerabytes(-10));
 	}
 
-	@Test
-	public void convertWhenSimpleTerabytesShouldReturnDataSize() {
-		assertThat(convert("10TB")).isEqualTo(DataSize.ofTerabytes(10));
-		assertThat(convert("+10TB")).isEqualTo(DataSize.ofTerabytes(10));
-		assertThat(convert("-10TB")).isEqualTo(DataSize.ofTerabytes(-10));
+	@ConversionServiceTest
+	void convertWhenSimpleWithoutSuffixShouldReturnDataSize(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10")).isEqualTo(DataSize.ofBytes(10));
+		assertThat(convert(conversionService, "+10")).isEqualTo(DataSize.ofBytes(10));
+		assertThat(convert(conversionService, "-10")).isEqualTo(DataSize.ofBytes(-10));
 	}
 
-	@Test
-	public void convertWhenSimpleWithoutSuffixShouldReturnDataSize() {
-		assertThat(convert("10")).isEqualTo(DataSize.ofBytes(10));
-		assertThat(convert("+10")).isEqualTo(DataSize.ofBytes(10));
-		assertThat(convert("-10")).isEqualTo(DataSize.ofBytes(-10));
+	@ConversionServiceTest
+	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDataSize(ConversionService conversionService) {
+		assertThat(convert(conversionService, "10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(conversionService, "+10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
+		assertThat(convert(conversionService, "-10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(-10));
 	}
 
-	@Test
-	public void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDataSize() {
-		assertThat(convert("10", DataUnit.KILOBYTES)).isEqualTo(DataSize.ofKilobytes(10));
-		assertThat(convert("+10", DataUnit.KILOBYTES))
-				.isEqualTo(DataSize.ofKilobytes(10));
-		assertThat(convert("-10", DataUnit.KILOBYTES))
-				.isEqualTo(DataSize.ofKilobytes(-10));
-	}
-
-	@Test
-	public void convertWhenBadFormatShouldThrowException() {
-		assertThatExceptionOfType(ConversionFailedException.class)
-				.isThrownBy(() -> convert("10WB"))
+	@ConversionServiceTest
+	void convertWhenBadFormatShouldThrowException(ConversionService conversionService) {
+		assertThatExceptionOfType(ConversionFailedException.class).isThrownBy(() -> convert(conversionService, "10WB"))
 				.withMessageContaining("'10WB' is not a valid data size");
 	}
 
-	@Test
-	public void convertWhenEmptyShouldReturnNull() {
-		assertThat(convert("")).isNull();
+	@ConversionServiceTest
+	void convertWhenEmptyShouldReturnNull(ConversionService conversionService) {
+		assertThat(convert(conversionService, "")).isNull();
 	}
 
-	private DataSize convert(String source) {
-		return this.conversionService.convert(source, DataSize.class);
+	private DataSize convert(ConversionService conversionService, String source) {
+		return conversionService.convert(source, DataSize.class);
 	}
 
-	private DataSize convert(String source, DataUnit unit) {
-		return (DataSize) this.conversionService.convert(source,
-				TypeDescriptor.forObject(source), MockDataSizeTypeDescriptor.get(unit));
+	private DataSize convert(ConversionService conversionService, String source, DataUnit unit) {
+		return (DataSize) conversionService.convert(source, TypeDescriptor.forObject(source),
+				MockDataSizeTypeDescriptor.get(unit));
 	}
 
-	@Parameters(name = "{0}")
-	public static Iterable<Object[]> conversionServices() {
-		return new ConversionServiceParameters(new StringToDataSizeConverter());
+	static Stream<? extends Arguments> conversionServices() {
+		return ConversionServiceArguments.with(new StringToDataSizeConverter());
 	}
 
 }

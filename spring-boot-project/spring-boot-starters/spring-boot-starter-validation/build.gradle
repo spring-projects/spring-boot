@@ -1,0 +1,11 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Java Bean Validation with Hibernate Validator"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.glassfish:jakarta.el")
+	api("org.hibernate.validator:hibernate-validator")
+}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -101,19 +101,20 @@ public @interface SpringBootTest {
 	 * @return the application arguments to pass to the application under test.
 	 * @see ApplicationArguments
 	 * @see SpringApplication#run(String...)
+	 * @since 2.2.0
 	 */
 	String[] args() default {};
 
 	/**
-	 * The <em>annotated classes</em> to use for loading an
+	 * The <em>component classes</em> to use for loading an
 	 * {@link org.springframework.context.ApplicationContext ApplicationContext}. Can also
 	 * be specified using
 	 * {@link ContextConfiguration#classes() @ContextConfiguration(classes=...)}. If no
 	 * explicit classes are defined the test will look for nested
 	 * {@link Configuration @Configuration} classes, before falling back to a
-	 * {@link SpringBootConfiguration} search.
+	 * {@link SpringBootConfiguration @SpringBootConfiguration} search.
 	 * @see ContextConfiguration#classes()
-	 * @return the annotated classes used to load the application context
+	 * @return the component classes used to load the application context
 	 */
 	Class<?>[] classes() default {};
 
@@ -141,7 +142,7 @@ public @interface SpringBootTest {
 		 * Creates a web application context (reactive or servlet based) and sets a
 		 * {@code server.port=0} {@link Environment} property (which usually triggers
 		 * listening on a random port). Often used in conjunction with a
-		 * {@link LocalServerPort} injected field on the test.
+		 * {@link LocalServerPort @LocalServerPort} injected field on the test.
 		 */
 		RANDOM_PORT(true),
 

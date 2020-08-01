@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,15 +28,13 @@ import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.Assert;
-import org.junit.rules.TemporaryFolder;
-
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.NestedConfigurationProperty;
 import org.springframework.boot.testsupport.compiler.TestCompiler;
 import org.springframework.boot.testsupport.compiler.TestCompiler.TestCompilationTask;
+import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.FileSystemUtils;
 
@@ -58,20 +56,21 @@ public class TestProject {
 	 * Contains copies of the original source so we can modify it safely to test
 	 * incremental builds.
 	 */
-	private File sourceFolder;
+	private File sourceDirectory;
 
 	private TestCompiler compiler;
 
 	private Set<File> sourceFiles = new LinkedHashSet<>();
 
-	public TestProject(TemporaryFolder tempFolder, Class<?>... classes)
-			throws IOException {
-		this.sourceFolder = tempFolder.newFolder();
-		this.compiler = new TestCompiler(tempFolder) {
+	public TestProject(File tempDirectory, Class<?>... classes) throws IOException {
+		this.sourceDirectory = new File(tempDirectory, "src");
+		this.compiler = new TestCompiler(new File(tempDirectory, "build")) {
+
 			@Override
-			protected File getSourceFolder() {
-				return TestProject.this.sourceFolder;
+			protected File getSourceDirectory() {
+				return TestProject.this.sourceDirectory;
 			}
+
 		};
 		Set<Class<?>> contents = new HashSet<>(Arrays.asList(classes));
 		contents.addAll(Arrays.asList(ALWAYS_INCLUDE));
@@ -93,14 +92,14 @@ public class TestProject {
 	}
 
 	public File getSourceFile(Class<?> type) {
-		return new File(this.sourceFolder, TestCompiler.sourcePathFor(type));
+		return new File(this.sourceDirectory, TestCompiler.sourcePathFor(type));
 	}
 
 	public ConfigurationMetadata fullBuild() {
 		TestConfigurationMetadataAnnotationProcessor processor = new TestConfigurationMetadataAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		TestCompilationTask task = this.compiler.getTask(this.sourceFiles);
-		deleteFolderContents(this.compiler.getOutputLocation());
+		deleteDirectoryContents(this.compiler.getOutputLocation());
 		task.call(processor);
 		return processor.getMetadata();
 	}
@@ -113,18 +112,18 @@ public class TestProject {
 		return processor.getMetadata();
 	}
 
-	private void deleteFolderContents(File outputFolder) {
-		FileSystemUtils.deleteRecursively(outputFolder);
-		outputFolder.mkdirs();
+	private void deleteDirectoryContents(File outputDirectory) {
+		FileSystemUtils.deleteRecursively(outputDirectory);
+		outputDirectory.mkdirs();
 	}
 
 	/**
-	 * Retrieve File relative to project's output folder.
+	 * Retrieve File relative to project's output directory.
 	 * @param relativePath the relative path
 	 * @return the output file
 	 */
 	public File getOutputFile(String relativePath) {
-		Assert.assertFalse(new File(relativePath).isAbsolute());
+		Assert.isTrue(!new File(relativePath).isAbsolute(), "'" + relativePath + "' was absolute");
 		return new File(this.compiler.getOutputLocation(), relativePath);
 	}
 
@@ -134,15 +133,12 @@ public class TestProject {
 	 * @param snippetStream the snippet stream
 	 * @throws Exception if the source cannot be added
 	 */
-	public void addSourceCode(Class<?> target, InputStream snippetStream)
-			throws Exception {
+	public void addSourceCode(Class<?> target, InputStream snippetStream) throws Exception {
 		File targetFile = getSourceFile(target);
 		String contents = getContents(targetFile);
 		int insertAt = contents.lastIndexOf('}');
-		String additionalSource = FileCopyUtils
-				.copyToString(new InputStreamReader(snippetStream));
-		contents = contents.substring(0, insertAt) + additionalSource
-				+ contents.substring(insertAt);
+		String additionalSource = FileCopyUtils.copyToString(new InputStreamReader(snippetStream));
+		contents = contents.substring(0, insertAt) + additionalSource + contents.substring(insertAt);
 		putContents(targetFile, contents);
 	}
 
@@ -162,7 +158,7 @@ public class TestProject {
 	 * @throws IOException on IO error
 	 */
 	public void revert(Class<?> type) throws IOException {
-		Assert.assertTrue(getSourceFile(type).exists());
+		Assert.isTrue(getSourceFile(type).exists(), "Source file for type '" + type + "' does not exist");
 		copySources(type);
 	}
 
@@ -172,7 +168,7 @@ public class TestProject {
 	 * @throws IOException on IO error
 	 */
 	public void add(Class<?> type) throws IOException {
-		Assert.assertFalse(getSourceFile(type).exists());
+		Assert.isTrue(!getSourceFile(type).exists(), "Source file for type '" + type + "' already exists");
 		copySources(type);
 	}
 
@@ -189,7 +185,7 @@ public class TestProject {
 	 * code.
 	 */
 	private File getOriginalSourceFile(Class<?> type) {
-		return new File(TestCompiler.SOURCE_FOLDER, TestCompiler.sourcePathFor(type));
+		return new File(TestCompiler.SOURCE_DIRECTORY, TestCompiler.sourcePathFor(type));
 	}
 
 	private static void putContents(File targetFile, String contents) throws IOException {

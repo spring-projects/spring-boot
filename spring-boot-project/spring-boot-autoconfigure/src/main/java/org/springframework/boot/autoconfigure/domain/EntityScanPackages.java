@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -23,11 +23,11 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.config.ConstructorArgumentValues;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
@@ -105,36 +105,17 @@ public class EntityScanPackages {
 	 * @param registry the source registry
 	 * @param packageNames the package names to register
 	 */
-	public static void register(BeanDefinitionRegistry registry,
-			Collection<String> packageNames) {
+	public static void register(BeanDefinitionRegistry registry, Collection<String> packageNames) {
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notNull(packageNames, "PackageNames must not be null");
 		if (registry.containsBeanDefinition(BEAN)) {
-			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
-			ConstructorArgumentValues constructorArguments = beanDefinition
-					.getConstructorArgumentValues();
-			constructorArguments.addIndexedArgumentValue(0,
-					addPackageNames(constructorArguments, packageNames));
+			EntityScanPackagesBeanDefinition beanDefinition = (EntityScanPackagesBeanDefinition) registry
+					.getBeanDefinition(BEAN);
+			beanDefinition.addPackageNames(packageNames);
 		}
 		else {
-			GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-			beanDefinition.setBeanClass(EntityScanPackages.class);
-			beanDefinition.getConstructorArgumentValues().addIndexedArgumentValue(0,
-					StringUtils.toStringArray(packageNames));
-			beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-			registry.registerBeanDefinition(BEAN, beanDefinition);
+			registry.registerBeanDefinition(BEAN, new EntityScanPackagesBeanDefinition(packageNames));
 		}
-	}
-
-	private static String[] addPackageNames(
-			ConstructorArgumentValues constructorArguments,
-			Collection<String> packageNames) {
-		String[] existing = (String[]) constructorArguments
-				.getIndexedArgumentValue(0, String[].class).getValue();
-		Set<String> merged = new LinkedHashSet<>();
-		merged.addAll(Arrays.asList(existing));
-		merged.addAll(packageNames);
-		return StringUtils.toStringArray(merged);
 	}
 
 	/**
@@ -144,28 +125,46 @@ public class EntityScanPackages {
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
 		@Override
-		public void registerBeanDefinitions(AnnotationMetadata metadata,
-				BeanDefinitionRegistry registry) {
+		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 			register(registry, getPackagesToScan(metadata));
 		}
 
 		private Set<String> getPackagesToScan(AnnotationMetadata metadata) {
-			AnnotationAttributes attributes = AnnotationAttributes.fromMap(
-					metadata.getAnnotationAttributes(EntityScan.class.getName()));
+			AnnotationAttributes attributes = AnnotationAttributes
+					.fromMap(metadata.getAnnotationAttributes(EntityScan.class.getName()));
 			String[] basePackages = attributes.getStringArray("basePackages");
-			Class<?>[] basePackageClasses = attributes
-					.getClassArray("basePackageClasses");
+			Class<?>[] basePackageClasses = attributes.getClassArray("basePackageClasses");
 			Set<String> packagesToScan = new LinkedHashSet<>(Arrays.asList(basePackages));
 			for (Class<?> basePackageClass : basePackageClasses) {
 				packagesToScan.add(ClassUtils.getPackageName(basePackageClass));
 			}
 			if (packagesToScan.isEmpty()) {
 				String packageName = ClassUtils.getPackageName(metadata.getClassName());
-				Assert.state(!StringUtils.isEmpty(packageName),
-						"@EntityScan cannot be used with the default package");
+				Assert.state(!StringUtils.isEmpty(packageName), "@EntityScan cannot be used with the default package");
 				return Collections.singleton(packageName);
 			}
 			return packagesToScan;
+		}
+
+	}
+
+	static class EntityScanPackagesBeanDefinition extends GenericBeanDefinition {
+
+		private Set<String> packageNames = new LinkedHashSet<>();
+
+		EntityScanPackagesBeanDefinition(Collection<String> packageNames) {
+			setBeanClass(EntityScanPackages.class);
+			setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			addPackageNames(packageNames);
+		}
+
+		@Override
+		public Supplier<?> getInstanceSupplier() {
+			return () -> new EntityScanPackages(StringUtils.toStringArray(this.packageNames));
+		}
+
+		private void addPackageNames(Collection<String> additionalPackageNames) {
+			this.packageNames.addAll(additionalPackageNames);
 		}
 
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -55,12 +55,12 @@ class TomcatEmbeddedContext extends StandardContext {
 	@Override
 	public void setManager(Manager manager) {
 		if (manager instanceof ManagerBase) {
-			((ManagerBase) manager).setSessionIdGenerator(new LazySessionIdGenerator());
+			manager.setSessionIdGenerator(new LazySessionIdGenerator());
 		}
 		super.setManager(manager);
 	}
 
-	public void deferredLoadOnStartup() throws LifecycleException {
+	void deferredLoadOnStartup() throws LifecycleException {
 		doWithThreadContextClassLoader(getLoader().getClassLoader(),
 				() -> getLoadOnStartupWrappers(findChildren()).forEach(this::load));
 	}
@@ -71,8 +71,7 @@ class TomcatEmbeddedContext extends StandardContext {
 			Wrapper wrapper = (Wrapper) child;
 			int order = wrapper.getLoadOnStartup();
 			if (order >= 0) {
-				grouped.computeIfAbsent(order, ArrayList::new);
-				grouped.get(order).add(wrapper);
+				grouped.computeIfAbsent(order, (o) -> new ArrayList<>()).add(wrapper);
 			}
 		}
 		return grouped.values().stream().flatMap(List::stream);
@@ -83,8 +82,7 @@ class TomcatEmbeddedContext extends StandardContext {
 			wrapper.load();
 		}
 		catch (ServletException ex) {
-			String message = sm.getString("standardContext.loadOnStartup.loadException",
-					getName(), wrapper.getName());
+			String message = sm.getString("standardContext.loadOnStartup.loadException", getName(), wrapper.getName());
 			if (getComputedFailCtxIfServletStartFails()) {
 				throw new WebServerException(message, ex);
 			}
@@ -102,8 +100,8 @@ class TomcatEmbeddedContext extends StandardContext {
 	 * @param code the code to run
 	 */
 	private void doWithThreadContextClassLoader(ClassLoader classLoader, Runnable code) {
-		ClassLoader existingLoader = (classLoader != null)
-				? ClassUtils.overrideThreadContextClassLoader(classLoader) : null;
+		ClassLoader existingLoader = (classLoader != null) ? ClassUtils.overrideThreadContextClassLoader(classLoader)
+				: null;
 		try {
 			code.run();
 		}
@@ -114,11 +112,11 @@ class TomcatEmbeddedContext extends StandardContext {
 		}
 	}
 
-	public void setStarter(TomcatStarter starter) {
+	void setStarter(TomcatStarter starter) {
 		this.starter = starter;
 	}
 
-	public TomcatStarter getStarter() {
+	TomcatStarter getStarter() {
 		return this.starter;
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -52,12 +52,12 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 	 * @param endpointMediaTypes media types consumed and produced by the endpoints
 	 * @param corsConfiguration the CORS configuration for the endpoints or {@code null}
 	 * @param linksResolver resolver for determining links to available endpoints
+	 * @param shouldRegisterLinksMapping whether the links endpoint should be registered
 	 */
-	public WebMvcEndpointHandlerMapping(EndpointMapping endpointMapping,
-			Collection<ExposableWebEndpoint> endpoints,
+	public WebMvcEndpointHandlerMapping(EndpointMapping endpointMapping, Collection<ExposableWebEndpoint> endpoints,
 			EndpointMediaTypes endpointMediaTypes, CorsConfiguration corsConfiguration,
-			EndpointLinksResolver linksResolver) {
-		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration);
+			EndpointLinksResolver linksResolver, boolean shouldRegisterLinksMapping) {
+		super(endpointMapping, endpoints, endpointMediaTypes, corsConfiguration, shouldRegisterLinksMapping);
 		this.linksResolver = linksResolver;
 		setOrder(-100);
 	}
@@ -74,11 +74,9 @@ public class WebMvcEndpointHandlerMapping extends AbstractWebMvcEndpointHandlerM
 
 		@Override
 		@ResponseBody
-		public Map<String, Map<String, Link>> links(HttpServletRequest request,
-				HttpServletResponse response) {
+		public Map<String, Map<String, Link>> links(HttpServletRequest request, HttpServletResponse response) {
 			return Collections.singletonMap("_links",
-					WebMvcEndpointHandlerMapping.this.linksResolver
-							.resolveLinks(request.getRequestURL().toString()));
+					WebMvcEndpointHandlerMapping.this.linksResolver.resolveLinks(request.getRequestURL().toString()));
 		}
 
 		@Override

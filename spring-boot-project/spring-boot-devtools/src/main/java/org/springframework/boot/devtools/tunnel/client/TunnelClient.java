@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -88,7 +89,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 			ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
 			int port = serverSocketChannel.socket().getLocalPort();
-			logger.trace("Listening for TCP traffic to tunnel on port " + port);
+			logger.trace(LogMessage.format("Listening for TCP traffic to tunnel on port %s", port));
 			this.serverThread = new ServerThread(serverSocketChannel);
 			this.serverThread.start();
 			return port;
@@ -144,8 +145,8 @@ public class TunnelClient implements SmartInitializingSingleton {
 		}
 
 		public void close() throws IOException {
-			logger.trace("Closing tunnel client on port "
-					+ this.serverSocketChannel.socket().getLocalPort());
+			logger.trace(LogMessage.format("Closing tunnel client on port %s",
+					this.serverSocketChannel.socket().getLocalPort()));
 			this.serverSocketChannel.close();
 			this.acceptConnections = false;
 			interrupt();
@@ -171,10 +172,10 @@ public class TunnelClient implements SmartInitializingSingleton {
 		private void handleConnection(SocketChannel socketChannel) throws Exception {
 			Closeable closeable = new SocketCloseable(socketChannel);
 			TunnelClient.this.listeners.fireOpenEvent(socketChannel);
-			try (WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection
-					.open(socketChannel, closeable)) {
-				logger.trace("Accepted connection to tunnel client from "
-						+ socketChannel.socket().getRemoteSocketAddress());
+			try (WritableByteChannel outputChannel = TunnelClient.this.tunnelConnection.open(socketChannel,
+					closeable)) {
+				logger.trace(
+						"Accepted connection to tunnel client from " + socketChannel.socket().getRemoteSocketAddress());
 				while (true) {
 					ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 					int amountRead = socketChannel.read(buffer);

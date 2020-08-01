@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,12 +17,11 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.io.File;
-import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
@@ -30,6 +29,7 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.boot.web.servlet.server.Jsp;
@@ -47,38 +47,43 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Yunkun Huang
  */
-public class ServletWebServerFactoryCustomizerTests {
+class ServletWebServerFactoryCustomizerTests {
 
 	private final ServerProperties properties = new ServerProperties();
 
 	private ServletWebServerFactoryCustomizer customizer;
 
-	@Before
-	public void setup() {
+	@BeforeEach
+	void setup() {
 		this.customizer = new ServletWebServerFactoryCustomizer(this.properties);
 	}
 
 	@Test
-	public void testDefaultDisplayName() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+	void testDefaultDisplayName() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("application");
 	}
 
 	@Test
-	public void testCustomizeDisplayName() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+	void testCustomizeDisplayName() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.getServlet().setApplicationDisplayName("TestName");
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("TestName");
 	}
 
 	@Test
-	public void testCustomizeSsl() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+	void testCustomizeDefaultServlet() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.properties.getServlet().setRegisterDefaultServlet(false);
+		this.customizer.customize(factory);
+		verify(factory).setRegisterDefaultServlet(false);
+	}
+
+	@Test
+	void testCustomizeSsl() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		Ssl ssl = mock(Ssl.class);
 		this.properties.setSsl(ssl);
 		this.customizer.customize(factory);
@@ -86,15 +91,14 @@ public class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	public void testCustomizeJsp() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+	void testCustomizeJsp() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setJsp(any(Jsp.class));
 	}
 
 	@Test
-	public void customizeSessionProperties() throws Exception {
+	void customizeSessionProperties() throws Exception {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.timeout", "123");
 		map.put("server.servlet.session.tracking-modes", "cookie,url");
@@ -106,63 +110,69 @@ public class ServletWebServerFactoryCustomizerTests {
 		map.put("server.servlet.session.cookie.secure", "true");
 		map.put("server.servlet.session.cookie.max-age", "60");
 		bindProperties(map);
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getTimeout())
-				.isEqualTo(Duration.ofSeconds(123));
+		assertThat(sessionCaptor.getValue().getTimeout()).hasSeconds(123);
 		Cookie cookie = sessionCaptor.getValue().getCookie();
 		assertThat(cookie.getName()).isEqualTo("testname");
 		assertThat(cookie.getDomain()).isEqualTo("testdomain");
 		assertThat(cookie.getPath()).isEqualTo("/testpath");
 		assertThat(cookie.getComment()).isEqualTo("testcomment");
 		assertThat(cookie.getHttpOnly()).isTrue();
-		assertThat(cookie.getMaxAge()).isEqualTo(Duration.ofSeconds(60));
+		assertThat(cookie.getMaxAge()).hasSeconds(60);
 
 	}
 
 	@Test
-	public void testCustomizeTomcatPort() {
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+	void testCustomizeTomcatPort() {
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.properties.setPort(8080);
 		this.customizer.customize(factory);
 		verify(factory).setPort(8080);
 	}
 
 	@Test
-	public void customizeServletDisplayName() {
+	void customizeServletDisplayName() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.application-display-name", "MyBootApp");
 		bindProperties(map);
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setDisplayName("MyBootApp");
 	}
 
 	@Test
-	public void testCustomizeTomcatMinSpareThreads() {
+	void testCustomizeTomcatMinSpareThreads() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.tomcat.min-spare-threads", "10");
+		map.put("server.tomcat.threads.min-spare", "10");
 		bindProperties(map);
-		assertThat(this.properties.getTomcat().getMinSpareThreads()).isEqualTo(10);
+		assertThat(this.properties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
 	}
 
 	@Test
-	public void sessionStoreDir() {
+	void sessionStoreDir() {
 		Map<String, String> map = new HashMap<>();
-		map.put("server.servlet.session.store-dir", "myfolder");
+		map.put("server.servlet.session.store-dir", "mydirectory");
 		bindProperties(map);
-		ConfigurableServletWebServerFactory factory = mock(
-				ConfigurableServletWebServerFactory.class);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getStoreDir())
-				.isEqualTo(new File("myfolder"));
+		assertThat(sessionCaptor.getValue().getStoreDir()).isEqualTo(new File("mydirectory"));
+	}
+
+	@Test
+	void whenShutdownPropertyIsSetThenShutdownIsCustomized() {
+		Map<String, String> map = new HashMap<>();
+		map.put("server.shutdown", "graceful");
+		bindProperties(map);
+		ConfigurableServletWebServerFactory factory = mock(ConfigurableServletWebServerFactory.class);
+		this.customizer.customize(factory);
+		ArgumentCaptor<Shutdown> shutdownCaptor = ArgumentCaptor.forClass(Shutdown.class);
+		verify(factory).setShutdown(shutdownCaptor.capture());
+		assertThat(shutdownCaptor.getValue()).isEqualTo(Shutdown.GRACEFUL);
 	}
 
 	private void bindProperties(Map<String, String> map) {

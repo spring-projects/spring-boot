@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -84,11 +84,11 @@ public class HttpTunnelPayload {
 		headers.setContentLength(this.data.remaining());
 		headers.add(SEQ_HEADER, Long.toString(getSequence()));
 		headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-		WritableByteChannel body = Channels.newChannel(message.getBody());
-		while (this.data.hasRemaining()) {
-			body.write(this.data);
+		try (WritableByteChannel body = Channels.newChannel(message.getBody())) {
+			while (this.data.hasRemaining()) {
+				body.write(this.data);
+			}
 		}
-		body.close();
 	}
 
 	/**
@@ -117,14 +117,14 @@ public class HttpTunnelPayload {
 		}
 		String seqHeader = message.getHeaders().getFirst(SEQ_HEADER);
 		Assert.state(StringUtils.hasLength(seqHeader), "Missing sequence header");
-		ReadableByteChannel body = Channels.newChannel(message.getBody());
-		ByteBuffer payload = ByteBuffer.allocate((int) length);
-		while (payload.hasRemaining()) {
-			body.read(payload);
+		try (ReadableByteChannel body = Channels.newChannel(message.getBody())) {
+			ByteBuffer payload = ByteBuffer.allocate((int) length);
+			while (payload.hasRemaining()) {
+				body.read(payload);
+			}
+			payload.flip();
+			return new HttpTunnelPayload(Long.parseLong(seqHeader), payload);
 		}
-		body.close();
-		payload.flip();
-		return new HttpTunnelPayload(Long.valueOf(seqHeader), payload);
 	}
 
 	/**
@@ -134,8 +134,7 @@ public class HttpTunnelPayload {
 	 * @return payload data or {@code null}
 	 * @throws IOException in case of I/O errors
 	 */
-	public static ByteBuffer getPayloadData(ReadableByteChannel channel)
-			throws IOException {
+	public static ByteBuffer getPayloadData(ReadableByteChannel channel) throws IOException {
 		ByteBuffer buffer = ByteBuffer.allocate(BUFFER_SIZE);
 		try {
 			int amountRead = channel.read(buffer);

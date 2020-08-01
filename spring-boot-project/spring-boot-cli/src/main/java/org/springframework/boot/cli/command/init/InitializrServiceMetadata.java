@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,7 +30,6 @@ import org.json.JSONObject;
  * Define the metadata available for a particular service instance.
  *
  * @author Stephane Nicoll
- * @since 1.2.0
  */
 class InitializrServiceMetadata {
 
@@ -70,8 +69,7 @@ class InitializrServiceMetadata {
 	InitializrServiceMetadata(ProjectType defaultProjectType) {
 		this.dependencies = new HashMap<>();
 		this.projectTypes = new MetadataHolder<>();
-		this.projectTypes.getContent().put(defaultProjectType.getId(),
-				defaultProjectType);
+		this.projectTypes.getContent().put(defaultProjectType.getId(), defaultProjectType);
 		this.projectTypes.setDefaultItem(defaultProjectType);
 		this.defaults = new HashMap<>();
 	}
@@ -80,7 +78,7 @@ class InitializrServiceMetadata {
 	 * Return the dependencies supported by the service.
 	 * @return the supported dependencies
 	 */
-	public Collection<Dependency> getDependencies() {
+	Collection<Dependency> getDependencies() {
 		return this.dependencies.values();
 	}
 
@@ -90,7 +88,7 @@ class InitializrServiceMetadata {
 	 * @param id the id
 	 * @return the dependency or {@code null}
 	 */
-	public Dependency getDependency(String id) {
+	Dependency getDependency(String id) {
 		return this.dependencies.get(id);
 	}
 
@@ -98,7 +96,7 @@ class InitializrServiceMetadata {
 	 * Return the project types supported by the service.
 	 * @return the supported project types
 	 */
-	public Map<String, ProjectType> getProjectTypes() {
+	Map<String, ProjectType> getProjectTypes() {
 		return this.projectTypes.getContent();
 	}
 
@@ -107,7 +105,7 @@ class InitializrServiceMetadata {
 	 * default.
 	 * @return the default project type or {@code null}
 	 */
-	public ProjectType getDefaultType() {
+	ProjectType getDefaultType() {
 		if (this.projectTypes.getDefaultItem() != null) {
 			return this.projectTypes.getDefaultItem();
 		}
@@ -122,12 +120,11 @@ class InitializrServiceMetadata {
 	 * Returns the defaults applicable to the service.
 	 * @return the defaults of the service
 	 */
-	public Map<String, String> getDefaults() {
+	Map<String, String> getDefaults() {
 		return this.defaults;
 	}
 
-	private Map<String, Dependency> parseDependencies(JSONObject root)
-			throws JSONException {
+	private Map<String, Dependency> parseDependencies(JSONObject root) throws JSONException {
 		Map<String, Dependency> result = new HashMap<>();
 		if (!root.has(DEPENDENCIES_EL)) {
 			return result;
@@ -141,16 +138,14 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root)
-			throws JSONException {
+	private MetadataHolder<String, ProjectType> parseProjectTypes(JSONObject root) throws JSONException {
 		MetadataHolder<String, ProjectType> result = new MetadataHolder<>();
 		if (!root.has(TYPE_EL)) {
 			return result;
 		}
 		JSONObject type = root.getJSONObject(TYPE_EL);
 		JSONArray array = type.getJSONArray(VALUES_EL);
-		String defaultType = (type.has(DEFAULT_ATTRIBUTE)
-				? type.getString(DEFAULT_ATTRIBUTE) : null);
+		String defaultType = (type.has(DEFAULT_ATTRIBUTE) ? type.getString(DEFAULT_ATTRIBUTE) : null);
 		for (int i = 0; i < array.length(); i++) {
 			JSONObject typeJson = array.getJSONObject(i);
 			ProjectType projectType = parseType(typeJson, defaultType);
@@ -178,8 +173,7 @@ class InitializrServiceMetadata {
 		return result;
 	}
 
-	private void parseGroup(JSONObject group, Map<String, Dependency> dependencies)
-			throws JSONException {
+	private void parseGroup(JSONObject group, Map<String, Dependency> dependencies) throws JSONException {
 		if (group.has(VALUES_EL)) {
 			JSONArray content = group.getJSONArray(VALUES_EL);
 			for (int i = 0; i < content.length(); i++) {
@@ -196,8 +190,7 @@ class InitializrServiceMetadata {
 		return new Dependency(id, name, description);
 	}
 
-	private ProjectType parseType(JSONObject object, String defaultId)
-			throws JSONException {
+	private ProjectType parseType(JSONObject object, String defaultId) throws JSONException {
 		String id = getStringValue(object, ID_ATTRIBUTE, null);
 		String name = getStringValue(object, NAME_ATTRIBUTE, null);
 		String action = getStringValue(object, ACTION_ATTRIBUTE, null);
@@ -210,8 +203,7 @@ class InitializrServiceMetadata {
 		return new ProjectType(id, name, action, defaultType, tags);
 	}
 
-	private String getStringValue(JSONObject object, String name, String defaultValue)
-			throws JSONException {
+	private String getStringValue(JSONObject object, String name, String defaultValue) throws JSONException {
 		return object.has(name) ? object.getString(name) : defaultValue;
 	}
 
@@ -237,15 +229,15 @@ class InitializrServiceMetadata {
 			this.content = new HashMap<>();
 		}
 
-		public Map<K, T> getContent() {
+		Map<K, T> getContent() {
 			return this.content;
 		}
 
-		public T getDefaultItem() {
+		T getDefaultItem() {
 			return this.defaultItem;
 		}
 
-		public void setDefaultItem(T defaultItem) {
+		void setDefaultItem(T defaultItem) {
 			this.defaultItem = defaultItem;
 		}
 

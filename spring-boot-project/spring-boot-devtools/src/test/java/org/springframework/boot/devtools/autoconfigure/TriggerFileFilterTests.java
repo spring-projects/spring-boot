@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,9 +18,8 @@ package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -30,32 +29,35 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public class TriggerFileFilterTests {
+class TriggerFileFilterTests {
 
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	@Test
-	public void nameMustNotBeNull() {
+	void nameMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(() -> new TriggerFileFilter(null))
 				.withMessageContaining("Name must not be null");
 	}
 
 	@Test
-	public void acceptNameMatch() throws Exception {
-		File file = this.temp.newFile("thefile.txt");
+	void acceptNameMatch() throws Exception {
+		File file = new File(this.tempDir, "thefile.txt");
+		file.createNewFile();
 		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isTrue();
 	}
 
 	@Test
-	public void doesNotAcceptNameMismatch() throws Exception {
-		File file = this.temp.newFile("notthefile.txt");
+	void doesNotAcceptNameMismatch() throws Exception {
+		File file = new File(this.tempDir, "notthefile.txt");
+		file.createNewFile();
 		assertThat(new TriggerFileFilter("thefile.txt").accept(file)).isFalse();
 	}
 
 	@Test
-	public void testName() throws Exception {
-		File file = this.temp.newFile(".triggerfile").getAbsoluteFile();
+	void testName() throws Exception {
+		File file = new File(this.tempDir, ".triggerfile");
+		file.createNewFile();
 		assertThat(new TriggerFileFilter(".triggerfile").accept(file)).isTrue();
 	}
 

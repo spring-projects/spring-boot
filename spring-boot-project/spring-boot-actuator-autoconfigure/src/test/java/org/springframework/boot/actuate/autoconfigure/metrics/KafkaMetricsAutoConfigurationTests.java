@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,15 +16,20 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
-import io.micrometer.core.instrument.binder.kafka.KafkaConsumerMetrics;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.kafka.annotation.EnableKafkaStreams;
+import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
+import org.springframework.kafka.core.DefaultKafkaProducerFactory;
+import org.springframework.kafka.core.MicrometerConsumerListener;
+import org.springframework.kafka.core.MicrometerProducerListener;
+import org.springframework.kafka.streams.KafkaStreamsMicrometerListener;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -32,45 +37,61 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link KafkaMetricsAutoConfiguration}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
+ * @author Eddú Meléndez
  */
-public class KafkaMetricsAutoConfigurationTests {
+class KafkaMetricsAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.with(MetricsRun.simple()).withPropertyValues("spring.jmx.enabled=true")
-			.withConfiguration(
-					AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(KafkaMetricsAutoConfiguration.class));
 
 	@Test
-	public void whenThereIsNoMBeanServerAutoConfigurationBacksOff() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.doesNotHaveBean(KafkaConsumerMetrics.class));
+	void whenThereIsAMeterRegistryThenMetricsListenersAreAdded() {
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class)).run((context) -> {
+					assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
+							.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerProducerListener.class);
+					assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
+							.getListeners()).hasSize(1).hasOnlyElementsOfTypes(MicrometerConsumerListener.class);
+				});
 	}
 
 	@Test
-	public void whenThereIsAnMBeanServerKafkaConsumerMetricsIsConfigured() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
-				.run((context) -> assertThat(context)
-						.hasSingleBean(KafkaConsumerMetrics.class));
+	void whenThereIsNoMeterRegistryThenListenerCustomizationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class)).run((context) -> {
+			assertThat(((DefaultKafkaProducerFactory<?, ?>) context.getBean(DefaultKafkaProducerFactory.class))
+					.getListeners()).isEmpty();
+			assertThat(((DefaultKafkaConsumerFactory<?, ?>) context.getBean(DefaultKafkaConsumerFactory.class))
+					.getListeners()).isEmpty();
+		});
 	}
 
 	@Test
-	public void allowsCustomKafkaConsumerMetricsToBeUsed() {
-		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class))
-				.withUserConfiguration(CustomKafkaConsumerMetricsConfiguration.class)
-				.run((context) -> assertThat(context)
-						.hasSingleBean(KafkaConsumerMetrics.class)
-						.hasBean("customKafkaConsumerMetrics"));
+	void whenKafkaStreamsIsEnabledAndThereIsAMeterRegistryThenMetricsListenersAreAdded() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
+				.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.application.name=my-test-app").with(MetricsRun.simple()).run((context) -> {
+					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
+							.getBean(StreamsBuilderFactoryBean.class);
+					assertThat(streamsBuilderFactoryBean.getListeners()).hasSize(1)
+							.hasOnlyElementsOfTypes(KafkaStreamsMicrometerListener.class);
+				});
 	}
 
-	@Configuration
-	static class CustomKafkaConsumerMetricsConfiguration {
+	@Test
+	void whenKafkaStreamsIsEnabledAndThereIsNoMeterRegistryThenListenerCustomizationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(KafkaAutoConfiguration.class))
+				.withUserConfiguration(EnableKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.application.name=my-test-app").run((context) -> {
+					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
+							.getBean(StreamsBuilderFactoryBean.class);
+					assertThat(streamsBuilderFactoryBean.getListeners()).isEmpty();
+				});
+	}
 
-		@Bean
-		public KafkaConsumerMetrics customKafkaConsumerMetrics() {
-			return new KafkaConsumerMetrics();
-		}
+	@Configuration(proxyBeanMethods = false)
+	@EnableKafkaStreams
+	static class EnableKafkaStreamsConfiguration {
 
 	}
 

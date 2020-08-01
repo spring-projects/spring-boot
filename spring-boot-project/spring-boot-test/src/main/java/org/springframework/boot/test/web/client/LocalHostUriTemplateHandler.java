@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,8 +70,7 @@ public class LocalHostUriTemplateHandler extends RootUriTemplateHandler {
 	 * @param handler the delegate handler
 	 * @since 2.0.3
 	 */
-	public LocalHostUriTemplateHandler(Environment environment, String scheme,
-			UriTemplateHandler handler) {
+	public LocalHostUriTemplateHandler(Environment environment, String scheme, UriTemplateHandler handler) {
 		super(handler);
 		Assert.notNull(environment, "Environment must not be null");
 		Assert.notNull(scheme, "Scheme must not be null");

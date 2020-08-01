@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,11 +16,11 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.io.File;
 import java.io.IOException;
 
-import org.junit.Before;
-import org.junit.Rule;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.test.TestConfigurationMetadataAnnotationProcessor;
@@ -33,14 +33,14 @@ import org.springframework.boot.testsupport.compiler.TestCompiler;
  */
 public abstract class AbstractMetadataGenerationTests {
 
-	@Rule
-	public TemporaryFolder temporaryFolder = new TemporaryFolder();
+	@TempDir
+	File tempDir;
 
 	private TestCompiler compiler;
 
-	@Before
-	public void createCompiler() throws IOException {
-		this.compiler = new TestCompiler(this.temporaryFolder);
+	@BeforeEach
+	void createCompiler() throws IOException {
+		this.compiler = new TestCompiler(this.tempDir);
 	}
 
 	protected TestCompiler getCompiler() {

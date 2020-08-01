@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -21,7 +21,7 @@ import javax.jms.ConnectionFactory;
 import javax.jms.ConnectionMetaData;
 import javax.jms.JMSException;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 
@@ -41,10 +41,10 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  */
-public class JmsHealthIndicatorTests {
+class JmsHealthIndicatorTests {
 
 	@Test
-	public void jmsBrokerIsUp() throws JMSException {
+	void jmsBrokerIsUp() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);
@@ -59,10 +59,9 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void jmsBrokerIsDown() throws JMSException {
+	void jmsBrokerIsDown() throws JMSException {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
-		given(connectionFactory.createConnection())
-				.willThrow(new JMSException("test", "123"));
+		given(connectionFactory.createConnection()).willThrow(new JMSException("test", "123"));
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
@@ -70,10 +69,9 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void jmsBrokerCouldNotRetrieveProviderMetadata() throws JMSException {
+	void jmsBrokerCouldNotRetrieveProviderMetadata() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
-		given(connectionMetaData.getJMSProviderName())
-				.willThrow(new JMSException("test", "123"));
+		given(connectionMetaData.getJMSProviderName()).willThrow(new JMSException("test", "123"));
 		Connection connection = mock(Connection.class);
 		given(connection.getMetaData()).willReturn(connectionMetaData);
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
@@ -86,7 +84,7 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void jmsBrokerUsesFailover() throws JMSException {
+	void jmsBrokerUsesFailover() throws JMSException {
 		ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
@@ -101,7 +99,7 @@ public class JmsHealthIndicatorTests {
 	}
 
 	@Test
-	public void whenConnectionStartIsUnresponsiveStatusIsDown() throws JMSException {
+	void whenConnectionStartIsUnresponsiveStatusIsDown() throws JMSException {
 		ConnectionMetaData connectionMetaData = mock(ConnectionMetaData.class);
 		given(connectionMetaData.getJMSProviderName()).willReturn("JMS test provider");
 		Connection connection = mock(Connection.class);
@@ -116,8 +114,7 @@ public class JmsHealthIndicatorTests {
 		JmsHealthIndicator indicator = new JmsHealthIndicator(connectionFactory);
 		Health health = indicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat((String) health.getDetails().get("error"))
-				.contains("Connection closed");
+		assertThat((String) health.getDetails().get("error")).contains("Connection closed");
 	}
 
 	private static final class UnresponsiveStartAnswer implements Answer<Void> {

@@ -4,15 +4,15 @@
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
-    xmlns:maven="http://www.eclipse.org/oomph/setup/maven/1.0"
+    xmlns:oomph="http://www.eclipse.org/buildship/oomph/1.0"
     xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
-    name="spring.boot"
-    label="Spring Boot">
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/buildship/oomph/1.0 https://raw.githubusercontent.com/eclipse/buildship/master/org.eclipse.buildship.oomph/model/GradleImport-1.0.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
+    name="spring.boot.2.4.x"
+    label="Spring Boot 2.4.x">
   <setupTask
       xsi:type="setup:VariableTask"
       type="FOLDER"
@@ -55,13 +55,9 @@
   <setupTask
       xsi:type="setup.p2:P2Task">
     <requirement
-        name="epp.package.java"/>
-    <requirement
         name="org.eclipse.platform.feature.group"/>
     <requirement
         name="org.eclipse.jdt.feature.group"/>
-    <requirement
-        name="AnyEditTools.feature.group"/>
     <requirement
         name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
@@ -71,42 +67,47 @@
     <requirement
         name="org.eclipse.jst.server_ui.feature.feature.group"/>
     <requirement
-        name="org.eclipse.wst.server_adapters.feature.feature.group"/>
-    <requirement
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.m2e.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.oomph.setup.maven.feature.group"/>
+    <requirement
+        name="org.eclipse.oomph.setup.workingsets.feature.group"/>
+    <requirement
+        name="org.eclipse.wst.server_adapters.feature.feature.group"/>
     <requirement
         name="org.eclipse.wst.web_ui.feature.feature.group"/>
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <requirement
-        name="org.springframework.ide.eclipse.boot.feature.feature.group"/>
-    <repository
-        url="http://download.eclipse.org/technology/epp/packages/oxygen/R/"/>
-    <repository
-        url="http://download.eclipse.org/releases/oxygen/"/>
-    <repository
-        url="http://andrei.gmxhome.de/eclipse/"/>
+        name="org.springframework.boot.ide.main.feature.feature.group"/>
+    <requirement
+        name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
+    <requirement
+        name="org.springframework.tooling.boot.ls.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.buildship.feature.group"/>
+    <requirement
+        name="org.eclipse.buildship.oomph.feature.group"/>
     <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
-        url="http://download.eclipse.org/egit/github/updates/"/>
+        url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
-        url="http://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201207090124/"/>
+        url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
     <repository
-        url="http://dist.springsource.com/release/TOOLS/update/e4.7"/>
+        url="https://download.eclipse.org/buildship/updates/e411/releases/"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
     </description>
   </setupTask>
   <setupTask
-      xsi:type="maven:MavenImportTask">
+      xsi:type="oomph:GradleImportTask">
     <sourceLocator
         rootFolder="${checkout.location}"
-        locateNestedProjects="true">
-        <excludedPath>spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin</excludedPath>
-    </sourceLocator>
-    <description></description>
+        locateNestedProjects="true"/>
   </setupTask>
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">
@@ -126,38 +127,44 @@
         name="spring-boot-tools">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|.*-plugin|autoconfigure-processor)"/>
+          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|.*-layertools|.*-plugin|autoconfigure-processor|buildpack.*)"/>
     </workingSet>
     <workingSet
         name="spring-boot-starters">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-starter(s|-.*)"/>
+          xsi:type="predicates:OrPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-starter(s|-.*)"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-starter"/>
+      </predicate>
     </workingSet>
     <workingSet
-        name="spring-boot-samples">
+        name="spring-boot-smoke-tests">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-sample(s|-.*)"/>
+          xsi:type="predicates:OrPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-smoke-test(s|-.*)"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-smoke-tests-invoker"/>
+      </predicate>
     </workingSet>
     <workingSet
         name="spring-boot-tests">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-.*-test.*"/>
+          xsi:type="predicates:AndPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-(.*-test|tests).*"/>
+        <operand
+            xsi:type="workingsets:ExclusionPredicate"
+            excludedWorkingSet="//@setupTasks.7/@workingSets.3"/>
+      </predicate>
     </workingSet>
-  </setupTask>
-  <setupTask
-      xsi:type="setup:CompoundTask"
-      name="de.loskutov.anyedit.AnyEditTools">
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/de.loskutov.anyedit.AnyEditTools/org.eclipse.jdt.ui.editor.tab.width"
-        value="4"/>
-    <setupTask
-        xsi:type="setup:PreferenceTask"
-        key="/instance/de.loskutov.anyedit.AnyEditTools/saveAndAddLine"
-        value="true"/>
   </setupTask>
   <setupTask
       xsi:type="setup:CompoundTask"
@@ -253,7 +260,7 @@
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.editors/printMarginColumn"
-        value="90"/>
+        value="120"/>
     <setupTask
         xsi:type="setup:PreferenceTask"
         key="/instance/org.eclipse.ui.editors/lineNumberRuler"

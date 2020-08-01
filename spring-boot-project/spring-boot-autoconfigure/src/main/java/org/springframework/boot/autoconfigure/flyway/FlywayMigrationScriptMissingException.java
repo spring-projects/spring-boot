@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -31,9 +31,8 @@ public class FlywayMigrationScriptMissingException extends RuntimeException {
 	private final List<String> locations;
 
 	FlywayMigrationScriptMissingException(List<String> locations) {
-		super(locations.isEmpty() ? "Migration script locations not configured"
-				: "Cannot find migrations location in: " + locations
-						+ " (please add migrations or check your Flyway configuration)");
+		super(locations.isEmpty() ? "Migration script locations not configured" : "Cannot find migration scripts in: "
+				+ locations + " (please add migration scripts or check your Flyway configuration)");
 		this.locations = new ArrayList<>(locations);
 	}
 

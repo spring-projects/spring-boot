@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -81,8 +81,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 					"An error occurred while processing a CUSTOM type filter: ");
 			return BeanUtils.instantiateClass(filterClass, TypeFilter.class);
 		}
-		throw new IllegalArgumentException(
-				"Filter type not supported with Class value: " + filterType);
+		throw new IllegalArgumentException("Filter type not supported with Class value: " + filterType);
 	}
 
 	private TypeFilter createTypeFilter(FilterType filterType, String pattern) {
@@ -92,8 +91,7 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 		case REGEX:
 			return new RegexPatternTypeFilter(Pattern.compile(pattern));
 		}
-		throw new IllegalArgumentException(
-				"Filter type not supported with String pattern: " + filterType);
+		throw new IllegalArgumentException("Filter type not supported with String pattern: " + filterType);
 	}
 
 	@Override
@@ -101,8 +99,8 @@ public class FilterAnnotations implements Iterable<TypeFilter> {
 		return this.filters.iterator();
 	}
 
-	public boolean anyMatches(MetadataReader metadataReader,
-			MetadataReaderFactory metadataReaderFactory) throws IOException {
+	public boolean anyMatches(MetadataReader metadataReader, MetadataReaderFactory metadataReaderFactory)
+			throws IOException {
 		for (TypeFilter filter : this) {
 			if (filter.match(metadataReader, metadataReaderFactory)) {
 				return true;

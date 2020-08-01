@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.audit;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.audit.AuditEvent;
 import org.springframework.boot.actuate.audit.AuditEventRepository;
-import org.springframework.boot.actuate.audit.InMemoryAuditEventRepository;
 import org.springframework.boot.actuate.audit.listener.AbstractAuditListener;
 import org.springframework.boot.actuate.audit.listener.AuditListener;
 import org.springframework.boot.actuate.security.AbstractAuthenticationAuditListener;
@@ -27,8 +25,10 @@ import org.springframework.boot.actuate.security.AbstractAuthorizationAuditListe
 import org.springframework.boot.actuate.security.AuthenticationAuditListener;
 import org.springframework.boot.actuate.security.AuthorizationAuditListener;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -39,14 +39,15 @@ import org.springframework.context.annotation.Configuration;
  * @author Vedran Pavic
  * @since 2.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
+@ConditionalOnBean(AuditEventRepository.class)
+@ConditionalOnProperty(prefix = "management.auditevents", name = "enabled", matchIfMissing = true)
 public class AuditAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(AbstractAuditListener.class)
-	public AuditListener auditListener(
-			ObjectProvider<AuditEventRepository> auditEventRepository) throws Exception {
-		return new AuditListener(auditEventRepository.getIfAvailable());
+	public AuditListener auditListener(AuditEventRepository auditEventRepository) {
+		return new AuditListener(auditEventRepository);
 	}
 
 	@Bean
@@ -61,17 +62,6 @@ public class AuditAutoConfiguration {
 	@ConditionalOnMissingBean(AbstractAuthorizationAuditListener.class)
 	public AuthorizationAuditListener authorizationAuditListener() throws Exception {
 		return new AuthorizationAuditListener();
-	}
-
-	@Configuration
-	@ConditionalOnMissingBean(AuditEventRepository.class)
-	protected static class AuditEventRepositoryConfiguration {
-
-		@Bean
-		public InMemoryAuditEventRepository auditEventRepository() throws Exception {
-			return new InMemoryAuditEventRepository();
-		}
-
 	}
 
 }

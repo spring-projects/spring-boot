@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -18,18 +18,49 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.atlas;
 
 import java.time.Duration;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
- * {@link ConfigurationProperties} for configuring Atlas metrics export.
+ * {@link ConfigurationProperties @ConfigurationProperties} for configuring Atlas metrics
+ * export.
  *
  * @author Jon Schneider
  * @author Stephane Nicoll
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.atlas")
-public class AtlasProperties extends StepRegistryProperties {
+public class AtlasProperties {
+
+	/**
+	 * Step size (i.e. reporting frequency) to use.
+	 */
+	private Duration step = Duration.ofMinutes(1);
+
+	/**
+	 * Whether exporting of metrics to this backend is enabled.
+	 */
+	private boolean enabled = true;
+
+	/**
+	 * Connection timeout for requests to this backend.
+	 */
+	private Duration connectTimeout = Duration.ofSeconds(1);
+
+	/**
+	 * Read timeout for requests to this backend.
+	 */
+	private Duration readTimeout = Duration.ofSeconds(10);
+
+	/**
+	 * Number of threads to use with the metrics publishing scheduler.
+	 */
+	private Integer numThreads = 4;
+
+	/**
+	 * Number of measurements per request to use for this backend. If more measurements
+	 * are found, then multiple requests will be made.
+	 */
+	private Integer batchSize = 10000;
 
 	/**
 	 * URI of the Atlas server.
@@ -66,6 +97,54 @@ public class AtlasProperties extends StepRegistryProperties {
 	 * URI for the Atlas LWC endpoint to evaluate the data for a subscription.
 	 */
 	private String evalUri = "http://localhost:7101/lwc/api/v1/evaluate";
+
+	public Duration getStep() {
+		return this.step;
+	}
+
+	public void setStep(Duration step) {
+		this.step = step;
+	}
+
+	public boolean isEnabled() {
+		return this.enabled;
+	}
+
+	public void setEnabled(boolean enabled) {
+		this.enabled = enabled;
+	}
+
+	public Duration getConnectTimeout() {
+		return this.connectTimeout;
+	}
+
+	public void setConnectTimeout(Duration connectTimeout) {
+		this.connectTimeout = connectTimeout;
+	}
+
+	public Duration getReadTimeout() {
+		return this.readTimeout;
+	}
+
+	public void setReadTimeout(Duration readTimeout) {
+		this.readTimeout = readTimeout;
+	}
+
+	public Integer getNumThreads() {
+		return this.numThreads;
+	}
+
+	public void setNumThreads(Integer numThreads) {
+		this.numThreads = numThreads;
+	}
+
+	public Integer getBatchSize() {
+		return this.batchSize;
+	}
+
+	public void setBatchSize(Integer batchSize) {
+		this.batchSize = batchSize;
+	}
 
 	public String getUri() {
 		return this.uri;

@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -58,7 +58,7 @@ import org.springframework.xml.xsd.SimpleXsdSchema;
  * @author Stephane Nicoll
  * @since 1.4.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(MessageDispatcherServlet.class)
 @ConditionalOnMissingBean(WsConfigurationSupport.class)
@@ -73,8 +73,8 @@ public class WebServicesAutoConfiguration {
 		servlet.setApplicationContext(applicationContext);
 		String path = properties.getPath();
 		String urlMapping = path + (path.endsWith("/") ? "*" : "/*");
-		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(
-				servlet, urlMapping);
+		ServletRegistrationBean<MessageDispatcherServlet> registration = new ServletRegistrationBean<>(servlet,
+				urlMapping);
 		WebServicesProperties.Servlet servletProperties = properties.getServlet();
 		registration.setLoadOnStartup(servletProperties.getLoadOnStartup());
 		servletProperties.getInit().forEach(registration::addInitParameter);
@@ -87,7 +87,7 @@ public class WebServicesAutoConfiguration {
 		return new WsdlDefinitionBeanFactoryPostProcessor();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableWs
 	protected static class WsConfiguration {
 
@@ -104,42 +104,34 @@ public class WebServicesAutoConfiguration {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry)
-				throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			Binder binder = Binder.get(this.applicationContext.getEnvironment());
-			List<String> wsdlLocations = binder
-					.bind("spring.webservices.wsdl-locations",
-							Bindable.listOf(String.class))
+			List<String> wsdlLocations = binder.bind("spring.webservices.wsdl-locations", Bindable.listOf(String.class))
 					.orElse(Collections.emptyList());
 			for (String wsdlLocation : wsdlLocations) {
-				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class,
-						SimpleWsdl11Definition::new, registry);
-				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class,
-						SimpleXsdSchema::new, registry);
+				registerBeans(wsdlLocation, "*.wsdl", SimpleWsdl11Definition.class, SimpleWsdl11Definition::new,
+						registry);
+				registerBeans(wsdlLocation, "*.xsd", SimpleXsdSchema.class, SimpleXsdSchema::new, registry);
 			}
 		}
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory)
-				throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
 		}
 
 		private <T> void registerBeans(String location, String pattern, Class<T> type,
 				Function<Resource, T> beanSupplier, BeanDefinitionRegistry registry) {
 			for (Resource resource : getResources(location, pattern)) {
 				BeanDefinition beanDefinition = BeanDefinitionBuilder
-						.genericBeanDefinition(type, () -> beanSupplier.apply(resource))
-						.getBeanDefinition();
-				registry.registerBeanDefinition(
-						StringUtils.stripFilenameExtension(resource.getFilename()),
+						.genericBeanDefinition(type, () -> beanSupplier.apply(resource)).getBeanDefinition();
+				registry.registerBeanDefinition(StringUtils.stripFilenameExtension(resource.getFilename()),
 						beanDefinition);
 			}
 		}
 
 		private Resource[] getResources(String location, String pattern) {
 			try {
-				return this.applicationContext
-						.getResources(ensureTrailingSlash(location) + pattern);
+				return this.applicationContext.getResources(ensureTrailingSlash(location) + pattern);
 			}
 			catch (IOException ex) {
 				return new Resource[0];

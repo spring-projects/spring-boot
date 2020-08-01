@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.logging;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -25,55 +25,54 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Ben Hale
  */
-public class LoggerConfigurationComparatorTests {
+class LoggerConfigurationComparatorTests {
 
-	private final LoggerConfigurationComparator comparator = new LoggerConfigurationComparator(
-			"ROOT");
+	private final LoggerConfigurationComparator comparator = new LoggerConfigurationComparator("ROOT");
 
 	@Test
-	public void rootLoggerFirst() {
+	void rootLoggerFirst() {
 		LoggerConfiguration first = new LoggerConfiguration("ROOT", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("alpha", null, LogLevel.OFF);
 		assertThat(this.comparator.compare(first, second)).isLessThan(0);
 	}
 
 	@Test
-	public void rootLoggerSecond() {
+	void rootLoggerSecond() {
 		LoggerConfiguration first = new LoggerConfiguration("alpha", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("ROOT", null, LogLevel.OFF);
 		assertThat(this.comparator.compare(first, second)).isGreaterThan(0);
 	}
 
 	@Test
-	public void rootLoggerFirstEmpty() {
+	void rootLoggerFirstEmpty() {
 		LoggerConfiguration first = new LoggerConfiguration("ROOT", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("", null, LogLevel.OFF);
 		assertThat(this.comparator.compare(first, second)).isLessThan(0);
 	}
 
 	@Test
-	public void rootLoggerSecondEmpty() {
+	void rootLoggerSecondEmpty() {
 		LoggerConfiguration first = new LoggerConfiguration("", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("ROOT", null, LogLevel.OFF);
 		assertThat(this.comparator.compare(first, second)).isGreaterThan(0);
 	}
 
 	@Test
-	public void lexicalFirst() {
+	void lexicalFirst() {
 		LoggerConfiguration first = new LoggerConfiguration("alpha", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("bravo", null, LogLevel.OFF);
 		assertThat(this.comparator.compare(first, second)).isLessThan(0);
 	}
 
 	@Test
-	public void lexicalSecond() {
+	void lexicalSecond() {
 		LoggerConfiguration first = new LoggerConfiguration("bravo", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("alpha", null, LogLevel.OFF);
 		assertThat(this.comparator.compare(first, second)).isGreaterThan(0);
 	}
 
 	@Test
-	public void lexicalEqual() {
+	void lexicalEqual() {
 		LoggerConfiguration first = new LoggerConfiguration("alpha", null, LogLevel.OFF);
 		LoggerConfiguration second = new LoggerConfiguration("alpha", null, LogLevel.OFF);
 		assertThat(this.comparator.compare(first, second)).isEqualTo(0);

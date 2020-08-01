@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,10 +19,14 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 import javax.sql.XADataSource;
 
+import com.ibm.db2.jcc.DB2XADataSource;
 import org.hsqldb.jdbc.pool.JDBCXADataSource;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.XADataSourceWrapper;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -37,10 +41,10 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
-public class XADataSourceAutoConfigurationTests {
+class XADataSourceAutoConfigurationTests {
 
 	@Test
-	public void wrapExistingXaDataSource() {
+	void wrapExistingXaDataSource() {
 		ApplicationContext context = createContext(WrapExisting.class);
 		context.getBean(DataSource.class);
 		XADataSource source = context.getBean(XADataSource.class);
@@ -49,9 +53,8 @@ public class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromUrl() {
-		ApplicationContext context = createContext(FromProperties.class,
-				"spring.datasource.url:jdbc:hsqldb:mem:test",
+	void createFromUrl() {
+		ApplicationContext context = createContext(FromProperties.class, "spring.datasource.url:jdbc:hsqldb:mem:test",
 				"spring.datasource.username:un");
 		context.getBean(DataSource.class);
 		MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
@@ -62,7 +65,21 @@ public class XADataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	public void createFromClass() throws Exception {
+	void createNonEmbeddedFromXAProperties() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(XADataSourceAutoConfiguration.class))
+				.withUserConfiguration(FromProperties.class)
+				.withClassLoader(new FilteredClassLoader("org.h2.Driver", "org.hsqldb.jdbcDriver"))
+				.withPropertyValues("spring.datasource.xa.data-source-class-name:com.ibm.db2.jcc.DB2XADataSource",
+						"spring.datasource.xa.properties.user:test", "spring.datasource.xa.properties.password:secret")
+				.run((context) -> {
+					MockXADataSourceWrapper wrapper = context.getBean(MockXADataSourceWrapper.class);
+					XADataSource xaDataSource = wrapper.getXaDataSource();
+					assertThat(xaDataSource).isInstanceOf(DB2XADataSource.class);
+				});
+	}
+
+	@Test
+	void createFromClass() throws Exception {
 		ApplicationContext context = createContext(FromProperties.class,
 				"spring.datasource.xa.data-source-class-name:org.hsqldb.jdbc.pool.JDBCXADataSource",
 				"spring.datasource.xa.properties.login-timeout:123");
@@ -81,32 +98,32 @@ public class XADataSourceAutoConfigurationTests {
 		return context;
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class WrapExisting {
 
 		@Bean
-		public MockXADataSourceWrapper wrapper() {
+		MockXADataSourceWrapper wrapper() {
 			return new MockXADataSourceWrapper();
 		}
 
 		@Bean
-		public XADataSource xaDataSource() {
+		XADataSource xaDataSource() {
 			return mock(XADataSource.class);
 		}
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class FromProperties {
 
 		@Bean
-		public MockXADataSourceWrapper wrapper() {
+		MockXADataSourceWrapper wrapper() {
 			return new MockXADataSourceWrapper();
 		}
 
 	}
 
-	private static class MockXADataSourceWrapper implements XADataSourceWrapper {
+	static class MockXADataSourceWrapper implements XADataSourceWrapper {
 
 		private XADataSource dataSource;
 
@@ -116,7 +133,7 @@ public class XADataSourceAutoConfigurationTests {
 			return mock(DataSource.class);
 		}
 
-		public XADataSource getXaDataSource() {
+		XADataSource getXaDataSource() {
 			return this.dataSource;
 		}
 

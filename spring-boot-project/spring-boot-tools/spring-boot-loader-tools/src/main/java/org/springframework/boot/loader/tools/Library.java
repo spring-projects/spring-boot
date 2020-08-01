@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -17,11 +17,15 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 
 /**
  * Encapsulates information about a single library that may be packed into the archive.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 1.1.2
  * @see Libraries
  */
@@ -32,6 +36,8 @@ public class Library {
 	private final File file;
 
 	private final LibraryScope scope;
+
+	private final LibraryCoordinates coordinates;
 
 	private final boolean unpackRequired;
 
@@ -63,9 +69,23 @@ public class Library {
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
 	 */
 	public Library(String name, File file, LibraryScope scope, boolean unpackRequired) {
+		this(name, file, scope, null, unpackRequired);
+	}
+
+	/**
+	 * Create a new {@link Library}.
+	 * @param name the name of the library as it should be written or {@code null} to use
+	 * the file name
+	 * @param file the source file
+	 * @param scope the scope of the library
+	 * @param coordinates the library coordinates or {@code null}
+	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 */
+	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired) {
 		this.name = (name != null) ? name : file.getName();
 		this.file = file;
 		this.scope = scope;
+		this.coordinates = coordinates;
 		this.unpackRequired = unpackRequired;
 	}
 
@@ -86,11 +106,28 @@ public class Library {
 	}
 
 	/**
+	 * Open a stream that provides the content of the source file.
+	 * @return the file content
+	 * @throws IOException on error
+	 */
+	InputStream openStream() throws IOException {
+		return new FileInputStream(this.file);
+	}
+
+	/**
 	 * Return the scope of the library.
 	 * @return the scope
 	 */
 	public LibraryScope getScope() {
 		return this.scope;
+	}
+
+	/**
+	 * Return the {@linkplain LibraryCoordinates coordinates} of the library.
+	 * @return the coordinates
+	 */
+	public LibraryCoordinates getCoordinates() {
+		return this.coordinates;
 	}
 
 	/**
@@ -100,6 +137,10 @@ public class Library {
 	 */
 	public boolean isUnpackRequired() {
 		return this.unpackRequired;
+	}
+
+	long getLastModified() {
+		return this.file.lastModified();
 	}
 
 }

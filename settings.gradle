@@ -1,0 +1,82 @@
+pluginManagement {
+	repositories {
+		mavenCentral()
+		gradlePluginPortal()
+		maven {
+			url 'https://repo.spring.io/plugins-release'
+		}
+		if (version.endsWith('-SNAPSHOT')) {
+			maven { url "https://repo.spring.io/snapshot" }
+		}
+	}
+	resolutionStrategy {
+		eachPlugin {
+			if (requested.id.id == "org.jetbrains.kotlin.jvm") {
+				useVersion "${kotlinVersion}"
+			}
+			if (requested.id.id == "org.jetbrains.kotlin.plugin.spring") {
+				useVersion "${kotlinVersion}"
+			}
+		}
+	}
+}
+
+plugins {
+	id "com.gradle.enterprise" version "3.3.3"
+	id "io.spring.gradle-enterprise-conventions" version "0.0.3"
+}
+
+rootProject.name="spring-boot-build"
+
+settings.gradle.projectsLoaded {
+	gradleEnterprise {
+		buildScan {
+			if (settings.gradle.rootProject.hasProperty('buildJavaHome')) {
+				value('Build Java home', settings.gradle.rootProject.getProperty('buildJavaHome'))
+			}
+
+			settings.gradle.rootProject.getBuildDir().mkdirs()
+			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "build scan not generated"
+
+			buildScanPublished { scan ->
+				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
+			}
+		}
+	}
+}
+
+include "spring-boot-project:spring-boot-dependencies"
+include "spring-boot-project:spring-boot-parent"
+include "spring-boot-project:spring-boot-tools:spring-boot-antlib"
+include "spring-boot-project:spring-boot-tools:spring-boot-autoconfigure-processor"
+include "spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"
+include "spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"
+include "spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"
+include "spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin"
+include "spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"
+include "spring-boot-project:spring-boot-tools:spring-boot-loader"
+include "spring-boot-project:spring-boot-tools:spring-boot-loader-tools"
+include "spring-boot-project:spring-boot-tools:spring-boot-maven-plugin"
+include "spring-boot-project:spring-boot-tools:spring-boot-test-support"
+include "spring-boot-project:spring-boot"
+include "spring-boot-project:spring-boot-autoconfigure"
+include "spring-boot-project:spring-boot-actuator"
+include "spring-boot-project:spring-boot-actuator-autoconfigure"
+include "spring-boot-project:spring-boot-cli"
+include "spring-boot-project:spring-boot-devtools"
+include "spring-boot-project:spring-boot-docs"
+include "spring-boot-project:spring-boot-properties-migrator"
+include "spring-boot-project:spring-boot-test"
+include "spring-boot-project:spring-boot-test-autoconfigure"
+include "spring-boot-tests:spring-boot-deployment-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
+
+file("${rootDir}/spring-boot-project/spring-boot-starters").eachDirMatch(~/spring-boot-starter.*/) {
+	include "spring-boot-project:spring-boot-starters:${it.name}"
+}
+
+file("${rootDir}/spring-boot-tests/spring-boot-smoke-tests").eachDirMatch(~/spring-boot-smoke-test.*/) {
+	include "spring-boot-tests:spring-boot-smoke-tests:${it.name}"
+}

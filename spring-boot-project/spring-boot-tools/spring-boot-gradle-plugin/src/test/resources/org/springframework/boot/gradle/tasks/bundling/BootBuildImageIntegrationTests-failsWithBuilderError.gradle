@@ -1,0 +1,11 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+bootBuildImage {
+	environment = ["BP_JVM_VERSION": "13.9.9"]
+}

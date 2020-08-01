@@ -1,0 +1,14 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::env[]
+bootBuildImage {
+	environment = ["BP_JVM_VERSION" : "13.0.1"]
+}
+// end::env[]

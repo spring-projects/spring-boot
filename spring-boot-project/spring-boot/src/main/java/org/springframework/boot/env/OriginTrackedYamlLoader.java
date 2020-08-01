@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -19,6 +19,7 @@ package org.springframework.boot.env;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -27,6 +28,7 @@ import org.yaml.snakeyaml.LoaderOptions;
 import org.yaml.snakeyaml.Yaml;
 import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Constructor;
+import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.Mark;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
@@ -70,7 +72,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
-	public List<Map<String, Object>> load() {
+	List<Map<String, Object>> load() {
 		final List<Map<String, Object>> result = new ArrayList<>();
 		process((properties, map) -> result.add(getFlattenedMap(map)));
 		return result;
@@ -79,7 +81,16 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	/**
 	 * {@link Constructor} that tracks property origins.
 	 */
-	private class OriginTrackingConstructor extends Constructor {
+	private class OriginTrackingConstructor extends SafeConstructor {
+
+		@Override
+		public Object getData() throws NoSuchElementException {
+			Object data = super.getData();
+			if (data instanceof CharSequence && ((CharSequence) data).length() == 0) {
+				return null;
+			}
+			return data;
+		}
 
 		@Override
 		protected Object constructObject(Node node) {
@@ -95,8 +106,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		}
 
 		private void replaceMappingNodeKeys(MappingNode node) {
-			node.setValue(node.getValue().stream().map(KeyScalarNode::get)
-					.collect(Collectors.toList()));
+			node.setValue(node.getValue().stream().map(KeyScalarNode::get).collect(Collectors.toList()));
 		}
 
 		private Object constructTrackedObject(Node node, Object value) {
@@ -111,8 +121,7 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 		private Origin getOrigin(Node node) {
 			Mark mark = node.getStartMark();
 			Location location = new Location(mark.getLine(), mark.getColumn());
-			return new TextResourceOrigin(OriginTrackedYamlLoader.this.resource,
-					location);
+			return new TextResourceOrigin(OriginTrackedYamlLoader.this.resource, location);
 		}
 
 	}
@@ -123,11 +132,10 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	private static class KeyScalarNode extends ScalarNode {
 
 		KeyScalarNode(ScalarNode node) {
-			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(),
-					node.getScalarStyle());
+			super(node.getTag(), node.getValue(), node.getStartMark(), node.getEndMark(), node.getScalarStyle());
 		}
 
-		public static NodeTuple get(NodeTuple nodeTuple) {
+		static NodeTuple get(NodeTuple nodeTuple) {
 			Node keyNode = nodeTuple.getKeyNode();
 			Node valueNode = nodeTuple.getValueNode();
 			return new NodeTuple(KeyScalarNode.get(keyNode), valueNode);

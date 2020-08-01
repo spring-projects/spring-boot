@@ -1,7 +1,7 @@
 package org.test
 
 @Grab("hsqldb")
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @EnableBatchProcessing
 class JobConfig {
 

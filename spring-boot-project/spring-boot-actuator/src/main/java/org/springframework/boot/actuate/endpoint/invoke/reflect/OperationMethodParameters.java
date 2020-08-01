@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -43,24 +43,19 @@ class OperationMethodParameters implements OperationParameters {
 	 * @param method the source method
 	 * @param parameterNameDiscoverer the parameter name discoverer
 	 */
-	OperationMethodParameters(Method method,
-			ParameterNameDiscoverer parameterNameDiscoverer) {
+	OperationMethodParameters(Method method, ParameterNameDiscoverer parameterNameDiscoverer) {
 		Assert.notNull(method, "Method must not be null");
-		Assert.notNull(parameterNameDiscoverer,
-				"ParameterNameDiscoverer must not be null");
+		Assert.notNull(parameterNameDiscoverer, "ParameterNameDiscoverer must not be null");
 		String[] parameterNames = parameterNameDiscoverer.getParameterNames(method);
 		Parameter[] parameters = method.getParameters();
-		Assert.state(parameterNames != null,
-				() -> "Failed to extract parameter names for " + method);
+		Assert.state(parameterNames != null, () -> "Failed to extract parameter names for " + method);
 		this.operationParameters = getOperationParameters(parameters, parameterNames);
 	}
 
-	private List<OperationParameter> getOperationParameters(Parameter[] parameters,
-			String[] names) {
+	private List<OperationParameter> getOperationParameters(Parameter[] parameters, String[] names) {
 		List<OperationParameter> operationParameters = new ArrayList<>(parameters.length);
 		for (int i = 0; i < names.length; i++) {
-			operationParameters
-					.add(new OperationMethodParameter(names[i], parameters[i]));
+			operationParameters.add(new OperationMethodParameter(names[i], parameters[i]));
 		}
 		return Collections.unmodifiableList(operationParameters);
 	}

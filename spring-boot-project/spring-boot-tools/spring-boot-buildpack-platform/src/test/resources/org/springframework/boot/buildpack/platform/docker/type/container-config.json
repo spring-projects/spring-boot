@@ -1,0 +1,17 @@
+{
+	"User": "root",
+	"Image": "docker.io/library/ubuntu:bionic",
+	"Cmd": [
+		"ls",
+		"-l",
+		"-h"
+	],
+	"Labels": {
+		"spring": "boot"
+	},
+	"HostConfig": {
+		"Binds": [
+			"bind-source:bind-dest"
+		]
+	}
+}

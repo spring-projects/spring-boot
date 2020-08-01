@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -39,8 +39,7 @@ class ConditionEvaluationDeltaLoggingListener
 
 	private static final ConcurrentHashMap<String, ConditionEvaluationReport> previousReports = new ConcurrentHashMap<>();
 
-	private static final Log logger = LogFactory
-			.getLog(ConditionEvaluationDeltaLoggingListener.class);
+	private static final Log logger = LogFactory.getLog(ConditionEvaluationDeltaLoggingListener.class);
 
 	private volatile ApplicationContext context;
 
@@ -49,19 +48,15 @@ class ConditionEvaluationDeltaLoggingListener
 		if (!event.getApplicationContext().equals(this.context)) {
 			return;
 		}
-		ConditionEvaluationReport report = event.getApplicationContext()
-				.getBean(ConditionEvaluationReport.class);
-		ConditionEvaluationReport previousReport = previousReports
-				.get(event.getApplicationContext().getId());
+		ConditionEvaluationReport report = event.getApplicationContext().getBean(ConditionEvaluationReport.class);
+		ConditionEvaluationReport previousReport = previousReports.get(event.getApplicationContext().getId());
 		if (previousReport != null) {
 			ConditionEvaluationReport delta = report.getDelta(previousReport);
-			if (!delta.getConditionAndOutcomesBySource().isEmpty()
-					|| !delta.getExclusions().isEmpty()
+			if (!delta.getConditionAndOutcomesBySource().isEmpty() || !delta.getExclusions().isEmpty()
 					|| !delta.getUnconditionalClasses().isEmpty()) {
 				if (logger.isInfoEnabled()) {
 					logger.info("Condition evaluation delta:"
-							+ new ConditionEvaluationReportMessage(delta,
-									"CONDITION EVALUATION DELTA"));
+							+ new ConditionEvaluationReportMessage(delta, "CONDITION EVALUATION DELTA"));
 				}
 			}
 			else {

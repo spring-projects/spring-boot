@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -24,12 +24,13 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 
 /**
- * An identifier for an actuator endpoint. Endpoint IDs may contain only letters, numbers
- * {@code '.'} and {@code '-'}. They must begin with a lower-case letter. Case and syntax
- * characters are ignored when comparing endpoint IDs.
+ * An identifier for an actuator endpoint. Endpoint IDs may contain only letters and
+ * numbers. They must begin with a lower-case letter. Case and syntax characters are
+ * ignored when comparing endpoint IDs.
  *
  * @author Phillip Webb
  * @since 2.0.6
@@ -40,9 +41,11 @@ public final class EndpointId {
 
 	private static final Set<String> loggedWarnings = new HashSet<>();
 
-	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9\\.\\-]+");
+	private static final Pattern VALID_PATTERN = Pattern.compile("[a-zA-Z0-9.-]+");
 
-	private static final Pattern WARNING_PATTERN = Pattern.compile("[\\.\\-]+");
+	private static final Pattern WARNING_PATTERN = Pattern.compile("[.-]+");
+
+	private static final String MIGRATE_LEGACY_NAMES_PROPERTY = "management.endpoints.migrate-legacy-ids";
 
 	private final String value;
 
@@ -52,12 +55,9 @@ public final class EndpointId {
 
 	private EndpointId(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		Assert.isTrue(VALID_PATTERN.matcher(value).matches(),
-				"Value must only contain valid chars");
-		Assert.isTrue(!Character.isDigit(value.charAt(0)),
-				"Value must not start with a number");
-		Assert.isTrue(!Character.isUpperCase(value.charAt(0)),
-				"Value must not start with an uppercase letter");
+		Assert.isTrue(VALID_PATTERN.matcher(value).matches(), "Value must only contain valid chars");
+		Assert.isTrue(!Character.isDigit(value.charAt(0)), "Value must not start with a number");
+		Assert.isTrue(!Character.isUpperCase(value.charAt(0)), "Value must not start with an uppercase letter");
 		if (WARNING_PATTERN.matcher(value).find()) {
 			logWarning(value);
 		}
@@ -85,8 +85,7 @@ public final class EndpointId {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		return this.lowerCaseAlphaNumeric
-				.equals(((EndpointId) obj).lowerCaseAlphaNumeric);
+		return this.lowerCaseAlphaNumeric.equals(((EndpointId) obj).lowerCaseAlphaNumeric);
 	}
 
 	@Override
@@ -117,6 +116,27 @@ public final class EndpointId {
 	}
 
 	/**
+	 * Factory method to create a new {@link EndpointId} of the specified value. This
+	 * variant will respect the {@code management.endpoints.migrate-legacy-names} property
+	 * if it has been set in the {@link Environment}.
+	 * @param environment the Spring environment
+	 * @param value the endpoint ID value
+	 * @return an {@link EndpointId} instance
+	 * @since 2.2.0
+	 */
+	public static EndpointId of(Environment environment, String value) {
+		Assert.notNull(environment, "Environment must not be null");
+		return new EndpointId(migrateLegacyId(environment, value));
+	}
+
+	private static String migrateLegacyId(Environment environment, String value) {
+		if (environment.getProperty(MIGRATE_LEGACY_NAMES_PROPERTY, Boolean.class, false)) {
+			return value.replace(".", "");
+		}
+		return value;
+	}
+
+	/**
 	 * Factory method to create a new {@link EndpointId} from a property value. More
 	 * lenient than {@link #of(String)} to allow for common "relaxed" property variants.
 	 * @param value the property value to convert
@@ -132,8 +152,7 @@ public final class EndpointId {
 
 	private static void logWarning(String value) {
 		if (logger.isWarnEnabled() && loggedWarnings.add(value)) {
-			logger.warn("Endpoint ID '" + value
-					+ "' contains invalid characters, please migrate to a valid format.");
+			logger.warn("Endpoint ID '" + value + "' contains invalid characters, please migrate to a valid format.");
 		}
 	}
 

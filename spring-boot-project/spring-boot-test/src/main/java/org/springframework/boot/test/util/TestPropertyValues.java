@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -50,8 +50,7 @@ import org.springframework.util.StringUtils;
  */
 public final class TestPropertyValues {
 
-	private static final TestPropertyValues EMPTY = new TestPropertyValues(
-			Collections.emptyMap());
+	private static final TestPropertyValues EMPTY = new TestPropertyValues(Collections.emptyMap());
 
 	private final Map<String, Object> properties;
 
@@ -145,8 +144,7 @@ public final class TestPropertyValues {
 		if (sources.contains(name)) {
 			PropertySource<?> propertySource = sources.get(name);
 			if (propertySource.getClass() == type.getSourceClass()) {
-				((Map<String, Object>) propertySource.getSource())
-						.putAll(this.properties);
+				((Map<String, Object>) propertySource.getSource()).putAll(this.properties);
 				return;
 			}
 		}
@@ -300,8 +298,7 @@ public final class TestPropertyValues {
 
 		private Map<String, String> apply(Map<String, ?> properties) {
 			Map<String, String> previous = new LinkedHashMap<>();
-			properties.forEach((name, value) -> previous.put(name,
-					setOrClear(name, (String) value)));
+			properties.forEach((name, value) -> previous.put(name, setOrClear(name, (String) value)));
 			return previous;
 		}
 

@@ -1,0 +1,11 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring AMQP and Rabbit MQ"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("org.springframework:spring-messaging")
+	api("org.springframework.amqp:spring-rabbit")
+}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,8 +44,7 @@ import org.springframework.util.StringUtils;
  */
 public class PrometheusPushGatewayManager {
 
-	private static final Log logger = LogFactory
-			.getLog(PrometheusPushGatewayManager.class);
+	private static final Log logger = LogFactory.getLog(PrometheusPushGatewayManager.class);
 
 	private final PushGateway pushGateway;
 
@@ -72,11 +71,9 @@ public class PrometheusPushGatewayManager {
 	 * @param shutdownOperation the shutdown operation that should be performed when
 	 * context is closed.
 	 */
-	public PrometheusPushGatewayManager(PushGateway pushGateway,
-			CollectorRegistry registry, Duration pushRate, String job,
-			Map<String, String> groupingKeys, ShutdownOperation shutdownOperation) {
-		this(pushGateway, registry, new PushGatewayTaskScheduler(), pushRate, job,
-				groupingKeys, shutdownOperation);
+	public PrometheusPushGatewayManager(PushGateway pushGateway, CollectorRegistry registry, Duration pushRate,
+			String job, Map<String, String> groupingKeys, ShutdownOperation shutdownOperation) {
+		this(pushGateway, registry, new PushGatewayTaskScheduler(), pushRate, job, groupingKeys, shutdownOperation);
 	}
 
 	/**
@@ -90,10 +87,8 @@ public class PrometheusPushGatewayManager {
 	 * @param shutdownOperation the shutdown operation that should be performed when
 	 * context is closed.
 	 */
-	public PrometheusPushGatewayManager(PushGateway pushGateway,
-			CollectorRegistry registry, TaskScheduler scheduler, Duration pushRate,
-			String job, Map<String, String> groupingKey,
-			ShutdownOperation shutdownOperation) {
+	public PrometheusPushGatewayManager(PushGateway pushGateway, CollectorRegistry registry, TaskScheduler scheduler,
+			Duration pushRate, String job, Map<String, String> groupingKey, ShutdownOperation shutdownOperation) {
 		Assert.notNull(pushGateway, "PushGateway must not be null");
 		Assert.notNull(registry, "Registry must not be null");
 		Assert.notNull(scheduler, "Scheduler must not be null");
@@ -103,8 +98,7 @@ public class PrometheusPushGatewayManager {
 		this.registry = registry;
 		this.job = job;
 		this.groupingKey = groupingKey;
-		this.shutdownOperation = (shutdownOperation != null) ? shutdownOperation
-				: ShutdownOperation.NONE;
+		this.shutdownOperation = (shutdownOperation != null) ? shutdownOperation : ShutdownOperation.NONE;
 		this.scheduler = scheduler;
 		this.scheduled = this.scheduler.scheduleAtFixedRate(this::push, pushRate);
 	}
@@ -191,8 +185,7 @@ public class PrometheusPushGatewayManager {
 		}
 
 		@Override
-		public ScheduledExecutorService getScheduledExecutor()
-				throws IllegalStateException {
+		public ScheduledExecutorService getScheduledExecutor() throws IllegalStateException {
 			return Executors.newSingleThreadScheduledExecutor(this::newThread);
 		}
 

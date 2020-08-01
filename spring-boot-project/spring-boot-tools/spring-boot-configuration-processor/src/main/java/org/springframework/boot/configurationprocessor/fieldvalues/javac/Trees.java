@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor.fieldvalues.javac;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -25,7 +26,6 @@ import javax.lang.model.element.Element;
  * Reflection based access to {@code com.sun.source.util.Trees}.
  *
  * @author Phillip Webb
- * @since 1.2.0
  */
 final class Trees extends ReflectionWrapper {
 
@@ -33,16 +33,27 @@ final class Trees extends ReflectionWrapper {
 		super("com.sun.source.util.Trees", instance);
 	}
 
-	public Tree getTree(Element element) throws Exception {
+	Tree getTree(Element element) throws Exception {
 		Object tree = findMethod("getTree", Element.class).invoke(getInstance(), element);
 		return (tree != null) ? new Tree(tree) : null;
 	}
 
-	public static Trees instance(ProcessingEnvironment env) throws Exception {
-		ClassLoader classLoader = env.getClass().getClassLoader();
-		Class<?> type = findClass(classLoader, "com.sun.source.util.Trees");
-		Method method = findMethod(type, "instance", ProcessingEnvironment.class);
-		return new Trees(method.invoke(null, env));
+	static Trees instance(ProcessingEnvironment env) throws Exception {
+		try {
+			ClassLoader classLoader = env.getClass().getClassLoader();
+			Class<?> type = findClass(classLoader, "com.sun.source.util.Trees");
+			Method method = findMethod(type, "instance", ProcessingEnvironment.class);
+			return new Trees(method.invoke(null, env));
+		}
+		catch (Exception ex) {
+			return instance(unwrap(env));
+		}
+	}
+
+	private static ProcessingEnvironment unwrap(ProcessingEnvironment wrapper) throws Exception {
+		Field delegateField = wrapper.getClass().getDeclaredField("delegate");
+		delegateField.setAccessible(true);
+		return (ProcessingEnvironment) delegateField.get(wrapper);
 	}
 
 }

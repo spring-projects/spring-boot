@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -22,14 +22,14 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.io.StringReader;
 import java.lang.reflect.Field;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.io.ByteArrayResource;
@@ -45,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  *
  * @author Phillip Webb
  */
-public abstract class AbstractJsonMarshalTesterTests {
+abstract class AbstractJsonMarshalTesterTests {
 
 	private static final String JSON = "{\"name\":\"Spring\",\"age\":123}";
 
@@ -55,20 +55,16 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 	private static final ExampleObject OBJECT = createExampleObject("Spring", 123);
 
-	private static final ResolvableType TYPE = ResolvableType
-			.forClass(ExampleObject.class);
-
-	@Rule
-	public TemporaryFolder temp = new TemporaryFolder();
+	private static final ResolvableType TYPE = ResolvableType.forClass(ExampleObject.class);
 
 	@Test
-	public void writeShouldReturnJsonContent() throws Exception {
+	void writeShouldReturnJsonContent() throws Exception {
 		JsonContent<Object> content = createTester(TYPE).write(OBJECT);
 		assertThat(content).isEqualToJson(JSON);
 	}
 
 	@Test
-	public void writeListShouldReturnJsonContent() throws Exception {
+	void writeListShouldReturnJsonContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("listOfExampleObject");
 		List<ExampleObject> value = Collections.singletonList(OBJECT);
 		JsonContent<Object> content = createTester(type).write(value);
@@ -76,7 +72,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	public void writeArrayShouldReturnJsonContent() throws Exception {
+	void writeArrayShouldReturnJsonContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("arrayOfExampleObject");
 		ExampleObject[] value = new ExampleObject[] { OBJECT };
 		JsonContent<Object> content = createTester(type).write(value);
@@ -84,7 +80,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	public void writeMapShouldReturnJsonContent() throws Exception {
+	void writeMapShouldReturnJsonContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("mapOfExampleObject");
 		Map<String, Object> value = new LinkedHashMap<>();
 		value.put("a", OBJECT);
@@ -93,82 +89,81 @@ public abstract class AbstractJsonMarshalTesterTests {
 	}
 
 	@Test
-	public void createWhenResourceLoadClassIsNullShouldThrowException() {
-		assertThatIllegalArgumentException().isThrownBy(
-				() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
+	void createWhenResourceLoadClassIsNullShouldThrowException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> createTester(null, ResolvableType.forClass(ExampleObject.class)))
 				.withMessageContaining("ResourceLoadClass must not be null");
 	}
 
 	@Test
-	public void createWhenTypeIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> createTester(getClass(), null))
+	void createWhenTypeIsNullShouldThrowException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> createTester(getClass(), null))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
-	public void parseBytesShouldReturnObject() throws Exception {
+	void parseBytesShouldReturnObject() throws Exception {
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.parse(JSON.getBytes())).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void parseStringShouldReturnObject() throws Exception {
+	void parseStringShouldReturnObject() throws Exception {
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.parse(JSON)).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void readResourcePathShouldReturnObject() throws Exception {
+	void readResourcePathShouldReturnObject() throws Exception {
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read("example.json")).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void readFileShouldReturnObject() throws Exception {
-		File file = this.temp.newFile("example.json");
+	void readFileShouldReturnObject(@TempDir Path temp) throws Exception {
+		File file = new File(temp.toFile(), "example.json");
 		FileCopyUtils.copy(JSON.getBytes(), file);
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(file)).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void readInputStreamShouldReturnObject() throws Exception {
+	void readInputStreamShouldReturnObject() throws Exception {
 		InputStream stream = new ByteArrayInputStream(JSON.getBytes());
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(stream)).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void readResourceShouldReturnObject() throws Exception {
+	void readResourceShouldReturnObject() throws Exception {
 		Resource resource = new ByteArrayResource(JSON.getBytes());
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(resource)).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void readReaderShouldReturnObject() throws Exception {
+	void readReaderShouldReturnObject() throws Exception {
 		Reader reader = new StringReader(JSON);
 		AbstractJsonMarshalTester<Object> tester = createTester(TYPE);
 		assertThat(tester.read(reader)).isEqualTo(OBJECT);
 	}
 
 	@Test
-	public void parseListShouldReturnContent() throws Exception {
+	void parseListShouldReturnContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("listOfExampleObject");
 		AbstractJsonMarshalTester<Object> tester = createTester(type);
 		assertThat(tester.parse(ARRAY_JSON)).asList().containsOnly(OBJECT);
 	}
 
 	@Test
-	public void parseArrayShouldReturnContent() throws Exception {
+	void parseArrayShouldReturnContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("arrayOfExampleObject");
 		AbstractJsonMarshalTester<Object> tester = createTester(type);
 		assertThat(tester.parse(ARRAY_JSON)).asArray().containsOnly(OBJECT);
 	}
 
 	@Test
-	public void parseMapShouldReturnContent() throws Exception {
+	void parseMapShouldReturnContent() throws Exception {
 		ResolvableType type = ResolvableTypes.get("mapOfExampleObject");
 		AbstractJsonMarshalTester<Object> tester = createTester(type);
 		assertThat(tester.parse(MAP_JSON)).asMap().containsEntry("a", OBJECT);
@@ -185,13 +180,12 @@ public abstract class AbstractJsonMarshalTesterTests {
 		return createTester(AbstractJsonMarshalTesterTests.class, type);
 	}
 
-	protected abstract AbstractJsonMarshalTester<Object> createTester(
-			Class<?> resourceLoadClass, ResolvableType type);
+	protected abstract AbstractJsonMarshalTester<Object> createTester(Class<?> resourceLoadClass, ResolvableType type);
 
 	/**
 	 * Access to field backed by {@link ResolvableType}.
 	 */
-	public static class ResolvableTypes {
+	static class ResolvableTypes {
 
 		public List<ExampleObject> listOfExampleObject;
 
@@ -199,7 +193,7 @@ public abstract class AbstractJsonMarshalTesterTests {
 
 		public Map<String, ExampleObject> mapOfExampleObject;
 
-		public static ResolvableType get(String name) {
+		static ResolvableType get(String name) {
 			Field field = ReflectionUtils.findField(ResolvableTypes.class, name);
 			return ResolvableType.forField(field);
 		}

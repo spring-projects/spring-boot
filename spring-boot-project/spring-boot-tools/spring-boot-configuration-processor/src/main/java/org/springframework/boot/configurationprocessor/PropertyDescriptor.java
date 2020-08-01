@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @param <S> the type of the source element that determines the property
  * @author Stephane Nicoll
  */
-abstract class PropertyDescriptor<S> {
+abstract class PropertyDescriptor<S extends Element> {
 
 	private final TypeElement ownerElement;
 
@@ -51,9 +51,8 @@ abstract class PropertyDescriptor<S> {
 
 	private final ExecutableElement setter;
 
-	protected PropertyDescriptor(TypeElement ownerElement,
-			ExecutableElement factoryMethod, S source, String name, TypeMirror type,
-			VariableElement field, ExecutableElement getter, ExecutableElement setter) {
+	protected PropertyDescriptor(TypeElement ownerElement, ExecutableElement factoryMethod, S source, String name,
+			TypeMirror type, VariableElement field, ExecutableElement getter, ExecutableElement setter) {
 		this.ownerElement = ownerElement;
 		this.factoryMethod = factoryMethod;
 		this.source = source;
@@ -64,52 +63,51 @@ abstract class PropertyDescriptor<S> {
 		this.setter = setter;
 	}
 
-	public TypeElement getOwnerElement() {
+	TypeElement getOwnerElement() {
 		return this.ownerElement;
 	}
 
-	public ExecutableElement getFactoryMethod() {
+	ExecutableElement getFactoryMethod() {
 		return this.factoryMethod;
 	}
 
-	public S getSource() {
+	S getSource() {
 		return this.source;
 	}
 
-	public String getName() {
+	String getName() {
 		return this.name;
 	}
 
-	public TypeMirror getType() {
+	TypeMirror getType() {
 		return this.type;
 	}
 
-	public VariableElement getField() {
+	VariableElement getField() {
 		return this.field;
 	}
 
-	public ExecutableElement getGetter() {
+	ExecutableElement getGetter() {
 		return this.getter;
 	}
 
-	public ExecutableElement getSetter() {
+	ExecutableElement getSetter() {
 		return this.setter;
 	}
 
 	protected abstract boolean isProperty(MetadataGenerationEnvironment environment);
 
-	protected ItemDeprecation resolveItemDeprecation(
-			MetadataGenerationEnvironment environment) {
-		boolean deprecated = environment.isDeprecated(getGetter())
-				|| environment.isDeprecated(getSetter())
-				|| environment.isDeprecated(getFactoryMethod());
+	protected abstract Object resolveDefaultValue(MetadataGenerationEnvironment environment);
+
+	protected ItemDeprecation resolveItemDeprecation(MetadataGenerationEnvironment environment) {
+		boolean deprecated = environment.isDeprecated(getGetter()) || environment.isDeprecated(getSetter())
+				|| environment.isDeprecated(getField()) || environment.isDeprecated(getFactoryMethod());
 		return deprecated ? environment.resolveItemDeprecation(getGetter()) : null;
 	}
 
 	protected boolean isNested(MetadataGenerationEnvironment environment) {
 		Element typeElement = environment.getTypeUtils().asElement(getType());
-		if (!(typeElement instanceof TypeElement)
-				|| typeElement.getKind() == ElementKind.ENUM) {
+		if (!(typeElement instanceof TypeElement) || typeElement.getKind() == ElementKind.ENUM) {
 			return false;
 		}
 		if (environment.getConfigurationPropertiesAnnotation(getGetter()) != null) {
@@ -124,8 +122,7 @@ abstract class PropertyDescriptor<S> {
 		return isParentTheSame(typeElement, getOwnerElement());
 	}
 
-	public ItemMetadata resolveItemMetadata(String prefix,
-			MetadataGenerationEnvironment environment) {
+	ItemMetadata resolveItemMetadata(String prefix, MetadataGenerationEnvironment environment) {
 		if (isNested(environment)) {
 			return resolveItemMetadataGroup(prefix, environment);
 		}
@@ -135,19 +132,17 @@ abstract class PropertyDescriptor<S> {
 		return null;
 	}
 
-	private ItemMetadata resolveItemMetadataProperty(String prefix,
-			MetadataGenerationEnvironment environment) {
+	private ItemMetadata resolveItemMetadataProperty(String prefix, MetadataGenerationEnvironment environment) {
 		String dataType = resolveType(environment);
 		String ownerType = environment.getTypeUtils().getQualifiedName(getOwnerElement());
 		String description = resolveDescription(environment);
 		Object defaultValue = resolveDefaultValue(environment);
 		ItemDeprecation deprecation = resolveItemDeprecation(environment);
-		return ItemMetadata.newProperty(prefix, getName(), dataType, ownerType, null,
-				description, defaultValue, deprecation);
+		return ItemMetadata.newProperty(prefix, getName(), dataType, ownerType, null, description, defaultValue,
+				deprecation);
 	}
 
-	private ItemMetadata resolveItemMetadataGroup(String prefix,
-			MetadataGenerationEnvironment environment) {
+	private ItemMetadata resolveItemMetadataGroup(String prefix, MetadataGenerationEnvironment environment) {
 		Element propertyElement = environment.getTypeUtils().asElement(getType());
 		String nestedPrefix = ConfigurationMetadata.nestedPrefix(prefix, getName());
 		String dataType = environment.getTypeUtils().getQualifiedName(propertyElement);
@@ -162,10 +157,6 @@ abstract class PropertyDescriptor<S> {
 
 	private String resolveDescription(MetadataGenerationEnvironment environment) {
 		return environment.getTypeUtils().getJavaDoc(getField());
-	}
-
-	private Object resolveDefaultValue(MetadataGenerationEnvironment environment) {
-		return environment.getDefaultValue(getOwnerElement(), getName());
 	}
 
 	private boolean isCyclePresent(Element returnType, Element element) {

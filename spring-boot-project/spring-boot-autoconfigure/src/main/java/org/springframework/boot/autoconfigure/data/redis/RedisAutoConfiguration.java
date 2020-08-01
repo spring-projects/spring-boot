@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,9 @@ import org.springframework.data.redis.core.StringRedisTemplate;
  * @author Stephane Nicoll
  * @author Marco Aust
  * @author Mark Paluch
+ * @since 1.0.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisOperations.class)
 @EnableConfigurationProperties(RedisProperties.class)
 @Import({ LettuceConnectionConfiguration.class, JedisConnectionConfiguration.class })
@@ -51,8 +52,8 @@ public class RedisAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(name = "redisTemplate")
-	public RedisTemplate<Object, Object> redisTemplate(
-			RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
+	public RedisTemplate<Object, Object> redisTemplate(RedisConnectionFactory redisConnectionFactory)
+			throws UnknownHostException {
 		RedisTemplate<Object, Object> template = new RedisTemplate<>();
 		template.setConnectionFactory(redisConnectionFactory);
 		return template;
@@ -60,8 +61,8 @@ public class RedisAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public StringRedisTemplate stringRedisTemplate(
-			RedisConnectionFactory redisConnectionFactory) throws UnknownHostException {
+	public StringRedisTemplate stringRedisTemplate(RedisConnectionFactory redisConnectionFactory)
+			throws UnknownHostException {
 		StringRedisTemplate template = new StringRedisTemplate();
 		template.setConnectionFactory(redisConnectionFactory);
 		return template;

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -70,23 +70,19 @@ public class HttpWebServiceMessageSenderBuilder {
 	 */
 	public HttpWebServiceMessageSenderBuilder requestFactory(
 			Supplier<ClientHttpRequestFactory> requestFactorySupplier) {
-		Assert.notNull(requestFactorySupplier,
-				"RequestFactory Supplier must not be null");
+		Assert.notNull(requestFactorySupplier, "RequestFactory Supplier must not be null");
 		this.requestFactorySupplier = requestFactorySupplier;
 		return this;
 	}
 
 	public WebServiceMessageSender build() {
 		ClientHttpRequestFactory requestFactory = (this.requestFactorySupplier != null)
-				? this.requestFactorySupplier.get()
-				: new ClientHttpRequestFactorySupplier().get();
+				? this.requestFactorySupplier.get() : new ClientHttpRequestFactorySupplier().get();
 		if (this.connectTimeout != null) {
-			new TimeoutRequestFactoryCustomizer(this.connectTimeout, "setConnectTimeout")
-					.customize(requestFactory);
+			new TimeoutRequestFactoryCustomizer(this.connectTimeout, "setConnectTimeout").customize(requestFactory);
 		}
 		if (this.readTimeout != null) {
-			new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout")
-					.customize(requestFactory);
+			new TimeoutRequestFactoryCustomizer(this.readTimeout, "setReadTimeout").customize(requestFactory);
 		}
 		return new ClientHttpRequestMessageSender(requestFactory);
 	}
@@ -105,19 +101,17 @@ public class HttpWebServiceMessageSenderBuilder {
 			this.methodName = methodName;
 		}
 
-		public void customize(ClientHttpRequestFactory factory) {
-			ReflectionUtils.invokeMethod(findMethod(factory), factory,
-					Math.toIntExact(this.timeout.toMillis()));
+		void customize(ClientHttpRequestFactory factory) {
+			ReflectionUtils.invokeMethod(findMethod(factory), factory, Math.toIntExact(this.timeout.toMillis()));
 		}
 
 		private Method findMethod(ClientHttpRequestFactory factory) {
-			Method method = ReflectionUtils.findMethod(factory.getClass(),
-					this.methodName, int.class);
+			Method method = ReflectionUtils.findMethod(factory.getClass(), this.methodName, int.class);
 			if (method != null) {
 				return method;
 			}
-			throw new IllegalStateException("Request factory " + factory.getClass()
-					+ " does not have a " + this.methodName + "(int) method");
+			throw new IllegalStateException(
+					"Request factory " + factory.getClass() + " does not have a " + this.methodName + "(int) method");
 		}
 
 	}

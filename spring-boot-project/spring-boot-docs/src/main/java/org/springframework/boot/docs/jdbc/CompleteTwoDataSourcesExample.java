@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -37,7 +37,7 @@ public class CompleteTwoDataSourcesExample {
 	 * A complete configuration that exposes two data sources.
 	 */
 	@Configuration
-	static class CompleteDataSourcesConfiguration {
+	public static class CompleteDataSourcesConfiguration {
 
 		// tag::configuration[]
 		@Bean
@@ -51,8 +51,7 @@ public class CompleteTwoDataSourcesExample {
 		@Primary
 		@ConfigurationProperties("app.datasource.first.configuration")
 		public HikariDataSource firstDataSource() {
-			return firstDataSourceProperties().initializeDataSourceBuilder()
-					.type(HikariDataSource.class).build();
+			return firstDataSourceProperties().initializeDataSourceBuilder().type(HikariDataSource.class).build();
 		}
 
 		@Bean
@@ -64,8 +63,7 @@ public class CompleteTwoDataSourcesExample {
 		@Bean
 		@ConfigurationProperties("app.datasource.second.configuration")
 		public BasicDataSource secondDataSource() {
-			return secondDataSourceProperties().initializeDataSourceBuilder()
-					.type(BasicDataSource.class).build();
+			return secondDataSourceProperties().initializeDataSourceBuilder().type(BasicDataSource.class).build();
 		}
 		// end::configuration[]
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -44,20 +44,16 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 	private ClassLoader beanClassLoader;
 
 	@Override
-	public boolean[] match(String[] autoConfigurationClasses,
-			AutoConfigurationMetadata autoConfigurationMetadata) {
-		ConditionEvaluationReport report = ConditionEvaluationReport
-				.find(this.beanFactory);
-		ConditionOutcome[] outcomes = getOutcomes(autoConfigurationClasses,
-				autoConfigurationMetadata);
+	public boolean[] match(String[] autoConfigurationClasses, AutoConfigurationMetadata autoConfigurationMetadata) {
+		ConditionEvaluationReport report = ConditionEvaluationReport.find(this.beanFactory);
+		ConditionOutcome[] outcomes = getOutcomes(autoConfigurationClasses, autoConfigurationMetadata);
 		boolean[] match = new boolean[outcomes.length];
 		for (int i = 0; i < outcomes.length; i++) {
 			match[i] = (outcomes[i] == null || outcomes[i].isMatch());
 			if (!match[i] && outcomes[i] != null) {
 				logOutcome(autoConfigurationClasses[i], outcomes[i]);
 				if (report != null) {
-					report.recordConditionEvaluation(autoConfigurationClasses[i], this,
-							outcomes[i]);
+					report.recordConditionEvaluation(autoConfigurationClasses[i], this, outcomes[i]);
 				}
 			}
 		}
@@ -85,8 +81,8 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		this.beanClassLoader = classLoader;
 	}
 
-	protected List<String> filter(Collection<String> classNames,
-			ClassNameFilter classNameFilter, ClassLoader classLoader) {
+	protected final List<String> filter(Collection<String> classNames, ClassNameFilter classNameFilter,
+			ClassLoader classLoader) {
 		if (CollectionUtils.isEmpty(classNames)) {
 			return Collections.emptyList();
 		}
@@ -97,6 +93,21 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 			}
 		}
 		return matches;
+	}
+
+	/**
+	 * Slightly faster variant of {@link ClassUtils#forName(String, ClassLoader)} that
+	 * doesn't deal with primitives, arrays or inner types.
+	 * @param className the class name to resolve
+	 * @param classLoader the class loader to use
+	 * @return a resolved class
+	 * @throws ClassNotFoundException if the class cannot be found
+	 */
+	protected static Class<?> resolve(String className, ClassLoader classLoader) throws ClassNotFoundException {
+		if (classLoader != null) {
+			return Class.forName(className, false, classLoader);
+		}
+		return Class.forName(className);
 	}
 
 	protected enum ClassNameFilter {
@@ -119,27 +130,19 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 
 		};
 
-		public abstract boolean matches(String className, ClassLoader classLoader);
+		abstract boolean matches(String className, ClassLoader classLoader);
 
-		public static boolean isPresent(String className, ClassLoader classLoader) {
+		static boolean isPresent(String className, ClassLoader classLoader) {
 			if (classLoader == null) {
 				classLoader = ClassUtils.getDefaultClassLoader();
 			}
 			try {
-				forName(className, classLoader);
+				resolve(className, classLoader);
 				return true;
 			}
 			catch (Throwable ex) {
 				return false;
 			}
-		}
-
-		private static Class<?> forName(String className, ClassLoader classLoader)
-				throws ClassNotFoundException {
-			if (classLoader != null) {
-				return classLoader.loadClass(className);
-			}
-			return Class.forName(className);
 		}
 
 	}

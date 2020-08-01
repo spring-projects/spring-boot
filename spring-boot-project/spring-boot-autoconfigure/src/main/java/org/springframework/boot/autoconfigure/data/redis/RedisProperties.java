@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -30,6 +30,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Marco Aust
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.redis")
 public class RedisProperties {
@@ -69,6 +70,11 @@ public class RedisProperties {
 	 * Connection timeout.
 	 */
 	private Duration timeout;
+
+	/**
+	 * Client name to be set on connections with CLIENT SETNAME.
+	 */
+	private String clientName;
 
 	private Sentinel sentinel;
 
@@ -134,6 +140,14 @@ public class RedisProperties {
 		return this.timeout;
 	}
 
+	public String getClientName() {
+		return this.clientName;
+	}
+
+	public void setClientName(String clientName) {
+		this.clientName = clientName;
+	}
+
 	public Sentinel getSentinel() {
 		return this.sentinel;
 	}
@@ -171,7 +185,8 @@ public class RedisProperties {
 
 		/**
 		 * Target for the minimum number of idle connections to maintain in the pool. This
-		 * setting only has an effect if it is positive.
+		 * setting only has an effect if both it and time between eviction runs are
+		 * positive.
 		 */
 		private int minIdle = 0;
 
@@ -187,6 +202,12 @@ public class RedisProperties {
 		 * indefinitely.
 		 */
 		private Duration maxWait = Duration.ofMillis(-1);
+
+		/**
+		 * Time between runs of the idle object evictor thread. When positive, the idle
+		 * object evictor thread starts, otherwise no idle object eviction is performed.
+		 */
+		private Duration timeBetweenEvictionRuns;
 
 		public int getMaxIdle() {
 			return this.maxIdle;
@@ -218,6 +239,14 @@ public class RedisProperties {
 
 		public void setMaxWait(Duration maxWait) {
 			this.maxWait = maxWait;
+		}
+
+		public Duration getTimeBetweenEvictionRuns() {
+			return this.timeBetweenEvictionRuns;
+		}
+
+		public void setTimeBetweenEvictionRuns(Duration timeBetweenEvictionRuns) {
+			this.timeBetweenEvictionRuns = timeBetweenEvictionRuns;
 		}
 
 	}
@@ -272,6 +301,11 @@ public class RedisProperties {
 		 */
 		private List<String> nodes;
 
+		/**
+		 * Password for authenticating with sentinel(s).
+		 */
+		private String password;
+
 		public String getMaster() {
 			return this.master;
 		}
@@ -286,6 +320,14 @@ public class RedisProperties {
 
 		public void setNodes(List<String> nodes) {
 			this.nodes = nodes;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 	}
@@ -325,6 +367,8 @@ public class RedisProperties {
 		 */
 		private Pool pool;
 
+		private final Cluster cluster = new Cluster();
+
 		public Duration getShutdownTimeout() {
 			return this.shutdownTimeout;
 		}
@@ -339,6 +383,51 @@ public class RedisProperties {
 
 		public void setPool(Pool pool) {
 			this.pool = pool;
+		}
+
+		public Cluster getCluster() {
+			return this.cluster;
+		}
+
+		public static class Cluster {
+
+			private final Refresh refresh = new Refresh();
+
+			public Refresh getRefresh() {
+				return this.refresh;
+			}
+
+			public static class Refresh {
+
+				/**
+				 * Cluster topology refresh period.
+				 */
+				private Duration period;
+
+				/**
+				 * Whether adaptive topology refreshing using all available refresh
+				 * triggers should be used.
+				 */
+				private boolean adaptive;
+
+				public Duration getPeriod() {
+					return this.period;
+				}
+
+				public void setPeriod(Duration period) {
+					this.period = period;
+				}
+
+				public boolean isAdaptive() {
+					return this.adaptive;
+				}
+
+				public void setAdaptive(boolean adaptive) {
+					this.adaptive = adaptive;
+				}
+
+			}
+
 		}
 
 	}

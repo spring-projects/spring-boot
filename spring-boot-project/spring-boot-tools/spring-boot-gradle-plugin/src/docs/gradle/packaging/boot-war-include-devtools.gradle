@@ -1,0 +1,18 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootWar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+dependencies {
+	developmentOnly files("spring-boot-devtools-1.2.3.RELEASE.jar")
+}
+
+// tag::include-devtools[]
+bootWar {
+	classpath configurations.developmentOnly
+}
+// end::include-devtools[]

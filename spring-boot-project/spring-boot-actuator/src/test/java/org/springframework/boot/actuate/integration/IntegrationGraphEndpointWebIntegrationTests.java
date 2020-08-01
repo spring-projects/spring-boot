@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.integration;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
-
-import org.springframework.boot.actuate.endpoint.web.test.WebEndpointRunners;
+import org.springframework.boot.actuate.endpoint.web.test.WebEndpointTest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -33,38 +30,33 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  *
  * @author Tim Ysewyn
  */
-@RunWith(WebEndpointRunners.class)
-public class IntegrationGraphEndpointWebIntegrationTests {
+class IntegrationGraphEndpointWebIntegrationTests {
 
-	private static WebTestClient client;
-
-	@Test
-	public void graph() {
-		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isOk().expectBody()
-				.jsonPath("contentDescriptor.providerVersion").isNotEmpty()
-				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.0f)
+	@WebEndpointTest
+	void graph(WebTestClient client) {
+		client.get().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isOk().expectBody().jsonPath("contentDescriptor.providerVersion").isNotEmpty()
+				.jsonPath("contentDescriptor.providerFormatVersion").isEqualTo(1.2f)
 				.jsonPath("contentDescriptor.provider").isEqualTo("spring-integration");
 	}
 
-	@Test
-	public void rebuild() {
-		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON)
-				.exchange().expectStatus().isNoContent();
+	@WebEndpointTest
+	void rebuild(WebTestClient client) {
+		client.post().uri("/actuator/integrationgraph").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
+				.isNoContent();
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@EnableIntegration
-	public static class TestConfiguration {
+	static class TestConfiguration {
 
 		@Bean
-		public IntegrationGraphEndpoint endpoint(
-				IntegrationGraphServer integrationGraphServer) {
+		IntegrationGraphEndpoint endpoint(IntegrationGraphServer integrationGraphServer) {
 			return new IntegrationGraphEndpoint(integrationGraphServer);
 		}
 
 		@Bean
-		public IntegrationGraphServer integrationGraphServer() {
+		IntegrationGraphServer integrationGraphServer() {
 			return new IntegrationGraphServer();
 		}
 

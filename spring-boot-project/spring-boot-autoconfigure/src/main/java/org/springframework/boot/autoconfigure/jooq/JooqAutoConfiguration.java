@@ -5,7 +5,7 @@
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -57,25 +57,21 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Dmytro Nosan
  * @since 1.3.0
  */
-@Configuration
+@Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(DSLContext.class)
 @ConditionalOnBean(DataSource.class)
-@AutoConfigureAfter({ DataSourceAutoConfiguration.class,
-		TransactionAutoConfiguration.class })
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class })
 public class JooqAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public DataSourceConnectionProvider dataSourceConnectionProvider(
-			DataSource dataSource) {
-		return new DataSourceConnectionProvider(
-				new TransactionAwareDataSourceProxy(dataSource));
+	@ConditionalOnMissingBean(ConnectionProvider.class)
+	public DataSourceConnectionProvider dataSourceConnectionProvider(DataSource dataSource) {
+		return new DataSourceConnectionProvider(new TransactionAwareDataSourceProxy(dataSource));
 	}
 
 	@Bean
 	@ConditionalOnBean(PlatformTransactionManager.class)
-	public SpringTransactionProvider transactionProvider(
-			PlatformTransactionManager txManager) {
+	public SpringTransactionProvider transactionProvider(PlatformTransactionManager txManager) {
 		return new SpringTransactionProvider(txManager);
 	}
 
@@ -85,7 +81,7 @@ public class JooqAutoConfiguration {
 		return new DefaultExecuteListenerProvider(new JooqExceptionTranslator());
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(DSLContext.class)
 	@EnableConfigurationProperties(JooqProperties.class)
 	public static class DslContextConfiguration {
@@ -97,12 +93,10 @@ public class JooqAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
-		public DefaultConfiguration jooqConfiguration(JooqProperties properties,
-				ConnectionProvider connectionProvider, DataSource dataSource,
-				ObjectProvider<TransactionProvider> transactionProvider,
+		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
+				DataSource dataSource, ObjectProvider<TransactionProvider> transactionProvider,
 				ObjectProvider<RecordMapperProvider> recordMapperProvider,
-				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider,
-				ObjectProvider<Settings> settings,
+				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider, ObjectProvider<Settings> settings,
 				ObjectProvider<RecordListenerProvider> recordListenerProviders,
 				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
 				ObjectProvider<VisitListenerProvider> visitListenerProviders,
@@ -116,14 +110,11 @@ public class JooqAutoConfiguration {
 			recordUnmapperProvider.ifAvailable(configuration::set);
 			settings.ifAvailable(configuration::set);
 			executorProvider.ifAvailable(configuration::set);
-			configuration.set(recordListenerProviders.orderedStream()
-					.toArray(RecordListenerProvider[]::new));
-			configuration.set(executeListenerProviders.orderedStream()
-					.toArray(ExecuteListenerProvider[]::new));
-			configuration.set(visitListenerProviders.orderedStream()
-					.toArray(VisitListenerProvider[]::new));
-			configuration.setTransactionListenerProvider(transactionListenerProviders
-					.orderedStream().toArray(TransactionListenerProvider[]::new));
+			configuration.set(recordListenerProviders.orderedStream().toArray(RecordListenerProvider[]::new));
+			configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
+			configuration.set(visitListenerProviders.orderedStream().toArray(VisitListenerProvider[]::new));
+			configuration.setTransactionListenerProvider(
+					transactionListenerProviders.orderedStream().toArray(TransactionListenerProvider[]::new));
 			return configuration;
 		}
 

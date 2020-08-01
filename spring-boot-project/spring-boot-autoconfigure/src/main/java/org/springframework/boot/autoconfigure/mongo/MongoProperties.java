@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,8 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
+import org.bson.UuidRepresentation;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -31,6 +32,8 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Stephane Nicoll
  * @author Nasko Vasilev
  * @author Mark Paluch
+ * @author Artsiom Yudovin
+ * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.data.mongodb")
 public class MongoProperties {
@@ -56,7 +59,8 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mongo database URI. Cannot be set with host, port and credentials.
+	 * Mongo database URI. Cannot be set with host, port, credentials and replica set
+	 * name.
 	 */
 	private String uri;
 
@@ -86,9 +90,24 @@ public class MongoProperties {
 	private char[] password;
 
 	/**
+	 * Required replica set name for the cluster. Cannot be set with URI.
+	 */
+	private String replicaSetName;
+
+	/**
 	 * Fully qualified name of the FieldNamingStrategy to use.
 	 */
 	private Class<?> fieldNamingStrategy;
+
+	/**
+	 * Representation to use when converting a UUID to a BSON binary value.
+	 */
+	private UuidRepresentation uuidRepresentation = UuidRepresentation.JAVA_LEGACY;
+
+	/**
+	 * Whether to enable auto-index creation.
+	 */
+	private Boolean autoIndexCreation;
 
 	public String getHost() {
 		return this.host;
@@ -130,12 +149,28 @@ public class MongoProperties {
 		this.password = password;
 	}
 
+	public String getReplicaSetName() {
+		return this.replicaSetName;
+	}
+
+	public void setReplicaSetName(String replicaSetName) {
+		this.replicaSetName = replicaSetName;
+	}
+
 	public Class<?> getFieldNamingStrategy() {
 		return this.fieldNamingStrategy;
 	}
 
 	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
+	}
+
+	public UuidRepresentation getUuidRepresentation() {
+		return this.uuidRepresentation;
+	}
+
+	public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
+		this.uuidRepresentation = uuidRepresentation;
 	}
 
 	public String getUri() {
@@ -170,7 +205,15 @@ public class MongoProperties {
 		if (this.database != null) {
 			return this.database;
 		}
-		return new MongoClientURI(determineUri()).getDatabase();
+		return new ConnectionString(determineUri()).getDatabase();
+	}
+
+	public Boolean isAutoIndexCreation() {
+		return this.autoIndexCreation;
+	}
+
+	public void setAutoIndexCreation(Boolean autoIndexCreation) {
+		this.autoIndexCreation = autoIndexCreation;
 	}
 
 }

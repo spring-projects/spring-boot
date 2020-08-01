@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -28,21 +28,21 @@ import org.springframework.boot.diagnostics.FailureAnalyzer;
  *
  * @author Andy Wilkinson
  */
-class ValidationExceptionFailureAnalyzer
-		extends AbstractFailureAnalyzer<ValidationException> {
+class ValidationExceptionFailureAnalyzer extends AbstractFailureAnalyzer<ValidationException> {
 
-	private static final String MISSING_IMPLEMENTATION_MESSAGE = "Unable to create a "
+	private static final String JAVAX_MISSING_IMPLEMENTATION_MESSAGE = "Unable to create a "
 			+ "Configuration, because no Bean Validation provider could be found";
+
+	private static final String JAKARTA_MISSING_IMPLEMENTATION_MESSAGE = "Unable to create a "
+			+ "Configuration, because no Jakarta Bean Validation provider could be found";
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, ValidationException cause) {
-		if (cause.getMessage().startsWith(MISSING_IMPLEMENTATION_MESSAGE)) {
+		if (cause.getMessage().startsWith(JAVAX_MISSING_IMPLEMENTATION_MESSAGE)
+				|| cause.getMessage().startsWith(JAKARTA_MISSING_IMPLEMENTATION_MESSAGE)) {
 			return new FailureAnalysis(
-					"The Bean Validation API is on the classpath but no implementation"
-							+ " could be found",
-					"Add an implementation, such as Hibernate Validator, to the"
-							+ " classpath",
-					cause);
+					"The Bean Validation API is on the classpath but no implementation could be found",
+					"Add an implementation, such as Hibernate Validator, to the classpath", cause);
 		}
 		return null;
 	}

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -42,8 +42,7 @@ abstract class AggregateBinder<T> {
 	 * @param source the configuration property source or {@code null} for all sources.
 	 * @return if recursive binding is supported
 	 */
-	protected abstract boolean isAllowRecursiveBinding(
-			ConfigurationPropertySource source);
+	protected abstract boolean isAllowRecursiveBinding(ConfigurationPropertySource source);
 
 	/**
 	 * Perform binding for the aggregate.
@@ -53,8 +52,7 @@ abstract class AggregateBinder<T> {
 	 * @return the bound aggregate or null
 	 */
 	@SuppressWarnings("unchecked")
-	public final Object bind(ConfigurationPropertyName name, Bindable<?> target,
-			AggregateElementBinder elementBinder) {
+	final Object bind(ConfigurationPropertyName name, Bindable<?> target, AggregateElementBinder elementBinder) {
 		Object result = bindAggregate(name, target, elementBinder);
 		Supplier<?> value = target.getValue();
 		if (result == null || value == null) {
@@ -70,8 +68,8 @@ abstract class AggregateBinder<T> {
 	 * @param elementBinder an element binder
 	 * @return the bound result
 	 */
-	protected abstract Object bindAggregate(ConfigurationPropertyName name,
-			Bindable<?> target, AggregateElementBinder elementBinder);
+	protected abstract Object bindAggregate(ConfigurationPropertyName name, Bindable<?> target,
+			AggregateElementBinder elementBinder);
 
 	/**
 	 * Merge any additional elements into the existing aggregate.

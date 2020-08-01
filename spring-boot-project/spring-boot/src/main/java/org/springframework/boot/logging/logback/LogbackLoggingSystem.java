@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -33,7 +33,9 @@ import ch.qos.logback.classic.turbo.TurboFilter;
 import ch.qos.logback.classic.util.ContextInitializer;
 import ch.qos.logback.core.joran.spi.JoranException;
 import ch.qos.logback.core.spi.FilterReply;
+import ch.qos.logback.core.status.OnConsoleStatusListener;
 import ch.qos.logback.core.status.Status;
+import ch.qos.logback.core.util.StatusListenerConfigHelper;
 import org.slf4j.ILoggerFactory;
 import org.slf4j.Logger;
 import org.slf4j.Marker;
@@ -47,20 +49,25 @@ import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
+import org.springframework.core.SpringProperties;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link LoggingSystem} for <a href="http://logback.qos.ch">logback</a>.
+ * {@link LoggingSystem} for <a href="https://logback.qos.ch">logback</a>.
  *
  * @author Phillip Webb
  * @author Dave Syer
  * @author Andy Wilkinson
  * @author Ben Hale
+ * @since 1.0.0
  */
 public class LogbackLoggingSystem extends Slf4JLoggingSystem {
+
+	// Static final field to facilitate code removal by Graal
+	private static final boolean XML_ENABLED = !SpringProperties.getFlag("spring.xml.ignore");
 
 	private static final String CONFIGURATION_FILE_PROPERTY = "logback.configurationFile";
 
@@ -80,8 +87,8 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	private static final TurboFilter FILTER = new TurboFilter() {
 
 		@Override
-		public FilterReply decide(Marker marker, ch.qos.logback.classic.Logger logger,
-				Level level, String format, Object[] params, Throwable t) {
+		public FilterReply decide(Marker marker, ch.qos.logback.classic.Logger logger, Level level, String format,
+				Object[] params, Throwable t) {
 			return FilterReply.DENY;
 		}
 
@@ -93,8 +100,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	protected String[] getStandardConfigLocations() {
-		return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy",
-				"logback.xml" };
+		return new String[] { "logback-test.groovy", "logback-test.xml", "logback.groovy", "logback.xml" };
 	}
 
 	@Override
@@ -108,8 +114,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	@Override
-	public void initialize(LoggingInitializationContext initializationContext,
-			String configLocation, LogFile logFile) {
+	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
 		LoggerContext loggerContext = getLoggerContext();
 		if (isAlreadyInitialized(loggerContext)) {
 			return;
@@ -118,43 +123,43 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		loggerContext.getTurboFilterList().remove(FILTER);
 		markAsInitialized(loggerContext);
 		if (StringUtils.hasText(System.getProperty(CONFIGURATION_FILE_PROPERTY))) {
-			getLogger(LogbackLoggingSystem.class.getName()).warn(
-					"Ignoring '" + CONFIGURATION_FILE_PROPERTY + "' system property. "
-							+ "Please use 'logging.config' instead.");
+			getLogger(LogbackLoggingSystem.class.getName()).warn("Ignoring '" + CONFIGURATION_FILE_PROPERTY
+					+ "' system property. Please use 'logging.config' instead.");
 		}
 	}
 
 	@Override
-	protected void loadDefaults(LoggingInitializationContext initializationContext,
-			LogFile logFile) {
+	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		LoggerContext context = getLoggerContext();
 		stopAndReset(context);
-		LogbackConfigurator configurator = new LogbackConfigurator(context);
+		boolean debug = Boolean.getBoolean("logback.debug");
+		if (debug) {
+			StatusListenerConfigHelper.addOnConsoleListenerInstance(context, new OnConsoleStatusListener());
+		}
+		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
+				: new LogbackConfigurator(context);
 		Environment environment = initializationContext.getEnvironment();
 		context.putProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN,
-				environment.resolvePlaceholders(
-						"${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
-		context.putProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN,
-				environment.resolvePlaceholders(
-						"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
-		new DefaultLogbackConfiguration(initializationContext, logFile)
-				.apply(configurator);
+				environment.resolvePlaceholders("${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
+		context.putProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN, environment.resolvePlaceholders(
+				"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
+		context.putProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN, environment
+				.resolvePlaceholders("${logging.pattern.rolling-file-name:${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz}"));
+		new DefaultLogbackConfiguration(initializationContext, logFile).apply(configurator);
 		context.setPackagingDataEnabled(true);
 	}
 
 	@Override
-	protected void loadConfiguration(LoggingInitializationContext initializationContext,
-			String location, LogFile logFile) {
+	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
+			LogFile logFile) {
 		super.loadConfiguration(initializationContext, location, logFile);
 		LoggerContext loggerContext = getLoggerContext();
 		stopAndReset(loggerContext);
 		try {
-			configureByResourceUrl(initializationContext, loggerContext,
-					ResourceUtils.getURL(location));
+			configureByResourceUrl(initializationContext, loggerContext, ResourceUtils.getURL(location));
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Could not initialize Logback logging from " + location, ex);
+			throw new IllegalStateException("Could not initialize Logback logging from " + location, ex);
 		}
 		List<Status> statuses = loggerContext.getStatusManager().getCopyOfStatusList();
 		StringBuilder errors = new StringBuilder();
@@ -165,17 +170,14 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 			}
 		}
 		if (errors.length() > 0) {
-			throw new IllegalStateException(
-					String.format("Logback configuration error detected: %n%s", errors));
+			throw new IllegalStateException(String.format("Logback configuration error detected: %n%s", errors));
 		}
 	}
 
-	private void configureByResourceUrl(
-			LoggingInitializationContext initializationContext,
-			LoggerContext loggerContext, URL url) throws JoranException {
-		if (url.toString().endsWith("xml")) {
-			JoranConfigurator configurator = new SpringBootJoranConfigurator(
-					initializationContext);
+	private void configureByResourceUrl(LoggingInitializationContext initializationContext, LoggerContext loggerContext,
+			URL url) throws JoranException {
+		if (XML_ENABLED && url.toString().endsWith("xml")) {
+			JoranConfigurator configurator = new SpringBootJoranConfigurator(initializationContext);
 			configurator.setContext(loggerContext);
 			configurator.doConfigure(url);
 		}
@@ -236,21 +238,25 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public LoggerConfiguration getLoggerConfiguration(String loggerName) {
-		return getLoggerConfiguration(getLogger(loggerName));
+		String name = getLoggerName(loggerName);
+		LoggerContext loggerContext = getLoggerContext();
+		return getLoggerConfiguration(loggerContext.exists(name));
 	}
 
-	private LoggerConfiguration getLoggerConfiguration(
-			ch.qos.logback.classic.Logger logger) {
+	private String getLoggerName(String name) {
+		if (!StringUtils.hasLength(name) || Logger.ROOT_LOGGER_NAME.equals(name)) {
+			return ROOT_LOGGER_NAME;
+		}
+		return name;
+	}
+
+	private LoggerConfiguration getLoggerConfiguration(ch.qos.logback.classic.Logger logger) {
 		if (logger == null) {
 			return null;
 		}
 		LogLevel level = LEVELS.convertNativeToSystem(logger.getLevel());
-		LogLevel effectiveLevel = LEVELS
-				.convertNativeToSystem(logger.getEffectiveLevel());
-		String name = logger.getName();
-		if (!StringUtils.hasLength(name) || Logger.ROOT_LOGGER_NAME.equals(name)) {
-			name = ROOT_LOGGER_NAME;
-		}
+		LogLevel effectiveLevel = LEVELS.convertNativeToSystem(logger.getEffectiveLevel());
+		String name = getLoggerName(logger.getName());
 		return new LoggerConfiguration(name, level, effectiveLevel);
 	}
 
@@ -274,11 +280,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private ch.qos.logback.classic.Logger getLogger(String name) {
 		LoggerContext factory = getLoggerContext();
-		if (StringUtils.isEmpty(name) || ROOT_LOGGER_NAME.equals(name)) {
-			name = Logger.ROOT_LOGGER_NAME;
-		}
-		return factory.getLogger(name);
-
+		return factory.getLogger(getLoggerName(name));
 	}
 
 	private LoggerContext getLoggerContext() {

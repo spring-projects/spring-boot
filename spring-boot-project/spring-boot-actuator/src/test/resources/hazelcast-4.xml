@@ -1,0 +1,13 @@
+<hazelcast xmlns="http://www.hazelcast.com/schema/config"
+		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		   xsi:schemaLocation="http://www.hazelcast.com/schema/config
+           http://www.hazelcast.com/schema/config/hazelcast-config-4.0.xsd">
+	<instance-name>actuator-hazelcast-4</instance-name>
+	<map name="defaultCache"/>
+	<network>
+		<join>
+			<tcp-ip enabled="false"/>
+			<multicast enabled="false"/>
+		</join>
+	</network>
+</hazelcast>

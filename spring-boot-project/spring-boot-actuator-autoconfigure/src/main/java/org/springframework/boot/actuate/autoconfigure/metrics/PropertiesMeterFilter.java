@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -61,8 +61,7 @@ public class PropertiesMeterFilter implements MeterFilter {
 			return new MeterFilter() {
 			};
 		}
-		Tags commonTags = Tags.of(tags.entrySet().stream()
-				.map((entry) -> Tag.of(entry.getKey(), entry.getValue()))
+		Tags commonTags = Tags.of(tags.entrySet().stream().map((entry) -> Tag.of(entry.getKey(), entry.getValue()))
 				.collect(Collectors.toList()));
 		return MeterFilter.commonTags(commonTags);
 	}
@@ -79,33 +78,30 @@ public class PropertiesMeterFilter implements MeterFilter {
 	}
 
 	@Override
-	public DistributionStatisticConfig configure(Meter.Id id,
-			DistributionStatisticConfig config) {
+	public DistributionStatisticConfig configure(Meter.Id id, DistributionStatisticConfig config) {
 		Distribution distribution = this.properties.getDistribution();
 		return DistributionStatisticConfig.builder()
-				.percentilesHistogram(lookupWithFallbackToAll(
-						distribution.getPercentilesHistogram(), id, null))
-				.percentiles(
-						lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
-				.sla(convertSla(id.getType(), lookup(distribution.getSla(), id, null)))
-				.minimumExpectedValue(convertMeterValue(id.getType(),
-						lookup(distribution.getMinimumExpectedValue(), id, null)))
-				.maximumExpectedValue(convertMeterValue(id.getType(),
-						lookup(distribution.getMaximumExpectedValue(), id, null)))
+				.percentilesHistogram(lookupWithFallbackToAll(distribution.getPercentilesHistogram(), id, null))
+				.percentiles(lookupWithFallbackToAll(distribution.getPercentiles(), id, null))
+				.serviceLevelObjectives(
+						convertServiceLevelObjectives(id.getType(), lookup(distribution.getSlo(), id, null)))
+				.minimumExpectedValue(
+						convertMeterValue(id.getType(), lookup(distribution.getMinimumExpectedValue(), id, null)))
+				.maximumExpectedValue(
+						convertMeterValue(id.getType(), lookup(distribution.getMaximumExpectedValue(), id, null)))
 				.build().merge(config);
 	}
 
-	private long[] convertSla(Meter.Type meterType, ServiceLevelAgreementBoundary[] sla) {
-		if (sla == null) {
+	private double[] convertServiceLevelObjectives(Meter.Type meterType, ServiceLevelObjectiveBoundary[] slo) {
+		if (slo == null) {
 			return null;
 		}
-		long[] converted = Arrays.stream(sla)
-				.map((candidate) -> candidate.getValue(meterType))
-				.filter(Objects::nonNull).mapToLong(Long::longValue).toArray();
+		double[] converted = Arrays.stream(slo).map((candidate) -> candidate.getValue(meterType))
+				.filter(Objects::nonNull).mapToDouble(Double::doubleValue).toArray();
 		return (converted.length != 0) ? converted : null;
 	}
 
-	private Long convertMeterValue(Meter.Type meterType, String value) {
+	private Double convertMeterValue(Meter.Type meterType, String value) {
 		return (value != null) ? MeterValue.valueOf(value).getValue(meterType) : null;
 	}
 

@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -56,15 +56,12 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
  * @author Andy Wilkinson
  */
 @TestPropertySource(properties = { "spring.jackson.serialization.indent_output=true",
-		"management.endpoints.web.exposure.include=*",
-		"spring.jackson.default-property-inclusion=non_null" })
+		"management.endpoints.web.exposure.include=*", "spring.jackson.default-property-inclusion=non_null" })
 public abstract class AbstractEndpointDocumentationTests {
 
 	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
-		return StringUtils
-				.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
-						.map((constant) -> "`" + constant.name() + "`")
-						.collect(Collectors.toList()), ", ");
+		return StringUtils.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
+				.map((constant) -> "`" + constant.name() + "`").collect(Collectors.toList()), ", ");
 	}
 
 	protected OperationPreprocessor limit(String... keys) {
@@ -74,8 +71,7 @@ public abstract class AbstractEndpointDocumentationTests {
 	@SuppressWarnings("unchecked")
 	protected <T> OperationPreprocessor limit(Predicate<T> filter, String... keys) {
 		return new ContentModifyingOperationPreprocessor((content, mediaType) -> {
-			ObjectMapper objectMapper = new ObjectMapper()
-					.enable(SerializationFeature.INDENT_OUTPUT);
+			ObjectMapper objectMapper = new ObjectMapper().enable(SerializationFeature.INDENT_OUTPUT);
 			try {
 				Map<String, Object> payload = objectMapper.readValue(content, Map.class);
 				Object target = payload;
@@ -90,12 +86,10 @@ public abstract class AbstractEndpointDocumentationTests {
 					}
 				}
 				if (target instanceof Map) {
-					parent.put(keys[keys.length - 1],
-							select((Map<String, Object>) target, filter));
+					parent.put(keys[keys.length - 1], select((Map<String, Object>) target, filter));
 				}
 				else {
-					parent.put(keys[keys.length - 1],
-							select((List<Object>) target, filter));
+					parent.put(keys[keys.length - 1], select((List<Object>) target, filter));
 				}
 				return objectMapper.writeValueAsBytes(payload);
 			}
@@ -106,36 +100,30 @@ public abstract class AbstractEndpointDocumentationTests {
 	}
 
 	protected FieldDescriptor parentIdField() {
-		return fieldWithPath("contexts.*.parentId")
-				.description("Id of the parent application context, if any.").optional()
-				.type(JsonFieldType.STRING);
+		return fieldWithPath("contexts.*.parentId").description("Id of the parent application context, if any.")
+				.optional().type(JsonFieldType.STRING);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <T> Map<String, Object> select(Map<String, Object> candidates,
-			Predicate<T> filter) {
+	private <T> Map<String, Object> select(Map<String, Object> candidates, Predicate<T> filter) {
 		Map<String, Object> selected = new HashMap<>();
-		candidates.entrySet().stream().filter((candidate) -> filter.test((T) candidate))
-				.limit(3)
+		candidates.entrySet().stream().filter((candidate) -> filter.test((T) candidate)).limit(3)
 				.forEach((entry) -> selected.put(entry.getKey(), entry.getValue()));
 		return selected;
 	}
 
 	@SuppressWarnings("unchecked")
 	private <T> List<Object> select(List<Object> candidates, Predicate<T> filter) {
-		return candidates.stream().filter((candidate) -> filter.test((T) candidate))
-				.limit(3).collect(Collectors.toList());
+		return candidates.stream().filter((candidate) -> filter.test((T) candidate)).limit(3)
+				.collect(Collectors.toList());
 	}
 
-	@Configuration
-	@ImportAutoConfiguration({ JacksonAutoConfiguration.class,
-			HttpMessageConvertersAutoConfiguration.class, WebMvcAutoConfiguration.class,
-			DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
-			WebEndpointAutoConfiguration.class,
-			WebMvcEndpointManagementContextConfiguration.class,
-			WebFluxEndpointManagementContextConfiguration.class,
-			PropertyPlaceholderAutoConfiguration.class, WebFluxAutoConfiguration.class,
-			HttpHandlerAutoConfiguration.class })
+	@Configuration(proxyBeanMethods = false)
+	@ImportAutoConfiguration({ JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
+			WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class, EndpointAutoConfiguration.class,
+			WebEndpointAutoConfiguration.class, WebMvcEndpointManagementContextConfiguration.class,
+			WebFluxEndpointManagementContextConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+			WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class })
 	static class BaseDocumentationConfiguration {
 
 	}
