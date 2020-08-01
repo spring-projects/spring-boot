@@ -649,81 +649,94 @@ TIP: The `HealthContributorRegistry` can be used to register and unregister heal
 
 [[production-ready-health-indicators]]
 ==== Auto-configured HealthIndicators
-The following `HealthIndicators` are auto-configured by Spring Boot when appropriate:
+The following `HealthIndicators` are auto-configured by Spring Boot when appropriate.
+You can also enable/disable selected indicators by configuring `management.health.key.enabled`,
+with the `key` listed in the table below.
 
-[cols="4,6"]
+[cols="2,4,6"]
 |===
-| Name | Description
+| Key | Name | Description
 
+| `cassandra`
 | {spring-boot-actuator-module-code}/cassandra/CassandraHealthIndicator.java[`CassandraHealthIndicator`]
 | Checks that a Cassandra database is up.
 
+| `couchbase`
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseHealthIndicator.java[`CouchbaseHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
+| `datasource`
 | {spring-boot-actuator-module-code}/jdbc/DataSourceHealthIndicator.java[`DataSourceHealthIndicator`]
 | Checks that a connection to `DataSource` can be obtained.
 
+| `diskspace`
 | {spring-boot-actuator-module-code}/system/DiskSpaceHealthIndicator.java[`DiskSpaceHealthIndicator`]
 | Checks for low disk space.
 
+| `elasticsearch`
 | {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchRestHealthIndicator.java[`ElasticsearchRestHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
+| `hazelcast`
 | {spring-boot-actuator-module-code}/hazelcast/HazelcastHealthIndicator.java[`HazelcastHealthIndicator`]
 | Checks that a Hazelcast server is up.
 
+| `influxdb`
 | {spring-boot-actuator-module-code}/influx/InfluxDbHealthIndicator.java[`InfluxDbHealthIndicator`]
 | Checks that an InfluxDB server is up.
 
+| `jms`
 | {spring-boot-actuator-module-code}/jms/JmsHealthIndicator.java[`JmsHealthIndicator`]
 | Checks that a JMS broker is up.
 
+| `ldap`
 | {spring-boot-actuator-module-code}/ldap/LdapHealthIndicator.java[`LdapHealthIndicator`]
 | Checks that an LDAP server is up.
 
-| {spring-boot-actuator-module-code}/availability/LivenessStateHealthIndicator.java[`LivenessStateHealthIndicator`]
-| Exposes the "Liveness" application availability state.
-
+| `mail`
 | {spring-boot-actuator-module-code}/mail/MailHealthIndicator.java[`MailHealthIndicator`]
 | Checks that a mail server is up.
 
+| `mongo`
 | {spring-boot-actuator-module-code}/mongo/MongoHealthIndicator.java[`MongoHealthIndicator`]
 | Checks that a Mongo database is up.
 
+| `neo4j`
 | {spring-boot-actuator-module-code}/neo4j/Neo4jHealthIndicator.java[`Neo4jHealthIndicator`]
 | Checks that a Neo4j database is up.
 
+| `ping`
 | {spring-boot-actuator-module-code}/health/PingHealthIndicator.java[`PingHealthIndicator`]
 | Always responds with `UP`.
 
+| `rabbit`
 | {spring-boot-actuator-module-code}/amqp/RabbitHealthIndicator.java[`RabbitHealthIndicator`]
 | Checks that a Rabbit server is up.
 
-| {spring-boot-actuator-module-code}/availability/ReadinessStateHealthIndicator.java[`ReadinessStateHealthIndicator`]
-| Exposes the "Readiness" application availability state.
-
+| `redis`
 | {spring-boot-actuator-module-code}/redis/RedisHealthIndicator.java[`RedisHealthIndicator`]
 | Checks that a Redis server is up.
 
+| `solr`
 | {spring-boot-actuator-module-code}/solr/SolrHealthIndicator.java[`SolrHealthIndicator`]
 | Checks that a Solr server is up.
 |===
 
 TIP: You can disable them all by setting the configprop:management.health.defaults.enabled[] property.
 
-Additional `HealthIndicators` are available but not enabled by default;
-developers can use their configuration property to activate them:
+Additional `HealthIndicators` are available but not enabled by default:
 
-[cols="4,6"]
+[cols="3,4,6"]
 |===
-| Name | Description
+| Key | Name | Description
 
+| `livenessstate`
 | {spring-boot-actuator-module-code}/availability/LivenessStateHealthIndicator.java[`LivenessStateHealthIndicator`]
-| Checks the liveness state of the application. Enabled by `management.health.livenessstate.enabled` property.
+| Exposes the "Liveness" application availability state.
 
+| `readinessstate`
 | {spring-boot-actuator-module-code}/availability/ReadinessStateHealthIndicator.java[`ReadinessStateHealthIndicator`]
-| Checks the readiness state of the application. Enabled by `management.health.readinessstate.enabled` property.
+| Exposes the "Readiness" application availability state.
 |===
 
 
