@@ -189,7 +189,7 @@ class BeanDefinitionLoader {
 	}
 
 	private void load(CharSequence source) {
-		String resolvedSource = this.xmlReader.getEnvironment().resolvePlaceholders(source.toString());
+		String resolvedSource = this.scanner.getEnvironment().resolvePlaceholders(source.toString());
 		// Attempt as a Class
 		try {
 			load(ClassUtils.forName(resolvedSource, null));
