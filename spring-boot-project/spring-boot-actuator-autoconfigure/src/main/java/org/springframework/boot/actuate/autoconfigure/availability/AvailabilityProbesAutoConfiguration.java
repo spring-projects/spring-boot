@@ -48,14 +48,15 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 public class AvailabilityProbesAutoConfiguration {
 
 	@Bean
-	@ConditionalOnMissingBean
-	public LivenessStateHealthIndicator livenessStateProbeIndicator(ApplicationAvailability applicationAvailability) {
+	@ConditionalOnMissingBean(name = "livenessStateHealthIndicator")
+	public LivenessStateHealthIndicator livenessStateHealthIndicator(ApplicationAvailability applicationAvailability) {
 		return new LivenessStateHealthIndicator(applicationAvailability);
 	}
 
 	@Bean
-	@ConditionalOnMissingBean
-	public ReadinessStateHealthIndicator readinessStateProbeIndicator(ApplicationAvailability applicationAvailability) {
+	@ConditionalOnMissingBean(name = "readinessStateHealthIndicator")
+	public ReadinessStateHealthIndicator readinessStateHealthIndicator(
+			ApplicationAvailability applicationAvailability) {
 		return new ReadinessStateHealthIndicator(applicationAvailability);
 	}
 
