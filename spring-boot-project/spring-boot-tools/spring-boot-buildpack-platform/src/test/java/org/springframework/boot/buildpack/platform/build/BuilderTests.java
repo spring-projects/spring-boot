@@ -19,6 +19,7 @@ package org.springframework.boot.buildpack.platform.build;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.PrintStream;
+import java.net.URI;
 
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
@@ -29,6 +30,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
+import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
@@ -44,6 +46,8 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -145,6 +149,86 @@ class BuilderTests {
 		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
 		verify(docker.image()).load(archive.capture(), any());
 		verify(docker.image()).remove(archive.getValue().getTag(), true);
+	}
+
+	@Test
+	void buildInvokesBuilderWithNeverPullPolicy() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any()))
+				.willAnswer(withPulledImage(runImage));
+		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME))))
+				.willReturn(builderImage);
+		given(docker.image().inspect(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb"))))
+				.willReturn(runImage);
+		Builder builder = new Builder(BuildLog.to(out), docker);
+		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.NEVER);
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		verify(docker.image()).load(archive.capture(), any());
+		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		verify(docker.image(), never()).pull(any(), any());
+		verify(docker.image(), times(2)).inspect(any());
+	}
+
+	@Test
+	void buildInvokesBuilderWithAlwaysPullPolicy() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any()))
+				.willAnswer(withPulledImage(runImage));
+		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME))))
+				.willReturn(builderImage);
+		given(docker.image().inspect(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb"))))
+				.willReturn(runImage);
+		Builder builder = new Builder(BuildLog.to(out), docker);
+		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.ALWAYS);
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		verify(docker.image()).load(archive.capture(), any());
+		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		verify(docker.image(), times(2)).pull(any(), any());
+		verify(docker.image(), never()).inspect(any());
+	}
+
+	@Test
+	void buildInvokesBuilderWithIfNotPresentPullPolicy() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any()))
+				.willAnswer(withPulledImage(runImage));
+		given(docker.image().inspect(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)))).willThrow(
+				new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+				.willReturn(builderImage);
+		given(docker.image().inspect(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")))).willThrow(
+				new DockerEngineException("docker://localhost/", new URI("example"), 404, "NOT FOUND", null, null))
+				.willReturn(runImage);
+		Builder builder = new Builder(BuildLog.to(out), docker);
+		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.IF_NOT_PRESENT);
+		builder.build(request);
+		assertThat(out.toString()).contains("Running creator");
+		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+		ArgumentCaptor<ImageArchive> archive = ArgumentCaptor.forClass(ImageArchive.class);
+		verify(docker.image()).load(archive.capture(), any());
+		verify(docker.image()).remove(archive.getValue().getTag(), true);
+		verify(docker.image(), times(2)).inspect(any());
+		verify(docker.image(), times(2)).pull(any(), any());
 	}
 
 	@Test

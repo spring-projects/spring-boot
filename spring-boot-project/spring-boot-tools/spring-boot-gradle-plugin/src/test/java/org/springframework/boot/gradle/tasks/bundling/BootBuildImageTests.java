@@ -27,6 +27,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -192,6 +193,17 @@ class BootBuildImageTests {
 	void whenRunImageIsConfiguredThenRequestUsesSpecifiedRunImage() {
 		this.buildImage.setRunImage("example.com/test/run:1.0");
 		assertThat(this.buildImage.createRequest().getRunImage().getName()).isEqualTo("test/run");
+	}
+
+	@Test
+	void whenUsingDefaultConfigurationThenRequestHasNoPullDisabled() {
+		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
+	}
+
+	@Test
+	void whenNoPullIsEnabledThenRequestHasNoPullEnabled() {
+		this.buildImage.setPullPolicy(PullPolicy.NEVER);
+		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.NEVER);
 	}
 
 }

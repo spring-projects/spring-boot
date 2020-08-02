@@ -72,6 +72,21 @@ public interface BuildLog {
 	void pulledRunImage(BuildRequest request, Image image);
 
 	/**
+	 * Log that the image is being pulled.
+	 * @param imageReference the image reference
+	 * @param imageType the image type
+	 * @return a consumer for progress update events
+	 */
+	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType);
+
+	/**
+	 * Log that the image has been pulled.
+	 * @param image the builder image that was pulled
+	 * @param imageType the image type that was pulled
+	 */
+	void pulledImage(Image image, ImageType imageType);
+
+	/**
 	 * Log that the lifecycle is executing.
 	 * @param request the build request
 	 * @param version the lifecycle version

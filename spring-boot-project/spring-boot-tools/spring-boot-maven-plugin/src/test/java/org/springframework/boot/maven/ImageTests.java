@@ -26,6 +26,7 @@ import org.apache.maven.artifact.versioning.VersionRange;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 
@@ -63,6 +64,7 @@ class ImageTests {
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
+		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
 	}
 
 	@Test
@@ -103,6 +105,14 @@ class ImageTests {
 		image.verboseLogging = true;
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.isVerboseLogging()).isTrue();
+	}
+
+	@Test
+	void getBuildRequestWhenHasPullPolicyUsesPullPolicy() {
+		Image image = new Image();
+		image.setPullPolicy(PullPolicy.NEVER);
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.NEVER);
 	}
 
 	private Artifact createArtifact() {
