@@ -286,7 +286,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	private LoggerContext getLoggerContext() {
 		ILoggerFactory factory = StaticLoggerBinder.getSingleton().getLoggerFactory();
 		Assert.isInstanceOf(LoggerContext.class, factory,
-				String.format(
+				() -> String.format(
 						"LoggerFactory is not a Logback LoggerContext but Logback is on "
 								+ "the classpath. Either remove Logback or the competing "
 								+ "implementation (%s loaded from %s). If you are using "

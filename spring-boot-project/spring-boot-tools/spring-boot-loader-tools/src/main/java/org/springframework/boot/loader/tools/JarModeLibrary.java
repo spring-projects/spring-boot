@@ -65,7 +65,7 @@ public class JarModeLibrary extends Library {
 	public InputStream openStream() throws IOException {
 		String path = "META-INF/jarmode/" + getCoordinates().getArtifactId() + ".jar";
 		URL resource = getClass().getClassLoader().getResource(path);
-		Assert.state(resource != null, "Unable to find resource " + path);
+		Assert.state(resource != null, () -> "Unable to find resource " + path);
 		return resource.openStream();
 	}
 

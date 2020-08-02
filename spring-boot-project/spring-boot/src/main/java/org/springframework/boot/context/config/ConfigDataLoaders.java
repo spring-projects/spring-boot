@@ -105,7 +105,7 @@ class ConfigDataLoaders {
 				}
 			}
 		}
-		Assert.state(result != null, "No loader found for location '" + location + "'");
+		Assert.state(result != null, () -> "No loader found for location '" + location + "'");
 		return result;
 	}
 

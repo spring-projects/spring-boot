@@ -113,8 +113,8 @@ public class Builder {
 	private void assertStackIdsMatch(Image runImage, Image builderImage) {
 		StackId runImageStackId = StackId.fromImage(runImage);
 		StackId builderImageStackId = StackId.fromImage(builderImage);
-		Assert.state(runImageStackId.equals(builderImageStackId),
-				"Run image stack '" + runImageStackId + "' does not match builder stack '" + builderImageStackId + "'");
+		Assert.state(runImageStackId.equals(builderImageStackId), () -> "Run image stack '" + runImageStackId
+				+ "' does not match builder stack '" + builderImageStackId + "'");
 	}
 
 	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {

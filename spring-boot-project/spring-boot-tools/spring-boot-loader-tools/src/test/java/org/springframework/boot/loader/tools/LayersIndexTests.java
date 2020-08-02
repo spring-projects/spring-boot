@@ -130,7 +130,7 @@ class LayersIndexTests {
 				String actualContent = getContent();
 				String name = "LayersIndexTests-" + LayersIndexTests.this.testMethodName + ".txt";
 				InputStream in = LayersIndexTests.class.getResourceAsStream(name);
-				Assert.state(in != null, "Can't read " + name);
+				Assert.state(in != null, () -> "Can't read " + name);
 				String expectedContent = new String(FileCopyUtils.copyToByteArray(in), StandardCharsets.UTF_8);
 				expectedContent = expectedContent.replace("\r", "");
 				assertThat(actualContent).isEqualTo(expectedContent);
