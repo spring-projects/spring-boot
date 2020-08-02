@@ -48,7 +48,7 @@ public enum PeriodStyle {
 				}
 				Matcher matcher = matcher(value);
 				Assert.state(matcher.matches(), "Does not match simple period pattern");
-				Assert.isTrue(hasAtLeastOneGroupValue(matcher), "'" + value + "' is not a valid simple period");
+				Assert.isTrue(hasAtLeastOneGroupValue(matcher), () -> "'" + value + "' is not a valid simple period");
 				int years = parseInt(matcher, 1);
 				int months = parseInt(matcher, 2);
 				int weeks = parseInt(matcher, 3);

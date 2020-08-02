@@ -94,7 +94,7 @@ public abstract class Packager {
 	protected Packager(File source, LayoutFactory layoutFactory) {
 		Assert.notNull(source, "Source file must not be null");
 		Assert.isTrue(source.exists() && source.isFile(),
-				"Source must refer to an existing file, got " + source.getAbsolutePath());
+				() -> "Source must refer to an existing file, got " + source.getAbsolutePath());
 		this.source = source.getAbsoluteFile();
 		this.layoutFactory = layoutFactory;
 	}
