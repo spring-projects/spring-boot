@@ -67,6 +67,11 @@ public class Image {
 	 */
 	boolean verboseLogging;
 
+	/**
+	 * If images should be pulled from a remote repository during image build.
+	 */
+	boolean noPull;
+
 	void setName(String name) {
 		this.name = name;
 	}
@@ -77,6 +82,10 @@ public class Image {
 
 	void setRunImage(String runImage) {
 		this.runImage = runImage;
+	}
+
+	public void setNoPull(boolean noPull) {
+		this.noPull = noPull;
 	}
 
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
@@ -103,6 +112,7 @@ public class Image {
 		}
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);
+		request = request.withNoPull(this.noPull);
 		return request;
 	}
 

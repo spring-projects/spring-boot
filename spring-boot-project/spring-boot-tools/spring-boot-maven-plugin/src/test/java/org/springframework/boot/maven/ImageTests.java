@@ -63,6 +63,7 @@ class ImageTests {
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
+		assertThat(request.isNoPull()).isFalse();
 	}
 
 	@Test
@@ -103,6 +104,14 @@ class ImageTests {
 		image.verboseLogging = true;
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.isVerboseLogging()).isTrue();
+	}
+
+	@Test
+	void getBuildRequestWhenHasNoPullUsesNoPull() {
+		Image image = new Image();
+		image.setNoPull(true);
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.isNoPull()).isTrue();
 	}
 
 	private Artifact createArtifact() {

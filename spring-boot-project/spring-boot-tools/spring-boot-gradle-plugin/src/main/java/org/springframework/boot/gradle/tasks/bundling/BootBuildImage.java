@@ -69,6 +69,8 @@ public class BootBuildImage extends DefaultTask {
 
 	private boolean verboseLogging;
 
+	private boolean noPull;
+
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
 		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
@@ -224,6 +226,24 @@ public class BootBuildImage extends DefaultTask {
 		this.verboseLogging = verboseLogging;
 	}
 
+	/**
+	 * Returns whether images should be pulled from a remote repository during image
+	 * build.
+	 * @return whether images should be pulled
+	 */
+	@Input
+	public boolean isNoPull() {
+		return this.noPull;
+	}
+
+	/**
+	 * Sets whether images should be pulled from a remote repository during image build.
+	 * @param noPull {@code true} to disable pulling an image, otherwise {@code false}.
+	 */
+	public void setNoPull(boolean noPull) {
+		this.noPull = noPull;
+	}
+
 	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
 		Builder builder = new Builder();
@@ -255,6 +275,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizeCreator(request);
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);
+		request = request.withNoPull(this.noPull);
 		return request;
 	}
 

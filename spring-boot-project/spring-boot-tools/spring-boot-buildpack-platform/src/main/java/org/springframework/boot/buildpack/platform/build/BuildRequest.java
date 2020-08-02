@@ -56,6 +56,8 @@ public class BuildRequest {
 
 	private final boolean verboseLogging;
 
+	private final boolean noPull;
+
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(applicationContent, "ApplicationContent must not be null");
@@ -66,12 +68,13 @@ public class BuildRequest {
 		this.env = Collections.emptyMap();
 		this.cleanCache = false;
 		this.verboseLogging = false;
+		this.noPull = false;
 		this.creator = Creator.withVersion("");
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
 			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
-			boolean verboseLogging) {
+			boolean verboseLogging, boolean noPull) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
@@ -80,6 +83,7 @@ public class BuildRequest {
 		this.env = env;
 		this.cleanCache = cleanCache;
 		this.verboseLogging = verboseLogging;
+		this.noPull = noPull;
 	}
 
 	/**
@@ -90,7 +94,7 @@ public class BuildRequest {
 	public BuildRequest withBuilder(ImageReference builder) {
 		Assert.notNull(builder, "Builder must not be null");
 		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.runImage,
-				this.creator, this.env, this.cleanCache, this.verboseLogging);
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.noPull);
 	}
 
 	/**
@@ -100,7 +104,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withRunImage(ImageReference runImageName) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, runImageName.inTaggedOrDigestForm(),
-				this.creator, this.env, this.cleanCache, this.verboseLogging);
+				this.creator, this.env, this.cleanCache, this.verboseLogging, this.noPull);
 	}
 
 	/**
@@ -111,7 +115,7 @@ public class BuildRequest {
 	public BuildRequest withCreator(Creator creator) {
 		Assert.notNull(creator, "Creator must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, creator, this.env,
-				this.cleanCache, this.verboseLogging);
+				this.cleanCache, this.verboseLogging, this.noPull);
 	}
 
 	/**
@@ -126,7 +130,7 @@ public class BuildRequest {
 		Map<String, String> env = new LinkedHashMap<>(this.env);
 		env.put(name, value);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
-				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging);
+				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging, this.noPull);
 	}
 
 	/**
@@ -139,7 +143,7 @@ public class BuildRequest {
 		Map<String, String> updatedEnv = new LinkedHashMap<>(this.env);
 		updatedEnv.putAll(env);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
-				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging);
+				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging, this.noPull);
 	}
 
 	/**
@@ -149,7 +153,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withCleanCache(boolean cleanCache) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				cleanCache, this.verboseLogging);
+				cleanCache, this.verboseLogging, this.noPull);
 	}
 
 	/**
@@ -159,7 +163,17 @@ public class BuildRequest {
 	 */
 	public BuildRequest withVerboseLogging(boolean verboseLogging) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, verboseLogging);
+				this.cleanCache, verboseLogging, this.noPull);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with an updated no-pull setting.
+	 * @param noPull if no need to pull images
+	 * @return an updated build request
+	 */
+	public BuildRequest withNoPull(boolean noPull) {
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
+				this.cleanCache, this.verboseLogging, noPull);
 	}
 
 	/**
@@ -227,6 +241,14 @@ public class BuildRequest {
 	 */
 	public boolean isVerboseLogging() {
 		return this.verboseLogging;
+	}
+
+	/**
+	 * Return if no need to pull images from a remote repository.
+	 * @return if no need to pull images
+	 */
+	public boolean isNoPull() {
+		return this.noPull;
 	}
 
 	/**

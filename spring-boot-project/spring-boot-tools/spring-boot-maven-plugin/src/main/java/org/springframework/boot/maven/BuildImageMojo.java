@@ -123,6 +123,12 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	@Parameter(property = "spring-boot.build-image.runImage", readonly = true)
 	String runImage;
 
+	/**
+	 * Alias for {@link Image#noPull} to support configuration via command-line property.
+	 */
+	@Parameter(property = "spring-boot.build-image.noPull", readonly = true)
+	boolean noPull;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -160,6 +166,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		if (image.runImage == null && this.runImage != null) {
 			image.setRunImage(this.runImage);
 		}
+		image.setNoPull(this.noPull);
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
 

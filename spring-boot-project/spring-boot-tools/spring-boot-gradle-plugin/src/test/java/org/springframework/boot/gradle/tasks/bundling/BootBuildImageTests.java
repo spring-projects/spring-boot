@@ -194,4 +194,15 @@ class BootBuildImageTests {
 		assertThat(this.buildImage.createRequest().getRunImage().getName()).isEqualTo("test/run");
 	}
 
+	@Test
+	void whenUsingDefaultConfigurationThenRequestHasNoPullDisabled() {
+		assertThat(this.buildImage.createRequest().isNoPull()).isFalse();
+	}
+
+	@Test
+	void whenNoPullIsEnabledThenRequestHasNoPullEnabled() {
+		this.buildImage.setNoPull(true);
+		assertThat(this.buildImage.createRequest().isNoPull()).isTrue();
+	}
+
 }

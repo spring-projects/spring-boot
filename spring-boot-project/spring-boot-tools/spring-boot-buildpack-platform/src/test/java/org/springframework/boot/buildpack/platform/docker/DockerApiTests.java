@@ -217,6 +217,21 @@ class DockerApiTests {
 			verify(http()).delete(removeUri);
 		}
 
+		@Test
+		void inspectWhenReferenceIsNullThrowsException() {
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.inspect(null))
+					.withMessage("Reference must not be null");
+		}
+
+		@Test
+		void inspectInspectImage() throws Exception {
+			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/json");
+			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
+			Image image = this.api.inspect(reference);
+			assertThat(image.getLayers()).hasSize(46);
+		}
+
 	}
 
 	@Nested
