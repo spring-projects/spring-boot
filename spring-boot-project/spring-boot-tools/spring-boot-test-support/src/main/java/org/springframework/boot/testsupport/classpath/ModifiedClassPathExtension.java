@@ -41,7 +41,7 @@ import org.springframework.util.ReflectionUtils;
  *
  * @author Christoph Dreis
  */
-class ModifiedClassPathExtension implements InvocationInterceptor {
+public class ModifiedClassPathExtension implements InvocationInterceptor {
 
 	@Override
 	public void interceptBeforeAllMethod(Invocation<Void> invocation,
