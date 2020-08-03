@@ -89,7 +89,14 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 
 	private static ModifiedClassPathClassLoader compute(Class<?> testClass) {
 		ClassLoader classLoader = testClass.getClassLoader();
-		return new ModifiedClassPathClassLoader(processUrls(extractUrls(classLoader), testClass),
+		MergedAnnotations annotations = MergedAnnotations.from(testClass,
+				MergedAnnotations.SearchStrategy.TYPE_HIERARCHY);
+		if (annotations.isPresent(ForkedClassPath.class) && (annotations.isPresent(ClassPathOverrides.class)
+				|| annotations.isPresent(ClassPathExclusions.class))) {
+			throw new IllegalStateException("@ForkedClassPath is redundant in combination with either "
+					+ "@ClassPathOverrides or @ClassPathExclusions");
+		}
+		return new ModifiedClassPathClassLoader(processUrls(extractUrls(classLoader), annotations),
 				classLoader.getParent(), classLoader);
 	}
 
@@ -170,9 +177,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		}
 	}
 
-	private static URL[] processUrls(URL[] urls, Class<?> testClass) {
-		MergedAnnotations annotations = MergedAnnotations.from(testClass,
-				MergedAnnotations.SearchStrategy.TYPE_HIERARCHY);
+	private static URL[] processUrls(URL[] urls, MergedAnnotations annotations) {
 		ClassPathEntryFilter filter = new ClassPathEntryFilter(annotations.get(ClassPathExclusions.class));
 		List<URL> additionalUrls = getAdditionalUrls(annotations.get(ClassPathOverrides.class));
 		List<URL> processedUrls = new ArrayList<>(additionalUrls);
