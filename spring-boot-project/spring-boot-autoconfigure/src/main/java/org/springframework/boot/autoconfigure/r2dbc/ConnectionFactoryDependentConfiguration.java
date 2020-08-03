@@ -18,27 +18,27 @@ package org.springframework.boot.autoconfigure.r2dbc;
 
 import io.r2dbc.spi.ConnectionFactory;
 
-import org.springframework.boot.autoconfigure.AutoConfigureBefore;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for R2DBC.
+ * Configuration of the R2DBC infrastructure based on a {@link ConnectionFactory}.
  *
- * @author Mark Paluch
  * @author Stephane Nicoll
- * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(ConnectionFactory.class)
-@AutoConfigureBefore(DataSourceAutoConfiguration.class)
-@EnableConfigurationProperties(R2dbcProperties.class)
-@Import({ ConnectionFactoryConfigurations.Pool.class, ConnectionFactoryConfigurations.Generic.class,
-		ConnectionFactoryDependentConfiguration.class })
-public class R2dbcAutoConfiguration {
+@ConditionalOnClass(DatabaseClient.class)
+@ConditionalOnSingleCandidate(ConnectionFactory.class)
+class ConnectionFactoryDependentConfiguration {
+
+	@Bean
+	@ConditionalOnMissingBean
+	DatabaseClient r2dbcDatabaseClient(ConnectionFactory connectionFactory) {
+		return DatabaseClient.builder().connectionFactory(connectionFactory).build();
+	}
 
 }

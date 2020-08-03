@@ -1972,7 +1972,7 @@ You can tune that behavior by setting `spring.datasource.continue-on-error`.
 === Initialize a Database Using R2DBC
 If you are using R2DBC, the regular `DataSource` auto-configuration backs off so none of the options described above can be used.
 
-If you are using Spring Data R2DBC, you can initialize the database on startup using SQL scripts as shown in the following example:
+You can initialize the database on startup using SQL scripts as shown in the following example:
 
 [source,java,indent=0]
 ----

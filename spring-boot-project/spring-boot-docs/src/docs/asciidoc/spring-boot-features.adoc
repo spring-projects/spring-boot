@@ -4215,7 +4215,7 @@ If you want to make sure that each context has a separate embedded database, you
 
 [[boot-features-r2dbc-using-database-client]]
 ==== Using DatabaseClient
-Spring Data's `DatabaseClient` class is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
+A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
 [source,java,indent=0]
 ----

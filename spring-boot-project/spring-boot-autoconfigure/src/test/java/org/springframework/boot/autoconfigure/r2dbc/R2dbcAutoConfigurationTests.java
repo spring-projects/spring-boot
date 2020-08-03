@@ -39,6 +39,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -238,6 +239,24 @@ class R2dbcAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasSingleBean(ConnectionFactory.class)
 						.doesNotHaveBean(DataSource.class));
+	}
+
+	@Test
+	void databaseClientIsConfigured() {
+		this.contextRunner.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName())
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class).hasSingleBean(DatabaseClient.class);
+					assertThat(context.getBean(DatabaseClient.class).getConnectionFactory())
+							.isSameAs(context.getBean(ConnectionFactory.class));
+				});
+	}
+
+	@Test
+	void databaseClientBacksOffIfSpringR2dbcIsNotAvailable() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.r2dbc"))
+				.withPropertyValues("spring.r2dbc.url:r2dbc:h2:mem:///" + randomDatabaseName())
+				.run((context) -> assertThat(context).hasSingleBean(ConnectionFactory.class)
+						.doesNotHaveBean(DatabaseClient.class));
 	}
 
 	private String randomDatabaseName() {
