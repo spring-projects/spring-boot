@@ -52,7 +52,7 @@ anchors:
         "zip.deployed": "false"
   slack-fail-params: &slack-fail-params
     text: >
-      @here :concourse-failed: <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>
+      :concourse-failed: @here <https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}|${BUILD_PIPELINE_NAME} ${BUILD_JOB_NAME} failed!>
       [$TEXT_FILE_CONTENT]
     text_file: git-repo/build/build-scan-uri.txt
     silent: true
