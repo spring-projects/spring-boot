@@ -1321,7 +1321,7 @@ Spring Boot also <<production-ready-metrics-meter,configures built-in instrument
 [[production-ready-metrics-export-appoptics]]
 ==== AppOptics
 By default, the AppOptics registry pushes metrics to `https://api.appoptics.com/v1/measurements` periodically.
-To export metrics to SaaS {micrometer-registry-docs}/appoptics[AppOptics], your API token must be provided:
+To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your API token must be provided:
 
 [source,properties,indent=0,configprops]
 ----
@@ -1561,7 +1561,7 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 
 [[production-ready-metrics-export-signalfx]]
 ==== SignalFx
-SignalFx registry pushes metrics to {micrometer-registry-docs}/signalfx[SignalFx] periodically.
+SignalFx registry pushes metrics to {micrometer-registry-docs}/signalFx[SignalFx] periodically.
 To export metrics to https://www.signalfx.com[SignalFx], your access token must be provided:
 
 [source,properties,indent=0,configprops]
@@ -1596,7 +1596,7 @@ You can also disable it explicitly:
 [[production-ready-metrics-export-statsd]]
 ==== StatsD
 The StatsD registry pushes metrics over UDP to a StatsD agent eagerly.
-By default, metrics are exported to a {micrometer-registry-docs}/statsd[StatsD] agent running on your local machine.
+By default, metrics are exported to a {micrometer-registry-docs}/statsD[StatsD] agent running on your local machine.
 The StatsD agent host and port to use can be provided using:
 
 [source,properties,indent=0,configprops]
