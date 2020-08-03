@@ -1,5 +1,4 @@
 source ./test-functions.sh
-source ./init.d/test-functions.sh
 install_service
 echo 'LOG_FOLDER=log' > /test-service/spring-boot-app.conf
 mkdir -p /test-service/log

@@ -1,5 +1,4 @@
 source ./test-functions.sh
-source ./init.d/test-functions.sh
 install_service
 echo 'RUN_ARGS=--server.port=8081' > /test-service/spring-boot-app.conf
 start_service

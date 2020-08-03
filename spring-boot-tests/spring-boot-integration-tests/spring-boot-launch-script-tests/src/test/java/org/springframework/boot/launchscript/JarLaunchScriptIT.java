@@ -22,45 +22,72 @@ import org.junit.jupiter.params.provider.MethodSource;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests of Spring Boot's launch script with launching via shell.
+ * Integration tests of Spring Boot's launch script when executing the jar directly.
  *
  * @author Alexey Vinogradov
+ * @author Andy Wilkinson
  */
-class ShellLaunchScriptIT extends AbstractLaunchScriptIT {
+class JarLaunchScriptIT extends AbstractLaunchScriptIT {
+
+	JarLaunchScriptIT() {
+		super("jar/");
+	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
 	void basicLaunch(String os, String version) throws Exception {
-		doLaunch(os, version, "jar/basic-launch.sh");
+		doLaunch(os, version, "basic-launch.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
 	void launchWithDebugEnv(String os, String version) throws Exception {
-		final String output = doTest(os, version, "jar/launch-with-debug.sh");
+		final String output = doTest(os, version, "launch-with-debug.sh");
 		assertThat(output).contains("++ pwd");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
 	void launchWithDifferentJarFileEnv(String os, String version) throws Exception {
-		final String output = doTest(os, version, "jar/launch-with-jarfile.sh");
+		final String output = doTest(os, version, "launch-with-jarfile.sh");
 		assertThat(output).contains("app-another.jar");
 		assertThat(output).doesNotContain("spring-boot-launch-script-tests.jar");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	void launchWithDifferentAppName(String os, String version) throws Exception {
-		final String output = doTest(os, version, "jar/launch-with-app-name.sh");
-		assertThat(output).contains("All tests are passed.");
+	void launchWithSingleCommandLineArgument(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-single-command-line-argument.sh");
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
-	void launchInInitdDir(String os, String version) throws Exception {
-		final String output = doTest(os, version, "jar/launch-in-init.d-dir.sh");
-		assertThat(output).contains("Usage: ./some_app {start|stop|force-stop|restart|force-reload|status|run}");
+	void launchWithMultipleCommandLineArguments(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-multiple-command-line-arguments.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	void launchWithSingleRunArg(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-single-run-arg.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	void launchWithMultipleRunArgs(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-multiple-run-args.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	void launchWithSingleJavaOpt(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-single-java-opt.sh");
+	}
+
+	@ParameterizedTest(name = "{0} {1}")
+	@MethodSource("parameters")
+	void launchWithMultipleJavaOpts(String os, String version) throws Exception {
+		doLaunch(os, version, "launch-with-multiple-java-opts.sh");
 	}
 
 }

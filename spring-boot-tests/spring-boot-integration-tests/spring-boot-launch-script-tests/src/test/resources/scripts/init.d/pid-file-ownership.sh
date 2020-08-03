@@ -1,5 +1,4 @@
 source ./test-functions.sh
-source ./init.d/test-functions.sh
 install_service
 
 useradd phil

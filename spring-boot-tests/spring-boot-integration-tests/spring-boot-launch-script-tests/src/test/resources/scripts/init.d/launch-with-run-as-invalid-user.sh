@@ -1,5 +1,4 @@
 source ./test-functions.sh
-source ./init.d/test-functions.sh
 install_service
 
 echo 'RUN_AS_USER=johndoe' > /test-service/spring-boot-app.conf

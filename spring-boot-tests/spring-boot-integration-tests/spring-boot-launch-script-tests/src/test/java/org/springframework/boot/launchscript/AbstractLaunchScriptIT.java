@@ -35,11 +35,19 @@ import static org.hamcrest.Matchers.containsString;
 /**
  * Abstract base class for testing the launch script.
  *
+ * @author Andy Wilkinson
+ * @author Ali Shahbour
  * @author Alexey Vinogradov
  */
 abstract class AbstractLaunchScriptIT {
 
 	protected static final char ESC = 27;
+
+	private final String scriptsDir;
+
+	protected AbstractLaunchScriptIT(String scriptsDir) {
+		this.scriptsDir = scriptsDir;
+	}
 
 	static List<Object[]> parameters() {
 		List<Object[]> parameters = new ArrayList<>();
@@ -69,7 +77,8 @@ abstract class AbstractLaunchScriptIT {
 
 	protected String doTest(String os, String version, String script) throws Exception {
 		ToStringConsumer consumer = new ToStringConsumer().withRemoveAnsiCodes(false);
-		try (LaunchScriptTestContainer container = new LaunchScriptTestContainer(os, version, script)) {
+		try (LaunchScriptTestContainer container = new LaunchScriptTestContainer(os, version, this.scriptsDir,
+				script)) {
 			container.withLogConsumer(consumer);
 			container.start();
 			while (container.isRunning()) {
@@ -81,17 +90,16 @@ abstract class AbstractLaunchScriptIT {
 
 	private static final class LaunchScriptTestContainer extends GenericContainer<LaunchScriptTestContainer> {
 
-		private LaunchScriptTestContainer(String os, String version, String testScript) {
+		private LaunchScriptTestContainer(String os, String version, String scriptsDir, String testScript) {
 			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
 					.withFileFromFile("Dockerfile",
-							new File("src/test/resources/conf/" + os + "/" + version + "/Dockerfile"))
-					.withFileFromFile("spring-boot-launch-script-tests.jar", findApplication())
-					.withFileFromFile("test-functions.sh", new File("src/test/resources/scripts/test-functions.sh"))
-					.withFileFromFile("jar/test-functions.sh",
-							new File("src/test/resources/scripts/jar/test-functions.sh"))
-					.withFileFromFile("init.d/test-functions.sh",
-							new File("src/test/resources/scripts/init.d/test-functions.sh")));
-			withCopyFileToContainer(MountableFile.forHostPath("src/test/resources/scripts/" + testScript),
+							new File("src/test/resources/conf/" + os + "/" + version + "/Dockerfile")));
+			withCopyFileToContainer(MountableFile.forHostPath(findApplication().getAbsolutePath()),
+					"/spring-boot-launch-script-tests.jar");
+			withCopyFileToContainer(
+					MountableFile.forHostPath("src/test/resources/scripts/" + scriptsDir + "test-functions.sh"),
+					"/test-functions.sh");
+			withCopyFileToContainer(MountableFile.forHostPath("src/test/resources/scripts/" + scriptsDir + testScript),
 					"/" + testScript);
 			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
 			withStartupTimeout(Duration.ofMinutes(10));

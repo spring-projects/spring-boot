@@ -1,5 +1,4 @@
 source ./test-functions.sh
-source ./init.d/test-functions.sh
 install_service
 mkdir /test-service/pid
 echo 'PID_FOLDER=pid' > /test-service/spring-boot-app.conf

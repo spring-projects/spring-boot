@@ -1,5 +1,4 @@
 source ./test-functions.sh
-source ./init.d/test-functions.sh
 install_double_link_service
 echo 'JAVA_OPTS=-Dserver.port=8081' > /test-service/spring-boot-app.conf
 start_service
