@@ -7,5 +7,3 @@ RUN yum install -y wget && \
         https://cdn.azul.com/zulu/bin/zulu8.21.0.1-jdk8.0.131-linux.x86_64.rpm && \
     yum --nogpg localinstall -y jdk.rpm && \
     rm -f jdk.rpm
-ADD spring-boot-launch-script-tests.jar /spring-boot-launch-script-tests.jar
-ADD test-functions.sh /test-functions.sh
