@@ -80,16 +80,18 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 		this.contextRunner.withPropertyValues(getPropertyValues()).run((context) -> {
 			RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
 			RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
-			assertThat(registration.getProviderDetails().getWebSsoUrl())
+
+			assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceLocation())
 					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php");
-			assertThat(registration.getProviderDetails().getEntityId())
+			assertThat(registration.getAssertingPartyDetails().getEntityId())
 					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php");
-			assertThat(registration.getAssertionConsumerServiceUrlTemplate())
+			assertThat(registration.getAssertionConsumerServiceLocation())
 					.isEqualTo("{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
-			assertThat(registration.getProviderDetails().getBinding()).isEqualTo(Saml2MessageBinding.POST);
-			assertThat(registration.getProviderDetails().isSignAuthNRequest()).isEqualTo(false);
-			assertThat(registration.getSigningCredentials()).isNotNull();
-			assertThat(registration.getVerificationCredentials()).isNotNull();
+			assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
+					.isEqualTo(Saml2MessageBinding.POST);
+			assertThat(registration.getAssertingPartyDetails().getWantAuthnRequestsSigned()).isEqualTo(false);
+			assertThat(registration.getSigningX509Credentials()).isNotNull();
+			assertThat(registration.getAssertingPartyDetails().getVerificationX509Credentials()).isNotNull();
 		});
 	}
 
