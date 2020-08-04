@@ -19,6 +19,8 @@ package org.springframework.boot.launchscript;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
 
+import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -27,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Alexey Vinogradov
  * @author Andy Wilkinson
  */
+@DisabledIfDockerUnavailable
 class JarLaunchScriptIntegrationTests extends AbstractLaunchScriptIntegrationTests {
 
 	JarLaunchScriptIntegrationTests() {
