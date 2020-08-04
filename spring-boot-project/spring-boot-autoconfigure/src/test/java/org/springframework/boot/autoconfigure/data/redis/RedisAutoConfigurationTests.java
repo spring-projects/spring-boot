@@ -314,20 +314,20 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithClusterDynamicSourcesEnabled() {
+	void testRedisConfigurationWithClusterDynamicRefreshSourcesEnabled() {
 		this.contextRunner
 				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-						"spring.redis.lettuce.cluster.refresh.dynamic-sources=true")
+						"spring.redis.lettuce.cluster.refresh.dynamic-refresh-sources=true")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
 								.isTrue()));
 	}
 
 	@Test
-	void testRedisConfigurationWithClusterDynamicSourcesDisabled() {
+	void testRedisConfigurationWithClusterDynamicRefreshSourcesDisabled() {
 		this.contextRunner
 				.withPropertyValues("spring.redis.cluster.nodes=127.0.0.1:27379,127.0.0.1:27380",
-						"spring.redis.lettuce.cluster.refresh.dynamic-sources=false")
+						"spring.redis.lettuce.cluster.refresh.dynamic-refresh-sources=false")
 				.run(assertClientOptions(ClusterClientOptions.class,
 						(options) -> assertThat(options.getTopologyRefreshOptions().useDynamicRefreshSources())
 								.isFalse()));

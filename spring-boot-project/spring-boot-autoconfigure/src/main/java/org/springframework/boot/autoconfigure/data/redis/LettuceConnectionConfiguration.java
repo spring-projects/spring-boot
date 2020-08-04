@@ -131,15 +131,13 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (getProperties().getCluster() != null) {
 			ClusterClientOptions.Builder builder = ClusterClientOptions.builder();
 			Refresh refreshProperties = getProperties().getLettuce().getCluster().getRefresh();
-			Builder refreshBuilder = ClusterTopologyRefreshOptions.builder();
+			Builder refreshBuilder = ClusterTopologyRefreshOptions.builder()
+					.dynamicRefreshSources(refreshProperties.isDynamicRefreshSources());
 			if (refreshProperties.getPeriod() != null) {
 				refreshBuilder.enablePeriodicRefresh(refreshProperties.getPeriod());
 			}
 			if (refreshProperties.isAdaptive()) {
 				refreshBuilder.enableAllAdaptiveRefreshTriggers();
-			}
-			if (refreshProperties.isDynamicSources() != null) {
-				refreshBuilder.dynamicRefreshSources(refreshProperties.isDynamicSources());
 			}
 			return builder.topologyRefreshOptions(refreshBuilder.build());
 		}
