@@ -16,37 +16,30 @@
 
 package org.springframework.boot.launchscript;
 
-import java.io.File;
-import java.time.Duration;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.regex.Pattern;
 
-import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.params.ParameterizedTest;
 import org.junit.jupiter.params.provider.MethodSource;
-import org.testcontainers.containers.GenericContainer;
-import org.testcontainers.containers.output.ToStringConsumer;
-import org.testcontainers.images.builder.ImageFromDockerfile;
-import org.testcontainers.utility.MountableFile;
 
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
 
 /**
  * Integration tests for Spring Boot's launch script on OSs that use SysVinit.
  *
  * @author Andy Wilkinson
  * @author Ali Shahbour
+ * @author Alexey Vinogradov
  */
 @DisabledIfDockerUnavailable
-class SysVinitLaunchScriptIntegrationTests {
+class SysVinitLaunchScriptIntegrationTests extends AbstractLaunchScriptIntegrationTests {
 
-	private static final char ESC = 27;
+	SysVinitLaunchScriptIntegrationTests() {
+		super("init.d/");
+	}
 
 	@ParameterizedTest(name = "{0} {1}")
 	@MethodSource("parameters")
@@ -279,44 +272,6 @@ class SysVinitLaunchScriptIntegrationTests {
 		assertThat(output).has(coloredString(AnsiColor.RED, "Cannot run as 'wagner': current user is not root"));
 	}
 
-	static List<Object[]> parameters() {
-		List<Object[]> parameters = new ArrayList<>();
-		for (File os : new File("src/intTest/resources/conf").listFiles()) {
-			for (File version : os.listFiles()) {
-				parameters.add(new Object[] { os.getName(), version.getName() });
-			}
-		}
-		return parameters;
-	}
-
-	private void doLaunch(String os, String version, String script) throws Exception {
-		assertThat(doTest(os, version, script)).contains("Launched");
-	}
-
-	private String doTest(String os, String version, String script) throws Exception {
-		ToStringConsumer consumer = new ToStringConsumer().withRemoveAnsiCodes(false);
-		try (LaunchScriptTestContainer container = new LaunchScriptTestContainer(os, version, script)) {
-			container.withLogConsumer(consumer);
-			container.start();
-			while (container.isRunning()) {
-				Thread.sleep(100);
-			}
-		}
-		return consumer.toUtf8String();
-	}
-
-	private Condition<String> coloredString(AnsiColor color, String string) {
-		String colorString = ESC + "[0;" + color + "m" + string + ESC + "[0m";
-		return new Condition<String>() {
-
-			@Override
-			public boolean matches(String value) {
-				return containsString(colorString).matches(value);
-			}
-
-		};
-	}
-
 	private String extractPid(String output) {
 		return extract("PID", output);
 	}
@@ -328,31 +283,6 @@ class SysVinitLaunchScriptIntegrationTests {
 			return matcher.group(1);
 		}
 		throw new IllegalArgumentException("Failed to extract " + label + " from output: " + output);
-	}
-
-	private static final class LaunchScriptTestContainer extends GenericContainer<LaunchScriptTestContainer> {
-
-		private LaunchScriptTestContainer(String os, String version, String testScript) {
-			super(new ImageFromDockerfile("spring-boot-launch-script/" + os.toLowerCase() + "-" + version)
-					.withFileFromFile("Dockerfile",
-							new File("src/intTest/resources/conf/" + os + "/" + version + "/Dockerfile"))
-					.withFileFromFile("app.jar", findApplication()).withFileFromFile("test-functions.sh",
-							new File("src/intTest/resources/scripts/test-functions.sh")));
-			withCopyFileToContainer(MountableFile.forHostPath("src/intTest/resources/scripts/" + testScript),
-					"/" + testScript);
-			withCommand("/bin/bash", "-c", "chmod +x " + testScript + " && ./" + testScript);
-			withStartupTimeout(Duration.ofMinutes(10));
-		}
-
-		private static File findApplication() {
-			File appJar = new File("build/app/build/libs/app.jar");
-			if (appJar.isFile()) {
-				return appJar;
-			}
-			throw new IllegalStateException(
-					"Could not find test application in build/app/build/libs directory. Have you built it?");
-		}
-
 	}
 
 }
