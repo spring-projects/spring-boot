@@ -101,7 +101,7 @@ class KafkaMetricsAutoConfigurationTests {
 	static class EnableKafkaStreamsConfiguration {
 
 		@Bean
-		public KTable<?, ?> table(StreamsBuilder builder) {
+		KTable<?, ?> table(StreamsBuilder builder) {
 			KStream<Object, Object> stream = builder.stream(Pattern.compile("test"));
 			return stream.groupByKey().count(Materialized.as("store"));
 		}
