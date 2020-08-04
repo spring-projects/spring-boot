@@ -26,6 +26,6 @@ allprojects {
 	}
 
 	configurations.all {
-		resolutionStrategy.cacheChangingModulesFor 60, "minutes"
+		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
