@@ -69,7 +69,7 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-core")
-	implementation("io.projectreactor.netty:reactor-netty")
+	implementation("io.projectreactor.netty:reactor-netty-http")
 	implementation("jakarta.servlet:jakarta.servlet-api")
 	implementation("org.apache.commons:commons-dbcp2")
 	implementation("org.apache.kafka:kafka-streams")

@@ -58,7 +58,7 @@ final class GracefulShutdown {
 	private void doShutdown(GracefulShutdownCallback callback, DisposableServer server) {
 		this.shuttingDown = true;
 		try {
-			server.disposeNow(Duration.ofMillis(Long.MAX_VALUE));
+			server.disposeNow(Duration.ofNanos(Long.MAX_VALUE));
 			logger.info("Graceful shutdown complete");
 			callback.shutdownComplete(GracefulShutdownResult.IDLE);
 		}

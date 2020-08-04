@@ -84,7 +84,7 @@ dependencies {
 	testImplementation("org.springframework:spring-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 
-	testRuntimeOnly("io.projectreactor.netty:reactor-netty")
+	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
 	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")

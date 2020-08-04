@@ -29,7 +29,7 @@ dependencies {
 	optional("com.sun.mail:jakarta.mail")
 	optional("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 	optional("io.lettuce:lettuce-core")
-	optional("io.projectreactor.netty:reactor-netty")
+	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.rsocket:rsocket-core")

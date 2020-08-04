@@ -141,7 +141,7 @@ class WebFluxEndpointIntegrationTests
 
 		@Bean
 		WebFilter webFilter() {
-			return (exchange, chain) -> chain.filter(exchange).subscriberContext(
+			return (exchange, chain) -> chain.filter(exchange).contextWrite(
 					ReactiveSecurityContextHolder.withAuthentication(new UsernamePasswordAuthenticationToken("Alice",
 							"secret", Arrays.asList(new SimpleGrantedAuthority("ROLE_ACTUATOR")))));
 		}
