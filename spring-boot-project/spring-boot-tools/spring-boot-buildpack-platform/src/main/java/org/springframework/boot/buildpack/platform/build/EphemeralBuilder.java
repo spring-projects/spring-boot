@@ -74,7 +74,7 @@ class EphemeralBuilder {
 		return Layer.of((layout) -> {
 			for (Map.Entry<String, String> entry : env.entrySet()) {
 				String name = "/platform/env/" + entry.getKey();
-				Content content = Content.of(entry.getValue());
+				Content content = Content.of((entry.getValue() != null) ? entry.getValue() : "");
 				layout.file(name, Owner.ROOT, content);
 			}
 		});
