@@ -216,7 +216,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.0.5") {
+	library("Couchbase Client", "3.0.7") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
