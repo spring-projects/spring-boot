@@ -77,9 +77,9 @@ public class RedisProperties {
 	private String clientName;
 
 	/**
-	 * Type of client to use.
+	 * Type of client to use. By default, auto-detected according to the classpath.
 	 */
-	private ClientType clientType = ClientType.Lettuce;
+	private ClientType clientType;
 
 	private Sentinel sentinel;
 
@@ -191,14 +191,15 @@ public class RedisProperties {
 	public enum ClientType {
 
 		/**
-		 * Use the Lettuce client
+		 * Use the Lettuce redis client.
 		 */
-		Lettuce,
+		LETTUCE,
 
 		/**
-		 * Use the Jedis client
+		 * Use the Jedis redis client.
 		 */
-		Jedis
+		JEDIS
+
 	}
 
 	/**
