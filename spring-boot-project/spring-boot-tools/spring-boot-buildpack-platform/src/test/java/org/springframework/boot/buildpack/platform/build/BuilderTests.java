@@ -160,7 +160,7 @@ class BuilderTests {
 		given(docker.image().inspect(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb"))))
 				.willReturn(runImage);
 		Builder builder = new Builder(BuildLog.to(out), docker);
-		BuildRequest request = getTestRequest().withNoPull(true);
+		BuildRequest request = getTestRequest().withPullPolicy(PullPolicy.NEVER);
 		builder.build(request);
 		assertThat(out.toString()).contains("Running creator");
 		assertThat(out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");

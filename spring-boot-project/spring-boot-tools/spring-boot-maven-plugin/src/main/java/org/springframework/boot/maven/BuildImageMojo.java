@@ -42,6 +42,7 @@ import org.springframework.boot.buildpack.platform.build.BuildLog;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -124,10 +125,10 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	String runImage;
 
 	/**
-	 * Alias for {@link Image#noPull} to support configuration via command-line property.
+	 * Alias for {@link Image#pullPolicy} to support configuration via command-line property.
 	 */
-	@Parameter(property = "spring-boot.build-image.noPull", readonly = true)
-	boolean noPull;
+	@Parameter(property = "spring-boot.build-image.pullPolicy", readonly = true)
+	PullPolicy pullPolicy;
 
 	@Override
 	public void execute() throws MojoExecutionException {
@@ -166,7 +167,9 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		if (image.runImage == null && this.runImage != null) {
 			image.setRunImage(this.runImage);
 		}
-		image.setNoPull(this.noPull);
+		if (image.pullPolicy == null && this.pullPolicy != null) {
+			image.setPullPolicy(pullPolicy);
+		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}
 

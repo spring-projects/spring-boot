@@ -22,6 +22,7 @@ import java.util.function.Function;
 import org.apache.maven.artifact.Artifact;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
@@ -70,7 +71,7 @@ public class Image {
 	/**
 	 * If images should be pulled from a remote repository during image build.
 	 */
-	boolean noPull;
+	PullPolicy pullPolicy;
 
 	void setName(String name) {
 		this.name = name;
@@ -84,8 +85,8 @@ public class Image {
 		this.runImage = runImage;
 	}
 
-	public void setNoPull(boolean noPull) {
-		this.noPull = noPull;
+	public void setPullPolicy(PullPolicy pullPolicy) {
+		this.pullPolicy = pullPolicy;
 	}
 
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
@@ -112,7 +113,9 @@ public class Image {
 		}
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);
-		request = request.withNoPull(this.noPull);
+		if (this.pullPolicy != null) {
+			request = request.withPullPolicy(this.pullPolicy);
+		}
 		return request;
 	}
 

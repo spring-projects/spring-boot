@@ -16,10 +16,6 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
 import org.gradle.api.DefaultTask;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
@@ -30,16 +26,20 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
-
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
 import org.springframework.boot.gradle.util.VersionExtractor;
 import org.springframework.util.StringUtils;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A {@link Task} for bundling an application into an OCI image using a
@@ -69,7 +69,7 @@ public class BootBuildImage extends DefaultTask {
 
 	private boolean verboseLogging;
 
-	private boolean noPull;
+	private PullPolicy pullPolicy;
 
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
@@ -229,19 +229,20 @@ public class BootBuildImage extends DefaultTask {
 	/**
 	 * Returns whether images should be pulled from a remote repository during image
 	 * build.
+	 *
 	 * @return whether images should be pulled
 	 */
 	@Input
-	public boolean isNoPull() {
-		return this.noPull;
+	public PullPolicy getPullPolicy() {
+		return this.pullPolicy;
 	}
 
 	/**
 	 * Sets whether images should be pulled from a remote repository during image build.
-	 * @param noPull {@code true} to disable pulling an image, otherwise {@code false}.
+	 * @param pullPolicy
 	 */
-	public void setNoPull(boolean noPull) {
-		this.noPull = noPull;
+	public void setPullPolicy(PullPolicy pullPolicy) {
+		this.pullPolicy = pullPolicy;
 	}
 
 	@TaskAction
@@ -275,7 +276,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizeCreator(request);
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);
-		request = request.withNoPull(this.noPull);
+		request = customizePullPolicy(request);
 		return request;
 	}
 
@@ -307,6 +308,13 @@ public class BootBuildImage extends DefaultTask {
 		String springBootVersion = VersionExtractor.forClass(BootBuildImage.class);
 		if (StringUtils.hasText(springBootVersion)) {
 			return request.withCreator(Creator.withVersion(springBootVersion));
+		}
+		return request;
+	}
+
+	private BuildRequest customizePullPolicy(BuildRequest request) {
+		if (this.pullPolicy != null) {
+			request = request.withPullPolicy(this.pullPolicy);
 		}
 		return request;
 	}

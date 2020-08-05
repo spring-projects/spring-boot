@@ -77,7 +77,7 @@ public class Builder {
 
 	private Image pullBuilder(BuildRequest request) throws IOException {
 		ImageReference builderImageReference = request.getBuilder();
-		if (request.isNoPull()) {
+		if (request.getPullPolicy() == PullPolicy.NEVER) {
 			return this.docker.image().inspect(builderImageReference);
 		}
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pullingBuilder(request, builderImageReference);
@@ -106,7 +106,7 @@ public class Builder {
 
 	private Image pullRunImage(BuildRequest request) throws IOException {
 		ImageReference runImage = request.getRunImage();
-		if (request.isNoPull()) {
+		if (request.getPullPolicy() == PullPolicy.NEVER) {
 			return this.docker.image().inspect(runImage);
 		}
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pullingRunImage(request, runImage);
