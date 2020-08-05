@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,13 +165,13 @@ class FileSystemWatcherTests {
 	void waitsForQuietPeriod() throws Exception {
 		setupWatcher(300, 200);
 		File folder = startWithNewFolder();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			touch(new File(folder, i + "test.txt"));
-			Thread.sleep(100);
+			Thread.sleep(10);
 		}
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles().size()).isEqualTo(10);
+		assertThat(changedFiles.getFiles()).hasSize(100);
 	}
 
 	@Test
@@ -287,12 +287,12 @@ class FileSystemWatcherTests {
 
 	private ChangedFiles getSingleChangedFiles() {
 		Set<ChangedFiles> singleChange = getSingleOnChange();
-		assertThat(singleChange.size()).isEqualTo(1);
+		assertThat(singleChange).hasSize(1);
 		return singleChange.iterator().next();
 	}
 
 	private Set<ChangedFiles> getSingleOnChange() {
-		assertThat(this.changes.size()).isEqualTo(1);
+		assertThat(this.changes).hasSize(1);
 		return this.changes.get(0);
 	}
 
