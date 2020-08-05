@@ -51,13 +51,9 @@ public class Saml2RelyingPartyProperties {
 	public static class Registration {
 
 		/**
-		 * Relying party's EntityID.
-		 *
-		 * This value may contain a number of placeholders. They are: baseUrl,
-		 * registrationId, baseScheme, baseHost, and basePort.
-		 *
-		 * The default value is
-		 * {baseUrl}/saml2/service-provider-metadata/{registrationId}.
+		 * Relying party's entity ID template. Can generate its entity ID based on
+		 * possible variables of "baseUrl", "registrationId", "baseScheme", "baseHost",
+		 * and "basePort".
 		 */
 		private String relyingPartyEntityId = "{baseUrl}/saml2/service-provider-metadata/{registrationId}";
 
