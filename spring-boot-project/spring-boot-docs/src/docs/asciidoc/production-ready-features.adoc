@@ -2127,7 +2127,7 @@ To register custom metrics, inject `MeterRegistry` into your component, as shown
 include::{code-examples}/actuate/metrics/MetricsMeterRegistryInjectionExample.java[tag=component]
 ----
 
-If you metrics depend on other beans, it is recommend that you use a `MeterBinder` to register them, as shown in the following example:
+If your metrics depend on other beans, it is recommended that you use a `MeterBinder` to register them, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -2136,7 +2136,7 @@ include::{code-examples}/actuate/metrics/SampleMeterBinderConfiguration.java[tag
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
 By default, metrics from all `MeterBinder` beans will be automatically bound to the Spring-managed `MeterRegistry`.
-A `MeterBinder` implementation can also be useful if you find that you repeatedly instrument a suite of metrics across components or applications..
+A `MeterBinder` implementation can also be useful if you find that you repeatedly instrument a suite of metrics across components or applications.
 
 
 

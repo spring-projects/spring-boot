@@ -138,10 +138,10 @@ class WebConversionServiceTests {
 
 	private void isoOffsetDateTimeFormat(DateTimeFormatters formatters) {
 		WebConversionService conversionService = new WebConversionService(formatters);
-		OffsetDateTime offsetdate = OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23),
+		OffsetDateTime offsetDateTime = OffsetDateTime.of(LocalDate.of(2020, 4, 26), LocalTime.of(12, 45, 23),
 				ZoneOffset.ofHoursMinutes(1, 30));
-		assertThat(conversionService.convert(offsetdate, String.class))
-				.isEqualTo(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetdate));
+		assertThat(conversionService.convert(offsetDateTime, String.class))
+				.isEqualTo(DateTimeFormatter.ISO_OFFSET_DATE_TIME.format(offsetDateTime));
 	}
 
 	@Test
