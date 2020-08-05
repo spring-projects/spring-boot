@@ -35,7 +35,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
  */
 public class InvalidConfigDataPropertyException extends ConfigDataException {
 
-	private static final Map<ConfigurationPropertyName, ConfigurationPropertyName> ERROR = Collections.emptyMap();
+	private static final Map<ConfigurationPropertyName, ConfigurationPropertyName> ERROR;
 
 	private static final Map<ConfigurationPropertyName, ConfigurationPropertyName> WARNING;
 	static {
@@ -43,6 +43,10 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 		warning.put(ConfigurationPropertyName.of("spring.profiles"),
 				ConfigurationPropertyName.of("spring.config.activate.on-profile"));
 		WARNING = Collections.unmodifiableMap(warning);
+		Map<ConfigurationPropertyName, ConfigurationPropertyName> error = new LinkedHashMap<>();
+		error.put(ConfigurationPropertyName.of("spring.profiles.include"),
+				ConfigurationPropertyName.of("spring.profiles.group"));
+		ERROR = Collections.unmodifiableMap(error);
 	}
 
 	private final ConfigurationProperty property;
