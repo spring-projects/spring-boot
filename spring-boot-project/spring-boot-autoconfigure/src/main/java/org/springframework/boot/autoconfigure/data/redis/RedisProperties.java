@@ -76,6 +76,11 @@ public class RedisProperties {
 	 */
 	private String clientName;
 
+	/**
+	 * Type of client to use. By default, auto-detected according to the classpath.
+	 */
+	private ClientType clientType;
+
 	private Sentinel sentinel;
 
 	private Cluster cluster;
@@ -148,6 +153,14 @@ public class RedisProperties {
 		this.clientName = clientName;
 	}
 
+	public ClientType getClientType() {
+		return this.clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
+	}
+
 	public Sentinel getSentinel() {
 		return this.sentinel;
 	}
@@ -170,6 +183,23 @@ public class RedisProperties {
 
 	public Lettuce getLettuce() {
 		return this.lettuce;
+	}
+
+	/**
+	 * Type of Redis client to use.
+	 */
+	public enum ClientType {
+
+		/**
+		 * Use the Lettuce redis client.
+		 */
+		LETTUCE,
+
+		/**
+		 * Use the Jedis redis client.
+		 */
+		JEDIS
+
 	}
 
 	/**
