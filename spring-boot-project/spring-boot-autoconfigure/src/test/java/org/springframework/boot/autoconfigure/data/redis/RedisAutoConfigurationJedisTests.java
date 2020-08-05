@@ -43,6 +43,12 @@ class RedisAutoConfigurationJedisTests {
 			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
 
 	@Test
+	void testDefaultRedisConfiguration() {
+		this.contextRunner.run((context) -> assertThat(context.getBean("redisConnectionFactory"))
+				.isInstanceOf(JedisConnectionFactory.class));
+	}
+
+	@Test
 	void testOverrideRedisConfiguration() {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.database:1").run((context) -> {
 			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);

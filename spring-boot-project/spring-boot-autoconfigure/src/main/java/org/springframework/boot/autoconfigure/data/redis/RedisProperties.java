@@ -76,6 +76,11 @@ public class RedisProperties {
 	 */
 	private String clientName;
 
+	/**
+	 * Type of client to use.
+	 */
+	private ClientType clientType = ClientType.Lettuce;
+
 	private Sentinel sentinel;
 
 	private Cluster cluster;
@@ -148,6 +153,14 @@ public class RedisProperties {
 		this.clientName = clientName;
 	}
 
+	public ClientType getClientType() {
+		return this.clientType;
+	}
+
+	public void setClientType(ClientType clientType) {
+		this.clientType = clientType;
+	}
+
 	public Sentinel getSentinel() {
 		return this.sentinel;
 	}
@@ -170,6 +183,22 @@ public class RedisProperties {
 
 	public Lettuce getLettuce() {
 		return this.lettuce;
+	}
+
+	/**
+	 * Type of Redis client to use.
+	 */
+	public enum ClientType {
+
+		/**
+		 * Use the Lettuce client
+		 */
+		Lettuce,
+
+		/**
+		 * Use the Jedis client
+		 */
+		Jedis
 	}
 
 	/**
