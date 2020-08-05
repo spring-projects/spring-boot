@@ -155,7 +155,7 @@ class OAuth2WebSecurityConfigurationTests {
 		result = result && ObjectUtils.nullSafeEquals(reg1.getClientName(), reg2.getClientName());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getClientSecret(), reg2.getClientSecret());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getScopes(), reg2.getScopes());
-		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUriTemplate(), reg2.getRedirectUriTemplate());
+		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUri(), reg2.getRedirectUri());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getRegistrationId(), reg2.getRegistrationId());
 		result = result
 				&& ObjectUtils.nullSafeEquals(reg1.getAuthorizationGrantType(), reg2.getAuthorizationGrantType());
