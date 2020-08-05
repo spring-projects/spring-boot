@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.test.autoconfigure.web.reactive.webclient;
+package org.springframework.boot.test.autoconfigure.data.cassandra;
 
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
+import org.springframework.data.cassandra.repository.CassandraRepository;
 
 /**
- * Example {@link SpringBootApplication @SpringBootApplication} used with
- * {@link WebFluxTest @WebFluxTest} tests.
+ * Example repository used with {@link DataCassandraTest @DataCassandraTest} tests.
  *
- * @author Stephane Nicoll
+ * @author Artsiom Yudovin
  */
-@SpringBootApplication(exclude = CassandraAutoConfiguration.class)
-public class ExampleWebFluxApplication {
+interface ExampleRepository extends CassandraRepository<ExampleEntity, String> {
 
 }
