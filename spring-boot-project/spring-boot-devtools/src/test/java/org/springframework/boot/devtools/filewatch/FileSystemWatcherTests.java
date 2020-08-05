@@ -166,13 +166,13 @@ class FileSystemWatcherTests {
 	void waitsForQuietPeriod() throws Exception {
 		setupWatcher(300, 200);
 		File directory = startWithNewDirectory();
-		for (int i = 0; i < 10; i++) {
+		for (int i = 0; i < 100; i++) {
 			touch(new File(directory, i + "test.txt"));
-			Thread.sleep(100);
+			Thread.sleep(10);
 		}
 		this.watcher.stopAfter(1);
 		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles().size()).isEqualTo(10);
+		assertThat(changedFiles.getFiles()).hasSize(100);
 	}
 
 	@Test
@@ -288,12 +288,12 @@ class FileSystemWatcherTests {
 
 	private ChangedFiles getSingleChangedFiles() {
 		Set<ChangedFiles> singleChange = getSingleOnChange();
-		assertThat(singleChange.size()).isEqualTo(1);
+		assertThat(singleChange).hasSize(1);
 		return singleChange.iterator().next();
 	}
 
 	private Set<ChangedFiles> getSingleOnChange() {
-		assertThat(this.changes.size()).isEqualTo(1);
+		assertThat(this.changes).hasSize(1);
 		return this.changes.get(0);
 	}
 
