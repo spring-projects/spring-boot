@@ -421,7 +421,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	@Test
 	void runWhenCustomDefaultProfileSameAsActiveFromFileActivatesProfile() {
-		ConfigurableApplicationContext context = this.application.run("--spring.profiles.default=customdefault",
+		ConfigurableApplicationContext context = this.application.run(
+				"--spring.config.location=classpath:configdata/profiles/", "--spring.profiles.default=customdefault",
 				"--spring.config.name=customprofile");
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.containsProperty("customprofile")).isTrue();
