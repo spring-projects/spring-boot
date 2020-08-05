@@ -1967,9 +1967,8 @@ Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
 	spring.jpa.hibernate.ddl-auto=none
 ----
 
-If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you cannot use basic SQL scripts to create and initialize the schema.
-In this situation, if `schema.sql` and `data.sql` are present, they will be ignored.
-It is not possible to use a Database Migration Tool to manage schema creation, and a basic SQL script to initialize it.
+If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
+Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
 ====
 
 By default, Spring Boot enables the fail-fast feature of the Spring JDBC initializer.
