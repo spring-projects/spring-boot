@@ -86,7 +86,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	@Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
-		if (this.includeException != null) {
+		if (Boolean.TRUE.equals(this.includeException)) {
 			options = options.including(Include.EXCEPTION);
 		}
 		if (!options.isIncluded(Include.EXCEPTION)) {
