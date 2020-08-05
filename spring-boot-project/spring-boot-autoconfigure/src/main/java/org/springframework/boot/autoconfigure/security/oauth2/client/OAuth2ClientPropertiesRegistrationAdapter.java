@@ -67,7 +67,7 @@ public final class OAuth2ClientPropertiesRegistrationAdapter {
 				.to(builder::clientAuthenticationMethod);
 		map.from(properties::getAuthorizationGrantType).as(AuthorizationGrantType::new)
 				.to(builder::authorizationGrantType);
-		map.from(properties::getRedirectUri).to(builder::redirectUriTemplate);
+		map.from(properties::getRedirectUri).to(builder::redirectUri);
 		map.from(properties::getScope).as(StringUtils::toStringArray).to(builder::scope);
 		map.from(properties::getClientName).to(builder::clientName);
 		return builder.build();

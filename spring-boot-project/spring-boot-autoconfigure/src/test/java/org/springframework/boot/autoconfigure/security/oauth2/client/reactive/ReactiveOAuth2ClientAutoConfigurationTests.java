@@ -207,7 +207,7 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 					.clientAuthenticationMethod(
 							org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).scope("read")
-					.clientSecret("secret").redirectUriTemplate("https://redirect-uri.com")
+					.clientSecret("secret").redirectUri("https://redirect-uri.com")
 					.authorizationUri("https://authorization-uri.com").tokenUri("https://token-uri.com")
 					.userInfoUri(userInfoUri).userNameAttributeName("login");
 			return builder.build();
