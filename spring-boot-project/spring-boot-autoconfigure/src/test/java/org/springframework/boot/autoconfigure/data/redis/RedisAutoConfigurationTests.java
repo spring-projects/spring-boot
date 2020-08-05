@@ -39,6 +39,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisNode;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration;
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
@@ -52,7 +53,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link RedisAutoConfiguration}.
+ * Tests for {@link RedisAutoConfiguration} when both Jedis and Lettuce are on the
+ * classpath.
  *
  * @author Dave Syer
  * @author Christian Dupuis
@@ -74,6 +76,8 @@ class RedisAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBean("redisTemplate", RedisOperations.class)).isNotNull();
 			assertThat(context.getBean(StringRedisTemplate.class)).isNotNull();
+			assertThat(context.getBean("redisConnectionFactory")).isInstanceOf(LettuceConnectionFactory.class);
+			assertThat(context.getBeanProvider(JedisConnectionConfiguration.class).getIfAvailable()).isNull();
 		});
 	}
 
@@ -180,6 +184,21 @@ class RedisAutoConfigurationTests {
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getClientName()).isEqualTo("spring-boot");
 				});
+	}
+
+	@Test
+	void testRedisConfigurationWithClientNameJedis() {
+		this.contextRunner.withPropertyValues("spring.redis.client-type:jedis")
+				.run((context) -> assertThat(context.getBean("redisConnectionFactory"))
+						.isInstanceOf(JedisConnectionFactory.class));
+	}
+
+	@Test
+	void testRedisConfigurationWithClientNameLettuce() {
+		this.contextRunner.withPropertyValues("spring.redis.client-type:lettuce").run((context) -> {
+			assertThat(context.getBean("redisConnectionFactory")).isInstanceOf(LettuceConnectionFactory.class);
+			assertThat(context.getBeanProvider(JedisConnectionConfiguration.class).getIfAvailable()).isNull();
+		});
 	}
 
 	@Test
