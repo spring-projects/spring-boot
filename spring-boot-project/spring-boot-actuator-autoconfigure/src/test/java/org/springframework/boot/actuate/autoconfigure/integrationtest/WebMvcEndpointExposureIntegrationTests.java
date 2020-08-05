@@ -166,7 +166,7 @@ class WebMvcEndpointExposureIntegrationTests {
 		int port = context.getSourceApplicationContext(ServletWebServerApplicationContext.class).getWebServer()
 				.getPort();
 		ExchangeStrategies exchangeStrategies = ExchangeStrategies.builder()
-				.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(512 * 1024)).build();
+				.codecs((configurer) -> configurer.defaultCodecs().maxInMemorySize(-1)).build();
 		return WebTestClient.bindToServer().baseUrl("http://localhost:" + port).exchangeStrategies(exchangeStrategies)
 				.build();
 	}
