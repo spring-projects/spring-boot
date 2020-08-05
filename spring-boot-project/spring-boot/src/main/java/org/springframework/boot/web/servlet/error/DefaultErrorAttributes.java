@@ -108,7 +108,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	@Override
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
-		if (this.includeException != null) {
+		if (Boolean.TRUE.equals(this.includeException)) {
 			options = options.including(Include.EXCEPTION);
 		}
 		if (!options.isIncluded(Include.EXCEPTION)) {
