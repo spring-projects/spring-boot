@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,19 +16,19 @@
 
 package org.springframework.boot.test.autoconfigure.data.cassandra;
 
+import com.datastax.oss.driver.api.core.CqlSession;
+import com.datastax.oss.driver.api.core.context.DriverContext;
+import com.datastax.oss.driver.api.core.type.codec.registry.CodecRegistry;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.junit.jupiter.Container;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.testcontainers.CassandraContainer;
-import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.core.env.Environment;
-import org.springframework.test.context.ContextConfiguration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for the {@link DataCassandraTest#properties properties} attribute of
@@ -36,13 +36,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Artsiom Yudovin
  */
-@DisabledWithoutDockerTestcontainers
-@ContextConfiguration(initializers = DataCassandraTestPropertiesIntegrationTests.Initializer.class)
 @DataCassandraTest(properties = "spring.profiles.active=test")
 class DataCassandraTestPropertiesIntegrationTests {
-
-	@Container
-	public static final CassandraContainer cassandra = new CassandraContainer();
 
 	@Autowired
 	private Environment environment;
@@ -52,12 +47,17 @@ class DataCassandraTestPropertiesIntegrationTests {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
 	}
 
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
+	@TestConfiguration(proxyBeanMethods = false)
+	static class CassandraMockConfiguration {
 
-		@Override
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.data.cassandra.port=" + cassandra.getFirstMappedPort())
-					.applyTo(configurableApplicationContext.getEnvironment());
+		@Bean
+		CqlSession cqlSession() {
+			DriverContext context = mock(DriverContext.class);
+			CodecRegistry codecRegistry = mock(CodecRegistry.class);
+			given(context.getCodecRegistry()).willReturn(codecRegistry);
+			CqlSession cqlSession = mock(CqlSession.class);
+			given(cqlSession.getContext()).willReturn(context);
+			return cqlSession;
 		}
 
 	}

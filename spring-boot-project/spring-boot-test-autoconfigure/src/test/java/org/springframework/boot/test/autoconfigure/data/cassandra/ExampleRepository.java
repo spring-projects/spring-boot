@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,13 +16,13 @@
 
 package org.springframework.boot.test.autoconfigure.data.cassandra;
 
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.cassandra.repository.CassandraRepository;
 
 /**
  * Example repository used with {@link DataCassandraTest @DataCassandraTest} tests.
  *
  * @author Artsiom Yudovin
  */
-public interface ExampleRepository extends CrudRepository<Person, String> {
+interface ExampleRepository extends CassandraRepository<ExampleEntity, String> {
 
 }

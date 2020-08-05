@@ -6947,6 +6947,34 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-cassandra-test]]
+==== Auto-configured Data Cassandra Tests
+You can use `@DataCassandraTest` to test Cassandra applications.
+By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
+Regular `@Component` beans are not loaded into the `ApplicationContext`.
+(For more about using Cassandra with Spring Boot, see "<<boot-features-cassandra>>", earlier in this chapter.)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+
+The following example shows a typical setup for using Cassandra tests in Spring Boot:
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
+
+	@DataCassandraTest
+	class ExampleDataCassandraTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
 ==== Auto-configured Data JPA Tests
 You can use the `@DataJpaTest` annotation to test JPA applications.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.data.cassandra;
 
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.core.annotation.MergedAnnotations;
+import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.TestContextBootstrapper;
 
 /**
@@ -25,14 +26,13 @@ import org.springframework.test.context.TestContextBootstrapper;
  * support.
  *
  * @author Artsiom Yudovin
- * @since 2.1.0
  */
-public class DataCassandraTestContextBootstrapper extends SpringBootTestContextBootstrapper {
+class DataCassandraTestContextBootstrapper extends SpringBootTestContextBootstrapper {
 
 	@Override
 	protected String[] getProperties(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, MergedAnnotations.SearchStrategy.INHERITED_ANNOTATIONS)
-				.get(DataCassandraTest.class).getValue("properties", String[].class).orElse(null);
+		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(DataCassandraTest.class)
+				.getValue("properties", String[].class).orElse(null);
 	}
 
 }

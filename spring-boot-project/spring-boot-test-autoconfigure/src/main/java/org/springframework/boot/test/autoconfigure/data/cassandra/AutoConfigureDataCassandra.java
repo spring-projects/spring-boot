@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,11 +27,11 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 
 /**
  * {@link ImportAutoConfiguration Auto-configuration imports} for typical Data Cassandra
- * tests. Most tests should consider using {@link DataCassandraTest} rather than using
- * this annotation directly.
+ * tests. Most tests should consider using {@link DataCassandraTest @DataCassandraTest}
+ * rather than using this annotation directly.
  *
  * @author Artsiom Yudovin
- * @since 2.1.0
+ * @since 2.4.0
  * @see DataCassandraTest
  */
 @Target(ElementType.TYPE)

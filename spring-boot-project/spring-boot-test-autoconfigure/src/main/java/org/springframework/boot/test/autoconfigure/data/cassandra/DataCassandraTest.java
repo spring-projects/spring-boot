@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,25 +30,25 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.test.autoconfigure.OverrideAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.core.AutoConfigureCache;
 import org.springframework.boot.test.autoconfigure.filter.TypeExcludeFilters;
-import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.core.annotation.AliasFor;
 import org.springframework.core.env.Environment;
 import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical Cassandra test. Can be used when a test focuses <strong>only</strong> on
+ * Annotation that can be used for a Cassandra test that focuses <strong>only</strong> on
  * Cassandra components.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to Cassandra tests.
  * <p>
- * By default, tests annotated with {@code @DataCassandraTest} will use an embedded
- * in-memory Cassandra process (if available).
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Artsiom Yudovin
- * @since 2.1.0
+ * @author Stephane Nicoll
+ * @since 2.4.0
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
@@ -86,14 +86,14 @@ public @interface DataCassandraTest {
 	 * application context.
 	 * @return include filters to apply
 	 */
-	ComponentScan.Filter[] includeFilters() default {};
+	Filter[] includeFilters() default {};
 
 	/**
 	 * A set of exclude filters which can be used to filter beans that would otherwise be
 	 * added to the application context.
 	 * @return exclude filters to apply
 	 */
-	ComponentScan.Filter[] excludeFilters() default {};
+	Filter[] excludeFilters() default {};
 
 	/**
 	 * Auto-configuration exclusions that should be applied for this test.
