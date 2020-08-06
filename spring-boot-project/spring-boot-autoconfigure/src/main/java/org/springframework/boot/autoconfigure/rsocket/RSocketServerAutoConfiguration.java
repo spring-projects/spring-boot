@@ -69,13 +69,10 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@SuppressWarnings("deprecation")
 		RSocketWebSocketNettyRouteProvider rSocketWebsocketRouteProvider(RSocketProperties properties,
-				RSocketMessageHandler messageHandler,
-				ObjectProvider<org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> processors,
-				ObjectProvider<RSocketServerCustomizer> customizers) {
+				RSocketMessageHandler messageHandler, ObjectProvider<RSocketServerCustomizer> customizers) {
 			return new RSocketWebSocketNettyRouteProvider(properties.getServer().getMappingPath(),
-					messageHandler.responder(), processors.orderedStream(), customizers.orderedStream());
+					messageHandler.responder(), customizers.orderedStream());
 		}
 
 	}
@@ -92,9 +89,7 @@ public class RSocketServerAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@SuppressWarnings("deprecation")
 		RSocketServerFactory rSocketServerFactory(RSocketProperties properties, ReactorResourceFactory resourceFactory,
-				ObjectProvider<org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> processors,
 				ObjectProvider<RSocketServerCustomizer> customizers) {
 			NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
 			factory.setResourceFactory(resourceFactory);
@@ -103,7 +98,6 @@ public class RSocketServerAutoConfiguration {
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
 			factory.setRSocketServerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
-			factory.setSocketFactoryProcessors(processors.orderedStream().collect(Collectors.toList()));
 			return factory;
 		}
 

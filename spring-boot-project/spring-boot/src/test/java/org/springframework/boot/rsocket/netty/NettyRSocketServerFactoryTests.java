@@ -46,7 +46,6 @@ import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.will;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -126,24 +125,6 @@ class NettyRSocketServerFactoryTests {
 		String payload = "test payload";
 		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
 		assertThat(response).isEqualTo(payload);
-	}
-
-	@Test
-	@Deprecated
-	void serverProcessors() {
-		NettyRSocketServerFactory factory = getFactory();
-		org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor[] processors = new org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor[2];
-		for (int i = 0; i < processors.length; i++) {
-			processors[i] = mock(org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor.class);
-			given(processors[i].process(any(io.rsocket.RSocketFactory.ServerRSocketFactory.class)))
-					.will((invocation) -> invocation.getArgument(0));
-		}
-		factory.setSocketFactoryProcessors(Arrays.asList(processors));
-		this.server = factory.create(new EchoRequestResponseAcceptor());
-		InOrder ordered = inOrder((Object[]) processors);
-		for (org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor processor : processors) {
-			ordered.verify(processor).process(any(io.rsocket.RSocketFactory.ServerRSocketFactory.class));
-		}
 	}
 
 	@Test

@@ -59,9 +59,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private Duration lifecycleTimeout;
 
-	@SuppressWarnings("deprecation")
-	private List<org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> socketFactoryProcessors = new ArrayList<>();
-
 	private List<RSocketServerCustomizer> rSocketServerCustomizers = new ArrayList<>();
 
 	@Override
@@ -85,37 +82,6 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 */
 	public void setResourceFactory(ReactorResourceFactory resourceFactory) {
 		this.resourceFactory = resourceFactory;
-	}
-
-	/**
-	 * Set {@link org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor}s
-	 * that should be called to process the
-	 * {@link io.rsocket.RSocketFactory.ServerRSocketFactory} while building the server.
-	 * Calling this method will replace any existing processors.
-	 * @param socketFactoryProcessors processors to apply before the server starts
-	 * @deprecated in favor of {@link #setRSocketServerCustomizers(Collection)} as of
-	 * 2.2.7
-	 */
-	@Deprecated
-	public void setSocketFactoryProcessors(
-			Collection<? extends org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> socketFactoryProcessors) {
-		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
-		this.socketFactoryProcessors = new ArrayList<>(socketFactoryProcessors);
-	}
-
-	/**
-	 * Add {@link org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor}s
-	 * that should be called to process the
-	 * {@link io.rsocket.RSocketFactory.ServerRSocketFactory} while building the server.
-	 * @param socketFactoryProcessors processors to apply before the server starts
-	 * @deprecated in favor of
-	 * {@link #addRSocketServerCustomizers(RSocketServerCustomizer...)} as of 2.2.7
-	 */
-	@Deprecated
-	public void addSocketFactoryProcessors(
-			org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor... socketFactoryProcessors) {
-		Assert.notNull(socketFactoryProcessors, "SocketFactoryProcessors must not be null");
-		this.socketFactoryProcessors.addAll(Arrays.asList(socketFactoryProcessors));
 	}
 
 	/**
@@ -151,14 +117,10 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
 	public NettyRSocketServer create(SocketAcceptor socketAcceptor) {
 		ServerTransport<CloseableChannel> transport = createTransport();
 		io.rsocket.core.RSocketServer server = io.rsocket.core.RSocketServer.create(socketAcceptor);
-		io.rsocket.RSocketFactory.ServerRSocketFactory factory = new io.rsocket.RSocketFactory.ServerRSocketFactory(
-				server);
 		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
-		this.socketFactoryProcessors.forEach((processor) -> processor.process(factory));
 		Mono<CloseableChannel> starter = server.bind(transport);
 		return new NettyRSocketServer(starter, this.lifecycleTimeout);
 	}

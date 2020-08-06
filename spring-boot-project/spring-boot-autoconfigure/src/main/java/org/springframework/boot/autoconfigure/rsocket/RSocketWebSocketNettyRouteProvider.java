@@ -34,32 +34,24 @@ import org.springframework.boot.web.embedded.netty.NettyRouteProvider;
  *
  * @author Brian Clozel
  */
-@SuppressWarnings("deprecation")
 class RSocketWebSocketNettyRouteProvider implements NettyRouteProvider {
 
 	private final String mappingPath;
 
 	private final SocketAcceptor socketAcceptor;
 
-	private final List<org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> processors;
-
 	private final List<RSocketServerCustomizer> customizers;
 
 	RSocketWebSocketNettyRouteProvider(String mappingPath, SocketAcceptor socketAcceptor,
-			Stream<org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor> processors,
 			Stream<RSocketServerCustomizer> customizers) {
 		this.mappingPath = mappingPath;
 		this.socketAcceptor = socketAcceptor;
-		this.processors = processors.collect(Collectors.toList());
 		this.customizers = customizers.collect(Collectors.toList());
 	}
 
 	@Override
 	public HttpServerRoutes apply(HttpServerRoutes httpServerRoutes) {
 		RSocketServer server = RSocketServer.create(this.socketAcceptor);
-		io.rsocket.RSocketFactory.ServerRSocketFactory factory = new io.rsocket.RSocketFactory.ServerRSocketFactory(
-				server);
-		this.processors.forEach((processor) -> processor.process(factory));
 		this.customizers.forEach((customizer) -> customizer.customize(server));
 		ServerTransport.ConnectionAcceptor connectionAcceptor = server.asConnectionAcceptor();
 		return httpServerRoutes.ws(this.mappingPath, WebsocketRouteTransport.newHandler(connectionAcceptor));
