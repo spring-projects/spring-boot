@@ -261,16 +261,12 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	}
 
 	private File createLayeredJar() throws IOException {
-		return createLayeredJar(null);
+		return createLayeredJar((spec) -> {
+		});
 	}
 
 	private File createLayeredJar(Action<LayeredSpec> action) throws IOException {
-		if (action != null) {
-			getTask().layered(action);
-		}
-		else {
-			getTask().layered();
-		}
+		getTask().layered(action);
 		addContent();
 		executeTask();
 		return getTask().getArchiveFile().get().getAsFile();

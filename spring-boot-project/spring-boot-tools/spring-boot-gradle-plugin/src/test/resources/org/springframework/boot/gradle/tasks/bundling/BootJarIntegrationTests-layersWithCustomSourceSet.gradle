@@ -9,7 +9,6 @@ sourceSets {
 
 bootJar {
 	mainClassName = 'com.example.Application'
-	layered()
 }
 
 repositories {
