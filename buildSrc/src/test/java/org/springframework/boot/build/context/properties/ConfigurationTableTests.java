@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConfigurationTableTests {
 
-	private static String NEWLINE = System.lineSeparator();
+	private static final String NEWLINE = System.lineSeparator();
 
 	@Test
 	void simpleTable() {

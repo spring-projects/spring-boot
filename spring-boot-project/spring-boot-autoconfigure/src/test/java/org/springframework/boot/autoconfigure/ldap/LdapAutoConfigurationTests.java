@@ -42,7 +42,7 @@ import static org.mockito.Mockito.mock;
  */
 class LdapAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class));
 
 	@Test

@@ -50,7 +50,7 @@ public class ReactiveElasticsearchRestClientAutoConfigurationTests {
 	static ElasticsearchContainer elasticsearch = new VersionOverridingElasticsearchContainer().withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(10));
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class));
 
 	@Test

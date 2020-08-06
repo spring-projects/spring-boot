@@ -49,7 +49,7 @@ import static org.mockito.Mockito.verify;
  */
 class WebTestClientAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(WebTestClientAutoConfiguration.class));
 
 	@Test

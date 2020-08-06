@@ -51,7 +51,7 @@ import org.springframework.util.ObjectUtils;
  */
 class AutoConfiguredHealthEndpointGroups implements HealthEndpointGroups {
 
-	private static Predicate<String> ALL = (name) -> true;
+	private static final Predicate<String> ALL = (name) -> true;
 
 	private final HealthEndpointGroup primaryGroup;
 

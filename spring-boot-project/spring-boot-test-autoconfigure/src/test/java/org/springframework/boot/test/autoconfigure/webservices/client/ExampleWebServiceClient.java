@@ -28,7 +28,7 @@ import org.springframework.ws.client.core.WebServiceTemplate;
 @Service
 public class ExampleWebServiceClient {
 
-	private WebServiceTemplate webServiceTemplate;
+	private final WebServiceTemplate webServiceTemplate;
 
 	public ExampleWebServiceClient(WebServiceTemplateBuilder builder) {
 		this.webServiceTemplate = builder.build();

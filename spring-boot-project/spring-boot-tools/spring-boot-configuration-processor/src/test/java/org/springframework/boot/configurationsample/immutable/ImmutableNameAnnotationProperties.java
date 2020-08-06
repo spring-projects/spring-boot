@@ -29,7 +29,7 @@ import org.springframework.boot.configurationsample.Name;
 @ConstructorBinding
 public class ImmutableNameAnnotationProperties {
 
-	private String imports;
+	private final String imports;
 
 	public ImmutableNameAnnotationProperties(@Name("import") String imports) {
 		this.imports = imports;

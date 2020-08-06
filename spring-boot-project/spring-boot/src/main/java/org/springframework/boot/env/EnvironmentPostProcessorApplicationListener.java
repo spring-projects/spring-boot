@@ -46,7 +46,7 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	private int order = DEFAULT_ORDER;
 
-	private EnvironmentPostProcessorsFactory postProcessorsFactory;
+	private final EnvironmentPostProcessorsFactory postProcessorsFactory;
 
 	/**
 	 * Create a new {@link EnvironmentPostProcessorApplicationListener} with

@@ -65,7 +65,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class HttpMessageConvertersAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
 
 	@Test

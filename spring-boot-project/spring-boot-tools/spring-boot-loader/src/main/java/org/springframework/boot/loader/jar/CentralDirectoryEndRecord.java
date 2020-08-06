@@ -165,7 +165,7 @@ class CentralDirectoryEndRecord {
 
 		private final long centralDirectoryLength;
 
-		private int numberOfRecords;
+		private final int numberOfRecords;
 
 		private Zip64End(RandomAccessData data, int centralDirectoryEndOffset) throws IOException {
 			this(data, new Zip64Locator(data, centralDirectoryEndOffset));

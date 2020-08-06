@@ -39,7 +39,7 @@ public class Saml2RelyingPartyProperties {
 	/**
 	 * SAML2 relying party registrations.
 	 */
-	private Map<String, Registration> registration = new LinkedHashMap<>();
+	private final Map<String, Registration> registration = new LinkedHashMap<>();
 
 	public Map<String, Registration> getRegistration() {
 		return this.registration;
@@ -62,7 +62,7 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Remote SAML Identity Provider.
 		 */
-		private Identityprovider identityprovider = new Identityprovider();
+		private final Identityprovider identityprovider = new Identityprovider();
 
 		public String getRelyingPartyEntityId() {
 			return this.relyingPartyEntityId;
@@ -90,6 +90,10 @@ public class Saml2RelyingPartyProperties {
 
 			public List<Credential> getCredentials() {
 				return this.credentials;
+			}
+
+			public void setCredentials(List<Credential> credentials) {
+				this.credentials = credentials;
 			}
 
 			public static class Credential {
@@ -136,9 +140,9 @@ public class Saml2RelyingPartyProperties {
 		 */
 		private String entityId;
 
-		private Singlesignon singlesignon = new Singlesignon();
+		private final Singlesignon singlesignon = new Singlesignon();
 
-		private Verification verification = new Verification();
+		private final Verification verification = new Verification();
 
 		public String getEntityId() {
 			return this.entityId;
@@ -225,6 +229,10 @@ public class Saml2RelyingPartyProperties {
 
 			public List<Credential> getCredentials() {
 				return this.credentials;
+			}
+
+			public void setCredentials(List<Credential> credentials) {
+				this.credentials = credentials;
 			}
 
 			public static class Credential {

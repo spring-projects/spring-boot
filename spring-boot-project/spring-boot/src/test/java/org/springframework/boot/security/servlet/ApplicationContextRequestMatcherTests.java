@@ -196,7 +196,7 @@ class ApplicationContextRequestMatcherTests {
 			super(Object.class);
 		}
 
-		private AtomicBoolean initialized = new AtomicBoolean();
+		private final AtomicBoolean initialized = new AtomicBoolean();
 
 		@Override
 		protected void initialized(Supplier<Object> context) {

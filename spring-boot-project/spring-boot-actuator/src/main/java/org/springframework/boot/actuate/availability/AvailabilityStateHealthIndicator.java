@@ -41,7 +41,7 @@ public class AvailabilityStateHealthIndicator extends AbstractHealthIndicator {
 
 	private final ApplicationAvailability applicationAvailability;
 
-	private Class<? extends AvailabilityState> stateType;
+	private final Class<? extends AvailabilityState> stateType;
 
 	private final Map<AvailabilityState, Status> statusMappings = new HashMap<>();
 

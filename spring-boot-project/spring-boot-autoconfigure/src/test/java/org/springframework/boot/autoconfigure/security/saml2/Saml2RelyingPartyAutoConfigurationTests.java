@@ -51,7 +51,7 @@ public class Saml2RelyingPartyAutoConfigurationTests {
 
 	private static final String PREFIX = "spring.security.saml2.relyingparty.registration";
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class, SecurityAutoConfiguration.class));
 
 	@Test

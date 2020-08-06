@@ -206,7 +206,7 @@ public abstract class AutoConfigurationPackages {
 
 	static final class BasePackagesBeanDefinition extends GenericBeanDefinition {
 
-		private Set<String> basePackages = new LinkedHashSet<>();
+		private final Set<String> basePackages = new LinkedHashSet<>();
 
 		BasePackagesBeanDefinition(String... basePackages) {
 			setBeanClass(BasePackages.class);

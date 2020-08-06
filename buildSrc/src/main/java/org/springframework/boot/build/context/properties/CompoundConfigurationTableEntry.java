@@ -27,9 +27,9 @@ import java.util.stream.Stream;
  */
 class CompoundConfigurationTableEntry extends ConfigurationTableEntry {
 
-	private Set<String> configurationKeys;
+	private final Set<String> configurationKeys;
 
-	private String description;
+	private final String description;
 
 	CompoundConfigurationTableEntry(String key, String description) {
 		this.key = key;

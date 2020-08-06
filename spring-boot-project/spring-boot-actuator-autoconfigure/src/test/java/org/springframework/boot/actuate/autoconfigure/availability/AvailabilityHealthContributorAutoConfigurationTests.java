@@ -34,8 +34,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class AvailabilityHealthContributorAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-			.of(ApplicationAvailabilityAutoConfiguration.class, AvailabilityHealthContributorAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ApplicationAvailabilityAutoConfiguration.class,
+					AvailabilityHealthContributorAutoConfiguration.class));
 
 	@Test
 	void probesWhenNotKubernetesAddsNoBeans() {

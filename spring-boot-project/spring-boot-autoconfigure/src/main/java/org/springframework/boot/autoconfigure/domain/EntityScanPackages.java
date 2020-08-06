@@ -150,7 +150,7 @@ public class EntityScanPackages {
 
 	static class EntityScanPackagesBeanDefinition extends GenericBeanDefinition {
 
-		private Set<String> packageNames = new LinkedHashSet<>();
+		private final Set<String> packageNames = new LinkedHashSet<>();
 
 		EntityScanPackagesBeanDefinition(Collection<String> packageNames) {
 			setBeanClass(EntityScanPackages.class);

@@ -341,7 +341,7 @@ public class BomExtension {
 
 		private String repository = "spring-boot";
 
-		private List<String> issueLabels;
+		private final List<String> issueLabels;
 
 		private GitHub(String organization, String repository, List<String> issueLabels) {
 			this.organization = organization;
