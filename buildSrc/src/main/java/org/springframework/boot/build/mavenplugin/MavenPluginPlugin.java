@@ -177,6 +177,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		pluginDescriptorInputs.from(pomFile, (copy) -> replaceVersionPlaceholder(copy, project));
 		pluginDescriptorInputs.from(sourceSet.getOutput().getClassesDirs(), (sync) -> sync.into("target/classes"));
 		pluginDescriptorInputs.from(sourceSet.getAllJava().getSrcDirs(), (sync) -> sync.into("src/main/java"));
+		pluginDescriptorInputs.getInputs().property("version", project.getVersion());
 		return pluginDescriptorInputs;
 	}
 
