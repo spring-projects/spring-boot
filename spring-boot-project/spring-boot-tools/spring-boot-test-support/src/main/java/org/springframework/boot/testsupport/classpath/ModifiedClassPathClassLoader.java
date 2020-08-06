@@ -66,6 +66,8 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 
 	private static final Pattern INTELLIJ_CLASSPATH_JAR_PATTERN = Pattern.compile(".*classpath(\\d+)?\\.jar");
 
+	private static final int MAX_RESOLUTION_ATTEMPTS = 5;
+
 	private final ClassLoader junitLoader;
 
 	ModifiedClassPathClassLoader(URL[] urls, ClassLoader parent, ClassLoader junitLoader) {
@@ -190,6 +192,7 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 	}
 
 	private static List<URL> resolveCoordinates(String[] coordinates) {
+		Exception latestFailure = null;
 		DefaultServiceLocator serviceLocator = MavenRepositorySystemUtils.newServiceLocator();
 		serviceLocator.addService(RepositoryConnectorFactory.class, BasicRepositoryConnectorFactory.class);
 		serviceLocator.addService(TransporterFactory.class, HttpTransporterFactory.class);
@@ -197,22 +200,27 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 		LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
 		session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepository));
-		CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(
-				new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2").build()));
-
-		collectRequest.setDependencies(createDependencies(coordinates));
-		DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
-		try {
-			DependencyResult result = repositorySystem.resolveDependencies(session, dependencyRequest);
-			List<URL> resolvedArtifacts = new ArrayList<>();
-			for (ArtifactResult artifact : result.getArtifactResults()) {
-				resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
+		for (int i = 0; i < MAX_RESOLUTION_ATTEMPTS; i++) {
+			CollectRequest collectRequest = new CollectRequest(null,
+					Arrays.asList(
+							new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2")
+									.build()));
+			collectRequest.setDependencies(createDependencies(coordinates));
+			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
+			try {
+				DependencyResult result = repositorySystem.resolveDependencies(session, dependencyRequest);
+				List<URL> resolvedArtifacts = new ArrayList<>();
+				for (ArtifactResult artifact : result.getArtifactResults()) {
+					resolvedArtifacts.add(artifact.getArtifact().getFile().toURI().toURL());
+				}
+				return resolvedArtifacts;
 			}
-			return resolvedArtifacts;
+			catch (Exception ex) {
+				latestFailure = ex;
+			}
 		}
-		catch (Exception ignored) {
-			return Collections.emptyList();
-		}
+		throw new IllegalStateException("Resolution failed after " + MAX_RESOLUTION_ATTEMPTS + " attempts",
+				latestFailure);
 	}
 
 	private static List<Dependency> createDependencies(String[] allCoordinates) {
