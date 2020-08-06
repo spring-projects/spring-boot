@@ -75,6 +75,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -246,6 +247,8 @@ public class SpringApplication {
 
 	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
 
+	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
+
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
 	 * beans from the specified primary sources (see {@link SpringApplication class-level}
@@ -316,6 +319,7 @@ public class SpringApplication {
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
+			context.setApplicationStartup(this.applicationStartup);
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class<?>[] { ConfigurableApplicationContext.class }, context);
 			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
@@ -422,7 +426,8 @@ public class SpringApplication {
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
 		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
 		return new SpringApplicationRunListeners(logger,
-				getSpringFactoriesInstances(SpringApplicationRunListener.class, types, this, args));
+				getSpringFactoriesInstances(SpringApplicationRunListener.class, types, this, args),
+				this.applicationStartup);
 	}
 
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
@@ -1235,6 +1240,22 @@ public class SpringApplication {
 	 */
 	public Set<ApplicationListener<?>> getListeners() {
 		return asUnmodifiableOrderedSet(this.listeners);
+	}
+
+	/**
+	 * Set the {@link ApplicationStartup} to use for collecting startup metrics.
+	 * @param applicationStartup the application startup to use
+	 */
+	public void setApplicationStartup(ApplicationStartup applicationStartup) {
+		this.applicationStartup = (applicationStartup != null) ? applicationStartup : ApplicationStartup.DEFAULT;
+	}
+
+	/**
+	 * Returns the {@link ApplicationStartup} used for collecting startup metrics.
+	 * @return the application startup
+	 */
+	public ApplicationStartup getApplicationStartup() {
+		return this.applicationStartup;
 	}
 
 	/**

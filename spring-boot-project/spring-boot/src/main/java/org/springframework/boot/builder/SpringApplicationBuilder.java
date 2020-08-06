@@ -40,6 +40,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.util.StringUtils;
 
 /**
@@ -545,6 +546,18 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder listeners(ApplicationListener<?>... listeners) {
 		this.application.addListeners(listeners);
+		return this;
+	}
+
+	/**
+	 * Configure the {@link ApplicationStartup} to be used with the
+	 * {@link ApplicationContext} for collecting startup metrics.
+	 * @param applicationStartup the application startup to use
+	 * @return the current builder
+	 * @since 2.4.0
+	 */
+	public SpringApplicationBuilder applicationStartup(ApplicationStartup applicationStartup) {
+		this.application.setApplicationStartup(applicationStartup);
 		return this;
 	}
 
