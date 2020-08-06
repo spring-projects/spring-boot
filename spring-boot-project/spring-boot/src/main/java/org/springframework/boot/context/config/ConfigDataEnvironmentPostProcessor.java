@@ -16,7 +16,10 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 
@@ -61,10 +64,10 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		addPropertySources(environment, application.getResourceLoader(), application.getAdditionalProfiles());
+		postProcessEnvironment(environment, application.getResourceLoader(), application.getAdditionalProfiles());
 	}
 
-	protected final void addPropertySources(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+	void postProcessEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			Collection<String> additionalProfiles) {
 		try {
 			this.logger.trace("Post-processing environment to add config data");
@@ -91,6 +94,44 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	@SuppressWarnings("deprecation")
 	LegacyConfigFileApplicationListener getLegacyListener() {
 		return new LegacyConfigFileApplicationListener(this.logFactory.getLog(ConfigFileApplicationListener.class));
+	}
+
+	/**
+	 * Apply {@link ConfigData} post-processing to an existing {@link Environment}. This
+	 * method can be useful when working with an {@link Environment} that has been created
+	 * directly and not necessarily as part of a {@link SpringApplication}.
+	 * @param environment the environment to apply {@link ConfigData} to
+	 */
+	public static void applyTo(ConfigurableEnvironment environment) {
+		applyTo(environment, null, Collections.emptyList());
+	}
+
+	/**
+	 * Apply {@link ConfigData} post-processing to an existing {@link Environment}. This
+	 * method can be useful when working with an {@link Environment} that has been created
+	 * directly and not necessarily as part of a {@link SpringApplication}.
+	 * @param environment the environment to apply {@link ConfigData} to
+	 * @param resourceLoader the resource loader to use
+	 * @param additionalProfiles any additional profiles that should be applied
+	 */
+	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+			String... additionalProfiles) {
+		applyTo(environment, resourceLoader, Arrays.asList(additionalProfiles));
+	}
+
+	/**
+	 * Apply {@link ConfigData} post-processing to an existing {@link Environment}. This
+	 * method can be useful when working with an {@link Environment} that has been created
+	 * directly and not necessarily as part of a {@link SpringApplication}.
+	 * @param environment the environment to apply {@link ConfigData} to
+	 * @param resourceLoader the resource loader to use
+	 * @param additionalProfiles any additional profiles that should be applied
+	 */
+	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+			Collection<String> additionalProfiles) {
+		new ConfigDataEnvironmentPostProcessor(Supplier::get).postProcessEnvironment(environment, resourceLoader,
+				additionalProfiles);
+
 	}
 
 	@SuppressWarnings("deprecation")

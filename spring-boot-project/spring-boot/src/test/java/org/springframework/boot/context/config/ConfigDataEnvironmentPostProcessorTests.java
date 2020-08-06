@@ -118,4 +118,12 @@ class ConfigDataEnvironmentPostProcessorTests {
 		verify(legacyListener).addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
 	}
 
+	@Test
+	void applyToAppliesPostProcessing() {
+		int before = this.environment.getPropertySources().size();
+		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, "dev");
+		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
+	}
+
 }
