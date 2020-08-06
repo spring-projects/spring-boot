@@ -116,12 +116,8 @@ class DefinitionsParser {
 		}
 		if (types.isEmpty() && element instanceof Field) {
 			Field field = (Field) element;
-			if (field.getGenericType() instanceof TypeVariable) {
-				types.add(ResolvableType.forField(field, source));
-			}
-			else {
-				types.add(ResolvableType.forField(field));
-			}
+			types.add((field.getGenericType() instanceof TypeVariable) ? ResolvableType.forField(field, source)
+					: ResolvableType.forField(field));
 		}
 		return types;
 	}
