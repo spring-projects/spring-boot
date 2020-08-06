@@ -6681,7 +6681,7 @@ TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that
 This ensures that the parameter names are available to the caching infrastructure once the bean has been spied upon.
 
 TIP: When you are using `@SpyBean` to spy on a bean that is proxied by Spring, you may need to remove Spring's proxy in some situations, for example when setting expectations using `given` or `when`.
-Use `AopTestUtils.getTargetProxy(yourProxiedSpy)` to do so.
+Use `AopTestUtils.getTargetObject(yourProxiedSpy)` to do so.
 
 
 
