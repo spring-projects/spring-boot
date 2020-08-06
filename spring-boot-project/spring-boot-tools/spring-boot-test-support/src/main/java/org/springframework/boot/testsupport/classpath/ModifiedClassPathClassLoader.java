@@ -200,12 +200,11 @@ final class ModifiedClassPathClassLoader extends URLClassLoader {
 		RepositorySystem repositorySystem = serviceLocator.getService(RepositorySystem.class);
 		DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
 		LocalRepository localRepository = new LocalRepository(System.getProperty("user.home") + "/.m2/repository");
+		RemoteRepository remoteRepository = new RemoteRepository.Builder("central", "default",
+				"https://repo.maven.apache.org/maven2").build();
 		session.setLocalRepositoryManager(repositorySystem.newLocalRepositoryManager(session, localRepository));
 		for (int i = 0; i < MAX_RESOLUTION_ATTEMPTS; i++) {
-			CollectRequest collectRequest = new CollectRequest(null,
-					Arrays.asList(
-							new RemoteRepository.Builder("central", "default", "https://repo.maven.apache.org/maven2")
-									.build()));
+			CollectRequest collectRequest = new CollectRequest(null, Arrays.asList(remoteRepository));
 			collectRequest.setDependencies(createDependencies(coordinates));
 			DependencyRequest dependencyRequest = new DependencyRequest(collectRequest, null);
 			try {
