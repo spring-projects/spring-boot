@@ -19,6 +19,7 @@ package org.springframework.boot;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.apache.commons.logging.Log;
 
@@ -49,59 +50,36 @@ class SpringApplicationRunListeners {
 	}
 
 	void starting() {
-		StartupStep starting = this.applicationStartup.start("spring.boot.application.starting");
-		for (SpringApplicationRunListener listener : this.listeners) {
-			listener.starting();
-		}
-		starting.end();
+		doWithListeners("spring.boot.application.starting", SpringApplicationRunListener::starting);
 	}
 
 	void environmentPrepared(ConfigurableEnvironment environment) {
-		StartupStep environmentPrepared = this.applicationStartup.start("spring.boot.application.environment-prepared");
-		for (SpringApplicationRunListener listener : this.listeners) {
-			listener.environmentPrepared(environment);
-		}
-		environmentPrepared.end();
+		doWithListeners("spring.boot.application.environment-prepared",
+				(listener) -> listener.environmentPrepared(environment));
 	}
 
 	void contextPrepared(ConfigurableApplicationContext context) {
-		StartupStep contextPrepared = this.applicationStartup.start("spring.boot.application.context-prepared");
-		for (SpringApplicationRunListener listener : this.listeners) {
-			listener.contextPrepared(context);
-		}
-		contextPrepared.end();
+		doWithListeners("spring.boot.application.context-prepared", (listener) -> listener.contextPrepared(context));
 	}
 
 	void contextLoaded(ConfigurableApplicationContext context) {
-		StartupStep contextLoaded = this.applicationStartup.start("spring.boot.application.context-loaded");
-		for (SpringApplicationRunListener listener : this.listeners) {
-			listener.contextLoaded(context);
-		}
-		contextLoaded.end();
+		doWithListeners("spring.boot.application.context-loaded", (listener) -> listener.contextLoaded(context));
 	}
 
 	void started(ConfigurableApplicationContext context) {
-		StartupStep started = this.applicationStartup.start("spring.boot.application.started");
-		for (SpringApplicationRunListener listener : this.listeners) {
-			listener.started(context);
-		}
-		started.end();
+		doWithListeners("spring.boot.application.started", (listener) -> listener.started(context));
 	}
 
 	void running(ConfigurableApplicationContext context) {
-		StartupStep running = this.applicationStartup.start("spring.boot.application.running");
-		for (SpringApplicationRunListener listener : this.listeners) {
-			listener.running(context);
-		}
-		running.end();
+		doWithListeners("spring.boot.application.running", (listener) -> listener.running(context));
 	}
 
 	void failed(ConfigurableApplicationContext context, Throwable exception) {
-		StartupStep failed = this.applicationStartup.start("spring.boot.application.failed");
-		for (SpringApplicationRunListener listener : this.listeners) {
-			callFailedListener(listener, context, exception);
-		}
-		failed.tag("exception", exception.getClass().toString()).tag("message", exception.getMessage()).end();
+		doWithListeners("spring.boot.application.failed",
+				(listener) -> callFailedListener(listener, context, exception), (step) -> {
+					step.tag("exception", exception.getClass().toString());
+					step.tag("message", exception.getMessage());
+				});
 	}
 
 	private void callFailedListener(SpringApplicationRunListener listener, ConfigurableApplicationContext context,
@@ -122,6 +100,18 @@ class SpringApplicationRunListeners {
 				this.log.warn("Error handling failed (" + message + ")");
 			}
 		}
+	}
+
+	private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction) {
+		doWithListeners(stepName, listenerAction, StartupStep::end);
+	}
+
+	private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction,
+			Consumer<StartupStep> stepAction) {
+		StartupStep step = this.applicationStartup.start(stepName);
+		this.listeners.forEach(listenerAction);
+		stepAction.accept(step);
+		step.end();
 	}
 
 }

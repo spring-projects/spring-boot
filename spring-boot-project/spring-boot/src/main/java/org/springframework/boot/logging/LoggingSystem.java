@@ -58,24 +58,20 @@ public abstract class LoggingSystem {
 	 */
 	public static final String ROOT_LOGGER_NAME = "ROOT";
 
-	private static final Function<ClassLoader, LoggingSystem> SYSTEM_FACTORY;
+	private static final Function<ClassLoader, LoggingSystem> SYSTEM_FACTORY = getSystemFactory();
 
-	static {
+	private static Function<ClassLoader, LoggingSystem> getSystemFactory() {
 		ClassLoader classLoader = LoggingSystem.class.getClassLoader();
 		if (ClassUtils.isPresent("ch.qos.logback.core.Appender", classLoader)) {
-			SYSTEM_FACTORY = (cl) -> new LogbackLoggingSystem(cl);
+			return LogbackLoggingSystem::new;
 		}
-		else if (ClassUtils.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", classLoader)) {
-			SYSTEM_FACTORY = (cl) -> new Log4J2LoggingSystem(cl);
+		if (ClassUtils.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", classLoader)) {
+			return Log4J2LoggingSystem::new;
 		}
-		else if (ClassUtils.isPresent("java.util.logging.LogManager", classLoader)) {
-			SYSTEM_FACTORY = (cl) -> new JavaLoggingSystem(cl);
+		if (ClassUtils.isPresent("java.util.logging.LogManager", classLoader)) {
+			return JavaLoggingSystem::new;
 		}
-		else {
-			SYSTEM_FACTORY = (cl) -> {
-				throw new IllegalStateException("No suitable logging system located");
-			};
-		}
+		throw new IllegalStateException("No suitable logging system located");
 	}
 
 	/**

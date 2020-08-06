@@ -1160,12 +1160,10 @@ class SpringApplicationTests {
 		given(applicationStartup.start(anyString())).willReturn(startupStep);
 		given(startupStep.tag(anyString(), anyString())).willReturn(startupStep);
 		given(startupStep.tag(anyString(), ArgumentMatchers.<Supplier<String>>any())).willReturn(startupStep);
-
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setApplicationStartup(applicationStartup);
 		this.context = application.run();
-
 		assertThat(this.context.getBean(ApplicationStartup.class)).isEqualTo(applicationStartup);
 		verify(applicationStartup).start("spring.boot.application.starting");
 		verify(applicationStartup).start("spring.boot.application.environment-prepared");
