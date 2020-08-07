@@ -195,14 +195,6 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	void integrationEnablesDefaultCounts() {
-		this.contextRunner.withUserConfiguration(MessageSourceConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("myMessageSource");
-			assertThat(((MessageProcessorMessageSource) context.getBean("myMessageSource")).isCountsEnabled()).isTrue();
-		});
-	}
-
-	@Test
 	void rsocketSupportEnabled() {
 		this.contextRunner.withUserConfiguration(RSocketServerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class,
