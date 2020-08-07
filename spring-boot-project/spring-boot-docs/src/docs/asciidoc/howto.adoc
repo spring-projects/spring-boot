@@ -581,7 +581,7 @@ We recommend using `application.properties` to configure HTTPS, as the HTTP conn
 [[howto-configure-http2]]
 === Configure HTTP/2
 You can enable HTTP/2 support in your Spring Boot application with the configprop:server.http2.enabled[] configuration property.
-This support depends on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by JDK8.
+This support depends on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by all JDK8 releases.
 
 [NOTE]
 ====
@@ -599,8 +599,12 @@ As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on
 
 [[howto-configure-http2-jetty]]
 ==== HTTP/2 with Jetty
-As of Jetty 9.4.8, HTTP/2 is also supported with the https://www.conscrypt.org/[Conscrypt library].
-To enable that support, your application needs to have two additional dependencies: `org.eclipse.jetty:jetty-alpn-conscrypt-server` and `org.eclipse.jetty.http2:http2-server`.
+For HTTP/2 support, Jetty requires the additional `org.eclipse.jetty.http2:http2-server` dependency.
+Now depending on your deployment, you also need to choose other dependencies:
+
+* `org.eclipse.jetty:jetty-alpn-java-server` for applications running on JDK9+
+* `org.eclipse.jetty:jetty-alpn-openjdk8-server` for applications running on JDK8u252+
+* `org.eclipse.jetty:jetty-alpn-conscrypt-server` and the https://www.conscrypt.org/[Conscrypt library] with no JDK requirement
 
 
 
