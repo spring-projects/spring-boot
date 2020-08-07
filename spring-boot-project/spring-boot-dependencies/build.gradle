@@ -830,7 +830,7 @@ bom {
 			]
 		}
 	}
-	library("jOOQ", "3.13.2") {
+	library("jOOQ", "3.13.4") {
 		group("org.jooq") {
 			modules = [
 				"jooq",
