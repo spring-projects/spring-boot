@@ -163,11 +163,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		def integrationDocs = String.format("https://docs.spring.io/spring-integration/docs/%s/reference/html/", integrationVersion)
 		attributes "spring-integration-docs": integrationDocs
 	}
+	dependsOn test
+	inputs.dir("${buildDir}/generated-snippets")
 }
 
 asciidoctor {
 	configurations "asciidoctorExtensions"
-	dependsOn test
 	sources {
 		include "index.adoc"
 	}
@@ -175,7 +176,6 @@ asciidoctor {
 
 asciidoctorPdf {
 	configurations "asciidoctorExtensions"
-	dependsOn test
 	sources {
 		include "index.adoc"
 	}
