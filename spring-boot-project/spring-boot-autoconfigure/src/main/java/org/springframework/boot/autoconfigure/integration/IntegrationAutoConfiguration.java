@@ -118,7 +118,7 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
-		@EnableIntegrationManagement(defaultCountsEnabled = "true")
+		@EnableIntegrationManagement
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}
