@@ -35,6 +35,7 @@ processResources {
 	eachFile {
 		filter { it.replace('${spring-boot.version}', project.version) }
 	}
+	inputs.property "version", project.version
 }
 
 task integrationTest {
