@@ -14,7 +14,7 @@ bom {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("ActiveMQ", "5.15.12") {
+	library("ActiveMQ", "5.16.0") {
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-amqp",
@@ -1775,3 +1775,4 @@ bom {
 generateMetadataFileForMavenPublication {
 	enabled = false
 }
+
