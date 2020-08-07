@@ -49,7 +49,7 @@ public class DebugAgentEnvironmentPostProcessor implements EnvironmentPostProces
 					debugAgent.getMethod("init").invoke(null);
 				}
 				catch (Exception ex) {
-					throw new RuntimeException("Failed to init Reactor's debug agent");
+					throw new RuntimeException("Failed to init Reactor's debug agent", ex);
 				}
 			}
 		}
