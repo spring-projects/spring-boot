@@ -38,7 +38,7 @@ public class DockerEngineException extends RuntimeException {
 
 	private final Message responseMessage;
 
-	DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
+	public DockerEngineException(String host, URI uri, int statusCode, String reasonPhrase, Errors errors,
 			Message responseMessage) {
 		super(buildMessage(host, uri, statusCode, reasonPhrase, errors, responseMessage));
 		this.statusCode = statusCode;

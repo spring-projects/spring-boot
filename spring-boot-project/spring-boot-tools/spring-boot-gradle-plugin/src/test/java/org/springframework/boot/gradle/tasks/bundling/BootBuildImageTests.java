@@ -197,7 +197,7 @@ class BootBuildImageTests {
 
 	@Test
 	void whenUsingDefaultConfigurationThenRequestHasNoPullDisabled() {
-		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.IF_NOT_PRESENT);
+		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
 	}
 
 	@Test

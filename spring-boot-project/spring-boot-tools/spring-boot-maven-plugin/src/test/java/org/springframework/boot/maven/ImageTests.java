@@ -64,7 +64,7 @@ class ImageTests {
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
 		assertThat(request.isVerboseLogging()).isFalse();
-		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.IF_NOT_PRESENT);
+		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
 	}
 
 	@Test

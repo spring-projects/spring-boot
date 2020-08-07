@@ -32,6 +32,7 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Andrey Shlykov
  * @since 2.3.0
  */
 public class BuildRequest {
@@ -68,7 +69,7 @@ public class BuildRequest {
 		this.env = Collections.emptyMap();
 		this.cleanCache = false;
 		this.verboseLogging = false;
-		this.pullPolicy = PullPolicy.IF_NOT_PRESENT;
+		this.pullPolicy = PullPolicy.ALWAYS;
 		this.creator = Creator.withVersion("");
 	}
 
@@ -244,7 +245,7 @@ public class BuildRequest {
 	}
 
 	/**
-	 * Return the {@link PullPolicy} the builder should use.
+	 * Return the image {@link PullPolicy} that the builder should use.
 	 * @return image pull policy
 	 */
 	public PullPolicy getPullPolicy() {

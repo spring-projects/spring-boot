@@ -17,26 +17,31 @@
 package org.springframework.boot.buildpack.platform.build;
 
 /**
- * Image pull policy.
+ * Image types.
  *
  * @author Andrey Shlykov
- * @since 2.3.0
+ * @since 2.4.0
  */
-public enum PullPolicy {
+public enum ImageType {
 
 	/**
-	 * Always pull the image.
+	 * Builder image.
 	 */
-	ALWAYS,
+	BUILDER("builder image"),
 
 	/**
-	 * Never pull the image.
+	 * Run image.
 	 */
-	NEVER,
+	RUNNER("run image");
 
-	/**
-	 * Pull the image if it does not already exist in registry.
-	 */
-	IF_NOT_PRESENT
+	private final String description;
+
+	ImageType(String description) {
+		this.description = description;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
 
 }

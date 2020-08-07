@@ -125,7 +125,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	String runImage;
 
 	/**
-	 * Alias for {@link Image#pullPolicy} to support configuration via command-line property.
+	 * Alias for {@link Image#pullPolicy} to support configuration via command-line
+	 * property.
 	 */
 	@Parameter(property = "spring-boot.build-image.pullPolicy", readonly = true)
 	PullPolicy pullPolicy;
@@ -168,7 +169,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 			image.setRunImage(this.runImage);
 		}
 		if (image.pullPolicy == null && this.pullPolicy != null) {
-			image.setPullPolicy(pullPolicy);
+			image.setPullPolicy(this.pullPolicy);
 		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
 	}

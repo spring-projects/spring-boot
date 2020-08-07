@@ -16,6 +16,10 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import org.gradle.api.DefaultTask;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
@@ -26,6 +30,7 @@ import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
+
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
@@ -36,10 +41,6 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
 import org.springframework.boot.gradle.util.VersionExtractor;
 import org.springframework.util.StringUtils;
-
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * A {@link Task} for bundling an application into an OCI image using a
@@ -227,20 +228,20 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-	 * Returns whether images should be pulled from a remote repository during image
-	 * build.
-	 *
+	 * Returns image pull policy that will be used when building the image.
 	 * @return whether images should be pulled
 	 */
 	@Input
+	@Optional
 	public PullPolicy getPullPolicy() {
 		return this.pullPolicy;
 	}
 
 	/**
-	 * Sets whether images should be pulled from a remote repository during image build.
-	 * @param pullPolicy
+	 * Sets image pull policy that will be used when building the image.
+	 * @param pullPolicy image pull policy {@link PullPolicy}
 	 */
+	@Option(option = "pullPolicy", description = "The image pull policy")
 	public void setPullPolicy(PullPolicy pullPolicy) {
 		this.pullPolicy = pullPolicy;
 	}

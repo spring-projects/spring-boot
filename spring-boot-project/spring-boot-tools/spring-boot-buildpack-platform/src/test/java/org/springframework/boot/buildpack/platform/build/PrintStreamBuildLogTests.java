@@ -57,12 +57,13 @@ class PrintStreamBuildLogTests {
 		given(runImage.getDigests()).willReturn(Collections.singletonList("00000002"));
 		given(request.getName()).willReturn(name);
 		log.start(request);
-		Consumer<TotalProgressEvent> pullBuildImageConsumer = log.pullingBuilder(request, builderImageReference);
+		Consumer<TotalProgressEvent> pullBuildImageConsumer = log.pullingImage(builderImageReference,
+				ImageType.BUILDER);
 		pullBuildImageConsumer.accept(new TotalProgressEvent(100));
-		log.pulledBuilder(request, builderImage);
-		Consumer<TotalProgressEvent> pullRunImageConsumer = log.pullingRunImage(request, runImageReference);
+		log.pulledImage(builderImage, ImageType.BUILDER);
+		Consumer<TotalProgressEvent> pullRunImageConsumer = log.pullingImage(runImageReference, ImageType.RUNNER);
 		pullRunImageConsumer.accept(new TotalProgressEvent(100));
-		log.pulledRunImage(request, runImage);
+		log.pulledImage(runImage, ImageType.RUNNER);
 		log.executingLifecycle(request, LifecycleVersion.parse("0.5"), VolumeName.of("pack-abc.cache"));
 		Consumer<LogUpdateEvent> phase1Consumer = log.runningPhase(request, "alphabet");
 		phase1Consumer.accept(mockLogEvent("one"));
