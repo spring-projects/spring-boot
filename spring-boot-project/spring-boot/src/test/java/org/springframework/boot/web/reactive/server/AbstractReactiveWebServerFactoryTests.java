@@ -47,6 +47,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.MonoProcessor;
+import reactor.core.publisher.Sinks;
 import reactor.netty.NettyPipeline;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
@@ -507,7 +508,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	protected static class BlockingHandler implements HttpHandler {
 
-		private final BlockingQueue<MonoProcessor<Void>> monoProcessors = new ArrayBlockingQueue<>(10);
+		private final BlockingQueue<MonoProcessor<Void>> processors = new ArrayBlockingQueue<>(10);
 
 		private volatile boolean blocking = true;
 
@@ -518,16 +519,16 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		@Override
 		public Mono<Void> handle(ServerHttpRequest request, ServerHttpResponse response) {
 			if (this.blocking) {
-				MonoProcessor<Void> completion = MonoProcessor.create();
-				this.monoProcessors.add(completion);
-				return completion.then(Mono.empty());
+				Sinks.One<Void> completion = Sinks.one();
+				this.processors.add(MonoProcessor.fromSink(completion));
+				return completion.asMono().then(Mono.empty());
 			}
 			return Mono.empty();
 		}
 
 		public void completeOne() {
 			try {
-				MonoProcessor<Void> processor = this.monoProcessors.take();
+				MonoProcessor<Void> processor = this.processors.take();
 				processor.onComplete();
 			}
 			catch (InterruptedException ex) {
@@ -536,14 +537,14 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		}
 
 		public void awaitQueue() throws InterruptedException {
-			while (this.monoProcessors.isEmpty()) {
+			while (this.processors.isEmpty()) {
 				Thread.sleep(100);
 			}
 		}
 
 		public void stopBlocking() {
 			this.blocking = false;
-			this.monoProcessors.forEach(MonoProcessor::onComplete);
+			this.processors.forEach(MonoProcessor::onComplete);
 		}
 
 	}
