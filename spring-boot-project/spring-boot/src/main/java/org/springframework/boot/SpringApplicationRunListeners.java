@@ -111,7 +111,6 @@ class SpringApplicationRunListeners {
 		StartupStep step = this.applicationStartup.start(stepName);
 		this.listeners.forEach(listenerAction);
 		stepAction.accept(step);
-		step.end();
 	}
 
 }
