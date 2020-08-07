@@ -4365,6 +4365,14 @@ The following example shows how to connect to a MongoDB database:
 	}
 ----
 
+If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
+
+The auto-configured `MongoClient` is created using a `MongoClientSettings` bean.
+If you have defined your own `MongoClientSettings`, it will be used without modification and the `spring.data.mongodb` properties will be ignored.
+Otherwise a `MongoClientSettings` will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
+In either case, you can declare one or more `MongoClientSettingsBuilderCustomizer` beans to fine-tune the `MongoClientSettings` configuration.
+Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
+
 You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
 [source,properties,indent=0,configprops]
@@ -4383,12 +4391,6 @@ For example, you might declare the following settings in your `application.prope
 	spring.data.mongodb.username=user
 	spring.data.mongodb.password=secret
 ----
-
-If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
-
-The auto-configured `MongoClient` is created using `MongoClientSettings`.
-To fine-tune its configuration, declare one or more `MongoClientSettingsBuilderCustomizer` beans.
-Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
 
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.

@@ -43,12 +43,11 @@ public class MongoClientFactory extends MongoClientFactorySupport<MongoClient> {
 	 * Construct a factory for creating a blocking {@link MongoClient}.
 	 * @param properties configuration properties
 	 * @param environment a Spring {@link Environment} containing configuration properties
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #MongoClientFactory(MongoProperties, Environment, List)}
+	 * @deprecated since 2.3.0 in favor of {@link #MongoClientFactory(List)}
 	 */
 	@Deprecated
 	public MongoClientFactory(MongoProperties properties, Environment environment) {
-		this(properties, environment, null);
+		this(null);
 	}
 
 	/**
@@ -56,10 +55,20 @@ public class MongoClientFactory extends MongoClientFactorySupport<MongoClient> {
 	 * @param properties configuration properties
 	 * @param environment a Spring {@link Environment} containing configuration properties
 	 * @param builderCustomizers a list of configuration settings customizers
+	 * @deprecated since 2.4.0 in favor of {@link #MongoClientFactory(List)}
 	 */
+	@Deprecated
 	public MongoClientFactory(MongoProperties properties, Environment environment,
 			List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
-		super(properties, environment, builderCustomizers, MongoClients::create);
+		this(builderCustomizers);
+	}
+
+	/**
+	 * Construct a factory for creating a blocking {@link MongoClient}.
+	 * @param builderCustomizers a list of configuration settings customizers
+	 */
+	public MongoClientFactory(List<MongoClientSettingsBuilderCustomizer> builderCustomizers) {
+		super(builderCustomizers, MongoClients::create);
 	}
 
 }
