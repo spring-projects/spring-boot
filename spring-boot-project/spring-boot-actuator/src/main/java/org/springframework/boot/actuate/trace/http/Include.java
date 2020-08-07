@@ -24,6 +24,8 @@ import java.util.Set;
  * Include options for HTTP tracing.
  *
  * @author Wallace Wadge
+ * @author Emily Tsanova
+ * @author Joseph Beeton
  * @since 2.0.0
  */
 public enum Include {
@@ -55,6 +57,7 @@ public enum Include {
 	PRINCIPAL,
 
 	/**
+	 *
 	 * Include the remote address.
 	 */
 	REMOTE_ADDRESS,
@@ -75,7 +78,6 @@ public enum Include {
 		Set<Include> defaultIncludes = new LinkedHashSet<>();
 		defaultIncludes.add(Include.REQUEST_HEADERS);
 		defaultIncludes.add(Include.RESPONSE_HEADERS);
-		defaultIncludes.add(Include.COOKIE_HEADERS);
 		defaultIncludes.add(Include.TIME_TAKEN);
 		DEFAULT_INCLUDES = Collections.unmodifiableSet(defaultIncludes);
 	}

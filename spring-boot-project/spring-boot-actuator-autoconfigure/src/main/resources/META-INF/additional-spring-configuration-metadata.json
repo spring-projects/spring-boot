@@ -626,7 +626,6 @@
       "defaultValue": [
         "request-headers",
         "response-headers",
-        "cookies",
         "errors"
       ]
     },
