@@ -195,7 +195,7 @@ bom {
 			]
 		}
 	}
-	library("Commons Lang3", "3.10") {
+	library("Commons Lang3", "3.11") {
 		group("org.apache.commons") {
 			modules = [
 				"commons-lang3"
