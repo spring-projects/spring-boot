@@ -81,8 +81,7 @@ class HealthEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 				.description("The nested components that make up the health.").optional();
 		FieldDescriptor componentDetails = subsectionWithPath("components.*.details")
 				.description("Details of the health of a specific part of the application. "
-						+ "Presence is controlled by `management.endpoint.health.show-details`. May contain nested "
-						+ "components that make up the health.")
+						+ "Presence is controlled by `management.endpoint.health.show-details`.")
 				.optional();
 		this.mockMvc.perform(get("/actuator/health").accept(MediaType.APPLICATION_JSON)).andExpect(status().isOk())
 				.andDo(document("health",
