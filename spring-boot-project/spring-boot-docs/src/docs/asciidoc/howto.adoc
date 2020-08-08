@@ -2478,7 +2478,7 @@ Overriding versions may cause compatibility issues.
 
 To override dependency versions with Maven, see {spring-boot-maven-plugin-docs}#using[this section] of the Maven plugin's documentation.
 
-To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}#managing-dependencies-customizing[this section] of the Gradle plugin's documentation.
+To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}#managing-dependencies-dependency-management-plugin-customizing[this section] of the Gradle plugin's documentation.
 
 
 
