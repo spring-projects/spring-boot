@@ -21,8 +21,12 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import com.sun.jna.Platform;
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -35,12 +39,15 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
+import org.apache.http.message.BasicHeader;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 
 import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
 import org.springframework.boot.buildpack.platform.system.Environment;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HttpClientTransport} that talks to local Docker.
@@ -54,6 +61,8 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 	private static final String DOCKER_HOST = "DOCKER_HOST";
 
+	private static final String DOCKER_AUTHENTICATION_TOKEN = "DOCKER_AUTHENTICATION_TOKEN";
+
 	private static final HttpHost LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
 
 	private LocalHttpClientTransport(CloseableHttpClient client) {
@@ -62,6 +71,12 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 	static LocalHttpClientTransport create(Environment environment) {
 		HttpClientBuilder builder = HttpClients.custom();
+
+		Collection<Header> defaultHeaders = getDockerDefaultAuthenticationHeaders(environment);
+		if (!CollectionUtils.isEmpty(defaultHeaders)) {
+			builder.setDefaultHeaders(defaultHeaders);
+		}
+
 		builder.setConnectionManager(new LocalConnectionManager(socketFilePath(environment)));
 		builder.setSchemePortResolver(new LocalSchemePortResolver());
 		return new LocalHttpClientTransport(builder.build());
@@ -73,6 +88,16 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 			return host.substring(UNIX_SOCKET_PREFIX.length());
 		}
 		return host;
+	}
+
+	private static Collection<Header> getDockerDefaultAuthenticationHeaders(Environment environment) {
+		String authenticationToken = environment.get(DOCKER_AUTHENTICATION_TOKEN);
+
+		if (StringUtils.isEmpty(authenticationToken)) {
+			return Collections.emptyList();
+		}
+
+		return Arrays.asList(new BasicHeader("X-Registry-Auth", authenticationToken));
 	}
 
 	/**

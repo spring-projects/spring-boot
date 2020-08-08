@@ -41,6 +41,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author wmz7year
  */
 class RemoteHttpClientTransportTests {
 
@@ -94,6 +95,14 @@ class RemoteHttpClientTransportTests {
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get,
 				sslContextFactory);
 		assertThat(transport.getHost()).satisfies(hostOf("https", "192.168.1.2", 2376));
+	}
+
+	@Test
+	void createIfPossibleWhenUsesDockerAuthenticationToken() {
+		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
+		this.environment.put("DOCKER_AUTHENTICATION_TOKEN", "MOCK_DOCKER_AUTHENTICATION_TOKEN");
+		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get);
+		assertThat(transport).isNotNull();
 	}
 
 	private Consumer<HttpHost> hostOf(String scheme, String hostName, int port) {

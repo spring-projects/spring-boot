@@ -18,19 +18,26 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
+import org.apache.http.message.BasicHeader;
 
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link HttpClientTransport} that talks to a remote Docker.
@@ -47,6 +54,8 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 	private static final String DOCKER_TLS_VERIFY = "DOCKER_TLS_VERIFY";
 
 	private static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
+
+	private static final String DOCKER_AUTHENTICATION_TOKEN = "DOCKER_AUTHENTICATION_TOKEN";
 
 	private RemoteHttpClientTransport(CloseableHttpClient client, HttpHost host) {
 		super(client, host);
@@ -81,6 +90,11 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		if (secure) {
 			builder.setSSLSocketFactory(getSecureConnectionSocketFactory(environment, sslContextFactory));
 		}
+		Collection<Header> defaultHeaders = getDockerDefaultAuthenticationHeaders(environment);
+		if (!CollectionUtils.isEmpty(defaultHeaders)) {
+			builder.setDefaultHeaders(defaultHeaders);
+		}
+
 		String scheme = secure ? "https" : "http";
 		HttpHost httpHost = new HttpHost(tcpHost.getHostName(), tcpHost.getPort(), scheme);
 		return new RemoteHttpClientTransport(builder.build(), httpHost);
@@ -103,6 +117,16 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		catch (NumberFormatException ex) {
 			return false;
 		}
+	}
+
+	private static Collection<Header> getDockerDefaultAuthenticationHeaders(Environment environment) {
+		String authenticationToken = environment.get(DOCKER_AUTHENTICATION_TOKEN);
+
+		if (StringUtils.isEmpty(authenticationToken)) {
+			return Collections.emptyList();
+		}
+
+		return Arrays.asList(new BasicHeader("X-Registry-Auth", authenticationToken));
 	}
 
 }
