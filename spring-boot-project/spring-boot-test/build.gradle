@@ -43,6 +43,7 @@ dependencies {
 	testImplementation("org.codehaus.groovy:groovy-xml")
 	testImplementation("org.apache.johnzon:johnzon-jsonb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.slf4j:slf4j-api")
 	testImplementation("org.spockframework:spock-core")
 	testImplementation("org.springframework:spring-webmvc")

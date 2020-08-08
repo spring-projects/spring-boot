@@ -20,8 +20,9 @@ import java.io.File;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
@@ -37,6 +38,7 @@ import static org.mockito.BDDMockito.given;
  * @author Mattias Severson
  * @author Stephane Nicoll
  */
+@ExtendWith(MockitoExtension.class)
 class DiskSpaceHealthIndicatorTests {
 
 	private static final DataSize THRESHOLD = DataSize.ofKilobytes(1);
@@ -50,13 +52,12 @@ class DiskSpaceHealthIndicatorTests {
 
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
-		given(this.fileMock.exists()).willReturn(true);
 		this.healthIndicator = new DiskSpaceHealthIndicator(this.fileMock, THRESHOLD);
 	}
 
 	@Test
 	void diskSpaceIsUp() {
+		given(this.fileMock.exists()).willReturn(true);
 		long freeSpace = THRESHOLD.toBytes() + 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());
@@ -70,6 +71,7 @@ class DiskSpaceHealthIndicatorTests {
 
 	@Test
 	void diskSpaceIsDown() {
+		given(this.fileMock.exists()).willReturn(true);
 		long freeSpace = THRESHOLD.toBytes() - 10;
 		given(this.fileMock.getUsableSpace()).willReturn(freeSpace);
 		given(this.fileMock.getTotalSpace()).willReturn(TOTAL_SPACE.toBytes());

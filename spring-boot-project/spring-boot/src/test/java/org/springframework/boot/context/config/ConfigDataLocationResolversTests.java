@@ -23,10 +23,10 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
@@ -45,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class ConfigDataLocationResolversTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
@@ -59,11 +60,6 @@ class ConfigDataLocationResolversTests {
 	private Profiles profiles;
 
 	private ResourceLoader resourceLoader = new DefaultResourceLoader();
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void createWhenInjectingBinderCreatesResolver() {

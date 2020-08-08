@@ -23,8 +23,9 @@ import java.util.List;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.mock.env.MockPropertySource;
@@ -38,6 +39,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class ConfigDataImporterTests {
 
 	@Mock
@@ -60,7 +62,6 @@ class ConfigDataImporterTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		given(this.activationContext.getProfiles()).willReturn(this.profiles);
 	}
 

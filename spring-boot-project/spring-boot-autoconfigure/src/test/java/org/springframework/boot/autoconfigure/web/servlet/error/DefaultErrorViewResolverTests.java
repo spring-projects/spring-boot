@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,8 +24,9 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
+@ExtendWith(MockitoExtension.class)
 class DefaultErrorViewResolverTests {
 
 	private DefaultErrorViewResolver resolver;
@@ -71,7 +73,6 @@ class DefaultErrorViewResolverTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.refresh();
 		this.resourceProperties = new ResourceProperties();
@@ -115,6 +116,8 @@ class DefaultErrorViewResolverTests {
 
 	@Test
 	void resolveWhenSeries5xxTemplateMatchShouldReturnTemplate() {
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/503"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(false);
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/5xx"), any(Environment.class),
 				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.SERVICE_UNAVAILABLE,
@@ -124,6 +127,8 @@ class DefaultErrorViewResolverTests {
 
 	@Test
 	void resolveWhenSeries4xxTemplateMatchShouldReturnTemplate() {
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(false);
 		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"), any(Environment.class),
 				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
@@ -170,9 +175,10 @@ class DefaultErrorViewResolverTests {
 	@Test
 	void resolveWhenExactResourceMatchAndSeriesTemplateMatchShouldFavorResource() throws Exception {
 		setResourceLocation("/exact");
-		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/4xx"), any(Environment.class),
-				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(true);
+		given(this.templateAvailabilityProvider.isTemplateAvailable(eq("error/404"), any(Environment.class),
+				any(ClassLoader.class), any(ResourceLoader.class))).willReturn(false);
 		ModelAndView resolved = this.resolver.resolveErrorView(this.request, HttpStatus.NOT_FOUND, this.model);
+		verifyNoMoreInteractions(this.templateAvailabilityProvider);
 		MockHttpServletResponse response = render(resolved);
 		assertThat(response.getContentAsString().trim()).isEqualTo("exact/404");
 		assertThat(response.getContentType()).isEqualTo(MediaType.TEXT_HTML_VALUE);

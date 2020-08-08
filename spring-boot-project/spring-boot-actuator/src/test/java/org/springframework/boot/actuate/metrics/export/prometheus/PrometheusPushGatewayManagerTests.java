@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,12 +24,12 @@ import java.util.concurrent.ScheduledFuture;
 
 import io.prometheus.client.CollectorRegistry;
 import io.prometheus.client.exporter.PushGateway;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.PushGatewayTaskScheduler;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
@@ -51,6 +51,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class PrometheusPushGatewayManagerTests {
 
 	@Mock
@@ -59,6 +60,7 @@ class PrometheusPushGatewayManagerTests {
 	@Mock
 	private CollectorRegistry registry;
 
+	@Mock
 	private TaskScheduler scheduler;
 
 	private Duration pushRate = Duration.ofSeconds(1);
@@ -70,12 +72,6 @@ class PrometheusPushGatewayManagerTests {
 
 	@Mock
 	private ScheduledFuture<Object> future;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-		this.scheduler = mockScheduler(TaskScheduler.class);
-	}
 
 	@Test
 	void createWhenPushGatewayIsNullThrowsException() {
@@ -122,7 +118,8 @@ class PrometheusPushGatewayManagerTests {
 
 	@Test
 	void shutdownWhenOwnsSchedulerDoesShutdownScheduler() {
-		PushGatewayTaskScheduler ownedScheduler = mockScheduler(PushGatewayTaskScheduler.class);
+		PushGatewayTaskScheduler ownedScheduler = givenScheduleAtFixedRateWillReturnFuture(
+				mock(PushGatewayTaskScheduler.class));
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				ownedScheduler, this.pushRate, "job", this.groupingKey, null);
 		manager.shutdown();
@@ -131,7 +128,8 @@ class PrometheusPushGatewayManagerTests {
 
 	@Test
 	void shutdownWhenDoesNotOwnSchedulerDoesNotShutdownScheduler() {
-		ThreadPoolTaskScheduler otherScheduler = mockScheduler(ThreadPoolTaskScheduler.class);
+		ThreadPoolTaskScheduler otherScheduler = givenScheduleAtFixedRateWillReturnFuture(
+				mock(ThreadPoolTaskScheduler.class));
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				otherScheduler, this.pushRate, "job", this.groupingKey, null);
 		manager.shutdown();
@@ -140,6 +138,7 @@ class PrometheusPushGatewayManagerTests {
 
 	@Test
 	void shutdownWhenShutdownOperationIsPushPerformsPushOnShutdown() throws Exception {
+		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.PUSH);
 		manager.shutdown();
@@ -149,6 +148,7 @@ class PrometheusPushGatewayManagerTests {
 
 	@Test
 	void shutdownWhenShutdownOperationIsDeletePerformsDeleteOnShutdown() throws Exception {
+		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.DELETE);
 		manager.shutdown();
@@ -158,6 +158,7 @@ class PrometheusPushGatewayManagerTests {
 
 	@Test
 	void shutdownWhenShutdownOperationIsNoneDoesNothing() {
+		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.NONE);
 		manager.shutdown();
@@ -167,6 +168,7 @@ class PrometheusPushGatewayManagerTests {
 
 	@Test
 	void pushWhenUnknownHostExceptionIsThrownDoesShutdown() throws Exception {
+		givenScheduleAtFixedRateWithReturnFuture();
 		new PrometheusPushGatewayManager(this.pushGateway, this.registry, this.scheduler, this.pushRate, "job",
 				this.groupingKey, null);
 		verify(this.scheduler).scheduleAtFixedRate(this.task.capture(), eq(this.pushRate));
@@ -185,9 +187,12 @@ class PrometheusPushGatewayManagerTests {
 		this.task.getValue().run();
 	}
 
+	private void givenScheduleAtFixedRateWithReturnFuture() {
+		givenScheduleAtFixedRateWillReturnFuture(this.scheduler);
+	}
+
 	@SuppressWarnings({ "unchecked", "rawtypes" })
-	private <T extends TaskScheduler> T mockScheduler(Class<T> type) {
-		T scheduler = mock(type);
+	private <T extends TaskScheduler> T givenScheduleAtFixedRateWillReturnFuture(T scheduler) {
 		given(scheduler.scheduleAtFixedRate(isA(Runnable.class), isA(Duration.class)))
 				.willReturn((ScheduledFuture) this.future);
 		return scheduler;

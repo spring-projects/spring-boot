@@ -92,6 +92,7 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mariadb.jdbc:mariadb-java-client")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.postgresql:postgresql")
 	testImplementation("org.springframework:spring-context-support")
 	testImplementation("org.springframework.data:spring-data-redis")

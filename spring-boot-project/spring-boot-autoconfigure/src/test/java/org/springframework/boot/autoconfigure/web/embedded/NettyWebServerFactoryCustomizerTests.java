@@ -22,9 +22,10 @@ import java.util.Map;
 import io.netty.channel.ChannelOption;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.netty.http.server.HttpRequestDecoderSpec;
 import reactor.netty.http.server.HttpServer;
 
@@ -49,6 +50,7 @@ import static org.mockito.Mockito.verify;
  * @author Brian Clozel
  * @author Artsiom Yudovin
  */
+@ExtendWith(MockitoExtension.class)
 class NettyWebServerFactoryCustomizerTests {
 
 	private MockEnvironment environment;
@@ -62,7 +64,6 @@ class NettyWebServerFactoryCustomizerTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.environment = new MockEnvironment();
 		this.serverProperties = new ServerProperties();
 		ConfigurationPropertySources.attach(this.environment);

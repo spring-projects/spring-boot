@@ -32,7 +32,10 @@ import org.springframework.boot.web.servlet.mock.MockFilter;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -84,6 +87,7 @@ class FilterRegistrationBeanTests extends AbstractFilterRegistrationBeanTests {
 
 	@Test
 	void startupWithOncePerRequestDefaults() throws Exception {
+		given(this.servletContext.addFilter(anyString(), any(Filter.class))).willReturn(this.registration);
 		FilterRegistrationBean<?> bean = new FilterRegistrationBean<>(this.oncePerRequestFilter);
 		bean.onStartup(this.servletContext);
 		verify(this.servletContext).addFilter(eq("oncePerRequestFilter"), eq(this.oncePerRequestFilter));

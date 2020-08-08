@@ -25,9 +25,10 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentContributorsTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
@@ -69,7 +71,6 @@ class ConfigDataEnvironmentContributorsTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.environment = new MockEnvironment();
 		this.binder = Binder.get(this.environment);
 		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.binder, null);

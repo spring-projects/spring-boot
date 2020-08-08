@@ -33,13 +33,12 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.InOrder;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanCreationException;
@@ -94,19 +93,13 @@ import static org.mockito.Mockito.withSettings;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
-@ExtendWith(OutputCaptureExtension.class)
+@ExtendWith({ OutputCaptureExtension.class, MockitoExtension.class })
 class ServletWebServerApplicationContextTests {
 
-	private ServletWebServerApplicationContext context;
+	private ServletWebServerApplicationContext context = new ServletWebServerApplicationContext();
 
 	@Captor
 	private ArgumentCaptor<Filter> filterCaptor;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-		this.context = new ServletWebServerApplicationContext();
-	}
 
 	@AfterEach
 	void cleanup() {

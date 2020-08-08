@@ -19,12 +19,12 @@ package org.springframework.boot.env;
 import java.util.Collections;
 import java.util.function.Consumer;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -40,6 +40,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class DefaultPropertiesPropertySourceTests {
 
 	@Mock
@@ -47,11 +48,6 @@ class DefaultPropertiesPropertySourceTests {
 
 	@Captor
 	private ArgumentCaptor<DefaultPropertiesPropertySource> captor;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void nameIsDefaultProperties() {

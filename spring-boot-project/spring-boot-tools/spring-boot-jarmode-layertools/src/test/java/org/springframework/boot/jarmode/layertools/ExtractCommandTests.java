@@ -27,9 +27,10 @@ import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -39,6 +40,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class ExtractCommandTests {
 
 	@TempDir
@@ -57,17 +59,16 @@ class ExtractCommandTests {
 
 	@BeforeEach
 	void setup() throws Exception {
-		MockitoAnnotations.initMocks(this);
 		this.jarFile = createJarFile("test.jar");
 		this.extract = new File(this.temp, "extract");
 		this.extract.mkdir();
-		given(this.context.getJarFile()).willReturn(this.jarFile);
-		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command = new ExtractCommand(this.context, this.layers);
 	}
 
 	@Test
 	void runExtractsLayers() throws Exception {
+		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Collections.emptyList());
 		assertThat(this.extract.list()).containsOnly("a", "b", "c", "d");
 		assertThat(new File(this.extract, "a/a/a.jar")).exists();
@@ -78,6 +79,7 @@ class ExtractCommandTests {
 
 	@Test
 	void runWhenHasDestinationOptionExtractsLayers() {
+		given(this.context.getJarFile()).willReturn(this.jarFile);
 		File out = new File(this.extract, "out");
 		this.command.run(Collections.singletonMap(ExtractCommand.DESTINATION_OPTION, out.getAbsolutePath()),
 				Collections.emptyList());
@@ -89,6 +91,8 @@ class ExtractCommandTests {
 
 	@Test
 	void runWhenHasLayerParamsExtractsLimitedLayers() {
+		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Arrays.asList("a", "c"));
 		assertThat(this.extract.list()).containsOnly("a", "c");
 		assertThat(new File(this.extract, "a/a/a.jar")).exists();

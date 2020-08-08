@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import java.util.Set;
 
 import javax.xml.transform.sax.SAXTransformerFactory;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -55,6 +55,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Stephane Nicoll
  * @author Dmytro Nosan
  */
+@ExtendWith(MockitoExtension.class)
 class WebServiceTemplateBuilderTests {
 
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
@@ -64,11 +65,6 @@ class WebServiceTemplateBuilderTests {
 
 	@Mock
 	private ClientInterceptor interceptor;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void createWithCustomizersShouldApplyCustomizers() {

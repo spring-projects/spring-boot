@@ -19,12 +19,13 @@ package org.springframework.boot.context.config;
 import java.util.Set;
 import java.util.function.Supplier;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
-import org.mockito.MockitoAnnotations;
+import org.mockito.Mock;
 import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.core.env.StandardEnvironment;
@@ -46,13 +47,15 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentPostProcessorTests {
 
-	private ConfigDataEnvironment configDataEnvironment = mock(ConfigDataEnvironment.class);
+	private StandardEnvironment environment = new StandardEnvironment();
 
-	private StandardEnvironment environment;
+	private SpringApplication application = new SpringApplication();
 
-	private SpringApplication application;
+	@Mock
+	private ConfigDataEnvironment configDataEnvironment;
 
 	@Spy
 	private ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(Supplier::get);
@@ -62,13 +65,6 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	@Captor
 	private ArgumentCaptor<ResourceLoader> resourceLoaderCaptor;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-		this.application = new SpringApplication();
-		this.environment = new StandardEnvironment();
-	}
 
 	@Test
 	@SuppressWarnings("deprecation")

@@ -22,10 +22,11 @@ import java.io.ObjectOutputStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class HttpRestartServerTests {
 
 	@Mock
@@ -57,7 +59,6 @@ class HttpRestartServerTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.server = new HttpRestartServer(this.delegate);
 	}
 
