@@ -20,11 +20,10 @@ import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.availability.ApplicationAvailability;
 import org.springframework.boot.availability.AvailabilityState;
-import org.springframework.boot.availability.LivenessState;
 import org.springframework.boot.availability.ReadinessState;
 
 /**
- * A {@link HealthIndicator} that checks the {@link LivenessState} of the application.
+ * A {@link HealthIndicator} that checks the {@link ReadinessState} of the application.
  *
  * @author Brian Clozel
  * @author Phillip Webb
