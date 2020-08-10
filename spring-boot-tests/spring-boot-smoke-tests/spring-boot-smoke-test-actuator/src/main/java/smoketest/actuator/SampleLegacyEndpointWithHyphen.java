@@ -24,8 +24,8 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.stereotype.Component;
 
 @Component
-@Endpoint(id = "lega.cy")
-public class SampleLegacyEndpoint {
+@Endpoint(id = "another-legacy")
+public class SampleLegacyEndpointWithHyphen {
 
 	@ReadOperation
 	public Map<String, String> example() {
