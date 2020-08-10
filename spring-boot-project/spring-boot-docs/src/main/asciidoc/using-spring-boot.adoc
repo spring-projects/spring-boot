@@ -834,7 +834,7 @@ TIP: You might want to set `spring.devtools.restart.trigger-file` as a <<using-b
 Some IDEs have features that save you from needing to update your trigger file manually.
 https://spring.io/tools[Spring Tools for Eclipse] and https://www.jetbrains.com/idea/[IntelliJ IDEA (Ultimate Edition)] both have such support.
 With Spring Tools, you can use the "`reload`" button from the console view (as long as your `trigger-file` is named `.reloadtrigger`).
-For IntelliJ, you can follow the https://www.jetbrains.com/help/idea/spring-boot.html#configure-application-update-policies-with-devtools[instructions in their documentation].
+For IntelliJ IDEA, you can follow the https://www.jetbrains.com/help/idea/spring-boot.html#application-update-policies[instructions in their documentation].
 
 
 
