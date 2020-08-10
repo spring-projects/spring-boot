@@ -633,7 +633,7 @@ You cannot use a wildcard in a `classpath:` location.
 
 
 [[boot-features-external-config-files-profile-specific]]
-==== Profile Specific Files[[boot-features-external-config-profile-specific-properties]]
+==== Profile Specific Files
 As well as `application` property files, Spring Boot will also attempt to load profile-specific files using the naming convention `application-\{profile}`.
 For example, if your application activates a profile named `prod` and uses YAML files, then both `application.yml` and `application-prod.yml` will be considered.
 
