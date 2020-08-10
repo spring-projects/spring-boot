@@ -41,6 +41,26 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
+	public Consumer<TotalProgressEvent> pullingBuilder(BuildRequest request, ImageReference imageReference) {
+		return pullingImage(imageReference, ImageType.BUILDER);
+	}
+
+	@Override
+	public void pulledBuilder(BuildRequest request, Image image) {
+		pulledImage(image, ImageType.BUILDER);
+	}
+
+	@Override
+	public Consumer<TotalProgressEvent> pullingRunImage(BuildRequest request, ImageReference imageReference) {
+		return pullingImage(imageReference, ImageType.RUNNER);
+	}
+
+	@Override
+	public void pulledRunImage(BuildRequest request, Image image) {
+		pulledImage(image, ImageType.RUNNER);
+	}
+
+	@Override
 	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType) {
 		return getProgressConsumer(String.format(" > Pulling %s '%s'", imageType.getDescription(), imageReference));
 	}

@@ -42,6 +42,36 @@ public interface BuildLog {
 	void start(BuildRequest request);
 
 	/**
+	 * Log that the builder image is being pulled.
+	 * @param request the build request
+	 * @param imageReference the builder image reference
+	 * @return a consumer for progress update events
+	 */
+	Consumer<TotalProgressEvent> pullingBuilder(BuildRequest request, ImageReference imageReference);
+
+	/**
+	 * Log that the builder image has been pulled.
+	 * @param request the build request
+	 * @param image the builder image that was pulled
+	 */
+	void pulledBuilder(BuildRequest request, Image image);
+
+	/**
+	 * Log that a run image is being pulled.
+	 * @param request the build request
+	 * @param imageReference the run image reference
+	 * @return a consumer for progress update events
+	 */
+	Consumer<TotalProgressEvent> pullingRunImage(BuildRequest request, ImageReference imageReference);
+
+	/**
+	 * Log that a run image has been pulled.
+	 * @param request the build request
+	 * @param image the run image that was pulled
+	 */
+	void pulledRunImage(BuildRequest request, Image image);
+
+	/**
 	 * Log that the image is being pulled.
 	 * @param imageReference the image reference
 	 * @param imageType the image type

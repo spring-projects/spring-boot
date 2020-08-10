@@ -20,7 +20,7 @@ package org.springframework.boot.buildpack.platform.build;
  * Image pull policy.
  *
  * @author Andrey Shlykov
- * @since 2.3.0
+ * @since 2.4.0
  */
 public enum PullPolicy {
 
