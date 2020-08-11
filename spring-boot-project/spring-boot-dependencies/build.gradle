@@ -1073,7 +1073,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Resources Plugin", "3.1.0") {
+	library("Maven Resources Plugin", "3.2.0") {
 		group("org.apache.maven.plugins") {
 			plugins = [
 				"maven-resources-plugin"
