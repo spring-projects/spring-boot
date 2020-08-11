@@ -65,6 +65,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.data.couchbase.CouchbaseClientFactory;
 import org.springframework.data.couchbase.cache.CouchbaseCache;
+import org.springframework.data.couchbase.cache.CouchbaseCacheConfiguration;
 import org.springframework.data.couchbase.cache.CouchbaseCacheManager;
 import org.springframework.data.redis.cache.RedisCacheConfiguration;
 import org.springframework.data.redis.cache.RedisCacheManager;
@@ -196,7 +197,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Test
 	void couchbaseCacheExplicit() {
-		this.contextRunner.withUserConfiguration(CouchbaseCacheConfiguration.class)
+		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
 				.withPropertyValues("spring.cache.type=couchbase").run((context) -> {
 					CouchbaseCacheManager cacheManager = getCacheManager(context, CouchbaseCacheManager.class);
 					assertThat(cacheManager.getCacheNames()).isEmpty();
@@ -205,14 +206,14 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Test
 	void couchbaseCacheWithCustomizers() {
-		this.contextRunner.withUserConfiguration(CouchbaseCacheAndCustomizersConfiguration.class)
+		this.contextRunner.withUserConfiguration(CouchbaseWithCustomizersConfiguration.class)
 				.withPropertyValues("spring.cache.type=couchbase")
 				.run(verifyCustomizers("allCacheManagerCustomizer", "couchbaseCacheManagerCustomizer"));
 	}
 
 	@Test
 	void couchbaseCacheExplicitWithCaches() {
-		this.contextRunner.withUserConfiguration(CouchbaseCacheConfiguration.class)
+		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
 				.withPropertyValues("spring.cache.type=couchbase", "spring.cache.cacheNames[0]=foo",
 						"spring.cache.cacheNames[1]=bar")
 				.run((context) -> {
@@ -226,7 +227,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Test
 	void couchbaseCacheExplicitWithTtl() {
-		this.contextRunner.withUserConfiguration(CouchbaseCacheConfiguration.class)
+		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
 				.withPropertyValues("spring.cache.type=couchbase", "spring.cache.cacheNames=foo,bar",
 						"spring.cache.couchbase.expiration=2000")
 				.run((context) -> {
@@ -235,6 +236,20 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 					Cache cache = cacheManager.getCache("foo");
 					assertThat(cache).isInstanceOf(CouchbaseCache.class);
 					assertThat(((CouchbaseCache) cache).getCacheConfiguration().getExpiry()).hasSeconds(2);
+				});
+	}
+
+	@Test
+	void couchbaseCacheWithCouchbaseCacheManagerBuilderCustomizer() {
+		this.contextRunner.withUserConfiguration(CouchbaseConfiguration.class)
+				.withPropertyValues("spring.cache.type=couchbase", "spring.cache.couchbase.expiration=15s")
+				.withBean(CouchbaseCacheManagerBuilderCustomizer.class, () -> (builder) -> builder.cacheDefaults(
+						CouchbaseCacheConfiguration.defaultCacheConfig().entryExpiry(java.time.Duration.ofSeconds(10))))
+				.run((context) -> {
+					CouchbaseCacheManager cacheManager = getCacheManager(context, CouchbaseCacheManager.class);
+					CouchbaseCacheConfiguration couchbaseCacheConfiguration = getDefaultCouchbaseCacheConfiguration(
+							cacheManager);
+					assertThat(couchbaseCacheConfiguration.getExpiry()).isEqualTo(java.time.Duration.ofSeconds(10));
 				});
 	}
 
@@ -668,6 +683,10 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 		assertThat(((CaffeineCache) foo).getNativeCache().stats().missCount()).isEqualTo(1L);
 	}
 
+	private CouchbaseCacheConfiguration getDefaultCouchbaseCacheConfiguration(CouchbaseCacheManager cacheManager) {
+		return (CouchbaseCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
+	}
+
 	private RedisCacheConfiguration getDefaultRedisCacheConfiguration(RedisCacheManager cacheManager) {
 		return (RedisCacheConfiguration) ReflectionTestUtils.getField(cacheManager, "defaultCacheConfig");
 	}
@@ -721,7 +740,7 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableCaching
-	static class CouchbaseCacheConfiguration {
+	static class CouchbaseConfiguration {
 
 		@Bean
 		CouchbaseClientFactory couchbaseClientFactory() {
@@ -731,8 +750,8 @@ class CacheAutoConfigurationTests extends AbstractCacheAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import({ CouchbaseCacheConfiguration.class, CacheManagerCustomizersConfiguration.class })
-	static class CouchbaseCacheAndCustomizersConfiguration {
+	@Import({ CouchbaseConfiguration.class, CacheManagerCustomizersConfiguration.class })
+	static class CouchbaseWithCustomizersConfiguration {
 
 	}
 

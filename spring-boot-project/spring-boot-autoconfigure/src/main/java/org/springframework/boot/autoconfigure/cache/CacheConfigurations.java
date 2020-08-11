@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  * @author Eddú Meléndez
  */
+@SuppressWarnings("deprecation")
 final class CacheConfigurations {
 
 	private static final Map<CacheType, Class<?>> MAPPINGS;

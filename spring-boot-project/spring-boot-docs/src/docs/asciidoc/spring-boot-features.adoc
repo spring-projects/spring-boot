@@ -5163,48 +5163,23 @@ See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentat
 
 [[boot-features-caching-provider-couchbase]]
 ==== Couchbase
-If the https://www.couchbase.com/[Couchbase] Java client and the `couchbase-spring-cache` implementation are available and Couchbase is <<boot-features-couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
-It is also possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property.
-These caches operate on the `Bucket` that was auto-configured.
-You can _also_ create additional caches on another `Bucket` by using the customizer.
-Assume you need two caches (`cache1` and `cache2`) on the "main" `Bucket` and one (`cache3`) cache with a custom time to live of 2 seconds on the "`another`" `Bucket`.
-You can create the first two caches through configuration, as follows:
+If Spring Data Couchbase is available and Couchbase is <<boot-features-couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
+It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
+For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
 
 [source,properties,indent=0,configprops]
 ----
 	spring.cache.cache-names=cache1,cache2
+    spring.cache.couchbase.expiration=10m
 ----
 
-Then you can define a `@Configuration` class to configure the extra `Bucket` and the `cache3` cache, as follows:
+If you need more control over the configuration, consider registering a `CouchbaseCacheManagerBuilderCustomizer` bean.
+The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
 
 [source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class CouchbaseCacheConfiguration {
-
-		private final Cluster cluster;
-
-		public CouchbaseCacheConfiguration(Cluster cluster) {
-			this.cluster = cluster;
-		}
-
-		@Bean
-		public Bucket anotherBucket() {
-			return this.cluster.openBucket("another", "secret");
-		}
-
-		@Bean
-		public CacheManagerCustomizer<CouchbaseCacheManager> cacheManagerCustomizer() {
-			return c -> {
-				c.prepareCache("cache3", CacheBuilder.newInstance(anotherBucket())
-						.withExpiration(2));
-			};
-		}
-
-	}
+include::{code-examples}/cache/CouchbaseCacheManagerCustomizationExample.java[tag=configuration]
 ----
-
-This sample configuration reuses the `Cluster` that was created through auto-configuration.
 
 
 
