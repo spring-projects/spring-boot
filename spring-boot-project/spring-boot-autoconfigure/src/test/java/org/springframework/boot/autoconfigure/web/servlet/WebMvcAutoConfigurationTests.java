@@ -53,6 +53,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
@@ -84,6 +85,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
+import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
@@ -893,6 +895,23 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
+	@Test
+	void urlPathHelperDoesNotUseFullPathWithAdditionalDispatcherServlet() {
+		this.contextRunner.withUserConfiguration(AdditionalDispatcherServletConfiguration.class).run((context) -> {
+			UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
+			assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(false);
+		});
+	}
+
+	@Test
+	void urlPathHelperDoesNotUseFullPathWithAdditionalUntypedDispatcherServlet() {
+		this.contextRunner.withUserConfiguration(AdditionalUntypedDispatcherServletConfiguration.class)
+				.run((context) -> {
+					UrlPathHelper urlPathHelper = context.getBean(UrlPathHelper.class);
+					assertThat(urlPathHelper).extracting("alwaysUseFullPath").isEqualTo(false);
+				});
+	}
+
 	private void assertCacheControl(AssertableWebApplicationContext context) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
@@ -1272,6 +1291,26 @@ class WebMvcAutoConfigurationTests {
 		@Override
 		public void addCorsMappings(CorsRegistry registry) {
 			registry.addMapping("/**").allowedMethods("GET");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AdditionalDispatcherServletConfiguration {
+
+		@Bean
+		ServletRegistrationBean<DispatcherServlet> additionalDispatcherServlet() {
+			return new ServletRegistrationBean<>(new DispatcherServlet());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AdditionalUntypedDispatcherServletConfiguration {
+
+		@Bean
+		ServletRegistrationBean<?> additionalDispatcherServlet() {
+			return new ServletRegistrationBean<>(new DispatcherServlet());
 		}
 
 	}
