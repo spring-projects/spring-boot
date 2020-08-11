@@ -825,10 +825,12 @@ The Javadoc on fields is used to populate the `description` attribute. For insta
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
-The annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
-In the cases where a `Collection` or `Enum` property has a non-empty default value, <<configuration-metadata-additional-metadata,manual metadata>> should be provided.
+The annotation processor applies a number of heuristics to extract the default value from the source model.
+Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
+Also, the annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
 
-Consider the following class:
+For cases where the default value could not be detected, <<configuration-metadata-additional-metadata,manual metadata>> should be provided.
+Consider the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -867,7 +869,7 @@ In order to document default values for properties in the class above, you could
 	]}
 ----
 
-Only the `name` of the property is required to document additional fields with manual metadata.
+NOTE: Only the `name` of the property is required to document additional metadata for existing properties.
 
 
 [[configuration-metadata-annotation-processor-metadata-generation-nested]]
