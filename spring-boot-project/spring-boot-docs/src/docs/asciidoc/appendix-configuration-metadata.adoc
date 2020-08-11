@@ -695,6 +695,11 @@ The following metadata snippet corresponds to the standard `spring.profiles.acti
 == Generating Your Own Metadata by Using the Annotation Processor
 You can easily generate your own configuration metadata file from items annotated with `@ConfigurationProperties` by using the `spring-boot-configuration-processor` jar.
 The jar includes a Java annotation processor which is invoked as your project is compiled.
+
+
+
+[[configuration-metadata-annotation-processor-setup]]
+=== Configuring the Annotation Processor
 To use the processor, include a dependency on `spring-boot-configuration-processor`.
 
 With Maven the dependency should be declared as optional, as shown in the following example:
@@ -759,20 +764,73 @@ If you are using an `additional-spring-configuration-metadata.json` file, the `c
 
 This dependency ensures that the additional metadata is available when the annotation processor runs during compilation.
 
+[NOTE]
+====
+If you are using AspectJ in your project, you need to make sure that the annotation processor runs only once.
+There are several ways to do this.
+With Maven, you can configure the `maven-apt-plugin` explicitly and add the dependency to the annotation processor only there.
+You could also let the AspectJ plugin run all the processing and disable annotation processing in the `maven-compiler-plugin` configuration, as follows:
+
+[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+----
+	<plugin>
+		<groupId>org.apache.maven.plugins</groupId>
+		<artifactId>maven-compiler-plugin</artifactId>
+		<configuration>
+			<proc>none</proc>
+		</configuration>
+	</plugin>
+----
+====
+
+
+
+[[configuration-metadata-annotation-processor-metadata-generation]]
+=== Automatic Metadata Generation
 The processor picks up both classes and methods that are annotated with `@ConfigurationProperties`.
-The Javadoc for field values within configuration classes is used to populate the `description` attribute.
+
+If the class is also annotated with `@ConstructorBinding`, a single constructor is expected and one property is created per constructor parameter.
+Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection and map types (that is detected even if only a getter is present).
+The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter` lombok annotations.
+
+Consider the following example:
+
+[source,java,indent=0,subs="verbatim,attributes"]
+----
+	@ConfigurationProperties(prefix="server")
+	public class ServerProperties {
+
+	    /**
+	    * Name of the server.
+	    */
+		private String name;
+
+		/**
+         * IP address to listen to.
+         */
+		private String ip = "127.0.0.1";
+
+		/**
+		* Port to listener to.
+		*/
+		private int port = 9797;
+
+		// ... getter and setters
+
+	}
+----
+
+This exposes three properties where `server.name` has no default and `server.ip` and `server.port` defaults to `"127.0.0.1"` and `9797` respectively.
+The Javadoc on fields is used to populate the `description` attribute. For instance, the description of `server.ip` is "IP address to listen to.".
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
-If the class has a single constructor with at least one parameters, one property is created per constructor parameter.
-Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection types (that is detected even if only a getter is present).
+The annotation processor applies a number of heuristics to extract the default value from the source model.
+Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
+Also, the annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
 
-The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter` lombok annotations.
-
-The annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
-In the cases where a `Collection` or `Enum` property has a non-empty default value, <<configuration-metadata-additional-metadata,manual metadata>> should be provided.
-
-Consider the following class:
+For cases where the default value could not be detected, <<configuration-metadata-additional-metadata,manual metadata>> should be provided.
+Consider the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -811,33 +869,14 @@ In order to document default values for properties in the class above, you could
 	]}
 ----
 
-Only the `name` of the property is required to document additional fields with manual metadata.
-
-[NOTE]
-====
-If you are using AspectJ in your project, you need to make sure that the annotation processor runs only once.
-There are several ways to do this.
-With Maven, you can configure the `maven-apt-plugin` explicitly and add the dependency to the annotation processor only there.
-You could also let the AspectJ plugin run all the processing and disable annotation processing in the `maven-compiler-plugin` configuration, as follows:
-
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
-----
-	<plugin>
-		<groupId>org.apache.maven.plugins</groupId>
-		<artifactId>maven-compiler-plugin</artifactId>
-		<configuration>
-			<proc>none</proc>
-		</configuration>
-	</plugin>
-----
-====
+NOTE: Only the `name` of the property is required to document additional metadata for existing properties.
 
 
-
-[[configuration-metadata-nested-properties]]
-=== Nested Properties
+[[configuration-metadata-annotation-processor-metadata-generation-nested]]
+==== Nested Properties
 The annotation processor automatically considers inner classes as nested properties.
-Consider the following class:
+Rather than documenting the `ip` and `port` at the root of the namespace, we could create a sub-namespace for it.
+Consider the updated example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
