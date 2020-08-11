@@ -103,15 +103,16 @@ class SpringApplicationRunListeners {
 	}
 
 	private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction) {
-		doWithListeners(stepName, listenerAction, (step) -> {
-		});
+		doWithListeners(stepName, listenerAction, null);
 	}
 
 	private void doWithListeners(String stepName, Consumer<SpringApplicationRunListener> listenerAction,
 			Consumer<StartupStep> stepAction) {
 		StartupStep step = this.applicationStartup.start(stepName);
 		this.listeners.forEach(listenerAction);
-		stepAction.accept(step);
+		if (stepAction != null) {
+			stepAction.accept(step);
+		}
 		step.end();
 	}
 

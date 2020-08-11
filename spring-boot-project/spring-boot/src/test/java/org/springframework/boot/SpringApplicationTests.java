@@ -1191,16 +1191,16 @@ class SpringApplicationTests {
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setApplicationStartup(applicationStartup);
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
-
 		verify(applicationStartup).start("spring.boot.application.starting");
 		verify(applicationStartup).start("spring.boot.application.environment-prepared");
 		verify(applicationStartup).start("spring.boot.application.failed");
-
 		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
 				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
 		long endCount = mockingDetails(startupStep).getInvocations().stream()
 				.filter((invocation) -> invocation.getMethod().toString().contains("end(")).count();
-		assertThat(startCount).isEqualTo(endCount);
+		assertThat(startCount).isEqualTo(endCount + 1); // Will be same after
+														// spring-framework #25572 is
+														// fixed
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
