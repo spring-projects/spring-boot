@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ package org.springframework.boot.autoconfigure;
 import java.util.function.Supplier;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.MutablePropertyValues;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -47,6 +49,7 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
  * {@link ConfigurationClassPostProcessor} and Spring Boot.
  *
  * @author Phillip Webb
+ * @author Dave Syer
  */
 class SharedMetadataReaderFactoryContextInitializer
 		implements ApplicationContextInitializer<ConfigurableApplicationContext>, Ordered {
@@ -56,7 +59,8 @@ class SharedMetadataReaderFactoryContextInitializer
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.addBeanFactoryPostProcessor(new CachingMetadataReaderFactoryPostProcessor(applicationContext));
+		BeanFactoryPostProcessor postProcessor = new CachingMetadataReaderFactoryPostProcessor(applicationContext);
+		applicationContext.addBeanFactoryPostProcessor(postProcessor);
 	}
 
 	@Override
@@ -69,7 +73,7 @@ class SharedMetadataReaderFactoryContextInitializer
 	 * {@link CachingMetadataReaderFactory} and configure the
 	 * {@link ConfigurationClassPostProcessor}.
 	 */
-	private static class CachingMetadataReaderFactoryPostProcessor
+	static class CachingMetadataReaderFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor, PriorityOrdered {
 
 		private ConfigurableApplicationContext context;
@@ -103,28 +107,64 @@ class SharedMetadataReaderFactoryContextInitializer
 
 		private void configureConfigurationClassPostProcessor(BeanDefinitionRegistry registry) {
 			try {
-				BeanDefinition definition = registry
-						.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
-				if (definition instanceof AbstractBeanDefinition) {
-					AbstractBeanDefinition bean = (AbstractBeanDefinition) definition;
-					if (bean.getInstanceSupplier() != null) {
-						Supplier<?> supplier = bean.getInstanceSupplier();
-						bean.setInstanceSupplier(() -> modify(supplier));
-						return;
-					}
-				}
-				definition.getPropertyValues().add("metadataReaderFactory", new RuntimeBeanReference(BEAN_NAME));
+				configureConfigurationClassPostProcessor(
+						registry.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 			}
 		}
 
-		private Object modify(Supplier<?> supplier) {
-			Object object = supplier.get();
-			if (object instanceof ConfigurationClassPostProcessor) {
-				((ConfigurationClassPostProcessor) object).setMetadataReaderFactory(this.context.getBean(BEAN_NAME, MetadataReaderFactory.class));
+		private void configureConfigurationClassPostProcessor(BeanDefinition definition) {
+			if (definition instanceof AbstractBeanDefinition) {
+				configureConfigurationClassPostProcessor((AbstractBeanDefinition) definition);
+				return;
 			}
-			return object;
+			configureConfigurationClassPostProcessor(definition.getPropertyValues());
+		}
+
+		private void configureConfigurationClassPostProcessor(AbstractBeanDefinition definition) {
+			Supplier<?> instanceSupplier = definition.getInstanceSupplier();
+			if (instanceSupplier != null) {
+				definition.setInstanceSupplier(
+						new ConfigurationClassPostProcessorCustomizingSupplier(this.context, instanceSupplier));
+				return;
+			}
+			configureConfigurationClassPostProcessor(definition.getPropertyValues());
+		}
+
+		private void configureConfigurationClassPostProcessor(MutablePropertyValues propertyValues) {
+			propertyValues.add("metadataReaderFactory", new RuntimeBeanReference(BEAN_NAME));
+		}
+
+	}
+
+	/**
+	 * {@link Supplier} used to customize the {@link ConfigurationClassPostProcessor} when
+	 * it's first created.
+	 */
+	static class ConfigurationClassPostProcessorCustomizingSupplier implements Supplier<Object> {
+
+		private final ConfigurableApplicationContext context;
+
+		private final Supplier<?> instanceSupplier;
+
+		ConfigurationClassPostProcessorCustomizingSupplier(ConfigurableApplicationContext context,
+				Supplier<?> instanceSupplier) {
+			this.context = context;
+			this.instanceSupplier = instanceSupplier;
+		}
+
+		@Override
+		public Object get() {
+			Object instance = this.instanceSupplier.get();
+			if (instance instanceof ConfigurationClassPostProcessor) {
+				configureConfigurationClassPostProcessor((ConfigurationClassPostProcessor) instance);
+			}
+			return instance;
+		}
+
+		private void configureConfigurationClassPostProcessor(ConfigurationClassPostProcessor instance) {
+			instance.setMetadataReaderFactory(this.context.getBean(BEAN_NAME, MetadataReaderFactory.class));
 		}
 
 	}
