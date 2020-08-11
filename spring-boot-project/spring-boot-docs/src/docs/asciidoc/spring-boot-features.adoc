@@ -4738,8 +4738,14 @@ If the port is the same for all your contact points you can use a shortcut and o
 TIP: Those two examples are identical as the port default to `9042`.
 If you need to configure the port, use `spring.data.cassandra.port`.
 
-You can also register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer` for more advanced driver customizations.
+[NOTE]
+====
+The Cassandra driver has its own configuration infrastructure that loads an `application.conf` at the root of the classpath.
+
+Spring Boot does not look for such a file and rather provides a number of configuration properties via the `spring.data.cassandra.*` namespace.
+For more advanced driver customizations, you can register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer`.
 The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
+====
 
 NOTE: If you're using `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
 
