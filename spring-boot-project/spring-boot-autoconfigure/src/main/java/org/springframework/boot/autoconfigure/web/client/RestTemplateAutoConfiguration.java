@@ -33,12 +33,14 @@ import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.client.RestTemplateAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RestTemplateBuilderCustomizer;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Lazy;
+import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -59,6 +61,7 @@ public class RestTemplateAutoConfiguration {
 	@ConditionalOnMissingBean
 	public RestTemplateBuilder restTemplateBuilder(ObjectProvider<HttpMessageConverters> messageConverters,
 			ObjectProvider<RestTemplateCustomizer> restTemplateCustomizers,
+			ObjectProvider<RestTemplateBuilderCustomizer> restTemplateBuilderCustomizer,
 			ObjectProvider<RestTemplateRequestCustomizer<?>> restTemplateRequestCustomizers) {
 		RestTemplateBuilder builder = new RestTemplateBuilder();
 		HttpMessageConverters converters = messageConverters.getIfUnique();
@@ -67,6 +70,10 @@ public class RestTemplateAutoConfiguration {
 		}
 		builder = addCustomizers(builder, restTemplateCustomizers, RestTemplateBuilder::customizers);
 		builder = addCustomizers(builder, restTemplateRequestCustomizers, RestTemplateBuilder::requestCustomizers);
+		for (RestTemplateBuilderCustomizer customizer : restTemplateBuilderCustomizer) {
+			builder = customizer.customize(builder);
+			Assert.notNull(builder, "RestTemplateBuilderCustomizer returned null builder");
+		}
 		return builder;
 	}
 

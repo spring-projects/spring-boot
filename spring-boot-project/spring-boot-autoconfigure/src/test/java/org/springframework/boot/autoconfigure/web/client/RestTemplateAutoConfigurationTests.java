@@ -20,7 +20,9 @@ import java.util.Collections;
 import java.util.List;
 
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 
+import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
@@ -28,6 +30,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RestTemplateBuilderCustomizer;
 import org.springframework.boot.web.client.RestTemplateCustomizer;
 import org.springframework.boot.web.client.RestTemplateRequestCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -42,10 +45,12 @@ import org.springframework.mock.http.client.MockClientHttpResponse;
 import org.springframework.web.client.RestTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.doThrow;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.verify;
 
 /**
  * Tests for {@link RestTemplateAutoConfiguration}
@@ -157,6 +162,25 @@ class RestTemplateAutoConfigurationTests {
 				.run((context) -> assertThat(context).doesNotHaveBean(RestTemplateBuilder.class));
 	}
 
+	@Test
+	void customizerShouldCustomizeBuilder() {
+		this.contextRunner.withUserConfiguration(RestTemplateBuilderCustomizerConfig.class).run((context) ->
+			assertThatThrownBy(() -> context.getBean(RestTemplateBuilder.class).build())
+					.isInstanceOf(IllegalStateException.class).hasMessageContaining("customized builder")
+		);
+	}
+
+	@Test
+	void customizerShouldReturnInstanceNotANull() {
+		this.contextRunner.withUserConfiguration(RestTemplateBuilderCustomizerReturnsNullConfig.class).run((context) ->
+			assertThatThrownBy(() -> context.getBean(RestTemplateBuilder.class).build())
+					.isInstanceOf(BeanCreationException.class)
+					.hasMessageContaining("Error creating bean with name 'restTemplateBuilder'")
+					.hasRootCauseInstanceOf(IllegalArgumentException.class)
+					.hasRootCauseMessage("RestTemplateBuilderCustomizer returned null builder")
+		);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class RestTemplateConfig {
 
@@ -229,6 +253,30 @@ class RestTemplateAutoConfigurationTests {
 	}
 
 	static class CustomHttpMessageConverter extends StringHttpMessageConverter {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestTemplateBuilderCustomizerConfig {
+
+		@Bean
+		RestTemplateBuilderCustomizer restTemplateBuilderCustomizer() {
+			return (oldBuilder) -> {
+				final RestTemplateBuilder builder = Mockito.spy(oldBuilder);
+				doThrow(new IllegalStateException("customized builder")).when(builder).build();
+				return builder;
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RestTemplateBuilderCustomizerReturnsNullConfig {
+
+		@Bean
+		RestTemplateBuilderCustomizer restTemplateBuilderCustomizer() {
+			return (oldBuilder) -> null;
+		}
 
 	}
 
