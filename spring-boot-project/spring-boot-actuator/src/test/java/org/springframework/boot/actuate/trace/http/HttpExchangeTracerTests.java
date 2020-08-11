@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.trace.http.HttpTrace.Request;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -268,6 +269,29 @@ class HttpExchangeTracerTests {
 		HttpTrace trace = new HttpTrace(createRequest());
 		new HttpExchangeTracer(EnumSet.of(Include.TIME_TAKEN)).sendingResponse(trace, createResponse(), null, null);
 		assertThat(trace.getTimeTaken()).isNotNull();
+	}
+
+	@Test
+	void defaultIncludes() {
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		requestHeaders.set(HttpHeaders.COOKIE, "value");
+		requestHeaders.set(HttpHeaders.AUTHORIZATION, "secret");
+		HttpExchangeTracer tracer = new HttpExchangeTracer(Include.defaultIncludes());
+		HttpTrace trace = tracer.receivedRequest(createRequest(requestHeaders));
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(HttpHeaders.SET_COOKIE, "test=test");
+		responseHeaders.setContentLength(0);
+		tracer.sendingResponse(trace, createResponse(responseHeaders), this::createPrincipal, () -> "sessionId");
+		assertThat(trace.getTimeTaken()).isNotNull();
+		assertThat(trace.getPrincipal()).isNull();
+		assertThat(trace.getSession()).isNull();
+		assertThat(trace.getTimestamp()).isNotNull();
+		assertThat(trace.getRequest().getMethod()).isEqualTo("GET");
+		assertThat(trace.getRequest().getRemoteAddress()).isNull();
+		assertThat(trace.getResponse().getStatus()).isEqualTo(204);
+		assertThat(trace.getRequest().getHeaders()).containsOnlyKeys(HttpHeaders.ACCEPT);
+		assertThat(trace.getResponse().getHeaders()).containsOnlyKeys(HttpHeaders.CONTENT_LENGTH);
 	}
 
 	private TraceableRequest createRequest() {
