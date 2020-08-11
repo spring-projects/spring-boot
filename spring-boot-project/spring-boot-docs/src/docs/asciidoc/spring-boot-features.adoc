@@ -533,6 +533,11 @@ You can also supply the JSON as a JNDI variable, as follows: `java:comp/env/spri
 ====
 
 
+NOTE: Although `null` values from the JSON will be added to the resulting property source, the `PropertySourcesPropertyResolver` treats `null` properties as missing values.
+This means that the JSON cannot override properties from lower order property sources with a `null` value.
+
+
+
 
 [[boot-features-external-config-random-values]]
 === Configuring Random Values
