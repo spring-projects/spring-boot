@@ -21,6 +21,7 @@ import java.util.List;
 
 import com.couchbase.client.java.Cluster;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.cache.CacheProperties.Couchbase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -39,16 +40,20 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Stephane Nicoll
  * @since 1.4.0
+ * @deprecated since 2.3.3 as this class is not intended for public use. It will be made
+ * package-private in a future release
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class, CouchbaseClientFactory.class, CouchbaseCacheManager.class })
 @ConditionalOnMissingBean(CacheManager.class)
 @ConditionalOnSingleCandidate(CouchbaseClientFactory.class)
 @Conditional(CacheCondition.class)
+@Deprecated
 public class CouchbaseCacheConfiguration {
 
 	@Bean
 	public CouchbaseCacheManager cacheManager(CacheProperties cacheProperties, CacheManagerCustomizers customizers,
+			ObjectProvider<CouchbaseCacheManagerBuilderCustomizer> couchbaseCacheManagerBuilderCustomizers,
 			CouchbaseClientFactory clientFactory) {
 		List<String> cacheNames = cacheProperties.getCacheNames();
 		CouchbaseCacheManagerBuilder builder = CouchbaseCacheManager.builder(clientFactory);
@@ -62,6 +67,7 @@ public class CouchbaseCacheConfiguration {
 		if (!ObjectUtils.isEmpty(cacheNames)) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
+		couchbaseCacheManagerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		CouchbaseCacheManager cacheManager = builder.build();
 		return customizers.customize(cacheManager);
 	}

@@ -80,6 +80,7 @@ dependencies {
 	implementation("org.springframework:spring-test")
 	implementation("org.springframework:spring-web")
 	implementation("org.springframework:spring-webflux")
+	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-redis")
 	implementation("org.springframework.data:spring-data-r2dbc")
 	implementation("org.springframework.kafka:spring-kafka")
