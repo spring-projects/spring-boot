@@ -538,6 +538,9 @@ Or you could supply the JSON by using a command line argument:
 
 If you are deploying to a classic Application Server, you could also use a JNDI variable named `java:comp/env/spring.application.json`.
 
+NOTE: Although `null` values from the JSON will be added to the resulting property source, the `PropertySourcesPropertyResolver` treats `null` properties as missing values.
+This means that the JSON cannot override properties from lower order property sources with a `null` value.
+
 
 
 [[boot-features-external-config-application-property-files]]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.env;
 
 import java.util.Collections;
+import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -26,6 +27,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.mock.env.MockPropertySource;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -168,6 +170,39 @@ class SpringApplicationJsonEnvironmentPostProcessorTests {
 		PropertySource<?> json = this.environment.getPropertySources().get("spring.application.json");
 		assertThat(this.environment.getProperty("foo")).isEqualTo("custom");
 		assertThat(this.environment.getPropertySources()).containsSequence(custom, json, servlet, jndi);
+	}
+
+	@Test
+	void nullValuesShouldBeAddedToPropertySource() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"SPRING_APPLICATION_JSON={\"foo\":null}");
+		this.processor.postProcessEnvironment(this.environment, null);
+		assertThat(this.environment.containsProperty("foo")).isTrue();
+	}
+
+	@Test
+	void emptyValuesForCollectionShouldNotBeIgnored() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"SPRING_APPLICATION_JSON={\"foo\":[]}");
+		MockPropertySource source = new MockPropertySource();
+		source.setProperty("foo", "bar");
+		this.environment.getPropertySources().addLast(source);
+		assertThat(this.environment.resolvePlaceholders("${foo}")).isEqualTo("bar");
+		this.environment.getPropertySources().addLast(source);
+		this.processor.postProcessEnvironment(this.environment, null);
+		assertThat(this.environment.resolvePlaceholders("${foo}")).isEmpty();
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void emptyMapValuesShouldNotBeIgnored() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"SPRING_APPLICATION_JSON={\"foo\":{}}");
+		MockPropertySource source = new MockPropertySource();
+		source.setProperty("foo.baz", "bar");
+		this.environment.getPropertySources().addLast(source);
+		this.processor.postProcessEnvironment(this.environment, null);
+		assertThat(this.environment.getProperty("foo", Map.class)).isEmpty();
 	}
 
 	private void testServletPropertySource(String servletPropertySourceName) {
