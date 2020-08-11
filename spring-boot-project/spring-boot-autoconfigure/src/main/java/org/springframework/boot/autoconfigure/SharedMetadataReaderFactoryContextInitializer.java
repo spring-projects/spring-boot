@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure;
 
+import java.util.function.Supplier;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanClassLoaderAware;
 import org.springframework.beans.factory.FactoryBean;
@@ -23,6 +25,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.config.RuntimeBeanReference;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
@@ -53,7 +56,7 @@ class SharedMetadataReaderFactoryContextInitializer
 
 	@Override
 	public void initialize(ConfigurableApplicationContext applicationContext) {
-		applicationContext.addBeanFactoryPostProcessor(new CachingMetadataReaderFactoryPostProcessor());
+		applicationContext.addBeanFactoryPostProcessor(new CachingMetadataReaderFactoryPostProcessor(applicationContext));
 	}
 
 	@Override
@@ -68,6 +71,12 @@ class SharedMetadataReaderFactoryContextInitializer
 	 */
 	private static class CachingMetadataReaderFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor, PriorityOrdered {
+
+		private ConfigurableApplicationContext context;
+
+		CachingMetadataReaderFactoryPostProcessor(ConfigurableApplicationContext context) {
+			this.context = context;
+		}
 
 		@Override
 		public int getOrder() {
@@ -96,10 +105,26 @@ class SharedMetadataReaderFactoryContextInitializer
 			try {
 				BeanDefinition definition = registry
 						.getBeanDefinition(AnnotationConfigUtils.CONFIGURATION_ANNOTATION_PROCESSOR_BEAN_NAME);
+				if (definition instanceof AbstractBeanDefinition) {
+					AbstractBeanDefinition bean = (AbstractBeanDefinition) definition;
+					if (bean.getInstanceSupplier() != null) {
+						Supplier<?> supplier = bean.getInstanceSupplier();
+						bean.setInstanceSupplier(() -> modify(supplier));
+						return;
+					}
+				}
 				definition.getPropertyValues().add("metadataReaderFactory", new RuntimeBeanReference(BEAN_NAME));
 			}
 			catch (NoSuchBeanDefinitionException ex) {
 			}
+		}
+
+		private Object modify(Supplier<?> supplier) {
+			Object object = supplier.get();
+			if (object instanceof ConfigurationClassPostProcessor) {
+				((ConfigurationClassPostProcessor) object).setMetadataReaderFactory(this.context.getBean(BEAN_NAME, MetadataReaderFactory.class));
+			}
+			return object;
 		}
 
 	}
