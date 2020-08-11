@@ -20,9 +20,8 @@ package org.springframework.boot.buildpack.platform.build;
  * Image types.
  *
  * @author Andrey Shlykov
- * @since 2.4.0
  */
-public enum ImageType {
+enum ImageType {
 
 	/**
 	 * Builder image.
@@ -40,7 +39,7 @@ public enum ImageType {
 		this.description = description;
 	}
 
-	public String getDescription() {
+	String getDescription() {
 		return this.description;
 	}
 

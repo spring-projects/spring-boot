@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Andrey Shlykov
  */
 class BootBuildImageTests {
 
@@ -196,12 +197,12 @@ class BootBuildImageTests {
 	}
 
 	@Test
-	void whenUsingDefaultConfigurationThenRequestHasNoPullDisabled() {
+	void whenUsingDefaultConfigurationThenRequestHasAlwaysPullPolicy() {
 		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
 	}
 
 	@Test
-	void whenNoPullIsEnabledThenRequestHasNoPullEnabled() {
+	void whenPullPolicyIsConfiguredThenRequestHasPullPolicy() {
 		this.buildImage.setPullPolicy(PullPolicy.NEVER);
 		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.NEVER);
 	}

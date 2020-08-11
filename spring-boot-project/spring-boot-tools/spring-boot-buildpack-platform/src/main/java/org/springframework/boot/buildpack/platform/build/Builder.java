@@ -96,25 +96,21 @@ public class Builder {
 	private Image getImage(BuildRequest request, ImageType imageType) throws IOException {
 		ImageReference imageReference = (imageType == ImageType.BUILDER) ? request.getBuilder() : request.getRunImage();
 
-		Image image;
-		if (request.getPullPolicy() != PullPolicy.ALWAYS) {
-			try {
-				image = this.docker.image().inspect(imageReference);
-			}
-			catch (DockerEngineException exception) {
-				if (request.getPullPolicy() == PullPolicy.IF_NOT_PRESENT && exception.getStatusCode() == 404) {
-					image = pullImage(imageReference, imageType);
-				}
-				else {
-					throw exception;
-				}
-			}
-		}
-		else {
-			image = pullImage(imageReference, imageType);
+		if (request.getPullPolicy() == PullPolicy.ALWAYS) {
+			return pullImage(imageReference, imageType);
 		}
 
-		return image;
+		try {
+			return this.docker.image().inspect(imageReference);
+		}
+		catch (DockerEngineException exception) {
+			if (request.getPullPolicy() == PullPolicy.IF_NOT_PRESENT && exception.getStatusCode() == 404) {
+				return pullImage(imageReference, imageType);
+			}
+			else {
+				throw exception;
+			}
+		}
 	}
 
 	private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
