@@ -59,7 +59,7 @@ The following table summarizes the available properties and their default values
 | `imageName`
 | `--imageName`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
-| `docker.io/library/${project.artifactId}:${project.version}`
+| `docker.io/library/${project.name}:${project.version}`
 
 | `environment`
 |
@@ -149,7 +149,7 @@ include::../gradle/packaging/boot-build-image-env-proxy.gradle.kts[tags=env]
 
 [[build-image-example-custom-image-name]]
 ==== Custom Image Name
-By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
+By default, the image name is inferred from the `name` and the `version` of the project, something like `docker.io/library/${project.name}:${project.version}`.
 You can take control over the name by setting task properties, as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
