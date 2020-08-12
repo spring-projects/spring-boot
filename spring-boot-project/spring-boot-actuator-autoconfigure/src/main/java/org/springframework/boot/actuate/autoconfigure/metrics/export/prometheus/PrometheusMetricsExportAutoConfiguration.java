@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -49,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Prometheus.
@@ -124,11 +126,16 @@ public class PrometheusMetricsExportAutoConfiguration {
 			String job = getJob(properties, environment);
 			Map<String, String> groupingKey = properties.getGroupingKey();
 			ShutdownOperation shutdownOperation = properties.getShutdownOperation();
-			return new PrometheusPushGatewayManager(getPushGateway(properties.getBaseUrl()), collectorRegistry,
-					pushRate, job, groupingKey, shutdownOperation);
+			PushGateway pushGateway = initializePushGateway(properties.getBaseUrl());
+			if (StringUtils.hasText(properties.getUsername())) {
+				pushGateway.setConnectionFactory(
+						new BasicAuthHttpConnectionFactory(properties.getUsername(), properties.getPassword()));
+			}
+			return new PrometheusPushGatewayManager(pushGateway, collectorRegistry, pushRate, job, groupingKey,
+					shutdownOperation);
 		}
 
-		private PushGateway getPushGateway(String url) {
+		private PushGateway initializePushGateway(String url) {
 			try {
 				return new PushGateway(new URL(url));
 			}
