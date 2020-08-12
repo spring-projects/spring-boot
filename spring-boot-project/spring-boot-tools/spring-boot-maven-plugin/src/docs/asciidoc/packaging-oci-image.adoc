@@ -85,6 +85,12 @@ The following table summarizes the available parameters and their default values
 | `spring-boot.build-image.imageName`
 | `docker.io/library/${project.artifactId}:${project.version}`
 
+| `pullPolicy`
+| {spring-boot-api}/buildpack/platform/build/PullPolicy.html[Policy] used to determine when to pull the builder and run images from the registry.
+Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
+| `spring-boot.build-image.pullPolicy`
+| `ALWAYS`
+
 | `env`
 | Environment variables that should be passed to the builder.
 |
@@ -101,7 +107,7 @@ The following table summarizes the available parameters and their default values
 | `false`
 |===
 
-For more details, see <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
+For more details, see <<build-image-examples,examples>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
 

@@ -30,6 +30,7 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  *
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Andrey Shlykov
  * @since 2.3.0
  */
 public abstract class AbstractBuildLog implements BuildLog {
@@ -41,23 +42,37 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
+	@Deprecated
 	public Consumer<TotalProgressEvent> pullingBuilder(BuildRequest request, ImageReference imageReference) {
-		return getProgressConsumer(" > Pulling builder image '" + imageReference + "'");
+		return pullingImage(imageReference, ImageType.BUILDER);
 	}
 
 	@Override
+	@Deprecated
 	public void pulledBuilder(BuildRequest request, Image image) {
-		log(" > Pulled builder image '" + getDigest(image) + "'");
+		pulledImage(image, ImageType.BUILDER);
 	}
 
 	@Override
+	@Deprecated
 	public Consumer<TotalProgressEvent> pullingRunImage(BuildRequest request, ImageReference imageReference) {
-		return getProgressConsumer(" > Pulling run image '" + imageReference + "'");
+		return pullingImage(imageReference, ImageType.RUNNER);
 	}
 
 	@Override
+	@Deprecated
 	public void pulledRunImage(BuildRequest request, Image image) {
-		log(" > Pulled run image '" + getDigest(image) + "'");
+		pulledImage(image, ImageType.RUNNER);
+	}
+
+	@Override
+	public Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType) {
+		return getProgressConsumer(String.format(" > Pulling %s '%s'", imageType.getDescription(), imageReference));
+	}
+
+	@Override
+	public void pulledImage(Image image, ImageType imageType) {
+		log(String.format(" > Pulled %s '%s'", imageType.getDescription(), getDigest(image)));
 	}
 
 	@Override

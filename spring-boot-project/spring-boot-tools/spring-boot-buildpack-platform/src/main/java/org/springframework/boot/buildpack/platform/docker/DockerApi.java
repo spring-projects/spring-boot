@@ -158,10 +158,7 @@ public class DockerApi {
 						listener.onUpdate(event);
 					});
 				}
-				URI imageUri = buildUrl("/images/" + reference.withDigest(digestCapture.getCapturedDigest()) + "/json");
-				try (Response response = http().get(imageUri)) {
-					return Image.of(response.getContent());
-				}
+				return inspect(reference.withDigest(digestCapture.getCapturedDigest()));
 			}
 			finally {
 				listener.onFinish();
@@ -200,6 +197,20 @@ public class DockerApi {
 			Collection<String> params = force ? FORCE_PARAMS : Collections.emptySet();
 			URI uri = buildUrl("/images/" + reference, params);
 			http().delete(uri);
+		}
+
+		/**
+		 * Inspect an image.
+		 * @param reference the image reference
+		 * @return the image from the local repository
+		 * @throws IOException on IO error
+		 */
+		public Image inspect(ImageReference reference) throws IOException {
+			Assert.notNull(reference, "Reference must not be null");
+			URI imageUri = buildUrl("/images/" + reference + "/json");
+			try (Response response = http().get(imageUri)) {
+				return Image.of(response.getContent());
+			}
 		}
 
 	}

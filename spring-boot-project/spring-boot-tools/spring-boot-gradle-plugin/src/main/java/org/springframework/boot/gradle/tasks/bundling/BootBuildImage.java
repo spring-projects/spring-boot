@@ -34,6 +34,7 @@ import org.gradle.api.tasks.options.Option;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -68,6 +69,8 @@ public class BootBuildImage extends DefaultTask {
 	private boolean cleanCache;
 
 	private boolean verboseLogging;
+
+	private PullPolicy pullPolicy;
 
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
@@ -224,6 +227,25 @@ public class BootBuildImage extends DefaultTask {
 		this.verboseLogging = verboseLogging;
 	}
 
+	/**
+	 * Returns image pull policy that will be used when building the image.
+	 * @return whether images should be pulled
+	 */
+	@Input
+	@Optional
+	public PullPolicy getPullPolicy() {
+		return this.pullPolicy;
+	}
+
+	/**
+	 * Sets image pull policy that will be used when building the image.
+	 * @param pullPolicy image pull policy {@link PullPolicy}
+	 */
+	@Option(option = "pullPolicy", description = "The image pull policy")
+	public void setPullPolicy(PullPolicy pullPolicy) {
+		this.pullPolicy = pullPolicy;
+	}
+
 	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
 		Builder builder = new Builder();
@@ -255,6 +277,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizeCreator(request);
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);
+		request = customizePullPolicy(request);
 		return request;
 	}
 
@@ -286,6 +309,13 @@ public class BootBuildImage extends DefaultTask {
 		String springBootVersion = VersionExtractor.forClass(BootBuildImage.class);
 		if (StringUtils.hasText(springBootVersion)) {
 			return request.withCreator(Creator.withVersion(springBootVersion));
+		}
+		return request;
+	}
+
+	private BuildRequest customizePullPolicy(BuildRequest request) {
+		if (this.pullPolicy != null) {
+			request = request.withPullPolicy(this.pullPolicy);
 		}
 		return request;
 	}
