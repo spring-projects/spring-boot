@@ -16,13 +16,14 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.prometheus;
 
-import io.micrometer.prometheus.HistogramFlavor;
-import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
-import org.springframework.boot.context.properties.ConfigurationProperties;
-
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
+
+import io.micrometer.prometheus.HistogramFlavor;
+
+import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring metrics export
@@ -85,7 +86,6 @@ public class PrometheusProperties {
 		return this.pushgateway;
 	}
 
-
 	/**
 	 * Configuration options for push-based interaction with Prometheus.
 	 */
@@ -102,6 +102,16 @@ public class PrometheusProperties {
 		private String baseUrl = "http://localhost:9091";
 
 		/**
+		 * Login user of the Prometheus Pushgateway.
+		 */
+		private String username;
+
+		/**
+		 * Login password of the Prometheus Pushgateway.
+		 */
+		private String password;
+
+		/**
 		 * Frequency with which to push metrics.
 		 */
 		private Duration pushRate = Duration.ofMinutes(1);
@@ -115,21 +125,6 @@ public class PrometheusProperties {
 		 * Grouping key for the pushed metrics.
 		 */
 		private Map<String, String> groupingKey = new HashMap<>();
-
-		/**
-		 * Enable publishing via a Prometheus Pushgateway with Basic Auth.
-		 */
-		private Boolean authEnabled = false;
-
-		/**
-		 * Prometheus Pushgateway basic-auth username.
-		 */
-		private String authusername;
-
-		/**
-		 * Prometheus Pushgateway basic-auth password.
-		 */
-		private String authpassword;
 
 		/**
 		 * Operation that should be performed on shutdown.
@@ -150,6 +145,22 @@ public class PrometheusProperties {
 
 		public void setBaseUrl(String baseUrl) {
 			this.baseUrl = baseUrl;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 		public Duration getPushRate() {
@@ -184,29 +195,6 @@ public class PrometheusProperties {
 			this.shutdownOperation = shutdownOperation;
 		}
 
-		public Boolean getAuthEnabled() {
-			return this.authEnabled;
-		}
-
-		public void setAuthEnabled(Boolean authEnabled) {
-			this.authEnabled = authEnabled;
-		}
-
-		public String getAuthusername() {
-			return authusername;
-		}
-
-		public void setAuthusername(String authusername) {
-			this.authusername = authusername;
-		}
-
-		public String getAuthpassword() {
-			return authpassword;
-		}
-
-		public void setAuthpassword(String authpassword) {
-			this.authpassword = authpassword;
-		}
 	}
 
 }
