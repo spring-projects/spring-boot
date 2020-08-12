@@ -28,6 +28,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -217,6 +218,21 @@ class PackagingDocumentationTests {
 			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
 					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isEmpty();
 		}
+	}
+
+	@TestTemplate
+	void bootBuildImageWithCustomBuildpackJvmVersion() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env")
+				.build("bootBuildImageEnvironment");
+		assertThat(result.getOutput()).contains("BP_JVM_VERSION=13.0.1");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithCustomProxySettings() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-proxy")
+				.build("bootBuildImageEnvironment");
+		assertThat(result.getOutput()).contains("HTTP_PROXY=http://proxy.example.com")
+				.contains("HTTPS_PROXY=https://proxy.example.com");
 	}
 
 	protected void jarFile(File file) throws IOException {

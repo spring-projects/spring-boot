@@ -15,3 +15,9 @@ bootBuildImage {
 	]
 }
 // end::env[]
+
+task bootBuildImageEnvironment {
+	doFirst {
+		bootBuildImage.environment.each { name, value -> println "$name=$value" } 		
+	}
+}
