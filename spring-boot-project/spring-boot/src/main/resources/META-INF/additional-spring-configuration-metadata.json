@@ -754,7 +754,7 @@
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Comma-separated list of profile expressions that at least one should match for the document to be included.",
       "deprecation": {
-        "replacement": "spring.config.import.on-profile",
+        "replacement": "spring.config.activate.on-profile",
         "level": "warning"
       }
     },
@@ -797,7 +797,7 @@
       "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     },
     {
-      "name": "spring.config.import.on-profile",
+      "name": "spring.config.activate.on-profile",
       "type": "java.lang.String[]",
       "description": "Profile expressions that should match for the document to be included",
       "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
