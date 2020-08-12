@@ -224,7 +224,7 @@ class PackagingDocumentationTests {
 	void bootBuildImageWithCustomBuildpackJvmVersion() throws IOException {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env")
 				.build("bootBuildImageEnvironment");
-		assertThat(result.getOutput()).contains("BP_JVM_VERSION=13.0.1");
+		assertThat(result.getOutput()).contains("BP_JVM_VERSION=8.*");
 	}
 
 	@TestTemplate
