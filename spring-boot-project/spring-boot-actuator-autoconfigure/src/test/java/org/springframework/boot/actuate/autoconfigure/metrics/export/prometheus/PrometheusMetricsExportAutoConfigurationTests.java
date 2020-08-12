@@ -191,6 +191,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 						.isInstanceOf(BasicAuthHttpConnectionFactory.class)));
 	}
 
+	@Test
+	void pushGatewayIsNotConfiguredWhenEnabledFlagIsNotSet() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(PrometheusPushGatewayManager.class));
+	}
+
 	private void hasGatewayURL(AssertableApplicationContext context, String url) {
 		assertThat(getPushGateway(context)).hasFieldOrPropertyWithValue("gatewayBaseURL", url);
 	}
