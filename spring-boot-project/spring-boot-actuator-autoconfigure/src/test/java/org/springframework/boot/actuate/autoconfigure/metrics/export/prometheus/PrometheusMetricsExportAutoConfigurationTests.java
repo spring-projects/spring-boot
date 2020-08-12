@@ -154,6 +154,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 				.run((context) -> hasGatewayURL(context, "https://example.com:8080/metrics/"));
 	}
 
+	@Test
+	void pushGatewayIsNotConfiguredWhenEnabledFlagIsNotSet() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(PrometheusPushGatewayManager.class));
+	}
+
 	private void hasGatewayURL(AssertableApplicationContext context, String url) {
 		assertThat(context).hasSingleBean(PrometheusPushGatewayManager.class);
 		PrometheusPushGatewayManager gatewayManager = context.getBean(PrometheusPushGatewayManager.class);
