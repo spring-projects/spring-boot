@@ -19,15 +19,14 @@ package org.springframework.boot;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.BeanDefinitionStoreException;
-import org.springframework.boot.testsupport.classpath.ModifiedClassPathExtension;
+import org.springframework.boot.testsupport.classpath.ForkedClassPath;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
-@ExtendWith(ModifiedClassPathExtension.class)
+@ForkedClassPath
 class IgnoringXmlBeanDefinitionLoaderTests {
 
 	@BeforeAll
