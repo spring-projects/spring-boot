@@ -497,8 +497,8 @@ To scan for a free port (using OS natives to prevent clashes) use `server.port=0
 
 [[howto-discover-the-http-port-at-runtime]]
 === Discover the HTTP Port at Runtime
-You can access the port the server is running on from log output or from the `ServletWebServerApplicationContext` through its `WebServer`.
-The best way to get that and be sure that it has been initialized is to add a `@Bean` of type `ApplicationListener<ServletWebServerInitializedEvent>` and pull the container out of the event when it is published.
+You can access the port the server is running on from log output or from the `WebServerApplicationContext` through its `WebServer`.
+The best way to get that and be sure it has been initialized is to add a `@Bean` of type `ApplicationListener<WebServerInitializedEvent>` and pull the container out of the event when it is published.
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
 
@@ -506,9 +506,6 @@ Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can 
 ----
 	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
-
-		@Autowired
-		ServletWebServerApplicationContext server;
 
 		@LocalServerPort
 		int port;
