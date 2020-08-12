@@ -152,7 +152,8 @@ The builder and run image can be specified on the command line as well, as shown
 ==== Builder Configuration
 If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
 
-The following example assumes that the default builder defines a `BP_JVM_VERSION` property (typically used to customize the JDK version the image should use):
+The following example assumes that the default builder recognizes a `BP_JVM_VERSION` property.
+This property is typically used to customize the JDK version the image should use by specifying the major version and a wildcard for the rest of the version:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -166,7 +167,7 @@ The following example assumes that the default builder defines a `BP_JVM_VERSION
 					<configuration>
 						<image>
 							<env>
-								<BP_JVM_VERSION>13.0.1</BP_JVM_VERSION>
+								<BP_JVM_VERSION>8.*</BP_JVM_VERSION>
 							</env>
 						</image>
 					</configuration>
