@@ -7,7 +7,7 @@ plugins {
 
 // tag::env[]
 tasks.getByName<BootBuildImage>("bootBuildImage") {
-	environment = mapOf("BP_JVM_VERSION" to "13.0.1")
+	environment = mapOf("BP_JVM_VERSION" to "8.*")
 }
 // end::env[]
 
