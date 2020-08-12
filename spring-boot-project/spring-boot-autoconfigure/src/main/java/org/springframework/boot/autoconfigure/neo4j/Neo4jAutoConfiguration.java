@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 import org.neo4j.driver.AuthToken;
@@ -42,6 +43,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
@@ -56,19 +58,31 @@ import org.springframework.util.StringUtils;
 @EnableConfigurationProperties(Neo4jProperties.class)
 public class Neo4jAutoConfiguration {
 
+	private static final URI DEFAULT_SERVER_URI = URI.create("bolt://localhost:7687");
+
 	@Bean
 	@ConditionalOnMissingBean
-	public Driver neo4jDriver(Neo4jProperties properties,
+	public Driver neo4jDriver(Neo4jProperties properties, Environment environment,
 			ObjectProvider<ConfigBuilderCustomizer> configBuilderCustomizers) {
-		AuthToken authToken = mapAuthToken(properties.getAuthentication());
+		AuthToken authToken = mapAuthToken(properties.getAuthentication(), environment);
 		Config config = mapDriverConfig(properties,
 				configBuilderCustomizers.orderedStream().collect(Collectors.toList()));
-		return GraphDatabase.driver(properties.getUri(), authToken, config);
+		URI serverUri = determineServerUri(properties, environment);
+		return GraphDatabase.driver(serverUri, authToken, config);
 	}
 
-	AuthToken mapAuthToken(Neo4jProperties.Authentication authentication) {
-		String username = authentication.getUsername();
-		String password = authentication.getPassword();
+	URI determineServerUri(Neo4jProperties properties, Environment environment) {
+		return getOrFallback(properties.getUri(), () -> {
+			URI deprecatedProperty = environment.getProperty("spring.data.neo4j.uri", URI.class);
+			return (deprecatedProperty != null) ? deprecatedProperty : DEFAULT_SERVER_URI;
+		});
+	}
+
+	AuthToken mapAuthToken(Neo4jProperties.Authentication authentication, Environment environment) {
+		String username = getOrFallback(authentication.getUsername(),
+				() -> environment.getProperty("spring.data.neo4j.username", String.class));
+		String password = getOrFallback(authentication.getPassword(),
+				() -> environment.getProperty("spring.data.neo4j.password", String.class));
 		String kerberosTicket = authentication.getKerberosTicket();
 		String realm = authentication.getRealm();
 
@@ -87,6 +101,13 @@ public class Neo4jAutoConfiguration {
 			return AuthTokens.kerberos(kerberosTicket);
 		}
 		return AuthTokens.none();
+	}
+
+	private <T> T getOrFallback(T value, Supplier<T> fallback) {
+		if (value != null) {
+			return value;
+		}
+		return fallback.get();
 	}
 
 	Config mapDriverConfig(Neo4jProperties properties, List<ConfigBuilderCustomizer> customizers) {

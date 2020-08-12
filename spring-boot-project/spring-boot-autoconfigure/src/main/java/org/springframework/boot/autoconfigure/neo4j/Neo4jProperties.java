@@ -35,7 +35,7 @@ public class Neo4jProperties {
 	/**
 	 * URI used by the driver.
 	 */
-	private URI uri = URI.create("bolt://localhost:7687");
+	private URI uri;
 
 	/**
 	 * Timeout for borrowing connections from the pool.

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.neo4j;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
 import java.time.Duration;
 import java.util.Arrays;
 
@@ -37,6 +38,8 @@ import org.springframework.boot.autoconfigure.neo4j.Neo4jProperties.Security.Tru
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.core.env.Environment;
+import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -115,6 +118,40 @@ class Neo4jAutoConfigurationTests {
 	}
 
 	@Test
+	void determineServerUriShouldDefaultToLocalhost() {
+		assertThat(determineServerUri(new Neo4jProperties(), new MockEnvironment()))
+				.isEqualTo(URI.create("bolt://localhost:7687"));
+	}
+
+	@Test
+	void determineServerUriWithCustomUriShouldOverrideDefault() {
+		URI customUri = URI.create("bolt://localhost:4242");
+		Neo4jProperties properties = new Neo4jProperties();
+		properties.setUri(customUri);
+		assertThat(determineServerUri(properties, new MockEnvironment())).isEqualTo(customUri);
+	}
+
+	@Test
+	@Deprecated
+	void determineServerUriWithDeprecatedPropertyShouldOverrideDefault() {
+		URI customUri = URI.create("bolt://localhost:4242");
+		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.uri", customUri.toString());
+		assertThat(determineServerUri(new Neo4jProperties(), environment)).isEqualTo(customUri);
+	}
+
+	@Test
+	@Deprecated
+	void determineServerUriWithCustoUriShouldTakePrecedenceOverDeprecatedProperty() {
+		URI customUri = URI.create("bolt://localhost:4242");
+		URI anotherCustomURI = URI.create("bolt://localhost:2424");
+		Neo4jProperties properties = new Neo4jProperties();
+		properties.setUri(customUri);
+		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.uri",
+				anotherCustomURI.toString());
+		assertThat(determineServerUri(properties, environment)).isEqualTo(customUri);
+	}
+
+	@Test
 	void authenticationShouldDefaultToNone() {
 		assertThat(mapAuthToken(new Authentication())).isEqualTo(AuthTokens.none());
 	}
@@ -134,6 +171,25 @@ class Neo4jAutoConfigurationTests {
 		authentication.setPassword("Urlaub");
 		authentication.setRealm("Test Realm");
 		assertThat(mapAuthToken(authentication)).isEqualTo(AuthTokens.basic("Farin", "Urlaub", "Test Realm"));
+	}
+
+	@Test
+	@Deprecated
+	void authenticationWithUsernameUsingDeprecatedPropertiesShouldEnableBasicAuth() {
+		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.username", "user")
+				.withProperty("spring.data.neo4j.password", "secret");
+		assertThat(mapAuthToken(new Authentication(), environment)).isEqualTo(AuthTokens.basic("user", "secret"));
+	}
+
+	@Test
+	@Deprecated
+	void authenticationWithUsernameShouldTakePrecedenceOverDeprecatedPropertiesAndEnableBasicAuth() {
+		MockEnvironment environment = new MockEnvironment().withProperty("spring.data.neo4j.username", "user")
+				.withProperty("spring.data.neo4j.password", "secret");
+		Authentication authentication = new Authentication();
+		authentication.setUsername("Farin");
+		authentication.setPassword("Urlaub");
+		assertThat(mapAuthToken(authentication, environment)).isEqualTo(AuthTokens.basic("Farin", "Urlaub"));
 	}
 
 	@Test
@@ -262,8 +318,16 @@ class Neo4jAutoConfigurationTests {
 				.isInstanceOf(Neo4jSpringJclLogging.class);
 	}
 
+	private URI determineServerUri(Neo4jProperties properties, Environment environment) {
+		return new Neo4jAutoConfiguration().determineServerUri(properties, environment);
+	}
+
+	private AuthToken mapAuthToken(Authentication authentication, Environment environment) {
+		return new Neo4jAutoConfiguration().mapAuthToken(authentication, environment);
+	}
+
 	private AuthToken mapAuthToken(Authentication authentication) {
-		return new Neo4jAutoConfiguration().mapAuthToken(authentication);
+		return mapAuthToken(authentication, new MockEnvironment());
 	}
 
 	private Config mapDriverConfig(Neo4jProperties properties, ConfigBuilderCustomizer... customizers) {

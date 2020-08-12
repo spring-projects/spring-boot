@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.neo4j;
 
-import java.net.URI;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
@@ -64,12 +63,6 @@ class Neo4jPropertiesTests {
 		Neo4jProperties properties = new Neo4jProperties();
 		assertDuration(properties.getConnectionTimeout(), defaultConfig.connectionTimeoutMillis());
 		assertDuration(properties.getMaxTransactionRetryTime(), RetrySettings.DEFAULT.maxRetryTimeMs());
-	}
-
-	@Test
-	void shouldAssumeDefaultValuesForUrl() {
-		Neo4jProperties driverProperties = new Neo4jProperties();
-		assertThat(driverProperties.getUri()).isEqualTo(URI.create("bolt://localhost:7687"));
 	}
 
 	private static void assertDuration(Duration duration, long expectedValueInMillis) {

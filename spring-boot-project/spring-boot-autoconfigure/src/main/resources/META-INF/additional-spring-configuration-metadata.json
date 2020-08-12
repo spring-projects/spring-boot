@@ -681,7 +681,7 @@
       "description": "Login password of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.password",
-        "level": "error"
+        "level": "warning"
       }
     },
     {
@@ -706,7 +706,7 @@
       "description": "URI used by the driver. Auto-detected by default.",
       "deprecation": {
         "replacement": "spring.neo4j.uri",
-        "level": "error"
+        "level": "warning"
       }
     },
     {
@@ -724,7 +724,7 @@
       "description": "Login user of the server.",
       "deprecation": {
         "replacement": "spring.neo4j.authentication.password",
-        "level": "error"
+        "level": "warning"
       }
     },
     {
@@ -1505,6 +1505,10 @@
     {
       "name": "spring.mvc.locale-resolver",
       "defaultValue": "accept-header"
+    },
+    {
+      "name": "spring.neo4j.uri",
+      "defaultValue": "bolt://localhost:7687"
     },
     {
       "name": "spring.quartz.jdbc.comment-prefix",
