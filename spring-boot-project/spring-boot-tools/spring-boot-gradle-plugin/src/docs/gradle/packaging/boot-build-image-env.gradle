@@ -12,3 +12,9 @@ bootBuildImage {
 	environment = ["BP_JVM_VERSION" : "13.0.1"]
 }
 // end::env[]
+
+task bootBuildImageEnvironment {
+	doFirst {
+		bootBuildImage.environment.each { name, value -> println "$name=$value" } 		
+	}
+}
