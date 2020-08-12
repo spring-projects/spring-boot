@@ -41,12 +41,16 @@ import org.springframework.test.web.servlet.MockMvc;
  * <p>
  * Allows configuration of the output directory and the host, scheme, and port of
  * generated URIs. When further configuration is required a
- * {@link RestDocsMockMvcConfigurationCustomizer} bean can be used.
+ * {@link RestDocsMockMvcConfigurationCustomizer},
+ * {@link RestDocsWebTestClientConfigurationCustomizer}, or
+ * {@link RestDocsRestAssuredConfigurationCustomizer} bean can be used.
  *
  * @author Andy Wilkinson
  * @since 1.4.0
  * @see RestDocsAutoConfiguration
  * @see RestDocsMockMvcConfigurationCustomizer
+ * @see RestDocsWebTestClientConfigurationCustomizer
+ * @see RestDocsRestAssuredConfigurationCustomizer
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
