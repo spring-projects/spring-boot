@@ -3,12 +3,14 @@ plugins {
 	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
-bootJar {
-	mainClassName 'com.example.ExampleApplication'
-}
-
 // tag::image-name[]
 bootBuildImage {
-	imageName = "example.com/library/${project.artifactId}"
+	imageName = "example.com/library/${project.name}"
 }
 // end::image-name[]
+
+task bootBuildImageName {
+    doFirst {
+        println(tasks.bootBuildImage.imageName)
+    }
+}
