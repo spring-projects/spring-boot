@@ -47,6 +47,7 @@ import org.springframework.data.neo4j.core.schema.Node;
 import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data Neo4j.
@@ -106,7 +107,7 @@ public class Neo4jDataAutoConfiguration {
 	}
 
 	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
-	@ConditionalOnMissingBean(PlatformTransactionManager.class)
+	@ConditionalOnMissingBean(TransactionManager.class)
 	public Neo4jTransactionManager transactionManager(Driver driver, DatabaseSelectionProvider databaseNameProvider,
 			ObjectProvider<TransactionManagerCustomizers> optionalCustomizers) {
 		Neo4jTransactionManager transactionManager = new Neo4jTransactionManager(driver, databaseNameProvider);

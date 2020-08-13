@@ -28,7 +28,7 @@ import org.springframework.boot.autoconfigure.data.neo4j.country.CountryReposito
 import org.springframework.boot.autoconfigure.data.neo4j.country.ReactiveCountryRepository;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
+import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.config.EnableReactiveNeo4jRepositories;
 
@@ -57,7 +57,7 @@ public class Neo4jReactiveRepositoriesAutoConfigurationTests {
 	@Test
 	void configurationWithNoRepositories() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class).run((context) -> assertThat(context)
-				.hasSingleBean(ReactiveNeo4jTransactionManager.class).doesNotHaveBean(ReactiveNeo4jRepository.class));
+				.hasSingleBean(ReactiveNeo4jTemplate.class).doesNotHaveBean(ReactiveNeo4jRepository.class));
 	}
 
 	@Test
@@ -70,7 +70,7 @@ public class Neo4jReactiveRepositoriesAutoConfigurationTests {
 	@Test
 	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		this.contextRunner.withUserConfiguration(SortOfInvalidCustomConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(ReactiveNeo4jTransactionManager.class)
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveNeo4jTemplate.class)
 						.doesNotHaveBean(ReactiveNeo4jRepository.class));
 	}
 

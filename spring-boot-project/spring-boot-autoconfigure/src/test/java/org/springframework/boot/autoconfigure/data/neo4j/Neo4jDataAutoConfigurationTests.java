@@ -31,6 +31,8 @@ import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.core.convert.Neo4jConversions;
 import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -117,6 +119,13 @@ class Neo4jDataAutoConfigurationTests {
 			assertThat(context.getBean(Neo4jTransactionManager.class)).extracting("databaseSelectionProvider")
 					.isSameAs(context.getBean(DatabaseSelectionProvider.class));
 		});
+	}
+
+	@Test
+	void shouldBackoffIfReactiveTransactionManagerIsSet() {
+		this.contextRunner.withBean(ReactiveTransactionManager.class, () -> mock(ReactiveTransactionManager.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jTransactionManager.class)
+						.hasSingleBean(TransactionManager.class));
 	}
 
 	@Test
