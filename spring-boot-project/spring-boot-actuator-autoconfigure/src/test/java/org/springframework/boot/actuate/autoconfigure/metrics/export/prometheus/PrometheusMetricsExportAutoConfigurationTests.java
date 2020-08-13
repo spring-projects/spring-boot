@@ -141,6 +141,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void pushGatewayIsNotConfiguredWhenEnabledFlagIsNotSet() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(PrometheusPushGatewayManager.class));
+	}
+
+	@Test
 	void withPushGatewayEnabled(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues("management.metrics.export.prometheus.pushgateway.enabled=true")
