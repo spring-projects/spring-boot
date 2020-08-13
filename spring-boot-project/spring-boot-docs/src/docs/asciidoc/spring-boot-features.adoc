@@ -4527,9 +4527,10 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 [[boot-features-spring-data-neo4j-repositories]]
 ==== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
+For complete details of Spring Data Neo4j, refer to the {spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
-You could take the JPA example from earlier and define `City` as Neo4j OGM `@NodeEntity` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
+You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -4547,9 +4548,10 @@ You could take the JPA example from earlier and define `City` as Neo4j OGM `@Nod
 ----
 
 The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
-You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
+Spring Boot supports both classic and reactive Neo4j repositories, using the `Neo4jTemplate` or `ReactiveNeo4jTemplate` beans.
+When Project Reactor is available on the classpath, the reactive style is also auto-configured.
 
-TIP: For complete details of Spring Data Neo4j, including its object mapping technologies, refer to the {spring-data-neo4j-docs}[reference documentation].
+You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
 
 
 
@@ -7152,7 +7154,7 @@ If, however, you prefer to run tests against a real MongoDB server, you should e
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test]]
 ==== Auto-configured Data Neo4j Tests
 You can use `@DataNeo4jTest` to test Neo4j applications.
-By default, it uses an in-memory embedded Neo4j (if the embedded driver is available), scans for `@NodeEntity` classes, and configures Spring Data Neo4j repositories.
+By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
 Regular `@Component` beans are not loaded into the `ApplicationContext`.
 (For more about using Neo4J with Spring Boot, see "<<boot-features-neo4j>>", earlier in this chapter.)
 
