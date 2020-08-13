@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -124,6 +124,12 @@ class PrometheusMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
+	void pushGatewayIsNotConfiguredWhenEnabledFlagIsNotSet() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(PrometheusPushGatewayManager.class));
+	}
+
+	@Test
 	void withPushGatewayEnabled(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class))
 				.withPropertyValues("management.metrics.export.prometheus.pushgateway.enabled=true")
@@ -152,12 +158,6 @@ class PrometheusMetricsExportAutoConfigurationTests {
 						"management.metrics.export.prometheus.pushgateway.base-url=https://example.com:8080")
 				.withUserConfiguration(BaseConfiguration.class)
 				.run((context) -> hasGatewayURL(context, "https://example.com:8080/metrics/"));
-	}
-
-	@Test
-	void pushGatewayIsNotConfiguredWhenEnabledFlagIsNotSet() {
-		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(PrometheusPushGatewayManager.class));
 	}
 
 	private void hasGatewayURL(AssertableApplicationContext context, String url) {
