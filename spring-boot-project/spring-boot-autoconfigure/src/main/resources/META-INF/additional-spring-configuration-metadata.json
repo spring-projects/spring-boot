@@ -49,10 +49,6 @@
       "defaultValue": "never"
     },
     {
-      "name": "server.forward-headers-strategy",
-      "defaultValue": "ncsa"
-    },
-    {
       "name": "server.http2.enabled",
       "description": "Whether to enable HTTP/2 support, if the current environment supports it.",
       "defaultValue": false
@@ -70,6 +66,10 @@
         "replacement": "server.jetty.accesslog.format",
         "level": "error"
       }
+    },
+    {
+      "name": "server.jetty.accesslog.format",
+      "defaultValue": "ncsa"
     },
     {
       "name": "server.jetty.accesslog.locale",
