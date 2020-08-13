@@ -53,7 +53,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -314,7 +313,6 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		}
 		else {
 			try {
-				ResourceUtils.getURL(logConfig).openStream().close();
 				system.initialize(initializationContext, logConfig, logFile);
 			}
 			catch (Exception ex) {
