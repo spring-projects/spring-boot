@@ -30,14 +30,14 @@ import org.springframework.util.FileCopyUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link VolumeMountConfigDataLoader}.
+ * Tests for {@link ConfigTreeConfigDataLoader}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class VolumeMountConfigDataLoaderTests {
+public class ConfigTreeConfigDataLoaderTests {
 
-	private VolumeMountConfigDataLoader loader = new VolumeMountConfigDataLoader();
+	private ConfigTreeConfigDataLoader loader = new ConfigTreeConfigDataLoader();
 
 	@TempDir
 	Path directory;
@@ -47,11 +47,11 @@ public class VolumeMountConfigDataLoaderTests {
 		File file = this.directory.resolve("hello").toFile();
 		file.getParentFile().mkdirs();
 		FileCopyUtils.copy("world".getBytes(StandardCharsets.UTF_8), file);
-		VolumeMountConfigDataLocation location = new VolumeMountConfigDataLocation(this.directory.toString());
+		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation(this.directory.toString());
 		ConfigData configData = this.loader.load(location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(1);
 		PropertySource<?> source = configData.getPropertySources().get(0);
-		assertThat(source.getName()).isEqualTo("Volume mount config '" + this.directory.toString() + "'");
+		assertThat(source.getName()).isEqualTo("Config tree '" + this.directory.toString() + "'");
 		assertThat(source.getProperty("hello").toString()).isEqualTo("world");
 	}
 

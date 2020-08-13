@@ -20,21 +20,21 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 
-import org.springframework.boot.env.VolumeMountDirectoryPropertySource;
+import org.springframework.boot.env.ConfigTreePropertySource;
 
 /**
- * {@link ConfigDataLoader} for directory locations mounted as volumes.
+ * {@link ConfigDataLoader} for config tree locations.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class VolumeMountConfigDataLoader implements ConfigDataLoader<VolumeMountConfigDataLocation> {
+class ConfigTreeConfigDataLoader implements ConfigDataLoader<ConfigTreeConfigDataLocation> {
 
 	@Override
-	public ConfigData load(VolumeMountConfigDataLocation location) throws IOException {
+	public ConfigData load(ConfigTreeConfigDataLocation location) throws IOException {
 		Path path = location.getPath();
-		String name = "Volume mount config '" + path + "'";
-		VolumeMountDirectoryPropertySource source = new VolumeMountDirectoryPropertySource(name, path);
+		String name = "Config tree '" + path + "'";
+		ConfigTreePropertySource source = new ConfigTreePropertySource(name, path);
 		return new ConfigData(Collections.singletonList(source));
 	}
 

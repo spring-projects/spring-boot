@@ -5,13 +5,13 @@ org.springframework.boot.env.YamlPropertySourceLoader
 
 # ConfigData Location Resolvers
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
-org.springframework.boot.context.config.ResourceConfigDataLocationResolver,\
-org.springframework.boot.context.config.VolumeMountConfigDataLocationResolver
+org.springframework.boot.context.config.ConfigTreeConfigDataLocationResolver,\
+org.springframework.boot.context.config.ResourceConfigDataLocationResolver
 
 # ConfigData Loaders
 org.springframework.boot.context.config.ConfigDataLoader=\
-org.springframework.boot.context.config.ResourceConfigDataLoader,\
-org.springframework.boot.context.config.VolumeMountConfigDataLoader
+org.springframework.boot.context.config.ConfigTreeConfigDataLoader,\
+org.springframework.boot.context.config.ResourceConfigDataLoader
 
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\

@@ -46,16 +46,16 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 /**
- * {@link PropertySource} backed by a directory that contains files for each value. The
- * {@link PropertySource} will recursively scan a given source directory and expose a
+ * {@link PropertySource} backed by a directory tree that contains files for each value.
+ * The {@link PropertySource} will recursively scan a given source directory and expose a
  * property for each file found. The property name will be the filename, and the property
  * value will be the contents of the file.
  * <p>
  * Directories are only scanned when the source is first created. The directory is not
  * monitored for updates, so files should not be added or removed. However, the contents
  * of a file can be updated as long as the property source was created with a
- * {@link Option#ALWAYS_READ} option. Nested folders are included in the source, but with
- * a {@code '.'} rather than {@code '/'} used as the path separator.
+ * {@link Option#ALWAYS_READ} option. Nested directories are included in the source, but
+ * with a {@code '.'} rather than {@code '/'} used as the path separator.
  * <p>
  * Property values are returned as {@link Value} instances which allows them to be treated
  * either as an {@link InputStreamSource} or as a {@link CharSequence}. In addition, if
@@ -69,7 +69,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @since 2.4.0
  */
-public class VolumeMountDirectoryPropertySource extends EnumerablePropertySource<Path> implements OriginLookup<String> {
+public class ConfigTreePropertySource extends EnumerablePropertySource<Path> implements OriginLookup<String> {
 
 	private static final int MAX_DEPTH = 100;
 
@@ -80,25 +80,25 @@ public class VolumeMountDirectoryPropertySource extends EnumerablePropertySource
 	private final Set<Option> options;
 
 	/**
-	 * Create a new {@link VolumeMountDirectoryPropertySource} instance.
+	 * Create a new {@link ConfigTreePropertySource} instance.
 	 * @param name the name of the property source
 	 * @param sourceDirectory the underlying source directory
 	 */
-	public VolumeMountDirectoryPropertySource(String name, Path sourceDirectory) {
+	public ConfigTreePropertySource(String name, Path sourceDirectory) {
 		this(name, sourceDirectory, EnumSet.noneOf(Option.class));
 	}
 
 	/**
-	 * Create a new {@link VolumeMountDirectoryPropertySource} instance.
+	 * Create a new {@link ConfigTreePropertySource} instance.
 	 * @param name the name of the property source
 	 * @param sourceDirectory the underlying source directory
 	 * @param options the property source options
 	 */
-	public VolumeMountDirectoryPropertySource(String name, Path sourceDirectory, Option... options) {
+	public ConfigTreePropertySource(String name, Path sourceDirectory, Option... options) {
 		this(name, sourceDirectory, EnumSet.copyOf(Arrays.asList(options)));
 	}
 
-	private VolumeMountDirectoryPropertySource(String name, Path sourceDirectory, Set<Option> options) {
+	private ConfigTreePropertySource(String name, Path sourceDirectory, Set<Option> options) {
 		super(name, sourceDirectory);
 		Assert.isTrue(Files.exists(sourceDirectory), () -> "Directory '" + sourceDirectory + "' does not exist");
 		Assert.isTrue(Files.isDirectory(sourceDirectory), () -> "File '" + sourceDirectory + "' is not a directory");

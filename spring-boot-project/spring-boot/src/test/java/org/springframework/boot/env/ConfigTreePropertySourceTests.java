@@ -26,8 +26,8 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.convert.ApplicationConversionService;
-import org.springframework.boot.env.VolumeMountDirectoryPropertySource.Option;
-import org.springframework.boot.env.VolumeMountDirectoryPropertySource.Value;
+import org.springframework.boot.env.ConfigTreePropertySource.Option;
+import org.springframework.boot.env.ConfigTreePropertySource.Value;
 import org.springframework.boot.origin.TextResourceOrigin;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.support.ConfigurableConversionService;
@@ -40,32 +40,31 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link VolumeMountDirectoryPropertySource}.
+ * Tests for {@link ConfigTreePropertySource}.
  *
  * @author Phillip Webb
  */
-class VolumeMountDirectoryPropertySourceTests {
+class ConfigTreePropertySourceTests {
 
 	@TempDir
 	Path directory;
 
 	@Test
 	void createWhenNameIsNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new VolumeMountDirectoryPropertySource(null, this.directory))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource(null, this.directory))
 				.withMessageContaining("name must contain");
 	}
 
 	@Test
 	void createWhenSourceIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new VolumeMountDirectoryPropertySource("test", null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", null))
 				.withMessage("Property source must not be null");
 	}
 
 	@Test
 	void createWhenSourceDoesNotExistThrowsException() {
 		Path missing = this.directory.resolve("missing");
-		assertThatIllegalArgumentException().isThrownBy(() -> new VolumeMountDirectoryPropertySource("test", missing))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", missing))
 				.withMessage("Directory '" + missing + "' does not exist");
 	}
 
@@ -73,45 +72,45 @@ class VolumeMountDirectoryPropertySourceTests {
 	void createWhenSourceIsFileThrowsException() throws Exception {
 		Path file = this.directory.resolve("file");
 		FileCopyUtils.copy("test".getBytes(StandardCharsets.UTF_8), file.toFile());
-		assertThatIllegalArgumentException().isThrownBy(() -> new VolumeMountDirectoryPropertySource("test", file))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreePropertySource("test", file))
 				.withMessage("File '" + file + "' is not a directory");
 	}
 
 	@Test
 	void getPropertyNamesFromFlatReturnsPropertyNames() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getFlatPropertySource();
+		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c");
 	}
 
 	@Test
 	void getPropertyNamesFromNestedReturnsPropertyNames() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getNestedPropertySource();
+		ConfigTreePropertySource propertySource = getNestedPropertySource();
 		assertThat(propertySource.getPropertyNames()).containsExactly("c", "fa.a", "fa.b", "fb.a", "fb.fa.a");
 	}
 
 	@Test
 	void getPropertyNamesWhenLowercaseReturnsPropertyNames() throws Exception {
 		addProperty("SpRiNg", "boot");
-		VolumeMountDirectoryPropertySource propertySource = new VolumeMountDirectoryPropertySource("test",
-				this.directory, Option.USE_LOWERCASE_NAMES);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.USE_LOWERCASE_NAMES);
 		assertThat(propertySource.getPropertyNames()).containsExactly("spring");
 	}
 
 	@Test
 	void getPropertyFromFlatReturnsFileContent() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getFlatPropertySource();
+		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		assertThat(propertySource.getProperty("b")).hasToString("B");
 	}
 
 	@Test
 	void getPropertyFromFlatWhenMissingReturnsNull() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getFlatPropertySource();
+		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		assertThat(propertySource.getProperty("missing")).isNull();
 	}
 
 	@Test
 	void getPropertyFromFlatWhenFileDeletedThrowsException() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getFlatPropertySource();
+		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		Path b = this.directory.resolve("b");
 		Files.delete(b);
 		assertThatIllegalStateException().isThrownBy(() -> propertySource.getProperty("b").toString())
@@ -120,7 +119,7 @@ class VolumeMountDirectoryPropertySourceTests {
 
 	@Test
 	void getOriginFromFlatReturnsOrigin() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getFlatPropertySource();
+		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		TextResourceOrigin origin = (TextResourceOrigin) propertySource.getOrigin("b");
 		assertThat(origin.getResource().getFile()).isEqualTo(this.directory.resolve("b").toFile());
 		assertThat(origin.getLocation().getLine()).isEqualTo(0);
@@ -129,7 +128,7 @@ class VolumeMountDirectoryPropertySourceTests {
 
 	@Test
 	void getOriginFromFlatWhenMissingReturnsNull() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getFlatPropertySource();
+		ConfigTreePropertySource propertySource = getFlatPropertySource();
 		assertThat(propertySource.getOrigin("missing")).isNull();
 	}
 
@@ -147,13 +146,13 @@ class VolumeMountDirectoryPropertySourceTests {
 
 	@Test
 	void getPropertyFromNestedReturnsFileContent() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getNestedPropertySource();
+		ConfigTreePropertySource propertySource = getNestedPropertySource();
 		assertThat(propertySource.getProperty("fb.fa.a")).hasToString("BAA");
 	}
 
 	@Test
 	void getPropertyWhenNotAlwaysReadIgnoresUpdates() throws Exception {
-		VolumeMountDirectoryPropertySource propertySource = getNestedPropertySource();
+		ConfigTreePropertySource propertySource = getNestedPropertySource();
 		Value v1 = propertySource.getProperty("fa.b");
 		Value v2 = propertySource.getProperty("fa.b");
 		assertThat(v1).isSameAs(v2);
@@ -167,8 +166,8 @@ class VolumeMountDirectoryPropertySourceTests {
 	@Test
 	void getPropertyWhenAlwaysReadReflectsUpdates() throws Exception {
 		addNested();
-		VolumeMountDirectoryPropertySource propertySource = new VolumeMountDirectoryPropertySource("test",
-				this.directory, Option.ALWAYS_READ);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.ALWAYS_READ);
 		Value v1 = propertySource.getProperty("fa.b");
 		Value v2 = propertySource.getProperty("fa.b");
 		assertThat(v1).isNotSameAs(v2);
@@ -183,21 +182,21 @@ class VolumeMountDirectoryPropertySourceTests {
 	@Test
 	void getPropertyWhenLowercaseReturnsValue() throws Exception {
 		addProperty("SpRiNg", "boot");
-		VolumeMountDirectoryPropertySource propertySource = new VolumeMountDirectoryPropertySource("test",
-				this.directory, Option.USE_LOWERCASE_NAMES);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.USE_LOWERCASE_NAMES);
 		assertThat(propertySource.getProperty("spring")).hasToString("boot");
 	}
 
-	private VolumeMountDirectoryPropertySource getFlatPropertySource() throws IOException {
+	private ConfigTreePropertySource getFlatPropertySource() throws IOException {
 		addProperty("a", "A");
 		addProperty("b", "B");
 		addProperty("c", "C");
-		return new VolumeMountDirectoryPropertySource("test", this.directory);
+		return new ConfigTreePropertySource("test", this.directory);
 	}
 
-	private VolumeMountDirectoryPropertySource getNestedPropertySource() throws IOException {
+	private ConfigTreePropertySource getNestedPropertySource() throws IOException {
 		addNested();
-		return new VolumeMountDirectoryPropertySource("test", this.directory);
+		return new ConfigTreePropertySource("test", this.directory);
 	}
 
 	private void addNested() throws IOException {
