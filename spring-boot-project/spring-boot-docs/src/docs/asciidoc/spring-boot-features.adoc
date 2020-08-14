@@ -7908,7 +7908,7 @@ TIP: If multiple auto-configurations have to be defined, there is no need to ord
 
 Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
-Invoking `run` provides a callback context that can be used with `Assert4J`.
+Invoking `run` provides a callback context that can be used with `AssertJ`.
 
 [source,java,indent=0]
 ----
