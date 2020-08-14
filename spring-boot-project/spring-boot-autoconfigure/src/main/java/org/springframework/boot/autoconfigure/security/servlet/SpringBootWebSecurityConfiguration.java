@@ -24,22 +24,23 @@ import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * The default configuration for web security. It relies on Spring Security's
  * content-negotiation strategy to determine what sort of authentication to use. If the
- * user specifies their own {@link WebSecurityConfigurerAdapter}, this will back-off
- * completely and the users should specify all the bits that they want to configure as
- * part of the custom security configuration.
+ * user specifies their own {@link WebSecurityConfigurerAdapter} or
+ * {@link SecurityFilterChain} bean, this will back-off completely and the users should
+ * specify all the bits that they want to configure as part of the custom security
+ * configuration.
  *
  * @author Madhura Bhave
- * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
-@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
+@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
+@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
-public class SpringBootWebSecurityConfiguration {
+class SpringBootWebSecurityConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)

@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 
 /**
@@ -31,7 +32,7 @@ import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
  *
  * @author Madhura Bhave
  */
-@ConditionalOnClass(WebSecurityConfigurerAdapter.class)
+@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
 @Configuration(proxyBeanMethods = false)
 class RemoteDevtoolsSecurityConfiguration {
 

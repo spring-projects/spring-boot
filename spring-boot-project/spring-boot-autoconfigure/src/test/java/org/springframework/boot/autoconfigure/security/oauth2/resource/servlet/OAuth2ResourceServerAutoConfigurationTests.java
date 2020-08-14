@@ -41,6 +41,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.oauth2.core.DelegatingOAuth2TokenValidator;
 import org.springframework.security.oauth2.core.OAuth2TokenValidator;
@@ -280,6 +281,30 @@ class OAuth2ResourceServerAutoConfigurationTests {
 	}
 
 	@Test
+	void jwtSecurityFilterShouldBeConditionalOnSecurityFilterChainClass() {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+				.withUserConfiguration(JwtDecoderConfig.class)
+				.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class)).run((context) -> {
+					assertThat(context).hasSingleBean(OAuth2ResourceServerAutoConfiguration.class);
+					assertThat(getBearerTokenFilter(context)).isNull();
+				});
+	}
+
+	@Test
+	void opaqueTokenSecurityFilterShouldBeConditionalOnSecurityFilterChainClass() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
+				.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class)).run((context) -> {
+					assertThat(context).hasSingleBean(OAuth2ResourceServerAutoConfiguration.class);
+					assertThat(getBearerTokenFilter(context)).isNull();
+				});
+	}
+
+	@Test
 	void autoConfigurationWhenJwkSetUriAndIntrospectionUriAvailable() {
 		this.contextRunner
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com",
@@ -349,6 +374,24 @@ class OAuth2ResourceServerAutoConfigurationTests {
 							.getField(jwtValidator, "tokenValidators");
 					assertThat(tokenValidators).hasAtLeastOneElementOfType(JwtIssuerValidator.class);
 				});
+	}
+
+	@Test
+	void jwtSecurityConfigurerBacksOffWhenSecurityFilterChainBeanIsPresent() {
+		this.contextRunner
+				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://jwk-set-uri.com")
+				.withUserConfiguration(JwtDecoderConfig.class, TestSecurityFilterChainConfig.class)
+				.run((context) -> assertThat(context).hasSingleBean(SecurityFilterChain.class));
+	}
+
+	@Test
+	void opaqueTokenSecurityConfigurerBacksOffWhenSecurityFilterChainBeanIsPresent() {
+		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class)
+				.withPropertyValues(
+						"spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://check-token.com",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id",
+						"spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret")
+				.run((context) -> assertThat(context).hasSingleBean(SecurityFilterChain.class));
 	}
 
 	private Filter getBearerTokenFilter(AssertableWebApplicationContext context) {
@@ -423,6 +466,18 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		@Bean
 		OpaqueTokenIntrospector decoder() {
 			return mock(OpaqueTokenIntrospector.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableWebSecurity
+	static class TestSecurityFilterChainConfig {
+
+		@Bean
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+			return http.antMatcher("/**").authorizeRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
 		}
 
 	}

@@ -2265,7 +2265,7 @@ For more about Spring Security, see the {spring-security}[Spring Security projec
 
 [[howto-switch-off-spring-boot-security-configuration]]
 === Switch off the Spring Boot Security Configuration
-If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` in your application, it switches off the default webapp security settings in Spring Boot.
+If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` or a `SecurityFilterChain` bean in your application, it switches off the default webapp security settings in Spring Boot.
 
 
 [[howto-change-the-user-details-service-and-add-user-accounts]]

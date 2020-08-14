@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,6 +29,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * {@link WebSecurityConfigurerAdapter} to add OAuth client support.
@@ -52,7 +54,8 @@ class OAuth2WebSecurityConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
+	@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
+	@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
 	static class OAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
 
 		@Override

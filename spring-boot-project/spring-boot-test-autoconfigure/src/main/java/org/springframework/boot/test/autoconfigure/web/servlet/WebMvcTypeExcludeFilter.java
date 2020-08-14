@@ -52,7 +52,8 @@ public final class WebMvcTypeExcludeFilter extends StandardAnnotationCustomizabl
 	private static final Class<?>[] NO_CONTROLLERS = {};
 
 	private static final String[] OPTIONAL_INCLUDES = {
-			"org.springframework.security.config.annotation.web.WebSecurityConfigurer" };
+			"org.springframework.security.config.annotation.web.WebSecurityConfigurer",
+			"org.springframework.security.web.SecurityFilterChain" };
 
 	private static final Set<Class<?>> DEFAULT_INCLUDES;
 

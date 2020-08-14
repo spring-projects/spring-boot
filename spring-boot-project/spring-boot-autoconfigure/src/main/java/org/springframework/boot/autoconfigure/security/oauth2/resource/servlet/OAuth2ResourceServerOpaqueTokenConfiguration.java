@@ -16,6 +16,7 @@
 package org.springframework.boot.autoconfigure.security.oauth2.resource.servlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
@@ -26,6 +27,7 @@ import org.springframework.security.config.annotation.web.configuration.WebSecur
 import org.springframework.security.config.annotation.web.configurers.oauth2.server.resource.OAuth2ResourceServerConfigurer;
 import org.springframework.security.oauth2.server.resource.introspection.NimbusOpaqueTokenIntrospector;
 import org.springframework.security.oauth2.server.resource.introspection.OpaqueTokenIntrospector;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * Configures a {@link OpaqueTokenIntrospector} when a token introspection endpoint is
@@ -52,7 +54,8 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
+	@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
+	@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
 	static class OAuth2WebSecurityConfigurerAdapter {
 
 		@Bean
