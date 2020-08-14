@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.client.servlet.OAu
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -49,7 +50,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
+@ConditionalOnClass({ SecurityFilterChain.class, HttpSecurity.class })
 @ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @AutoConfigureBefore(SecurityAutoConfiguration.class)
@@ -58,19 +59,15 @@ import org.springframework.security.web.SecurityFilterChain;
 		OAuth2ResourceServerAutoConfiguration.class, Saml2RelyingPartyAutoConfiguration.class })
 public class ManagementWebSecurityAutoConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	static class ManagementWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests((requests) -> {
-				requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
-				requests.anyRequest().authenticated();
-			});
-			http.formLogin(Customizer.withDefaults());
-			http.httpBasic(Customizer.withDefaults());
-		}
-
+	@Bean
+	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
+		http.authorizeRequests((requests) -> {
+			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
+			requests.anyRequest().authenticated();
+		});
+		http.formLogin(Customizer.withDefaults());
+		http.httpBasic(Customizer.withDefaults());
+		return http.build();
 	}
 
 }

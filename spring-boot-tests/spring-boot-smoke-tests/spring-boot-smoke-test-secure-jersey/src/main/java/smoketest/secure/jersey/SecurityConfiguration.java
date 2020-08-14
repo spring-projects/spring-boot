@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import org.springframework.boot.actuate.web.mappings.MappingsEndpoint;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
+public class SecurityConfiguration {
 
 	@SuppressWarnings("deprecation")
 	@Bean
@@ -38,8 +38,8 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 						.authorities("ROLE_ACTUATOR", "ROLE_USER").build());
 	}
 
-	@Override
-	protected void configure(HttpSecurity http) throws Exception {
+	@Bean
+	SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http.authorizeRequests()
 				.requestMatchers(EndpointRequest.to("health", "info")).permitAll()
@@ -47,6 +47,7 @@ public class SecurityConfiguration extends WebSecurityConfigurerAdapter {
 				.antMatchers("/**").hasRole("USER")
 				.and()
 			.httpBasic();
+		return http.build();
 		// @formatter:on
 	}
 

@@ -54,15 +54,16 @@ class OAuth2WebSecurityConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
+	@ConditionalOnClass({ SecurityFilterChain.class, HttpSecurity.class })
 	@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
-	static class OAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	static class OAuth2SecurityFilterChainConfiguration {
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
+		@Bean
+		SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
 			http.oauth2Login(Customizer.withDefaults());
 			http.oauth2Client();
+			return http.build();
 		}
 
 	}

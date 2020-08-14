@@ -21,8 +21,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -37,15 +39,16 @@ import org.springframework.security.web.SecurityFilterChain;
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
-@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
+@ConditionalOnClass({ SecurityFilterChain.class, HttpSecurity.class })
+@ConditionalOnMissingBean({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class SpringBootWebSecurityConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
+	@Bean
 	@Order(SecurityProperties.BASIC_AUTH_ORDER)
-	static class DefaultConfigurerAdapter extends WebSecurityConfigurerAdapter {
-
+	SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+		http.authorizeRequests().anyRequest().authenticated().and().formLogin().and().httpBasic();
+		return http.build();
 	}
 
 }

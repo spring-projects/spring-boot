@@ -56,6 +56,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ManagementWebSecurityAutoConfigurationTests {
 
+	private static final String MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN = "managementSecurityFilterChain";
+
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(HealthContributorAutoConfiguration.class, HealthEndpointAutoConfiguration.class,
 					InfoEndpointAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
@@ -65,6 +67,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 	@Test
 	void permitAllForHealth() {
 		this.contextRunner.run((context) -> {
+			assertThat(context).hasBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN);
 			HttpStatus status = getResponseStatus(context, "/actuator/health");
 			assertThat(status).isEqualTo(HttpStatus.OK);
 		});
@@ -127,8 +130,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 	void backOffIfOAuth2ResourceServerAutoConfigurationPresent() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(OAuth2ResourceServerAutoConfiguration.class))
 				.withPropertyValues("spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://authserver")
-				.run((context) -> assertThat(context).doesNotHaveBean(
-						ManagementWebSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
+						.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
 	@Test
@@ -139,8 +142,8 @@ class ManagementWebSecurityAutoConfigurationTests {
 						"spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.sign-request=false",
 						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location")
-				.run((context) -> assertThat(context).doesNotHaveBean(
-						ManagementWebSecurityAutoConfiguration.ManagementWebSecurityConfigurerAdapter.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
+						.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
 	}
 
 	private HttpStatus getResponseStatus(AssertableWebApplicationContext context, String path)
