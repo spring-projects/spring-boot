@@ -382,16 +382,6 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Default properties for the environment in the form {@code key=value} or
-	 * {@code key:value}.
-	 * @param defaultProperties the properties to set.
-	 * @return the current builder
-	 */
-	public SpringApplicationBuilder properties(String... defaultProperties) {
-		return properties(getMapFromKeyValuePairs(defaultProperties));
-	}
-
-	/**
 	 * Flag to control whether the application should be initialized lazily.
 	 * @param lazyInitialization the flag to set. Defaults to false.
 	 * @return the current builder
@@ -400,6 +390,16 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder lazyInitialization(boolean lazyInitialization) {
 		this.application.setLazyInitialization(lazyInitialization);
 		return this;
+	}
+
+	/**
+	 * Default properties for the environment in the form {@code key=value} or
+	 * {@code key:value}.
+	 * @param defaultProperties the properties to set.
+	 * @return the current builder
+	 */
+	public SpringApplicationBuilder properties(String... defaultProperties) {
+		return properties(getMapFromKeyValuePairs(defaultProperties));
 	}
 
 	private Map<String, Object> getMapFromKeyValuePairs(String[] properties) {
