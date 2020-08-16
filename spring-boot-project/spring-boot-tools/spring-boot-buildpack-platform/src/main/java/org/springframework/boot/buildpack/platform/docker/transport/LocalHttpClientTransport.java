@@ -21,8 +21,10 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
+import java.util.Collection;
 
 import com.sun.jna.Platform;
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -41,6 +43,7 @@ import org.apache.http.util.Args;
 import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
 import org.springframework.boot.buildpack.platform.system.Environment;
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link HttpClientTransport} that talks to local Docker.
@@ -60,10 +63,14 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 		super(client, LOCAL_DOCKER_HOST);
 	}
 
-	static LocalHttpClientTransport create(Environment environment) {
+	static LocalHttpClientTransport create(Environment environment,
+			Collection<Header> dockerEngineAuthenticationHeaders) {
 		HttpClientBuilder builder = HttpClients.custom();
 		builder.setConnectionManager(new LocalConnectionManager(socketFilePath(environment)));
 		builder.setSchemePortResolver(new LocalSchemePortResolver());
+		if (!CollectionUtils.isEmpty(dockerEngineAuthenticationHeaders)) {
+			builder.setDefaultHeaders(dockerEngineAuthenticationHeaders);
+		}
 		return new LocalHttpClientTransport(builder.build());
 	}
 

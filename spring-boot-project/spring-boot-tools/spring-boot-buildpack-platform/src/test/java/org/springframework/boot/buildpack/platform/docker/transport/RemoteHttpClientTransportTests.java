@@ -19,13 +19,17 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
+import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -65,6 +69,16 @@ class RemoteHttpClientTransportTests {
 	void createIfPossibleWhenDockerHostIsAddressReturnsTransport() {
 		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get);
+		assertThat(transport).isNotNull();
+	}
+
+	@Test
+	void createWithDockerEngineAuthenticationHeaders() {
+		Collection<Header> dockerEngineAuthenticationHeaders = Arrays.asList(new BasicHeader("X-Registry-Auth",
+				"eyJ1c2VybmFtZSI6ICJ1c2VybmFtZSIsInBhc3N3b3JkIjogInBhc3N3b3JkIiwiZW1haWwiOiAibW9ja0BzcHJpbmcuY29tIiwic2VydmVyYWRkcmVzcyI6ICJodHRwOi8vbW9jay5kb2NrZXIucmVnaXN0cnkifQ=="));
+		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
+		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get,
+				dockerEngineAuthenticationHeaders);
 		assertThat(transport).isNotNull();
 	}
 

@@ -29,6 +29,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerReference;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerStatus;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
@@ -56,7 +57,13 @@ class BuilderTests {
 
 	@Test
 	void createWhenLogIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Builder(null)).withMessage("Log must not be null");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Builder((BuildLog)null)).withMessage("Log must not be null");
+	}
+
+	@Test
+	void createWithDockerConfiguration() {
+		Builder builder = new Builder(BuildLog.toSystemOut(), new DockerConfiguration());
+		assertThat(builder).isNotNull();
 	}
 
 	@Test

@@ -34,6 +34,7 @@ import org.gradle.api.tasks.options.Option;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -68,6 +69,8 @@ public class BootBuildImage extends DefaultTask {
 	private boolean cleanCache;
 
 	private boolean verboseLogging;
+
+	private Docker docker;
 
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
@@ -224,9 +227,31 @@ public class BootBuildImage extends DefaultTask {
 		this.verboseLogging = verboseLogging;
 	}
 
+	/**
+	 * Returns the Docker configuration with the builder will be used.
+	 * @return Docker configuration.
+	 */
+	@Input
+	@Optional
+	public Docker getDocker() {
+		return this.docker;
+	}
+
+	/**
+	 * Sets the Docker configuration with the builder will be used.
+	 * @param docker Docker configuration.
+	 */
+	@Option(option = "docker", description = "The Docker configuration to use")
+	public void setDocker(Docker docker) {
+		this.docker = docker;
+	}
+
 	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
-		Builder builder = new Builder();
+		DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.getDockerConfiguration()
+				: new DockerConfiguration();
+
+		Builder builder = new Builder(dockerConfiguration);
 		BuildRequest request = createRequest();
 		builder.build(request);
 	}
