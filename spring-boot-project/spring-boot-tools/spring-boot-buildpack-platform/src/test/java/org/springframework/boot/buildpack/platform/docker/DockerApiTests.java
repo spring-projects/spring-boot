@@ -20,7 +20,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Collection;
 
+import org.apache.http.Header;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -34,6 +36,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ContainerApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.ImageApi;
 import org.springframework.boot.buildpack.platform.docker.DockerApi.VolumeApi;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport.Response;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
@@ -48,6 +52,7 @@ import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.util.Base64Utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -111,6 +116,46 @@ class DockerApiTests {
 			}
 
 		};
+	}
+
+	@Test
+	void createDockerApi() {
+		DockerApi api = new DockerApi();
+		assertThat(api).isNotNull();
+	}
+
+	@Test
+	void createDockerApiWithDockerConfiguration() {
+		DockerApi api = new DockerApi(new DockerConfiguration());
+		assertThat(api).isNotNull();
+	}
+
+	@Test
+	void createWhenDockerConfigurationIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new DockerApi((DockerConfiguration) null))
+				.withMessage("Docker configuration must not be null");
+	}
+
+	@Test
+	void createDockerEngineAuthenticationHeaders() {
+		DockerRegistryConfiguration dockerRegistryConfiguration = new DockerRegistryConfiguration();
+		dockerRegistryConfiguration.setUsername("username");
+		dockerRegistryConfiguration.setPassword("password");
+		dockerRegistryConfiguration.setEmail("mock@spring.com");
+		dockerRegistryConfiguration.setUrl("http://mock.docker.registry");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration();
+		dockerConfiguration.setDockerRegistryConfiguration(dockerRegistryConfiguration);
+		Collection<Header> dockerEngineAuthenticationHeaders = DockerApi
+				.createDockerEngineAuthenticationHeaders(dockerConfiguration);
+		assertThat(dockerEngineAuthenticationHeaders.size() == 1).isTrue();
+		Header header = dockerEngineAuthenticationHeaders.iterator().next();
+		assertThat(header.getName()).isEqualTo("X-Registry-Auth");
+		assertThat(header.getValue()).isEqualTo(
+				"ewogICJ1c2VybmFtZSIgOiAidXNlcm5hbWUiLAogICJwYXNzd29yZCIgOiAicGFzc3dvcmQiLAogICJlbWFpbCIgOiAibW9ja0BzcHJpbmcuY29tIiwKICAic2VydmVyYWRkcmVzcyIgOiAiaHR0cDovL21vY2suZG9ja2VyLnJlZ2lzdHJ5Igp9");
+		assertThat(new String(Base64Utils.decodeFromString(header.getValue())))
+				.isEqualTo("{\n" + "  \"username\" : \"username\",\n" + "  \"password\" : \"password\",\n"
+						+ "  \"email\" : \"mock@spring.com\",\n"
+						+ "  \"serveraddress\" : \"http://mock.docker.registry\"\n" + "}");
 	}
 
 	@Nested

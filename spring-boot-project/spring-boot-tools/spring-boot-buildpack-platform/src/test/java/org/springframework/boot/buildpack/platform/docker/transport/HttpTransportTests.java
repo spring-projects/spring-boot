@@ -19,9 +19,13 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
 
+import org.apache.http.Header;
+import org.apache.http.message.BasicHeader;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -62,6 +66,14 @@ class HttpTransportTests {
 	@Test
 	void createWhenDoesNotHaveDockerHostVariableReturnsLocal() {
 		HttpTransport transport = HttpTransport.create((name) -> null);
+		assertThat(transport).isInstanceOf(LocalHttpClientTransport.class);
+	}
+
+	@Test
+	void createWithDockerEngineAuthenticationHeaders() {
+		Collection<Header> dockerEngineAuthenticationHeaders = Arrays.asList(new BasicHeader("X-Registry-Auth",
+				"eyJ1c2VybmFtZSI6ICJ1c2VybmFtZSIsInBhc3N3b3JkIjogInBhc3N3b3JkIiwiZW1haWwiOiAibW9ja0BzcHJpbmcuY29tIiwic2VydmVyYWRkcmVzcyI6ICJodHRwOi8vbW9jay5kb2NrZXIucmVnaXN0cnkifQ=="));
+		HttpTransport transport = HttpTransport.create((name) -> null, dockerEngineAuthenticationHeaders);
 		assertThat(transport).isInstanceOf(LocalHttpClientTransport.class);
 	}
 

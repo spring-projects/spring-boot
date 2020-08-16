@@ -21,6 +21,10 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
+import java.util.Collection;
+import java.util.Collections;
+
+import org.apache.http.Header;
 
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.system.Environment;
@@ -84,7 +88,17 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create() {
-		return create(Environment.SYSTEM);
+		return create(Collections.emptyList());
+	}
+
+	/**
+	 * Create the most suitable {@link HttpTransport} based on the
+	 * {@link Environment#SYSTEM system environment}.
+	 * @param dockerEngineAuthenticationHeaders authentication headerS for Docker engine.
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create(Collection<Header> dockerEngineAuthenticationHeaders) {
+		return create(Environment.SYSTEM, dockerEngineAuthenticationHeaders);
 	}
 
 	/**
@@ -94,8 +108,21 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create(Environment environment) {
-		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment);
-		return (remote != null) ? remote : LocalHttpClientTransport.create(environment);
+		return create(environment, Collections.emptyList());
+	}
+
+	/**
+	 * Create the most suitable {@link HttpTransport} based on the given
+	 * {@link Environment}.
+	 * @param environment the source environment
+	 * @param dockerEngineAuthenticationHeaders authentication headerS for Docker engine.
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create(Environment environment, Collection<Header> dockerEngineAuthenticationHeaders) {
+		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment,
+				dockerEngineAuthenticationHeaders);
+		return (remote != null) ? remote
+				: LocalHttpClientTransport.create(environment, dockerEngineAuthenticationHeaders);
 	}
 
 	/**
