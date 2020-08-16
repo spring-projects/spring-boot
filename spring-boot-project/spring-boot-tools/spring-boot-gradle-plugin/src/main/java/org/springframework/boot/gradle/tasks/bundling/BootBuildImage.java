@@ -249,7 +249,7 @@ public class BootBuildImage extends DefaultTask {
 		this.docker = docker;
 	}
 
-    /**
+	/**
 	 * Returns image pull policy that will be used when building the image.
 	 * @return whether images should be pulled
 	 */
