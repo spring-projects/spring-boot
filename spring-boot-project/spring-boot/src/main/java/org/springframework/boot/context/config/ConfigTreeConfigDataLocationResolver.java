@@ -20,15 +20,14 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * {@link ConfigDataLocationResolver} for volume mounted locations such as Kubernetes
- * ConfigMaps and Secrets.
+ * {@link ConfigDataLocationResolver} for config tree locations.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class VolumeMountConfigDataLocationResolver implements ConfigDataLocationResolver<VolumeMountConfigDataLocation> {
+class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationResolver<ConfigTreeConfigDataLocation> {
 
-	private static final String PREFIX = "volumemount:";
+	private static final String PREFIX = "configtree:";
 
 	@Override
 	public boolean isResolvable(ConfigDataLocationResolverContext context, String location) {
@@ -36,8 +35,8 @@ class VolumeMountConfigDataLocationResolver implements ConfigDataLocationResolve
 	}
 
 	@Override
-	public List<VolumeMountConfigDataLocation> resolve(ConfigDataLocationResolverContext context, String location) {
-		VolumeMountConfigDataLocation resolved = new VolumeMountConfigDataLocation(location.substring(PREFIX.length()));
+	public List<ConfigTreeConfigDataLocation> resolve(ConfigDataLocationResolverContext context, String location) {
+		ConfigTreeConfigDataLocation resolved = new ConfigTreeConfigDataLocation(location.substring(PREFIX.length()));
 		return Collections.singletonList(resolved);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,8 @@ import org.springframework.transaction.annotation.Transactional;
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to Neo4j tests.
  * <p>
- * By default, tests annotated with {@code @DataNeo4jTest} will use an embedded in-memory
- * Neo4j process (if available). They will also be transactional with the usual
- * test-related semantics (i.e. rollback by default).
+ * By default, tests annotated with {@code @DataNeo4jTest} are transactional with the
+ * usual test-related semantics (i.e. rollback by default).
  * <p>
  * When using JUnit 4, this annotation should be used in combination with
  * {@code @RunWith(SpringRunner.class)}.

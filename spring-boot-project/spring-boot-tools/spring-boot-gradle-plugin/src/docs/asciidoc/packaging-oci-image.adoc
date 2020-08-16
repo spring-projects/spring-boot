@@ -61,6 +61,12 @@ The following table summarizes the available properties and their default values
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
 | `docker.io/library/${project.artifactId}:${project.version}`
 
+| `pullPolicy`
+| `--pullPolicy`
+| {spring-boot-api}/buildpack/platform/build/PullPolicy.html[Policy] used to determine when to pull the builder and run images from the registry.
+Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
+| `ALWAYS`
+
 | `environment`
 |
 | Environment variables that should be passed to the builder.
@@ -115,7 +121,8 @@ The builder and run image can be specified on the command line as well, as shown
 ==== Builder Configuration
 If the builder exposes configuration options, those can be set using the `environment` property.
 
-The following example assumes that the default builder defines a `BP_JVM_VERSION` property (typically used to customize the JDK version the image should use):
+The following example assumes that the default builder recognizes a `BP_JVM_VERSION` property.
+This property is typically used to customize the JDK version the image should use by specifying the major version and a wildcard for the rest of the version:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

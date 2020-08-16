@@ -85,6 +85,12 @@ The following table summarizes the available parameters and their default values
 | `spring-boot.build-image.imageName`
 | `docker.io/library/${project.artifactId}:${project.version}`
 
+| `pullPolicy`
+| {spring-boot-api}/buildpack/platform/build/PullPolicy.html[Policy] used to determine when to pull the builder and run images from the registry.
+Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
+| `spring-boot.build-image.pullPolicy`
+| `ALWAYS`
+
 | `env`
 | Environment variables that should be passed to the builder.
 |
@@ -101,7 +107,7 @@ The following table summarizes the available parameters and their default values
 | `false`
 |===
 
-For more details, see <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
+For more details, see <<build-image-examples,examples>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
 
@@ -152,7 +158,8 @@ The builder and run image can be specified on the command line as well, as shown
 ==== Builder Configuration
 If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
 
-The following example assumes that the default builder defines a `BP_JVM_VERSION` property (typically used to customize the JDK version the image should use):
+The following example assumes that the default builder recognizes a `BP_JVM_VERSION` property.
+This property is typically used to customize the JDK version the image should use by specifying the major version and a wildcard for the rest of the version:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -166,7 +173,7 @@ The following example assumes that the default builder defines a `BP_JVM_VERSION
 					<configuration>
 						<image>
 							<env>
-								<BP_JVM_VERSION>13.0.1</BP_JVM_VERSION>
+								<BP_JVM_VERSION>8.*</BP_JVM_VERSION>
 							</env>
 						</image>
 					</configuration>

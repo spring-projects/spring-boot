@@ -35,7 +35,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
 /**
- * Class to load {@code .properties} files into a map of {@code String} ->
+ * Class to load {@code .properties} files into a map of {@code String} -&gt;
  * {@link OriginTrackedValue}. Also supports expansion of {@code name[]=a,b,c} list style
  * values.
  *

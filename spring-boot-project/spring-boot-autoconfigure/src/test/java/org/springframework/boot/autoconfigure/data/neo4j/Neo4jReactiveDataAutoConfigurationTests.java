@@ -30,8 +30,8 @@ import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jOperations;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
-import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -113,23 +113,12 @@ class Neo4jReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
-	void shouldProvideReactiveTransactionManager() {
-		this.contextRunner.withUserConfiguration(CustomReactiveDatabaseSelectionProviderConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveNeo4jTransactionManager.class);
-					assertThat(context.getBean(ReactiveNeo4jTransactionManager.class))
-							.extracting("databaseSelectionProvider")
-							.isSameAs(context.getBean(ReactiveDatabaseSelectionProvider.class));
-				});
-	}
-
-	@Test
-	void shouldReuseExistingReactiveTransactionManager() {
+	void shouldUseExistingReactiveTransactionManager() {
 		this.contextRunner
 				.withBean("myCustomReactiveTransactionManager", ReactiveTransactionManager.class,
 						() -> mock(ReactiveTransactionManager.class))
 				.run((context) -> assertThat(context).hasSingleBean(ReactiveTransactionManager.class)
-						.hasBean("myCustomReactiveTransactionManager"));
+						.hasSingleBean(TransactionManager.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)

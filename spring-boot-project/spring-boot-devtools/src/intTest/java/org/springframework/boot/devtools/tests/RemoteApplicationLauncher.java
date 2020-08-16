@@ -101,7 +101,7 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	private int awaitServerPort(LaunchedJvm jvm, File serverPortFile) throws Exception {
-		return Awaitility.waitAtMost(Duration.ofSeconds(30))
+		return Awaitility.waitAtMost(Duration.ofSeconds(60))
 				.until(() -> new ApplicationState(serverPortFile, jvm), ApplicationState::hasServerPort)
 				.getServerPort();
 	}

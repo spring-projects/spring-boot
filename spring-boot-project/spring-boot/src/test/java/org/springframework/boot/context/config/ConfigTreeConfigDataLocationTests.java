@@ -24,37 +24,37 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
- * Tests for {@link VolumeMountConfigDataLocation}.
+ * Tests for {@link ConfigTreeConfigDataLocation}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class VolumeMountConfigDataLocationTests {
+public class ConfigTreeConfigDataLocationTests {
 
 	@Test
 	void constructorWhenPathIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new VolumeMountConfigDataLocation(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataLocation(null))
 				.withMessage("Path must not be null");
 	}
 
 	@Test
 	void equalsWhenPathIsTheSameReturnsTrue() {
-		VolumeMountConfigDataLocation location = new VolumeMountConfigDataLocation("/etc/config");
-		VolumeMountConfigDataLocation other = new VolumeMountConfigDataLocation("/etc/config");
+		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation("/etc/config");
+		ConfigTreeConfigDataLocation other = new ConfigTreeConfigDataLocation("/etc/config");
 		assertThat(location).isEqualTo(other);
 	}
 
 	@Test
 	void equalsWhenPathIsDifferentReturnsFalse() {
-		VolumeMountConfigDataLocation location = new VolumeMountConfigDataLocation("/etc/config");
-		VolumeMountConfigDataLocation other = new VolumeMountConfigDataLocation("other-location");
+		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation("/etc/config");
+		ConfigTreeConfigDataLocation other = new ConfigTreeConfigDataLocation("other-location");
 		assertThat(location).isNotEqualTo(other);
 	}
 
 	@Test
 	void toStringReturnsDescriptiveString() {
-		VolumeMountConfigDataLocation location = new VolumeMountConfigDataLocation("/etc/config");
-		assertThat(location.toString()).isEqualTo("volume mount [" + new File("/etc/config").getAbsolutePath() + "]");
+		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation("/etc/config");
+		assertThat(location.toString()).isEqualTo("config tree [" + new File("/etc/config").getAbsolutePath() + "]");
 	}
 
 }

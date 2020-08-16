@@ -675,7 +675,7 @@ Locations will be processed in the order that they are defined, with later impor
 [TIP]
 ====
 Spring Boot includes pluggable API that allows various different location addresses to be supported.
-By default you can import Java Properties, YAML and volume mounts.
+By default you can import Java Properties, YAML and "`<<boot-features-external-config-files-configtree, configuration trees>>`".
 
 Third-party jars can offer support for additional technologies (there's no requirement for files to be local).
 For example, you can imagine config data being from external stores such as Consul, Apache ZooKeeper or Netflix Archaius.
@@ -685,8 +685,8 @@ If you want to support your own locations, see the `ConfigDataLocationResolver` 
 
 
 
-[[boot-features-external-config-files-voumemounts]]
-==== Using Volume Mount Properties
+[[boot-features-external-config-files-configtree]]
+==== Using Configuration Trees
 When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
 It's not uncommon to use environment variables for such purposes, but this can have drawbacks, especially if the value is supposed to be kept secret.
 
@@ -696,10 +696,10 @@ For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/c
 There are two common volume mount patterns that can be use:
 
 . A single file contains a complete set of properties (usually written as YAML).
-. Multiple files are written to a directory with the filename becoming the '`key`' and the contents becoming the '`value`'.
+. Multiple files are written to a directory tree, with the filename becoming the '`key`' and the contents becoming the '`value`'.
 
 For the first case, you can import the YAML or Properties file directly using `spring.config.import` as described <<boot-features-external-config-files-importing,above>>.
-For the second case, you need to use the `volumemount:` prefix so that Spring Boot knows it needs to expose all the files as properties.
+For the second case, you need to use the `configtree:` prefix so that Spring Boot knows it needs to expose all the files as properties.
 
 As an example, let's imagine that Kubernetes has mounted the following volume:
 
@@ -718,12 +718,12 @@ To import these properties, you can add the following to your `application.prope
 
 [source,properties,indent=0]
 ----
-spring.config.import=volumemount:/etc/config
+spring.config.import=configtree:/etc/config
 ----
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
 
-TIP: Volume mounted values can be bound to both string `String` and `byte[]` types depending on the contents expected.
+TIP: Configuration tree values can be bound to both string `String` and `byte[]` types depending on the contents expected.
 
 
 
@@ -3656,8 +3656,8 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 For security purposes, all actuators other than `/health` and `/info` are disabled by default.
 The configprop:management.endpoints.web.exposure.include[] property can be used to enable the actuators.
 
-If Spring Security is on the classpath and no other WebSecurityConfigurerAdapter is present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
-If you define a custom `WebSecurityConfigurerAdapter`, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
+If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
+If you define a custom `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information and/or are secured by placing them behind a firewall or by something like Spring Security.
 
@@ -4527,9 +4527,10 @@ Each will be called in order with the `ConfigBuilder` that is used to build the 
 [[boot-features-spring-data-neo4j-repositories]]
 ==== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
+For complete details of Spring Data Neo4j, refer to the {spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
-You could take the JPA example from earlier and define `City` as Neo4j OGM `@NodeEntity` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
+You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -4547,9 +4548,10 @@ You could take the JPA example from earlier and define `City` as Neo4j OGM `@Nod
 ----
 
 The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
-You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
+Spring Boot supports both classic and reactive Neo4j repositories, using the `Neo4jTemplate` or `ReactiveNeo4jTemplate` beans.
+When Project Reactor is available on the classpath, the reactive style is also auto-configured.
 
-TIP: For complete details of Spring Data Neo4j, including its object mapping technologies, refer to the {spring-data-neo4j-docs}[reference documentation].
+You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
 
 
 
@@ -7152,7 +7154,7 @@ If, however, you prefer to run tests against a real MongoDB server, you should e
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test]]
 ==== Auto-configured Data Neo4j Tests
 You can use `@DataNeo4jTest` to test Neo4j applications.
-By default, it uses an in-memory embedded Neo4j (if the embedded driver is available), scans for `@NodeEntity` classes, and configures Spring Data Neo4j repositories.
+By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
 Regular `@Component` beans are not loaded into the `ApplicationContext`.
 (For more about using Neo4J with Spring Boot, see "<<boot-features-neo4j>>", earlier in this chapter.)
 
@@ -7906,7 +7908,7 @@ TIP: If multiple auto-configurations have to be defined, there is no need to ord
 
 Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
-Invoking `run` provides a callback context that can be used with `Assert4J`.
+Invoking `run` provides a callback context that can be used with `AssertJ`.
 
 [source,java,indent=0]
 ----

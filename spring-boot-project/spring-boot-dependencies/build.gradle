@@ -304,7 +304,7 @@ bom {
 			]
 		}
 	}
-	library("Flyway", "6.5.3") {
+	library("Flyway", "6.5.4") {
 		group("org.flywaydb") {
 			modules = [
 				"flyway-core"
@@ -1108,7 +1108,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.5.3") {
+	library("Micrometer", "1.5.4") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1466,7 +1466,7 @@ bom {
 			]
 		}
 	}
-	library("Selenium HtmlUnit", "2.43.0") {
+	library("Selenium HtmlUnit", "2.43.1") {
 		group("org.seleniumhq.selenium") {
 			modules = [
 				"htmlunit-driver"
@@ -1530,7 +1530,7 @@ bom {
 			]
 		}
 	}
-	library("Spring AMQP", "2.3.0-SNAPSHOT") {
+	library("Spring AMQP", "2.3.0-M2") {
 		group("org.springframework.amqp") {
 			modules = [
 				"spring-amqp",
@@ -1540,7 +1540,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.3.0-M1") {
+	library("Spring Batch", "4.3.0-M2") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
@@ -1571,14 +1571,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.4.0-SNAPSHOT") {
+	library("Spring Integration", "5.4.0-M2") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
 			]
 		}
 	}
-	library("Spring Kafka", "2.6.0-SNAPSHOT") {
+	library("Spring Kafka", "2.6.0-M1") {
 		group("org.springframework.kafka") {
 			modules = [
 				"spring-kafka",

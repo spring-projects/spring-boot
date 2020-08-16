@@ -25,20 +25,20 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link VolumeMountConfigDataLocationResolver}.
+ * Tests for {@link ConfigTreeConfigDataLocationResolver}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-class VolumeMountConfigDataLocationResolverTests {
+class ConfigTreeConfigDataLocationResolverTests {
 
-	private VolumeMountConfigDataLocationResolver resolver = new VolumeMountConfigDataLocationResolver();
+	private ConfigTreeConfigDataLocationResolver resolver = new ConfigTreeConfigDataLocationResolver();
 
 	private ConfigDataLocationResolverContext context = mock(ConfigDataLocationResolverContext.class);
 
 	@Test
 	void isResolvableWhenPrefixMatchesReturnsTrue() {
-		assertThat(this.resolver.isResolvable(this.context, "volumemount:/etc/config")).isTrue();
+		assertThat(this.resolver.isResolvable(this.context, "configtree:/etc/config")).isTrue();
 	}
 
 	@Test
@@ -49,10 +49,10 @@ class VolumeMountConfigDataLocationResolverTests {
 
 	@Test
 	void resolveReturnsConfigVolumeMountLocation() {
-		List<VolumeMountConfigDataLocation> locations = this.resolver.resolve(this.context, "volumemount:/etc/config");
+		List<ConfigTreeConfigDataLocation> locations = this.resolver.resolve(this.context, "configtree:/etc/config");
 		assertThat(locations.size()).isEqualTo(1);
 		assertThat(locations).extracting(Object::toString)
-				.containsExactly("volume mount [" + new File("/etc/config").getAbsolutePath() + "]");
+				.containsExactly("config tree [" + new File("/etc/config").getAbsolutePath() + "]");
 	}
 
 }

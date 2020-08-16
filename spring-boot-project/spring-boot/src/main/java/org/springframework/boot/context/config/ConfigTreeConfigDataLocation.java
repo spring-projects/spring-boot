@@ -20,19 +20,21 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Objects;
 
+import org.springframework.boot.env.ConfigTreePropertySource;
 import org.springframework.util.Assert;
 
 /**
- * {@link ConfigDataLocation} backed by a directory mounted as a volume.
+ * {@link ConfigDataLocation} backed by a config tree directory.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @see ConfigTreePropertySource
  */
-class VolumeMountConfigDataLocation extends ConfigDataLocation {
+class ConfigTreeConfigDataLocation extends ConfigDataLocation {
 
 	private final Path path;
 
-	VolumeMountConfigDataLocation(String path) {
+	ConfigTreeConfigDataLocation(String path) {
 		Assert.notNull(path, "Path must not be null");
 		this.path = Paths.get(path).toAbsolutePath();
 	}
@@ -49,7 +51,7 @@ class VolumeMountConfigDataLocation extends ConfigDataLocation {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		VolumeMountConfigDataLocation other = (VolumeMountConfigDataLocation) obj;
+		ConfigTreeConfigDataLocation other = (ConfigTreeConfigDataLocation) obj;
 		return Objects.equals(this.path, other.path);
 	}
 
@@ -60,7 +62,7 @@ class VolumeMountConfigDataLocation extends ConfigDataLocation {
 
 	@Override
 	public String toString() {
-		return "volume mount [" + this.path + "]";
+		return "config tree [" + this.path + "]";
 	}
 
 }

@@ -24,6 +24,7 @@ import javax.servlet.Filter;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
@@ -115,13 +117,35 @@ class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent() {
+	void securityConfigurerBacksOffBacksOffWhenOtherWebSecurityAdapterPresent() {
 		this.contextRunner
 				.withUserConfiguration(TestWebSecurityConfigurerConfig.class, OAuth2WebSecurityConfiguration.class)
 				.run((context) -> {
 					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
 					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 					assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
+				});
+	}
+
+	@Test
+	void securityConfigurerBacksOffBacksOffWhenOtherSecurityFilterChainBeanPresent() {
+		this.contextRunner
+				.withUserConfiguration(TestSecurityFilterChainConfig.class, OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
+					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
+					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
+					assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
+				});
+	}
+
+	@Test
+	void securityConfigurerBacksOffConditionalOnSecurityFilterChainClass() {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class)).run((context) -> {
+					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
+					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 				});
 	}
 
@@ -208,6 +232,19 @@ class OAuth2WebSecurityConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@Import(ClientRegistrationRepositoryConfiguration.class)
 	static class TestWebSecurityConfigurerConfig extends WebSecurityConfigurerAdapter {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(ClientRegistrationRepositoryConfiguration.class)
+	static class TestSecurityFilterChainConfig {
+
+		@Bean
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+			return http.antMatcher("/**").authorizeRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
+
+		}
 
 	}
 
