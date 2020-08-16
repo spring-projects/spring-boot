@@ -62,6 +62,7 @@ import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
+import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
@@ -588,6 +589,16 @@ class KafkaAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomRecordFilterStrategy() {
+		this.contextRunner.withUserConfiguration(TestRecordFilterStrategyConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("recordFilterStrategy",
+					context.getBean("recordFilterStrategy"));
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class MessageConverterConfiguration {
 
@@ -716,6 +727,17 @@ class KafkaAutoConfigurationTests {
 		@Bean
 		StreamsBuilderFactoryBean secondStreamsBuilderFactoryBean() {
 			return mock(StreamsBuilderFactoryBean.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestRecordFilterStrategyConfiguration {
+
+		@Bean
+		@SuppressWarnings("unchecked")
+		RecordFilterStrategy<Object, Object> recordFilterStrategy() {
+			return mock(RecordFilterStrategy.class);
 		}
 
 	}

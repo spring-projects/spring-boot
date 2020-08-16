@@ -33,6 +33,7 @@ import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.listener.RecordInterceptor;
+import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.MessageConverter;
@@ -113,8 +114,10 @@ class KafkaAnnotationDrivenConfiguration {
 	@ConditionalOnMissingBean(name = "kafkaListenerContainerFactory")
 	ConcurrentKafkaListenerContainerFactory<?, ?> kafkaListenerContainerFactory(
 			ConcurrentKafkaListenerContainerFactoryConfigurer configurer,
-			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory) {
+			ObjectProvider<ConsumerFactory<Object, Object>> kafkaConsumerFactory,
+			ObjectProvider<RecordFilterStrategy<Object, Object>> kafkaFilterStrategyProvider) {
 		ConcurrentKafkaListenerContainerFactory<Object, Object> factory = new ConcurrentKafkaListenerContainerFactory<>();
+		kafkaFilterStrategyProvider.ifAvailable(factory::setRecordFilterStrategy);
 		configurer.configure(factory, kafkaConsumerFactory
 				.getIfAvailable(() -> new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties())));
 		return factory;
