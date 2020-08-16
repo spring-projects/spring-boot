@@ -18,9 +18,12 @@ package org.springframework.boot.buildpack.platform.docker.transport;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.util.Collection;
+import java.util.Collections;
 
 import javax.net.ssl.SSLContext;
 
+import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.conn.socket.LayeredConnectionSocketFactory;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
@@ -31,6 +34,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.CollectionUtils;
 
 /**
  * {@link HttpClientTransport} that talks to a remote Docker.
@@ -53,15 +57,25 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 	}
 
 	static RemoteHttpClientTransport createIfPossible(Environment environment) {
-		return createIfPossible(environment, new SslContextFactory());
+		return createIfPossible(environment, Collections.emptyList());
+	}
+
+	static RemoteHttpClientTransport createIfPossible(Environment environment,
+			Collection<Header> dockerEngineAuthenticationHeaders) {
+		return createIfPossible(environment, new SslContextFactory(), dockerEngineAuthenticationHeaders);
 	}
 
 	static RemoteHttpClientTransport createIfPossible(Environment environment, SslContextFactory sslContextFactory) {
+		return createIfPossible(environment, sslContextFactory, Collections.emptyList());
+	}
+
+	static RemoteHttpClientTransport createIfPossible(Environment environment, SslContextFactory sslContextFactory,
+			Collection<Header> dockerEngineAuthenticationHeaders) {
 		String host = environment.get(DOCKER_HOST);
 		if (host == null || isLocalFileReference(host)) {
 			return null;
 		}
-		return create(environment, sslContextFactory, HttpHost.create(host));
+		return create(environment, sslContextFactory, HttpHost.create(host), dockerEngineAuthenticationHeaders);
 	}
 
 	private static boolean isLocalFileReference(String host) {
@@ -75,11 +89,14 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 	}
 
 	private static RemoteHttpClientTransport create(Environment environment, SslContextFactory sslContextFactory,
-			HttpHost tcpHost) {
+			HttpHost tcpHost, Collection<Header> dockerEngineAuthenticationHeaders) {
 		HttpClientBuilder builder = HttpClients.custom();
 		boolean secure = isSecure(environment);
 		if (secure) {
 			builder.setSSLSocketFactory(getSecureConnectionSocketFactory(environment, sslContextFactory));
+		}
+		if (!CollectionUtils.isEmpty(dockerEngineAuthenticationHeaders)) {
+			builder.setDefaultHeaders(dockerEngineAuthenticationHeaders);
 		}
 		String scheme = secure ? "https" : "http";
 		HttpHost httpHost = new HttpHost(tcpHost.getHostName(), tcpHost.getPort(), scheme);

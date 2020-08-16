@@ -24,8 +24,12 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.client.utils.URIBuilder;
+import org.apache.http.message.BasicHeader;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport;
 import org.springframework.boot.buildpack.platform.docker.transport.HttpTransport.Response;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig;
@@ -68,7 +72,15 @@ public class DockerApi {
 	 * Create a new {@link DockerApi} instance.
 	 */
 	public DockerApi() {
-		this(HttpTransport.create());
+		this(new DockerConfiguration());
+	}
+
+	/**
+	 * Create a new {@link DockerApi} instance.
+	 * @param dockerConfiguration the Docker configuration options.
+	 */
+	public DockerApi(DockerConfiguration dockerConfiguration) {
+		this(HttpTransport.create(createDockerEngineAuthenticationHeaders(dockerConfiguration)));
 	}
 
 	/**
@@ -82,6 +94,22 @@ public class DockerApi {
 		this.image = new ImageApi();
 		this.container = new ContainerApi();
 		this.volume = new VolumeApi();
+	}
+
+	static Collection<Header> createDockerEngineAuthenticationHeaders(DockerConfiguration dockerConfiguration) {
+		Assert.notNull(dockerConfiguration, "Docker configuration must not be null");
+
+		DockerRegistryConfiguration dockerRegistryConfiguration = dockerConfiguration.getDockerRegistryConfiguration();
+		if (dockerRegistryConfiguration == null) {
+			return Collections.emptyList();
+		}
+
+		String dockerRegistryAuthToken = dockerRegistryConfiguration.createDockerRegistryAuthToken();
+		if (StringUtils.isEmpty(dockerRegistryAuthToken)) {
+			return Collections.emptyList();
+		}
+
+		return Arrays.asList(new BasicHeader("X-Registry-Auth", dockerRegistryAuthToken));
 	}
 
 	private HttpTransport http() {
