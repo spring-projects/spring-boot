@@ -62,6 +62,7 @@ import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.listener.RecordInterceptor;
 import org.springframework.kafka.listener.SeekToCurrentBatchErrorHandler;
 import org.springframework.kafka.listener.SeekToCurrentErrorHandler;
+import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
@@ -465,6 +466,25 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithDefaultRecordFilterStrategy() {
+		this.contextRunner.run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("recordFilterStrategy", null);
+		});
+	}
+
+	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomRecordFilterStrategy() {
+		this.contextRunner.withUserConfiguration(RecordFilterStrategyConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("recordFilterStrategy",
+					context.getBean("recordFilterStrategy"));
+		});
+	}
+
+	@Test
 	void testConcurrentKafkaListenerContainerFactoryWithCustomErrorHandler() {
 		this.contextRunner.withUserConfiguration(ErrorHandlerConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -604,6 +624,16 @@ class KafkaAutoConfigurationTests {
 		@Bean
 		BatchMessageConverter myBatchMessageConverter() {
 			return mock(BatchMessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RecordFilterStrategyConfiguration {
+
+		@Bean
+		RecordFilterStrategy<Object, Object> recordFilterStrategy() {
+			return (record) -> false;
 		}
 
 	}

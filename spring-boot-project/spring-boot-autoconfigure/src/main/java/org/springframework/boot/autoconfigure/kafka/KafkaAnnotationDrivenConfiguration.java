@@ -33,6 +33,7 @@ import org.springframework.kafka.listener.BatchErrorHandler;
 import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.listener.RecordInterceptor;
+import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.BatchMessageConverter;
 import org.springframework.kafka.support.converter.BatchMessagingMessageConverter;
 import org.springframework.kafka.support.converter.MessageConverter;
@@ -53,6 +54,8 @@ class KafkaAnnotationDrivenConfiguration {
 
 	private final RecordMessageConverter messageConverter;
 
+	private final RecordFilterStrategy<Object, Object> recordFilterStrategy;
+
 	private final BatchMessageConverter batchMessageConverter;
 
 	private final KafkaTemplate<Object, Object> kafkaTemplate;
@@ -71,6 +74,7 @@ class KafkaAnnotationDrivenConfiguration {
 
 	KafkaAnnotationDrivenConfiguration(KafkaProperties properties,
 			ObjectProvider<RecordMessageConverter> messageConverter,
+			ObjectProvider<RecordFilterStrategy<Object, Object>> recordFilterStrategy,
 			ObjectProvider<BatchMessageConverter> batchMessageConverter,
 			ObjectProvider<KafkaTemplate<Object, Object>> kafkaTemplate,
 			ObjectProvider<KafkaAwareTransactionManager<Object, Object>> kafkaTransactionManager,
@@ -80,6 +84,7 @@ class KafkaAnnotationDrivenConfiguration {
 			ObjectProvider<RecordInterceptor<Object, Object>> recordInterceptor) {
 		this.properties = properties;
 		this.messageConverter = messageConverter.getIfUnique();
+		this.recordFilterStrategy = recordFilterStrategy.getIfUnique();
 		this.batchMessageConverter = batchMessageConverter
 				.getIfUnique(() -> new BatchMessagingMessageConverter(this.messageConverter));
 		this.kafkaTemplate = kafkaTemplate.getIfUnique();
@@ -99,6 +104,7 @@ class KafkaAnnotationDrivenConfiguration {
 		MessageConverter messageConverterToUse = (this.properties.getListener().getType().equals(Type.BATCH))
 				? this.batchMessageConverter : this.messageConverter;
 		configurer.setMessageConverter(messageConverterToUse);
+		configurer.setRecordFilterStrategy(this.recordFilterStrategy);
 		configurer.setReplyTemplate(this.kafkaTemplate);
 		configurer.setTransactionManager(this.transactionManager);
 		configurer.setRebalanceListener(this.rebalanceListener);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.kafka.listener.ConsumerAwareRebalanceListener;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.ErrorHandler;
 import org.springframework.kafka.listener.RecordInterceptor;
+import org.springframework.kafka.listener.adapter.RecordFilterStrategy;
 import org.springframework.kafka.support.converter.MessageConverter;
 import org.springframework.kafka.transaction.KafkaAwareTransactionManager;
 
@@ -44,6 +45,8 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	private KafkaProperties properties;
 
 	private MessageConverter messageConverter;
+
+	private RecordFilterStrategy<Object, Object> recordFilterStrategy;
 
 	private KafkaTemplate<Object, Object> replyTemplate;
 
@@ -73,6 +76,14 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 	 */
 	void setMessageConverter(MessageConverter messageConverter) {
 		this.messageConverter = messageConverter;
+	}
+
+	/**
+	 * Set the {@link RecordFilterStrategy} to use to filter incoming records.
+	 * @param recordFilterStrategy the record filter strategy
+	 */
+	void setRecordFilterStrategy(RecordFilterStrategy<Object, Object> recordFilterStrategy) {
+		this.recordFilterStrategy = recordFilterStrategy;
 	}
 
 	/**
@@ -151,6 +162,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		Listener properties = this.properties.getListener();
 		map.from(properties::getConcurrency).to(factory::setConcurrency);
 		map.from(this.messageConverter).to(factory::setMessageConverter);
+		map.from(this.recordFilterStrategy).to(factory::setRecordFilterStrategy);
 		map.from(this.replyTemplate).to(factory::setReplyTemplate);
 		if (properties.getType().equals(Listener.Type.BATCH)) {
 			factory.setBatchListener(true);
