@@ -466,6 +466,25 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithDefaultRecordFilterStrategy() {
+		this.contextRunner.run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("recordFilterStrategy", null);
+		});
+	}
+
+	@Test
+	void testConcurrentKafkaListenerContainerFactoryWithCustomRecordFilterStrategy() {
+		this.contextRunner.withUserConfiguration(RecordFilterStrategyConfiguration.class).run((context) -> {
+			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
+					.getBean(ConcurrentKafkaListenerContainerFactory.class);
+			assertThat(factory).hasFieldOrPropertyWithValue("recordFilterStrategy",
+					context.getBean("recordFilterStrategy"));
+		});
+	}
+
+	@Test
 	void testConcurrentKafkaListenerContainerFactoryWithCustomErrorHandler() {
 		this.contextRunner.withUserConfiguration(ErrorHandlerConfiguration.class).run((context) -> {
 			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
@@ -589,16 +608,6 @@ class KafkaAutoConfigurationTests {
 				});
 	}
 
-	@Test
-	void testConcurrentKafkaListenerContainerFactoryWithCustomRecordFilterStrategy() {
-		this.contextRunner.withUserConfiguration(TestRecordFilterStrategyConfiguration.class).run((context) -> {
-			ConcurrentKafkaListenerContainerFactory<?, ?> factory = context
-					.getBean(ConcurrentKafkaListenerContainerFactory.class);
-			assertThat(factory).hasFieldOrPropertyWithValue("recordFilterStrategy",
-					context.getBean("recordFilterStrategy"));
-		});
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class MessageConverterConfiguration {
 
@@ -615,6 +624,16 @@ class KafkaAutoConfigurationTests {
 		@Bean
 		BatchMessageConverter myBatchMessageConverter() {
 			return mock(BatchMessageConverter.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RecordFilterStrategyConfiguration {
+
+		@Bean
+		RecordFilterStrategy<Object, Object> recordFilterStrategy() {
+			return (record) -> false;
 		}
 
 	}
@@ -727,17 +746,6 @@ class KafkaAutoConfigurationTests {
 		@Bean
 		StreamsBuilderFactoryBean secondStreamsBuilderFactoryBean() {
 			return mock(StreamsBuilderFactoryBean.class);
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestRecordFilterStrategyConfiguration {
-
-		@Bean
-		@SuppressWarnings("unchecked")
-		RecordFilterStrategy<Object, Object> recordFilterStrategy() {
-			return mock(RecordFilterStrategy.class);
 		}
 
 	}
