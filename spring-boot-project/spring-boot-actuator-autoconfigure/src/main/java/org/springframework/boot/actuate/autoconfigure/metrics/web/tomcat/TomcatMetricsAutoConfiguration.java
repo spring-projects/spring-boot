@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.tomcat.TomcatMetrics;
 import org.apache.catalina.Manager;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.metrics.web.tomcat.TomcatMetricsBinder;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -40,7 +40,7 @@ import org.springframework.context.annotation.Configuration;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication
 @ConditionalOnClass({ TomcatMetrics.class, Manager.class })
-@AutoConfigureAfter(CompositeMeterRegistryAutoConfiguration.class)
+@AutoConfigureAfter(MeterRegistryAutoConfiguration.class)
 public class TomcatMetricsAutoConfiguration {
 
 	@Bean

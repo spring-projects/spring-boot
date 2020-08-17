@@ -25,7 +25,7 @@ import io.micrometer.newrelic.NewRelicInsightsAgentClientProvider;
 import io.micrometer.newrelic.NewRelicInsightsApiClientProvider;
 import io.micrometer.newrelic.NewRelicMeterRegistry;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -48,7 +48,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureBefore({ CompositeMeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
+@AutoConfigureBefore({ MeterRegistryAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(NewRelicMeterRegistry.class)

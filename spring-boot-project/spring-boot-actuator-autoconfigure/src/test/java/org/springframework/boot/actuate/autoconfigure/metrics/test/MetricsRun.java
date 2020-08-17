@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration;
@@ -67,7 +67,7 @@ public final class MetricsRun {
 	}
 
 	private static final AutoConfigurations AUTO_CONFIGURATIONS = AutoConfigurations.of(MetricsAutoConfiguration.class,
-			CompositeMeterRegistryAutoConfiguration.class);
+			MeterRegistryAutoConfiguration.class);
 
 	private MetricsRun() {
 	}

@@ -21,7 +21,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
@@ -52,7 +52,7 @@ public class HealthIndicatorRegistryInjectionIntegrationTests {
 
 	@Configuration
 	@ImportAutoConfiguration({ HealthEndpointAutoConfiguration.class, HealthContributorAutoConfiguration.class,
-			CompositeMeterRegistryAutoConfiguration.class, MetricsAutoConfiguration.class })
+			MeterRegistryAutoConfiguration.class, MetricsAutoConfiguration.class })
 	static class Config {
 
 		Config(org.springframework.boot.actuate.health.HealthAggregator healthAggregator,
