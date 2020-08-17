@@ -232,6 +232,17 @@ class DefaultErrorAttributesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
+	void excludeExceptionAttributeWithDeprecatedConstructor() {
+		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(false);
+		RuntimeException ex = new RuntimeException("Test");
+		this.request.setAttribute("javax.servlet.error.exception", ex);
+		Map<String, Object> attributes = errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.of());
+		assertThat(attributes.get("exception")).isNull();
+	}
+
+	@Test
 	void withStackTraceAttribute() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
