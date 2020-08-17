@@ -19,13 +19,13 @@ The following table shows the environment variables and their values:
 |===
 | Environment variable | Description
 
-| DOCKER_HOST 
+| DOCKER_HOST
 | URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
 
-| DOCKER_TLS_VERIFY 
+| DOCKER_TLS_VERIFY
 | Enable secure HTTPS protocol when set to `1` (optional)
 
-| DOCKER_CERT_PATH 
+| DOCKER_CERT_PATH
 | Path to certificate and key files for HTTPS (required if `DOCKER_TLS_VERIFY=1`, ignored otherwise)
 |===
 
@@ -59,7 +59,7 @@ The following table summarizes the available properties and their default values
 | `imageName`
 | `--imageName`
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
-| `docker.io/library/${project.artifactId}:${project.version}`
+| `docker.io/library/${project.name}:${project.version}`
 
 | `pullPolicy`
 | `--pullPolicy`
@@ -155,7 +155,7 @@ include::../gradle/packaging/boot-build-image-env-proxy.gradle.kts[tags=env]
 
 [[build-image-example-custom-image-name]]
 ==== Custom Image Name
-By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
+By default, the image name is inferred from the `name` and the `version` of the project, something like `docker.io/library/${project.name}:${project.version}`.
 You can take control over the name by setting task properties, as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
