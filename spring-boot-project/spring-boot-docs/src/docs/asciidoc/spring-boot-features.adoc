@@ -4827,7 +4827,7 @@ Spring Data includes repository support for Couchbase.
 For complete details of Spring Data Couchbase, refer to the {spring-data-couchbase-docs}[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
-This happens when a `Cluster` is availabe, as described above, and a bucket name as been specified:
+This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
 
 [source,properties,indent=0,configprops]
 ----
