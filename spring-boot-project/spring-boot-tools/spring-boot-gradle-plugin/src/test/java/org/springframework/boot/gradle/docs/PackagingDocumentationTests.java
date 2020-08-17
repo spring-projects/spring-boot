@@ -237,6 +237,13 @@ class PackagingDocumentationTests {
 				.contains("HTTPS_PROXY=https://proxy.example.com");
 	}
 
+	@TestTemplate
+	void bootBuildImageWithCustomImageName() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-name")
+				.build("bootBuildImageName");
+		assertThat(result.getOutput()).contains("example.com/library/" + this.gradleBuild.getProjectDir().getName());
+	}
+
 	protected void jarFile(File file) throws IOException {
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
