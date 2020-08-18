@@ -136,7 +136,7 @@ public class PrometheusPushGatewayManager {
 	 * is set to "PUSH", the push gateway may trigger calls to meters that are present in
 	 * other beans. The push operation must happen BEFORE those beans are destroyed to
 	 * prevent errors during shutdown.
-	 * @param event The context closed event
+	 * @param event the context closed event
 	 */
 	@EventListener
 	public void shutdown(ContextClosedEvent event) {
