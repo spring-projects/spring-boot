@@ -174,7 +174,7 @@ public class JarFile extends AbstractJarFile {
 	}
 
 	@Override
-	protected Permission getPermission() {
+	Permission getPermission() {
 		return new FilePermission(this.rootFile.getFile().getPath(), READ_ACTION);
 	}
 
@@ -225,7 +225,7 @@ public class JarFile extends AbstractJarFile {
 	}
 
 	@Override
-	protected InputStream getInputStream() throws IOException {
+	InputStream getInputStream() throws IOException {
 		return this.data.getInputStream();
 	}
 
@@ -389,7 +389,7 @@ public class JarFile extends AbstractJarFile {
 	}
 
 	@Override
-	protected JarFileType getType() {
+	JarFileType getType() {
 		return this.type;
 	}
 
