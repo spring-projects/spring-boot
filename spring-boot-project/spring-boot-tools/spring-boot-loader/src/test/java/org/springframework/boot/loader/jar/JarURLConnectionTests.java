@@ -62,14 +62,14 @@ class JarURLConnectionTests {
 	void connectionToRootUsingAbsoluteUrl() throws Exception {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/");
 		Object content = JarURLConnection.get(url, this.jarFile).getContent();
-		assertThat(((JarFile) content).getParent()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap((java.util.jar.JarFile) content)).isSameAs(this.jarFile);
 	}
 
 	@Test
 	void connectionToRootUsingRelativeUrl() throws Exception {
 		URL url = new URL("jar:file:" + getRelativePath() + "!/");
 		Object content = JarURLConnection.get(url, this.jarFile).getContent();
-		assertThat(((JarFile) content).getParent()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap((java.util.jar.JarFile) content)).isSameAs(this.jarFile);
 	}
 
 	@Test
@@ -226,7 +226,7 @@ class JarURLConnectionTests {
 	void openConnectionCanBeClosedWithoutClosingSourceJar() throws Exception {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/");
 		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
-		JarFile connectionJarFile = connection.getJarFile();
+		java.util.jar.JarFile connectionJarFile = connection.getJarFile();
 		connectionJarFile.close();
 		assertThat(this.jarFile.isClosed()).isFalse();
 	}
