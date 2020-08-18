@@ -43,17 +43,17 @@ class JarFileWrapper extends AbstractJarFile {
 	}
 
 	@Override
-	protected URL getUrl() throws MalformedURLException {
+	URL getUrl() throws MalformedURLException {
 		return this.parent.getUrl();
 	}
 
 	@Override
-	protected JarFileType getType() {
+	JarFileType getType() {
 		return this.parent.getType();
 	}
 
 	@Override
-	protected Permission getPermission() {
+	Permission getPermission() {
 		return this.parent.getPermission();
 	}
 
@@ -78,7 +78,7 @@ class JarFileWrapper extends AbstractJarFile {
 	}
 
 	@Override
-	protected InputStream getInputStream() throws IOException {
+	InputStream getInputStream() throws IOException {
 		return this.parent.getInputStream();
 	}
 
