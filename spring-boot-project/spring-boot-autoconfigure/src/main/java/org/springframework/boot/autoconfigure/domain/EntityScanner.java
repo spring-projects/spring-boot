@@ -42,6 +42,8 @@ public class EntityScanner {
 
 	private final ApplicationContext context;
 
+	private final ClassPathScanningCandidateComponentProvider componentProvider;
+
 	/**
 	 * Create a new {@link EntityScanner} instance.
 	 * @param context the source application context
@@ -49,6 +51,21 @@ public class EntityScanner {
 	public EntityScanner(ApplicationContext context) {
 		Assert.notNull(context, "Context must not be null");
 		this.context = context;
+		this.componentProvider = new ClassPathScanningCandidateComponentProvider(false);
+		this.componentProvider.setEnvironment(this.context.getEnvironment());
+		this.componentProvider.setResourceLoader(this.context);
+	}
+
+	/**
+	 * Create a new {@link EntityScanner} instance.
+	 * @param context the source application context
+	 * @param componentProvider the scanner, it's environment and resource loader must
+	 * already be set
+	 */
+	public EntityScanner(ApplicationContext context, ClassPathScanningCandidateComponentProvider componentProvider) {
+		Assert.notNull(context, "Context must not be null");
+		this.context = context;
+		this.componentProvider = componentProvider;
 	}
 
 	/**
@@ -63,16 +80,13 @@ public class EntityScanner {
 		if (packages.isEmpty()) {
 			return Collections.emptySet();
 		}
-		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-		scanner.setEnvironment(this.context.getEnvironment());
-		scanner.setResourceLoader(this.context);
 		for (Class<? extends Annotation> annotationType : annotationTypes) {
-			scanner.addIncludeFilter(new AnnotationTypeFilter(annotationType));
+			this.componentProvider.addIncludeFilter(new AnnotationTypeFilter(annotationType));
 		}
 		Set<Class<?>> entitySet = new HashSet<>();
 		for (String basePackage : packages) {
 			if (StringUtils.hasText(basePackage)) {
-				for (BeanDefinition candidate : scanner.findCandidateComponents(basePackage)) {
+				for (BeanDefinition candidate : this.componentProvider.findCandidateComponents(basePackage)) {
 					entitySet.add(ClassUtils.forName(candidate.getBeanClassName(), this.context.getClassLoader()));
 				}
 			}

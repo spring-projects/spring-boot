@@ -23,14 +23,19 @@ import javax.persistence.Entity;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.boot.autoconfigure.domain.scan.a.AbstractEntityA;
 import org.springframework.boot.autoconfigure.domain.scan.a.EmbeddableA;
 import org.springframework.boot.autoconfigure.domain.scan.a.EntityA;
+import org.springframework.boot.autoconfigure.domain.scan.a.InterfaceEntityA;
 import org.springframework.boot.autoconfigure.domain.scan.b.EmbeddableB;
 import org.springframework.boot.autoconfigure.domain.scan.b.EntityB;
 import org.springframework.boot.autoconfigure.domain.scan.c.EmbeddableC;
 import org.springframework.boot.autoconfigure.domain.scan.c.EntityC;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -76,6 +81,30 @@ class EntityScannerTests {
 				EmbeddableC.class);
 		assertThat(scanner.scan(Entity.class, Embeddable.class)).containsOnly(EntityA.class, EntityB.class,
 				EntityC.class, EmbeddableA.class, EmbeddableB.class, EmbeddableC.class);
+		context.close();
+	}
+
+	@Test
+	void scanShouldScanAbstractClassesAndInterfacesToo() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
+		ClassPathScanningCandidateComponentProvider componentProvider = new ClassPathScanningCandidateComponentProvider(
+				false) {
+			@Override
+			protected boolean isCandidateComponent(AnnotatedBeanDefinition beanDefinition) {
+				AnnotationMetadata metadata = beanDefinition.getMetadata();
+				return metadata.isIndependent();
+			}
+		};
+		componentProvider.setEnvironment(context.getEnvironment());
+		componentProvider.setResourceLoader(context);
+		EntityScanner scanner = new EntityScanner(context, componentProvider);
+		assertThat(scanner.scan(Entity.class)).containsOnly(EntityA.class, AbstractEntityA.class,
+				InterfaceEntityA.class, EntityB.class, EntityC.class);
+		assertThat(scanner.scan(Embeddable.class)).containsOnly(EmbeddableA.class, EmbeddableB.class,
+				EmbeddableC.class);
+		assertThat(scanner.scan(Entity.class, Embeddable.class)).containsOnly(EntityA.class, AbstractEntityA.class,
+				InterfaceEntityA.class, EntityB.class, EntityC.class, EmbeddableA.class, EmbeddableB.class,
+				EmbeddableC.class);
 		context.close();
 	}
 
