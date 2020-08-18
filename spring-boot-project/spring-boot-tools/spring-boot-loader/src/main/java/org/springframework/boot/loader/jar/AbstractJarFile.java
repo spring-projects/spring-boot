@@ -45,26 +45,26 @@ abstract class AbstractJarFile extends java.util.jar.JarFile {
 	 * @return the URL
 	 * @throws MalformedURLException if the URL is malformed
 	 */
-	protected abstract URL getUrl() throws MalformedURLException;
+	abstract URL getUrl() throws MalformedURLException;
 
 	/**
 	 * Return the {@link JarFileType} of this instance.
 	 * @return the jar file type
 	 */
-	protected abstract JarFileType getType();
+	abstract JarFileType getType();
 
 	/**
 	 * Return the security permission for this JAR.
 	 * @return the security permission.
 	 */
-	protected abstract Permission getPermission();
+	abstract Permission getPermission();
 
 	/**
 	 * Return an {@link InputStream} for the entire jar contents.
 	 * @return the contents input stream
 	 * @throws IOException on IO error
 	 */
-	protected abstract InputStream getInputStream() throws IOException;
+	abstract InputStream getInputStream() throws IOException;
 
 	/**
 	 * The type of a {@link JarFile}.
