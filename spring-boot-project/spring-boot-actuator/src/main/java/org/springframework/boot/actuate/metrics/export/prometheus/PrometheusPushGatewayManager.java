@@ -28,6 +28,8 @@ import io.prometheus.client.exporter.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.context.event.ContextClosedEvent;
+import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.Assert;
@@ -130,9 +132,14 @@ public class PrometheusPushGatewayManager {
 	}
 
 	/**
-	 * Shutdown the manager, running any {@link ShutdownOperation}.
+	 * Shutdown the manager, running any {@link ShutdownOperation}. If shutdown operation
+	 * is set to "PUSH", the push gateway may trigger calls to meters that are present in
+	 * other beans. The push operation must happen BEFORE those beans are destroyed to
+	 * prevent errors during shutdown.
+	 * @param event The context closed event
 	 */
-	public void shutdown() {
+	@EventListener
+	public void shutdown(ContextClosedEvent event) {
 		shutdown(this.shutdownOperation);
 	}
 

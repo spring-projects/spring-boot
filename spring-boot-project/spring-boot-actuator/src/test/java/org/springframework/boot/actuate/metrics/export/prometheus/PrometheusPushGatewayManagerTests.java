@@ -33,6 +33,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.PushGatewayTaskScheduler;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
@@ -53,6 +55,9 @@ import static org.mockito.Mockito.verifyNoInteractions;
  */
 @ExtendWith(MockitoExtension.class)
 class PrometheusPushGatewayManagerTests {
+
+	@Mock
+	private ApplicationContext applicationContext;
 
 	@Mock
 	private PushGateway pushGateway;
@@ -122,7 +127,7 @@ class PrometheusPushGatewayManagerTests {
 				mock(PushGatewayTaskScheduler.class));
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				ownedScheduler, this.pushRate, "job", this.groupingKey, null);
-		manager.shutdown();
+		manager.shutdown(new ContextClosedEvent(this.applicationContext));
 		verify(ownedScheduler).shutdown();
 	}
 
@@ -132,7 +137,7 @@ class PrometheusPushGatewayManagerTests {
 				mock(ThreadPoolTaskScheduler.class));
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				otherScheduler, this.pushRate, "job", this.groupingKey, null);
-		manager.shutdown();
+		manager.shutdown(new ContextClosedEvent(this.applicationContext));
 		verify(otherScheduler, never()).shutdown();
 	}
 
@@ -141,7 +146,7 @@ class PrometheusPushGatewayManagerTests {
 		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.PUSH);
-		manager.shutdown();
+		manager.shutdown(new ContextClosedEvent(this.applicationContext));
 		verify(this.future).cancel(false);
 		verify(this.pushGateway).pushAdd(this.registry, "job", this.groupingKey);
 	}
@@ -151,7 +156,7 @@ class PrometheusPushGatewayManagerTests {
 		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.DELETE);
-		manager.shutdown();
+		manager.shutdown(new ContextClosedEvent(this.applicationContext));
 		verify(this.future).cancel(false);
 		verify(this.pushGateway).delete("job", this.groupingKey);
 	}
@@ -161,7 +166,7 @@ class PrometheusPushGatewayManagerTests {
 		givenScheduleAtFixedRateWithReturnFuture();
 		PrometheusPushGatewayManager manager = new PrometheusPushGatewayManager(this.pushGateway, this.registry,
 				this.scheduler, this.pushRate, "job", this.groupingKey, ShutdownOperation.NONE);
-		manager.shutdown();
+		manager.shutdown(new ContextClosedEvent(this.applicationContext));
 		verify(this.future).cancel(false);
 		verifyNoInteractions(this.pushGateway);
 	}
