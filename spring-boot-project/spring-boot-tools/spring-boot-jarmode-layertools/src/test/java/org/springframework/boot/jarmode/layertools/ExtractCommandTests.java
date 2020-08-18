@@ -18,6 +18,7 @@ package org.springframework.boot.jarmode.layertools;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +33,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 
 /**
@@ -93,6 +95,19 @@ class ExtractCommandTests {
 		assertThat(this.extract.list()).containsOnly("a", "c");
 		assertThat(new File(this.extract, "a/a/a.jar")).exists();
 		assertThat(new File(this.extract, "c/c/c.jar")).exists();
+	}
+
+	@Test
+	void runWithJarFileContainingNoEntriesFails() throws IOException {
+		File file = new File(this.temp, "empty.jar");
+		FileWriter writer = new FileWriter(file);
+		writer.write("text");
+		writer.flush();
+		given(this.context.getJarFile()).willReturn(file);
+		given(this.context.getWorkingDir()).willReturn(this.extract);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))
+				.withMessageContaining("not compatible with layertools");
 	}
 
 	private File createJarFile(String name) throws IOException {
