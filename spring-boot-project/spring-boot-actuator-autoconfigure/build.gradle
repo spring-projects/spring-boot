@@ -30,6 +30,7 @@ dependencies {
 
 	optional("ch.qos.logback:logback-classic")
 	optional("com.datastax.oss:java-driver-core")
+	optional("com.datastax.oss:java-driver-metrics-micrometer")
 	optional("com.fasterxml.jackson.dataformat:jackson-dataformat-xml")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
@@ -140,6 +141,8 @@ dependencies {
 	testImplementation("org.springframework.restdocs:spring-restdocs-mockmvc")
 	testImplementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	testImplementation("org.springframework.security:spring-security-test")
+	testImplementation("org.testcontainers:cassandra")
+	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.yaml:snakeyaml")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
