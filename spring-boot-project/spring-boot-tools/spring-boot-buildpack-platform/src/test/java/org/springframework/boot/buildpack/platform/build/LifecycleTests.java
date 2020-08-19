@@ -190,7 +190,7 @@ class LifecycleTests {
 	}
 
 	private void assertPhaseWasRun(String name, IOConsumer<ContainerConfig> configConsumer) throws IOException {
-		ContainerReference containerReference = ContainerReference.of("lifecycle-" + name);
+		ContainerReference containerReference = ContainerReference.of("cnb-lifecycle-" + name);
 		verify(this.docker.container()).start(containerReference);
 		verify(this.docker.container()).logs(eq(containerReference), any());
 		verify(this.docker.container()).remove(containerReference, true);

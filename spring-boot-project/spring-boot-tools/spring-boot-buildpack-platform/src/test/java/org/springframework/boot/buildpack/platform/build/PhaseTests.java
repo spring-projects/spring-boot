@@ -30,6 +30,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * Tests for {@link Phase}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class PhaseTests {
 
@@ -52,7 +53,7 @@ class PhaseTests {
 		Phase phase = new Phase("test", false);
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/lifecycle/test", NO_ARGS);
+		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
 	}
@@ -65,7 +66,7 @@ class PhaseTests {
 		phase.apply(update);
 		verify(update).withUser("root");
 		verify(update).withBind("/var/run/docker.sock", "/var/run/docker.sock");
-		verify(update).withCommand("/lifecycle/test", NO_ARGS);
+		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
 	}
@@ -76,7 +77,7 @@ class PhaseTests {
 		phase.withLogLevelArg();
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/lifecycle/test", "-log-level", "debug");
+		verify(update).withCommand("/cnb/lifecycle/test", "-log-level", "debug");
 		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
 	}
@@ -87,7 +88,7 @@ class PhaseTests {
 		phase.withLogLevelArg();
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/lifecycle/test");
+		verify(update).withCommand("/cnb/lifecycle/test");
 		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
 	}
@@ -98,7 +99,7 @@ class PhaseTests {
 		phase.withArgs("a", "b", "c");
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/lifecycle/test", "a", "b", "c");
+		verify(update).withCommand("/cnb/lifecycle/test", "a", "b", "c");
 		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
 	}
@@ -110,7 +111,7 @@ class PhaseTests {
 		phase.withBinds(volumeName, "/test");
 		Update update = mock(Update.class);
 		phase.apply(update);
-		verify(update).withCommand("/lifecycle/test");
+		verify(update).withCommand("/cnb/lifecycle/test");
 		verify(update).withLabel("author", "spring-boot");
 		verify(update).withBind(volumeName, "/test");
 		verifyNoMoreInteractions(update);
