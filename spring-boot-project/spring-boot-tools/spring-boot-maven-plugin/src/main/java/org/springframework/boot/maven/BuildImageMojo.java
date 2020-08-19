@@ -65,6 +65,10 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 
 	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
 
+	static {
+		System.setProperty("org.slf4j.simpleLogger.log.org.apache.http.wire", "ERROR");
+	}
+
 	/**
 	 * Directory containing the JAR.
 	 * @since 2.3.0
