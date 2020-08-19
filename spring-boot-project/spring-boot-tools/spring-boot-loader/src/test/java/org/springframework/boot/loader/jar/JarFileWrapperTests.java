@@ -30,6 +30,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
@@ -51,9 +52,14 @@ class JarFileWrapperTests {
 	private JarFileWrapper wrapper;
 
 	@BeforeEach
-	void setup(@TempDir File temp) throws IOException {
+	void setup(@TempDir File temp) throws Exception {
 		this.parent = new SpyJarFile(createTempJar(temp));
 		this.wrapper = new JarFileWrapper(this.parent);
+	}
+
+	@AfterEach
+	void cleanup() throws Exception {
+		this.parent.close();
 	}
 
 	private File createTempJar(File temp) throws IOException {
