@@ -8255,7 +8255,7 @@ Note that some features (such as detecting the default value or deprecated items
 === Testing
 While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
-This makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for Kotlin.
+This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
 If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testing-spring-boot-applications-mocking-beans,`@MockBean` and `@SpyBean` annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
