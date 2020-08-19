@@ -7813,7 +7813,7 @@ Note that some features (such as detecting the default value or deprecated items
 === Testing
 While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
-This makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for Kotlin.
+This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
 
 JUnit 5 is the default and the vintage engine is provided for backward compatibility with JUnit 4.
 If you don't use it, exclude `org.junit.vintage:junit-vintage-engine`.
