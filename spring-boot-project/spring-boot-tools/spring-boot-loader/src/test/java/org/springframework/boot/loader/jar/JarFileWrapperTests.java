@@ -137,7 +137,7 @@ class JarFileWrapperTests {
 
 	@Test
 	void toStringDelegatesToParent() {
-		assertThat(this.wrapper.toString()).endsWith("/temp.jar");
+		assertThat(this.wrapper.toString()).endsWith("temp.jar");
 	}
 
 	@Test // gh-22991
