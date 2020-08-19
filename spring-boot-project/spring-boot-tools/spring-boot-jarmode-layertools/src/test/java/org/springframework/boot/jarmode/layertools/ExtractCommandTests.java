@@ -104,9 +104,9 @@ class ExtractCommandTests {
 	@Test
 	void runWithJarFileContainingNoEntriesFails() throws IOException {
 		File file = new File(this.temp, "empty.jar");
-		FileWriter writer = new FileWriter(file);
-		writer.write("text");
-		writer.flush();
+		try (FileWriter writer = new FileWriter(file)) {
+			writer.write("text");
+		}
 		given(this.context.getJarFile()).willReturn(file);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		assertThatIllegalStateException()
