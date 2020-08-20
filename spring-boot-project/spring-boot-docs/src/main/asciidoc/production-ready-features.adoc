@@ -475,7 +475,15 @@ Consider the following JSON request body:
 	}
 ----
 
-This can be used to invoke a write operation that takes `String name` and `int counter` parameters.
+This can be used to invoke a write operation that takes `String name` and `int counter` parameters (name of Java parameter have to match name of JSON property).
+
+[source,java,indent=0]
+----
+    @WriteOperation
+    public void writeMethod(String name, int counter) {
+      // do the stuff
+    }
+----
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
 In particular declaring a single parameter with a custom type defining a `name` and `counter` properties is not supported.
