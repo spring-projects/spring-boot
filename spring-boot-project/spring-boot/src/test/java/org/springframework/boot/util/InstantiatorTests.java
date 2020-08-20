@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.config;
+package org.springframework.boot.util;
 
 import java.util.Arrays;
 import java.util.Collections;

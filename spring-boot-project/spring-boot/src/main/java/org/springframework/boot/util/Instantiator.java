@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.config;
+package org.springframework.boot.util;
 
 import java.lang.reflect.Constructor;
 import java.util.ArrayList;
@@ -38,8 +38,9 @@ import org.springframework.util.ReflectionUtils;
  *
  * @param <T> the type to instantiate
  * @author Phillip Webb
+ * @since 2.4.0
  */
-class Instantiator<T> {
+public class Instantiator<T> {
 
 	private static final Comparator<Constructor<?>> CONSTRUCTOR_COMPARATOR = Comparator
 			.<Constructor<?>>comparingInt(Constructor::getParameterCount).reversed();
@@ -53,7 +54,7 @@ class Instantiator<T> {
 	 * @param type the type to instantiate
 	 * @param availableParameters consumer used to register available parameters
 	 */
-	Instantiator(Class<?> type, Consumer<AvailableParameters> availableParameters) {
+	public Instantiator(Class<?> type, Consumer<AvailableParameters> availableParameters) {
 		this.type = type;
 		this.availableParameters = getAvailableParameters(availableParameters);
 	}
@@ -83,7 +84,7 @@ class Instantiator<T> {
 	 * @param names the class names to instantiate
 	 * @return a list of instantiated instances
 	 */
-	List<T> instantiate(Collection<String> names) {
+	public List<T> instantiate(Collection<String> names) {
 		List<T> instances = new ArrayList<>(names.size());
 		for (String name : names) {
 			instances.add(instantiate(name));
@@ -141,7 +142,7 @@ class Instantiator<T> {
 	/**
 	 * Callback used to register available parameters.
 	 */
-	interface AvailableParameters {
+	public interface AvailableParameters {
 
 		/**
 		 * Add a parameter with an instance value.
