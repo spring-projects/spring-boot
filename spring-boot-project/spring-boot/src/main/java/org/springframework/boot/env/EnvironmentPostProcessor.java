@@ -34,9 +34,16 @@ import org.springframework.core.env.Environment;
  * if they wish to be invoked in specific order.
  * <p>
  * Since Spring Boot 2.4, {@code EnvironmentPostProcessor} implementations may optionally
- * take a single {@link Log} or {@link DeferredLogFactory} instance as a constructor
- * argument. The injected {@link Log} instance will defer output until the application has
- * been full prepared to allow the environment itself to configure logging levels.
+ * take the following constructor parameters:
+ * <ul>
+ * <li>{@link DeferredLogFactory} - A factory that can be used to create loggers with
+ * output deferred until the application has been full prepared (allowing the environment
+ * itself to configure logging levels).</li>
+ * <li>{@link Log} - A log with output deferred until the application has been full
+ * prepared (allowing the environment itself to configure logging levels).</li>
+ * <li>{@link BootstrapRegistry} - A bootstrap registry that can be used to store objects
+ * that may be expensive to create, or need to be shared.</li>
+ * </ul>
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll

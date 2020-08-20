@@ -36,10 +36,13 @@ class EnvironmentPostProcessorsFactoryTests {
 
 	private final DeferredLogFactory logFactory = Supplier::get;
 
+	private final BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+
 	@Test
 	void fromSpringFactoriesReturnsFactory() {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory.fromSpringFactories(null);
-		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory);
+		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
+				this.bootstrapRegistry);
 		assertThat(processors).hasSizeGreaterThan(1);
 	}
 
@@ -47,7 +50,8 @@ class EnvironmentPostProcessorsFactoryTests {
 	void ofClassesReturnsFactory() {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory
 				.of(TestEnvironmentPostProcessor.class);
-		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory);
+		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
+				this.bootstrapRegistry);
 		assertThat(processors).hasSize(1);
 		assertThat(processors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
 	}
@@ -56,16 +60,8 @@ class EnvironmentPostProcessorsFactoryTests {
 	void ofClassNamesReturnsFactory() {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory
 				.of(TestEnvironmentPostProcessor.class.getName());
-		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory);
-		assertThat(processors).hasSize(1);
-		assertThat(processors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
-	}
-
-	@Test
-	void singletonReturnsFactory() {
-		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory
-				.singleton(TestEnvironmentPostProcessor::new);
-		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory);
+		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
+				this.bootstrapRegistry);
 		assertThat(processors).hasSize(1);
 		assertThat(processors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
 	}

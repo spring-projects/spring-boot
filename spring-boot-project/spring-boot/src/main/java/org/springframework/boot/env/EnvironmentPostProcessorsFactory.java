@@ -16,9 +16,7 @@
 
 package org.springframework.boot.env;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.function.Function;
 
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -36,9 +34,11 @@ public interface EnvironmentPostProcessorsFactory {
 	/**
 	 * Create all requested {@link EnvironmentPostProcessor} instances.
 	 * @param logFactory a deferred log factory
+	 * @param bootstrapRegistry a bootstrap registry
 	 * @return the post processor instances
 	 */
-	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory);
+	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
+			BootstrapRegistry bootstrapRegistry);
 
 	/**
 	 * Return a {@link EnvironmentPostProcessorsFactory} backed by
@@ -69,16 +69,6 @@ public interface EnvironmentPostProcessorsFactory {
 	 */
 	static EnvironmentPostProcessorsFactory of(String... classNames) {
 		return new ReflectionEnvironmentPostProcessorsFactory(classNames);
-	}
-
-	/**
-	 * Create a {@link EnvironmentPostProcessorsFactory} containing only a single post
-	 * processor.
-	 * @param factory the factory used to create the post processor
-	 * @return an {@link EnvironmentPostProcessorsFactory} instance
-	 */
-	static EnvironmentPostProcessorsFactory singleton(Function<DeferredLogFactory, EnvironmentPostProcessor> factory) {
-		return (logFactory) -> Collections.singletonList(factory.apply(logFactory));
 	}
 
 }

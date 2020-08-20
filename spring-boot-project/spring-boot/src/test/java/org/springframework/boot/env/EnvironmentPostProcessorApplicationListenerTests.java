@@ -45,8 +45,11 @@ class EnvironmentPostProcessorApplicationListenerTests {
 
 	private DeferredLogs deferredLogs = spy(new DeferredLogs());
 
+	private DefaultBootstrapRegisty bootstrapRegistry = spy(new DefaultBootstrapRegisty());
+
 	private EnvironmentPostProcessorApplicationListener listener = new EnvironmentPostProcessorApplicationListener(
-			EnvironmentPostProcessorsFactory.singleton(TestEnvironmentPostProcessor::new), this.deferredLogs);
+			EnvironmentPostProcessorsFactory.of(TestEnvironmentPostProcessor.class), this.deferredLogs,
+			this.bootstrapRegistry);
 
 	@Test
 	void createUsesSpringFactories() {
@@ -57,7 +60,7 @@ class EnvironmentPostProcessorApplicationListenerTests {
 	@Test
 	void createWhenHasFactoryUsesFactory() {
 		EnvironmentPostProcessorApplicationListener listener = new EnvironmentPostProcessorApplicationListener(
-				EnvironmentPostProcessorsFactory.singleton(TestEnvironmentPostProcessor::new));
+				EnvironmentPostProcessorsFactory.of(TestEnvironmentPostProcessor.class));
 		List<EnvironmentPostProcessor> postProcessors = listener.getEnvironmentPostProcessors();
 		assertThat(postProcessors).hasSize(1);
 		assertThat(postProcessors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
@@ -103,6 +106,15 @@ class EnvironmentPostProcessorApplicationListenerTests {
 	}
 
 	@Test
+	void onApplicationEventWhenApplicationPreparedEventTriggersRegistryActions() {
+		SpringApplication application = mock(SpringApplication.class);
+		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
+		ApplicationPreparedEvent event = new ApplicationPreparedEvent(application, new String[0], context);
+		this.listener.onApplicationEvent(event);
+		verify(this.bootstrapRegistry).applicationContextPrepared(context);
+	}
+
+	@Test
 	void onApplicationEventWhenApplicationFailedEventSwitchesLogs() {
 		SpringApplication application = mock(SpringApplication.class);
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
@@ -114,7 +126,9 @@ class EnvironmentPostProcessorApplicationListenerTests {
 
 	static class TestEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
-		TestEnvironmentPostProcessor(DeferredLogFactory logFactory) {
+		TestEnvironmentPostProcessor(DeferredLogFactory logFactory, BootstrapRegistry bootstrapRegistry) {
+			assertThat(logFactory).isNotNull();
+			assertThat(bootstrapRegistry).isNotNull();
 		}
 
 		@Override

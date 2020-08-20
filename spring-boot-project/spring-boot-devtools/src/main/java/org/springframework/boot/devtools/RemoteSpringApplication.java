@@ -74,7 +74,7 @@ public final class RemoteSpringApplication {
 		List<ApplicationListener<?>> listeners = new ArrayList<>();
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(new EnvironmentPostProcessorApplicationListener(
-				EnvironmentPostProcessorsFactory.singleton(ConfigDataEnvironmentPostProcessor::new)));
+				EnvironmentPostProcessorsFactory.of(ConfigDataEnvironmentPostProcessor.class)));
 		listeners.add(new ClasspathLoggingApplicationListener());
 		listeners.add(new LoggingApplicationListener());
 		listeners.add(new RemoteUrlPropertyExtractor());

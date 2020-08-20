@@ -44,6 +44,8 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	private final DeferredLogs deferredLogs;
 
+	private final DefaultBootstrapRegisty bootstrapRegistry;
+
 	private int order = DEFAULT_ORDER;
 
 	private final EnvironmentPostProcessorsFactory postProcessorsFactory;
@@ -63,13 +65,14 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	 * @param postProcessorsFactory the post processors factory
 	 */
 	public EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory) {
-		this(postProcessorsFactory, new DeferredLogs());
+		this(postProcessorsFactory, new DeferredLogs(), new DefaultBootstrapRegisty());
 	}
 
 	EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory,
-			DeferredLogs deferredLogs) {
+			DeferredLogs deferredLogs, DefaultBootstrapRegisty bootstrapRegistry) {
 		this.postProcessorsFactory = postProcessorsFactory;
 		this.deferredLogs = deferredLogs;
+		this.bootstrapRegistry = bootstrapRegistry;
 	}
 
 	@Override
@@ -84,8 +87,11 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 		if (event instanceof ApplicationEnvironmentPreparedEvent) {
 			onApplicationEnvironmentPreparedEvent((ApplicationEnvironmentPreparedEvent) event);
 		}
-		if (event instanceof ApplicationPreparedEvent || event instanceof ApplicationFailedEvent) {
-			onFinish();
+		if (event instanceof ApplicationPreparedEvent) {
+			onApplicationPreparedEvent((ApplicationPreparedEvent) event);
+		}
+		if (event instanceof ApplicationFailedEvent) {
+			onApplicationFailedEvent((ApplicationFailedEvent) event);
 		}
 	}
 
@@ -97,12 +103,17 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 		}
 	}
 
-	List<EnvironmentPostProcessor> getEnvironmentPostProcessors() {
-		return this.postProcessorsFactory.getEnvironmentPostProcessors(this.deferredLogs);
+	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
+		this.deferredLogs.switchOverAll();
+		this.bootstrapRegistry.applicationContextPrepared(event.getApplicationContext());
 	}
 
-	private void onFinish() {
+	private void onApplicationFailedEvent(ApplicationFailedEvent event) {
 		this.deferredLogs.switchOverAll();
+	}
+
+	List<EnvironmentPostProcessor> getEnvironmentPostProcessors() {
+		return this.postProcessorsFactory.getEnvironmentPostProcessors(this.deferredLogs, this.bootstrapRegistry);
 	}
 
 	@Override
