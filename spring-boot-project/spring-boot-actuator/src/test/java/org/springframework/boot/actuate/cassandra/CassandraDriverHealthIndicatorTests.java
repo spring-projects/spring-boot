@@ -16,26 +16,36 @@
 
 package org.springframework.boot.actuate.cassandra;
 
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
+import java.util.stream.Stream;
+
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.DriverTimeoutException;
-import com.datastax.oss.driver.api.core.cql.ResultSet;
-import com.datastax.oss.driver.api.core.cql.Row;
-import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.Version;
+import com.datastax.oss.driver.api.core.metadata.Metadata;
+import com.datastax.oss.driver.api.core.metadata.Node;
+import com.datastax.oss.driver.api.core.metadata.NodeState;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
+import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.when;
 
 /**
  * Tests for {@link CassandraDriverHealthIndicator}.
  *
  * @author Alexandre Dutra
+ * @author Tomasz Lelek
  * @since 2.4.0
  */
 class CassandraDriverHealthIndicatorTests {
@@ -45,30 +55,86 @@ class CassandraDriverHealthIndicatorTests {
 		assertThatIllegalArgumentException().isThrownBy(() -> new CassandraDriverHealthIndicator(null));
 	}
 
-	@Test
-	void healthWithCassandraUp() {
+	@ParameterizedTest
+	@MethodSource
+	void reportCassandraHealthCheck(Map<UUID, Node> nodes, Status expectedStatus) {
 		CqlSession session = mock(CqlSession.class);
-		ResultSet resultSet = mock(ResultSet.class);
-		Row row = mock(Row.class);
-		given(session.execute(any(SimpleStatement.class))).willReturn(resultSet);
-		given(resultSet.one()).willReturn(row);
-		given(row.isNull(0)).willReturn(false);
-		given(row.getString(0)).willReturn("1.0.0");
+		Metadata metadata = mock(Metadata.class);
+		when(session.getMetadata()).thenReturn(metadata);
+		when(metadata.getNodes()).thenReturn(nodes);
+
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(expectedStatus);
+	}
+
+	static Stream<Arguments> reportCassandraHealthCheck() {
+		Node healthyNode = mock(Node.class);
+		when(healthyNode.getState()).thenReturn(NodeState.UP);
+		Node unhealthyNode = mock(Node.class);
+		when(unhealthyNode.getState()).thenReturn(NodeState.DOWN);
+		Node unknownNode = mock(Node.class);
+		when(unknownNode.getState()).thenReturn(NodeState.UNKNOWN);
+		Node forcedDownNode = mock(Node.class);
+		when(forcedDownNode.getState()).thenReturn(NodeState.FORCED_DOWN);
+		return Stream.<Arguments>builder().add(Arguments.arguments(createNodes(healthyNode), Status.UP))
+				.add(Arguments.arguments(createNodes(unhealthyNode), Status.DOWN))
+				.add(Arguments.arguments(createNodes(unknownNode), Status.DOWN))
+				.add(Arguments.arguments(createNodes(forcedDownNode), Status.DOWN))
+				.add(Arguments.arguments(createNodes(healthyNode, unhealthyNode), Status.UP))
+				.add(Arguments.arguments(createNodes(healthyNode, unknownNode), Status.UP))
+				.add(Arguments.arguments(createNodes(healthyNode, forcedDownNode), Status.UP)).build();
+	}
+
+	@Test
+	void addVersionToDetailsIfReportedNotNull() {
+		CqlSession session = mock(CqlSession.class);
+		Metadata metadata = mock(Metadata.class);
+		when(session.getMetadata()).thenReturn(metadata);
+		Node node = mock(Node.class);
+		when(node.getState()).thenReturn(NodeState.UP);
+		when(node.getCassandraVersion()).thenReturn(Version.V4_0_0);
+		when(metadata.getNodes()).thenReturn(createNodes(node));
+
 		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails().get("version")).isEqualTo("1.0.0");
+		assertThat(health.getDetails().get("version")).isEqualTo(Version.V4_0_0);
+	}
+
+	@Test
+	void doNotAddVersionToDetailsIfReportedNull() {
+		CqlSession session = mock(CqlSession.class);
+		Metadata metadata = mock(Metadata.class);
+		when(session.getMetadata()).thenReturn(metadata);
+		Node node = mock(Node.class);
+		when(node.getState()).thenReturn(NodeState.UP);
+		when(metadata.getNodes()).thenReturn(createNodes(node));
+
+		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
+		Health health = healthIndicator.health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails().get("version")).isNull();
 	}
 
 	@Test
 	void healthWithCassandraDown() {
 		CqlSession session = mock(CqlSession.class);
-		given(session.execute(any(SimpleStatement.class))).willThrow(new DriverTimeoutException("Test Exception"));
+		given(session.getMetadata()).willThrow(new DriverTimeoutException("Test Exception"));
 		CassandraDriverHealthIndicator healthIndicator = new CassandraDriverHealthIndicator(session);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat(health.getDetails().get("error"))
 				.isEqualTo(DriverTimeoutException.class.getName() + ": Test Exception");
+	}
+
+	private static Map<UUID, Node> createNodes(Node... nodes) {
+		Map<UUID, Node> nodesMap = new HashMap<>();
+		for (Node n : nodes) {
+			nodesMap.put(UUID.randomUUID(), n);
+		}
+
+		return nodesMap;
 	}
 
 }

@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.cassandra;
 
-import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import java.util.Collection;
+import java.util.Objects;
+
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.Row;
-import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.metadata.Node;
+import com.datastax.oss.driver.api.core.metadata.NodeState;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -31,12 +33,10 @@ import org.springframework.util.Assert;
  * Cassandra data stores.
  *
  * @author Alexandre Dutra
+ * @author Tomasz Lelek
  * @since 2.4.0
  */
 public class CassandraDriverHealthIndicator extends AbstractHealthIndicator {
-
-	private static final SimpleStatement SELECT = SimpleStatement
-			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private final CqlSession session;
 
@@ -52,11 +52,18 @@ public class CassandraDriverHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Row row = this.session.execute(SELECT).one();
-		builder.up();
-		if (row != null && !row.isNull(0)) {
-			builder.withDetail("version", row.getString(0));
+		Collection<Node> nodes = this.session.getMetadata().getNodes().values();
+		boolean atLeastOneUp = nodes.stream().map(Node::getState).anyMatch((state) -> state == NodeState.UP);
+		if (atLeastOneUp) {
+			builder.up();
 		}
+		else {
+			builder.down();
+		}
+
+		// fill details with version of the first node (if the version is not null)
+		nodes.stream().map(Node::getCassandraVersion).filter(Objects::nonNull).findFirst()
+				.ifPresent((version) -> builder.withDetail("version", version));
 	}
 
 }
