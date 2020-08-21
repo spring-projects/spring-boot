@@ -40,19 +40,21 @@ public interface ConfigDataLoader<L extends ConfigDataLocation> {
 
 	/**
 	 * Returns if the specified location can be loaded by this instance.
+	 * @param context the loader context
 	 * @param location the location to check.
 	 * @return if the location is supported by this loader
 	 */
-	default boolean isLoadable(L location) {
+	default boolean isLoadable(ConfigDataLoaderContext context, L location) {
 		return true;
 	}
 
 	/**
 	 * Load {@link ConfigData} for the given location.
+	 * @param context the loader context
 	 * @param location the location to load
 	 * @return the loaded config data or {@code null} if the location should be skipped
 	 * @throws IOException on IO error
 	 */
-	ConfigData load(L location) throws IOException;
+	ConfigData load(ConfigDataLoaderContext context, L location) throws IOException;
 
 }

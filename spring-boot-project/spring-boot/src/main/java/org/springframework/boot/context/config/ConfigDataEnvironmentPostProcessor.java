@@ -24,6 +24,8 @@ import java.util.function.Supplier;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.BootstrapRegistry;
+import org.springframework.boot.env.DefaultBootstrapRegisty;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
@@ -52,9 +54,12 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 
 	private final Log logger;
 
-	public ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory) {
+	private final BootstrapRegistry bootstrapRegistry;
+
+	public ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory, BootstrapRegistry bootstrapRegistry) {
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
+		this.bootstrapRegistry = bootstrapRegistry;
 	}
 
 	@Override
@@ -83,7 +88,8 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 
 	ConfigDataEnvironment getConfigDataEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			Collection<String> additionalProfiles) {
-		return new ConfigDataEnvironment(this.logFactory, environment, resourceLoader, additionalProfiles);
+		return new ConfigDataEnvironment(this.logFactory, this.bootstrapRegistry, environment, resourceLoader,
+				additionalProfiles);
 	}
 
 	private void postProcessUsingLegacyApplicationListener(ConfigurableEnvironment environment,
@@ -103,7 +109,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	 * @param environment the environment to apply {@link ConfigData} to
 	 */
 	public static void applyTo(ConfigurableEnvironment environment) {
-		applyTo(environment, null, Collections.emptyList());
+		applyTo(environment, null, null, Collections.emptyList());
 	}
 
 	/**
@@ -112,11 +118,13 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	 * directly and not necessarily as part of a {@link SpringApplication}.
 	 * @param environment the environment to apply {@link ConfigData} to
 	 * @param resourceLoader the resource loader to use
+	 * @param bootstrapRegistry the bootstrap registry to use or {@code null} to use a
+	 * throw-away registry
 	 * @param additionalProfiles any additional profiles that should be applied
 	 */
 	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
-			String... additionalProfiles) {
-		applyTo(environment, resourceLoader, Arrays.asList(additionalProfiles));
+			BootstrapRegistry bootstrapRegistry, String... additionalProfiles) {
+		applyTo(environment, resourceLoader, bootstrapRegistry, Arrays.asList(additionalProfiles));
 	}
 
 	/**
@@ -125,13 +133,17 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	 * directly and not necessarily as part of a {@link SpringApplication}.
 	 * @param environment the environment to apply {@link ConfigData} to
 	 * @param resourceLoader the resource loader to use
+	 * @param bootstrapRegistry the bootstrap registry to use or {@code null} to use a
+	 * throw-away registry
 	 * @param additionalProfiles any additional profiles that should be applied
 	 */
 	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
-			Collection<String> additionalProfiles) {
-		new ConfigDataEnvironmentPostProcessor(Supplier::get).postProcessEnvironment(environment, resourceLoader,
-				additionalProfiles);
-
+			BootstrapRegistry bootstrapRegistry, Collection<String> additionalProfiles) {
+		DeferredLogFactory logFactory = Supplier::get;
+		bootstrapRegistry = (bootstrapRegistry != null) ? bootstrapRegistry : new DefaultBootstrapRegisty();
+		ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(logFactory,
+				bootstrapRegistry);
+		postProcessor.postProcessEnvironment(environment, resourceLoader, additionalProfiles);
 	}
 
 	@SuppressWarnings("deprecation")

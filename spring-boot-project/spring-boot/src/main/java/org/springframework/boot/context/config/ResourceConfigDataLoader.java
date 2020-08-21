@@ -29,7 +29,7 @@ import org.springframework.core.io.Resource;
 class ResourceConfigDataLoader implements ConfigDataLoader<ResourceConfigDataLocation> {
 
 	@Override
-	public ConfigData load(ResourceConfigDataLocation location) throws IOException {
+	public ConfigData load(ConfigDataLoaderContext context, ResourceConfigDataLocation location) throws IOException {
 		return new ConfigData(location.load());
 	}
 

@@ -28,6 +28,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ConfigTreeConfigDataLoader}.
@@ -39,6 +40,8 @@ public class ConfigTreeConfigDataLoaderTests {
 
 	private ConfigTreeConfigDataLoader loader = new ConfigTreeConfigDataLoader();
 
+	private ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
+
 	@TempDir
 	Path directory;
 
@@ -48,7 +51,7 @@ public class ConfigTreeConfigDataLoaderTests {
 		file.getParentFile().mkdirs();
 		FileCopyUtils.copy("world".getBytes(StandardCharsets.UTF_8), file);
 		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation(this.directory.toString());
-		ConfigData configData = this.loader.load(location);
+		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(1);
 		PropertySource<?> source = configData.getPropertySources().get(0);
 		assertThat(source.getName()).isEqualTo("Config tree '" + this.directory.toString() + "'");

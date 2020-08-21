@@ -55,26 +55,29 @@ class ConfigDataImporter {
 	 * previously loaded.
 	 * @param activationContext the activation context
 	 * @param locationResolverContext the location resolver context
+	 * @param loaderContext the loader context
 	 * @param locations the locations to resolve
 	 * @return a map of the loaded locations and data
 	 */
 	Map<ConfigDataLocation, ConfigData> resolveAndLoad(ConfigDataActivationContext activationContext,
-			ConfigDataLocationResolverContext locationResolverContext, List<String> locations) {
+			ConfigDataLocationResolverContext locationResolverContext, ConfigDataLoaderContext loaderContext,
+			List<String> locations) {
 		try {
 			Profiles profiles = (activationContext != null) ? activationContext.getProfiles() : null;
-			return load(this.resolvers.resolveAll(locationResolverContext, locations, profiles));
+			return load(loaderContext, this.resolvers.resolveAll(locationResolverContext, locations, profiles));
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("IO error on loading imports from " + locations, ex);
 		}
 	}
 
-	private Map<ConfigDataLocation, ConfigData> load(List<ConfigDataLocation> locations) throws IOException {
+	private Map<ConfigDataLocation, ConfigData> load(ConfigDataLoaderContext loaderContext,
+			List<ConfigDataLocation> locations) throws IOException {
 		Map<ConfigDataLocation, ConfigData> result = new LinkedHashMap<>();
 		for (int i = locations.size() - 1; i >= 0; i--) {
 			ConfigDataLocation location = locations.get(i);
 			if (this.loadedLocations.add(location)) {
-				result.put(location, this.loaders.load(location));
+				result.put(location, this.loaders.load(loaderContext, location));
 			}
 		}
 		return Collections.unmodifiableMap(result);

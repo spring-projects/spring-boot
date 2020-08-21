@@ -36,6 +36,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.env.BootstrapRegistry;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.ObjectUtils;
@@ -53,19 +54,25 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 
 	private final ConfigDataEnvironmentContributor root;
 
+	private final BootstrapRegistry bootstrapRegistry;
+
 	/**
 	 * Create a new {@link ConfigDataEnvironmentContributors} instance.
 	 * @param logFactory the log factory
+	 * @param bootstrapRegistry the bootstrap registry
 	 * @param contributors the initial set of contributors
 	 */
-	ConfigDataEnvironmentContributors(DeferredLogFactory logFactory,
+	ConfigDataEnvironmentContributors(DeferredLogFactory logFactory, BootstrapRegistry bootstrapRegistry,
 			List<ConfigDataEnvironmentContributor> contributors) {
 		this.logger = logFactory.getLog(getClass());
+		this.bootstrapRegistry = bootstrapRegistry;
 		this.root = ConfigDataEnvironmentContributor.of(contributors);
 	}
 
-	private ConfigDataEnvironmentContributors(Log logger, ConfigDataEnvironmentContributor root) {
+	private ConfigDataEnvironmentContributors(Log logger, BootstrapRegistry bootstrapRegistry,
+			ConfigDataEnvironmentContributor root) {
 		this.logger = logger;
+		this.bootstrapRegistry = bootstrapRegistry;
 		this.root = root;
 	}
 
@@ -91,20 +98,25 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 				this.logger.trace(LogMessage.format("Processed imports for of %d contributors", processedCount));
 				return result;
 			}
-			ConfigDataLocationResolverContext locationResolverContext = new ContributorLocationResolverContext(result,
-					unprocessed, activationContext);
+			ConfigDataLocationResolverContext locationResolverContext = new ContributorConfigDataLocationResolverContext(
+					result, unprocessed, activationContext);
+			ConfigDataLoaderContext loaderContext = new ContributorDataLoaderContext(this);
 			List<String> imports = unprocessed.getImports();
 			this.logger.trace(LogMessage.format("Processing imports %s", imports));
 			Map<ConfigDataLocation, ConfigData> imported = importer.resolveAndLoad(activationContext,
-					locationResolverContext, imports);
+					locationResolverContext, loaderContext, imports);
 			this.logger.trace(LogMessage.of(() -> imported.isEmpty() ? "Nothing imported" : "Imported "
 					+ imported.size() + " location " + ((imported.size() != 1) ? "s" : "") + imported.keySet()));
 			ConfigDataEnvironmentContributor processed = unprocessed.withChildren(importPhase,
 					asContributors(activationContext, imported));
-			result = new ConfigDataEnvironmentContributors(this.logger,
+			result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapRegistry,
 					result.getRoot().withReplacement(unprocessed, processed));
 			processedCount++;
 		}
+	}
+
+	protected final BootstrapRegistry getBootstrapRegistry() {
+		return this.bootstrapRegistry;
 	}
 
 	private ConfigDataEnvironmentContributor getFirstUnprocessed(ConfigDataEnvironmentContributors contributors,
@@ -177,10 +189,27 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 	}
 
 	/**
-	 * {@link ConfigDataLocationResolverContext} backed by a
-	 * {@link ConfigDataEnvironmentContributor}.
+	 * {@link ConfigDataLocationResolverContext} for a contributor.
 	 */
-	private static class ContributorLocationResolverContext implements ConfigDataLocationResolverContext {
+	private static class ContributorDataLoaderContext implements ConfigDataLoaderContext {
+
+		private final ConfigDataEnvironmentContributors contributors;
+
+		ContributorDataLoaderContext(ConfigDataEnvironmentContributors contributors) {
+			this.contributors = contributors;
+		}
+
+		@Override
+		public BootstrapRegistry getBootstrapRegistry() {
+			return this.contributors.getBootstrapRegistry();
+		}
+
+	}
+
+	/**
+	 * {@link ConfigDataLocationResolverContext} for a contributor.
+	 */
+	private static class ContributorConfigDataLocationResolverContext implements ConfigDataLocationResolverContext {
 
 		private final ConfigDataEnvironmentContributors contributors;
 
@@ -190,7 +219,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 
 		private volatile Binder binder;
 
-		ContributorLocationResolverContext(ConfigDataEnvironmentContributors contributors,
+		ContributorConfigDataLocationResolverContext(ConfigDataEnvironmentContributors contributors,
 				ConfigDataEnvironmentContributor contributor, ConfigDataActivationContext activationContext) {
 			this.contributors = contributors;
 			this.contributor = contributor;
@@ -210,6 +239,11 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		@Override
 		public ConfigDataLocation getParent() {
 			return this.contributor.getLocation();
+		}
+
+		@Override
+		public BootstrapRegistry getBootstrapRegistry() {
+			return this.contributors.getBootstrapRegistry();
 		}
 
 	}

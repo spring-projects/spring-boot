@@ -17,6 +17,8 @@
 package org.springframework.boot.context.config;
 
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.env.BootstrapRegistry;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 
 /**
  * Context provided to {@link ConfigDataLocationResolver} methods.
@@ -40,5 +42,12 @@ public interface ConfigDataLocationResolverContext {
 	 * @return the parent location
 	 */
 	ConfigDataLocation getParent();
+
+	/**
+	 * Provides access to the {@link BootstrapRegistry} shared across all
+	 * {@link EnvironmentPostProcessor EnvironmentPostProcessors}.
+	 * @return the bootstrap registry
+	 */
+	BootstrapRegistry getBootstrapRegistry();
 
 }

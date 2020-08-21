@@ -80,24 +80,25 @@ class ConfigDataLoaders {
 	/**
 	 * Load {@link ConfigData} using the first appropriate {@link ConfigDataLoader}.
 	 * @param <L> the config data location type
+	 * @param context the loader context
 	 * @param location the location to load
 	 * @return the loaded {@link ConfigData}
 	 * @throws IOException on IO error
 	 */
-	<L extends ConfigDataLocation> ConfigData load(L location) throws IOException {
-		ConfigDataLoader<L> loader = getLoader(location);
+	<L extends ConfigDataLocation> ConfigData load(ConfigDataLoaderContext context, L location) throws IOException {
+		ConfigDataLoader<L> loader = getLoader(context, location);
 		this.logger.trace(LogMessage.of(() -> "Loading " + location + " using loader " + loader.getClass().getName()));
-		return loader.load(location);
+		return loader.load(context, location);
 	}
 
 	@SuppressWarnings("unchecked")
-	private <L extends ConfigDataLocation> ConfigDataLoader<L> getLoader(L location) {
+	private <L extends ConfigDataLocation> ConfigDataLoader<L> getLoader(ConfigDataLoaderContext context, L location) {
 		ConfigDataLoader<L> result = null;
 		for (int i = 0; i < this.loaders.size(); i++) {
 			ConfigDataLoader<?> candidate = this.loaders.get(i);
 			if (this.locationTypes.get(i).isInstance(location)) {
 				ConfigDataLoader<L> loader = (ConfigDataLoader<L>) candidate;
-				if (loader.isLoadable(location)) {
+				if (loader.isLoadable(context, location)) {
 					if (result != null) {
 						throw new IllegalStateException("Multiple loaders found for location " + location + " ["
 								+ candidate.getClass().getName() + "," + result.getClass().getName() + "]");

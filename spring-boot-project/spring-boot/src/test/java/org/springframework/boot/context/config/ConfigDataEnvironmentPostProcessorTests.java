@@ -28,6 +28,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.env.DefaultBootstrapRegisty;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -58,7 +59,8 @@ class ConfigDataEnvironmentPostProcessorTests {
 	private ConfigDataEnvironment configDataEnvironment;
 
 	@Spy
-	private ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(Supplier::get);
+	private ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(Supplier::get,
+			new DefaultBootstrapRegisty());
 
 	@Captor
 	private ArgumentCaptor<Set<String>> additionalProfilesCaptor;
@@ -117,7 +119,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 	@Test
 	void applyToAppliesPostProcessing() {
 		int before = this.environment.getPropertySources().size();
-		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, "dev");
+		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, "dev");
 		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
 	}

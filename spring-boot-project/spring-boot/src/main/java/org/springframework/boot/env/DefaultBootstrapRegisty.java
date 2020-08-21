@@ -81,6 +81,13 @@ public class DefaultBootstrapRegisty implements BootstrapRegistry {
 	}
 
 	/**
+	 * Clear the registry to reclaim memory.
+	 */
+	public void clear() {
+		this.registrations.clear();
+	}
+
+	/**
 	 * Default implementation of {@link Registration}.
 	 */
 	private static class DefaultRegistration<T> implements Registration<T> {

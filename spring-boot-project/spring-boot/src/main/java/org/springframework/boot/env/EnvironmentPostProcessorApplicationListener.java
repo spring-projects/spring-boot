@@ -104,11 +104,16 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		this.deferredLogs.switchOverAll();
 		this.bootstrapRegistry.applicationContextPrepared(event.getApplicationContext());
+		finish();
 	}
 
 	private void onApplicationFailedEvent(ApplicationFailedEvent event) {
+		finish();
+	}
+
+	private void finish() {
+		this.bootstrapRegistry.clear();
 		this.deferredLogs.switchOverAll();
 	}
 

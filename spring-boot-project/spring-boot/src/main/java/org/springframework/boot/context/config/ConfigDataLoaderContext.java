@@ -16,26 +16,22 @@
 
 package org.springframework.boot.context.config;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.util.Collections;
-
-import org.springframework.boot.env.ConfigTreePropertySource;
+import org.springframework.boot.env.BootstrapRegistry;
+import org.springframework.boot.env.EnvironmentPostProcessor;
 
 /**
- * {@link ConfigDataLoader} for config tree locations.
+ * Context provided to {@link ConfigDataLoader} methods.
  *
- * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.4.0
  */
-class ConfigTreeConfigDataLoader implements ConfigDataLoader<ConfigTreeConfigDataLocation> {
+public interface ConfigDataLoaderContext {
 
-	@Override
-	public ConfigData load(ConfigDataLoaderContext context, ConfigTreeConfigDataLocation location) throws IOException {
-		Path path = location.getPath();
-		String name = "Config tree '" + path + "'";
-		ConfigTreePropertySource source = new ConfigTreePropertySource(name, path);
-		return new ConfigData(Collections.singletonList(source));
-	}
+	/**
+	 * Provides access to the {@link BootstrapRegistry} shared across all
+	 * {@link EnvironmentPostProcessor EnvironmentPostProcessors}.
+	 * @return the bootstrap registry
+	 */
+	BootstrapRegistry getBootstrapRegistry();
 
 }

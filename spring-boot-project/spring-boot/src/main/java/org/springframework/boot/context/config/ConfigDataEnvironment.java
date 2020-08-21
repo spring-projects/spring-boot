@@ -25,6 +25,7 @@ import org.apache.commons.logging.Log;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributors.BinderOption;
 import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.env.BootstrapRegistry;
 import org.springframework.boot.env.DefaultPropertiesPropertySource;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -77,6 +78,8 @@ class ConfigDataEnvironment {
 
 	private final Log logger;
 
+	private final BootstrapRegistry bootstrapRegistry;
+
 	private final ConfigurableEnvironment environment;
 
 	private final ConfigDataLocationResolvers resolvers;
@@ -90,16 +93,18 @@ class ConfigDataEnvironment {
 	/**
 	 * Create a new {@link ConfigDataEnvironment} instance.
 	 * @param logFactory the deferred log factory
+	 * @param bootstrapRegistry the bootstrap registry
 	 * @param environment the Spring {@link Environment}.
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
 	 * @param additionalProfiles any additional profiles to activate
 	 */
-	ConfigDataEnvironment(DeferredLogFactory logFactory, ConfigurableEnvironment environment,
-			ResourceLoader resourceLoader, Collection<String> additionalProfiles) {
+	ConfigDataEnvironment(DeferredLogFactory logFactory, BootstrapRegistry bootstrapRegistry,
+			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles) {
 		Binder binder = Binder.get(environment);
 		UseLegacyConfigProcessingException.throwIfRequested(binder);
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
+		this.bootstrapRegistry = bootstrapRegistry;
 		this.environment = environment;
 		this.resolvers = createConfigDataLocationResolvers(logFactory, binder, resourceLoader);
 		this.additionalProfiles = additionalProfiles;
@@ -132,7 +137,7 @@ class ConfigDataEnvironment {
 			this.logger.trace("Creating wrapped config data contributor for default property source");
 			contributors.add(ConfigDataEnvironmentContributor.ofExisting(defaultPropertySource));
 		}
-		return new ConfigDataEnvironmentContributors(this.logFactory, contributors);
+		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapRegistry, contributors);
 	}
 
 	ConfigDataEnvironmentContributors getContributors() {
