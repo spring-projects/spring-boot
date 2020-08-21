@@ -28,6 +28,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Identityprovider.Verification;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration.Signing;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -37,8 +38,10 @@ import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Configuration @Configuration} used to map {@link Saml2RelyingPartyProperties} to
@@ -64,16 +67,25 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		boolean signRequest = properties.getIdentityprovider().getSinglesignon().isSignRequest();
-		validateSigningCredentials(properties, signRequest);
-		RelyingPartyRegistration.Builder builder = RelyingPartyRegistration.withRegistrationId(id);
+		RelyingPartyRegistration.Builder builder;
+		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUri());
+		if (usingMetadata) {
+			builder = RelyingPartyRegistrations.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri())
+					.registrationId(id);
+		}
+		else {
+			builder = RelyingPartyRegistration.withRegistrationId(id);
+		}
 		builder.assertionConsumerServiceLocation(
 				"{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
+		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		builder.assertingPartyDetails((details) -> {
-			details.singleSignOnServiceLocation(properties.getIdentityprovider().getSinglesignon().getUrl());
-			details.entityId(properties.getIdentityprovider().getEntityId());
-			details.singleSignOnServiceBinding(properties.getIdentityprovider().getSinglesignon().getBinding());
-			details.wantAuthnRequestsSigned(signRequest);
+			map.from(identityprovider::getEntityId).to(details::entityId);
+			map.from(identityprovider.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
+			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
+			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
+					.to(details::wantAuthnRequestsSigned);
 		});
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
@@ -81,7 +93,10 @@ class Saml2RelyingPartyRegistrationConfiguration {
 				.verificationX509Credentials((credentials) -> properties.getIdentityprovider().getVerification()
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
 		builder.entityId(properties.getRelyingPartyEntityId());
-		return builder.build();
+		RelyingPartyRegistration registration = builder.build();
+		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
+		validateSigningCredentials(properties, signRequest);
+		return registration;
 	}
 
 	private void validateSigningCredentials(Registration properties, boolean signRequest) {

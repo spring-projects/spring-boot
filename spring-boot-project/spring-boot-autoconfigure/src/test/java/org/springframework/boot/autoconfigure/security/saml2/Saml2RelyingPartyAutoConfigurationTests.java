@@ -16,10 +16,14 @@
 
 package org.springframework.boot.autoconfigure.security.saml2;
 
+import java.io.InputStream;
 import java.util.List;
 
 import javax.servlet.Filter;
 
+import okhttp3.mockwebserver.MockResponse;
+import okhttp3.mockwebserver.MockWebServer;
+import okio.Buffer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -30,6 +34,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -113,6 +118,20 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	}
 
 	@Test
+	void autoconfigurationShouldQueryIdentityProviderMetadataWhenMetadataUrlIsPresent() throws Exception {
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server);
+			this.contextRunner.withPropertyValues(PREFIX + ".foo.identityprovider.metadata-uri=" + metadataUrl)
+					.run((context) -> {
+						assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
+						assertThat(server.getRequestCount()).isEqualTo(1);
+					});
+		}
+	}
+
+	@Test
 	void relyingPartyRegistrationRepositoryShouldBeConditionalOnMissingBean() {
 		this.contextRunner.withPropertyValues(getPropertyValues())
 				.withUserConfiguration(RegistrationRepositoryConfiguration.class).run((context) -> {
@@ -174,6 +193,14 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		List<SecurityFilterChain> filterChains = filterChain.getFilterChains();
 		List<Filter> filters = filterChains.get(0).getFilters();
 		return filters.stream().anyMatch(filter::isInstance);
+	}
+
+	private void setupMockResponse(MockWebServer server) throws Exception {
+		try (InputStream metadataSource = new ClassPathResource("saml/idp-metadata").getInputStream()) {
+			Buffer metadataBuffer = new Buffer().readFrom(metadataSource);
+			MockResponse metadataResponse = new MockResponse().setBody(metadataBuffer);
+			server.enqueue(metadataResponse);
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)

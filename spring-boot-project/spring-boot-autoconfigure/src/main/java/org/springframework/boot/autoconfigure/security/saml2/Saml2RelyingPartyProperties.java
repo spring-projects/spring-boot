@@ -140,6 +140,11 @@ public class Saml2RelyingPartyProperties {
 		 */
 		private String entityId;
 
+		/**
+		 * Endpoint for discovery-based configuration.
+		 */
+		private String metadataUri;
+
 		private final Singlesignon singlesignon = new Singlesignon();
 
 		private final Verification verification = new Verification();
@@ -150,6 +155,14 @@ public class Saml2RelyingPartyProperties {
 
 		public void setEntityId(String entityId) {
 			this.entityId = entityId;
+		}
+
+		public String getMetadataUri() {
+			return this.metadataUri;
+		}
+
+		public void setMetadataUri(String metadataUri) {
+			this.metadataUri = metadataUri;
 		}
 
 		@Deprecated
