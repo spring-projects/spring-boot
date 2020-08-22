@@ -50,8 +50,8 @@ class ConfigDataActivationContextTests {
 	}
 
 	@Test
-	void getCloudPlatformWhenClouldPropertyInEnvironmentDeducesCloudPlatform() {
-		MockEnvironment environment = createKuberntesEnvironment();
+	void getCloudPlatformWhenCloudPropertyInEnvironmentDeducesCloudPlatform() {
+		MockEnvironment environment = createKubernetesEnvironment();
 		Binder binder = Binder.get(environment);
 		ConfigDataActivationContext context = new ConfigDataActivationContext(environment, binder);
 		assertThat(context.getCloudPlatform()).isEqualTo(CloudPlatform.KUBERNETES);
@@ -59,7 +59,7 @@ class ConfigDataActivationContextTests {
 
 	@Test
 	void getCloudPlatformWhenCloudPropertyHasBeenContributedDuringInitialLoadDeducesCloudPlatform() {
-		Environment environment = createKuberntesEnvironment();
+		Environment environment = createKubernetesEnvironment();
 		Binder binder = new Binder(
 				new MapConfigurationPropertySource(Collections.singletonMap("spring.main.cloud-platform", "HEROKU")));
 		ConfigDataActivationContext context = new ConfigDataActivationContext(environment, binder);
@@ -85,7 +85,7 @@ class ConfigDataActivationContextTests {
 		assertThat(context.getProfiles()).isEqualTo(profiles);
 	}
 
-	private MockEnvironment createKuberntesEnvironment() {
+	private MockEnvironment createKubernetesEnvironment() {
 		MockEnvironment environment = new MockEnvironment();
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("KUBERNETES_SERVICE_HOST", "host");

@@ -42,9 +42,9 @@ class InvalidConfigDataPropertyExceptionTests {
 
 	private ConfigurationPropertyName replacement = ConfigurationPropertyName.of("replacement");
 
-	private ConfigurationPropertyName invaid = ConfigurationPropertyName.of("invalid");
+	private ConfigurationPropertyName invalid = ConfigurationPropertyName.of("invalid");
 
-	private ConfigurationProperty property = new ConfigurationProperty(this.invaid, "bad", MockOrigin.of("origin"));
+	private ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", MockOrigin.of("origin"));
 
 	private Log logger = mock(Log.class);
 
@@ -68,7 +68,7 @@ class InvalidConfigDataPropertyExceptionTests {
 
 	@Test
 	void createWhenNoOriginHasCorrectMessage() {
-		ConfigurationProperty property = new ConfigurationProperty(this.invaid, "bad", null);
+		ConfigurationProperty property = new ConfigurationProperty(this.invalid, "bad", null);
 		assertThat(new InvalidConfigDataPropertyException(property, this.replacement, this.location)).hasMessage(
 				"Property 'invalid' imported from location 'test' is invalid and should be replaced with 'replacement'");
 	}
@@ -95,7 +95,7 @@ class InvalidConfigDataPropertyExceptionTests {
 	}
 
 	@Test
-	@Disabled("Disabled until spring.profiles suppport is dropped")
+	@Disabled("Disabled until spring.profiles support is dropped")
 	void throwOrWarnWhenHasInvalidPropertyThrowsException() {
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("spring.profiles", "a");
