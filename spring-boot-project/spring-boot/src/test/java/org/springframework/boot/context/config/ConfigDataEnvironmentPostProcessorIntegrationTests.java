@@ -218,7 +218,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenHasSystemPropertyLoadsWithSystemPropertyTakingPrecendence() {
+	void runWhenHasSystemPropertyLoadsWithSystemPropertyTakingPrecedence() {
 		System.setProperty("the.property", "fromsystem");
 		ConfigurableApplicationContext context = this.application.run("--spring.config.name=testproperties");
 		String property = context.getEnvironment().getProperty("the.property");
@@ -226,7 +226,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenHasDefaultPropertiesIncluesDefaultPropertiesLast() {
+	void runWhenHasDefaultPropertiesIncludesDefaultPropertiesLast() {
 		this.application.setDefaultProperties(Collections.singletonMap("my.fallback", "foo"));
 		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("my.fallback");
@@ -249,7 +249,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenProgrammticallySetProfilesLoadsWithSetProfilesTakePrecedenceOverDefaultProfile() {
+	void runWhenProgrammaticallySetProfilesLoadsWithSetProfilesTakePrecedenceOverDefaultProfile() {
 		this.application.setAdditionalProfiles("other");
 		ConfigurableApplicationContext context = this.application.run();
 		String property = context.getEnvironment().getProperty("my.property");

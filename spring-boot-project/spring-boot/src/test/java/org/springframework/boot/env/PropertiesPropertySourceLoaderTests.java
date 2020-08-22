@@ -49,7 +49,7 @@ class PropertiesPropertySourceLoaderTests {
 	}
 
 	@Test
-	void loadMultiDocumentPropertiesWithSeparatorAtTheBeginningofFile() throws Exception {
+	void loadMultiDocumentPropertiesWithSeparatorAtTheBeginningOfFile() throws Exception {
 		List<PropertySource<?>> loaded = this.loader.load("test.properties",
 				new ClassPathResource("multi-document-properties-2.properties", getClass()));
 		assertThat(loaded.size()).isEqualTo(2);

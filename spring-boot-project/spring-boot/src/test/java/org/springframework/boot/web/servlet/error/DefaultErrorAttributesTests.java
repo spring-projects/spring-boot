@@ -269,7 +269,7 @@ class DefaultErrorAttributesTests {
 	}
 
 	@Test
-	void whenGetMessageIsOverridenThenMessageAttributeContainsValueReturnedFromIt() {
+	void whenGetMessageIsOverriddenThenMessageAttributeContainsValueReturnedFromIt() {
 		Map<String, Object> attributes = new DefaultErrorAttributes() {
 
 			@Override

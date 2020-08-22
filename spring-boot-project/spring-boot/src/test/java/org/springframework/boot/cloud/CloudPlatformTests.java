@@ -154,7 +154,7 @@ class CloudPlatformTests {
 	}
 
 	@Test
-	void isEnforcedWhenEnvironmentPropertyIsMissingatchReturnsFalse() {
+	void isEnforcedWhenEnvironmentPropertyIsMissingReturnsFalse() {
 		MockEnvironment environment = new MockEnvironment();
 		assertThat(CloudPlatform.KUBERNETES.isEnforced(environment)).isFalse();
 	}
@@ -172,7 +172,7 @@ class CloudPlatformTests {
 	}
 
 	@Test
-	void isEnforcedWhenBinderPropertyIsMissingatchReturnsFalse() {
+	void isEnforcedWhenBinderPropertyIsMissingReturnsFalse() {
 		Binder binder = new Binder(new MockConfigurationPropertySource());
 		assertThat(CloudPlatform.KUBERNETES.isEnforced(binder)).isFalse();
 	}
