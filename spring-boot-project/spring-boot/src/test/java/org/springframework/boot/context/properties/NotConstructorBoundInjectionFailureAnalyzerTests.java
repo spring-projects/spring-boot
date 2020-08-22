@@ -50,7 +50,7 @@ class NotConstructorBoundInjectionFailureAnalyzerTests {
 	}
 
 	@Test
-	void failureAnaylsisForNonConstructorBoundProperties() {
+	void failureAnalysisForNonConstructorBoundProperties() {
 		FailureAnalysis analysis = analyzeFailure(createFailure(JavaBeanBoundPropertiesConfiguration.class));
 		assertThat(analysis).isNull();
 	}

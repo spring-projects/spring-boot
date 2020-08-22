@@ -149,7 +149,7 @@ class ConfigDataEnvironmentTests {
 	}
 
 	@Test
-	void processAndApplyMovesDefaultProperySourceToLast(TestInfo info) {
+	void processAndApplyMovesDefaultPropertySourceToLast(TestInfo info) {
 		MockPropertySource defaultPropertySource = new MockPropertySource("defaultProperties");
 		this.environment.getPropertySources().addFirst(defaultPropertySource);
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
@@ -188,7 +188,7 @@ class ConfigDataEnvironmentTests {
 	}
 
 	@Test
-	@Disabled("Disabled until spring.profiles suppport is dropped")
+	@Disabled("Disabled until spring.profiles support is dropped")
 	void processAndApplyWhenHasInvalidPropertyThrowsException() {
 		this.environment.setProperty("spring.profile", "a");
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapRegistry,
