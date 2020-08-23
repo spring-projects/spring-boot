@@ -564,8 +564,7 @@ class JarFileTests {
 			for (int i = 0; i < entries.size(); i++) {
 				JarEntry entry = entries.get(i);
 				InputStream entryInput = zip64JarFile.getInputStream(entry);
-				String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
-				assertThat(contents).isEqualTo("Entry " + (i + 1));
+				assertThat(entryInput).hasContent("Entry " + (i + 1));
 			}
 		}
 	}
@@ -594,8 +593,7 @@ class JarFileTests {
 				for (int i = 0; i < entries.size(); i++) {
 					JarEntry entry = entries.get(i);
 					InputStream entryInput = nestedZip64JarFile.getInputStream(entry);
-					String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
-					assertThat(contents).isEqualTo("Entry " + (i + 1));
+					assertThat(entryInput).hasContent("Entry " + (i + 1));
 				}
 			}
 		}
