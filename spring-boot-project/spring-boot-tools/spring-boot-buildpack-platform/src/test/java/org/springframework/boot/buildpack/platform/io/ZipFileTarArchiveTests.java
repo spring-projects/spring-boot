@@ -29,8 +29,6 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.util.StreamUtils;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
@@ -77,8 +75,7 @@ class ZipFileTarArchiveTests {
 			assertThat(fileEntry.getLongUserId()).isEqualTo(123);
 			assertThat(fileEntry.getLongGroupId()).isEqualTo(456);
 			assertThat(fileEntry.getSize()).isEqualTo(4);
-			String fileContent = StreamUtils.copyToString(tarStream, StandardCharsets.UTF_8);
-			assertThat(fileContent).isEqualTo("test");
+			assertThat(tarStream).hasContent("test");
 		}
 	}
 
