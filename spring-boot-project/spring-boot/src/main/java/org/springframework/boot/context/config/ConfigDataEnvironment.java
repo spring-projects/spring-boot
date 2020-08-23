@@ -235,7 +235,7 @@ class ConfigDataEnvironment {
 		MutablePropertySources propertySources = this.environment.getPropertySources();
 		this.logger.trace("Applying config data environment contributions");
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
-			if (contributor.getKind() == ConfigDataEnvironmentContributor.Kind.IMPORTED
+			if (contributor.getKind() == ConfigDataEnvironmentContributor.Kind.BOUND_IMPORT
 					&& contributor.getPropertySource() != null) {
 				if (!contributor.isActive(activationContext)) {
 					this.logger.trace(LogMessage.format("Skipping inactive property source '%s'",

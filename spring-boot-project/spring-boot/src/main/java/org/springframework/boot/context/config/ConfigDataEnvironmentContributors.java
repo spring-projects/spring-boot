@@ -29,6 +29,7 @@ import java.util.stream.Stream;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
+import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -91,27 +92,38 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		this.logger.trace(LogMessage.format("Processing imports for phase %s. %s", importPhase,
 				(activationContext != null) ? activationContext : "no activation context"));
 		ConfigDataEnvironmentContributors result = this;
-		int processedCount = 0;
+		int processed = 0;
 		while (true) {
-			ConfigDataEnvironmentContributor unprocessed = getFirstUnprocessed(result, activationContext, importPhase);
-			if (unprocessed == null) {
-				this.logger.trace(LogMessage.format("Processed imports for of %d contributors", processedCount));
+			ConfigDataEnvironmentContributor contributor = getNextToProcess(result, activationContext, importPhase);
+			if (contributor == null) {
+				this.logger.trace(LogMessage.format("Processed imports for of %d contributors", processed));
 				return result;
 			}
+			if (contributor.getKind() == Kind.UNBOUND_IMPORT) {
+				Iterable<ConfigurationPropertySource> sources = Collections
+						.singleton(contributor.getConfigurationPropertySource());
+				PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(
+						result, activationContext, true);
+				Binder binder = new Binder(sources, placeholdersResolver, null, null, null);
+				ConfigDataEnvironmentContributor bound = contributor.withBoundProperties(binder);
+				result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapRegistry,
+						result.getRoot().withReplacement(contributor, bound));
+				continue;
+			}
 			ConfigDataLocationResolverContext locationResolverContext = new ContributorConfigDataLocationResolverContext(
-					result, unprocessed, activationContext);
+					result, contributor, activationContext);
 			ConfigDataLoaderContext loaderContext = new ContributorDataLoaderContext(this);
-			List<String> imports = unprocessed.getImports();
+			List<String> imports = contributor.getImports();
 			this.logger.trace(LogMessage.format("Processing imports %s", imports));
 			Map<ConfigDataLocation, ConfigData> imported = importer.resolveAndLoad(activationContext,
 					locationResolverContext, loaderContext, imports);
 			this.logger.trace(LogMessage.of(() -> imported.isEmpty() ? "Nothing imported" : "Imported "
 					+ imported.size() + " location " + ((imported.size() != 1) ? "s" : "") + imported.keySet()));
-			ConfigDataEnvironmentContributor processed = unprocessed.withChildren(importPhase,
-					asContributors(activationContext, imported));
+			ConfigDataEnvironmentContributor contributorAndChildren = contributor.withChildren(importPhase,
+					asContributors(imported));
 			result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapRegistry,
-					result.getRoot().withReplacement(unprocessed, processed));
-			processedCount++;
+					result.getRoot().withReplacement(contributor, contributorAndChildren));
+			processed++;
 		}
 	}
 
@@ -119,22 +131,27 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return this.bootstrapRegistry;
 	}
 
-	private ConfigDataEnvironmentContributor getFirstUnprocessed(ConfigDataEnvironmentContributors contributors,
+	private ConfigDataEnvironmentContributor getNextToProcess(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext, ImportPhase importPhase) {
 		for (ConfigDataEnvironmentContributor contributor : contributors.getRoot()) {
-			if (contributor.isActive(activationContext) && contributor.hasUnprocessedImports(importPhase)) {
+			if (contributor.getKind() == Kind.UNBOUND_IMPORT
+					|| isActiveWithUnprocessedImports(activationContext, importPhase, contributor)) {
 				return contributor;
 			}
 		}
 		return null;
 	}
 
-	private List<ConfigDataEnvironmentContributor> asContributors(ConfigDataActivationContext activationContext,
-			Map<ConfigDataLocation, ConfigData> imported) {
+	private boolean isActiveWithUnprocessedImports(ConfigDataActivationContext activationContext,
+			ImportPhase importPhase, ConfigDataEnvironmentContributor contributor) {
+		return contributor.isActive(activationContext) && contributor.hasUnprocessedImports(importPhase);
+	}
+
+	private List<ConfigDataEnvironmentContributor> asContributors(Map<ConfigDataLocation, ConfigData> imported) {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>(imported.size() * 5);
 		imported.forEach((location, data) -> {
 			for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
-				contributors.add(ConfigDataEnvironmentContributor.ofImported(location, data, i, activationContext));
+				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, data, i));
 			}
 		});
 		return Collections.unmodifiableList(contributors);
@@ -155,14 +172,18 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 	 * @return a binder instance
 	 */
 	Binder getBinder(ConfigDataActivationContext activationContext, BinderOption... options) {
-		return getBinder(activationContext, ObjectUtils.isEmpty(options) ? EnumSet.noneOf(BinderOption.class)
-				: EnumSet.copyOf(Arrays.asList(options)));
+		return getBinder(activationContext, asBinderOptionsSet(options));
+	}
+
+	private Set<BinderOption> asBinderOptionsSet(BinderOption... options) {
+		return ObjectUtils.isEmpty(options) ? EnumSet.noneOf(BinderOption.class)
+				: EnumSet.copyOf(Arrays.asList(options));
 	}
 
 	private Binder getBinder(ConfigDataActivationContext activationContext, Set<BinderOption> options) {
 		boolean failOnInactiveSource = options.contains(BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		Iterable<ConfigurationPropertySource> sources = () -> getBinderSources(activationContext,
-				!failOnInactiveSource);
+				!options.contains(BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE));
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(this.root,
 				activationContext, failOnInactiveSource);
 		BindHandler bindHandler = !failOnInactiveSource ? null : new InactiveSourceChecker(activationContext);

@@ -268,10 +268,8 @@ class ConfigDataEnvironmentContributorsTests {
 		MockPropertySource secondPropertySource = new MockPropertySource();
 		secondPropertySource.setProperty("test", "two");
 		ConfigData configData = new ConfigData(Arrays.asList(firstPropertySource, secondPropertySource));
-		ConfigDataEnvironmentContributor firstContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 0, this.activationContext);
-		ConfigDataEnvironmentContributor secondContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 1, this.activationContext);
+		ConfigDataEnvironmentContributor firstContributor = createBoundImportContributor(configData, 0);
+		ConfigDataEnvironmentContributor secondContributor = createBoundImportContributor(configData, 1);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapRegistry, Arrays.asList(firstContributor, secondContributor));
 		Binder binder = contributors.getBinder(this.activationContext);
@@ -286,10 +284,8 @@ class ConfigDataEnvironmentContributorsTests {
 		MockPropertySource secondPropertySource = new MockPropertySource();
 		secondPropertySource.setProperty("test", "two");
 		ConfigData configData = new ConfigData(Arrays.asList(firstPropertySource, secondPropertySource));
-		ConfigDataEnvironmentContributor firstContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 0, this.activationContext);
-		ConfigDataEnvironmentContributor secondContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 1, this.activationContext);
+		ConfigDataEnvironmentContributor firstContributor = createBoundImportContributor(configData, 0);
+		ConfigDataEnvironmentContributor secondContributor = createBoundImportContributor(configData, 1);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapRegistry, Arrays.asList(firstContributor, secondContributor));
 		Binder binder = contributors.getBinder(this.activationContext);
@@ -317,10 +313,8 @@ class ConfigDataEnvironmentContributorsTests {
 		secondPropertySource.setProperty("other", "two");
 		secondPropertySource.setProperty("test", "${other}");
 		ConfigData configData = new ConfigData(Arrays.asList(firstPropertySource, secondPropertySource));
-		ConfigDataEnvironmentContributor firstContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 0, this.activationContext);
-		ConfigDataEnvironmentContributor secondContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 1, this.activationContext);
+		ConfigDataEnvironmentContributor firstContributor = createBoundImportContributor(configData, 0);
+		ConfigDataEnvironmentContributor secondContributor = createBoundImportContributor(configData, 1);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapRegistry, Arrays.asList(firstContributor, secondContributor));
 		Binder binder = contributors.getBinder(this.activationContext);
@@ -335,10 +329,8 @@ class ConfigDataEnvironmentContributorsTests {
 		MockPropertySource secondPropertySource = new MockPropertySource();
 		secondPropertySource.setProperty("test", "two");
 		ConfigData configData = new ConfigData(Arrays.asList(firstPropertySource, secondPropertySource));
-		ConfigDataEnvironmentContributor firstContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 0, this.activationContext);
-		ConfigDataEnvironmentContributor secondContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 1, this.activationContext);
+		ConfigDataEnvironmentContributor firstContributor = createBoundImportContributor(configData, 0);
+		ConfigDataEnvironmentContributor secondContributor = createBoundImportContributor(configData, 1);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapRegistry, Arrays.asList(firstContributor, secondContributor));
 		Binder binder = contributors.getBinder(this.activationContext, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
@@ -354,10 +346,8 @@ class ConfigDataEnvironmentContributorsTests {
 		secondPropertySource.setProperty("spring.config.activate.on-profile", "production");
 		secondPropertySource.setProperty("test", "two");
 		ConfigData configData = new ConfigData(Arrays.asList(firstPropertySource, secondPropertySource));
-		ConfigDataEnvironmentContributor firstContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 0, this.activationContext);
-		ConfigDataEnvironmentContributor secondContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 1, this.activationContext);
+		ConfigDataEnvironmentContributor firstContributor = createBoundImportContributor(configData, 0);
+		ConfigDataEnvironmentContributor secondContributor = createBoundImportContributor(configData, 1);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapRegistry, Arrays.asList(firstContributor, secondContributor));
 		Binder binder = contributors.getBinder(this.activationContext, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
@@ -374,15 +364,21 @@ class ConfigDataEnvironmentContributorsTests {
 		secondPropertySource.setProperty("test", "${other}");
 		secondPropertySource.setProperty("other", "one");
 		ConfigData configData = new ConfigData(Arrays.asList(firstPropertySource, secondPropertySource));
-		ConfigDataEnvironmentContributor firstContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 0, this.activationContext);
-		ConfigDataEnvironmentContributor secondContributor = ConfigDataEnvironmentContributor.ofImported(null,
-				configData, 1, this.activationContext);
+		ConfigDataEnvironmentContributor firstContributor = createBoundImportContributor(configData, 0);
+		ConfigDataEnvironmentContributor secondContributor = createBoundImportContributor(configData, 1);
 		ConfigDataEnvironmentContributors contributors = new ConfigDataEnvironmentContributors(this.logFactory,
 				this.bootstrapRegistry, Arrays.asList(firstContributor, secondContributor));
 		Binder binder = contributors.getBinder(this.activationContext, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> binder.bind("test", String.class))
 				.satisfies((ex) -> assertThat(ex.getCause()).isInstanceOf(InactiveConfigDataAccessException.class));
+	}
+
+	private ConfigDataEnvironmentContributor createBoundImportContributor(ConfigData configData,
+			int propertySourceIndex) {
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(null,
+				configData, propertySourceIndex);
+		Binder binder = new Binder(contributor.getConfigurationPropertySource());
+		return contributor.withBoundProperties(binder);
 	}
 
 	private static class TestConfigDataLocation extends ConfigDataLocation {

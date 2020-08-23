@@ -59,6 +59,8 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 
 	private final ConfigDataProperties properties;
 
+	private final boolean ignoreImports;
+
 	private final Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children;
 
 	private final Kind kind;
@@ -71,16 +73,18 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @param configurationPropertySource the configuration property source for the data
 	 * or {@code null}
 	 * @param properties the config data properties or {@code null}
+	 * @param ignoreImports if import properties should be ignored
 	 * @param children the children of this contributor at each {@link ImportPhase}
 	 */
 	ConfigDataEnvironmentContributor(Kind kind, ConfigDataLocation location, PropertySource<?> propertySource,
 			ConfigurationPropertySource configurationPropertySource, ConfigDataProperties properties,
-			Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children) {
+			boolean ignoreImports, Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children) {
 		this.kind = kind;
 		this.location = location;
 		this.properties = properties;
 		this.propertySource = propertySource;
 		this.configurationPropertySource = configurationPropertySource;
+		this.ignoreImports = ignoreImports;
 		this.children = (children != null) ? children : Collections.emptyMap();
 	}
 
@@ -175,6 +179,16 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		return new ContributorIterator();
 	}
 
+	ConfigDataEnvironmentContributor withBoundProperties(Binder binder) {
+		UseLegacyConfigProcessingException.throwIfRequested(binder);
+		ConfigDataProperties properties = ConfigDataProperties.get(binder);
+		if (this.ignoreImports) {
+			properties = properties.withoutImports();
+		}
+		return new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, this.location, this.propertySource,
+				this.configurationPropertySource, properties, this.ignoreImports, null);
+	}
+
 	/**
 	 * Create a new {@link ConfigDataEnvironmentContributor} instance with a new set of
 	 * children for the given phase.
@@ -187,7 +201,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		Map<ImportPhase, List<ConfigDataEnvironmentContributor>> updatedChildren = new LinkedHashMap<>(this.children);
 		updatedChildren.put(importPhase, children);
 		return new ConfigDataEnvironmentContributor(this.kind, this.location, this.propertySource,
-				this.configurationPropertySource, this.properties, updatedChildren);
+				this.configurationPropertySource, this.properties, this.ignoreImports, updatedChildren);
 	}
 
 	/**
@@ -212,7 +226,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 			updatedChildren.put(importPhase, Collections.unmodifiableList(updatedContributors));
 		});
 		return new ConfigDataEnvironmentContributor(this.kind, this.location, this.propertySource,
-				this.configurationPropertySource, this.properties, updatedChildren);
+				this.configurationPropertySource, this.properties, this.ignoreImports, updatedChildren);
 	}
 
 	/**
@@ -223,20 +237,20 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	static ConfigDataEnvironmentContributor of(List<ConfigDataEnvironmentContributor> contributors) {
 		Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children = new LinkedHashMap<>();
 		children.put(ImportPhase.BEFORE_PROFILE_ACTIVATION, Collections.unmodifiableList(contributors));
-		return new ConfigDataEnvironmentContributor(Kind.ROOT, null, null, null, null, children);
+		return new ConfigDataEnvironmentContributor(Kind.ROOT, null, null, null, null, false, children);
 	}
 
 	/**
 	 * Factory method to create a {@link Kind#INITIAL_IMPORT initial import} contributor.
 	 * This contributor is used to trigger initial imports of additional contributors. It
 	 * does not contribute any properties itself.
-	 * @param importLocation the initial import location
+	 * @param importLocation the initial import location (with placeholder resolved)
 	 * @return a new {@link ConfigDataEnvironmentContributor} instance
 	 */
 	static ConfigDataEnvironmentContributor ofInitialImport(String importLocation) {
 		List<String> imports = Collections.singletonList(importLocation);
 		ConfigDataProperties properties = new ConfigDataProperties(imports, null);
-		return new ConfigDataEnvironmentContributor(Kind.INITIAL_IMPORT, null, null, null, properties, null);
+		return new ConfigDataEnvironmentContributor(Kind.INITIAL_IMPORT, null, null, null, properties, false, null);
 	}
 
 	/**
@@ -248,31 +262,25 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	static ConfigDataEnvironmentContributor ofExisting(PropertySource<?> propertySource) {
 		return new ConfigDataEnvironmentContributor(Kind.EXISTING, null, propertySource,
-				ConfigurationPropertySource.from(propertySource), null, null);
+				ConfigurationPropertySource.from(propertySource), null, false, null);
 	}
 
 	/**
-	 * Factory method to create a {@link Kind#IMPORTED imported} contributor. This
-	 * contributor has been actively imported from another contributor and may itself
+	 * Factory method to create an {@link Kind#UNBOUND_IMPORT unbound import} contributor.
+	 * This contributor has been actively imported from another contributor and may itself
 	 * import further contributors later.
 	 * @param location the location of imported config data
 	 * @param configData the config data
 	 * @param propertySourceIndex the index of the property source that should be used
-	 * @param activationContext the current activation context
 	 * @return a new {@link ConfigDataEnvironmentContributor} instance
 	 */
-	static ConfigDataEnvironmentContributor ofImported(ConfigDataLocation location, ConfigData configData,
-			int propertySourceIndex, ConfigDataActivationContext activationContext) {
+	static ConfigDataEnvironmentContributor ofUnboundImport(ConfigDataLocation location, ConfigData configData,
+			int propertySourceIndex) {
 		PropertySource<?> propertySource = configData.getPropertySources().get(propertySourceIndex);
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySource.from(propertySource);
-		Binder binder = new Binder(configurationPropertySource);
-		UseLegacyConfigProcessingException.throwIfRequested(binder);
-		ConfigDataProperties properties = ConfigDataProperties.get(binder);
-		if (configData.getOptions().contains(ConfigData.Option.IGNORE_IMPORTS)) {
-			properties = properties.withoutImports();
-		}
-		return new ConfigDataEnvironmentContributor(Kind.IMPORTED, location, propertySource,
-				configurationPropertySource, properties, null);
+		boolean ignoreImports = configData.getOptions().contains(ConfigData.Option.IGNORE_IMPORTS);
+		return new ConfigDataEnvironmentContributor(Kind.UNBOUND_IMPORT, location, propertySource,
+				configurationPropertySource, null, ignoreImports, null);
 	}
 
 	/**
@@ -296,9 +304,16 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		EXISTING,
 
 		/**
-		 * A contributor with {@link ConfigData} imported from another contributor.
+		 * A contributor with {@link ConfigData} imported from another contributor but not
+		 * yet bound.
 		 */
-		IMPORTED;
+		UNBOUND_IMPORT,
+
+		/**
+		 * A contributor with {@link ConfigData} imported from another contributor that
+		 * has been.
+		 */
+		BOUND_IMPORT;
 
 	}
 

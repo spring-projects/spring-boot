@@ -35,6 +35,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -512,6 +513,27 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void runWhenUsingInvalidPropertyThrowsException() {
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class).isThrownBy(
 				() -> this.application.run("--spring.config.location=classpath:invalidproperty.properties"));
+	}
+
+	@Test
+	void runWhenImportUsesPlaceholder() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:application-import-with-placeholder.properties");
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported");
+	}
+
+	@Test
+	void runWhenImportFromEarlierDocumentUsesPlaceholder() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:application-import-with-placeholder-in-document.properties");
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported");
+	}
+
+	@Test
+	void runWhenHasPropertyInProfileDocumentThrowsException() {
+		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run(
+				"--spring.config.location=classpath:application-import-with-placeholder-in-profile-document.properties"))
+				.withCauseInstanceOf(InactiveConfigDataAccessException.class);
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
