@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.EnumSet;
@@ -25,6 +26,7 @@ import java.util.Map;
 import java.util.Set;
 
 import org.springframework.util.ClassUtils;
+import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -83,6 +85,17 @@ public abstract class LoggingSystem {
 	 * console only output
 	 */
 	public void initialize(LoggingInitializationContext initializationContext, String configLocation, LogFile logFile) {
+	}
+
+	/**
+	 * Validate the logging configuration.
+	 * @param initializationContext the logging initialization context.
+	 * @param logConfig the logging configuration location.
+	 * @throws IOException if an error occurs accessing the configuration.
+	 */
+	public void validateLoggingConfig(LoggingInitializationContext initializationContext, String logConfig)
+			throws IOException {
+		ResourceUtils.getURL(logConfig).openStream().close();
 	}
 
 	/**
