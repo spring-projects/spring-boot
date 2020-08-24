@@ -21,10 +21,8 @@ import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.Socket;
 import java.net.UnknownHostException;
-import java.util.Collection;
 
 import com.sun.jna.Platform;
-import org.apache.http.Header;
 import org.apache.http.HttpHost;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
@@ -40,10 +38,10 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
 import org.springframework.boot.buildpack.platform.system.Environment;
-import org.springframework.util.CollectionUtils;
 
 /**
  * {@link HttpClientTransport} that talks to local Docker.
@@ -59,19 +57,15 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 	private static final HttpHost LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
 
-	private LocalHttpClientTransport(CloseableHttpClient client) {
-		super(client, LOCAL_DOCKER_HOST);
+	private LocalHttpClientTransport(CloseableHttpClient client, DockerConfiguration dockerConfiguration) {
+		super(client, LOCAL_DOCKER_HOST, dockerConfiguration);
 	}
 
-	static LocalHttpClientTransport create(Environment environment,
-			Collection<Header> dockerEngineAuthenticationHeaders) {
+	static LocalHttpClientTransport create(Environment environment, DockerConfiguration dockerConfiguration) {
 		HttpClientBuilder builder = HttpClients.custom();
 		builder.setConnectionManager(new LocalConnectionManager(socketFilePath(environment)));
 		builder.setSchemePortResolver(new LocalSchemePortResolver());
-		if (!CollectionUtils.isEmpty(dockerEngineAuthenticationHeaders)) {
-			builder.setDefaultHeaders(dockerEngineAuthenticationHeaders);
-		}
-		return new LocalHttpClientTransport(builder.build());
+		return new LocalHttpClientTransport(builder.build(), dockerConfiguration);
 	}
 
 	private static String socketFilePath(Environment environment) {

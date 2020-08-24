@@ -54,7 +54,7 @@ public class Builder {
 	}
 
 	public Builder(BuildLog log) {
-		this(log, new DockerApi(new DockerConfiguration()));
+		this(log, new DockerApi());
 	}
 
 	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {

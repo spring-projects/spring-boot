@@ -1,0 +1,21 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::docker-auth-user[]
+bootBuildImage {
+	docker {
+		registry {
+			username = "user"
+			password = "secret"
+			url = "https://docker.example.com/v1/"
+			email = "user@example.com"
+		}
+	}
+}
+// end::docker-auth-user[]

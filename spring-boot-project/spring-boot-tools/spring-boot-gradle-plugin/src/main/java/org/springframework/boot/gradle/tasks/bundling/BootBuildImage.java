@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import groovy.lang.Closure;
+import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
@@ -27,15 +29,16 @@ import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
+import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -73,7 +76,7 @@ public class BootBuildImage extends DefaultTask {
 
 	private PullPolicy pullPolicy;
 
-	private Docker docker;
+	private DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
@@ -250,30 +253,36 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-	 * Returns the Docker configuration with the builder will be used.
+	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
+	 * @since 2.4.0
 	 */
-	@Input
-	@Optional
-	public Docker getDocker() {
+	@Nested
+	public DockerSpec getDocker() {
 		return this.docker;
 	}
 
 	/**
-	 * Sets the Docker configuration with the builder will be used.
-	 * @param docker docker configuration.
+	 * Configures the Docker connection using the given {@code action}.
+	 * @param action the action to apply
+	 * @since 2.4.0
 	 */
-	@Option(option = "docker", description = "The Docker configuration to use")
-	public void setDocker(Docker docker) {
-		this.docker = docker;
+	public void docker(Action<DockerSpec> action) {
+		action.execute(this.docker);
+	}
+
+	/**
+	 * Configures the Docker connection using the given {@code closure}.
+	 * @param closure the closure to apply
+	 * @since 2.4.0
+	 */
+	public void docker(Closure<?> closure) {
+		docker(ConfigureUtil.configureUsing(closure));
 	}
 
 	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
-		DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.getDockerConfiguration()
-				: new DockerConfiguration();
-
-		Builder builder = new Builder(dockerConfiguration);
+		Builder builder = new Builder(this.docker.asDockerConfiguration());
 		BuildRequest request = createRequest();
 		builder.build(request);
 	}

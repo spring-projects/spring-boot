@@ -36,10 +36,12 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for {@link HttpTransport} implementations backed by a
@@ -55,11 +57,14 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private final HttpHost host;
 
-	protected HttpClientTransport(CloseableHttpClient client, HttpHost host) {
+	private final String registryAuthHeader;
+
+	protected HttpClientTransport(CloseableHttpClient client, HttpHost host, DockerConfiguration dockerConfiguration) {
 		Assert.notNull(client, "Client must not be null");
 		Assert.notNull(host, "Host must not be null");
 		this.client = client;
 		this.host = host;
+		this.registryAuthHeader = buildRegistryAuthHeader(dockerConfiguration);
 	}
 
 	/**
@@ -116,6 +121,15 @@ abstract class HttpClientTransport implements HttpTransport {
 		return execute(new HttpDelete(uri));
 	}
 
+	private String buildRegistryAuthHeader(DockerConfiguration dockerConfiguration) {
+		if (dockerConfiguration == null || dockerConfiguration.getRegistryAuthentication() == null) {
+			return null;
+		}
+
+		String authHeader = dockerConfiguration.getRegistryAuthentication().createAuthHeader();
+		return (StringUtils.hasText(authHeader)) ? authHeader : null;
+	}
+
 	private Response execute(HttpEntityEnclosingRequestBase request, String contentType,
 			IOConsumer<OutputStream> writer) {
 		request.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
@@ -125,6 +139,9 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private Response execute(HttpUriRequest request) {
 		try {
+			if (this.registryAuthHeader != null) {
+				request.addHeader("X-Registry-Auth", this.registryAuthHeader);
+			}
 			CloseableHttpResponse response = this.client.execute(this.host, request);
 			StatusLine statusLine = response.getStatusLine();
 			int statusCode = statusLine.getStatusCode();

@@ -16,34 +16,41 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
+import org.springframework.util.Assert;
+
 /**
  * Docker configuration options.
  *
  * @author Wei Jiang
+ * @author Scott Frederick
  * @since 2.4.0
  */
-public class DockerConfiguration {
+public final class DockerConfiguration {
 
-	/**
-	 * The docker registry configuration.
-	 */
-	private DockerRegistryConfiguration dockerRegistryConfiguration;
+	private final DockerRegistryAuthentication authentication;
 
-	public DockerConfiguration() {
-		super();
+	private DockerConfiguration(DockerRegistryAuthentication authentication) {
+		this.authentication = authentication;
 	}
 
-	public DockerConfiguration(DockerRegistryConfiguration dockerRegistryConfiguration) {
-		super();
-		this.dockerRegistryConfiguration = dockerRegistryConfiguration;
+	public DockerRegistryAuthentication getRegistryAuthentication() {
+		return this.authentication;
 	}
 
-	public DockerRegistryConfiguration getDockerRegistryConfiguration() {
-		return this.dockerRegistryConfiguration;
+	public static DockerConfiguration withDefaults() {
+		return new DockerConfiguration(null);
 	}
 
-	public void setDockerRegistryConfiguration(DockerRegistryConfiguration dockerRegistryConfiguration) {
-		this.dockerRegistryConfiguration = dockerRegistryConfiguration;
+	public static DockerConfiguration withRegistryTokenAuthentication(String token) {
+		Assert.notNull(token, "Token must not be null");
+		return new DockerConfiguration(new DockerRegistryTokenAuthentication(token));
+	}
+
+	public static DockerConfiguration withRegistryUserAuthentication(String username, String password, String url,
+			String email) {
+		Assert.notNull(username, "Username must not be null");
+		Assert.notNull(password, "Password must not be null");
+		return new DockerConfiguration(new DockerRegistryUserAuthentication(username, password, url, email));
 	}
 
 }

@@ -21,11 +21,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
-import java.util.Collection;
-import java.util.Collections;
 
-import org.apache.http.Header;
-
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.system.Environment;
 
@@ -88,17 +85,17 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create() {
-		return create(Collections.emptyList());
+		return create(DockerConfiguration.withDefaults());
 	}
 
 	/**
 	 * Create the most suitable {@link HttpTransport} based on the
 	 * {@link Environment#SYSTEM system environment}.
-	 * @param dockerEngineAuthenticationHeaders authentication headerS for Docker engine.
+	 * @param dockerConfiguration the Docker engine configuration
 	 * @return a {@link HttpTransport} instance
 	 */
-	static HttpTransport create(Collection<Header> dockerEngineAuthenticationHeaders) {
-		return create(Environment.SYSTEM, dockerEngineAuthenticationHeaders);
+	static HttpTransport create(DockerConfiguration dockerConfiguration) {
+		return create(Environment.SYSTEM, dockerConfiguration);
 	}
 
 	/**
@@ -108,21 +105,19 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create(Environment environment) {
-		return create(environment, Collections.emptyList());
+		return create(environment, DockerConfiguration.withDefaults());
 	}
 
 	/**
 	 * Create the most suitable {@link HttpTransport} based on the given
-	 * {@link Environment}.
+	 * {@link Environment} and {@link DockerConfiguration}.
 	 * @param environment the source environment
-	 * @param dockerEngineAuthenticationHeaders authentication headerS for Docker engine.
+	 * @param dockerConfiguration the Docker engine configuration
 	 * @return a {@link HttpTransport} instance
 	 */
-	static HttpTransport create(Environment environment, Collection<Header> dockerEngineAuthenticationHeaders) {
-		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment,
-				dockerEngineAuthenticationHeaders);
-		return (remote != null) ? remote
-				: LocalHttpClientTransport.create(environment, dockerEngineAuthenticationHeaders);
+	static HttpTransport create(Environment environment, DockerConfiguration dockerConfiguration) {
+		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment, dockerConfiguration);
+		return (remote != null) ? remote : LocalHttpClientTransport.create(environment, dockerConfiguration);
 	}
 
 	/**
