@@ -2,7 +2,7 @@
     <extension>
         <groupId>com.gradle</groupId>
         <artifactId>gradle-enterprise-maven-extension</artifactId>
-        <version>1.6.1</version>
+        <version>1.6.2</version>
     </extension>
     <extension>
         <groupId>io.spring.ge.conventions</groupId>
