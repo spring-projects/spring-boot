@@ -26,7 +26,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 import io.undertow.UndertowOptions;
-import org.apache.commons.lang.ClassUtils;
 import org.xnio.Option;
 import org.xnio.Options;
 
@@ -40,6 +39,7 @@ import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.util.Assert;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.unit.DataSize;
 
@@ -170,7 +170,7 @@ public class UndertowWebServerFactoryCustomizer
 				map.forEach((key, value) -> {
 					Option<T> option = (Option<T>) this.nameLookup.get(getCanonicalName(key));
 					Assert.state(option != null,
-							"Unable to find '" + key + "' in " + ClassUtils.getShortClassName(this.source));
+							"Unable to find '" + key + "' in " + ClassUtils.getShortName(this.source));
 					T parsed = option.parseValue(value, getClass().getClassLoader());
 					function.apply(option).accept(parsed);
 				});
