@@ -445,6 +445,13 @@ If you add a `@Bean` annotated with `@Endpoint`, any methods annotated with `@Re
 Endpoints can be exposed over HTTP using Jersey, Spring MVC, or Spring WebFlux.
 If both Jersey and Spring MVC are available, Spring MVC will be used.
 
+The following example exposes a read operation that returns a custom object:
+
+[source,java,indent=0]
+----
+include::{code-examples}/actuate/endpoint/CustomEndpointExample.java[tag=read]
+----
+
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
 These endpoints are restricted to their respective technologies.
 For example, `@WebEndpoint` is exposed only over HTTP and not over JMX.
@@ -475,10 +482,15 @@ Consider the following JSON request body:
 	}
 ----
 
-This can be used to invoke a write operation that takes `String name` and `int counter` parameters.
+This can be used to invoke a write operation that takes `String name` and `int counter` parameters, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{code-examples}/actuate/endpoint/CustomEndpointExample.java[tag=write]
+----
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
-In particular declaring a single parameter with a custom type defining a `name` and `counter` properties is not supported.
+In particular declaring a single parameter with a `CustomData` type defining a `name` and `counter` properties is not supported.
 
 NOTE: To allow the input to be mapped to the operation method's parameters, Java code implementing an endpoint should be compiled with `-parameters`, and Kotlin code implementing an endpoint should be compiled with `-java-parameters`.
 This will happen automatically if you are using Spring Boot's Gradle plugin or if you are using Maven and `spring-boot-starter-parent`.
