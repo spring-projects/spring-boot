@@ -428,8 +428,21 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			getSearchLocations().forEach((location) -> {
 				boolean isDirectory = location.endsWith("/");
 				Set<String> names = isDirectory ? getSearchNames() : NO_SEARCH_NAMES;
-				names.forEach((name) -> load(location, name, profile, filterFactory, consumer));
+				names.forEach((name) -> load(stripOptionalPrefix(location), name, profile, filterFactory, consumer));
 			});
+		}
+
+		/**
+		 * Strip the optional prefix from the location. When using the legacy method, all
+		 * locations are optional.
+		 * @param location the location to strip
+		 * @return the stripped location
+		 */
+		private String stripOptionalPrefix(String location) {
+			if (location != null && location.startsWith(ConfigDataLocation.OPTIONAL_PREFIX)) {
+				return location.substring(ConfigDataLocation.OPTIONAL_PREFIX.length());
+			}
+			return location;
 		}
 
 		private void load(String location, String name, Profile profile, DocumentFilterFactory filterFactory,

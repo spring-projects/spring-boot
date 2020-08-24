@@ -41,7 +41,7 @@ class TestConfigDataBootstrap {
 		}
 
 		@Override
-		public List<Location> resolve(ConfigDataLocationResolverContext context, String location) {
+		public List<Location> resolve(ConfigDataLocationResolverContext context, String location, boolean optional) {
 			ResolverHelper helper = context.getBootstrapRegistry().get(ResolverHelper.class,
 					() -> new ResolverHelper(location));
 			return Collections.singletonList(new Location(helper));

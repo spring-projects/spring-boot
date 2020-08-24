@@ -151,13 +151,14 @@ class ConfigDataLocationResolversTests {
 		}
 
 		@Override
-		public List<TestConfigDataLocation> resolve(ConfigDataLocationResolverContext context, String location) {
+		public List<TestConfigDataLocation> resolve(ConfigDataLocationResolverContext context, String location,
+				boolean optional) {
 			return Collections.singletonList(new TestConfigDataLocation(this, location, false));
 		}
 
 		@Override
 		public List<TestConfigDataLocation> resolveProfileSpecific(ConfigDataLocationResolverContext context,
-				String location, Profiles profiles) {
+				String location, boolean optional, Profiles profiles) {
 			return Collections.singletonList(new TestConfigDataLocation(this, location, true));
 		}
 

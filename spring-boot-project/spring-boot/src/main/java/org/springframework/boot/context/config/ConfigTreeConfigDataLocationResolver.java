@@ -35,7 +35,8 @@ class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationResolver
 	}
 
 	@Override
-	public List<ConfigTreeConfigDataLocation> resolve(ConfigDataLocationResolverContext context, String location) {
+	public List<ConfigTreeConfigDataLocation> resolve(ConfigDataLocationResolverContext context, String location,
+			boolean optional) {
 		ConfigTreeConfigDataLocation resolved = new ConfigTreeConfigDataLocation(location.substring(PREFIX.length()));
 		return Collections.singletonList(resolved);
 	}

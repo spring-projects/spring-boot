@@ -30,6 +30,7 @@ class ResourceConfigDataLoader implements ConfigDataLoader<ResourceConfigDataLoc
 
 	@Override
 	public ConfigData load(ConfigDataLoaderContext context, ResourceConfigDataLocation location) throws IOException {
+		ConfigDataLocationNotFoundException.throwIfDoesNotExist(location, location.getResource());
 		return new ConfigData(location.load());
 	}
 

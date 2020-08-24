@@ -19,6 +19,7 @@ package org.springframework.boot.context.config;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 
@@ -28,6 +29,7 @@ import org.springframework.boot.util.Instantiator;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.StringUtils;
 
 /**
@@ -38,6 +40,8 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  */
 class ConfigDataLocationResolvers {
+
+	private final Log logger;
 
 	private final List<ConfigDataLocationResolver<?>> resolvers;
 
@@ -61,6 +65,7 @@ class ConfigDataLocationResolvers {
 	 */
 	ConfigDataLocationResolvers(DeferredLogFactory logFactory, Binder binder, ResourceLoader resourceLoader,
 			List<String> names) {
+		this.logger = logFactory.getLog(getClass());
 		Instantiator<ConfigDataLocationResolver<?>> instantiator = new Instantiator<>(ConfigDataLocationResolver.class,
 				(availableParameters) -> {
 					availableParameters.add(Log.class, logFactory::getLog);
@@ -106,26 +111,47 @@ class ConfigDataLocationResolvers {
 
 	private List<ConfigDataLocation> resolveAll(ConfigDataLocationResolverContext context, String location,
 			Profiles profiles) {
+		boolean optional = location != null && location.startsWith(ConfigDataLocation.OPTIONAL_PREFIX);
+		location = (!optional) ? location : location.substring(ConfigDataLocation.OPTIONAL_PREFIX.length());
 		if (!StringUtils.hasText(location)) {
 			return Collections.emptyList();
 		}
 		for (ConfigDataLocationResolver<?> resolver : getResolvers()) {
 			if (resolver.isResolvable(context, location)) {
-				return resolve(resolver, context, location, profiles);
+				return resolve(resolver, context, optional, location, profiles);
 			}
 		}
 		throw new UnsupportedConfigDataLocationException(location);
 	}
 
 	private List<ConfigDataLocation> resolve(ConfigDataLocationResolver<?> resolver,
-			ConfigDataLocationResolverContext context, String location, Profiles profiles) {
-		List<ConfigDataLocation> resolved = nonNullList(resolver.resolve(context, location));
+			ConfigDataLocationResolverContext context, boolean optional, String location, Profiles profiles) {
+		List<ConfigDataLocation> resolved = resolve(location, optional,
+				() -> resolver.resolve(context, location, optional));
 		if (profiles == null) {
 			return resolved;
 		}
-		List<ConfigDataLocation> profileSpecific = nonNullList(
-				resolver.resolveProfileSpecific(context, location, profiles));
+		List<ConfigDataLocation> profileSpecific = resolve(location, optional,
+				() -> resolver.resolveProfileSpecific(context, location, optional, profiles));
 		return merge(resolved, profileSpecific);
+	}
+
+	private List<ConfigDataLocation> resolve(String location, boolean optional,
+			Supplier<List<? extends ConfigDataLocation>> resolveAction) {
+		try {
+			List<ConfigDataLocation> resolved = nonNullList(resolveAction.get());
+			if (!resolved.isEmpty() && optional) {
+				resolved = OptionalConfigDataLocation.wrapAll(resolved);
+			}
+			return resolved;
+		}
+		catch (ConfigDataLocationNotFoundException ex) {
+			if (!optional) {
+				throw ex;
+			}
+			this.logger.trace(LogMessage.format("Skipping missing resource from optional location %s", location));
+			return Collections.emptyList();
+		}
 	}
 
 	@SuppressWarnings("unchecked")

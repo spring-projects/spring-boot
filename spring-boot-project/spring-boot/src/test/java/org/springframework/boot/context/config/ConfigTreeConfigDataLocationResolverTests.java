@@ -49,7 +49,8 @@ class ConfigTreeConfigDataLocationResolverTests {
 
 	@Test
 	void resolveReturnsConfigVolumeMountLocation() {
-		List<ConfigTreeConfigDataLocation> locations = this.resolver.resolve(this.context, "configtree:/etc/config");
+		List<ConfigTreeConfigDataLocation> locations = this.resolver.resolve(this.context, "configtree:/etc/config",
+				false);
 		assertThat(locations.size()).isEqualTo(1);
 		assertThat(locations).extracting(Object::toString)
 				.containsExactly("config tree [" + new File("/etc/config").getAbsolutePath() + "]");

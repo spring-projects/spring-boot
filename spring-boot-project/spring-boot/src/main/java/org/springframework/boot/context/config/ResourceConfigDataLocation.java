@@ -55,6 +55,10 @@ class ResourceConfigDataLocation extends ConfigDataLocation {
 		this.propertySourceLoader = propertySourceLoader;
 	}
 
+	Resource getResource() {
+		return this.resource;
+	}
+
 	String getLocation() {
 		return this.name;
 	}

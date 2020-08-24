@@ -69,8 +69,8 @@ class ConfigDataEnvironment {
 	/**
 	 * Default search locations used if not {@link #LOCATION_PROPERTY} is found.
 	 */
-	static final String[] DEFAULT_SEARCH_LOCATIONS = { "classpath:/", "classpath:/config/", "file:./",
-			"file:./config/*/", "file:./config/" };
+	static final String[] DEFAULT_SEARCH_LOCATIONS = { "optional:classpath:/", "optional:classpath:/config/",
+			"optional:file:./", "optional:file:./config/*/", "optional:file:./config/" };
 
 	private static final String[] EMPTY_LOCATIONS = new String[0];
 

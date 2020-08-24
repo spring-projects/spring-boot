@@ -60,11 +60,14 @@ public interface ConfigDataLocationResolver<L extends ConfigDataLocation> {
 	 * Resolve a location string into one or more {@link ConfigDataLocation} instances.
 	 * @param context the location resolver context
 	 * @param location the location that should be resolved
+	 * @param optional if the location is optional
 	 * @return a list of resolved locations in ascending priority order. If the same key
 	 * is contained in more than one of the location, then the later source will win.
-	 *
+	 * @throws ConfigDataLocationNotFoundException on a non-optional location that cannot
+	 * be found
 	 */
-	List<L> resolve(ConfigDataLocationResolverContext context, String location);
+	List<L> resolve(ConfigDataLocationResolverContext context, String location, boolean optional)
+			throws ConfigDataLocationNotFoundException;
 
 	/**
 	 * Resolve a location string into one or more {@link ConfigDataLocation} instances
@@ -72,12 +75,15 @@ public interface ConfigDataLocationResolver<L extends ConfigDataLocation> {
 	 * from the contributed values. By default this method returns an empty list.
 	 * @param context the location resolver context
 	 * @param location the location that should be resolved
+	 * @param optional if the location is optional
 	 * @param profiles profile information
 	 * @return a list of resolved locations in ascending priority order.If the same key is
 	 * contained in more than one of the location, then the later source will win.
+	 * @throws ConfigDataLocationNotFoundException on a non-optional location that cannot
+	 * be found
 	 */
-	default List<L> resolveProfileSpecific(ConfigDataLocationResolverContext context, String location,
-			Profiles profiles) {
+	default List<L> resolveProfileSpecific(ConfigDataLocationResolverContext context, String location, boolean optional,
+			Profiles profiles) throws ConfigDataLocationNotFoundException {
 		return Collections.emptyList();
 	}
 

@@ -570,8 +570,10 @@ The following example shows how to specify two locations:
 
 [indent=0]
 ----
-	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
+	$ java -jar myproject.jar --spring.config.location=optional:classpath:/default.properties,optional:classpath:/override.properties
 ----
+
+TIP: Use the prefix `optional:` if the <<boot-features-external-config-optional-prefix,locations are optional>> and you don't mind if they don't exist.
 
 WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
@@ -584,22 +586,22 @@ Typical extensions that are supported out-of-the-box are `.properties`, `.yaml`,
 When multiple locations are specified, the later ones can override the values of earlier ones.
 
 Locations configured by using `spring.config.location` replace the default locations.
-For example, if `spring.config.location` is configured with the value `classpath:/custom-config/,file:./custom-config/`, the complete set of locations considered is:
+For example, if `spring.config.location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
 
-. `classpath:custom-config/`
-. `file:./custom-config/`
+. `optional:classpath:custom-config/`
+. `optional:file:./custom-config/`
 
 If you prefer to add addition locations, rather than replacing them, you can use `spring.config.additional-location`.
 Properties loaded from additional locations can override those in the default locations.
-For example, if `spring.config.additional-location` is configured with the value `classpath:/custom-config/,file:./custom-config/`, the complete the complete set of locations considered is:
+For example, if `spring.config.additional-location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete the complete set of locations considered is:
 
-. `classpath:/`
-. `classpath:/config/`
-. `file:./`
-. `file:./config/*/`
-. `file:./config/`
-. `classpath:custom-config/`
-. `file:./custom-config/`
+. `optional:classpath:/`
+. `optional:classpath:/config/`
+. `optional:file:./`
+. `optional:file:./config/*/`
+. `optional:file:./config/`
+. `optional:classpath:custom-config/`
+. `optional:file:./custom-config/`
 
 This search ordering lets you specify default values in one configuration file and then selectively override those values in another.
 You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
@@ -609,6 +611,17 @@ NOTE: If you use environment variables rather than system properties, most opera
 See <<boot-features-external-config-relaxed-binding-from-environment-variables>> for details.
 
 NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
+
+
+
+[[boot-features-external-config-optional-prefix]]
+==== Optional Locations
+By default, when a specified config data location does not exist, Spring Boot will throw a `ConfigDataLocationNotFoundException` and your application will not start.
+
+If you want to specify a location, but you don't mind if it doesn't always exist, you can use the `optional:` prefix.
+You can use this prefix with the `spring.config.location` and `spring.config.additional-location` properties, as well as with <<boot-features-external-config-files-importing, `spring.config.import`>> declarations.
+
+For example, a `spring.config.import` value of `optional:file:./myconfig.properties` allows your application to start, even if the `myconfig.properties` file is missing.
 
 
 
@@ -662,7 +675,7 @@ For example, you might have the following in your classpath `application.propert
 [source,properties,indent=0]
 ----
 	spring.application.name=myapp
-	spring.config.import=file:./dev.properties
+	spring.config.import=optional:file:./dev.properties
 ----
 
 This will trigger the import of a `dev.properties` file in current directory (if such a file exists).
@@ -718,7 +731,7 @@ To import these properties, you can add the following to your `application.prope
 
 [source,properties,indent=0]
 ----
-spring.config.import=configtree:/etc/config
+spring.config.import=optional:configtree:/etc/config
 ----
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.

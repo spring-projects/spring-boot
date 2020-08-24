@@ -27,4 +27,9 @@ package org.springframework.boot.context.config;
  */
 public abstract class ConfigDataLocation {
 
+	/**
+	 * Prefix used to indicate that a {@link ConfigDataLocation} is optional.
+	 */
+	public static final String OPTIONAL_PREFIX = "optional:";
+
 }

@@ -86,9 +86,25 @@ class ConfigDataLoaders {
 	 * @throws IOException on IO error
 	 */
 	<L extends ConfigDataLocation> ConfigData load(ConfigDataLoaderContext context, L location) throws IOException {
+		boolean optional = location instanceof OptionalConfigDataLocation;
+		location = (!optional) ? location : OptionalConfigDataLocation.unwrap(location);
+		return load(context, optional, location);
+	}
+
+	private <L extends ConfigDataLocation> ConfigData load(ConfigDataLoaderContext context, boolean optional,
+			L location) throws IOException {
 		ConfigDataLoader<L> loader = getLoader(context, location);
 		this.logger.trace(LogMessage.of(() -> "Loading " + location + " using loader " + loader.getClass().getName()));
-		return loader.load(context, location);
+		try {
+			return loader.load(context, location);
+		}
+		catch (ConfigDataLocationNotFoundException ex) {
+			if (!optional) {
+				throw ex;
+			}
+			this.logger.trace(LogMessage.format("Skipping missing resource from optional location %s", location));
+			return null;
+		}
 	}
 
 	@SuppressWarnings("unchecked")

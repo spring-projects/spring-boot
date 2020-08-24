@@ -77,7 +77,10 @@ class ConfigDataImporter {
 		for (int i = locations.size() - 1; i >= 0; i--) {
 			ConfigDataLocation location = locations.get(i);
 			if (this.loadedLocations.add(location)) {
-				result.put(location, this.loaders.load(loaderContext, location));
+				ConfigData loaded = this.loaders.load(loaderContext, location);
+				if (loaded != null) {
+					result.put(location, loaded);
+				}
 			}
 		}
 		return Collections.unmodifiableMap(result);

@@ -54,7 +54,9 @@ public interface ConfigDataLoader<L extends ConfigDataLocation> {
 	 * @param location the location to load
 	 * @return the loaded config data or {@code null} if the location should be skipped
 	 * @throws IOException on IO error
+	 * @throws ConfigDataLocationNotFoundException if the location cannot be found
 	 */
-	ConfigData load(ConfigDataLoaderContext context, L location) throws IOException;
+	ConfigData load(ConfigDataLoaderContext context, L location)
+			throws IOException, ConfigDataLocationNotFoundException;
 
 }

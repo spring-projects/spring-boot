@@ -28,6 +28,7 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -56,6 +57,14 @@ public class ConfigTreeConfigDataLoaderTests {
 		PropertySource<?> source = configData.getPropertySources().get(0);
 		assertThat(source.getName()).isEqualTo("Config tree '" + this.directory.toString() + "'");
 		assertThat(source.getProperty("hello").toString()).isEqualTo("world");
+	}
+
+	@Test
+	void loadWhenPathDoesNotExistThrowsException() {
+		File missing = this.directory.resolve("missing").toFile();
+		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation(missing.toString());
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
+				.isThrownBy(() -> this.loader.load(this.loaderContext, location));
 	}
 
 }

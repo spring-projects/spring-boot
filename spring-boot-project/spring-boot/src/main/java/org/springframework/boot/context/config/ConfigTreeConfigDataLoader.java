@@ -32,6 +32,7 @@ class ConfigTreeConfigDataLoader implements ConfigDataLoader<ConfigTreeConfigDat
 
 	@Override
 	public ConfigData load(ConfigDataLoaderContext context, ConfigTreeConfigDataLocation location) throws IOException {
+		ConfigDataLocationNotFoundException.throwIfDoesNotExist(location, location.getPath());
 		Path path = location.getPath();
 		String name = "Config tree '" + path + "'";
 		ConfigTreePropertySource source = new ConfigTreePropertySource(name, path);

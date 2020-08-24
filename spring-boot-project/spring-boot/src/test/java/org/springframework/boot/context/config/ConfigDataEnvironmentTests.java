@@ -198,7 +198,7 @@ class ConfigDataEnvironmentTests {
 	}
 
 	private String getConfigLocation(TestInfo info) {
-		return "classpath:" + info.getTestClass().get().getName().replace('.', '/') + "-"
+		return "optional:classpath:" + info.getTestClass().get().getName().replace('.', '/') + "-"
 				+ info.getTestMethod().get().getName() + ".properties";
 	}
 
