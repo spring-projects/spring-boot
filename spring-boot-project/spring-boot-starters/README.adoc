@@ -112,6 +112,9 @@ do as they were designed before this was clarified.
 | Hiatus for Spring Boot
 | https://github.com/jihor/hiatus-spring-boot
 
+| https://www.hyperledger.org/use/fabric[Hyperledger Fabric]
+| https://github.com/bxforce/hyperledger-fabric-spring-boot
+
 | https://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
