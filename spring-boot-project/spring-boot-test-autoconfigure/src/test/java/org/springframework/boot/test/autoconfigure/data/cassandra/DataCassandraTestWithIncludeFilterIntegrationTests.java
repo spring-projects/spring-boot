@@ -45,7 +45,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataCassandraTest(includeFilters = @Filter(Service.class),
 		properties = { "spring.data.cassandra.local-datacenter=datacenter1",
 				"spring.data.cassandra.schema-action=create-if-not-exists",
-				"spring.data.cassandra.connection.connect-timeout=10s", "spring.data.cassandra.request.timeout=5s" })
+				"spring.data.cassandra.connection.connect-timeout=20s",
+				"spring.data.cassandra.connection.init-query-timeout=2s", "spring.data.cassandra.request.timeout=10s" })
 @Testcontainers(disabledWithoutDocker = true)
 class DataCassandraTestWithIncludeFilterIntegrationTests {
 
