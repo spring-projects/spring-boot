@@ -57,7 +57,6 @@ public enum Include {
 	PRINCIPAL,
 
 	/**
-	 *
 	 * Include the remote address.
 	 */
 	REMOTE_ADDRESS,
