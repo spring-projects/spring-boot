@@ -167,8 +167,7 @@ public class UndertowWebServerFactoryCustomizer
 		<T> Consumer<Map<String, String>> forEach(Function<Option<T>, Consumer<T>> function) {
 			return (map) -> map.forEach((key, value) -> {
 				Option<T> option = (Option<T>) this.nameLookup.get(getCanonicalName(key));
-				Assert.state(option != null,
-						"Unable to find '" + key + "' in " + ClassUtils.getShortName(this.source));
+				Assert.state(option != null, "Unable to find '" + key + "' in " + ClassUtils.getShortName(this.source));
 				T parsed = option.parseValue(value, getClass().getClassLoader());
 				function.apply(option).accept(parsed);
 			});
