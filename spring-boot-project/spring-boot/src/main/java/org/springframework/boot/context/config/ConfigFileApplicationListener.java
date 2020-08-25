@@ -259,7 +259,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	 */
 	private static class PropertySourceOrderingPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
-		private ConfigurableApplicationContext context;
+		private final ConfigurableApplicationContext context;
 
 		PropertySourceOrderingPostProcessor(ConfigurableApplicationContext context) {
 			this.context = context;
