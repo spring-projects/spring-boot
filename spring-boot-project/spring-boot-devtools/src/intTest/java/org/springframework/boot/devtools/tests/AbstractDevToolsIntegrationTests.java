@@ -65,7 +65,7 @@ abstract class AbstractDevToolsIntegrationTests {
 	}
 
 	protected int awaitServerPort() throws Exception {
-		int port = Awaitility.waitAtMost(Duration.ofSeconds(30))
+		int port = Awaitility.waitAtMost(Duration.ofMinutes(3))
 				.until(() -> new ApplicationState(this.serverPortFile, this.launchedApplication),
 						ApplicationState::hasServerPort)
 				.getServerPort();
