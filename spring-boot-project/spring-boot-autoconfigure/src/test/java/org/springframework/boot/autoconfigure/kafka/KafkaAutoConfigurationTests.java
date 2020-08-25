@@ -368,8 +368,8 @@ class KafkaAutoConfigurationTests {
 						"spring.kafka.listener.ack-count=123", "spring.kafka.listener.ack-time=456",
 						"spring.kafka.listener.concurrency=3", "spring.kafka.listener.poll-timeout=2000",
 						"spring.kafka.listener.no-poll-threshold=2.5", "spring.kafka.listener.type=batch",
-						"spring.kafka.listener.idle-event-interval=1s", "spring.kafka.listener.monitor-interval=45",
-						"spring.kafka.listener.log-container-config=true",
+						"spring.kafka.listener.idle-between-polls=1s", "spring.kafka.listener.idle-event-interval=1s",
+						"spring.kafka.listener.monitor-interval=45", "spring.kafka.listener.log-container-config=true",
 						"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
 						"spring.kafka.producer.transaction-id-prefix=foo", "spring.kafka.jaas.login-module=foo",
 						"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true")
@@ -392,6 +392,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(containerProperties.getAckTime()).isEqualTo(456L);
 					assertThat(containerProperties.getPollTimeout()).isEqualTo(2000L);
 					assertThat(containerProperties.getNoPollThreshold()).isEqualTo(2.5f);
+					assertThat(containerProperties.getIdleBetweenPolls()).isEqualTo(1000L);
 					assertThat(containerProperties.getIdleEventInterval()).isEqualTo(1000L);
 					assertThat(containerProperties.getMonitorInterval()).isEqualTo(45);
 					assertThat(containerProperties.isLogContainerConfig()).isTrue();

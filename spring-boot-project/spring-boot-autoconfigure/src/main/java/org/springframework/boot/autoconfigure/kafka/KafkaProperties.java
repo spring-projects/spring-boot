@@ -886,15 +886,14 @@ public class KafkaProperties {
 		private Duration ackTime;
 
 		/**
+		 * Sleep interval between Consumer.poll(Duration) calls.
+		 */
+		private Duration idleBetweenPolls = Duration.ZERO;
+
+		/**
 		 * Time between publishing idle consumer events (no data received).
 		 */
 		private Duration idleEventInterval;
-
-		/**
-		 * The sleep interval in milliseconds between
-		 * {@link org.apache.kafka.clients.consumer.Consumer#poll(Duration)} calls.
-		 */
-		private Duration idleBetweenPolls;
 
 		/**
 		 * Time between checks for non-responsive consumers. If a duration suffix is not
@@ -978,20 +977,20 @@ public class KafkaProperties {
 			this.ackTime = ackTime;
 		}
 
+		public Duration getIdleBetweenPolls() {
+			return this.idleBetweenPolls;
+		}
+
+		public void setIdleBetweenPolls(Duration idleBetweenPolls) {
+			this.idleBetweenPolls = idleBetweenPolls;
+		}
+
 		public Duration getIdleEventInterval() {
 			return this.idleEventInterval;
 		}
 
 		public void setIdleEventInterval(Duration idleEventInterval) {
 			this.idleEventInterval = idleEventInterval;
-		}
-
-		public Duration getIdleBetweenPolls() {
-			return idleBetweenPolls;
-		}
-
-		public void setIdleBetweenPolls(Duration idleBetweenPolls) {
-			this.idleBetweenPolls = idleBetweenPolls;
 		}
 
 		public Duration getMonitorInterval() {
@@ -1017,6 +1016,7 @@ public class KafkaProperties {
 		public void setMissingTopicsFatal(boolean missingTopicsFatal) {
 			this.missingTopicsFatal = missingTopicsFatal;
 		}
+
 	}
 
 	public static class Ssl {
