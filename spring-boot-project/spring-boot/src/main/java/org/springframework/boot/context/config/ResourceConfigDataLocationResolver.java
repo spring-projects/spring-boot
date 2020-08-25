@@ -25,6 +25,7 @@ import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
@@ -62,6 +63,8 @@ class ResourceConfigDataLocationResolver implements ConfigDataLocationResolver<R
 	private static final Comparator<File> FILE_COMPARATOR = Comparator.comparing(File::getAbsolutePath);
 
 	private static final Pattern URL_PREFIX = Pattern.compile("^([a-zA-Z][a-zA-Z0-9*]*?:)(.*$)");
+
+	private static final Pattern EXTENSION_HINT_PATTERN = Pattern.compile("^(.*)\\[(\\.\\w+)\\](?!\\[)$");
 
 	private static final String NO_PROFILE = null;
 
@@ -183,11 +186,17 @@ class ResourceConfigDataLocationResolver implements ConfigDataLocationResolver<R
 	}
 
 	private Set<Resolvable> getResolvablesForFile(String fileLocation, boolean optional, String profile) {
+		Matcher extensionHintMatcher = EXTENSION_HINT_PATTERN.matcher(fileLocation);
+		boolean extensionHintLocation = extensionHintMatcher.matches();
+		if (extensionHintLocation) {
+			fileLocation = extensionHintMatcher.group(1) + extensionHintMatcher.group(2);
+		}
 		for (PropertySourceLoader loader : this.propertySourceLoaders) {
 			String extension = getLoadableFileExtension(loader, fileLocation);
 			if (extension != null) {
 				String root = fileLocation.substring(0, fileLocation.length() - extension.length() - 1);
-				return Collections.singleton(new Resolvable(null, root, optional, profile, extension, loader));
+				return Collections.singleton(new Resolvable(null, root, optional, profile,
+						(!extensionHintLocation) ? extension : null, loader));
 			}
 		}
 		throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
@@ -343,7 +352,7 @@ class ResourceConfigDataLocationResolver implements ConfigDataLocationResolver<R
 				PropertySourceLoader loader) {
 			String profileSuffix = (StringUtils.hasText(profile)) ? "-" + profile : "";
 			this.directory = directory;
-			this.resourceLocation = rootLocation + profileSuffix + "." + extension;
+			this.resourceLocation = rootLocation + profileSuffix + ((extension != null) ? "." + extension : "");
 			this.optional = optional;
 			this.profile = profile;
 			this.loader = loader;

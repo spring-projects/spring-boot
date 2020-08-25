@@ -26,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.PropertiesPropertySourceLoader;
 import org.springframework.boot.logging.DeferredLog;
+import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -204,6 +205,17 @@ public class ResourceConfigDataLocationResolverTests {
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location, true))
 				.withMessageStartingWith("Unable to load config data from 'application.other'")
 				.satisfies((ex) -> assertThat(ex.getCause()).hasMessageStartingWith("File extension is not known"));
+	}
+
+	@Test
+	void resolveWhenLocationUsesOptionalExtensionSyntaxResolves() throws Exception {
+		String location = "classpath:/application-props-no-extension[.properties]";
+		List<ResourceConfigDataLocation> locations = this.resolver.resolve(this.context, location, true);
+		assertThat(locations.size()).isEqualTo(1);
+		ResourceConfigDataLocation resolved = locations.get(0);
+		assertThat(resolved.getResource().getFilename()).endsWith("application-props-no-extension");
+		PropertySource<?> propertySource = resolved.load().get(0);
+		assertThat(propertySource.getProperty("withnotext")).isEqualTo("test");
 	}
 
 	@Test
