@@ -886,6 +886,11 @@ public class KafkaProperties {
 		private Duration ackTime;
 
 		/**
+		 * Sleep interval between Consumer.poll(Duration) calls.
+		 */
+		private Duration idleBetweenPolls = Duration.ZERO;
+
+		/**
 		 * Time between publishing idle consumer events (no data received).
 		 */
 		private Duration idleEventInterval;
@@ -970,6 +975,14 @@ public class KafkaProperties {
 
 		public void setAckTime(Duration ackTime) {
 			this.ackTime = ackTime;
+		}
+
+		public Duration getIdleBetweenPolls() {
+			return this.idleBetweenPolls;
+		}
+
+		public void setIdleBetweenPolls(Duration idleBetweenPolls) {
+			this.idleBetweenPolls = idleBetweenPolls;
 		}
 
 		public Duration getIdleEventInterval() {
