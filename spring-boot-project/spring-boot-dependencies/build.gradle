@@ -1205,6 +1205,13 @@ bom {
 			]
 		}
 	}
+	library("Nimbus JOSE JWT", "8.8") {
+		group("com.nimbusds") {
+			modules = [
+				"nimbus-jose-jwt"
+			]
+		}
+	}
 	library("OJDBC", "19.3.0.0") {
 		group("com.oracle.ojdbc") {
 			modules = [
