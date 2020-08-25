@@ -26,7 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -54,7 +54,7 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 	void transactionManagerWithExistingDataSourceIsConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.run((context) -> {
-					assertThat(context).hasSingleBean(PlatformTransactionManager.class)
+					assertThat(context).hasSingleBean(TransactionManager.class)
 							.hasSingleBean(DataSourceTransactionManager.class);
 					assertThat(context.getBean(DataSourceTransactionManager.class).getDataSource())
 							.isSameAs(context.getBean(DataSource.class));
@@ -67,7 +67,7 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 				.withPropertyValues("spring.transaction.default-timeout=1m",
 						"spring.transaction.rollback-on-commit-failure=true")
 				.run((context) -> {
-					assertThat(context).hasSingleBean(PlatformTransactionManager.class)
+					assertThat(context).hasSingleBean(TransactionManager.class)
 							.hasSingleBean(DataSourceTransactionManager.class);
 					DataSourceTransactionManager transactionManager = context
 							.getBean(DataSourceTransactionManager.class);
@@ -79,22 +79,21 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 	@Test
 	void transactionManagerWithExistingTransactionManagerIsNotOverridden() {
 		this.contextRunner
-				.withBean("myTransactionManager", PlatformTransactionManager.class,
-						() -> mock(PlatformTransactionManager.class))
-				.run((context) -> assertThat(context).hasSingleBean(PlatformTransactionManager.class)
+				.withBean("myTransactionManager", TransactionManager.class, () -> mock(TransactionManager.class))
+				.run((context) -> assertThat(context).hasSingleBean(TransactionManager.class)
 						.hasBean("myTransactionManager"));
 	}
 
 	@Test
 	void transactionWithMultipleDataSourcesIsNotConfigured() {
 		this.contextRunner.withUserConfiguration(MultiDataSourceConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(PlatformTransactionManager.class));
+				.run((context) -> assertThat(context).doesNotHaveBean(TransactionManager.class));
 	}
 
 	@Test
 	void transactionWithMultipleDataSourcesAndPrimaryCandidateIsConfigured() {
 		this.contextRunner.withUserConfiguration(MultiDataSourceUsingPrimaryConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(PlatformTransactionManager.class)
+			assertThat(context).hasSingleBean(TransactionManager.class)
 					.hasSingleBean(DataSourceTransactionManager.class);
 			assertThat(context.getBean(DataSourceTransactionManager.class).getDataSource())
 					.isSameAs(context.getBean("test1DataSource"));

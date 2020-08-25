@@ -37,7 +37,6 @@ import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.boot.system.ApplicationHome;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 import org.springframework.util.StringUtils;
 
@@ -54,7 +53,7 @@ import org.springframework.util.StringUtils;
 @Configuration(proxyBeanMethods = false)
 @EnableConfigurationProperties(JtaProperties.class)
 @ConditionalOnClass({ JtaTransactionManager.class, BitronixContext.class })
-@ConditionalOnMissingBean(PlatformTransactionManager.class)
+@ConditionalOnMissingBean(org.springframework.transaction.TransactionManager.class)
 class BitronixJtaConfiguration {
 
 	@Bean

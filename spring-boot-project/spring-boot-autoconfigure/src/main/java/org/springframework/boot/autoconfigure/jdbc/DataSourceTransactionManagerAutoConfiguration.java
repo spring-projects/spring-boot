@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
-import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.TransactionManager;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -44,7 +44,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ JdbcTemplate.class, PlatformTransactionManager.class })
+@ConditionalOnClass({ JdbcTemplate.class, TransactionManager.class })
 @AutoConfigureOrder(Ordered.LOWEST_PRECEDENCE)
 @EnableConfigurationProperties(DataSourceProperties.class)
 public class DataSourceTransactionManagerAutoConfiguration {
@@ -54,7 +54,7 @@ public class DataSourceTransactionManagerAutoConfiguration {
 	static class DataSourceTransactionManagerConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean(PlatformTransactionManager.class)
+		@ConditionalOnMissingBean(TransactionManager.class)
 		DataSourceTransactionManager transactionManager(DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
 			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
