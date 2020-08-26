@@ -49,6 +49,11 @@ import org.springframework.util.StringUtils;
  */
 public class Profiles implements Iterable<String> {
 
+	/**
+	 * Name of property to set to specify additionally included active profiles.
+	 */
+	public static final String INCLUDE_PROFILES_PROPERTY_NAME = "spring.profiles.include";
+
 	private static final Bindable<MultiValueMap<String, String>> STRING_STRINGS_MAP = Bindable
 			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
 
@@ -67,7 +72,7 @@ public class Profiles implements Iterable<String> {
 	 * {@link Binder}.
 	 * @param environment the source environment
 	 * @param binder the binder for profile properties
-	 * @param additionalProfiles and additional active profiles
+	 * @param additionalProfiles any additional active profiles
 	 */
 	Profiles(Environment environment, Binder binder, Collection<String> additionalProfiles) {
 		this.groups = binder.bind("spring.profiles.group", STRING_STRINGS_MAP).orElseGet(LinkedMultiValueMap::new);

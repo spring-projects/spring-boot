@@ -549,6 +549,28 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 				() -> this.application.run("--spring.config.location=classpath:missing-appplication.properties"));
 	}
 
+	@Test
+	void runWhenHasIncludedProfilesActivatesProfiles() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:application-include-profiles.properties");
+		assertThat(context.getEnvironment().getActiveProfiles()).containsExactlyInAnyOrder("p1", "p2", "p3", "p4",
+				"p5");
+	}
+
+	@Test
+	void runWhenHasIncludedProfilesWithPlaceholderActivatesProfiles() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:application-include-profiles-with-placeholder.properties");
+		assertThat(context.getEnvironment().getActiveProfiles()).containsExactlyInAnyOrder("p1", "p2", "p3", "p4",
+				"p5");
+	}
+
+	@Test
+	void runWhenHasIncludedProfilesWithProfileSpecificDocumentThrowsException() {
+		assertThatExceptionOfType(InactiveConfigDataAccessException.class).isThrownBy(() -> this.application
+				.run("--spring.config.location=classpath:application-include-profiles-in-profile-specific.properties"));
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
 		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
 

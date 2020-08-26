@@ -123,17 +123,6 @@ class InvalidConfigDataPropertyExceptionTests {
 				+ "'spring.config.activate.on-profile' [origin: \"spring.profiles\" from property source \"mockProperties\"]");
 	}
 
-	@Test
-	void throwOrWarnWhenHasErrorPropertyThrowsException() {
-		MockPropertySource propertySource = new MockPropertySource();
-		propertySource.setProperty("spring.profiles.include", "a");
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
-		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
-				.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor))
-				.withMessage("Property 'spring.profiles.include' is invalid and should be replaced with "
-						+ "'spring.profiles.group' [origin: \"spring.profiles.include\" from property source \"mockProperties\"]");
-	}
-
 	private static class TestConfigDataLocation extends ConfigDataLocation {
 
 		@Override
