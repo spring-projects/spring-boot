@@ -83,6 +83,7 @@ import org.springframework.context.annotation.Import;
  * @author Gary Russell
  * @author Phillip Webb
  * @author Artsiom Yudovin
+ * @author Jonghan Kim
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -105,6 +106,7 @@ public class RabbitAutoConfiguration {
 							.getObject());
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::determineAddresses).to(factory::setAddresses);
+			map.from(properties::getAddressShuffleMode).whenNonNull().to(factory::setAddressShuffleMode);
 			map.from(properties::isPublisherReturns).to(factory::setPublisherReturns);
 			map.from(properties::getPublisherConfirmType).whenNonNull().to(factory::setPublisherConfirmType);
 			RabbitProperties.Cache.Channel channel = properties.getCache().getChannel();
