@@ -121,15 +121,6 @@ class WelcomePageRouterFunctionFactoryTests {
 				.isEqualTo("welcome-page-static");
 	}
 
-	private WebTestClient createClient(WelcomePageRouterFunctionFactory factory) {
-		return WebTestClient.bindToRouterFunction(factory.createRouterFunction()).build();
-	}
-
-	private WebTestClient createClient(WelcomePageRouterFunctionFactory factory, ViewResolver viewResolver) {
-		return WebTestClient.bindToRouterFunction(factory.createRouterFunction())
-				.handlerStrategies(HandlerStrategies.builder().viewResolver(viewResolver).build()).build();
-	}
-
 	private WebTestClient withStaticIndex() {
 		WelcomePageRouterFunctionFactory factory = factoryWithoutTemplateSupport(this.indexLocations, "/**");
 		return WebTestClient.bindToRouterFunction(factory.createRouterFunction()).build();
