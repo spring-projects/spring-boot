@@ -16,17 +16,26 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.lang.reflect.AnnotatedElement;
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.core.Ordered;
+import org.springframework.core.annotation.MergedAnnotationCollectors;
+import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
@@ -67,9 +76,6 @@ public class MetricsWebFilter implements WebFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		if (!this.autoTimer.isEnabled()) {
-			return chain.filter(exchange);
-		}
 		return chain.filter(exchange).transformDeferred((call) -> filter(exchange, call));
 	}
 
@@ -97,9 +103,45 @@ public class MetricsWebFilter implements WebFilter {
 	}
 
 	private void record(ServerWebExchange exchange, long start, Throwable cause) {
+		Object handler = exchange.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
+		Set<Timed> annotations = getTimedAnnotations(handler);
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
-		this.autoTimer.builder(this.metricName).tags(tags).register(this.registry).record(System.nanoTime() - start,
-				TimeUnit.NANOSECONDS);
+		long duration = System.nanoTime() - start;
+		if (annotations.isEmpty()) {
+			if (this.autoTimer.isEnabled()) {
+				this.autoTimer.builder(this.metricName).tags(tags).register(this.registry).record(duration,
+						TimeUnit.NANOSECONDS);
+			}
+		}
+		else {
+			for (Timed annotation : annotations) {
+				Timer.builder(annotation, this.metricName).tags(tags).register(this.registry).record(duration,
+						TimeUnit.NANOSECONDS);
+			}
+		}
+	}
+
+	private Set<Timed> getTimedAnnotations(Object handler) {
+		if (!(handler instanceof HandlerMethod)) {
+			return Collections.emptySet();
+		}
+		return getTimedAnnotations((HandlerMethod) handler);
+	}
+
+	private Set<Timed> getTimedAnnotations(HandlerMethod handler) {
+		Set<Timed> methodAnnotations = findTimedAnnotations(handler.getMethod());
+		if (!methodAnnotations.isEmpty()) {
+			return methodAnnotations;
+		}
+		return findTimedAnnotations(handler.getBeanType());
+	}
+
+	private Set<Timed> findTimedAnnotations(AnnotatedElement element) {
+		MergedAnnotations annotations = MergedAnnotations.from(element);
+		if (!annotations.isPresent(Timed.class)) {
+			return Collections.emptySet();
+		}
+		return annotations.stream(Timed.class).collect(MergedAnnotationCollectors.toAnnotationSet());
 	}
 
 }
