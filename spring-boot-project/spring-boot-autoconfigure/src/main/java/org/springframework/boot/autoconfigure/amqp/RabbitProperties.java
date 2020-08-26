@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -41,6 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Gary Russell
  * @author Artsiom Yudovin
  * @author Franjo Zilic
+ * @author Jonghan Kim
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -86,6 +88,11 @@ public class RabbitProperties {
 	 * host and port are ignored.
 	 */
 	private String addresses;
+
+	/**
+	 * Shuffling mode for connecting host. Default mode is NONE.
+	 */
+	private String addressShuffleMode = "NONE";
 
 	/**
 	 * Requested heartbeat timeout; zero for none. If a duration suffix is not specified,
@@ -280,6 +287,28 @@ public class RabbitProperties {
 
 	public void setVirtualHost(String virtualHost) {
 		this.virtualHost = "".equals(virtualHost) ? "/" : virtualHost;
+	}
+
+	public String getAddressShuffleMode() {
+		return this.addressShuffleMode;
+	}
+
+	/**
+	 * If addresses have been set and address shuffle mode has been set it is returned.
+	 * Otherwise returns the result of calling {@code getAddressShuffleMode()}.
+	 * @return the address shuffle mode
+	 * @see #setAddressShuffleMode(String)
+	 * @see #getAddressShuffleMode()
+	 */
+	public AbstractConnectionFactory.AddressShuffleMode determineAddressShuffleMode() {
+		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
+			return AbstractConnectionFactory.AddressShuffleMode.NONE;
+		}
+		return AbstractConnectionFactory.AddressShuffleMode.valueOf(this.addressShuffleMode.toUpperCase());
+	}
+
+	public void setAddressShuffleMode(String addressShuffleMode) {
+		this.addressShuffleMode = addressShuffleMode;
 	}
 
 	public Duration getRequestedHeartbeat() {
