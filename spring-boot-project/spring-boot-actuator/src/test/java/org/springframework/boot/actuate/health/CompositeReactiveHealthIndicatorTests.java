@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -72,9 +72,9 @@ class CompositeReactiveHealthIndicatorTests {
 	void timeoutReachedUsesFallback() {
 		Map<String, ReactiveHealthIndicator> indicators = new HashMap<>();
 		indicators.put("slow", new TimeoutHealth(10000, Status.UP));
-		indicators.put("fast", new TimeoutHealth(10, Status.UP));
+		indicators.put("fast", new TimeoutHealth(250, Status.UP));
 		CompositeReactiveHealthIndicator indicator = new CompositeReactiveHealthIndicator(this.healthAggregator,
-				new DefaultReactiveHealthIndicatorRegistry(indicators)).timeoutStrategy(100, UNKNOWN_HEALTH);
+				new DefaultReactiveHealthIndicatorRegistry(indicators)).timeoutStrategy(1000, UNKNOWN_HEALTH);
 		StepVerifier.create(indicator.health()).consumeNextWith((h) -> {
 			assertThat(h.getStatus()).isEqualTo(Status.UP);
 			assertThat(h.getDetails()).containsOnlyKeys("slow", "fast");
