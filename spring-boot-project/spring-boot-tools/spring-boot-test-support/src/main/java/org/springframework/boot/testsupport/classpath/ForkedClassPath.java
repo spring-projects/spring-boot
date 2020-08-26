@@ -25,7 +25,7 @@ import java.lang.annotation.Target;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 /**
- * Annotation used to fork the classpath. This can be helpful were neither
+ * Annotation used to fork the classpath. This can be helpful where neither
  * {@link ClassPathExclusions} or {@link ClassPathOverrides} are needed, but just a copy
  * of the classpath.
  *

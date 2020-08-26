@@ -76,7 +76,7 @@ class SharedMetadataReaderFactoryContextInitializer
 	static class CachingMetadataReaderFactoryPostProcessor
 			implements BeanDefinitionRegistryPostProcessor, PriorityOrdered {
 
-		private ConfigurableApplicationContext context;
+		private final ConfigurableApplicationContext context;
 
 		CachingMetadataReaderFactoryPostProcessor(ConfigurableApplicationContext context) {
 			this.context = context;
