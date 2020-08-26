@@ -23,7 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.amqp.core.AcknowledgeMode;
-import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
+import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.AddressShuffleMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -90,9 +90,9 @@ public class RabbitProperties {
 	private String addresses;
 
 	/**
-	 * Shuffling mode for connecting host. Default mode is NONE.
+	 * Shuffling mode for connecting host.
 	 */
-	private String addressShuffleMode = "NONE";
+	private AddressShuffleMode addressShuffleMode;
 
 	/**
 	 * Requested heartbeat timeout; zero for none. If a duration suffix is not specified,
@@ -289,25 +289,11 @@ public class RabbitProperties {
 		this.virtualHost = "".equals(virtualHost) ? "/" : virtualHost;
 	}
 
-	public String getAddressShuffleMode() {
+	public AddressShuffleMode getAddressShuffleMode() {
 		return this.addressShuffleMode;
 	}
 
-	/**
-	 * If addresses have been set and address shuffle mode has been set it is returned.
-	 * Otherwise returns the result of calling {@code getAddressShuffleMode()}.
-	 * @return the address shuffle mode
-	 * @see #setAddressShuffleMode(String)
-	 * @see #getAddressShuffleMode()
-	 */
-	public AbstractConnectionFactory.AddressShuffleMode determineAddressShuffleMode() {
-		if (CollectionUtils.isEmpty(this.parsedAddresses)) {
-			return AbstractConnectionFactory.AddressShuffleMode.NONE;
-		}
-		return AbstractConnectionFactory.AddressShuffleMode.valueOf(this.addressShuffleMode.toUpperCase());
-	}
-
-	public void setAddressShuffleMode(String addressShuffleMode) {
+	public void setAddressShuffleMode(AddressShuffleMode addressShuffleMode) {
 		this.addressShuffleMode = addressShuffleMode;
 	}
 

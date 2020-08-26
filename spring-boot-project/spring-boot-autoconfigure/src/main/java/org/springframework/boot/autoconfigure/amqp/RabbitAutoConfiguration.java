@@ -106,7 +106,7 @@ public class RabbitAutoConfiguration {
 							.getObject());
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::determineAddresses).to(factory::setAddresses);
-			map.from(properties::determineAddressShuffleMode).to(factory::setAddressShuffleMode);
+			map.from(properties::getAddressShuffleMode).whenNonNull().to(factory::setAddressShuffleMode);
 			map.from(properties::isPublisherReturns).to(factory::setPublisherReturns);
 			map.from(properties::getPublisherConfirmType).whenNonNull().to(factory::setPublisherConfirmType);
 			RabbitProperties.Cache.Channel channel = properties.getCache().getChannel();
