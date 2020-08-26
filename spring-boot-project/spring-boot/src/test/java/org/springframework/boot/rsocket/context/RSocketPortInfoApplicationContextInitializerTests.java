@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,56 +18,56 @@ package org.springframework.boot.rsocket.context;
 import java.net.InetSocketAddress;
 
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.rsocket.server.RSocketServer;
-import org.springframework.boot.rsocket.server.RSocketServerException;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
 
-@ExtendWith(SpringExtension.class)
-public class RSocketPortInfoApplicationContextInitializerTests {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
-	@Autowired
-	private RSocketPortInfoApplicationContextInitializer initializer;
-
-	@Autowired
-	private ConfigurableApplicationContext context;
-
-	@Autowired
-	private ApplicationEventPublisher publisher;
+/**
+ * Tests for {@link RSocketPortInfoApplicationContextInitializer}.
+ *
+ * @author Spencer Gibb
+ * @author Andy Wilkinson
+ */
+class RSocketPortInfoApplicationContextInitializerTests {
 
 	@Test
-	void nullAddressDoesNotThrow() {
-		initializer.initialize(context);
-		publisher.publishEvent(new RSocketServerInitializedEvent(new RSocketServer() {
-			@Override
-			public void start() throws RSocketServerException {
+	void whenServerHasAddressThenInitializerSetsPortProperty() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Config.class)) {
+			context.getBean(RSocketPortInfoApplicationContextInitializer.class).initialize(context);
+			RSocketServer server = mock(RSocketServer.class);
+			given(server.address()).willReturn(new InetSocketAddress(65535));
+			context.publishEvent(new RSocketServerInitializedEvent(server));
+			assertThat(context.getEnvironment().getProperty("local.rsocket.server.port")).isEqualTo("65535");
+		}
+	}
 
-			}
-
-			@Override
-			public void stop() throws RSocketServerException {
-
-			}
-
-			@Override
-			public InetSocketAddress address() {
-				return null;
-			}
-		}));
+	@Test
+	void whenServerHasNoAddressThenInitializerDoesNotSetPortProperty() {
+		try (ConfigurableApplicationContext context = new AnnotationConfigApplicationContext(Config.class)) {
+			context.getBean(RSocketPortInfoApplicationContextInitializer.class).initialize(context);
+			RSocketServer server = mock(RSocketServer.class);
+			context.publishEvent(new RSocketServerInitializedEvent(server));
+			verify(server).address();
+			assertThat(context.getEnvironment().getProperty("local.rsocket.server.port")).isNull();
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
 
 		@Bean
-		public RSocketPortInfoApplicationContextInitializer rSocketPortInfoApplicationContextInitializer() {
+		RSocketPortInfoApplicationContextInitializer rSocketPortInfoApplicationContextInitializer() {
 			return new RSocketPortInfoApplicationContextInitializer();
 		}
+
 	}
+
 }
