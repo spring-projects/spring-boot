@@ -63,7 +63,9 @@ public class RSocketPortInfoApplicationContextInitializer
 
 		@Override
 		public void onApplicationEvent(RSocketServerInitializedEvent event) {
-			setPortProperty(this.applicationContext, event.getServer().address().getPort());
+			if (event.getServer().address() != null) {
+				setPortProperty(this.applicationContext, event.getServer().address().getPort());
+			}
 		}
 
 		private void setPortProperty(ApplicationContext context, int port) {
