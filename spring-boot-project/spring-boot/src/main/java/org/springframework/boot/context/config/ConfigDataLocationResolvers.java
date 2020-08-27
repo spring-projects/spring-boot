@@ -43,29 +43,35 @@ class ConfigDataLocationResolvers {
 
 	private final Log logger;
 
+	private final boolean allLocationsOptional;
+
 	private final List<ConfigDataLocationResolver<?>> resolvers;
 
 	/**
 	 * Create a new {@link ConfigDataLocationResolvers} instance.
 	 * @param logFactory a {@link DeferredLogFactory} used to inject {@link Log} instances
+	 * @param allLocationsOptional if all locations are considered optional
 	 * @param binder a binder providing values from the initial {@link Environment}
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
 	 */
-	ConfigDataLocationResolvers(DeferredLogFactory logFactory, Binder binder, ResourceLoader resourceLoader) {
-		this(logFactory, binder, resourceLoader,
+	ConfigDataLocationResolvers(DeferredLogFactory logFactory, boolean allLocationsOptional, Binder binder,
+			ResourceLoader resourceLoader) {
+		this(logFactory, allLocationsOptional, binder, resourceLoader,
 				SpringFactoriesLoader.loadFactoryNames(ConfigDataLocationResolver.class, null));
 	}
 
 	/**
 	 * Create a new {@link ConfigDataLocationResolvers} instance.
 	 * @param logFactory a {@link DeferredLogFactory} used to inject {@link Log} instances
+	 * @param allLocationsOptional if all locations are considered optional
 	 * @param binder {@link Binder} providing values from the initial {@link Environment}
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
 	 * @param names the {@link ConfigDataLocationResolver} class names
 	 */
-	ConfigDataLocationResolvers(DeferredLogFactory logFactory, Binder binder, ResourceLoader resourceLoader,
-			List<String> names) {
+	ConfigDataLocationResolvers(DeferredLogFactory logFactory, boolean allLocationsOptional, Binder binder,
+			ResourceLoader resourceLoader, List<String> names) {
 		this.logger = logFactory.getLog(getClass());
+		this.allLocationsOptional = allLocationsOptional;
 		Instantiator<ConfigDataLocationResolver<?>> instantiator = new Instantiator<>(ConfigDataLocationResolver.class,
 				(availableParameters) -> {
 					availableParameters.add(Log.class, logFactory::getLog);
@@ -146,11 +152,11 @@ class ConfigDataLocationResolvers {
 			return resolved;
 		}
 		catch (ConfigDataLocationNotFoundException ex) {
-			if (!optional) {
-				throw ex;
+			if (this.allLocationsOptional || optional) {
+				this.logger.trace(LogMessage.format("Skipping missing resource from optional location %s", location));
+				return Collections.emptyList();
 			}
-			this.logger.trace(LogMessage.format("Skipping missing resource from optional location %s", location));
-			return Collections.emptyList();
+			throw ex;
 		}
 	}
 

@@ -80,8 +80,9 @@ class ConfigDataEnvironmentContributorsTests {
 	void setup() {
 		this.environment = new MockEnvironment();
 		this.binder = Binder.get(this.environment);
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.binder, null);
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory);
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, true, this.binder,
+				null);
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, false);
 		this.importer = new ConfigDataImporter(resolvers, loaders);
 		this.activationContext = new ConfigDataActivationContext(CloudPlatform.KUBERNETES, null);
 	}

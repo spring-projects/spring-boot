@@ -50,6 +50,12 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	 */
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 10;
 
+	/**
+	 * Property used to determine if all locations are optional and
+	 * {@code ConfigDataLocationNotFoundExceptions} should be ignored.
+	 */
+	public static final String ALL_LOCATIONS_OPTIONAL_PROPERTY = ConfigDataEnvironment.ALL_LOCATIONS_OPTIONAL_PROPERTY;
+
 	private final DeferredLogFactory logFactory;
 
 	private final Log logger;

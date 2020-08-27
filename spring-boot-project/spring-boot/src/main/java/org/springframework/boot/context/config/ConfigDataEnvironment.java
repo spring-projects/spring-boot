@@ -50,8 +50,8 @@ import org.springframework.util.StringUtils;
  * {@link Environment} and adding the initial set of imports.
  * <p>
  * The initial imports can be influenced via the {@link #LOCATION_PROPERTY},
- * {@value #ADDITIONAL_LOCATION_PROPERTY} and {@value #SPRING_CONFIG_IMPORT} properties.
- * If not explicit properties are set, the {@link #DEFAULT_SEARCH_LOCATIONS} will be used.
+ * {@value #ADDITIONAL_LOCATION_PROPERTY} and {@value #IMPORT_PROPERTY} properties. If not
+ * explicit properties are set, the {@link #DEFAULT_SEARCH_LOCATIONS} will be used.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -71,7 +71,13 @@ class ConfigDataEnvironment {
 	/**
 	 * Property used to provide additional locations to import.
 	 */
-	static final String SPRING_CONFIG_IMPORT = "spring.config.import";
+	static final String IMPORT_PROPERTY = "spring.config.import";
+
+	/**
+	 * Property used to determine if all locations are optional and
+	 * {@code ConfigDataLocationNotFoundExceptions} should be ignored.
+	 */
+	static final String ALL_LOCATIONS_OPTIONAL_PROPERTY = "spring.config.all-locations-optional";
 
 	/**
 	 * Default search locations used if not {@link #LOCATION_PROPERTY} is found.
@@ -114,19 +120,20 @@ class ConfigDataEnvironment {
 			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles) {
 		Binder binder = Binder.get(environment);
 		UseLegacyConfigProcessingException.throwIfRequested(binder);
+		boolean allLocationsOptional = binder.bind(ALL_LOCATIONS_OPTIONAL_PROPERTY, Boolean.class).orElse(false);
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
 		this.bootstrapRegistry = bootstrapRegistry;
 		this.environment = environment;
-		this.resolvers = createConfigDataLocationResolvers(logFactory, binder, resourceLoader);
+		this.resolvers = createConfigDataLocationResolvers(logFactory, allLocationsOptional, binder, resourceLoader);
 		this.additionalProfiles = additionalProfiles;
-		this.loaders = new ConfigDataLoaders(logFactory);
+		this.loaders = new ConfigDataLoaders(logFactory, allLocationsOptional);
 		this.contributors = createContributors(binder);
 	}
 
 	protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
-			Binder binder, ResourceLoader resourceLoader) {
-		return new ConfigDataLocationResolvers(logFactory, binder, resourceLoader);
+			boolean allLocationsOptional, Binder binder, ResourceLoader resourceLoader) {
+		return new ConfigDataLocationResolvers(logFactory, allLocationsOptional, binder, resourceLoader);
 	}
 
 	private ConfigDataEnvironmentContributors createContributors(Binder binder) {
@@ -159,7 +166,7 @@ class ConfigDataEnvironment {
 	private List<ConfigDataEnvironmentContributor> getInitialImportContributors(Binder binder) {
 		List<ConfigDataEnvironmentContributor> initialContributors = new ArrayList<>();
 		addInitialImportContributors(initialContributors,
-				binder.bind(SPRING_CONFIG_IMPORT, String[].class).orElse(EMPTY_LOCATIONS));
+				binder.bind(IMPORT_PROPERTY, String[].class).orElse(EMPTY_LOCATIONS));
 		addInitialImportContributors(initialContributors,
 				binder.bind(ADDITIONAL_LOCATION_PROPERTY, String[].class).orElse(EMPTY_LOCATIONS));
 		addInitialImportContributors(initialContributors,

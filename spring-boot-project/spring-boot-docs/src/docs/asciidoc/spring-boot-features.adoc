@@ -623,6 +623,9 @@ You can use this prefix with the `spring.config.location` and `spring.config.add
 
 For example, a `spring.config.import` value of `optional:file:./myconfig.properties` allows your application to start, even if the `myconfig.properties` file is missing.
 
+If you want all locations to be considered optional, you can use the `spring.config.all-locations-optional` property.
+Set the value to `true` using `SpringApplication.setDefaultProperties(...)` or with a system/environment variable.
+
 
 
 [[boot-features-external-config-files-wildcards]]
