@@ -550,8 +550,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenHasNonOptionalImportAndFailFalsePropertyIgnoresException() {
-		this.application.run("--spring.config.fail-on-location-not-found=false",
+	void runWhenHasNonOptionalImportAndAllOptionalPropertyIgnoresException() {
+		this.application.run("--spring.config.all-locations-optional=true",
 				"--spring.config.location=classpath:missing-appplication.properties");
 	}
 
