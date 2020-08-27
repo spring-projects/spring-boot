@@ -42,6 +42,7 @@ import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFac
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.AddressShuffleMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -137,12 +138,15 @@ class RabbitAutoConfigurationTests {
 	void testConnectionFactoryWithOverrides() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
-						"spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret",
-						"spring.rabbitmq.virtual_host:/vhost", "spring.rabbitmq.connection-timeout:123")
+						"spring.rabbitmq.address-shuffle-mode=random", "spring.rabbitmq.username:alice",
+						"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost",
+						"spring.rabbitmq.connection-timeout:123")
 				.run((context) -> {
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 					assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
 					assertThat(connectionFactory.getPort()).isEqualTo(9000);
+					assertThat(connectionFactory).hasFieldOrPropertyWithValue("addressShuffleMode",
+							AddressShuffleMode.RANDOM);
 					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
 					com.rabbitmq.client.ConnectionFactory rcf = connectionFactory.getRabbitConnectionFactory();
 					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);

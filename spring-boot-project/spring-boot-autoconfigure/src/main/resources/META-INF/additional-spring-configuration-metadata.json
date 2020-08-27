@@ -1539,6 +1539,10 @@
       "defaultValue": "local"
     },
     {
+      "name": "spring.rabbitmq.address-shuffle-mode",
+      "defaultValue": "none"
+    },
+    {
       "name": "spring.rabbitmq.cache.connection.mode",
       "defaultValue": "channel"
     },

@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 
 import org.springframework.amqp.core.AcknowledgeMode;
+import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.AddressShuffleMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.ConfirmType;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -86,6 +87,11 @@ public class RabbitProperties {
 	 * host and port are ignored.
 	 */
 	private String addresses;
+
+	/**
+	 * Mode used to shuffle configured addresses.
+	 */
+	private AddressShuffleMode addressShuffleMode = AddressShuffleMode.NONE;
 
 	/**
 	 * Requested heartbeat timeout; zero for none. If a duration suffix is not specified,
@@ -280,6 +286,14 @@ public class RabbitProperties {
 
 	public void setVirtualHost(String virtualHost) {
 		this.virtualHost = "".equals(virtualHost) ? "/" : virtualHost;
+	}
+
+	public AddressShuffleMode getAddressShuffleMode() {
+		return this.addressShuffleMode;
+	}
+
+	public void setAddressShuffleMode(AddressShuffleMode addressShuffleMode) {
+		this.addressShuffleMode = addressShuffleMode;
 	}
 
 	public Duration getRequestedHeartbeat() {
