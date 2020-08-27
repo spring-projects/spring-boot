@@ -83,7 +83,6 @@ import org.springframework.context.annotation.Import;
  * @author Gary Russell
  * @author Phillip Webb
  * @author Artsiom Yudovin
- * @author Jonghan Kim
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)

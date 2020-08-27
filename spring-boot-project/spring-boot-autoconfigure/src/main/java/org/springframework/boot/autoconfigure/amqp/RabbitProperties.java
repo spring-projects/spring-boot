@@ -42,7 +42,6 @@ import org.springframework.util.StringUtils;
  * @author Gary Russell
  * @author Artsiom Yudovin
  * @author Franjo Zilic
- * @author Jonghan Kim
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "spring.rabbitmq")
@@ -90,9 +89,9 @@ public class RabbitProperties {
 	private String addresses;
 
 	/**
-	 * Shuffling mode for connecting host.
+	 * Mode used to shuffle configured addresses.
 	 */
-	private AddressShuffleMode addressShuffleMode;
+	private AddressShuffleMode addressShuffleMode = AddressShuffleMode.NONE;
 
 	/**
 	 * Requested heartbeat timeout; zero for none. If a duration suffix is not specified,
