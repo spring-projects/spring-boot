@@ -124,6 +124,18 @@ class ValueObjectBinderTests {
 	}
 
 	@Test
+	void bindToClassWithMultipleConstructorsWhenOnlyOneIsNotPrivateShouldBind() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.int-value", "12");
+		this.sources.add(source);
+		MultipleConstructorsOnlyOneNotPrivateBean bean = this.binder
+				.bind("foo", Bindable.of(MultipleConstructorsOnlyOneNotPrivateBean.class)).get();
+		bean = bean.withString("test");
+		assertThat(bean.getIntValue()).isEqualTo(12);
+		assertThat(bean.getStringValue()).isEqualTo("test");
+	}
+
+	@Test
 	void bindToClassShouldBindNested() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value-bean.int-value", "123");
@@ -341,7 +353,6 @@ class ValueObjectBinderTests {
 		Bindable<NamedParameter> target = Bindable.of(NamedParameter.class);
 		NamedParameter bound = this.binder.bindOrCreate("test", target);
 		assertThat(bound.getImportName()).isEqualTo("test");
-
 	}
 
 	private void noConfigurationProperty(BindException ex) {
@@ -413,6 +424,35 @@ class ValueObjectBinderTests {
 
 		int getIntValue() {
 			return this.intValue;
+		}
+
+	}
+
+	static class MultipleConstructorsOnlyOneNotPrivateBean {
+
+		private final int intValue;
+
+		private final String stringValue;
+
+		MultipleConstructorsOnlyOneNotPrivateBean(int intValue) {
+			this(intValue, 23L, "hello");
+		}
+
+		private MultipleConstructorsOnlyOneNotPrivateBean(int intValue, long longValue, String stringValue) {
+			this.intValue = intValue;
+			this.stringValue = stringValue;
+		}
+
+		int getIntValue() {
+			return this.intValue;
+		}
+
+		String getStringValue() {
+			return this.stringValue;
+		}
+
+		MultipleConstructorsOnlyOneNotPrivateBean withString(String stringValue) {
+			return new MultipleConstructorsOnlyOneNotPrivateBean(this.intValue, 0, stringValue);
 		}
 
 	}
