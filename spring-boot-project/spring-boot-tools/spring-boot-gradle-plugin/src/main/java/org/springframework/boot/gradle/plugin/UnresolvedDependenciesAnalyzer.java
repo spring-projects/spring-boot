@@ -42,7 +42,7 @@ class UnresolvedDependenciesAnalyzer {
 
 	void analyze(Set<UnresolvedDependency> unresolvedDependencies) {
 		this.dependenciesWithNoVersion = unresolvedDependencies.stream()
-				.map((unresolvedDependency) -> unresolvedDependency.getSelector()).filter(this::hasNoVersion)
+				.map(UnresolvedDependency::getSelector).filter(this::hasNoVersion)
 				.collect(Collectors.toSet());
 	}
 
