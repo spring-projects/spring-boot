@@ -53,7 +53,6 @@ dependencies {
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
-	testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 	testImplementation("io.lettuce:lettuce-core")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
@@ -76,6 +75,7 @@ dependencies {
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
 
