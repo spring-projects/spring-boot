@@ -67,9 +67,19 @@ public class RedisProperties {
 	private boolean ssl;
 
 	/**
-	 * Connection timeout.
+	 * Connection and read timeout.
 	 */
 	private Duration timeout;
+
+	/**
+	 * Connection timeout.
+	 */
+	private Duration connectionTimeout;
+
+	/**
+	 * Read timeout.
+	 */
+	private Duration readTimeout;
 
 	/**
 	 * Client name to be set on connections with CLIENT SETNAME.
@@ -143,6 +153,22 @@ public class RedisProperties {
 
 	public Duration getTimeout() {
 		return this.timeout;
+	}
+
+	public Duration getConnectionTimeout() {
+		return (this.connectionTimeout != null) ? this.connectionTimeout : this.timeout;
+	}
+
+	public void setConnectionTimeout(Duration connectionTimeout) {
+		this.connectionTimeout = connectionTimeout;
+	}
+
+	public Duration getReadTimeout() {
+		return (this.readTimeout != null) ? this.readTimeout : this.timeout;
+	}
+
+	public void setReadTimeout(Duration readTimeout) {
+		this.readTimeout = readTimeout;
 	}
 
 	public String getClientName() {

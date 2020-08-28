@@ -92,9 +92,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		if (getProperties().isSsl()) {
 			builder.useSsl();
 		}
-		if (getProperties().getTimeout() != null) {
-			Duration timeout = getProperties().getTimeout();
-			builder.readTimeout(timeout).connectTimeout(timeout);
+		Duration connectionTimeout = getProperties().getConnectionTimeout();
+		Duration readTimeout = getProperties().getReadTimeout();
+		if (connectionTimeout != null) {
+			builder.connectTimeout(connectionTimeout);
+		}
+		if (readTimeout != null) {
+			builder.readTimeout(readTimeout);
 		}
 		if (StringUtils.hasText(getProperties().getClientName())) {
 			builder.clientName(getProperties().getClientName());
