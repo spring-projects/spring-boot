@@ -165,9 +165,10 @@ class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "logging.config=doesnotexist.xml");
 		assertThatIllegalStateException().isThrownBy(() -> {
 			this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-			assertThat(this.output)
-					.contains("Logging system failed to initialize using configuration from 'doesnotexist.xml'");
 		});
+		assertThat(this.output)
+				.contains("Logging system failed to initialize using configuration from 'doesnotexist.xml'")
+				.doesNotContain("JoranException");
 	}
 
 	@Test
