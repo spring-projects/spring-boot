@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,9 +165,10 @@ class LoggingApplicationListenerTests {
 		addPropertiesToEnvironment(this.context, "logging.config=doesnotexist.xml");
 		assertThatIllegalStateException().isThrownBy(() -> {
 			this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
-			assertThat(this.output)
-					.contains("Logging system failed to initialize using configuration from 'doesnotexist.xml'");
 		});
+		assertThat(this.output)
+				.contains("Logging system failed to initialize using configuration from 'doesnotexist.xml'")
+				.doesNotContain("JoranException");
 	}
 
 	@Test
