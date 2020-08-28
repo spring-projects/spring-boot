@@ -37,6 +37,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author HaiTao Zhang
  * @author Chris Bono
+ * @author David Good
  * @since 2.0.0
  */
 public class Sanitizer {
@@ -134,7 +135,7 @@ public class Sanitizer {
 		if (password != null) {
 			return StringUtils.replace(value, ":" + password + "@", ":******@");
 		}
-		return value;
+		return "******";
 	}
 
 }
