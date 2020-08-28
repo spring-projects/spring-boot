@@ -98,7 +98,7 @@ public final class LayerId {
 		Assert.notNull(digest, "Digest must not be null");
 		Assert.isTrue(digest.length == 32, "Digest must be exactly 32 bytes");
 		String algorithm = "sha256";
-		String hash = String.format("%32x", new BigInteger(1, digest));
+		String hash = String.format("%064x", new BigInteger(1, digest));
 		return new LayerId(algorithm + ":" + hash, algorithm, hash);
 	}
 
