@@ -41,7 +41,7 @@ class OptionalConfigDataLocationTests {
 	@BeforeEach
 	void setup() {
 		this.location = new ResourceConfigDataLocation("classpath:application.properties",
-				new ClassPathResource("application.properties"), mock(PropertySourceLoader.class));
+				new ClassPathResource("application.properties"), null, mock(PropertySourceLoader.class));
 	}
 
 	@Test

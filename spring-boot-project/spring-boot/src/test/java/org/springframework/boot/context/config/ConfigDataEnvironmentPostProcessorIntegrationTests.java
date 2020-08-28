@@ -19,6 +19,7 @@ package org.springframework.boot.context.config;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -35,7 +36,14 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
+import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindException;
+import org.springframework.boot.context.properties.bind.BindHandler;
+import org.springframework.boot.context.properties.bind.Bindable;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationProperty;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.origin.Origin;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -575,6 +583,29 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void runWhenHasIncludedProfilesWithProfileSpecificDocumentThrowsException() {
 		assertThatExceptionOfType(InactiveConfigDataAccessException.class).isThrownBy(() -> this.application
 				.run("--spring.config.location=classpath:application-include-profiles-in-profile-specific.properties"));
+	}
+
+	@Test
+	void runWhenImportingIncludesParentOrigin() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:application-import-with-placeholder.properties");
+		Binder binder = Binder.get(context.getEnvironment());
+		List<ConfigurationProperty> properties = new ArrayList<>();
+		BindHandler bindHandler = new BindHandler() {
+
+			@Override
+			public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context,
+					Object result) {
+				properties.add(context.getConfigurationProperty());
+				return result;
+			}
+
+		};
+		binder.bind("my.value", Bindable.of(String.class), bindHandler);
+		assertThat(properties).hasSize(1);
+		Origin origin = properties.get(0).getOrigin();
+		assertThat(origin.toString()).contains("application-import-with-placeholder-imported");
+		assertThat(origin.getParent().toString()).contains("application-import-with-placeholder");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {

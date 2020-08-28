@@ -19,6 +19,7 @@ package org.springframework.boot.context.config;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.BootstrapRegistry;
 import org.springframework.boot.env.EnvironmentPostProcessor;
+import org.springframework.boot.origin.Origin;
 
 /**
  * Context provided to {@link ConfigDataLocationResolver} methods.
@@ -49,5 +50,12 @@ public interface ConfigDataLocationResolverContext {
 	 * @return the bootstrap registry
 	 */
 	BootstrapRegistry getBootstrapRegistry();
+
+	/**
+	 * Return the {@link Origin} of a location that's being resolved.
+	 * @param location the location being resolved
+	 * @return the {@link Origin} of the location or {@code null}
+	 */
+	Origin getLocationOrigin(String location);
 
 }

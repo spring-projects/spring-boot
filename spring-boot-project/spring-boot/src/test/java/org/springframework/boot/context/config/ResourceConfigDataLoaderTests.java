@@ -43,7 +43,7 @@ public class ResourceConfigDataLoaderTests {
 	@Test
 	void loadWhenLocationResultsInMultiplePropertySourcesAddsAllToConfigData() throws IOException {
 		ResourceConfigDataLocation location = new ResourceConfigDataLocation("application.yml",
-				new ClassPathResource("configdata/yaml/application.yml"), new YamlPropertySourceLoader());
+				new ClassPathResource("configdata/yaml/application.yml"), null, new YamlPropertySourceLoader());
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(2);
 		PropertySource<?> source1 = configData.getPropertySources().get(0);
@@ -57,7 +57,7 @@ public class ResourceConfigDataLoaderTests {
 	@Test
 	void loadWhenPropertySourceIsEmptyAddsNothingToConfigData() throws IOException {
 		ResourceConfigDataLocation location = new ResourceConfigDataLocation("testproperties.properties",
-				new ClassPathResource("config/0-empty/testproperties.properties"),
+				new ClassPathResource("config/0-empty/testproperties.properties"), null,
 				new PropertiesPropertySourceLoader());
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(0);

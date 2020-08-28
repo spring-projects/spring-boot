@@ -170,7 +170,7 @@ public class ResourceConfigDataLocationResolverTests {
 				this.resourceLoader);
 		ClassPathResource parentResource = new ClassPathResource("configdata/properties/application.properties");
 		ResourceConfigDataLocation parent = new ResourceConfigDataLocation(
-				"classpath:/configdata/properties/application.properties", parentResource,
+				"classpath:/configdata/properties/application.properties", parentResource, null,
 				new PropertiesPropertySourceLoader());
 		given(this.context.getParent()).willReturn(parent);
 		List<ResourceConfigDataLocation> locations = this.resolver.resolve(this.context, location, true);
@@ -187,7 +187,7 @@ public class ResourceConfigDataLocationResolverTests {
 				this.resourceLoader);
 		ClassPathResource parentResource = new ClassPathResource("config/specific.properties");
 		ResourceConfigDataLocation parent = new ResourceConfigDataLocation("classpath:/config/specific.properties",
-				parentResource, new PropertiesPropertySourceLoader());
+				parentResource, null, new PropertiesPropertySourceLoader());
 		given(this.context.getParent()).willReturn(parent);
 		List<ResourceConfigDataLocation> locations = this.resolver.resolve(this.context, location, true);
 		assertThat(locations.size()).isEqualTo(1);
@@ -200,7 +200,8 @@ public class ResourceConfigDataLocationResolverTests {
 		String location = "application.other";
 		ClassPathResource parentResource = new ClassPathResource("configdata/application.properties");
 		ResourceConfigDataLocation parent = new ResourceConfigDataLocation(
-				"classpath:/configdata/application.properties", parentResource, new PropertiesPropertySourceLoader());
+				"classpath:/configdata/application.properties", parentResource, null,
+				new PropertiesPropertySourceLoader());
 		given(this.context.getParent()).willReturn(parent);
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location, true))
 				.withMessageStartingWith("Unable to load config data from 'application.other'")

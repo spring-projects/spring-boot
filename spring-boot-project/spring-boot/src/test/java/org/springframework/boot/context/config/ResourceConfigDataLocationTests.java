@@ -38,36 +38,36 @@ public class ResourceConfigDataLocationTests {
 
 	private final Resource resource = mock(Resource.class);
 
-	private final PropertySourceLoader propertySource = mock(PropertySourceLoader.class);
+	private final PropertySourceLoader propertySourceLoader = mock(PropertySourceLoader.class);
 
 	@Test
 	void constructorWhenNameIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ResourceConfigDataLocation(null, this.resource, this.propertySource))
+				.isThrownBy(() -> new ResourceConfigDataLocation(null, this.resource, null, this.propertySourceLoader))
 				.withMessage("Name must not be null");
 	}
 
 	@Test
 	void constructorWhenResourceIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ResourceConfigDataLocation(this.location, null, this.propertySource))
+				.isThrownBy(() -> new ResourceConfigDataLocation(this.location, null, null, this.propertySourceLoader))
 				.withMessage("Resource must not be null");
 	}
 
 	@Test
 	void constructorWhenLoaderIsNullThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ResourceConfigDataLocation(this.location, this.resource, null))
+				.isThrownBy(() -> new ResourceConfigDataLocation(this.location, this.resource, null, null))
 				.withMessage("PropertySourceLoader must not be null");
 	}
 
 	@Test
 	void equalsWhenResourceIsTheSameReturnsTrue() {
 		Resource resource = new ClassPathResource("config/");
-		ResourceConfigDataLocation location = new ResourceConfigDataLocation("my-location", resource,
-				this.propertySource);
-		ResourceConfigDataLocation other = new ResourceConfigDataLocation("other-location", resource,
-				this.propertySource);
+		ResourceConfigDataLocation location = new ResourceConfigDataLocation("my-location", resource, null,
+				this.propertySourceLoader);
+		ResourceConfigDataLocation other = new ResourceConfigDataLocation("other-location", resource, null,
+				this.propertySourceLoader);
 		assertThat(location).isEqualTo(other);
 	}
 
@@ -75,10 +75,10 @@ public class ResourceConfigDataLocationTests {
 	void equalsWhenResourceIsDifferentReturnsFalse() {
 		Resource resource1 = new ClassPathResource("config/");
 		Resource resource2 = new ClassPathResource("configdata/");
-		ResourceConfigDataLocation location = new ResourceConfigDataLocation("my-location", resource1,
-				this.propertySource);
-		ResourceConfigDataLocation other = new ResourceConfigDataLocation("other-location", resource2,
-				this.propertySource);
+		ResourceConfigDataLocation location = new ResourceConfigDataLocation("my-location", resource1, null,
+				this.propertySourceLoader);
+		ResourceConfigDataLocation other = new ResourceConfigDataLocation("other-location", resource2, null,
+				this.propertySourceLoader);
 		assertThat(location).isNotEqualTo(other);
 	}
 

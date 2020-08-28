@@ -39,6 +39,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.env.BootstrapRegistry;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.boot.origin.Origin;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.ObjectUtils;
 
@@ -265,6 +266,11 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		@Override
 		public BootstrapRegistry getBootstrapRegistry() {
 			return this.contributors.getBootstrapRegistry();
+		}
+
+		@Override
+		public Origin getLocationOrigin(String location) {
+			return this.contributor.getImportOrigin(location);
 		}
 
 	}

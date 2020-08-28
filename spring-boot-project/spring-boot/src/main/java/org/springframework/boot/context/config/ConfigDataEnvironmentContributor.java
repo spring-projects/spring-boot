@@ -28,6 +28,7 @@ import java.util.stream.StreamSupport;
 
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.origin.Origin;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
 
@@ -135,6 +136,10 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	List<String> getImports() {
 		return (this.properties != null) ? this.properties.getImports() : Collections.emptyList();
+	}
+
+	Origin getImportOrigin(String importLocation) {
+		return (this.properties != null) ? this.properties.getImportOrigin(importLocation) : null;
 	}
 
 	/**

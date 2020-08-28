@@ -189,6 +189,28 @@ class ConfigDataPropertiesTests {
 				.isThrownBy(() -> ConfigDataProperties.get(binder));
 	}
 
+	@Test
+	void getImportOriginWhenCommaListReturnsOrigin() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("spring.config.import", "one,two,three");
+		Binder binder = new Binder(source);
+		ConfigDataProperties properties = ConfigDataProperties.get(binder);
+		assertThat(properties.getImportOrigin("two"))
+				.hasToString("\"spring.config.import\" from property source \"source\"");
+	}
+
+	@Test
+	void getImportOriginWhenBracketListReturnsOrigin() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("spring.config.import[0]", "one");
+		source.put("spring.config.import[1]", "two");
+		source.put("spring.config.import[2]", "three");
+		Binder binder = new Binder(source);
+		ConfigDataProperties properties = ConfigDataProperties.get(binder);
+		assertThat(properties.getImportOrigin("two"))
+				.hasToString("\"spring.config.import[1]\" from property source \"source\"");
+	}
+
 	private Profiles createTestProfiles() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setActiveProfiles("a", "b", "c");

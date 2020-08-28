@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.List;
 
 import org.springframework.boot.env.PropertySourceLoader;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginTrackedResource;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.FileUrlResource;
@@ -38,20 +40,25 @@ class ResourceConfigDataLocation extends ConfigDataLocation {
 
 	private final Resource resource;
 
+	private final Origin origin;
+
 	private final PropertySourceLoader propertySourceLoader;
 
 	/**
 	 * Create a new {@link ResourceConfigDataLocation} instance.
 	 * @param name the source location
 	 * @param resource the underlying resource
+	 * @param origin the origin of the resource
 	 * @param propertySourceLoader the loader that should be used to load the resource
 	 */
-	ResourceConfigDataLocation(String name, Resource resource, PropertySourceLoader propertySourceLoader) {
+	ResourceConfigDataLocation(String name, Resource resource, Origin origin,
+			PropertySourceLoader propertySourceLoader) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(resource, "Resource must not be null");
 		Assert.notNull(propertySourceLoader, "PropertySourceLoader must not be null");
 		this.name = name;
 		this.resource = resource;
+		this.origin = origin;
 		this.propertySourceLoader = propertySourceLoader;
 	}
 
@@ -64,7 +71,8 @@ class ResourceConfigDataLocation extends ConfigDataLocation {
 	}
 
 	List<PropertySource<?>> load() throws IOException {
-		return this.propertySourceLoader.load(this.name, this.resource);
+		Resource resource = OriginTrackedResource.of(this.resource, this.origin);
+		return this.propertySourceLoader.load(this.name, resource);
 	}
 
 	@Override
