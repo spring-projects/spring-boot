@@ -17,39 +17,34 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
-import java.io.IOException;
 
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.testfixtures.ProjectBuilder;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for expectations about {code bootArchives} Gradle configuration about its
- * purpose.
+ * Tests for {@link SpringBootPlugin}.
  *
  * @author Martin Chalupa
+ * @author Andy Wilkinson
  */
-public class BootArchivesConfigurationContractTests {
+@ClassPathExclusions("kotlin-daemon-client-*.jar")
+public class SpringBootPluginTests {
 
 	@TempDir
 	File temp;
 
-	private Project project;
-
-	@BeforeEach
-	void createConvention() throws IOException {
-		this.project = ProjectBuilder.builder().withProjectDir(this.temp).build();
-	}
-
 	@Test
 	void bootArchivesConfigurationsCannotBeResolved() {
-		this.project.getPlugins().apply(SpringBootPlugin.class);
-		Configuration bootArchives = this.project.getConfigurations()
+		Project project = ProjectBuilder.builder().withProjectDir(this.temp).build();
+		project.getPlugins().apply(SpringBootPlugin.class);
+		Configuration bootArchives = project.getConfigurations()
 				.getByName(SpringBootPlugin.BOOT_ARCHIVES_CONFIGURATION_NAME);
 		assertThat(bootArchives.isCanBeResolved()).isFalse();
 	}
