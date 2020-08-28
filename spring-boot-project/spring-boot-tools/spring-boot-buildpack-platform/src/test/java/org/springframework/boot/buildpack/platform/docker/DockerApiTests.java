@@ -50,6 +50,7 @@ import org.springframework.boot.buildpack.platform.io.TarArchive;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.BDDMockito.given;
@@ -170,6 +171,16 @@ class DockerApiTests {
 			ImageArchive archive = mock(ImageArchive.class);
 			assertThatIllegalArgumentException().isThrownBy(() -> this.api.load(archive, null))
 					.withMessage("Listener must not be null");
+		}
+
+		@Test // gh-23130
+		void loadWithEmptyResponseThrowsException() throws Exception {
+			Image image = Image.of(getClass().getResourceAsStream("type/image.json"));
+			ImageArchive archive = ImageArchive.from(image);
+			URI loadUri = new URI(IMAGES_URL + "/load");
+			given(http().post(eq(loadUri), eq("application/x-tar"), any())).willReturn(emptyResponse());
+			assertThatIllegalStateException().isThrownBy(() -> this.api.load(archive, this.loadListener))
+					.withMessageContaining("Invalid response received");
 		}
 
 		@Test
