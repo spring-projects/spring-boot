@@ -74,10 +74,11 @@ class ConfigDataEnvironment {
 	static final String IMPORT_PROPERTY = "spring.config.import";
 
 	/**
-	 * Property used to determine if all locations are optional and
-	 * {@code ConfigDataLocationNotFoundExceptions} should be ignored.
+	 * Property used to determine what action to take when a
+	 * {@code ConfigDataLocationNotFoundException} is thrown.
+	 * @see ConfigDataLocationNotFoundAction
 	 */
-	static final String ALL_LOCATIONS_OPTIONAL_PROPERTY = "spring.config.all-locations-optional";
+	static final String ON_LOCATION_NOT_FOUND_PROPERTY = "spring.config.on-location-not-found";
 
 	/**
 	 * Default search locations used if not {@link #LOCATION_PROPERTY} is found.
@@ -120,20 +121,22 @@ class ConfigDataEnvironment {
 			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles) {
 		Binder binder = Binder.get(environment);
 		UseLegacyConfigProcessingException.throwIfRequested(binder);
-		boolean allLocationsOptional = binder.bind(ALL_LOCATIONS_OPTIONAL_PROPERTY, Boolean.class).orElse(false);
+		ConfigDataLocationNotFoundAction locationNotFoundAction = binder
+				.bind(ON_LOCATION_NOT_FOUND_PROPERTY, ConfigDataLocationNotFoundAction.class)
+				.orElse(ConfigDataLocationNotFoundAction.FAIL);
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
 		this.bootstrapRegistry = bootstrapRegistry;
 		this.environment = environment;
-		this.resolvers = createConfigDataLocationResolvers(logFactory, allLocationsOptional, binder, resourceLoader);
+		this.resolvers = createConfigDataLocationResolvers(logFactory, locationNotFoundAction, binder, resourceLoader);
 		this.additionalProfiles = additionalProfiles;
-		this.loaders = new ConfigDataLoaders(logFactory, allLocationsOptional);
+		this.loaders = new ConfigDataLoaders(logFactory, locationNotFoundAction);
 		this.contributors = createContributors(binder);
 	}
 
 	protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
-			boolean allLocationsOptional, Binder binder, ResourceLoader resourceLoader) {
-		return new ConfigDataLocationResolvers(logFactory, allLocationsOptional, binder, resourceLoader);
+			ConfigDataLocationNotFoundAction locationNotFoundAction, Binder binder, ResourceLoader resourceLoader) {
+		return new ConfigDataLocationResolvers(logFactory, locationNotFoundAction, binder, resourceLoader);
 	}
 
 	private ConfigDataEnvironmentContributors createContributors(Binder binder) {

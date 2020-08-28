@@ -40,7 +40,7 @@ class ConfigDataLoaders {
 
 	private final Log logger;
 
-	private final boolean allLocationsOptional;
+	private final ConfigDataLocationNotFoundAction locationNotFoundAction;
 
 	private final List<ConfigDataLoader<?>> loaders;
 
@@ -48,22 +48,25 @@ class ConfigDataLoaders {
 
 	/**
 	 * Create a new {@link ConfigDataLoaders} instance.
-	 * @param allLocationsOptional if all locations are considered optional
+	 * @param locationNotFoundAction the action to take if a
+	 * {@link ConfigDataLocationNotFoundException} is thrown
 	 * @param logFactory the deferred log factory
 	 */
-	ConfigDataLoaders(DeferredLogFactory logFactory, boolean allLocationsOptional) {
-		this(logFactory, allLocationsOptional, SpringFactoriesLoader.loadFactoryNames(ConfigDataLoader.class, null));
+	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigDataLocationNotFoundAction locationNotFoundAction) {
+		this(logFactory, locationNotFoundAction, SpringFactoriesLoader.loadFactoryNames(ConfigDataLoader.class, null));
 	}
 
 	/**
 	 * Create a new {@link ConfigDataLoaders} instance.
 	 * @param logFactory the deferred log factory
-	 * @param allLocationsOptional if all locations are considered optional
+	 * @param locationNotFoundAction the action to take if a
+	 * {@link ConfigDataLocationNotFoundException} is thrown
 	 * @param names the {@link ConfigDataLoader} class names instantiate
 	 */
-	ConfigDataLoaders(DeferredLogFactory logFactory, boolean allLocationsOptional, List<String> names) {
+	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigDataLocationNotFoundAction locationNotFoundAction,
+			List<String> names) {
 		this.logger = logFactory.getLog(getClass());
-		this.allLocationsOptional = allLocationsOptional;
+		this.locationNotFoundAction = locationNotFoundAction;
 		Instantiator<ConfigDataLoader<?>> instantiator = new Instantiator<>(ConfigDataLoader.class,
 				(availableParameters) -> availableParameters.add(Log.class, logFactory::getLog));
 		this.loaders = instantiator.instantiate(names);
@@ -104,11 +107,12 @@ class ConfigDataLoaders {
 			return loader.load(context, location);
 		}
 		catch (ConfigDataLocationNotFoundException ex) {
-			if (this.allLocationsOptional || optional) {
+			if (optional) {
 				this.logger.trace(LogMessage.format("Skipping missing resource from optional location %s", location));
 				return null;
 			}
-			throw ex;
+			this.locationNotFoundAction.handle(this.logger, location, ex);
+			return null;
 		}
 	}
 

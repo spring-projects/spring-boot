@@ -46,13 +46,14 @@ class ConfigDataLoadersTests {
 
 	@Test
 	void createWhenLoaderHasLogParameterInjectsLog() {
-		new ConfigDataLoaders(this.logFactory, true, Arrays.asList(LoggingConfigDataLoader.class.getName()));
+		new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
+				Arrays.asList(LoggingConfigDataLoader.class.getName()));
 	}
 
 	@Test
 	void loadWhenSingleLoaderSupportsLocationReturnsLoadedConfigData() throws Exception {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, false,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
 				Arrays.asList(TestConfigDataLoader.class.getName()));
 		ConfigData loaded = loaders.load(this.context, location);
 		assertThat(getLoader(loaded)).isInstanceOf(TestConfigDataLoader.class);
@@ -61,7 +62,7 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenMultipleLoadersSupportLocationThrowsException() throws Exception {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, false,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
 				Arrays.asList(LoggingConfigDataLoader.class.getName(), TestConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
 				.withMessageContaining("Multiple loaders found for location test");
@@ -70,7 +71,7 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenNoLoaderSupportsLocationThrowsException() {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, false,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
 				Arrays.asList(NonLoadableConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
 				.withMessage("No loader found for location 'test'");
@@ -79,7 +80,7 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenGenericTypeDoesNotMatchSkipsLoader() throws Exception {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, false,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
 				Arrays.asList(OtherConfigDataLoader.class.getName(), SpecificConfigDataLoader.class.getName()));
 		ConfigData loaded = loaders.load(this.context, location);
 		assertThat(getLoader(loaded)).isInstanceOf(SpecificConfigDataLoader.class);
