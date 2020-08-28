@@ -16,16 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.stream.Stream;
-
 import io.lettuce.core.RedisClient;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -144,32 +136,25 @@ class RedisAutoConfigurationJedisTests {
 				});
 	}
 
-	@ParameterizedTest(name = "{0}")
-	@MethodSource("timeoutArguments")
-	void testRedisConfigurationWithTimeout(List<String> properties, long readTimeout, long connectionTimeout) {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo")
-				.withPropertyValues(properties.toArray(new String[0])).run((context) -> {
+	@Test
+	void testRedisConfigurationWithTimeoutAndConnectionTimeout() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.timeout:250",
+				"spring.redis.connection-timeout:1000").run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(cf.getTimeout()).isEqualTo(readTimeout);
-					assertThat(cf.getClientConfiguration().getConnectTimeout().toMillis()).isEqualTo(connectionTimeout);
+					assertThat(cf.getTimeout()).isEqualTo(250);
+					assertThat(cf.getClientConfiguration().getConnectTimeout().toMillis()).isEqualTo(1000);
 				});
 	}
 
-	static Stream<Arguments> timeoutArguments() {
-		return Stream.of(Arguments.arguments(Collections.emptyList(), 2000, 2000),
-				Arguments.arguments(Collections.singletonList("spring.redis.timeout:100"), 100, 100),
-				Arguments.arguments(Collections.singletonList("spring.redis.read-timeout:100"), 100, 2000),
-				Arguments.arguments(Collections.singletonList("spring.redis.connection-timeout:100"), 2000, 100),
-				Arguments.arguments(Arrays.asList("spring.redis.timeout:100", "spring.redis.read-timeout:500"), 500,
-						100),
-				Arguments.arguments(Arrays.asList("spring.redis.timeout:100", "spring.redis.connection-timeout:500"),
-						100, 500),
-				Arguments.arguments(
-						Arrays.asList("spring.redis.read-timeout:250", "spring.redis.connection-timeout:1000"), 250,
-						1000),
-				Arguments.arguments(Arrays.asList("spring.redis.timeout:100", "spring.redis.read-timeout:250",
-						"spring.redis.connection-timeout:1000"), 250, 1000));
+	@Test
+	void testRedisConfigurationWithDefaultTimeouts() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo").run((context) -> {
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.getHostName()).isEqualTo("foo");
+			assertThat(cf.getTimeout()).isEqualTo(2000);
+			assertThat(cf.getClientConfiguration().getConnectTimeout().toMillis()).isEqualTo(2000);
+		});
 	}
 
 	@Test

@@ -124,9 +124,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (getProperties().isSsl()) {
 			builder.useSsl();
 		}
-		Duration readTimeout = getProperties().getReadTimeout();
-		if (readTimeout != null) {
-			builder.commandTimeout(readTimeout);
+		Duration timeout = getProperties().getTimeout();
+		if (timeout != null) {
+			builder.commandTimeout(timeout);
 		}
 		if (getProperties().getLettuce() != null) {
 			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
