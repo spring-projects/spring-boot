@@ -27,9 +27,17 @@ public final class MockOrigin implements Origin {
 
 	private final String value;
 
-	private MockOrigin(String value) {
+	private final Origin parent;
+
+	private MockOrigin(String value, Origin parent) {
 		Assert.notNull(value, "Value must not be null");
 		this.value = value;
+		this.parent = parent;
+	}
+
+	@Override
+	public Origin getParent() {
+		return this.parent;
 	}
 
 	@Override
@@ -54,7 +62,11 @@ public final class MockOrigin implements Origin {
 	}
 
 	public static Origin of(String value) {
-		return (value != null) ? new MockOrigin(value) : null;
+		return of(value, null);
+	}
+
+	public static Origin of(String value, Origin parent) {
+		return (value != null) ? new MockOrigin(value, parent) : null;
 	}
 
 }

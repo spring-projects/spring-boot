@@ -20,6 +20,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.origin.TextResourceOrigin.Location;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,7 +55,21 @@ class TextResourceOriginTests {
 		Location location = new Location(1, 2);
 		TextResourceOrigin origin = new TextResourceOrigin(null, location);
 		assertThat(origin.getLocation()).isEqualTo(location);
+	}
 
+	@Test
+	void getParentWhenResourceIsNotOriginTrackedReturnsNull() {
+		ClassPathResource resource = new ClassPathResource("foo.txt");
+		TextResourceOrigin origin = new TextResourceOrigin(resource, null);
+		assertThat(origin.getParent()).isNull();
+	}
+
+	@Test
+	void getParentWhenResourceIsOriginTrackedReturnsResourceOrigin() {
+		Origin resourceOrigin = MockOrigin.of("test");
+		Resource resource = OriginTrackedResource.of(new ClassPathResource("foo.txt"), resourceOrigin);
+		TextResourceOrigin origin = new TextResourceOrigin(resource, null);
+		assertThat(origin.getParent()).isSameAs(resourceOrigin);
 	}
 
 	@Test

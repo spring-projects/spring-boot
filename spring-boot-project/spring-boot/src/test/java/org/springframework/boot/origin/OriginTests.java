@@ -16,6 +16,8 @@
 
 package org.springframework.boot.origin;
 
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -28,6 +30,13 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  */
 class OriginTests {
+
+	@Test
+	void getParentWhenDefaultIsNull() {
+		Origin origin = new Origin() {
+		};
+		assertThat(origin.getParent()).isNull();
+	}
 
 	@Test
 	void fromWhenSourceIsNullReturnsNull() {
@@ -66,6 +75,20 @@ class OriginTests {
 		Origin origin = mock(Origin.class);
 		Exception exception = new TestException(null, new TestException(origin, null));
 		assertThat(Origin.from(exception)).isEqualTo(origin);
+	}
+
+	@Test
+	void parentsFromWhenSourceIsNullReturnsEmptyList() {
+		assertThat(Origin.parentsFrom(null)).isEmpty();
+	}
+
+	@Test
+	void parentsFromReturnsParents() {
+		Origin o1 = MockOrigin.of("1");
+		Origin o2 = MockOrigin.of("2", o1);
+		Origin o3 = MockOrigin.of("3", o2);
+		List<Origin> parents = Origin.parentsFrom(o3);
+		assertThat(parents).containsExactly(o2, o1);
 	}
 
 	static class TestException extends RuntimeException implements OriginProvider {

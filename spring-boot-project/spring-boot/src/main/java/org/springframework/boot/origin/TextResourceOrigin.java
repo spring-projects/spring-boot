@@ -21,11 +21,14 @@ import org.springframework.util.ObjectUtils;
 
 /**
  * {@link Origin} for an item loaded from a text resource. Provides access to the original
- * {@link Resource} that loaded the text and a {@link Location} within it.
+ * {@link Resource} that loaded the text and a {@link Location} within it. If the provided
+ * resource provides an {@link Origin} (e.g. it is an {@link OriginTrackedResource}), then
+ * it will be used as the {@link Origin#getParent() origin parent}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  * @since 2.0.0
+ * @see OriginTrackedResource
  */
 public class TextResourceOrigin implements Origin {
 
@@ -52,6 +55,11 @@ public class TextResourceOrigin implements Origin {
 	 */
 	public Location getLocation() {
 		return this.location;
+	}
+
+	@Override
+	public Origin getParent() {
+		return Origin.from(this.resource);
 	}
 
 	@Override
