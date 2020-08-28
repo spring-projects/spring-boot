@@ -24,11 +24,9 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.context.ApplicationContextInitializer;
-import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
-import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.DynamicPropertyRegistry;
+import org.springframework.test.context.DynamicPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -39,7 +37,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DataMongoTest
 @Testcontainers(disabledWithoutDocker = true)
-@ContextConfiguration(initializers = DataMongoTestReactiveIntegrationTests.Initializer.class)
 class DataMongoTestReactiveIntegrationTests {
 
 	@Container
@@ -52,6 +49,11 @@ class DataMongoTestReactiveIntegrationTests {
 	@Autowired
 	private ExampleReactiveRepository exampleRepository;
 
+	@DynamicPropertySource
+	static void mongoProperties(DynamicPropertyRegistry registry) {
+		registry.add("spring.data.mongodb.uri", mongoDB::getReplicaSetUrl);
+	}
+
 	@Test
 	void testRepository() {
 		ExampleDocument exampleDocument = new ExampleDocument();
@@ -59,16 +61,6 @@ class DataMongoTestReactiveIntegrationTests {
 		exampleDocument = this.exampleRepository.save(exampleDocument).block(Duration.ofSeconds(30));
 		assertThat(exampleDocument.getId()).isNotNull();
 		assertThat(this.mongoTemplate.collectionExists("exampleDocuments").block(Duration.ofSeconds(30))).isTrue();
-	}
-
-	static class Initializer implements ApplicationContextInitializer<ConfigurableApplicationContext> {
-
-		@Override
-		public void initialize(ConfigurableApplicationContext configurableApplicationContext) {
-			TestPropertyValues.of("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl())
-					.applyTo(configurableApplicationContext.getEnvironment());
-		}
-
 	}
 
 }
