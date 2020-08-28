@@ -111,6 +111,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 	private Configuration createBootArchivesConfiguration(Project project) {
 		Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
 		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
+		bootArchives.setCanBeResolved(false);
 		return bootArchives;
 	}
 
