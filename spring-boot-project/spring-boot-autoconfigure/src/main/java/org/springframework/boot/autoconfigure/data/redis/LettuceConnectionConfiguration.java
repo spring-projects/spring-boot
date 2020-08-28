@@ -17,9 +17,11 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
+import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
@@ -96,7 +98,15 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		builder.clientOptions(initializeClientOptionsBuilder().timeoutOptions(TimeoutOptions.enabled()).build());
+
+		ClientOptions.Builder clientOptionsBuilder = initializeClientOptionsBuilder();
+		Duration connectionTimeout = getProperties().getConnectionTimeout();
+		if (connectionTimeout != null) {
+			SocketOptions socketOptions = SocketOptions.builder().connectTimeout(connectionTimeout).build();
+			clientOptionsBuilder.socketOptions(socketOptions);
+		}
+		builder.clientOptions(clientOptionsBuilder.timeoutOptions(TimeoutOptions.enabled()).build());
+
 		builder.clientResources(clientResources);
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -114,8 +124,9 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (getProperties().isSsl()) {
 			builder.useSsl();
 		}
-		if (getProperties().getTimeout() != null) {
-			builder.commandTimeout(getProperties().getTimeout());
+		Duration timeout = getProperties().getTimeout();
+		if (timeout != null) {
+			builder.commandTimeout(timeout);
 		}
 		if (getProperties().getLettuce() != null) {
 			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
