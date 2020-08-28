@@ -6,6 +6,9 @@
 	</server>
 	<buildScan>
 		<publishIfAuthenticated>true</publishIfAuthenticated>
+    	<obfuscation>
+			<ipAddresses>#{{'0.0.0.0'}}</ipAddresses>
+    	</obfuscation>
 	</buildScan>
 	<buildCache>
 		<local>
