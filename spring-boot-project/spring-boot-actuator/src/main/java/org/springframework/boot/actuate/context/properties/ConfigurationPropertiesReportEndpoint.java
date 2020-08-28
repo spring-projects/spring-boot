@@ -60,6 +60,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.origin.Origin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.KotlinDetector;
@@ -292,10 +293,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private Map<String, Object> getInput(String property, ConfigurationProperty candidate) {
 		Map<String, Object> input = new LinkedHashMap<>();
-		String origin = (candidate.getOrigin() != null) ? candidate.getOrigin().toString() : "none";
 		Object value = candidate.getValue();
-		input.put("origin", origin);
+		Origin origin = Origin.from(candidate);
+		List<Origin> originParents = Origin.parentsFrom(candidate);
 		input.put("value", this.sanitizer.sanitize(property, value));
+		input.put("origin", (origin != null) ? origin.toString() : "none");
+		if (!originParents.isEmpty()) {
+			input.put("originParents", originParents.stream().map(Object::toString).toArray(String[]::new));
+		}
 		return input;
 	}
 

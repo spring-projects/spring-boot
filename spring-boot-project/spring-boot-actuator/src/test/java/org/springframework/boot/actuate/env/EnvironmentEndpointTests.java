@@ -29,6 +29,8 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDe
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceEntryDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +39,7 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -223,6 +226,18 @@ class EnvironmentEndpointTests {
 	}
 
 	@Test
+	void originAndOriginParents() {
+		StandardEnvironment environment = new StandardEnvironment();
+		OriginParentMockPropertySource propertySource = new OriginParentMockPropertySource();
+		propertySource.setProperty("name", "test");
+		environment.getPropertySources().addFirst(propertySource);
+		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment).environmentEntry("name");
+		PropertySourceEntryDescriptor entryDescriptor = propertySources(descriptor).get("mockProperties");
+		assertThat(entryDescriptor.getProperty().getOrigin()).isEqualTo("name");
+		assertThat(entryDescriptor.getProperty().getOriginParents()).containsExactly("spring", "boot");
+	}
+
+	@Test
 	void propertyEntryNotFound() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources().addFirst(singleKeyPropertySource("test", "foo", "bar"));
@@ -298,6 +313,38 @@ class EnvironmentEndpointTests {
 		}
 		else {
 			assertThat(actual.getProperty()).isNull();
+		}
+
+	}
+
+	static class OriginParentMockPropertySource extends MockPropertySource implements OriginLookup<String> {
+
+		@Override
+		public Origin getOrigin(String key) {
+			return new MockOrigin(key, new MockOrigin("spring", new MockOrigin("boot", null)));
+		}
+
+	}
+
+	static class MockOrigin implements Origin {
+
+		private final String value;
+
+		private final MockOrigin parent;
+
+		MockOrigin(String value, MockOrigin parent) {
+			this.value = value;
+			this.parent = parent;
+		}
+
+		@Override
+		public Origin getParent() {
+			return this.parent;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
 		}
 
 	}

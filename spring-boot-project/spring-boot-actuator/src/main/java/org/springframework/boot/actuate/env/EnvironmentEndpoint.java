@@ -142,13 +142,8 @@ public class EnvironmentEndpoint {
 	private PropertyValueDescriptor describeValueOf(String name, PropertySource<?> source,
 			PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
-		String origin = ((source instanceof OriginLookup) ? getOrigin((OriginLookup<Object>) source, name) : null);
+		Origin origin = ((source instanceof OriginLookup) ? ((OriginLookup<Object>) source).getOrigin(name) : null);
 		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
-	}
-
-	private String getOrigin(OriginLookup<Object> lookup, String name) {
-		Origin origin = lookup.getOrigin(name);
-		return (origin != null) ? origin.toString() : null;
 	}
 
 	private PlaceholdersResolver getResolver() {
@@ -353,9 +348,14 @@ public class EnvironmentEndpoint {
 
 		private final String origin;
 
-		private PropertyValueDescriptor(Object value, String origin) {
+		private final String[] originParents;
+
+		private PropertyValueDescriptor(Object value, Origin origin) {
 			this.value = value;
-			this.origin = origin;
+			this.origin = (origin != null) ? origin.toString() : null;
+			List<Origin> originParents = Origin.parentsFrom(origin);
+			this.originParents = originParents.isEmpty() ? null
+					: originParents.stream().map(Object::toString).toArray(String[]::new);
 		}
 
 		public Object getValue() {
@@ -364,6 +364,10 @@ public class EnvironmentEndpoint {
 
 		public String getOrigin() {
 			return this.origin;
+		}
+
+		public String[] getOriginParents() {
+			return this.originParents;
 		}
 
 	}
