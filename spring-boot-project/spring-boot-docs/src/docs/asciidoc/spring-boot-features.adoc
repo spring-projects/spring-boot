@@ -4554,9 +4554,9 @@ You can further tune how `RestClient` is configured, as shown in the following e
 ----
 
 You can also register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
-To take full control over the registration, define a `RestClient` bean.
+To take full control over the registration, define a `RestClientBuilder` bean.
 
-If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` dependency on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which wraps any existing `RestClient` bean, reusing its HTTP configuration.
+If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` dependency on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which leverages any existing `RestClientBuilder` bean, reusing its HTTP configuration.
 
 
 [[boot-features-connecting-to-elasticsearch-reactive-rest]]
