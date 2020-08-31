@@ -62,12 +62,18 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	@Override
 	protected Yaml createYaml() {
-		BaseConstructor constructor = new OriginTrackingConstructor();
+		LoaderOptions loaderOptions = new LoaderOptions();
+		loaderOptions.setAllowDuplicateKeys(false);
+		loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
+		loaderOptions.setAllowRecursiveKeys(true);
+		return createYaml(loaderOptions);
+	}
+
+	private Yaml createYaml(LoaderOptions loaderOptions) {
+		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
 		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
 		LimitedResolver resolver = new LimitedResolver();
-		LoaderOptions loaderOptions = new LoaderOptions();
-		loaderOptions.setAllowDuplicateKeys(false);
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
@@ -81,6 +87,10 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	 * {@link Constructor} that tracks property origins.
 	 */
 	private class OriginTrackingConstructor extends SafeConstructor {
+
+		OriginTrackingConstructor(LoaderOptions loadingConfig) {
+			super(loadingConfig);
+		}
 
 		@Override
 		protected Object constructObject(Node node) {
