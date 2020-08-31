@@ -101,7 +101,11 @@ The following table summarizes the available parameters and their default values
 | `false`
 |===
 
-For more details, see <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
+NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.
+By default, the plugin instructs the buildpacks to install the same Java version.
+You can override this behaviour by setting the `BP_JVM_VERSION` environment variable, see <<build-image-example-builder-configuration,builder configuration>>.
+
+For more details, see also <<build-image-example-custom-image-builder,custom image builder>> and <<build-image-example-custom-image-name,custom image name>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
 

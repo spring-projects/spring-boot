@@ -77,6 +77,10 @@ The following table summarizes the available properties and their default values
 | `false`
 |===
 
+NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.
+By default, the plugin instructs the buildpacks to install the same Java version.
+You can override this behaviour by setting the `BP_JVM_VERSION` environment variable, see <<build-image-example-builder-configuration,builder configuration>>.
+
 
 
 [[build-image-examples]]
