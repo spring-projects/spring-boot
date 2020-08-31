@@ -312,7 +312,7 @@ Application events are sent in the following order, as your application runs:
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean definitions have been loaded.
 . An `ApplicationStartedEvent` is sent after the context has been refreshed but before any application and command-line runners have been called.
 . An `AvailabilityChangeEvent` is sent right after with `LivenessState.CORRECT` to indicate that the application is considered as live.
-. An `ApplicationReadyEvent` is sent after any application and command-line runners have been called.
+. An `ApplicationReadyEvent` is sent after any <<boot-features-command-line-runner,application and command-line runners>> have been called.
 . An `AvailabilityChangeEvent` is sent right after with `ReadinessState.ACCEPTING_TRAFFIC` to indicate that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
@@ -325,6 +325,9 @@ In addition to these, the following events are also published after `Application
 
 TIP: You often need not use application events, but it can be handy to know that they exist.
 Internally, Spring Boot uses events to handle a variety of tasks.
+
+NOTE: Event listeners should not run potentially lengthy tasks as they execute in the same thread by default.
+Consider using <<boot-features-command-line-runner,application and command-line runners>> instead.
 
 Application events are sent by using Spring Framework's event publishing mechanism.
 Part of this mechanism ensures that an event published to the listeners in a child context is also published to the listeners in any ancestor contexts.
@@ -386,6 +389,9 @@ This lets you also inject single application arguments by using the `@Value` ann
 === Using the ApplicationRunner or CommandLineRunner
 If you need to run some specific code once the `SpringApplication` has started, you can implement the `ApplicationRunner` or `CommandLineRunner` interfaces.
 Both interfaces work in the same way and offer a single `run` method, which is called just before `SpringApplication.run(...)` completes.
+
+NOTE: This contract is well suited for tasks that should run after application startup but before it starts accepting traffic.
+
 
 The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
