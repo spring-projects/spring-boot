@@ -107,7 +107,11 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `false`
 |===
 
-For more details, see <<build-image-examples,examples>>.
+NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.
+By default, the plugin instructs the buildpacks to install the same Java version.
+You can override this behaviour by setting the `BP_JVM_VERSION` environment variable, see <<build-image-example-builder-configuration,builder configuration>>.
+
+For more details, see also <<build-image-examples,examples>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
 
