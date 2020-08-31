@@ -90,7 +90,7 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			}
 		}
 		String name = getName(prefix, attributeMapping, attribute);
-		putProperties(name, value.get(), properties);
+		putProperties(name, skip, value.get(), properties);
 	}
 
 	private String getName(String prefix, MergedAnnotation<?> attributeMapping, Method attribute) {
@@ -118,11 +118,17 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return postfix;
 	}
 
-	private void putProperties(String name, Object value, Map<String, Object> properties) {
+	private void putProperties(String name, SkipPropertyMapping defaultSkip, Object value,
+			Map<String, Object> properties) {
 		if (ObjectUtils.isArray(value)) {
 			Object[] array = ObjectUtils.toObjectArray(value);
 			for (int i = 0; i < array.length; i++) {
-				properties.put(name + "[" + i + "]", array[i]);
+				putProperties(name + "[" + i + "]", defaultSkip, array[i], properties);
+			}
+		}
+		else if (value instanceof MergedAnnotation<?>) {
+			for (Method attribute : ((MergedAnnotation<?>) value).getType().getDeclaredMethods()) {
+				collectProperties(name, defaultSkip, (MergedAnnotation<?>) value, attribute, properties);
 			}
 		}
 		else {
