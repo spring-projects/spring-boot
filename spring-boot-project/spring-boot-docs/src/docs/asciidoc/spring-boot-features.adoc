@@ -7342,7 +7342,7 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 [[boot-features-testing-spring-boot-applications-testing-auto-configured-additional-auto-config]]
 ==== Additional Auto-configuration and Slicing
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
-Additional auto-configurations can be added by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
+Additional auto-configurations can be added on a test-by-test basis by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -7354,6 +7354,15 @@ Additional auto-configurations can be added by creating a custom `@AutoConfigure
 ----
 
 NOTE: Make sure to not use the regular `@Import` annotation to import auto-configurations as they are handled in a specific way by Spring Boot.
+
+Alternatively, additional auto-configurations can be added for any use of a slice annotation by registering them in `META-INF/spring.factories` as shown in the following example:
+
+[indent=0]
+----
+	org.springframework.boot.test.autoconfigure.jdbc.JdbcTest=com.example.IntegrationAutoConfiguration
+----
+
+TIP: A slice or `@AutoConfigure...` annotation can be customized this way as long as it is meta-annotated with `@ImportAutoConfiguration`.
 
 
 
