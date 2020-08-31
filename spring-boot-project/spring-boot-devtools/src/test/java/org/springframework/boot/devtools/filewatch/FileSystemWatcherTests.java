@@ -273,8 +273,37 @@ class FileSystemWatcherTests {
 		assertThat(actual).isEqualTo(expected);
 	}
 
+	@Test
+	void withSnapshotRepository() throws Exception {
+		SnapshotStateRepository repository = new TestSnapshotStateRepository();
+		setupWatcher(20, 10, repository);
+		File directory = new File(this.tempDir, UUID.randomUUID().toString());
+		directory.mkdir();
+		File file = touch(new File(directory, "file.txt"));
+		this.watcher.addSourceDirectory(directory);
+		this.watcher.start();
+		file.delete();
+		this.watcher.stopAfter(1);
+		this.changes.clear();
+		File recreate = touch(new File(directory, "file.txt"));
+		setupWatcher(20, 10, repository);
+		this.watcher.addSourceDirectory(directory);
+		this.watcher.start();
+		this.watcher.stopAfter(1);
+		ChangedFiles changedFiles = getSingleChangedFiles();
+		Set<ChangedFile> actual = changedFiles.getFiles();
+		Set<ChangedFile> expected = new HashSet<>();
+		expected.add(new ChangedFile(directory, recreate, Type.ADD));
+		assertThat(actual).isEqualTo(expected);
+	}
+
 	private void setupWatcher(long pollingInterval, long quietPeriod) {
-		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval), Duration.ofMillis(quietPeriod));
+		setupWatcher(pollingInterval, quietPeriod, null);
+	}
+
+	private void setupWatcher(long pollingInterval, long quietPeriod, SnapshotStateRepository snapshotStateRepository) {
+		this.watcher = new FileSystemWatcher(false, Duration.ofMillis(pollingInterval), Duration.ofMillis(quietPeriod),
+				snapshotStateRepository);
 		this.watcher.addListener((changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}
 
@@ -302,6 +331,22 @@ class FileSystemWatcherTests {
 		FileOutputStream fileOutputStream = new FileOutputStream(file);
 		fileOutputStream.close();
 		return file;
+	}
+
+	private static class TestSnapshotStateRepository implements SnapshotStateRepository {
+
+		private Object state;
+
+		@Override
+		public void save(Object state) {
+			this.state = state;
+		}
+
+		@Override
+		public Object restore() {
+			return this.state;
+		}
+
 	}
 
 }
