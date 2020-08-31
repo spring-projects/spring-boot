@@ -135,6 +135,35 @@ class OriginTrackedYamlLoaderTests {
 		assertThat(loaded).isEmpty();
 	}
 
+	@Test
+	void loadWhenLargeNumberOfNodesLoadsYaml() {
+		StringBuilder yaml = new StringBuilder();
+		int size = 500;
+		yaml.append("defs:\n");
+		for (int i = 0; i < size; i++) {
+			yaml.append(" - def" + i + ": &def" + i + "\n");
+			yaml.append("    - value: " + i + "\n");
+		}
+		yaml.append("refs:\n");
+		for (int i = 0; i < size; i++) {
+			yaml.append("  ref" + i + ":\n");
+			yaml.append("   - value: *def" + i + "\n");
+		}
+		Resource resource = new ByteArrayResource(yaml.toString().getBytes(StandardCharsets.UTF_8));
+		this.loader = new OriginTrackedYamlLoader(resource);
+		Map<String, Object> loaded = this.loader.load().get(0);
+		assertThat(loaded).hasSize(size * 2);
+	}
+
+	@Test
+	void loadWhenRecursiveLoadsYaml() {
+		Resource resource = new ClassPathResource("recursive.yml", getClass());
+		this.loader = new OriginTrackedYamlLoader(resource);
+		Map<String, Object> loaded = this.loader.load().get(0);
+		assertThat(loaded.get("test.a.spring")).hasToString("a");
+		assertThat(loaded.get("test.b.boot")).hasToString("b");
+	}
+
 	private OriginTrackedValue getValue(String name) {
 		if (this.result == null) {
 			this.result = this.loader.load();
