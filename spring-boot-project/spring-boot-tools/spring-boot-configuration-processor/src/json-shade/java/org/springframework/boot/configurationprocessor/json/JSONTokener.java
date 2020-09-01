@@ -549,13 +549,15 @@ public class JSONTokener {
 		if (hex >= '0' && hex <= '9') {
 			return hex - '0';
 		}
-		if (hex >= 'A' && hex <= 'F') {
+		else if (hex >= 'A' && hex <= 'F') {
 			return hex - 'A' + 10;
 		}
-		if (hex >= 'a' && hex <= 'f') {
+		else if (hex >= 'a' && hex <= 'f') {
 			return hex - 'a' + 10;
 		}
-		return -1;
+		else {
+			return -1;
+		}
 	}
 
 }

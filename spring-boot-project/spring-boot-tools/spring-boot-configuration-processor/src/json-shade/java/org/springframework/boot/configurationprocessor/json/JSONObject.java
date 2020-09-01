@@ -596,10 +596,12 @@ public class JSONObject {
 	 */
 	public JSONArray getJSONArray(String name) throws JSONException {
 		Object object = get(name);
-		if (!(object instanceof JSONArray)) {
+		if (object instanceof JSONArray) {
+			return (JSONArray) object;
+		}
+		else {
 			throw JSON.typeMismatch(name, object, "JSONArray");
 		}
-		return (JSONArray) object;
 	}
 
 	/**
@@ -623,10 +625,12 @@ public class JSONObject {
 	 */
 	public JSONObject getJSONObject(String name) throws JSONException {
 		Object object = get(name);
-		if (!(object instanceof JSONObject)) {
+		if (object instanceof JSONObject) {
+			return (JSONObject) object;
+		}
+		else {
 			throw JSON.typeMismatch(name, object, "JSONObject");
 		}
-		return (JSONObject) object;
 	}
 
 	/**
