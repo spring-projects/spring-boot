@@ -33,9 +33,9 @@ import org.springframework.boot.actuate.health.Status;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.doAnswer;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.mock;
+import static org.mockito.BDDMockito.willAnswer;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CassandraDriverReactiveHealthIndicator}.
@@ -56,7 +56,7 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		ReactiveResultSet results = mock(ReactiveResultSet.class);
 		ReactiveRow row = mock(ReactiveRow.class);
 		given(session.executeReactive(any(SimpleStatement.class))).willReturn(results);
-		doAnswer(mockReactiveResultSetBehavior(row)).when(results).subscribe(any());
+		willAnswer(mockReactiveResultSetBehavior(row)).given(results).subscribe(any());
 		given(row.getString(0)).willReturn("6.0.0");
 		CassandraDriverReactiveHealthIndicator cassandraReactiveHealthIndicator = new CassandraDriverReactiveHealthIndicator(
 				session);
