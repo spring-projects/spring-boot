@@ -22,6 +22,9 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
+| AOProfiling (Aspect-oriented profiling)
+| https://github.com/rechnerherz/aoprofiling-spring-boot-starter
+
 | https://camel.apache.org/camel-spring-boot/latest/spring-boot.html[Apache Camel]
 | https://github.com/apache/camel-spring-boot
 
