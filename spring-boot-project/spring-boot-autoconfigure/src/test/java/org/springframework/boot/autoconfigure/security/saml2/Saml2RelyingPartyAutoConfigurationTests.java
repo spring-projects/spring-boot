@@ -16,13 +16,14 @@
 
 package org.springframework.boot.autoconfigure.security.saml2;
 
+import java.io.InputStream;
 import java.util.List;
 
 import javax.servlet.Filter;
 
 import okhttp3.mockwebserver.MockResponse;
 import okhttp3.mockwebserver.MockWebServer;
-import org.junit.jupiter.api.AfterEach;
+import okio.Buffer;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -33,6 +34,7 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -57,15 +59,6 @@ class Saml2RelyingPartyAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(Saml2RelyingPartyAutoConfiguration.class, SecurityAutoConfiguration.class));
-
-	private MockWebServer server;
-
-	@AfterEach
-	void cleanup() throws Exception {
-		if (this.server != null) {
-			this.server.shutdown();
-		}
-	}
 
 	@Test
 	void autoConfigurationShouldBeConditionalOnRelyingPartyRegistrationRepositoryClass() {
@@ -126,15 +119,16 @@ class Saml2RelyingPartyAutoConfigurationTests {
 
 	@Test
 	void autoconfigurationShouldQueryIdentityProviderMetadataWhenMetadataUrlIsPresent() throws Exception {
-		this.server = new MockWebServer();
-		this.server.start();
-		String metadataUrl = this.server.url("").toString();
-		setupMockResponse();
-		this.contextRunner.withPropertyValues(PREFIX + ".foo.identityprovider.metadata-url=" + metadataUrl)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
-					assertThat(this.server.getRequestCount()).isEqualTo(1);
-				});
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server);
+			this.contextRunner.withPropertyValues(PREFIX + ".foo.identityprovider.metadata-uri=" + metadataUrl)
+					.run((context) -> {
+						assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
+						assertThat(server.getRequestCount()).isEqualTo(1);
+					});
+		}
 	}
 
 	@Test
@@ -201,44 +195,12 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		return filters.stream().anyMatch(filter::isInstance);
 	}
 
-	private void setupMockResponse() {
-		String metadataResponse = "<md:EntityDescriptor entityID=\"https://idp.example.com/idp/shibboleth\"\n"
-				+ "                     xmlns:ds=\"http://www.w3.org/2000/09/xmldsig#\"\n"
-				+ "                     xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n"
-				+ "                     xmlns:shibmd=\"urn:mace:shibboleth:metadata:1.0\"\n"
-				+ "                     xmlns:md=\"urn:oasis:names:tc:SAML:2.0:metadata\"\n"
-				+ "                     xmlns:mdui=\"urn:oasis:names:tc:SAML:metadata:ui\">\n" + "    \n"
-				+ "   <md:IDPSSODescriptor protocolSupportEnumeration=\"urn:oasis:names:tc:SAML:2.0:protocol\">\n"
-				+ "      <md:KeyDescriptor>\n" + "         <ds:KeyInfo>\n" + "            <ds:X509Data>\n"
-				+ "               <ds:X509Certificate>\n"
-				+ "                  MIIDZjCCAk6gAwIBAgIVAL9O+PA7SXtlwZZY8MVSE9On1cVWMA0GCSqGSIb3DQEB\n"
-				+ "                  BQUAMCkxJzAlBgNVBAMTHmlkZW0tcHVwYWdlbnQuZG16LWludC51bmltby5pdDAe\n"
-				+ "                  Fw0xMzA3MjQwMDQ0MTRaFw0zMzA3MjQwMDQ0MTRaMCkxJzAlBgNVBAMTHmlkZW0t\n"
-				+ "                  cHVwYWdlbnQuZG16LWludC51bmltby5pdDCCASIwDQYJKoZIhvcNAMIIDQADggEP\n"
-				+ "                  ADCCAQoCggEBAIAcp/VyzZGXUF99kwj4NvL/Rwv4YvBgLWzpCuoxqHZ/hmBwJtqS\n"
-				+ "                  v0y9METBPFbgsF3hCISnxbcmNVxf/D0MoeKtw1YPbsUmow/bFe+r72hZ+IVAcejN\n"
-				+ "                  iDJ7t5oTjsRN1t1SqvVVk6Ryk5AZhpFW+W9pE9N6c7kJ16Rp2/mbtax9OCzxpece\n"
-				+ "                  byi1eiLfIBmkcRawL/vCc2v6VLI18i6HsNVO3l2yGosKCbuSoGDx2fCdAOk/rgdz\n"
-				+ "                  cWOvFsIZSKuD+FVbSS/J9GVs7yotsS4PRl4iX9UMnfDnOMfO7bcBgbXtDl4SCU1v\n"
-				+ "                  dJrRw7IL/pLz34Rv9a8nYitrzrxtLOp3nYUCAwEAAaOBhDCBgTBgBgMIIDEEWTBX\n"
-				+ "                  gh5pZGVtLXB1cGFnZW50LmRtei1pbnQudW5pbW8uaXSGNWh0dHBzOi8vaWRlbS1w\n"
-				+ "                  dXBhZ2VudC5kbXotaW50LnVuaW1vLml0L2lkcC9zaGliYm9sZXRoMB0GA1UdDgQW\n"
-				+ "                  BBT8PANzz+adGnTRe8ldcyxAwe4VnzANBgkqhkiG9w0BAQUFAAOCAQEAOEnO8Clu\n"
-				+ "                  9z/Lf/8XOOsTdxJbV29DIF3G8KoQsB3dBsLwPZVEAQIP6ceS32Xaxrl6FMTDDNkL\n"
-				+ "                  qUvvInUisw0+I5zZwYHybJQCletUWTnz58SC4C9G7FpuXHFZnOGtRcgGD1NOX4UU\n"
-				+ "                  duus/4nVcGSLhDjszZ70Xtj0gw2Sn46oQPHTJ81QZ3Y9ih+Aj1c9OtUSBwtWZFkU\n"
-				+ "                  yooAKoR8li68Yb21zN2N65AqV+ndL98M8xUYMKLONuAXStDeoVCipH6PJ09Z5U2p\n"
-				+ "                  V5p4IQRV6QBsNw9CISJFuHzkVYTH5ZxzN80Ru46vh4y2M0Nu8GQ9I085KoZkrf5e\n"
-				+ "                  Cq53OZt9ISjHEw==\n" + "               </ds:X509Certificate>\n"
-				+ "            </ds:X509Data>\n" + "         </ds:KeyInfo>\n" + "      </md:KeyDescriptor>\n" + "   \n"
-				+ "      <md:SingleSignOnService\n"
-				+ "         Binding=\"urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST\"\n"
-				+ "         Location=\"https://idp.example.com/sso\"/>\n" + "   </md:IDPSSODescriptor>\n" + "    \n"
-				+ "   <md:ContactPerson contactType=\"technical\">\n"
-				+ "      <md:EmailAddress>mailto:technical.contact@example.com</md:EmailAddress>\n"
-				+ "   </md:ContactPerson>\n" + "    \n" + "</md:EntityDescriptor>";
-		MockResponse mockResponse = new MockResponse().setBody(metadataResponse);
-		this.server.enqueue(mockResponse);
+	private void setupMockResponse(MockWebServer server) throws Exception {
+		try (InputStream metadataSource = new ClassPathResource("saml/idp-metadata").getInputStream()) {
+			Buffer metadataBuffer = new Buffer().readFrom(metadataSource);
+			MockResponse metadataResponse = new MockResponse().setBody(metadataBuffer);
+			server.enqueue(metadataResponse);
+		}
 	}
 
 	@Configuration(proxyBeanMethods = false)

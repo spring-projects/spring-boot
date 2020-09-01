@@ -143,7 +143,7 @@ public class Saml2RelyingPartyProperties {
 		/**
 		 * Endpoint for discovery-based configuration.
 		 */
-		private String metadataUrl;
+		private String metadataUri;
 
 		private final Singlesignon singlesignon = new Singlesignon();
 
@@ -157,12 +157,12 @@ public class Saml2RelyingPartyProperties {
 			this.entityId = entityId;
 		}
 
-		public String getMetadataUrl() {
-			return this.metadataUrl;
+		public String getMetadataUri() {
+			return this.metadataUri;
 		}
 
-		public void setMetadataUrl(String metadataUrl) {
-			this.metadataUrl = metadataUrl;
+		public void setMetadataUri(String metadataUri) {
+			this.metadataUri = metadataUri;
 		}
 
 		@Deprecated

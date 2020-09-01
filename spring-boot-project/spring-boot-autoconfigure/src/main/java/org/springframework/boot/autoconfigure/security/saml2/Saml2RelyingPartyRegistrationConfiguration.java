@@ -68,9 +68,9 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
 		RelyingPartyRegistration.Builder builder;
-		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUrl());
+		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUri());
 		if (usingMetadata) {
-			builder = RelyingPartyRegistrations.fromMetadataLocation(properties.getIdentityprovider().getMetadataUrl())
+			builder = RelyingPartyRegistrations.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri())
 					.registrationId(id);
 		}
 		else {

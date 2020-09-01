@@ -104,9 +104,9 @@ class Saml2RelyingPartyPropertiesTests {
 
 	@Test
 	void customizeIdentityProviderMetadataUrl() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.metadata-url",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.metadata-uri",
 				"https://idp.example.org/metadata");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getMetadataUrl())
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getMetadataUri())
 				.isEqualTo("https://idp.example.org/metadata");
 	}
 
