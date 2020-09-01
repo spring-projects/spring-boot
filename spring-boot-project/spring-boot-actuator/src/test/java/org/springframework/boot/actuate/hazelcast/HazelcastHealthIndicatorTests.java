@@ -29,7 +29,7 @@ import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -59,7 +59,7 @@ class HazelcastHealthIndicatorTests {
 	@Test
 	void hazelcastDown() {
 		HazelcastInstance hazelcast = mock(HazelcastInstance.class);
-		when(hazelcast.executeTransaction(any())).thenThrow(new HazelcastException());
+		given(hazelcast.executeTransaction(any())).willThrow(new HazelcastException());
 		Health health = new HazelcastHealthIndicator(hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
