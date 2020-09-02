@@ -1198,9 +1198,7 @@ class SpringApplicationTests {
 				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
 		long endCount = mockingDetails(startupStep).getInvocations().stream()
 				.filter((invocation) -> invocation.getMethod().toString().contains("end(")).count();
-		assertThat(startCount).isEqualTo(endCount + 1); // Will be same after
-														// spring-framework #25572 is
-														// fixed
+		assertThat(startCount).isEqualTo(endCount);
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
