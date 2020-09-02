@@ -22,12 +22,14 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Identityprovider.Verification;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration.Signing;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -36,9 +38,13 @@ import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.AssertingPartyDetails;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Configuration @Configuration} used to map {@link Saml2RelyingPartyProperties} to
@@ -64,24 +70,36 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		boolean signRequest = properties.getIdentityprovider().getSinglesignon().isSignRequest();
-		validateSigningCredentials(properties, signRequest);
-		RelyingPartyRegistration.Builder builder = RelyingPartyRegistration.withRegistrationId(id);
+		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUri());
+		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
+				.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri()).registrationId(id)
+				: RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(
 				"{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
-		builder.assertingPartyDetails((details) -> {
-			details.singleSignOnServiceLocation(properties.getIdentityprovider().getSinglesignon().getUrl());
-			details.entityId(properties.getIdentityprovider().getEntityId());
-			details.singleSignOnServiceBinding(properties.getIdentityprovider().getSinglesignon().getBinding());
-			details.wantAuthnRequestsSigned(signRequest);
-		});
+		builder.assertingPartyDetails(mapIdentityProvider(properties, usingMetadata));
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
 		builder.assertingPartyDetails((details) -> details
 				.verificationX509Credentials((credentials) -> properties.getIdentityprovider().getVerification()
 						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
 		builder.entityId(properties.getRelyingPartyEntityId());
-		return builder.build();
+		RelyingPartyRegistration registration = builder.build();
+		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
+		validateSigningCredentials(properties, signRequest);
+		return registration;
+	}
+
+	private Consumer<AssertingPartyDetails.Builder> mapIdentityProvider(Registration properties,
+			boolean usingMetadata) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
+		return (details) -> {
+			map.from(identityprovider::getEntityId).to(details::entityId);
+			map.from(identityprovider.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
+			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
+			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
+					.to(details::wantAuthnRequestsSigned);
+		};
 	}
 
 	private void validateSigningCredentials(Registration properties, boolean signRequest) {
