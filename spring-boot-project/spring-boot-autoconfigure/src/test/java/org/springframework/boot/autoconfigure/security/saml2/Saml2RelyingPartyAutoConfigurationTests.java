@@ -35,6 +35,7 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
+import org.springframework.core.io.Resource;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
@@ -122,7 +123,7 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		try (MockWebServer server = new MockWebServer()) {
 			server.start();
 			String metadataUrl = server.url("").toString();
-			setupMockResponse(server);
+			setupMockResponse(server, new ClassPathResource("saml/idp-metadata"));
 			this.contextRunner.withPropertyValues(PREFIX + ".foo.identityprovider.metadata-uri=" + metadataUrl)
 					.run((context) -> {
 						assertThat(context).hasSingleBean(RelyingPartyRegistrationRepository.class);
@@ -195,8 +196,8 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		return filters.stream().anyMatch(filter::isInstance);
 	}
 
-	private void setupMockResponse(MockWebServer server) throws Exception {
-		try (InputStream metadataSource = new ClassPathResource("saml/idp-metadata").getInputStream()) {
+	private void setupMockResponse(MockWebServer server, Resource resourceBody) throws Exception {
+		try (InputStream metadataSource = resourceBody.getInputStream()) {
 			Buffer metadataBuffer = new Buffer().readFrom(metadataSource);
 			MockResponse metadataResponse = new MockResponse().setBody(metadataBuffer);
 			server.enqueue(metadataResponse);

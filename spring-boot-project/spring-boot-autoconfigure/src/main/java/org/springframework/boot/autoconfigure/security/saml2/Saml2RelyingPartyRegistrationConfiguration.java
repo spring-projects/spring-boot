@@ -22,6 +22,7 @@ import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -37,6 +38,8 @@ import org.springframework.security.converter.RsaKeyConverters;
 import org.springframework.security.saml2.core.Saml2X509Credential;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.AssertingPartyDetails;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
@@ -67,26 +70,13 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		RelyingPartyRegistration.Builder builder;
 		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUri());
-		if (usingMetadata) {
-			builder = RelyingPartyRegistrations.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri())
-					.registrationId(id);
-		}
-		else {
-			builder = RelyingPartyRegistration.withRegistrationId(id);
-		}
+		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
+				.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri()).registrationId(id)
+				: RelyingPartyRegistration.withRegistrationId(id);
 		builder.assertionConsumerServiceLocation(
 				"{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
-		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		builder.assertingPartyDetails((details) -> {
-			map.from(identityprovider::getEntityId).to(details::entityId);
-			map.from(identityprovider.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
-			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
-			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
-					.to(details::wantAuthnRequestsSigned);
-		});
+		builder.assertingPartyDetails(mapIdentityProvider(properties, usingMetadata));
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
 		builder.assertingPartyDetails((details) -> details
@@ -97,6 +87,19 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
 		validateSigningCredentials(properties, signRequest);
 		return registration;
+	}
+
+	private Consumer<AssertingPartyDetails.Builder> mapIdentityProvider(Registration properties,
+			boolean usingMetadata) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
+		return (details) -> {
+			map.from(identityprovider::getEntityId).to(details::entityId);
+			map.from(identityprovider.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
+			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
+			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
+					.to(details::wantAuthnRequestsSigned);
+		};
 	}
 
 	private void validateSigningCredentials(Registration properties, boolean signRequest) {

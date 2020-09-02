@@ -141,7 +141,7 @@ public class Saml2RelyingPartyProperties {
 		private String entityId;
 
 		/**
-		 * Endpoint for discovery-based configuration.
+		 * URI to the metadata endpoint for discovery-based configuration.
 		 */
 		private String metadataUri;
 
