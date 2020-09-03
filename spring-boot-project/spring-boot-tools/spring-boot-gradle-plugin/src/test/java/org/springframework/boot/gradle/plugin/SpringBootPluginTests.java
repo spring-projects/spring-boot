@@ -24,8 +24,6 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -34,8 +32,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Martin Chalupa
  * @author Andy Wilkinson
  */
-@ClassPathExclusions("kotlin-daemon-client-*.jar")
-public class SpringBootPluginTests {
+class SpringBootPluginTests {
 
 	@TempDir
 	File temp;
