@@ -50,10 +50,10 @@ class PeriodStyleTests {
 
 	@Test
 	void detectAndParseWhenSimpleDaysShouldReturnPeriod() {
-		assertThat(PeriodStyle.detectAndParse("10d")).isEqualTo(Period.ofDays(10));
-		assertThat(PeriodStyle.detectAndParse("10D")).isEqualTo(Period.ofDays(10));
-		assertThat(PeriodStyle.detectAndParse("+10d")).isEqualTo(Period.ofDays(10));
-		assertThat(PeriodStyle.detectAndParse("-10D")).isEqualTo(Period.ofDays(-10));
+		assertThat(PeriodStyle.detectAndParse("10d")).hasDays(10);
+		assertThat(PeriodStyle.detectAndParse("10D")).hasDays(10);
+		assertThat(PeriodStyle.detectAndParse("+10d")).hasDays(10);
+		assertThat(PeriodStyle.detectAndParse("-10D")).hasDays(-10);
 	}
 
 	@Test
@@ -66,32 +66,32 @@ class PeriodStyleTests {
 
 	@Test
 	void detectAndParseWhenSimpleMonthsShouldReturnPeriod() {
-		assertThat(PeriodStyle.detectAndParse("10m")).isEqualTo(Period.ofMonths(10));
-		assertThat(PeriodStyle.detectAndParse("10M")).isEqualTo(Period.ofMonths(10));
-		assertThat(PeriodStyle.detectAndParse("+10m")).isEqualTo(Period.ofMonths(10));
-		assertThat(PeriodStyle.detectAndParse("-10M")).isEqualTo(Period.ofMonths(-10));
+		assertThat(PeriodStyle.detectAndParse("10m")).hasMonths(10);
+		assertThat(PeriodStyle.detectAndParse("10M")).hasMonths(10);
+		assertThat(PeriodStyle.detectAndParse("+10m")).hasMonths(10);
+		assertThat(PeriodStyle.detectAndParse("-10M")).hasMonths(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleYearsShouldReturnPeriod() {
-		assertThat(PeriodStyle.detectAndParse("10y")).isEqualTo(Period.ofYears(10));
-		assertThat(PeriodStyle.detectAndParse("10Y")).isEqualTo(Period.ofYears(10));
-		assertThat(PeriodStyle.detectAndParse("+10y")).isEqualTo(Period.ofYears(10));
-		assertThat(PeriodStyle.detectAndParse("-10Y")).isEqualTo(Period.ofYears(-10));
+		assertThat(PeriodStyle.detectAndParse("10y")).hasYears(10);
+		assertThat(PeriodStyle.detectAndParse("10Y")).hasYears(10);
+		assertThat(PeriodStyle.detectAndParse("+10y")).hasYears(10);
+		assertThat(PeriodStyle.detectAndParse("-10Y")).hasYears(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleWithoutSuffixShouldReturnPeriod() {
-		assertThat(PeriodStyle.detectAndParse("10")).isEqualTo(Period.ofDays(10));
-		assertThat(PeriodStyle.detectAndParse("+10")).isEqualTo(Period.ofDays(10));
-		assertThat(PeriodStyle.detectAndParse("-10")).isEqualTo(Period.ofDays(-10));
+		assertThat(PeriodStyle.detectAndParse("10")).hasDays(10);
+		assertThat(PeriodStyle.detectAndParse("+10")).hasDays(10);
+		assertThat(PeriodStyle.detectAndParse("-10")).hasDays(-10);
 	}
 
 	@Test
 	void detectAndParseWhenSimpleWithoutSuffixButWithChronoUnitShouldReturnPeriod() {
-		assertThat(PeriodStyle.detectAndParse("10", ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
-		assertThat(PeriodStyle.detectAndParse("+10", ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
-		assertThat(PeriodStyle.detectAndParse("-10", ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(-10));
+		assertThat(PeriodStyle.detectAndParse("10", ChronoUnit.MONTHS)).hasMonths(10);
+		assertThat(PeriodStyle.detectAndParse("+10", ChronoUnit.MONTHS)).hasMonths(10);
+		assertThat(PeriodStyle.detectAndParse("-10", ChronoUnit.MONTHS)).hasMonths(-10);
 	}
 
 	@Test
@@ -168,13 +168,13 @@ class PeriodStyleTests {
 
 	@Test
 	void parseSimpleShouldParse() {
-		assertThat(PeriodStyle.SIMPLE.parse("10m")).isEqualTo(Period.ofMonths(10));
+		assertThat(PeriodStyle.SIMPLE.parse("10m")).hasMonths(10);
 	}
 
 	@Test
 	void parseSimpleWithUnitShouldUseUnitAsFallback() {
-		assertThat(PeriodStyle.SIMPLE.parse("10m", ChronoUnit.DAYS)).isEqualTo(Period.ofMonths(10));
-		assertThat(PeriodStyle.SIMPLE.parse("10", ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
+		assertThat(PeriodStyle.SIMPLE.parse("10m", ChronoUnit.DAYS)).hasMonths(10);
+		assertThat(PeriodStyle.SIMPLE.parse("10", ChronoUnit.MONTHS)).hasMonths(10);
 	}
 
 	@Test

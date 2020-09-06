@@ -99,7 +99,7 @@ class ArrayBinderTests {
 		ResolvableType type = ResolvableType.forArrayComponent(INTEGER_ARRAY.getType());
 		Bindable<Integer[][]> target = Bindable.of(type);
 		Integer[][] result = this.binder.bind("foo", target).get();
-		assertThat(result).hasSize(2);
+		assertThat(result).hasDimensions(2, 2);
 		assertThat(result[0]).containsExactly(1, 2);
 		assertThat(result[1]).containsExactly(3, 4);
 	}
