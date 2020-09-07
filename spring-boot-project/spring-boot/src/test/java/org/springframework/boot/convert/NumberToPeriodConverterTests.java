@@ -41,21 +41,21 @@ class NumberToPeriodConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenSimpleWithoutSuffixShouldReturnPeriod(ConversionService conversionService) {
-		assertThat(convert(conversionService, 10)).isEqualTo(Period.ofDays(10));
-		assertThat(convert(conversionService, +10)).isEqualTo(Period.ofDays(10));
-		assertThat(convert(conversionService, -10)).isEqualTo(Period.ofDays(-10));
+		assertThat(convert(conversionService, 10)).hasDays(10);
+		assertThat(convert(conversionService, +10)).hasDays(10);
+		assertThat(convert(conversionService, -10)).hasDays(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnPeriod(ConversionService conversionService) {
-		assertThat(convert(conversionService, 10, ChronoUnit.DAYS)).isEqualTo(Period.ofDays(10));
-		assertThat(convert(conversionService, -10, ChronoUnit.DAYS)).isEqualTo(Period.ofDays(-10));
+		assertThat(convert(conversionService, 10, ChronoUnit.DAYS)).hasDays(10);
+		assertThat(convert(conversionService, -10, ChronoUnit.DAYS)).hasDays(-10);
 		assertThat(convert(conversionService, 10, ChronoUnit.WEEKS)).isEqualTo(Period.ofWeeks(10));
 		assertThat(convert(conversionService, -10, ChronoUnit.WEEKS)).isEqualTo(Period.ofWeeks(-10));
-		assertThat(convert(conversionService, 10, ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(10));
-		assertThat(convert(conversionService, -10, ChronoUnit.MONTHS)).isEqualTo(Period.ofMonths(-10));
-		assertThat(convert(conversionService, 10, ChronoUnit.YEARS)).isEqualTo(Period.ofYears(10));
-		assertThat(convert(conversionService, -10, ChronoUnit.YEARS)).isEqualTo(Period.ofYears(-10));
+		assertThat(convert(conversionService, 10, ChronoUnit.MONTHS)).hasMonths(10);
+		assertThat(convert(conversionService, -10, ChronoUnit.MONTHS)).hasMonths(-10);
+		assertThat(convert(conversionService, 10, ChronoUnit.YEARS)).hasYears(10);
+		assertThat(convert(conversionService, -10, ChronoUnit.YEARS)).hasYears(-10);
 	}
 
 	private Period convert(ConversionService conversionService, Integer source) {

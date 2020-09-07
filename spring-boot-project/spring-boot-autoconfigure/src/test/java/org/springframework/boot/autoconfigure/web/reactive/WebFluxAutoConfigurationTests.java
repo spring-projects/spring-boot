@@ -407,8 +407,8 @@ class WebFluxAutoConfigurationTests {
 			assertThat(handlerMap).hasSize(2);
 			for (Object handler : handlerMap.values()) {
 				if (handler instanceof ResourceWebHandler) {
-					assertThat(((ResourceWebHandler) handler).getCacheControl())
-							.isEqualToComparingFieldByField(CacheControl.maxAge(5, TimeUnit.SECONDS));
+					assertThat(((ResourceWebHandler) handler).getCacheControl()).usingRecursiveComparison()
+							.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS));
 				}
 			}
 		});
@@ -424,8 +424,8 @@ class WebFluxAutoConfigurationTests {
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
 						if (handler instanceof ResourceWebHandler) {
-							assertThat(((ResourceWebHandler) handler).getCacheControl()).isEqualToComparingFieldByField(
-									CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
+							assertThat(((ResourceWebHandler) handler).getCacheControl()).usingRecursiveComparison()
+									.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
 						}
 					}
 				});

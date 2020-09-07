@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -99,7 +99,7 @@ class ArrayBinderTests {
 		ResolvableType type = ResolvableType.forArrayComponent(INTEGER_ARRAY.getType());
 		Bindable<Integer[][]> target = Bindable.of(type);
 		Integer[][] result = this.binder.bind("foo", target).get();
-		assertThat(result).hasSize(2);
+		assertThat(result).hasDimensions(2, 2);
 		assertThat(result[0]).containsExactly(1, 2);
 		assertThat(result[1]).containsExactly(3, 4);
 	}
