@@ -32,7 +32,7 @@ import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
-import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 /**
@@ -75,7 +75,7 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 				fieldWithPath("timeline.events.[].startupStep.tags[].value")
 						.description("The value of the StartupStep Tag."));
 
-		this.mockMvc.perform(get("/actuator/startup")).andExpect(status().isOk())
+		this.mockMvc.perform(post("/actuator/startup")).andExpect(status().isOk())
 				.andDo(document("startup", responseFields));
 	}
 

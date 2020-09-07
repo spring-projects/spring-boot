@@ -18,7 +18,7 @@ package org.springframework.boot.actuate.startup;
 
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.metrics.buffering.StartupTimeline;
 
@@ -44,7 +44,7 @@ public class StartupEndpoint {
 		this.applicationStartup = applicationStartup;
 	}
 
-	@ReadOperation
+	@WriteOperation
 	public StartupResponse startup() {
 		StartupTimeline startupTimeline = this.applicationStartup.drainBufferedTimeline();
 		return new StartupResponse(startupTimeline);
