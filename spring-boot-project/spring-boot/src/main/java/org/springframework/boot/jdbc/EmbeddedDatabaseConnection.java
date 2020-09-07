@@ -59,17 +59,25 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * HSQL Database Connection.
 	 */
-	HSQL(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "jdbc:hsqldb:mem:%s");
+	HSQL(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "org.hsqldb.jdbcDriver",
+			"jdbc:hsqldb:mem:%s");
 
 	private final EmbeddedDatabaseType type;
 
 	private final String driverClass;
 
+	private final String alternativeDriverClass;
+
 	private final String url;
 
 	EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass, String url) {
+		this(type, driverClass, null, url);
+	}
+
+	EmbeddedDatabaseConnection(EmbeddedDatabaseType type, String driverClass, String fallbackDriverClass, String url) {
 		this.type = type;
 		this.driverClass = driverClass;
+		this.alternativeDriverClass = fallbackDriverClass;
 		this.url = url;
 	}
 
@@ -106,8 +114,12 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the driver class is one of the embedded types
 	 */
 	public static boolean isEmbedded(String driverClass) {
-		return driverClass != null && (driverClass.equals(HSQL.driverClass) || driverClass.equals(H2.driverClass)
-				|| driverClass.equals(DERBY.driverClass));
+		return driverClass != null
+				&& (matches(HSQL, driverClass) || matches(H2, driverClass) || matches(DERBY, driverClass));
+	}
+
+	private static boolean matches(EmbeddedDatabaseConnection candidate, String driverClass) {
+		return driverClass.equals(candidate.driverClass) || driverClass.equals(candidate.alternativeDriverClass);
 	}
 
 	/**
