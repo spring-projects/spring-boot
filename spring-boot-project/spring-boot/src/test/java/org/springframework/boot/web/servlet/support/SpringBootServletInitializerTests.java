@@ -41,6 +41,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.web.context.WebApplicationContext;
@@ -110,6 +111,27 @@ class SpringBootServletInitializerTests {
 			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilterNotRegistered()
 					.createRootApplicationContext(servletContext)) {
 				assertThat(context.getBeansOfType(ErrorPageFilter.class)).hasSize(0);
+			}
+		});
+		try {
+			webServer.start();
+		}
+		finally {
+			webServer.stop();
+		}
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void errorPageFilterIsRegisteredWithNearHighestPrecedence() {
+		WebServer webServer = new UndertowServletWebServerFactory(0).getWebServer((servletContext) -> {
+			try (AbstractApplicationContext context = (AbstractApplicationContext) new WithErrorPageFilter()
+					.createRootApplicationContext(servletContext)) {
+				Map<String, FilterRegistrationBean> registrations = context
+						.getBeansOfType(FilterRegistrationBean.class);
+				assertThat(registrations).hasSize(1);
+				FilterRegistrationBean errorPageFilterRegistration = registrations.get("errorPageFilterRegistration");
+				assertThat(errorPageFilterRegistration.getOrder()).isEqualTo(Ordered.HIGHEST_PRECEDENCE + 1);
 			}
 		});
 		try {
