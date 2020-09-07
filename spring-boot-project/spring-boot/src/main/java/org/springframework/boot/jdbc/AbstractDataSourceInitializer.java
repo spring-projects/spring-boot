@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.jdbc;
+
+import java.sql.DatabaseMetaData;
 
 import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
@@ -87,7 +89,7 @@ public abstract class AbstractDataSourceInitializer {
 	protected String getDatabaseName() {
 		try {
 			String productName = JdbcUtils.commonDatabaseName(
-					JdbcUtils.extractDatabaseMetaData(this.dataSource, "getDatabaseProductName").toString());
+					JdbcUtils.extractDatabaseMetaData(this.dataSource, DatabaseMetaData::getDatabaseProductName));
 			DatabaseDriver databaseDriver = DatabaseDriver.fromProductName(productName);
 			if (databaseDriver == DatabaseDriver.UNKNOWN) {
 				throw new IllegalStateException("Unable to detect database type");
