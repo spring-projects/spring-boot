@@ -138,7 +138,7 @@ class DeploymentIntegrationTests {
 			super(new ImageFromDockerfile().withFileFromFile("spring-boot.war", findWarToDeploy())
 					.withDockerfileFromBuilder((builder) -> builder.from(baseImage)
 							.add("spring-boot.war", deploymentLocation + "/spring-boot.war").build()));
-			withExposedPorts(port).withStartupTimeout(Duration.ofMinutes(10));
+			withExposedPorts(port).withStartupTimeout(Duration.ofMinutes(5)).withStartupAttempts(3);
 		}
 
 		private static File findWarToDeploy() {
