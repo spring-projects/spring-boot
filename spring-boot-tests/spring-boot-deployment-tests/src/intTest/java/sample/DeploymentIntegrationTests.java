@@ -77,10 +77,12 @@ class DeploymentIntegrationTests {
 	}
 
 	static List<DeployedApplication> deployedApplications() {
-		return Arrays.asList(new DeployedApplication("open-liberty:19.0.0.9-webProfile8", "/config/dropins", 9080),
-				new DeployedApplication("tomcat:9.0.29-jdk8-openjdk", "/usr/local/tomcat/webapps", 8080),
-				new DeployedApplication("tomee:11-jre-8.0.0-M3-webprofile", "/usr/local/tomee/webapps", 8080),
-				new DeployedApplication("jboss/wildfly:18.0.1.Final", "/opt/jboss/wildfly/standalone/deployments",
+		return Arrays.asList(
+				new DeployedApplication("openliberty/open-liberty:20.0.0.9-kernel-java8-openj9-ubi", "/config/dropins",
+						9080),
+				new DeployedApplication("tomcat:9.0.37-jdk8-openjdk", "/usr/local/tomcat/webapps", 8080),
+				new DeployedApplication("tomee:8-jre-8.0.2-webprofile", "/usr/local/tomee/webapps", 8080),
+				new DeployedApplication("jboss/wildfly:20.0.1.Final", "/opt/jboss/wildfly/standalone/deployments",
 						8080));
 	}
 
