@@ -3,6 +3,8 @@
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] using https://buildpacks.io/[Cloud Native Buildpacks].
 Images can be built using the `build-image` goal.
 
+NOTE: For security reasons, images build and run as non-root users, see https://buildpacks.io/docs/reference/spec/platform-api/#users[this section fore more details].
+
 The easiest way to get started is to invoke `mvn spring-boot:build-image` on a project.
 It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
 
