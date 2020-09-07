@@ -49,8 +49,12 @@ class SpringApplicationRunListeners {
 		this.applicationStartup = applicationStartup;
 	}
 
-	void starting() {
-		doWithListeners("spring.boot.application.starting", SpringApplicationRunListener::starting);
+	void starting(Class<?> mainApplicationClass) {
+		doWithListeners("spring.boot.application.starting", SpringApplicationRunListener::starting, (step) -> {
+			if (mainApplicationClass != null) {
+				step.tag("mainApplicationClass", mainApplicationClass.getName());
+			}
+		});
 	}
 
 	void environmentPrepared(ConfigurableEnvironment environment) {
