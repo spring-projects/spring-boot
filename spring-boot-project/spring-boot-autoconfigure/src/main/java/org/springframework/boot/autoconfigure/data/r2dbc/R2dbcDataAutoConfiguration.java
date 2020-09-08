@@ -31,10 +31,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.convert.CustomConversions;
 import org.springframework.data.r2dbc.convert.MappingR2dbcConverter;
+import org.springframework.data.r2dbc.convert.R2dbcConverter;
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions;
-import org.springframework.data.r2dbc.core.DefaultReactiveDataAccessStrategy;
 import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
-import org.springframework.data.r2dbc.core.ReactiveDataAccessStrategy;
 import org.springframework.data.r2dbc.dialect.DialectResolver;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
@@ -56,14 +55,17 @@ public class R2dbcDataAutoConfiguration {
 
 	private final DatabaseClient databaseClient;
 
+	private final R2dbcDialect dialect;
+
 	public R2dbcDataAutoConfiguration(DatabaseClient databaseClient) {
 		this.databaseClient = databaseClient;
+		this.dialect = DialectResolver.getDialect(this.databaseClient.getConnectionFactory());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public R2dbcEntityTemplate r2dbcEntityTemplate(ReactiveDataAccessStrategy reactiveDataAccessStrategy) {
-		return new R2dbcEntityTemplate(this.databaseClient, reactiveDataAccessStrategy);
+	public R2dbcEntityTemplate r2dbcEntityTemplate(R2dbcConverter r2dbcConverter) {
+		return new R2dbcEntityTemplate(this.databaseClient, this.dialect, r2dbcConverter);
 	}
 
 	@Bean
@@ -78,25 +80,19 @@ public class R2dbcDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveDataAccessStrategy reactiveDataAccessStrategy(R2dbcMappingContext mappingContext,
+	public MappingR2dbcConverter r2dbcConverter(R2dbcMappingContext mappingContext,
 			R2dbcCustomConversions r2dbcCustomConversions) {
-		MappingR2dbcConverter converter = new MappingR2dbcConverter(mappingContext, r2dbcCustomConversions);
-		return new DefaultReactiveDataAccessStrategy(getDialect(), converter);
+		return new MappingR2dbcConverter(mappingContext, r2dbcCustomConversions);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public R2dbcCustomConversions r2dbcCustomConversions() {
-		R2dbcDialect dialect = getDialect();
-		List<Object> converters = new ArrayList<>(dialect.getConverters());
+		List<Object> converters = new ArrayList<>(this.dialect.getConverters());
 		converters.addAll(R2dbcCustomConversions.STORE_CONVERTERS);
 		return new R2dbcCustomConversions(
-				CustomConversions.StoreConversions.of(dialect.getSimpleTypeHolder(), converters),
+				CustomConversions.StoreConversions.of(this.dialect.getSimpleTypeHolder(), converters),
 				Collections.emptyList());
-	}
-
-	private R2dbcDialect getDialect() {
-		return DialectResolver.getDialect(this.databaseClient.getConnectionFactory());
 	}
 
 }
