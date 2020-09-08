@@ -19,9 +19,8 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorConfigurations.CassandraReactiveDriverConfiguration;
-import org.springframework.boot.actuate.autoconfigure.cassandra.CassandraHealthContributorConfigurations.CassandraReactiveOperationsConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
+import org.springframework.boot.actuate.cassandra.CassandraDriverReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -31,7 +30,7 @@ import org.springframework.context.annotation.Import;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link CassandraReactiveHealthIndicator}.
+ * {@link CassandraDriverReactiveHealthIndicator}.
  *
  * @author Artsiom Yudovin
  * @author Stephane Nicoll
@@ -41,7 +40,9 @@ import org.springframework.context.annotation.Import;
 @ConditionalOnClass({ CqlSession.class, Flux.class })
 @ConditionalOnEnabledHealthIndicator("cassandra")
 @AutoConfigureAfter(CassandraReactiveDataAutoConfiguration.class)
-@Import({ CassandraReactiveOperationsConfiguration.class, CassandraReactiveDriverConfiguration.class })
+@Import({ CassandraReactiveDriverConfiguration.class,
+		CassandraHealthContributorConfigurations.CassandraReactiveOperationsConfiguration.class })
+@SuppressWarnings("deprecation")
 public class CassandraReactiveHealthContributorAutoConfiguration {
 
 }
