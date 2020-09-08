@@ -4691,9 +4691,10 @@ Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elastics
 [[boot-features-connecting-to-elasticsearch-rest]]
 ==== Connecting to Elasticsearch using REST clients
 Elasticsearch ships https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients] that you can use to query a cluster: the "Low Level" client and the "High Level" client.
+Spring Boot provides support for the "High Level" client, which ships with `org.elasticsearch.client:elasticsearch-rest-high-level-client`.
 
-If you have the `org.elasticsearch.client:elasticsearch-rest-client` dependency on the classpath, Spring Boot will auto-configure and register a `RestClient` bean that by default targets `http://localhost:9200`.
-You can further tune how `RestClient` is configured, as shown in the following example:
+If you have this dependency on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean that by default targets `http://localhost:9200`.
+You can further tune how `RestHighLevelClient` is configured, as shown in the following example:
 
 [source,properties,indent=0,configprops]
 ----
@@ -4706,8 +4707,7 @@ You can further tune how `RestClient` is configured, as shown in the following e
 You can also register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
 To take full control over the registration, define a `RestClientBuilder` bean.
 
-If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` dependency on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which leverages any existing `RestClientBuilder` bean, reusing its HTTP configuration.
-
+TIP: If your application needs access to a "Low Level" `RestClient`, you can get it by calling `client.getLowLevelClient()` on the auto-configured `RestHighLevelClient`.
 
 [[boot-features-connecting-to-elasticsearch-reactive-rest]]
 ==== Connecting to Elasticsearch using Reactive REST clients
