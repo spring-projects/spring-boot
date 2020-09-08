@@ -22,37 +22,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Import;
 
 /**
- * Enable support for {@link ConfigurationProperties @ConfigurationProperties} annotated
- * beans. {@code @ConfigurationProperties} beans can be registered in the standard way
- * (for example using {@link Bean @Bean} methods) or, for convenience, can be specified
- * directly on this annotation.
+ * Container annotation that aggregates several {@link ImportConfigurationPropertiesBean}
+ * annotations.
  *
- * @author Dave Syer
- * @since 1.0.0
+ * @author Phillip Webb
+ * @since 2.4.0
+ * @see ImportConfigurationPropertiesBean
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@Import(EnableConfigurationPropertiesRegistrar.class)
-public @interface EnableConfigurationProperties {
+@EnableConfigurationProperties
+@Import(ImportConfigurationPropertiesBeanRegistrar.class)
+public @interface ImportConfigurationPropertiesBeans {
 
 	/**
-	 * The bean name of the configuration properties validator.
-	 * @since 2.2.0
+	 * The contained {@link ImportConfigurationPropertiesBean} annotations.
+	 * @return the contained annotations
 	 */
-	String VALIDATOR_BEAN_NAME = "configurationPropertiesValidator";
-
-	/**
-	 * Convenient way to quickly register
-	 * {@link ConfigurationProperties @ConfigurationProperties} annotated beans with
-	 * Spring. Standard Spring Beans will also be scanned regardless of this value.
-	 * @return {@code @ConfigurationProperties} annotated beans to register
-	 * @see ImportConfigurationPropertiesBean
-	 */
-	Class<?>[] value() default {};
+	ImportConfigurationPropertiesBean[] value();
 
 }

@@ -140,6 +140,19 @@ class BindableTests {
 	}
 
 	@Test
+	void withAttributeShouldSetAttribute() {
+		Bindable<String> bindable = Bindable.of(String.class);
+		Bindable<String> withOne = bindable.withAttribute("one", 1);
+		Bindable<String> withOneAndTwo = withOne.withAttribute("two", 2);
+		assertThat(bindable.getAttribute("one")).isNull();
+		assertThat(bindable.getAttribute("two")).isNull();
+		assertThat(withOne.getAttribute("one")).isEqualTo(1);
+		assertThat(withOne.getAttribute("two")).isNull();
+		assertThat(withOneAndTwo.getAttribute("one")).isEqualTo(1);
+		assertThat(withOneAndTwo.getAttribute("two")).isEqualTo(2);
+	}
+
+	@Test
 	void toStringShouldShowDetails() {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
@@ -154,9 +167,10 @@ class BindableTests {
 		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof").withAnnotations(annotation);
+		Bindable<String> bindable4 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation)
+				.withAttribute("bar", "bar");
 		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
-		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
-		assertThat(bindable1).isEqualTo(bindable3);
+		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2).isEqualTo(bindable3).isNotEqualTo(bindable4);
 	}
 
 	@Test // gh-18218

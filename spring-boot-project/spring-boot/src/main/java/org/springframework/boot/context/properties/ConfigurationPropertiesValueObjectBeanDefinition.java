@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.core.annotation.MergedAnnotation;
 
 /**
  * {@link BeanDefinition} that is used for registering
@@ -29,21 +29,30 @@ import org.springframework.beans.factory.support.GenericBeanDefinition;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-final class ConfigurationPropertiesValueObjectBeanDefinition extends GenericBeanDefinition {
+final class ConfigurationPropertiesValueObjectBeanDefinition extends ConfigurationPropertiesBeanDefinition {
 
 	private final BeanFactory beanFactory;
 
 	private final String beanName;
 
-	ConfigurationPropertiesValueObjectBeanDefinition(BeanFactory beanFactory, String beanName, Class<?> beanClass) {
+	private final boolean deduceBindConstructor;
+
+	ConfigurationPropertiesValueObjectBeanDefinition(BeanFactory beanFactory, String beanName, Class<?> beanClass,
+			MergedAnnotation<ConfigurationProperties> annotation, boolean deduceBindConstructor) {
+		super(beanClass, annotation);
 		this.beanFactory = beanFactory;
 		this.beanName = beanName;
-		setBeanClass(beanClass);
+		this.deduceBindConstructor = deduceBindConstructor;
 		setInstanceSupplier(this::createBean);
 	}
 
+	boolean isDeduceBindConstructor() {
+		return this.deduceBindConstructor;
+	}
+
 	private Object createBean() {
-		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.forValueObject(getBeanClass(), this.beanName);
+		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.forValueObject(getBeanClass(), this.beanName,
+				getAnnotation(this), this.deduceBindConstructor);
 		ConfigurationPropertiesBinder binder = ConfigurationPropertiesBinder.get(this.beanFactory);
 		try {
 			return binder.bindOrCreate(bean);

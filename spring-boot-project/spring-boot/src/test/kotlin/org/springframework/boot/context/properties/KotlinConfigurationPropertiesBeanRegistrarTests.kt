@@ -3,7 +3,6 @@ package org.springframework.boot.context.properties
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.support.DefaultListableBeanFactory
-import org.springframework.beans.factory.support.GenericBeanDefinition
 import org.springframework.core.type.AnnotationMetadata
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory
 
@@ -24,7 +23,7 @@ class KotlinConfigurationPropertiesBeanRegistrarTests {
 		this.registrar.register(FooProperties::class.java)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
 				"foo-org.springframework.boot.context.properties.KotlinConfigurationPropertiesBeanRegistrarTests\$FooProperties")
-		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition::class.java)
+		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition::class.java)
 	}
 
 	@Test
@@ -41,7 +40,7 @@ class KotlinConfigurationPropertiesBeanRegistrarTests {
 		this.registrar.register(BingProperties::class.java)
 		val beanDefinition = this.beanFactory.getBeanDefinition(
 				"bing-org.springframework.boot.context.properties.KotlinConfigurationPropertiesBeanRegistrarTests\$BingProperties")
-		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition::class.java)
+		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition::class.java)
 	}
 
 	@ConfigurationProperties(prefix = "foo")

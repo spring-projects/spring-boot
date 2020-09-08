@@ -49,16 +49,19 @@ class PropertyDescriptorResolver {
 	 * specified {@link TypeElement type} based on the specified {@link ExecutableElement
 	 * factory method}, if any.
 	 * @param type the target type
+	 * @param fromImport it the type was imported via a
+	 * {@code @ImportConfigurationPropertiesBean}
 	 * @param factoryMethod the method that triggered the metadata for that {@code type}
 	 * or {@code null}
 	 * @return the candidate properties for metadata generation
 	 */
-	Stream<PropertyDescriptor<?>> resolve(TypeElement type, ExecutableElement factoryMethod) {
+	Stream<PropertyDescriptor<?>> resolve(TypeElement type, boolean fromImport, ExecutableElement factoryMethod) {
 		TypeElementMembers members = new TypeElementMembers(this.environment, type);
 		if (factoryMethod != null) {
 			return resolveJavaBeanProperties(type, factoryMethod, members);
 		}
-		return resolve(ConfigurationPropertiesTypeElement.of(type, this.environment), factoryMethod, members);
+		return resolve(ConfigurationPropertiesTypeElement.of(type, fromImport, this.environment), factoryMethod,
+				members);
 	}
 
 	private Stream<PropertyDescriptor<?>> resolve(ConfigurationPropertiesTypeElement type,
@@ -178,20 +181,29 @@ class PropertyDescriptorResolver {
 			return boundConstructor;
 		}
 
-		static ConfigurationPropertiesTypeElement of(TypeElement type, MetadataGenerationEnvironment env) {
-			boolean constructorBoundType = isConstructorBoundType(type, env);
+		static ConfigurationPropertiesTypeElement of(TypeElement type, boolean fromImport,
+				MetadataGenerationEnvironment env) {
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
 			List<ExecutableElement> boundConstructors = constructors.stream()
 					.filter(env::hasConstructorBindingAnnotation).collect(Collectors.toList());
+			boolean constructorBoundType = isConstructorBoundType(type, fromImport, constructors, env);
 			return new ConfigurationPropertiesTypeElement(type, constructorBoundType, constructors, boundConstructors);
 		}
 
-		private static boolean isConstructorBoundType(TypeElement type, MetadataGenerationEnvironment env) {
+		private static boolean isConstructorBoundType(TypeElement type, boolean fromImport,
+				List<ExecutableElement> constructors, MetadataGenerationEnvironment env) {
 			if (env.hasConstructorBindingAnnotation(type)) {
 				return true;
 			}
 			if (type.getNestingKind() == NestingKind.MEMBER) {
-				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), env);
+				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), false, constructors, env);
+			}
+			if (fromImport) {
+				for (ExecutableElement constructor : constructors) {
+					if (!constructor.getParameters().isEmpty()) {
+						return true;
+					}
+				}
 			}
 			return false;
 		}

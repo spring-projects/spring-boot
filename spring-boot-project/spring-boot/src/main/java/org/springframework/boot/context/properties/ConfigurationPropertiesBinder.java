@@ -25,6 +25,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.FactoryBean;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
@@ -206,7 +207,14 @@ class ConfigurationPropertiesBinder {
 	}
 
 	static ConfigurationPropertiesBinder get(BeanFactory beanFactory) {
-		return beanFactory.getBean(BEAN_NAME, ConfigurationPropertiesBinder.class);
+		try {
+			return beanFactory.getBean(BEAN_NAME, ConfigurationPropertiesBinder.class);
+		}
+		catch (NoSuchBeanDefinitionException ex) {
+			throw new NoSuchBeanDefinitionException(ex.getBeanName(),
+					"Unable to find ConfigurationPropertiesBinder bean '" + BEAN_NAME
+							+ "', ensure @EnableConfigurationProperties has been specified");
+		}
 	}
 
 	/**

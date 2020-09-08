@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Array;
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -42,6 +44,8 @@ public final class Bindable<T> {
 
 	private static final Annotation[] NO_ANNOTATIONS = {};
 
+	private static final Map<String, Object> NO_ATTRIBUTES = Collections.emptyMap();
+
 	private final ResolvableType type;
 
 	private final ResolvableType boxedType;
@@ -50,11 +54,15 @@ public final class Bindable<T> {
 
 	private final Annotation[] annotations;
 
-	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations) {
+	private final Map<String, Object> attributes;
+
+	private Bindable(ResolvableType type, ResolvableType boxedType, Supplier<T> value, Annotation[] annotations,
+			Map<String, Object> attributes) {
 		this.type = type;
 		this.boxedType = boxedType;
 		this.value = value;
 		this.annotations = annotations;
+		this.attributes = attributes;
 	}
 
 	/**
@@ -105,6 +113,16 @@ public final class Bindable<T> {
 		return null;
 	}
 
+	/**
+	 * Return the value of an attribute that has been associated with this
+	 * {@link Bindable}.
+	 * @param name the attribute name
+	 * @return the associated attribute value or {@code null}
+	 */
+	public Object getAttribute(String name) {
+		return this.attributes.get(name);
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
@@ -117,6 +135,7 @@ public final class Bindable<T> {
 		boolean result = true;
 		result = result && nullSafeEquals(this.type.resolve(), other.type.resolve());
 		result = result && nullSafeEquals(this.annotations, other.annotations);
+		result = result && nullSafeEquals(this.attributes, other.attributes);
 		return result;
 	}
 
@@ -126,6 +145,7 @@ public final class Bindable<T> {
 		int result = 1;
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.type);
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.annotations);
+		result = prime * result + ObjectUtils.nullSafeHashCode(this.attributes);
 		return result;
 	}
 
@@ -135,6 +155,7 @@ public final class Bindable<T> {
 		creator.append("type", this.type);
 		creator.append("value", (this.value != null) ? "provided" : "none");
 		creator.append("annotations", this.annotations);
+		creator.append("attributes", this.attributes);
 		return creator.toString();
 	}
 
@@ -149,7 +170,19 @@ public final class Bindable<T> {
 	 */
 	public Bindable<T> withAnnotations(Annotation... annotations) {
 		return new Bindable<>(this.type, this.boxedType, this.value,
-				(annotations != null) ? annotations : NO_ANNOTATIONS);
+				(annotations != null) ? annotations : NO_ANNOTATIONS, this.attributes);
+	}
+
+	/**
+	 * Create an updated {@link Bindable} instance with the specified attribute.
+	 * @param name the attribute name
+	 * @param value the attribute value
+	 * @return an updated {@link Bindable}
+	 */
+	public Bindable<T> withAttribute(String name, Object value) {
+		Map<String, Object> attributes = new HashMap<>(this.attributes);
+		attributes.put(name, value);
+		return new Bindable<>(this.type, this.boxedType, this.value, this.annotations, attributes);
 	}
 
 	/**
@@ -162,7 +195,7 @@ public final class Bindable<T> {
 				existingValue == null || this.type.isArray() || this.boxedType.resolve().isInstance(existingValue),
 				() -> "ExistingValue must be an instance of " + this.type);
 		Supplier<T> value = (existingValue != null) ? () -> existingValue : null;
-		return new Bindable<>(this.type, this.boxedType, value, this.annotations);
+		return new Bindable<>(this.type, this.boxedType, value, this.annotations, this.attributes);
 	}
 
 	/**
@@ -171,7 +204,7 @@ public final class Bindable<T> {
 	 * @return an updated {@link Bindable}
 	 */
 	public Bindable<T> withSuppliedValue(Supplier<T> suppliedValue) {
-		return new Bindable<>(this.type, this.boxedType, suppliedValue, this.annotations);
+		return new Bindable<>(this.type, this.boxedType, suppliedValue, this.annotations, this.attributes);
 	}
 
 	/**
@@ -244,7 +277,7 @@ public final class Bindable<T> {
 	public static <T> Bindable<T> of(ResolvableType type) {
 		Assert.notNull(type, "Type must not be null");
 		ResolvableType boxedType = box(type);
-		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS);
+		return new Bindable<>(type, boxedType, null, NO_ANNOTATIONS, NO_ATTRIBUTES);
 	}
 
 	private static ResolvableType box(ResolvableType type) {

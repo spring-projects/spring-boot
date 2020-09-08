@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.scan.combined.c.CombinedConfiguration;
 import org.springframework.boot.context.properties.scan.combined.d.OtherCombinedConfiguration;
 import org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration;
@@ -53,8 +52,8 @@ class ConfigurationPropertiesScanRegistrarTests {
 				"foo-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$FooProperties");
 		BeanDefinition barDefinition = this.beanFactory.getBeanDefinition(
 				"bar-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$BarProperties");
-		assertThat(bingDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
-		assertThat(fooDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
+		assertThat(bingDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+		assertThat(fooDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 		assertThat(barDefinition).isExactlyInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
 	}
 
@@ -66,7 +65,7 @@ class ConfigurationPropertiesScanRegistrarTests {
 				getAnnotationMetadata(ConfigurationPropertiesScanConfiguration.TestConfiguration.class), beanFactory);
 		BeanDefinition fooDefinition = beanFactory.getBeanDefinition(
 				"foo-org.springframework.boot.context.properties.scan.valid.ConfigurationPropertiesScanConfiguration$FooProperties");
-		assertThat(fooDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
+		assertThat(fooDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 	}
 
 	@Test
@@ -85,11 +84,11 @@ class ConfigurationPropertiesScanRegistrarTests {
 				"b.first-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BFirstProperties");
 		BeanDefinition bSecondDefinition = beanFactory.getBeanDefinition(
 				"b.second-org.springframework.boot.context.properties.scan.valid.b.BScanConfiguration$BSecondProperties");
-		assertThat(aDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
+		assertThat(aDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 		// Constructor injection
 		assertThat(bFirstDefinition).isExactlyInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
 		// Post-processing injection
-		assertThat(bSecondDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
+		assertThat(bSecondDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 	}
 
 	@Test

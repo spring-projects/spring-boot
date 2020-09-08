@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.beans.factory.support.GenericBeanDefinition;
+import org.springframework.core.annotation.MergedAnnotation;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -74,11 +75,29 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	}
 
 	@Test
-	void registerWhenNotValueObjectRegistersGenericBeanDefinition() {
+	void registerWhenNotValueObjectRegistersConfigurationPropertiesBeanDefinition() {
 		String beanName = MultiConstructorBeanConfigurationProperties.class.getName();
 		this.registrar.register(MultiConstructorBeanConfigurationProperties.class);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
-		assertThat(definition).isInstanceOf(GenericBeanDefinition.class);
+		assertThat(definition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+	}
+
+	@Test
+	void registerWhenDeduceBindConstructorRegistersValueObjectBeanDefinition() {
+		String beanName = DeducedValueObjectConfigurationProperties.class.getName();
+		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotation.of(ConfigurationProperties.class);
+		this.registrar.register(DeducedValueObjectConfigurationProperties.class, annotation, true);
+		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
+		assertThat(definition).isExactlyInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
+	}
+
+	@Test
+	void registerWhenDeduceBindConstructorRegistersJavaBeanObjectBeanDefinition() {
+		String beanName = DeducedJavaBeanConfigurationProperties.class.getName();
+		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotation.of(ConfigurationProperties.class);
+		this.registrar.register(DeducedJavaBeanConfigurationProperties.class, annotation, true);
+		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
+		assertThat(definition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 	}
 
 	@ConfigurationProperties(prefix = "beancp")
@@ -107,6 +126,17 @@ class ConfigurationPropertiesBeanRegistrarTests {
 
 		MultiConstructorBeanConfigurationProperties(String name) {
 		}
+
+	}
+
+	static class DeducedValueObjectConfigurationProperties {
+
+		DeducedValueObjectConfigurationProperties(String name) {
+		}
+
+	}
+
+	static class DeducedJavaBeanConfigurationProperties {
 
 	}
 
