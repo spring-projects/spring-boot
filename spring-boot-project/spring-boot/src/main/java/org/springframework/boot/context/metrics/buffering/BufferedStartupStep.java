@@ -126,16 +126,16 @@ class BufferedStartupStep implements StartupStep {
 
 		private class TagsIterator implements Iterator<Tag> {
 
-			private int idx = 0;
+			private int index = 0;
 
 			@Override
 			public boolean hasNext() {
-				return this.idx < DefaultTags.this.tags.length;
+				return this.index < DefaultTags.this.tags.length;
 			}
 
 			@Override
 			public Tag next() {
-				return DefaultTags.this.tags[this.idx++];
+				return DefaultTags.this.tags[this.index++];
 			}
 
 			@Override

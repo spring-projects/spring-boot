@@ -326,12 +326,10 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (type1.allowsFastEqualityCheck() && type2.allowsFastEqualityCheck()) {
 			return !fastElementEquals(e1, e2, i);
 		}
-		else if (type1.allowsDashIgnoringEqualityCheck() && type2.allowsDashIgnoringEqualityCheck()) {
+		if (type1.allowsDashIgnoringEqualityCheck() && type2.allowsDashIgnoringEqualityCheck()) {
 			return !dashIgnoringElementEquals(e1, e2, i);
 		}
-		else {
-			return !defaultElementEquals(e1, e2, i);
-		}
+		return !defaultElementEquals(e1, e2, i);
 	}
 
 	private boolean fastElementEquals(Elements e1, Elements e2, int i) {
