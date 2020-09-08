@@ -51,7 +51,7 @@ public class ElasticSearchRestHealthContributorAutoConfiguration
 
 	@Bean
 	@ConditionalOnMissingBean(name = { "elasticsearchHealthIndicator", "elasticsearchHealthContributor" })
-	public HealthContributor elasticsearchHealthContributor(Map <String, RestHighLevelClient> clients) {
+	public HealthContributor elasticsearchHealthContributor(Map<String, RestHighLevelClient> clients) {
 		return createContributor(clients);
 	}
 
