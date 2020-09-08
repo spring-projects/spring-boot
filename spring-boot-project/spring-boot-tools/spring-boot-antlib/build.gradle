@@ -42,7 +42,7 @@ task integrationTest {
 	dependsOn copyIntegrationTestSources, jar
 	def resultsDir = file("${buildDir}/test-results/integrationTest")
 	inputs.dir file("src/it")
-	inputs.files sourceSets.main.runtimeClasspath
+	inputs.files(sourceSets.main.runtimeClasspath).withNormalizer(ClasspathNormalizer)
 	outputs.dirs resultsDir
 	doLast {
 		ant.with {
