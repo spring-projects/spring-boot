@@ -105,7 +105,6 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
-import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.CachingResourceResolver;
 import org.springframework.web.servlet.resource.CachingResourceTransformer;
 import org.springframework.web.servlet.resource.ContentVersionStrategy;
@@ -255,6 +254,7 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void resourceHandlerChainCustomized() {
 		this.contextRunner
 				.withPropertyValues("spring.resources.chain.enabled:true", "spring.resources.chain.cache:false",
@@ -269,8 +269,9 @@ class WebMvcAutoConfigurationTests {
 					assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(2);
 					assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass").containsOnly(
 							EncodedResourceResolver.class, VersionResourceResolver.class, PathResourceResolver.class);
-					assertThat(getResourceTransformers(context, "/**")).extractingResultOf("getClass")
-							.containsOnly(CssLinkResourceTransformer.class, AppCacheManifestTransformer.class);
+					assertThat(getResourceTransformers(context, "/**")).extractingResultOf("getClass").containsOnly(
+							CssLinkResourceTransformer.class,
+							org.springframework.web.servlet.resource.AppCacheManifestTransformer.class);
 					VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(context, "/**")
 							.get(1);
 					Map<String, VersionStrategy> strategyMap = resolver.getStrategyMap();

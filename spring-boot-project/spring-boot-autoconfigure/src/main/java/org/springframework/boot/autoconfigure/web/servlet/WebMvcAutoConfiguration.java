@@ -111,7 +111,6 @@ import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
-import org.springframework.web.servlet.resource.AppCacheManifestTransformer;
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
@@ -564,6 +563,7 @@ public class WebMvcAutoConfiguration {
 			configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 		}
 
+		@SuppressWarnings("deprecation")
 		private void configureResourceChain(ResourceProperties.Chain properties, ResourceChainRegistration chain) {
 			Strategy strategy = properties.getStrategy();
 			if (properties.isCompressed()) {
@@ -573,7 +573,7 @@ public class WebMvcAutoConfiguration {
 				chain.addResolver(getVersionResourceResolver(strategy));
 			}
 			if (properties.isHtmlApplicationCache()) {
-				chain.addTransformer(new AppCacheManifestTransformer());
+				chain.addTransformer(new org.springframework.web.servlet.resource.AppCacheManifestTransformer());
 			}
 		}
 
