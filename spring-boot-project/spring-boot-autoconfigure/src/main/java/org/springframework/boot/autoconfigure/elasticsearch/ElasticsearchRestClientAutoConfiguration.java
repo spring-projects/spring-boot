@@ -50,6 +50,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RestHighLevelClient.class)
+@ConditionalOnMissingBean(RestClient.class)
 @EnableConfigurationProperties(ElasticsearchRestClientProperties.class)
 public class ElasticsearchRestClientAutoConfiguration {
 

@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link ElasticsearchRestClientAutoConfiguration}.
@@ -67,6 +68,13 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	void configureShouldOnlyCreateHighLevelRestClient() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(RestClient.class)
 				.hasSingleBean(RestHighLevelClient.class));
+	}
+
+	@Test
+	void configureWhenCustomRestClientShouldBackOff() {
+		this.contextRunner.withBean("customRestClient", RestClient.class, () -> mock(RestClient.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(RestHighLevelClient.class)
+						.hasSingleBean(RestClient.class).hasBean("customRestClient"));
 	}
 
 	@Test
