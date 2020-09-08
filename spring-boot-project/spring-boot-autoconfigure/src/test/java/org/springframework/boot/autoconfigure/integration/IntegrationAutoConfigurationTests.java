@@ -20,6 +20,7 @@ import javax.management.MBeanServer;
 
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
@@ -195,6 +196,7 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
+	@Disabled("SI is incompatible with the latest RSocket snapshots")
 	void rsocketSupportEnabled() {
 		this.contextRunner.withUserConfiguration(RSocketServerConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(RSocketServerAutoConfiguration.class,
