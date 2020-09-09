@@ -101,6 +101,7 @@ public final class MimeMappings implements Iterable<MimeMappings.Mapping> {
 		mappings.add("mid", "audio/midi");
 		mappings.add("midi", "audio/midi");
 		mappings.add("mif", "application/x-mif");
+		mappings.add("mjs", "text/javascript");
 		mappings.add("mov", "video/quicktime");
 		mappings.add("movie", "video/x-sgi-movie");
 		mappings.add("mp1", "audio/mpeg");
