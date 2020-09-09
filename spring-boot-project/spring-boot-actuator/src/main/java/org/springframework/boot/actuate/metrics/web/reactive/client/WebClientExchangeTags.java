@@ -66,7 +66,7 @@ public final class WebClientExchangeTags {
 	 * @return the uri tag
 	 */
 	public static Tag uri(ClientRequest request) {
-		String uri = (String) request.attribute(URI_TEMPLATE_ATTRIBUTE).orElseGet(() -> request.url().getPath());
+		String uri = (String) request.attribute(URI_TEMPLATE_ATTRIBUTE).orElseGet(() -> request.url().toString());
 		return Tag.of("uri", extractPath(uri));
 	}
 
