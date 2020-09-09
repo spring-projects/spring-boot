@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.hazelcast4;
+package smoketest.hazelcast3;
 
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 import org.junit.jupiter.api.Test;

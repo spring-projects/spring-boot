@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <hazelcast-client xmlns="http://www.hazelcast.com/schema/client-config"
 				  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-				  xsi:schemaLocation="http://www.hazelcast.com/schema/client-config hazelcast-client-config-3.12.xsd">
+				  xsi:schemaLocation="http://www.hazelcast.com/schema/client-config hazelcast-client-config-4.0.xsd">
 
 	<instance-name>spring-boot</instance-name>
 

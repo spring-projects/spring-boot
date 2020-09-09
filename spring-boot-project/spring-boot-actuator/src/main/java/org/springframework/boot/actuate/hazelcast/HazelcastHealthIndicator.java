@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.hazelcast;
 
 import java.lang.reflect.Method;
-import java.util.UUID;
 
 import com.hazelcast.core.HazelcastInstance;
 
@@ -54,14 +53,14 @@ public class HazelcastHealthIndicator extends AbstractHealthIndicator {
 
 	private String extractUuid() {
 		try {
-			return this.hazelcast.getLocalEndpoint().getUuid();
+			return this.hazelcast.getLocalEndpoint().getUuid().toString();
 		}
 		catch (NoSuchMethodError ex) {
-			// Hazelcast 4
+			// Hazelcast 3
 			Method endpointAccessor = ReflectionUtils.findMethod(HazelcastInstance.class, "getLocalEndpoint");
 			Object endpoint = ReflectionUtils.invokeMethod(endpointAccessor, this.hazelcast);
 			Method uuidAccessor = ReflectionUtils.findMethod(endpoint.getClass(), "getUuid");
-			return ((UUID) ReflectionUtils.invokeMethod(uuidAccessor, endpoint)).toString();
+			return (String) ReflectionUtils.invokeMethod(uuidAccessor, endpoint);
 		}
 	}
 

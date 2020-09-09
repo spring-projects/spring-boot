@@ -379,11 +379,10 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast", "3.12.9") {
+	library("Hazelcast", "4.0.3") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast",
-				"hazelcast-client",
 				"hazelcast-spring"
 			]
 		}

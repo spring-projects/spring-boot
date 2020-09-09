@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package smoketest.hazelcast4;
+package smoketest.hazelcast3;
 
 import com.hazelcast.spring.cache.HazelcastCacheManager;
 
@@ -27,10 +27,10 @@ import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
 @EnableCaching
-public class SampleHazelcast4Application {
+public class SampleHazelcast3Application {
 
 	public static void main(String[] args) {
-		SpringApplication.run(SampleHazelcast4Application.class, args);
+		SpringApplication.run(SampleHazelcast3Application.class, args);
 	}
 
 	@Bean

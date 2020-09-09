@@ -1,7 +1,7 @@
 <hazelcast xmlns="http://www.hazelcast.com/schema/config"
 		   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 		   xsi:schemaLocation="http://www.hazelcast.com/schema/config
-           http://www.hazelcast.com/schema/config/hazelcast-config-4.0.xsd">
+           http://www.hazelcast.com/schema/config/hazelcast-config-3.12.xsd">
 	<map name="countries">
 		<time-to-live-seconds>600</time-to-live-seconds>
 	</map>
