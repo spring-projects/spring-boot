@@ -104,7 +104,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 						.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 				Configuration productionRuntimeClasspath = project.getConfigurations()
 						.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
-				return mainSourceSet.getRuntimeClasspath().minus((developmentOnly.minus(productionRuntimeClasspath)));
+				return mainSourceSet.getRuntimeClasspath().minus((developmentOnly.minus(productionRuntimeClasspath)))
+						.filter(new JarTypeFileSpec());
 			});
 			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
 		});
@@ -129,7 +130,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
 			run.classpath(javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
-					.getRuntimeClasspath());
+					.getRuntimeClasspath().filter(new JarTypeFileSpec()));
 			run.getConventionMapping().map("jvmArgs", () -> {
 				if (project.hasProperty("applicationDefaultJvmArgs")) {
 					return project.property("applicationDefaultJvmArgs");
