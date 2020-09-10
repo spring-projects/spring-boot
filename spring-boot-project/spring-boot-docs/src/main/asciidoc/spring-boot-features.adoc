@@ -6393,7 +6393,8 @@ assertThat(json.write(message))
 ==== Auto-configured Spring MVC Tests
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest` annotation.
 `@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`.
-Regular `@Component` beans are not scanned when using this annotation.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6493,7 +6494,8 @@ TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you 
 ==== Auto-configured Spring WebFlux Tests
 To test that {spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the `@WebFluxTest` annotation.
 `@WebFluxTest` auto-configures the Spring WebFlux infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `WebFilter`, and `WebFluxConfigurer`.
-Regular `@Component` beans are not scanned when the `@WebFluxTest` annotation is used.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6554,7 +6556,8 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 You can use the `@DataJpaTest` annotation to test JPA applications.
 By default, it scans for `@Entity` classes and configures Spring Data JPA repositories.
 If an embedded database is available on the classpath, it configures one as well.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6628,7 +6631,8 @@ If, however, you prefer to run tests against a real database you can use the `@A
 ==== Auto-configured JDBC Tests
 `@JdbcTest` is similar to `@DataJpaTest` but is for tests that only require a `DataSource` and do not use Spring Data JDBC.
 By default, it configures an in-memory embedded database and a `JdbcTemplate`.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JdbcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6659,7 +6663,8 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 ==== Auto-configured Data JDBC Tests
 `@DataJdbcTest` is similar to `@JdbcTest` but is for tests that use Spring Data JDBC repositories.
 By default, it configures an in-memory embedded database, a `JdbcTemplate`, and Spring Data JDBC repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJdbcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6678,12 +6683,12 @@ You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing `DataSource` is used.
 If you want to replace it with an in-memory database, you can use `@AutoConfigureTestDatabase` to override those settings.
 (For more about using jOOQ with Spring Boot, see "<<boot-features-jooq>>", earlier in this chapter.)
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
 `@JooqTest` configures a `DSLContext`.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
 The following example shows the `@JooqTest` annotation in use:
 
 [source,java,indent=0]
@@ -6709,7 +6714,8 @@ If that is not what you want, you can disable transaction management for a test 
 ==== Auto-configured Data MongoDB Tests
 You can use `@DataMongoTest` to test MongoDB applications.
 By default, it configures an in-memory embedded MongoDB (if available), configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using MongoDB with Spring Boot, see "<<boot-features-mongodb>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -6752,7 +6758,8 @@ If, however, you prefer to run tests against a real MongoDB server, you should e
 ==== Auto-configured Data Neo4j Tests
 You can use `@DataNeo4jTest` to test Neo4j applications.
 By default, it uses an in-memory embedded Neo4j (if the embedded driver is available), scans for `@NodeEntity` classes, and configures Spring Data Neo4j repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataNeo4jTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Neo4J with Spring Boot, see "<<boot-features-neo4j>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -6797,7 +6804,8 @@ If that is not what you want, you can disable transaction management for a test 
 ==== Auto-configured Data Redis Tests
 You can use `@DataRedisTest` to test Redis applications.
 By default, it scans for `@RedisHash` classes and configures Spring Data Redis repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataRedisTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Redis with Spring Boot, see "<<boot-features-redis>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -6825,7 +6833,8 @@ The following example shows the `@DataRedisTest` annotation in use:
 ==== Auto-configured Data LDAP Tests
 You can use `@DataLdapTest` to test LDAP applications.
 By default, it configures an in-memory embedded LDAP (if available), configures an `LdapTemplate`, scans for `@Entry` classes, and configures Spring Data LDAP repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataLdapTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using LDAP with Spring Boot, see "<<boot-features-ldap>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -6868,7 +6877,8 @@ If, however, you prefer to run tests against a real LDAP server, you should excl
 ==== Auto-configured REST Clients
 You can use the `@RestClientTest` annotation to test REST clients.
 By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `RestTemplateBuilder`, and adds support for `MockRestServiceServer`.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@RestClientTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
