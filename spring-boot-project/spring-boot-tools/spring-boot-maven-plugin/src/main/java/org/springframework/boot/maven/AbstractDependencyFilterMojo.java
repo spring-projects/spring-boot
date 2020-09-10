@@ -104,6 +104,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		if (this.excludes != null && !this.excludes.isEmpty()) {
 			filters.addFilter(new ExcludeFilter(this.excludes));
 		}
+		filters.addFilter(new JarTypeFilter());
 		return filters;
 	}
 
