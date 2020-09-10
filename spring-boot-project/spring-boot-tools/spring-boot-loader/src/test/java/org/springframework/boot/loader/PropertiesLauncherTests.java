@@ -233,12 +233,13 @@ class PropertiesLauncherTests {
 
 	@Test
 	void testUserSpecifiedNestedJarPath() throws Exception {
-		System.setProperty("loader.path", "nested-jars/app.jar!/foo.jar");
+		System.setProperty("loader.path", "nested-jars/nested-jar-app.jar!/BOOT-INF/classes/");
 		System.setProperty("loader.main", "demo.Application");
 		this.launcher = new PropertiesLauncher();
-		List<Archive> archives = new ArrayList<>();
-		this.launcher.getClassPathArchivesIterator().forEachRemaining(archives::add);
-		assertThat(archives).hasSize(1).areExactly(1, endingWith("foo.jar!/"));
+		assertThat(ReflectionTestUtils.getField(this.launcher, "paths").toString())
+				.isEqualTo("[nested-jars/nested-jar-app.jar!/BOOT-INF/classes/]");
+		this.launcher.launch(new String[0]);
+		waitFor("Hello World");
 	}
 
 	@Test
