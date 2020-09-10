@@ -38,6 +38,10 @@ checkstyle {
 
 gradlePlugin {
 	plugins {
+		annotationProcessorPlugin {
+			id = "org.springframework.boot.annotation-processor"
+			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
+		}
 		autoConfigurationPlugin {
 			id = "org.springframework.boot.auto-configuration"
 			implementationClass = "org.springframework.boot.build.autoconfigure.AutoConfigurationPlugin"
