@@ -17,13 +17,11 @@ package org.springframework.boot.actuate.autoconfigure.metrics.cassandra;
 
 import java.net.InetSocketAddress;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
-import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.metrics.DefaultNodeMetric;
 import com.datastax.oss.driver.api.core.metrics.DefaultSessionMetric;
@@ -40,10 +38,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.DriverConfigLoaderBuilderCustomizer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -74,9 +69,7 @@ public class CassandraMetricsAutoConfigurationIntegrationTests {
 	 */
 	@Test
 	void autoConfiguredCassandraIsInstrumented() {
-		this.contextRunner.withUserConfiguration(SimpleDriverConfigLoaderBuilderMetricsConfig.class).run((context) -> {
-			CqlSessionBuilder builder = context.getBean(CqlSessionBuilder.class);
-			assertThat(builder).isInstanceOf(CassandraMetricsPostProcessor.MetricsSessionBuilder.class);
+		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
 			// execute queries to peg metrics
 			CqlSession session = context.getBean(CqlSession.class);
@@ -104,21 +97,6 @@ public class CassandraMetricsAutoConfigurationIntegrationTests {
 					.isGreaterThan(1d);
 
 		});
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class SimpleDriverConfigLoaderBuilderMetricsConfig {
-
-		@Bean
-		DriverConfigLoaderBuilderCustomizer customizer() {
-			return (builder) -> builder
-					.withStringList(DefaultDriverOption.METRICS_SESSION_ENABLED, Arrays.asList(
-							DefaultSessionMetric.CONNECTED_NODES.getPath(), DefaultSessionMetric.CQL_REQUESTS.getPath(),
-							DefaultSessionMetric.BYTES_SENT.getPath(), DefaultSessionMetric.BYTES_RECEIVED.getPath()))
-					.withStringList(DefaultDriverOption.METRICS_NODE_ENABLED,
-							Arrays.asList(DefaultNodeMetric.BYTES_SENT.getPath()));
-		}
-
 	}
 
 	static final class CassandraWaitStrategy extends AbstractWaitStrategy {

@@ -160,7 +160,7 @@ bom {
 			]
 		}
 	}
-	library("Cassandra Driver", "4.8.0") {
+	library("Cassandra Driver", "4.9.0") {
 		group("com.datastax.oss") {
 			imports = [
 				"java-driver-bom"

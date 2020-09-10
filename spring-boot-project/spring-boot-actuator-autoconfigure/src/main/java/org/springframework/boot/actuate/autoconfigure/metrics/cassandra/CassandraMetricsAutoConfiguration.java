@@ -15,23 +15,26 @@
  */
 package org.springframework.boot.actuate.autoconfigure.metrics.cassandra;
 
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
+
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
-import com.datastax.oss.driver.internal.metrics.micrometer.MicrometerDriverContext;
+import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import com.datastax.oss.driver.api.core.metrics.DefaultNodeMetric;
+import com.datastax.oss.driver.api.core.metrics.DefaultSessionMetric;
+import com.datastax.oss.driver.internal.metrics.micrometer.MicrometerMetricsFactory;
 import io.micrometer.core.instrument.MeterRegistry;
 
-import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
-import org.springframework.boot.autoconfigure.cassandra.CassandraProperties;
 import org.springframework.boot.autoconfigure.cassandra.CqlSessionBuilderCustomizer;
+import org.springframework.boot.autoconfigure.cassandra.DriverConfigLoaderBuilderCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -45,15 +48,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, SimpleMetricsExportAutoConfiguration.class })
 @AutoConfigureBefore({ CassandraAutoConfiguration.class })
-@ConditionalOnClass({ MeterRegistry.class, MicrometerDriverContext.class })
+@ConditionalOnClass({ MeterRegistry.class, MicrometerMetricsFactory.class })
 @ConditionalOnBean({ MeterRegistry.class })
 public class CassandraMetricsAutoConfiguration {
 
 	@Bean
-	public CassandraMetricsPostProcessor cassandraMetricsPostProcessor(ApplicationContext context,
-			CassandraProperties properties, DriverConfigLoader driverConfigLoader,
-			ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
-		return new CassandraMetricsPostProcessor(context, properties, driverConfigLoader, builderCustomizers);
+	public DriverConfigLoaderBuilderCustomizer cassandraMetricsConfigCustomizer() {
+		return (builder) -> builder.withString(DefaultDriverOption.METRICS_FACTORY_CLASS, "MicrometerMetricsFactory")
+				.withStringList(DefaultDriverOption.METRICS_SESSION_ENABLED,
+						Stream.of(DefaultSessionMetric.values()).map(DefaultSessionMetric::getPath)
+								.collect(Collectors.toList()))
+				.withStringList(DefaultDriverOption.METRICS_NODE_ENABLED, Stream.of(DefaultNodeMetric.values())
+						.map(DefaultNodeMetric::getPath).collect(Collectors.toList()));
+	}
+
+	@Bean
+	public CqlSessionBuilderCustomizer cassandraMetricsBuilderCustomizer(MeterRegistry registry) {
+		return (builder) -> builder.withMetricRegistry(registry);
 	}
 
 }
