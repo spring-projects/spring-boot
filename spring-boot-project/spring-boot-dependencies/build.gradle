@@ -1205,7 +1205,7 @@ bom {
 			]
 		}
 	}
-	library("Nimbus JOSE JWT", "8.19") {
+	library("Nimbus JOSE JWT", "9.0") {
 		group("com.nimbusds") {
 			modules = [
 				"nimbus-jose-jwt"
@@ -1623,7 +1623,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.4.0-RC1") {
+	library("Spring Security", "5.4.0") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"

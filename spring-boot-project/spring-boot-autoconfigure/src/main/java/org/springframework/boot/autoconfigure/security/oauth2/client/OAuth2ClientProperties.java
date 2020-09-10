@@ -105,7 +105,8 @@ public class OAuth2ClientProperties {
 		private String redirectUri;
 
 		/**
-		 * Authorization scopes. May be left blank when using a pre-defined provider.
+		 * Authorization scopes. When left blank the provider's default scopes, if any,
+		 * will be used.
 		 */
 		private Set<String> scope;
 

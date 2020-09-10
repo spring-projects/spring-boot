@@ -309,7 +309,7 @@ class OAuth2ClientPropertiesRegistrationAdapterTests {
 		assertThat(adapted.getAuthorizationGrantType()).isEqualTo(AuthorizationGrantType.AUTHORIZATION_CODE);
 		assertThat(adapted.getRegistrationId()).isEqualTo("okta");
 		assertThat(adapted.getClientName()).isEqualTo(issuer);
-		assertThat(adapted.getScopes()).containsOnly("openid");
+		assertThat(adapted.getScopes()).isNull();
 		assertThat(providerDetails.getAuthorizationUri()).isEqualTo("https://example.com/o/oauth2/v2/auth");
 		assertThat(providerDetails.getTokenUri()).isEqualTo("https://example.com/oauth2/v4/token");
 		assertThat(providerDetails.getJwkSetUri()).isEqualTo("https://example.com/oauth2/v3/certs");
