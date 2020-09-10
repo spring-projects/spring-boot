@@ -37,6 +37,9 @@ import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
+import org.springframework.boot.web.embedded.netty.SslServerCustomizer;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
 
@@ -45,6 +48,7 @@ import org.springframework.util.Assert;
  * by Netty.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  * @since 2.2.0
  */
 public class NettyRSocketServerFactory implements RSocketServerFactory, ConfigurableRSocketServerFactory {
@@ -61,6 +65,10 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 
 	private List<RSocketServerCustomizer> rSocketServerCustomizers = new ArrayList<>();
 
+	private Ssl ssl;
+
+	private SslStoreProvider sslStoreProvider;
+
 	@Override
 	public void setPort(int port) {
 		this.port = port;
@@ -74,6 +82,16 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	@Override
 	public void setTransport(RSocketServer.Transport transport) {
 		this.transport = transport;
+	}
+
+	@Override
+	public void setSsl(Ssl ssl) {
+		this.ssl = ssl;
+	}
+
+	@Override
+	public void setSslStoreProvider(SslStoreProvider sslStoreProvider) {
+		this.sslStoreProvider = sslStoreProvider;
 	}
 
 	/**
@@ -133,21 +151,27 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	}
 
 	private ServerTransport<CloseableChannel> createWebSocketTransport() {
+		HttpServer httpServer = HttpServer.create();
 		if (this.resourceFactory != null) {
-			HttpServer httpServer = HttpServer.create().runOn(this.resourceFactory.getLoopResources())
-					.bindAddress(this::getListenAddress);
-			return WebsocketServerTransport.create(httpServer);
+			httpServer = httpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		return WebsocketServerTransport.create(getListenAddress());
+		if (this.ssl != null && this.ssl.isEnabled()) {
+			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(this.ssl, null, this.sslStoreProvider);
+			httpServer = sslServerCustomizer.apply(httpServer);
+		}
+		return WebsocketServerTransport.create(httpServer.bindAddress(this::getListenAddress));
 	}
 
 	private ServerTransport<CloseableChannel> createTcpTransport() {
+		TcpServer tcpServer = TcpServer.create();
 		if (this.resourceFactory != null) {
-			TcpServer tcpServer = TcpServer.create().runOn(this.resourceFactory.getLoopResources())
-					.bindAddress(this::getListenAddress);
-			return TcpServerTransport.create(tcpServer);
+			tcpServer = tcpServer.runOn(this.resourceFactory.getLoopResources());
 		}
-		return TcpServerTransport.create(getListenAddress());
+		if (this.ssl != null && this.ssl.isEnabled()) {
+			TcpSslServerCustomizer sslServerCustomizer = new TcpSslServerCustomizer(this.ssl, this.sslStoreProvider);
+			tcpServer = sslServerCustomizer.apply(tcpServer);
+		}
+		return TcpServerTransport.create(tcpServer.bindAddress(this::getListenAddress));
 	}
 
 	private InetSocketAddress getListenAddress() {
@@ -155,6 +179,23 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 			return new InetSocketAddress(this.address.getHostAddress(), this.port);
 		}
 		return new InetSocketAddress(this.port);
+	}
+
+	private static final class TcpSslServerCustomizer extends SslServerCustomizer {
+
+		private TcpSslServerCustomizer(Ssl ssl, SslStoreProvider sslStoreProvider) {
+			super(ssl, null, sslStoreProvider);
+		}
+
+		private TcpServer apply(TcpServer server) {
+			try {
+				return server.secure((contextSpec) -> contextSpec.sslContext(getContextBuilder()));
+			}
+			catch (Exception ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,15 @@ package org.springframework.boot.autoconfigure.rsocket;
 import java.net.InetAddress;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.rsocket.server.RSocketServer;
+import org.springframework.boot.web.server.Ssl;
 
 /**
  * {@link ConfigurationProperties properties} for RSocket support.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  * @since 2.2.0
  */
 @ConfigurationProperties("spring.rsocket")
@@ -59,6 +62,9 @@ public class RSocketProperties {
 		 */
 		private String mappingPath;
 
+		@NestedConfigurationProperty
+		private Ssl ssl;
+
 		public Integer getPort() {
 			return this.port;
 		}
@@ -89,6 +95,14 @@ public class RSocketProperties {
 
 		public void setMappingPath(String mappingPath) {
 			this.mappingPath = mappingPath;
+		}
+
+		public Ssl getSsl() {
+			return this.ssl;
+		}
+
+		public void setSsl(Ssl ssl) {
+			this.ssl = ssl;
 		}
 
 	}

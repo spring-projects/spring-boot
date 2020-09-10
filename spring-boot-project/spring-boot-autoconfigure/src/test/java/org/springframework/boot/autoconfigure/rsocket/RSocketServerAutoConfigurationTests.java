@@ -92,6 +92,18 @@ class RSocketServerAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldUseSslWhenRocketServerSslIsConfigured() {
+		reactiveWebContextRunner()
+				.withPropertyValues("spring.rsocket.server.ssl.keyStore=classpath:rsocket/test.jks",
+						"spring.rsocket.server.ssl.keyPassword=password", "spring.rsocket.server.port=0")
+				.run((context) -> assertThat(context).hasSingleBean(RSocketServerFactory.class)
+						.hasSingleBean(RSocketServerBootstrap.class).hasSingleBean(RSocketServerCustomizer.class)
+						.getBean(RSocketServerFactory.class)
+						.hasFieldOrPropertyWithValue("ssl.keyStore", "classpath:rsocket/test.jks")
+						.hasFieldOrPropertyWithValue("ssl.keyPassword", "password"));
+	}
+
+	@Test
 	void shouldUseCustomServerBootstrap() {
 		contextRunner().withUserConfiguration(CustomServerBootstrapConfig.class).run((context) -> assertThat(context)
 				.getBeanNames(RSocketServerBootstrap.class).containsExactly("customServerBootstrap"));
