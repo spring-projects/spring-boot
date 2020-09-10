@@ -18,7 +18,6 @@ package smoketest.rsocket;
 
 import io.rsocket.metadata.WellKnownMimeType;
 import org.assertj.core.api.Assertions;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
@@ -48,7 +47,6 @@ public class SampleRSocketApplicationTests {
 	}
 
 	@Test
-	@Disabled("Fails with an unexpected error during frame handling")
 	void rSocketEndpoint() {
 		RSocketRequester requester = this.builder
 				.rsocketStrategies((builder) -> builder.encoder(new SimpleAuthenticationEncoder()))
