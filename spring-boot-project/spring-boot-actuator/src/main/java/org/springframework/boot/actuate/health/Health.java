@@ -193,6 +193,8 @@ public final class Health extends HealthComponent {
 
 		private Map<String, Object> details;
 
+		private Throwable exception;
+
 		/**
 		 * Create new Builder instance.
 		 */
@@ -231,6 +233,7 @@ public final class Health extends HealthComponent {
 		 */
 		public Builder withException(Throwable ex) {
 			Assert.notNull(ex, "Exception must not be null");
+			this.exception = ex;
 			return withDetail("error", ex.getClass().getName() + ": " + ex.getMessage());
 		}
 
@@ -318,6 +321,15 @@ public final class Health extends HealthComponent {
 		public Builder status(Status status) {
 			this.status = status;
 			return this;
+		}
+
+		/**
+		 * Return the {@link Exception}.
+		 * @return the exception or {@code null} if the builder has no exception
+		 * @since 2.6.0
+		 */
+		public Throwable getException() {
+			return this.exception;
 		}
 
 		/**
