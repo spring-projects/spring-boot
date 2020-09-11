@@ -206,7 +206,7 @@ public class ErrorMvcAutoConfiguration {
 			}
 			response.setContentType(TEXT_HTML_UTF8.toString());
 			StringBuilder builder = new StringBuilder();
-			Date timestamp = (Date) model.get("timestamp");
+			Object timestamp = model.get("timestamp");
 			Object message = model.get("message");
 			Object trace = model.get("trace");
 			if (response.getContentType() == null) {
