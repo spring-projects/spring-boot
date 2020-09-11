@@ -74,7 +74,7 @@ public class RedisProperties {
 	/**
 	 * Connection timeout.
 	 */
-	private Duration connectionTimeout;
+	private Duration connectTimeout;
 
 	/**
 	 * Client name to be set on connections with CLIENT SETNAME.
@@ -150,12 +150,12 @@ public class RedisProperties {
 		return this.timeout;
 	}
 
-	public Duration getConnectionTimeout() {
-		return this.connectionTimeout;
+	public Duration getConnectTimeout() {
+		return this.connectTimeout;
 	}
 
-	public void setConnectionTimeout(Duration connectionTimeout) {
-		this.connectionTimeout = connectionTimeout;
+	public void setConnectTimeout(Duration connectTimeout) {
+		this.connectTimeout = connectTimeout;
 	}
 
 	public String getClientName() {

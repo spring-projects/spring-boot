@@ -98,15 +98,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-
-		ClientOptions.Builder clientOptionsBuilder = initializeClientOptionsBuilder();
-		Duration connectionTimeout = getProperties().getConnectionTimeout();
-		if (connectionTimeout != null) {
-			SocketOptions socketOptions = SocketOptions.builder().connectTimeout(connectionTimeout).build();
-			clientOptionsBuilder.socketOptions(socketOptions);
-		}
-		builder.clientOptions(clientOptionsBuilder.timeoutOptions(TimeoutOptions.enabled()).build());
-
+		builder.clientOptions(createClientOptions());
 		builder.clientResources(clientResources);
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -124,9 +116,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (getProperties().isSsl()) {
 			builder.useSsl();
 		}
-		Duration timeout = getProperties().getTimeout();
-		if (timeout != null) {
-			builder.commandTimeout(timeout);
+		if (getProperties().getTimeout() != null) {
+			builder.commandTimeout(getProperties().getTimeout());
 		}
 		if (getProperties().getLettuce() != null) {
 			RedisProperties.Lettuce lettuce = getProperties().getLettuce();
@@ -138,6 +129,15 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			builder.clientName(getProperties().getClientName());
 		}
 		return builder;
+	}
+
+	private ClientOptions createClientOptions() {
+		ClientOptions.Builder builder = initializeClientOptionsBuilder();
+		Duration connectTimeout = getProperties().getConnectTimeout();
+		if (connectTimeout != null) {
+			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
+		}
+		return builder.timeoutOptions(TimeoutOptions.enabled()).build();
 	}
 
 	private ClientOptions.Builder initializeClientOptionsBuilder() {

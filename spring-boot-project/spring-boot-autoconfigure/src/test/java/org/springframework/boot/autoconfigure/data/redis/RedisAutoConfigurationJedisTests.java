@@ -16,14 +16,13 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import io.lettuce.core.RedisClient;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
@@ -38,11 +37,11 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Mark Paluch
  * @author Stephane Nicoll
  */
+@ClassPathExclusions("lettuce-core-*.jar")
 class RedisAutoConfigurationJedisTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
-			.withClassLoader(new FilteredClassLoader(RedisClient.class));
+			.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class));
 
 	@Test
 	void connectionFactoryDefaultsToJedis() {
@@ -137,9 +136,9 @@ class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithTimeoutAndConnectionTimeout() {
+	void testRedisConfigurationWithTimeoutAndConnectTimeout() {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.timeout:250",
-				"spring.redis.connection-timeout:1000").run((context) -> {
+				"spring.redis.connect-timeout:1000").run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getTimeout()).isEqualTo(250);

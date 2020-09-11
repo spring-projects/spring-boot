@@ -168,15 +168,14 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithTimeoutAndConnectionTimeout() {
+	void testRedisConfigurationWithTimeoutAndConnectTimeout() {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.timeout:250",
-				"spring.redis.connection-timeout:1000").run((context) -> {
+				"spring.redis.connect-timeout:1000").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getTimeout()).isEqualTo(250);
-					long actualConnectionTimeout = cf.getClientConfiguration().getClientOptions().get()
-							.getSocketOptions().getConnectTimeout().toMillis();
-					assertThat(actualConnectionTimeout).isEqualTo(1000);
+					assertThat(cf.getClientConfiguration().getClientOptions().get().getSocketOptions()
+							.getConnectTimeout().toMillis()).isEqualTo(1000);
 				});
 	}
 
@@ -186,9 +185,8 @@ class RedisAutoConfigurationTests {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("foo");
 			assertThat(cf.getTimeout()).isEqualTo(60000);
-			long actualConnectionTimeout = cf.getClientConfiguration().getClientOptions().get().getSocketOptions()
-					.getConnectTimeout().toMillis();
-			assertThat(actualConnectionTimeout).isEqualTo(10000);
+			assertThat(cf.getClientConfiguration().getClientOptions().get().getSocketOptions().getConnectTimeout()
+					.toMillis()).isEqualTo(10000);
 		});
 	}
 
