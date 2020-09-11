@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -26,7 +25,6 @@ import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
-import org.springframework.boot.convert.DurationUnit;
 
 /**
  * Configuration properties for Cassandra.
@@ -360,18 +358,14 @@ public class CassandraProperties {
 	public static class Pool {
 
 		/**
-		 * Idle timeout before an idle connection is removed. If a duration suffix is not
-		 * specified, seconds will be used.
+		 * Idle timeout before an idle connection is removed.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration idleTimeout = Duration.ofSeconds(120);
 
 		/**
 		 * Heartbeat interval after which a message is sent on an idle connection to make
-		 * sure it's still alive. If a duration suffix is not specified, seconds will be
-		 * used.
+		 * sure it's still alive.
 		 */
-		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration heartbeatInterval = Duration.ofSeconds(30);
 
 		public Duration getIdleTimeout() {
