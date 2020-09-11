@@ -146,11 +146,11 @@ public class CassandraAutoConfiguration {
 	}
 
 	private void mapPoolingOptions(CassandraProperties properties, CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		CassandraProperties.Pool poolProperties = properties.getPool();
-		map.from(poolProperties::getIdleTimeout).whenNonNull().asInt(Duration::getSeconds)
+		map.from(poolProperties::getIdleTimeout).asInt(Duration::toMillis)
 				.to((idleTimeout) -> options.add(DefaultDriverOption.HEARTBEAT_TIMEOUT, idleTimeout));
-		map.from(poolProperties::getHeartbeatInterval).whenNonNull().asInt(Duration::getSeconds)
+		map.from(poolProperties::getHeartbeatInterval).asInt(Duration::toMillis)
 				.to((heartBeatInterval) -> options.add(DefaultDriverOption.HEARTBEAT_INTERVAL, heartBeatInterval));
 	}
 
