@@ -17,9 +17,11 @@
 package org.springframework.boot.autoconfigure.data.redis;
 
 import java.net.UnknownHostException;
+import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.SocketOptions;
 import io.lettuce.core.TimeoutOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
@@ -96,7 +98,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
-		builder.clientOptions(initializeClientOptionsBuilder().timeoutOptions(TimeoutOptions.enabled()).build());
+		builder.clientOptions(createClientOptions());
 		builder.clientResources(clientResources);
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -127,6 +129,15 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			builder.clientName(getProperties().getClientName());
 		}
 		return builder;
+	}
+
+	private ClientOptions createClientOptions() {
+		ClientOptions.Builder builder = initializeClientOptionsBuilder();
+		Duration connectTimeout = getProperties().getConnectTimeout();
+		if (connectTimeout != null) {
+			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
+		}
+		return builder.timeoutOptions(TimeoutOptions.enabled()).build();
 	}
 
 	private ClientOptions.Builder initializeClientOptionsBuilder() {
