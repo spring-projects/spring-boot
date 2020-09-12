@@ -75,7 +75,7 @@ class ErrorMvcAutoConfigurationTests {
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					false);
-			Map<String, Object> attributes = errorAttributes.getErrorAttributes(webRequest, true);
+			Map<String, Object> attributes = errorAttributes.getErrorAttributes(webRequest, withAllOptions());
 			attributes.put("timestamp", Clock.systemUTC().instant());
 			errorView.render(attributes, webRequest.getRequest(), webRequest.getResponse());
 			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
