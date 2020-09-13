@@ -89,6 +89,20 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
+	 * Return {@code true} if any element in the name is indexed.
+	 * @return if the element has one or more indexed elements
+	 * @since 2.2.10
+	 */
+	public boolean hasIndexedElement() {
+		for (int i = 0; i < getNumberOfElements(); i++) {
+			if (isIndexed(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Return if the element in the name is indexed.
 	 * @param elementIndex the index of the element
 	 * @return {@code true} if the element is indexed

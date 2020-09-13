@@ -17,7 +17,9 @@
 package org.springframework.boot.context.properties.bind.validation;
 
 import java.util.ArrayList;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.validation.Valid;
@@ -35,11 +37,16 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.boot.origin.Origin;
 import org.springframework.core.convert.ConverterNotFoundException;
+import org.springframework.core.env.MapPropertySource;
+import org.springframework.validation.Errors;
 import org.springframework.validation.FieldError;
 import org.springframework.validation.ObjectError;
+import org.springframework.validation.ValidationUtils;
+import org.springframework.validation.Validator;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 
@@ -210,6 +217,54 @@ class ValidationBindHandlerTests {
 		assertThat(fieldError.getField()).isEqualTo("personAge");
 	}
 
+	@Test
+	void validateMapValues() throws Exception {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.items.[itemOne].number", "one");
+		source.put("test.items.[ITEM2].number", "two");
+		this.sources.add(source);
+		Validator validator = getMapValidator();
+		this.handler = new ValidationBindHandler(validator);
+		this.binder.bind(ConfigurationPropertyName.of("test"), Bindable.of(ExampleWithMap.class), this.handler);
+	}
+
+	@Test
+	void validateMapValuesWithNonUniformSource() throws Exception {
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("test.items.itemOne.number", "one");
+		map.put("test.items.ITEM2.number", "two");
+		this.sources.add(ConfigurationPropertySources.from(new MapPropertySource("test", map)).iterator().next());
+		Validator validator = getMapValidator();
+		this.handler = new ValidationBindHandler(validator);
+		this.binder.bind(ConfigurationPropertyName.of("test"), Bindable.of(ExampleWithMap.class), this.handler);
+	}
+
+	private Validator getMapValidator() {
+		return new Validator() {
+
+			@Override
+			public boolean supports(Class<?> clazz) {
+				return ExampleWithMap.class == clazz;
+
+			}
+
+			@Override
+			public void validate(Object target, Errors errors) {
+				ExampleWithMap value = (ExampleWithMap) target;
+				value.getItems().forEach((k, v) -> {
+					try {
+						errors.pushNestedPath("items[" + k + "]");
+						ValidationUtils.rejectIfEmptyOrWhitespace(errors, "number", "NUMBER_ERR");
+					}
+					finally {
+						errors.popNestedPath();
+					}
+				});
+			}
+
+		};
+	}
+
 	private BindValidationException bindAndExpectValidationError(Runnable action) {
 		try {
 			action.run();
@@ -354,6 +409,30 @@ class ValidationBindHandlerTests {
 
 		int getAge() {
 			throw new RuntimeException();
+		}
+
+	}
+
+	static class ExampleWithMap {
+
+		private Map<String, ExampleMapValue> items = new LinkedHashMap<>();
+
+		Map<String, ExampleMapValue> getItems() {
+			return this.items;
+		}
+
+	}
+
+	static class ExampleMapValue {
+
+		private String number;
+
+		String getNumber() {
+			return this.number;
+		}
+
+		void setNumber(String number) {
+			this.number = number;
 		}
 
 	}
