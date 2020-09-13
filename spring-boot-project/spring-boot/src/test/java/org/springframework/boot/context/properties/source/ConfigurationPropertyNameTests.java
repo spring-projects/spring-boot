@@ -669,4 +669,14 @@ class ConfigurationPropertyNameTests {
 		assertThat(ReflectionTestUtils.getField(name, "hashCode")).isEqualTo(hashCode);
 	}
 
+	@Test
+	void hasIndexedElementWhenHasIndexedElementReturnsTrue() throws Exception {
+		assertThat(ConfigurationPropertyName.of("foo[bar]").hasIndexedElement()).isTrue();
+	}
+
+	@Test
+	void hasIndexedElementWhenHasNoIndexedElementReturnsFalse() throws Exception {
+		assertThat(ConfigurationPropertyName.of("foo.bar").hasIndexedElement()).isFalse();
+	}
+
 }

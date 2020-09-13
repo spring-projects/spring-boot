@@ -29,7 +29,9 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.DataObjectPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName.Form;
 import org.springframework.core.ResolvableType;
+import org.springframework.util.ObjectUtils;
 import org.springframework.validation.AbstractBindingResult;
 import org.springframework.validation.Validator;
 
@@ -165,26 +167,51 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 		@Override
 		public Class<?> getFieldType(String field) {
-			try {
-				ResolvableType type = ValidationBindHandler.this.boundTypes.get(getName(field));
-				Class<?> resolved = (type != null) ? type.resolve() : null;
-				if (resolved != null) {
-					return resolved;
-				}
-			}
-			catch (Exception ex) {
+			ResolvableType type = getBoundField(ValidationBindHandler.this.boundTypes, field);
+			Class<?> resolved = (type != null) ? type.resolve() : null;
+			if (resolved != null) {
+				return resolved;
 			}
 			return super.getFieldType(field);
 		}
 
 		@Override
 		protected Object getActualFieldValue(String field) {
+			return getBoundField(ValidationBindHandler.this.boundResults, field);
+		}
+
+		private <T> T getBoundField(Map<ConfigurationPropertyName, T> boundFields, String field) {
 			try {
-				return ValidationBindHandler.this.boundResults.get(getName(field));
+				ConfigurationPropertyName name = getName(field);
+				T bound = boundFields.get(name);
+				if (bound != null) {
+					return bound;
+				}
+				if (name.hasIndexedElement()) {
+					for (Map.Entry<ConfigurationPropertyName, T> entry : boundFields.entrySet()) {
+						if (isFieldNameMatch(entry.getKey(), name)) {
+							return entry.getValue();
+						}
+					}
+				}
 			}
 			catch (Exception ex) {
 			}
 			return null;
+		}
+
+		private boolean isFieldNameMatch(ConfigurationPropertyName name, ConfigurationPropertyName fieldName) {
+			if (name.getNumberOfElements() != fieldName.getNumberOfElements()) {
+				return false;
+			}
+			for (int i = 0; i < name.getNumberOfElements(); i++) {
+				String element = name.getElement(i, Form.ORIGINAL);
+				String fieldElement = fieldName.getElement(i, Form.ORIGINAL);
+				if (!ObjectUtils.nullSafeEquals(element, fieldElement)) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		private ConfigurationPropertyName getName(String field) {
