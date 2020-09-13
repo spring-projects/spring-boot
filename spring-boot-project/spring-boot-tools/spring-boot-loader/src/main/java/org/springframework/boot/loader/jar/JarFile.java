@@ -27,7 +27,6 @@ import java.net.URLStreamHandlerFactory;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.function.Supplier;
-import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
@@ -387,26 +386,12 @@ public class JarFile extends java.util.jar.JarFile {
 		return this.signed;
 	}
 
-	void setupEntryCertificates() {
-		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
-		// happening that often.
+	JarEntryCertification getCertification(JarEntry entry) {
 		try {
-			try (JarInputStream jarStream = new JarInputStream(getData().getInputStream())) {
-				java.util.jar.JarEntry certEntry = null;
-				while ((certEntry = jarStream.getNextJarEntry()) != null) {
-					jarStream.closeEntry();
-					setCertificates(getJarEntry(certEntry.getName()), certEntry);
-				}
-			}
+			return this.entries.getCertification(entry);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
-		}
-	}
-
-	private void setCertificates(JarEntry entry, java.util.jar.JarEntry certEntry) {
-		if (entry != null) {
-			entry.setCertificates(certEntry);
 		}
 	}
 

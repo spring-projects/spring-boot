@@ -26,9 +26,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.Charset;
 import java.nio.file.attribute.FileTime;
-import java.security.cert.Certificate;
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
@@ -46,6 +44,7 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -377,39 +376,33 @@ public class JarFileTests {
 
 	@Test
 	public void verifySignedJar() throws Exception {
-		String classpath = System.getProperty("java.class.path");
-		String[] entries = classpath.split(System.getProperty("path.separator"));
-		String signedJarFile = null;
+		File signedJarFile = getSignedJarFile();
+		assertThat(signedJarFile).exists();
+		try (java.util.jar.JarFile expected = new java.util.jar.JarFile(signedJarFile)) {
+			try (JarFile actual = new JarFile(signedJarFile)) {
+				StopWatch stopWatch = new StopWatch();
+				Enumeration<JarEntry> actualEntries = actual.entries();
+				while (actualEntries.hasMoreElements()) {
+					JarEntry actualEntry = actualEntries.nextElement();
+					java.util.jar.JarEntry expectedEntry = expected.getJarEntry(actualEntry.getName());
+					assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
+							.isEqualTo(expectedEntry.getCertificates());
+					assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
+							.isEqualTo(expectedEntry.getCodeSigners());
+				}
+				assertThat(stopWatch.getTotalTimeSeconds()).isLessThan(3.0);
+			}
+		}
+	}
+
+	private File getSignedJarFile() {
+		String[] entries = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 		for (String entry : entries) {
 			if (entry.contains("bcprov")) {
-				signedJarFile = entry;
+				return new File(entry);
 			}
 		}
-		assertThat(signedJarFile).isNotNull();
-		java.util.jar.JarFile jarFile = new JarFile(new File(signedJarFile));
-		jarFile.getManifest();
-		Enumeration<JarEntry> jarEntries = jarFile.entries();
-
-		// Make sure this whole certificates routine runs in an acceptable time (few
-		// seconds at most)
-		// Some signed jars took from 30s to 5 min depending on the implementation.
-		Instant start = Instant.now();
-		while (jarEntries.hasMoreElements()) {
-			JarEntry jarEntry = jarEntries.nextElement();
-			InputStream inputStream = jarFile.getInputStream(jarEntry);
-			inputStream.skip(Long.MAX_VALUE);
-			inputStream.close();
-
-			Certificate[] certs = jarEntry.getCertificates();
-			if (!jarEntry.getName().startsWith("META-INF") && !jarEntry.isDirectory()
-					&& !jarEntry.getName().endsWith("TigerDigest.class")) {
-				assertThat(certs).isNotNull();
-			}
-		}
-		jarFile.close();
-
-		// 3 seconds is still quite long, but low enough to catch most problems
-		assertThat(ChronoUnit.SECONDS.between(start, Instant.now())).isLessThanOrEqualTo(3L);
+		return null;
 	}
 
 	@Test
