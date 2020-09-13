@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -616,6 +616,16 @@ class ConfigurationPropertyNameTests {
 		assertThat(ConfigurationPropertyName.isValid("-foo")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("FooBar")).isFalse();
 		assertThat(ConfigurationPropertyName.isValid("foo!bar")).isFalse();
+	}
+
+	@Test
+	void hasIndexedElementWhenHasIndexedElementReturnsTrue() throws Exception {
+		assertThat(ConfigurationPropertyName.of("foo[bar]").hasIndexedElement()).isTrue();
+	}
+
+	@Test
+	void hasIndexedElementWhenHasNoIndexedElementReturnsFalse() throws Exception {
+		assertThat(ConfigurationPropertyName.of("foo.bar").hasIndexedElement()).isFalse();
 	}
 
 }
