@@ -55,8 +55,8 @@ final class MainClassConvention implements Callable<Object> {
 			return springBootExtension.getMainClassName();
 		}
 		JavaApplication javaApplication = this.project.getConvention().findByType(JavaApplication.class);
-		if (javaApplication != null && javaApplication.getMainClassName() != null) {
-			return javaApplication.getMainClassName();
+		if (javaApplication != null && javaApplication.getMainClass().isPresent()) {
+			return javaApplication.getMainClass().get();
 		}
 		return resolveMainClass();
 	}
