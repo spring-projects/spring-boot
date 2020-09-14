@@ -377,7 +377,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 		int hashCode = AsciiBytes.hashCode(name);
 		int index = getFirstIndex(hashCode);
 		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
-			CentralDirectoryFileHeader candidate = getEntry(index, CentralDirectoryFileHeader.class, false, null);
+			FileHeader candidate = getEntry(index, FileHeader.class, false, null);
 			if (candidate.hasName(name, NO_SUFFIX)) {
 				return index;
 			}
