@@ -257,7 +257,11 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
-		StepVerifier.create(result).expectError(SSLException.class).verify(Duration.ofSeconds(10));
+		StepVerifier.create(result).expectErrorSatisfies((exception) -> {
+			if (!(exception instanceof SSLException)) {
+				assertThat(exception).hasCauseInstanceOf(SSLException.class);
+			}
+		}).verify(Duration.ofSeconds(10));
 	}
 
 	protected WebClient.Builder getWebClient() {
