@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import javax.net.ssl.KeyManagerFactory;
-import javax.net.ssl.SSLException;
 
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
@@ -72,6 +71,7 @@ import org.springframework.util.SocketUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
+import org.springframework.web.reactive.function.client.WebClientRequestException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -269,7 +269,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Mono<String> result = client.post().uri("/test").contentType(MediaType.TEXT_PLAIN)
 				.body(BodyInserters.fromValue("Hello World")).exchange()
 				.flatMap((response) -> response.bodyToMono(String.class));
-		StepVerifier.create(result).expectError(SSLException.class).verify(Duration.ofSeconds(10));
+		StepVerifier.create(result).expectError(WebClientRequestException.class).verify(Duration.ofSeconds(10));
 	}
 
 	protected WebClient.Builder getWebClient(int port) {
