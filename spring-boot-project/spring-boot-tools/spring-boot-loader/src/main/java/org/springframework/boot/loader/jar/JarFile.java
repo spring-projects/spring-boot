@@ -29,7 +29,6 @@ import java.security.Permission;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.function.Supplier;
-import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
@@ -353,30 +352,12 @@ public class JarFile extends AbstractJarFile {
 		return this.signed;
 	}
 
-	void setupEntryCertificates(JarEntry entry) {
-		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
-		// happening that often.
+	JarEntryCertification getCertification(JarEntry entry) {
 		try {
-			try (JarInputStream inputStream = new JarInputStream(getData().getInputStream())) {
-				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
-				while (certEntry != null) {
-					inputStream.closeEntry();
-					if (entry.getName().equals(certEntry.getName())) {
-						setCertificates(entry, certEntry);
-					}
-					setCertificates(getJarEntry(certEntry.getName()), certEntry);
-					certEntry = inputStream.getNextJarEntry();
-				}
-			}
+			return this.entries.getCertification(entry);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
-		}
-	}
-
-	private void setCertificates(JarEntry entry, java.util.jar.JarEntry certEntry) {
-		if (entry != null) {
-			entry.setCertificates(certEntry);
 		}
 	}
 

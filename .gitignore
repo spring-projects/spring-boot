@@ -19,6 +19,7 @@
 .settings
 .springBeans
 /build
+.vscode
 /code
 MANIFEST.MF
 _site/
