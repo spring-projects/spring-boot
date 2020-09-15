@@ -25,34 +25,34 @@ import org.springframework.core.type.AnnotationMetadata;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} for
- * {@link ImportConfigurationPropertiesBean @ImportConfigurationPropertiesBean}.
+ * {@link ConfigurationPropertiesImport @ConfigurationPropertiesImport}.
  *
  * @author Phillip Webb
  */
-class ImportConfigurationPropertiesBeanRegistrar implements ImportBeanDefinitionRegistrar {
+class ConfigurationPropertiesImportRegistrar implements ImportBeanDefinitionRegistrar {
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
 			BeanNameGenerator importBeanNameGenerator) {
 		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(registry);
 		MergedAnnotations annotations = importingClassMetadata.getAnnotations();
-		registerBeans(registrar, annotations.get(ImportConfigurationPropertiesBeans.class));
-		registerBean(registrar, annotations.get(ImportConfigurationPropertiesBean.class));
+		registerBeans(registrar, annotations.get(ConfigurationPropertiesImports.class));
+		registerBean(registrar, annotations.get(ConfigurationPropertiesImport.class));
 	}
 
 	private void registerBeans(ConfigurationPropertiesBeanRegistrar registrar,
-			MergedAnnotation<ImportConfigurationPropertiesBeans> annotation) {
+			MergedAnnotation<ConfigurationPropertiesImports> annotation) {
 		if (!annotation.isPresent()) {
 			return;
 		}
-		for (MergedAnnotation<ImportConfigurationPropertiesBean> containedAnnotation : annotation
-				.getAnnotationArray(MergedAnnotation.VALUE, ImportConfigurationPropertiesBean.class)) {
+		for (MergedAnnotation<ConfigurationPropertiesImport> containedAnnotation : annotation
+				.getAnnotationArray(MergedAnnotation.VALUE, ConfigurationPropertiesImport.class)) {
 			registerBean(registrar, containedAnnotation);
 		}
 	}
 
 	private void registerBean(ConfigurationPropertiesBeanRegistrar registrar,
-			MergedAnnotation<ImportConfigurationPropertiesBean> annotation) {
+			MergedAnnotation<ConfigurationPropertiesImport> annotation) {
 		if (!annotation.isPresent()) {
 			return;
 		}

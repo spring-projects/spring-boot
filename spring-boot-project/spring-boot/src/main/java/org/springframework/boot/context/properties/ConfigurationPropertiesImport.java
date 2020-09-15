@@ -46,9 +46,9 @@ import org.springframework.core.annotation.AliasFor;
 @Documented
 @EnableConfigurationProperties
 @ConfigurationProperties
-@Repeatable(ImportConfigurationPropertiesBeans.class)
-@Import(ImportConfigurationPropertiesBeanRegistrar.class)
-public @interface ImportConfigurationPropertiesBean {
+@Repeatable(ConfigurationPropertiesImports.class)
+@Import(ConfigurationPropertiesImportRegistrar.class)
+public @interface ConfigurationPropertiesImport {
 
 	/**
 	 * One or more types that should be imported as a bean.

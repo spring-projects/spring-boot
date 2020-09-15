@@ -1227,7 +1227,7 @@ Spring Boot provides infrastructure to bind `@ConfigurationProperties` types and
 You can either enable configuration properties on a class-by-class basis or enable configuration property scanning that works in a similar manner to component scanning.
 
 Sometimes, classes annotated with `@ConfigurationProperties` might not be suitable for scanning, for example, if you're developing your own auto-configuration or you want to enable them conditionally.
-In these cases, specify the list of types to process using the `@EnableConfigurationProperties` or `@ImportConfigurationPropertiesBean` annotations.
+In these cases, specify the list of types to process using the `@EnableConfigurationProperties` or `@ConfigurationPropertiesImport` annotations.
 This can be done on any `@Configuration` class, as shown in the following example:
 
 [source,java,indent=0]
@@ -1253,7 +1253,7 @@ If you want to define specific packages to scan, you can do so as shown in the f
 
 [NOTE]
 ====
-When the `@ConfigurationProperties` bean is registered using configuration property scanning or via `@EnableConfigurationProperties` or `@ImportConfigurationPropertiesBean`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
+When the `@ConfigurationProperties` bean is registered using configuration property scanning or via `@EnableConfigurationProperties` or `@ConfigurationPropertiesImport`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
 The bean name in the example above is `acme-com.example.AcmeProperties`.
@@ -1333,18 +1333,18 @@ To configure a bean from the `Environment` properties, add `@ConfigurationProper
 Any JavaBean property defined with the `another` prefix is mapped onto that `ExampleItem` bean in manner similar to the preceding `AcmeProperties` example.
 
 If you want to use constructor binding with a third-party class, you can't use a `@Bean` method since Spring will need to create the object instance.
-For those situations, you can use an `@ImportConfigurationPropertiesBean` annotation on your `@Configuration` or `@SpringBootApplication` class.
+For those situations, you can use an `@ConfigurationPropertiesImport` annotation on your `@Configuration` or `@SpringBootApplication` class.
 
 [source,java,indent=0]
 ----
 	@SpringBootApplication
-	@ImportConfigurationPropertiesBean(type = ExampleItem.class, prefix = "another")
+	@ConfigurationPropertiesImport(type = ExampleItem.class, prefix = "another")
 	public class MyApp {
 		...
 	}
 ----
 
-TIP: `@ImportConfigurationPropertiesBean` also works for JavaBean bindings as long as the type has a single no-arg constructor
+TIP: `@ConfigurationPropertiesImport` also works for JavaBean bindings as long as the type has a single no-arg constructor
 
 
 

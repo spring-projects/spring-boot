@@ -26,11 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link ImportConfigurationPropertiesBean}.
+ * Tests for {@link ConfigurationPropertiesImport}.
  *
  * @author Phillip Webb
  */
-class ImportConfigurationPropertiesBeanTests {
+class ConfigurationPropertiesImportTests {
 
 	@Test
 	void importJavaBean() {
@@ -86,7 +86,7 @@ class ImportConfigurationPropertiesBeanTests {
 	}
 
 	@Configuration
-	@ImportConfigurationPropertiesBean(prefix = "test", type = JavaBean.class)
+	@ConfigurationPropertiesImport(prefix = "test", type = JavaBean.class)
 	static class JavaBeanConfig {
 
 	}
@@ -106,7 +106,7 @@ class ImportConfigurationPropertiesBeanTests {
 	}
 
 	@Configuration
-	@ImportConfigurationPropertiesBean(prefix = "test", type = ValueObject.class)
+	@ConfigurationPropertiesImport(prefix = "test", type = ValueObject.class)
 	static class ValueObjectConfig {
 
 	}
@@ -126,7 +126,7 @@ class ImportConfigurationPropertiesBeanTests {
 	}
 
 	@Configuration
-	@ImportConfigurationPropertiesBean(prefix = "test", type = MultiConstructorValueObject.class)
+	@ConfigurationPropertiesImport(prefix = "test", type = MultiConstructorValueObject.class)
 	static class MultiConstructorValueObjectConfig {
 
 	}
@@ -145,14 +145,14 @@ class ImportConfigurationPropertiesBeanTests {
 	}
 
 	@Configuration
-	@ImportConfigurationPropertiesBean(type = { ValueObject.class, JavaBean.class }, prefix = "test")
+	@ConfigurationPropertiesImport(type = { ValueObject.class, JavaBean.class }, prefix = "test")
 	static class ImportMultipleTypesConfig {
 
 	}
 
 	@Configuration
-	@ImportConfigurationPropertiesBean(type = ValueObject.class, prefix = "vo")
-	@ImportConfigurationPropertiesBean(type = JavaBean.class, prefix = "jb")
+	@ConfigurationPropertiesImport(type = ValueObject.class, prefix = "vo")
+	@ConfigurationPropertiesImport(type = JavaBean.class, prefix = "jb")
 	static class ImportRepeatedAnnotationsConfig {
 
 	}

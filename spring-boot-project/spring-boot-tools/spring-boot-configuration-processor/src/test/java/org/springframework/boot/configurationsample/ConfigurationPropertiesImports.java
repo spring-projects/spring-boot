@@ -18,15 +18,12 @@ package org.springframework.boot.configurationsample;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
-import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.core.annotation.AliasFor;
-
 /**
- * Alternative to Spring Boot's {@code ImportConfigurationPropertiesBean} for testing
+ * Alternative to Spring Boot's {@code ConfigurationPropertiesImports} for testing
  * (removes the need for a dependency on the real annotation).
  *
  * @author Phillip Webb
@@ -34,19 +31,8 @@ import org.springframework.core.annotation.AliasFor;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@ConfigurationProperties
-@Repeatable(ImportConfigurationPropertiesBeans.class)
-public @interface ImportConfigurationPropertiesBean {
+public @interface ConfigurationPropertiesImports {
 
-	Class<?>[] type();
-
-	@AliasFor(annotation = ConfigurationProperties.class)
-	String prefix() default "";
-
-	@AliasFor(annotation = ConfigurationProperties.class)
-	boolean ignoreInvalidFields() default false;
-
-	@AliasFor(annotation = ConfigurationProperties.class)
-	boolean ignoreUnknownFields() default true;
+	ConfigurationPropertiesImport[] value();
 
 }

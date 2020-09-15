@@ -14,35 +14,39 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.properties;
+package org.springframework.boot.configurationsample;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
+import java.lang.annotation.Repeatable;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import org.springframework.context.annotation.Import;
+import org.springframework.core.annotation.AliasFor;
 
 /**
- * Container annotation that aggregates several {@link ImportConfigurationPropertiesBean}
- * annotations.
+ * Alternative to Spring Boot's {@code ConfigurationPropertiesImport} for testing (removes
+ * the need for a dependency on the real annotation).
  *
  * @author Phillip Webb
- * @since 2.4.0
- * @see ImportConfigurationPropertiesBean
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@EnableConfigurationProperties
-@Import(ImportConfigurationPropertiesBeanRegistrar.class)
-public @interface ImportConfigurationPropertiesBeans {
+@ConfigurationProperties
+@Repeatable(ConfigurationPropertiesImports.class)
+public @interface ConfigurationPropertiesImport {
 
-	/**
-	 * The contained {@link ImportConfigurationPropertiesBean} annotations.
-	 * @return the contained annotations
-	 */
-	ImportConfigurationPropertiesBean[] value();
+	Class<?>[] type();
+
+	@AliasFor(annotation = ConfigurationProperties.class)
+	String prefix() default "";
+
+	@AliasFor(annotation = ConfigurationProperties.class)
+	boolean ignoreInvalidFields() default false;
+
+	@AliasFor(annotation = ConfigurationProperties.class)
+	boolean ignoreUnknownFields() default true;
 
 }

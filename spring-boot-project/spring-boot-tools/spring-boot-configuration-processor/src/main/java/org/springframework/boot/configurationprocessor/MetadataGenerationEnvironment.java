@@ -97,15 +97,15 @@ class MetadataGenerationEnvironment {
 
 	private final String nameAnnotation;
 
-	private final String importConfigurationPropertiesBeanAnnotation;
+	private final String configurationPropertiesImportAnnotation;
 
-	private final String importConfigurationPropertiesBeansAnnotation;
+	private final String configurationPropertiesImportsAnnotation;
 
 	MetadataGenerationEnvironment(ProcessingEnvironment environment, String configurationPropertiesAnnotation,
 			String nestedConfigurationPropertyAnnotation, String deprecatedConfigurationPropertyAnnotation,
 			String constructorBindingAnnotation, String defaultValueAnnotation, String endpointAnnotation,
-			String readOperationAnnotation, String nameAnnotation, String importConfigurationPropertiesBeanAnnotation,
-			String importConfigurationPropertiesBeansAnnotation) {
+			String readOperationAnnotation, String nameAnnotation, String configurationPropertiesImportAnnotation,
+			String configurationPropertiesImportsAnnotation) {
 		this.typeUtils = new TypeUtils(environment);
 		this.elements = environment.getElementUtils();
 		this.messager = environment.getMessager();
@@ -118,8 +118,8 @@ class MetadataGenerationEnvironment {
 		this.endpointAnnotation = endpointAnnotation;
 		this.readOperationAnnotation = readOperationAnnotation;
 		this.nameAnnotation = nameAnnotation;
-		this.importConfigurationPropertiesBeanAnnotation = importConfigurationPropertiesBeanAnnotation;
-		this.importConfigurationPropertiesBeansAnnotation = importConfigurationPropertiesBeansAnnotation;
+		this.configurationPropertiesImportAnnotation = configurationPropertiesImportAnnotation;
+		this.configurationPropertiesImportsAnnotation = configurationPropertiesImportsAnnotation;
 	}
 
 	private static FieldValuesParser resolveFieldValuesParser(ProcessingEnvironment env) {
@@ -265,12 +265,12 @@ class MetadataGenerationEnvironment {
 		return this.elements.getTypeElement(this.configurationPropertiesAnnotation);
 	}
 
-	TypeElement getImportConfigurationPropertiesBeanAnnotationElement() {
-		return this.elements.getTypeElement(this.importConfigurationPropertiesBeanAnnotation);
+	TypeElement getConfigurationPropertiesImportAnnotationElement() {
+		return this.elements.getTypeElement(this.configurationPropertiesImportAnnotation);
 	}
 
-	TypeElement getImportConfigurationPropertiesBeansAnnotationElement() {
-		return this.elements.getTypeElement(this.importConfigurationPropertiesBeansAnnotation);
+	TypeElement getConfigurationPropertiesImportsAnnotationElement() {
+		return this.elements.getTypeElement(this.configurationPropertiesImportsAnnotation);
 	}
 
 	AnnotationMirror getConfigurationPropertiesAnnotation(Element element) {
@@ -297,13 +297,13 @@ class MetadataGenerationEnvironment {
 		return getAnnotation(element, this.nameAnnotation);
 	}
 
-	List<AnnotationMirror> getImportConfigurationPropertiesBeanAnnotations(Element element) {
+	List<AnnotationMirror> getConfigurationPropertiesImportAnnotations(Element element) {
 		List<AnnotationMirror> annotations = new ArrayList<>();
-		AnnotationMirror importBean = getAnnotation(element, this.importConfigurationPropertiesBeanAnnotation);
+		AnnotationMirror importBean = getAnnotation(element, this.configurationPropertiesImportAnnotation);
 		if (importBean != null) {
 			annotations.add(importBean);
 		}
-		AnnotationMirror importBeans = getAnnotation(element, this.importConfigurationPropertiesBeansAnnotation);
+		AnnotationMirror importBeans = getAnnotation(element, this.configurationPropertiesImportsAnnotation);
 		if (importBeans != null) {
 			AnnotationValue value = importBeans.getElementValues().values().iterator().next();
 			for (Object contained : (List<?>) value.getValue()) {

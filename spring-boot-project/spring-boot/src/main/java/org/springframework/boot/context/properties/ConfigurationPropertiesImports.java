@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample;
+package org.springframework.boot.context.properties;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,17 +22,27 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.context.annotation.Import;
+
 /**
- * Alternative to Spring Boot's {@code ImportConfigurationPropertiesBeans} for testing
- * (removes the need for a dependency on the real annotation).
+ * Container annotation that aggregates several {@link ConfigurationPropertiesImport}
+ * annotations.
  *
  * @author Phillip Webb
+ * @since 2.4.0
+ * @see ConfigurationPropertiesImport
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ImportConfigurationPropertiesBeans {
+@EnableConfigurationProperties
+@Import(ConfigurationPropertiesImportRegistrar.class)
+public @interface ConfigurationPropertiesImports {
 
-	ImportConfigurationPropertiesBean[] value();
+	/**
+	 * The contained {@link ConfigurationPropertiesImport} annotations.
+	 * @return the contained annotations
+	 */
+	ConfigurationPropertiesImport[] value();
 
 }

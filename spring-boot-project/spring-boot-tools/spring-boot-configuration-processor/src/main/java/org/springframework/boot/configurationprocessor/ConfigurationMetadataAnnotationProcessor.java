@@ -80,9 +80,9 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 
 	static final String NAME_ANNOTATION = "org.springframework.boot.context.properties.bind.Name";
 
-	static final String IMPORT_CONFIGURATION_PROPERTIES_BEAN_ANNOATION = "org.springframework.boot.context.properties.ImportConfigurationPropertiesBean";
+	static final String CONFIGURATION_PROPERTIES_IMPORT_ANNOATION = "org.springframework.boot.context.properties.ConfigurationPropertiesImport";
 
-	static final String IMPORT_CONFIGURATION_PROPERTIES_BEANS_ANNOATION = "org.springframework.boot.context.properties.ImportConfigurationPropertiesBeans";
+	static final String CONFIGURATION_PROPERTIES_IMPORTS_ANNOATION = "org.springframework.boot.context.properties.ConfigurationPropertiesImports";
 
 	private static final Set<String> SUPPORTED_OPTIONS = Collections
 			.unmodifiableSet(Collections.singleton(ADDITIONAL_METADATA_LOCATIONS_OPTION));
@@ -125,12 +125,12 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		return NAME_ANNOTATION;
 	}
 
-	protected String importConfigurationPropertiesBeanAnnotation() {
-		return IMPORT_CONFIGURATION_PROPERTIES_BEAN_ANNOATION;
+	protected String configurationPropertiesImportAnnotation() {
+		return CONFIGURATION_PROPERTIES_IMPORT_ANNOATION;
 	}
 
-	protected String importConfigurationPropertiesBeansAnnotation() {
-		return IMPORT_CONFIGURATION_PROPERTIES_BEANS_ANNOATION;
+	protected String configurationPropertiesImportsAnnotation() {
+		return CONFIGURATION_PROPERTIES_IMPORTS_ANNOATION;
 	}
 
 	@Override
@@ -151,8 +151,8 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataEnv = new MetadataGenerationEnvironment(env, configurationPropertiesAnnotation(),
 				nestedConfigurationPropertyAnnotation(), deprecatedConfigurationPropertyAnnotation(),
 				constructorBindingAnnotation(), defaultValueAnnotation(), endpointAnnotation(),
-				readOperationAnnotation(), nameAnnotation(), importConfigurationPropertiesBeanAnnotation(),
-				importConfigurationPropertiesBeansAnnotation());
+				readOperationAnnotation(), nameAnnotation(), configurationPropertiesImportAnnotation(),
+				configurationPropertiesImportsAnnotation());
 	}
 
 	@Override
@@ -160,7 +160,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		this.metadataCollector.processing(roundEnv);
 		processConfigurationProperties(roundEnv);
 		processEndpoint(roundEnv);
-		processImportConfigurationPropertiesBean(roundEnv);
+		processConfigurationPropertiesImport(roundEnv);
 		if (roundEnv.processingOver()) {
 			try {
 				writeMetaData();
@@ -188,22 +188,22 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private void processImportConfigurationPropertiesBean(RoundEnvironment roundEnv) {
-		TypeElement importConfigurationPropertiesBeanType = this.metadataEnv
-				.getImportConfigurationPropertiesBeanAnnotationElement();
-		TypeElement importConfigurationPropertiesBeansType = this.metadataEnv
-				.getImportConfigurationPropertiesBeansAnnotationElement();
-		if (importConfigurationPropertiesBeanType == null && importConfigurationPropertiesBeansType == null) {
+	private void processConfigurationPropertiesImport(RoundEnvironment roundEnv) {
+		TypeElement configurationPropertiesImportType = this.metadataEnv
+				.getConfigurationPropertiesImportAnnotationElement();
+		TypeElement configurationPropertiesImportsType = this.metadataEnv
+				.getConfigurationPropertiesImportsAnnotationElement();
+		if (configurationPropertiesImportType == null && configurationPropertiesImportsType == null) {
 			return;
 		}
 		Set<Element> elements = new LinkedHashSet<>();
-		if (importConfigurationPropertiesBeanType != null) {
-			elements.addAll(roundEnv.getElementsAnnotatedWith(importConfigurationPropertiesBeanType));
+		if (configurationPropertiesImportType != null) {
+			elements.addAll(roundEnv.getElementsAnnotatedWith(configurationPropertiesImportType));
 		}
-		if (importConfigurationPropertiesBeansType != null) {
-			elements.addAll(roundEnv.getElementsAnnotatedWith(importConfigurationPropertiesBeansType));
+		if (configurationPropertiesImportsType != null) {
+			elements.addAll(roundEnv.getElementsAnnotatedWith(configurationPropertiesImportsType));
 		}
-		elements.forEach(this::processImportConfigurationPropertiesBean);
+		elements.forEach(this::processConfigurationPropertiesImport);
 	}
 
 	private Map<Element, List<Element>> getElementsAnnotatedOrMetaAnnotatedWith(RoundEnvironment roundEnv,
@@ -314,13 +314,13 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 		}
 	}
 
-	private void processImportConfigurationPropertiesBean(Element element) {
-		this.metadataEnv.getImportConfigurationPropertiesBeanAnnotations(element)
-				.forEach(this::processImportConfigurationPropertiesBean);
+	private void processConfigurationPropertiesImport(Element element) {
+		this.metadataEnv.getConfigurationPropertiesImportAnnotations(element)
+				.forEach(this::processConfigurationPropertiesImport);
 	}
 
 	@SuppressWarnings("unchecked")
-	private void processImportConfigurationPropertiesBean(AnnotationMirror annotation) {
+	private void processConfigurationPropertiesImport(AnnotationMirror annotation) {
 		String prefix = getPrefix(annotation);
 		List<TypeMirror> types = (List<TypeMirror>) this.metadataEnv.getAnnotationElementValues(annotation).get("type");
 		for (TypeMirror type : types) {

@@ -20,8 +20,8 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationsample.ImportConfigurationPropertiesBean;
-import org.springframework.boot.configurationsample.ImportConfigurationPropertiesBeans;
+import org.springframework.boot.configurationsample.ConfigurationPropertiesImport;
+import org.springframework.boot.configurationsample.ConfigurationPropertiesImports;
 import org.springframework.boot.configurationsample.importbean.ImportJavaBeanConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportMultipleTypeConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportRepeatedConfigurationPropertiesBean;
@@ -32,8 +32,8 @@ import org.springframework.boot.configurationsample.importbean.ImportedValueObje
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ImportConfigurationPropertiesBean} and
- * {@link ImportConfigurationPropertiesBeans}.
+ * Tests for {@link ConfigurationPropertiesImport} and
+ * {@link ConfigurationPropertiesImports}.
  *
  * @author Phillip Webb
  */
