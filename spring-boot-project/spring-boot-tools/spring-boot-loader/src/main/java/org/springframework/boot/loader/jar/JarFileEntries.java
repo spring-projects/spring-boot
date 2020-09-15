@@ -353,11 +353,12 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			try (JarInputStream certifiedJarStream = new JarInputStream(this.jarFile.getData().getInputStream())) {
 				java.util.jar.JarEntry certifiedEntry = null;
 				while ((certifiedEntry = certifiedJarStream.getNextJarEntry()) != null) {
+					// Entry must be closed to trigger a read and set entry certificates
+					certifiedJarStream.closeEntry();
 					int index = getEntryIndex(certifiedEntry.getName());
 					if (index != -1) {
 						certifications[index] = JarEntryCertification.from(certifiedEntry);
 					}
-					certifiedJarStream.closeEntry();
 				}
 			}
 			this.certifications = certifications;
