@@ -23,7 +23,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 /**
- * Alternative to Spring Boot's {@code ConfigurationPropertiesImports} for testing
+ * Alternative to Spring Boot's {@code ImportAsConfigurationPropertiesBeans} for testing
  * (removes the need for a dependency on the real annotation).
  *
  * @author Phillip Webb
@@ -31,8 +31,8 @@ import java.lang.annotation.Target;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface ConfigurationPropertiesImports {
+public @interface ImportAsConfigurationPropertiesBeans {
 
-	ConfigurationPropertiesImport[] value();
+	ImportAsConfigurationPropertiesBean[] value();
 
 }

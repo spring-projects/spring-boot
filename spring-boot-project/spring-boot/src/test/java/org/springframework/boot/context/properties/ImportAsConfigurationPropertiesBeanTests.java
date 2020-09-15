@@ -26,11 +26,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link ConfigurationPropertiesImport}.
+ * Tests for {@link ImportAsConfigurationPropertiesBean}.
  *
  * @author Phillip Webb
  */
-class ConfigurationPropertiesImportTests {
+class ImportAsConfigurationPropertiesBeanTests {
 
 	@Test
 	void importJavaBean() {
@@ -57,7 +57,8 @@ class ConfigurationPropertiesImportTests {
 		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
 			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context.getEnvironment(), "test.name=spring");
 			context.register(MultiConstructorValueObjectConfig.class);
-			assertThatIllegalStateException().isThrownBy(context::refresh).withMessageContaining("Unable to deduce");
+			assertThatIllegalStateException().isThrownBy(context::refresh).havingCause()
+					.withMessageContaining("Unable to deduce");
 		}
 	}
 
@@ -80,13 +81,23 @@ class ConfigurationPropertiesImportTests {
 					"vo.value=boot");
 			context.register(ImportRepeatedAnnotationsConfig.class);
 			context.refresh();
-			// assertThat(context.getBean(JavaBean.class).getName()).isEqualTo("spring");
-			// assertThat(context.getBean(ValueObject.class).getValue()).isEqualTo("boot");
+			assertThat(context.getBean(JavaBean.class).getName()).isEqualTo("spring");
+			assertThat(context.getBean(ValueObject.class).getValue()).isEqualTo("boot");
+		}
+	}
+
+	@Test
+	void importAnnoatedBeanConfig() {
+		try (AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext()) {
+			TestPropertySourceUtils.addInlinedPropertiesToEnvironment(context.getEnvironment(), "onbean.name=spring");
+			context.register(ImportAnnotatedClassConfig.class);
+			context.refresh();
+			assertThat(context.getBean(JavaBean.class).getName()).isEqualTo("spring");
 		}
 	}
 
 	@Configuration
-	@ConfigurationPropertiesImport(prefix = "test", type = JavaBean.class)
+	@ImportAsConfigurationPropertiesBean(prefix = "test", type = JavaBean.class)
 	static class JavaBeanConfig {
 
 	}
@@ -106,7 +117,7 @@ class ConfigurationPropertiesImportTests {
 	}
 
 	@Configuration
-	@ConfigurationPropertiesImport(prefix = "test", type = ValueObject.class)
+	@ImportAsConfigurationPropertiesBean(prefix = "test", type = ValueObject.class)
 	static class ValueObjectConfig {
 
 	}
@@ -126,7 +137,7 @@ class ConfigurationPropertiesImportTests {
 	}
 
 	@Configuration
-	@ConfigurationPropertiesImport(prefix = "test", type = MultiConstructorValueObject.class)
+	@ImportAsConfigurationPropertiesBean(prefix = "test", type = MultiConstructorValueObject.class)
 	static class MultiConstructorValueObjectConfig {
 
 	}
@@ -145,15 +156,26 @@ class ConfigurationPropertiesImportTests {
 	}
 
 	@Configuration
-	@ConfigurationPropertiesImport(type = { ValueObject.class, JavaBean.class }, prefix = "test")
+	@ImportAsConfigurationPropertiesBean(type = { ValueObject.class, JavaBean.class }, prefix = "test")
 	static class ImportMultipleTypesConfig {
 
 	}
 
 	@Configuration
-	@ConfigurationPropertiesImport(type = ValueObject.class, prefix = "vo")
-	@ConfigurationPropertiesImport(type = JavaBean.class, prefix = "jb")
+	@ImportAsConfigurationPropertiesBean(type = ValueObject.class, prefix = "vo")
+	@ImportAsConfigurationPropertiesBean(type = JavaBean.class, prefix = "jb")
 	static class ImportRepeatedAnnotationsConfig {
+
+	}
+
+	@Configuration
+	@ImportAsConfigurationPropertiesBean(AnnotatedJavaBean.class)
+	static class ImportAnnotatedClassConfig {
+
+	}
+
+	@ConfigurationProperties(prefix = "onbean")
+	static class AnnotatedJavaBean extends JavaBean {
 
 	}
 

@@ -16,14 +16,14 @@
 
 package org.springframework.boot.configurationsample.importbean;
 
-import org.springframework.boot.configurationsample.ConfigurationPropertiesImport;
+import org.springframework.boot.configurationsample.ImportAsConfigurationPropertiesBean;
 
 /**
  * An import of a value object.
  *
  * @author Phillip Webb
  */
-@ConfigurationPropertiesImport(type = ImportedValueObject.class, prefix = "importbean")
+@ImportAsConfigurationPropertiesBean(type = ImportedValueObject.class, prefix = "importbean")
 public class ImportValueObjectConfigurationPropertiesBean {
 
 }

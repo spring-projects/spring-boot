@@ -37,7 +37,9 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 	public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
 		registerInfrastructureBeans(registry);
 		ConfigurationPropertiesBeanRegistrar beanRegistrar = new ConfigurationPropertiesBeanRegistrar(registry);
-		getTypes(metadata).forEach(beanRegistrar::register);
+		for (Class<?> type : getTypes(metadata)) {
+			beanRegistrar.register(type, null, false);
+		}
 	}
 
 	private Set<Class<?>> getTypes(AnnotationMetadata metadata) {

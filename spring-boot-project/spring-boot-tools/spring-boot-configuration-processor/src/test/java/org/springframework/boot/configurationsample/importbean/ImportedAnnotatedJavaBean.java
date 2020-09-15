@@ -16,15 +16,24 @@
 
 package org.springframework.boot.configurationsample.importbean;
 
-import org.springframework.boot.configurationsample.ImportAsConfigurationPropertiesBean;
+import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * An import of a java bean and a value object.
+ * Java bean that can be imported.
  *
  * @author Phillip Webb
  */
-@ImportAsConfigurationPropertiesBean(type = ImportedJavaBean.class, prefix = "jb")
-@ImportAsConfigurationPropertiesBean(type = ImportedValueObject.class, prefix = "vo")
-public class ImportRepeatedConfigurationPropertiesBean {
+@ConfigurationProperties(prefix = "test")
+public class ImportedAnnotatedJavaBean {
+
+	private String name;
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
 
 }

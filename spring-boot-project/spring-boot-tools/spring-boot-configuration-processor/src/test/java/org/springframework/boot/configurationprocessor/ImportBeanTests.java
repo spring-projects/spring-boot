@@ -20,20 +20,22 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
-import org.springframework.boot.configurationsample.ConfigurationPropertiesImport;
-import org.springframework.boot.configurationsample.ConfigurationPropertiesImports;
+import org.springframework.boot.configurationsample.ImportAsConfigurationPropertiesBean;
+import org.springframework.boot.configurationsample.ImportAsConfigurationPropertiesBeans;
+import org.springframework.boot.configurationsample.importbean.ImportAnnotatedJavaBean;
 import org.springframework.boot.configurationsample.importbean.ImportJavaBeanConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportMultipleTypeConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportRepeatedConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportValueObjectConfigurationPropertiesBean;
+import org.springframework.boot.configurationsample.importbean.ImportedAnnotatedJavaBean;
 import org.springframework.boot.configurationsample.importbean.ImportedJavaBean;
 import org.springframework.boot.configurationsample.importbean.ImportedValueObject;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConfigurationPropertiesImport} and
- * {@link ConfigurationPropertiesImports}.
+ * Tests for {@link ImportAsConfigurationPropertiesBean} and
+ * {@link ImportAsConfigurationPropertiesBeans}.
  *
  * @author Phillip Webb
  */
@@ -67,6 +69,13 @@ public class ImportBeanTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(ImportRepeatedConfigurationPropertiesBean.class);
 		assertThat(metadata).has(Metadata.withProperty("vo.value", String.class).fromSource(ImportedValueObject.class));
 		assertThat(metadata).has(Metadata.withProperty("jb.name", String.class).fromSource(ImportedJavaBean.class));
+	}
+
+	@Test
+	void importAnnotatedJavaBean() {
+		ConfigurationMetadata metadata = compile(ImportAnnotatedJavaBean.class);
+		assertThat(metadata)
+				.has(Metadata.withProperty("test.name", String.class).fromSource(ImportedAnnotatedJavaBean.class));
 	}
 
 }

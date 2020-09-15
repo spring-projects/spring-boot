@@ -46,17 +46,11 @@ final class ConfigurationPropertiesBeanRegistrar {
 		this.beanFactory = (BeanFactory) this.registry;
 	}
 
-	void register(Class<?> type) {
-		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
-				.from(type, SearchStrategy.TYPE_HIERARCHY).get(ConfigurationProperties.class);
-		register(type, annotation);
-	}
-
-	void register(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
-		register(type, annotation, false);
-	}
-
 	void register(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation, boolean deduceBindConstructor) {
+		MergedAnnotation<ConfigurationProperties> typeAnnotation = MergedAnnotations
+				.from(type, SearchStrategy.TYPE_HIERARCHY).get(ConfigurationProperties.class);
+		annotation = (!typeAnnotation.isPresent()) ? annotation : typeAnnotation;
+		annotation = (annotation != null) ? annotation : MergedAnnotation.missing();
 		String name = getName(type, annotation);
 		if (!containsBeanDefinition(name)) {
 			registerBeanDefinition(name, type, annotation, deduceBindConstructor);

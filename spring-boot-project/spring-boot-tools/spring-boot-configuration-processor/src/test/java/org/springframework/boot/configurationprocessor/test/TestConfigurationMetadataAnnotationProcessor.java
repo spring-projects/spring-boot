@@ -57,9 +57,9 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 
 	public static final String NAME_ANNOTATION = "org.springframework.boot.configurationsample.Name";
 
-	public static final String CONFIGURATION_PROPERTIES_IMPORT_ANNOATION = "org.springframework.boot.configurationsample.ConfigurationPropertiesImport";
+	public static final String IMPORT_AS_CONFIGURATION_PROPERTIES_BEAN_ANNOATION = "org.springframework.boot.configurationsample.ImportAsConfigurationPropertiesBean";
 
-	public static final String CONFIGURATION_PROPERTIES_IMPORTS_ANNOATION = "org.springframework.boot.configurationsample.ConfigurationPropertiesImports";
+	public static final String IMPORT_AS_CONFIGURATION_PROPERTIES_BEANS_ANNOATION = "org.springframework.boot.configurationsample.ImportAsConfigurationPropertiesBeans";
 
 	private ConfigurationMetadata metadata;
 
@@ -110,13 +110,13 @@ public class TestConfigurationMetadataAnnotationProcessor extends ConfigurationM
 	}
 
 	@Override
-	protected String configurationPropertiesImportAnnotation() {
-		return CONFIGURATION_PROPERTIES_IMPORT_ANNOATION;
+	protected String importAsConfigurationPropertiesBeanAnnotation() {
+		return IMPORT_AS_CONFIGURATION_PROPERTIES_BEAN_ANNOATION;
 	}
 
 	@Override
-	protected String configurationPropertiesImportsAnnotation() {
-		return CONFIGURATION_PROPERTIES_IMPORTS_ANNOATION;
+	protected String importAsConfigurationPropertiesBeansAnnotation() {
+		return IMPORT_AS_CONFIGURATION_PROPERTIES_BEANS_ANNOATION;
 	}
 
 	@Override

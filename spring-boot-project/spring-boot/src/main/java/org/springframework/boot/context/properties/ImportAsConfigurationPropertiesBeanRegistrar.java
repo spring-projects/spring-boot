@@ -22,41 +22,50 @@ import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 
 /**
  * {@link ImportBeanDefinitionRegistrar} for
- * {@link ConfigurationPropertiesImport @ConfigurationPropertiesImport}.
+ * {@link ImportAsConfigurationPropertiesBean @ImportAsConfigurationPropertiesBean}.
  *
  * @author Phillip Webb
  */
-class ConfigurationPropertiesImportRegistrar implements ImportBeanDefinitionRegistrar {
+class ImportAsConfigurationPropertiesBeanRegistrar implements ImportBeanDefinitionRegistrar {
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry,
 			BeanNameGenerator importBeanNameGenerator) {
-		ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(registry);
-		MergedAnnotations annotations = importingClassMetadata.getAnnotations();
-		registerBeans(registrar, annotations.get(ConfigurationPropertiesImports.class));
-		registerBean(registrar, annotations.get(ConfigurationPropertiesImport.class));
+		try {
+			ConfigurationPropertiesBeanRegistrar registrar = new ConfigurationPropertiesBeanRegistrar(registry);
+			MergedAnnotations annotations = importingClassMetadata.getAnnotations();
+			registerBeans(registrar, annotations.get(ImportAsConfigurationPropertiesBeans.class));
+			registerBean(registrar, annotations.get(ImportAsConfigurationPropertiesBean.class));
+		}
+		catch (RuntimeException ex) {
+			throw new IllegalStateException("Unable process @ImportAsConfigurationPropertiesBean annotations from "
+					+ importingClassMetadata.getClassName(), ex);
+		}
 	}
 
 	private void registerBeans(ConfigurationPropertiesBeanRegistrar registrar,
-			MergedAnnotation<ConfigurationPropertiesImports> annotation) {
+			MergedAnnotation<ImportAsConfigurationPropertiesBeans> annotation) {
 		if (!annotation.isPresent()) {
 			return;
 		}
-		for (MergedAnnotation<ConfigurationPropertiesImport> containedAnnotation : annotation
-				.getAnnotationArray(MergedAnnotation.VALUE, ConfigurationPropertiesImport.class)) {
+		for (MergedAnnotation<ImportAsConfigurationPropertiesBean> containedAnnotation : annotation
+				.getAnnotationArray(MergedAnnotation.VALUE, ImportAsConfigurationPropertiesBean.class)) {
 			registerBean(registrar, containedAnnotation);
 		}
 	}
 
 	private void registerBean(ConfigurationPropertiesBeanRegistrar registrar,
-			MergedAnnotation<ConfigurationPropertiesImport> annotation) {
+			MergedAnnotation<ImportAsConfigurationPropertiesBean> annotation) {
 		if (!annotation.isPresent()) {
 			return;
 		}
 		Class<?>[] types = annotation.getClassArray("type");
+		Assert.state(!ObjectUtils.isEmpty(types), "@ImportAsConfigurationPropertiesBean must declare types to import");
 		MergedAnnotation<ConfigurationProperties> configurationPropertiesAnnotation = MergedAnnotations
 				.from(annotation.synthesize()).get(ConfigurationProperties.class);
 		for (Class<?> type : types) {

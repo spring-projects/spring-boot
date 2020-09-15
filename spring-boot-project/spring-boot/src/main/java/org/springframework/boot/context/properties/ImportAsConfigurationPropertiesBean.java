@@ -28,15 +28,19 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.AliasFor;
 
 /**
- * Indicates one or more {@link ConfigurationProperties @ConfigurationProperties} classes
- * to import as Spring Beans. Typically used on {@link Configuration @Configuration}
- * classes to expose third-party classes as configuration property beans.
+ * Imports classes as {@link ConfigurationProperties @ConfigurationProperties} beans. Can
+ * be used to import {@link ConfigurationProperties @ConfigurationProperties} annotated
+ * types or third-party classes as configuration property beans.
  * <p>
  * Classes imported via this annotation that have a default constructor will use
  * {@code setter} binding, those with a non-default constructor will use
  * {@link ConstructorBinding @ConstructorBinding}. If you are looking to inject beans into
  * a constructor, you should use a regular {@link Configuration @Configuration} class
  * {@code @Bean} method instead.
+ * <p>
+ * The {@code @ConfigurationProperties} alias attributes defined on this class will only
+ * be used if the imported class is not itself annotated
+ * with{@code @ConfigurationProperties}.
  *
  * @author Phillip Webb
  * @since 2.4.0
@@ -46,15 +50,23 @@ import org.springframework.core.annotation.AliasFor;
 @Documented
 @EnableConfigurationProperties
 @ConfigurationProperties
-@Repeatable(ConfigurationPropertiesImports.class)
-@Import(ConfigurationPropertiesImportRegistrar.class)
-public @interface ConfigurationPropertiesImport {
+@Repeatable(ImportAsConfigurationPropertiesBeans.class)
+@Import(ImportAsConfigurationPropertiesBeanRegistrar.class)
+public @interface ImportAsConfigurationPropertiesBean {
 
 	/**
 	 * One or more types that should be imported as a bean.
 	 * @return the types to import
 	 */
-	Class<?>[] type();
+	@AliasFor("type")
+	Class<?>[] value() default {};
+
+	/**
+	 * One or more types that should be imported as a bean.
+	 * @return the types to import
+	 */
+	@AliasFor("value")
+	Class<?>[] type() default {};
 
 	/**
 	 * The prefix of the properties that are valid to bind to this object. A valid prefix

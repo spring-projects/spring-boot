@@ -50,7 +50,7 @@ class PropertyDescriptorResolver {
 	 * factory method}, if any.
 	 * @param type the target type
 	 * @param fromImport it the type was imported via a
-	 * {@code @ConfigurationPropertiesImport}
+	 * {@code @ImportAsConfigurationPropertiesBean}
 	 * @param factoryMethod the method that triggered the metadata for that {@code type}
 	 * or {@code null}
 	 * @return the candidate properties for metadata generation

@@ -43,7 +43,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@Test
 	void registerWhenNotAlreadyRegisteredAddBeanDefinition() {
 		String beanName = "beancp-" + BeanConfigurationProperties.class.getName();
-		this.registrar.register(BeanConfigurationProperties.class);
+		this.registrar.register(BeanConfigurationProperties.class, null, false);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
 		assertThat(definition).isNotNull();
 		assertThat(definition.getBeanClassName()).isEqualTo(BeanConfigurationProperties.class.getName());
@@ -53,7 +53,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	void registerWhenAlreadyContainsNameDoesNotReplace() {
 		String beanName = "beancp-" + BeanConfigurationProperties.class.getName();
 		this.registry.registerBeanDefinition(beanName, new GenericBeanDefinition());
-		this.registrar.register(BeanConfigurationProperties.class);
+		this.registrar.register(BeanConfigurationProperties.class, null, false);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
 		assertThat(definition).isNotNull();
 		assertThat(definition.getBeanClassName()).isNull();
@@ -62,14 +62,14 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@Test
 	void registerWhenNoAnnotationThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.registrar.register(NoAnnotationConfigurationProperties.class))
+				.isThrownBy(() -> this.registrar.register(NoAnnotationConfigurationProperties.class, null, false))
 				.withMessageContaining("No ConfigurationProperties annotation found");
 	}
 
 	@Test
 	void registerWhenValueObjectRegistersValueObjectBeanDefinition() {
 		String beanName = "valuecp-" + ValueObjectConfigurationProperties.class.getName();
-		this.registrar.register(ValueObjectConfigurationProperties.class);
+		this.registrar.register(ValueObjectConfigurationProperties.class, null, false);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
 		assertThat(definition).isInstanceOf(ConfigurationPropertiesValueObjectBeanDefinition.class);
 	}
@@ -77,7 +77,7 @@ class ConfigurationPropertiesBeanRegistrarTests {
 	@Test
 	void registerWhenNotValueObjectRegistersConfigurationPropertiesBeanDefinition() {
 		String beanName = MultiConstructorBeanConfigurationProperties.class.getName();
-		this.registrar.register(MultiConstructorBeanConfigurationProperties.class);
+		this.registrar.register(MultiConstructorBeanConfigurationProperties.class, null, false);
 		BeanDefinition definition = this.registry.getBeanDefinition(beanName);
 		assertThat(definition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
 	}
