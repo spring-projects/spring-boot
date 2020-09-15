@@ -407,10 +407,13 @@ class JarFileTests {
 				while (actualEntries.hasMoreElements()) {
 					JarEntry actualEntry = actualEntries.nextElement();
 					java.util.jar.JarEntry expectedEntry = expected.getJarEntry(actualEntry.getName());
-					assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
-							.isEqualTo(expectedEntry.getCertificates());
-					assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
-							.isEqualTo(expectedEntry.getCodeSigners());
+					StreamUtils.drain(expected.getInputStream(expectedEntry));
+					if (!actualEntry.getName().equals("META-INF/MANIFEST.MF")) {
+						assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCertificates());
+						assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCodeSigners());
+					}
 				}
 				assertThat(stopWatch.getTotalTimeSeconds()).isLessThan(3.0);
 			}
