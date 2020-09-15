@@ -311,7 +311,7 @@ bom {
 			]
 		}
 	}
-	library("Flatten Maven Plugin", "1.2.4") {
+	library("Flatten Maven Plugin", "1.2.5") {
 		group("org.codehaus.mojo") {
 			plugins = [
 				"flatten-maven-plugin"
