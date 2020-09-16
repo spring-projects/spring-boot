@@ -1691,7 +1691,7 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf Layout Dialect", "2.4.1") {
+	library("Thymeleaf Layout Dialect", "2.5.1") {
 		group("nz.net.ultraq.thymeleaf") {
 			modules = [
 				"thymeleaf-layout-dialect"
