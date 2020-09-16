@@ -83,7 +83,9 @@ class NettyRSocketServerFactoryTests {
 	}
 
 	private NettyRSocketServerFactory getFactory() {
-		return new NettyRSocketServerFactory();
+		NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
+		factory.setPort(0);
+		return factory;
 	}
 
 	@Test
@@ -202,10 +204,12 @@ class NettyRSocketServerFactoryTests {
 		@Override
 		public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket rSocket) {
 			return Mono.just(new RSocket() {
+
 				@Override
 				public Mono<Payload> requestResponse(Payload payload) {
 					return Mono.just(DefaultPayload.create(payload));
 				}
+
 			});
 		}
 
