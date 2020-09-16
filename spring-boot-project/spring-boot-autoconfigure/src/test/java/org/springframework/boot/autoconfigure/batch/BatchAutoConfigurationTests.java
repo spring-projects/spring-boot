@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,13 +35,9 @@ import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.core.configuration.support.JobRegistryBeanPostProcessor;
 import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.explore.support.MapJobExplorerFactoryBean;
 import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
-import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
-import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
-import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.DefaultApplicationArguments;
@@ -103,15 +99,6 @@ class BatchAutoConfigurationTests {
 	void whenThereIsAnEntityManagerFactoryButNoDataSourceAutoConfigurationBacksOff() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EntityManagerFactoryConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(BatchConfigurer.class));
-	}
-
-	@Test
-	void testCustomConfigurationWithNoDatabase() {
-		this.contextRunner.withUserConfiguration(TestCustomConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(JobLauncher.class);
-			JobExplorer explorer = context.getBean(JobExplorer.class);
-			assertThat(explorer.getJobInstances("job", 0, 100)).isEmpty();
-		});
 	}
 
 	@Test
@@ -315,44 +302,6 @@ class BatchAutoConfigurationTests {
 		@Bean
 		EntityManagerFactory entityManagerFactory() {
 			return mock(EntityManagerFactory.class);
-		}
-
-	}
-
-	@EnableBatchProcessing
-	@TestAutoConfigurationPackage(City.class)
-	static class TestCustomConfiguration implements BatchConfigurer {
-
-		private JobRepository jobRepository;
-
-		private MapJobRepositoryFactoryBean factory = new MapJobRepositoryFactoryBean();
-
-		@Override
-		public JobRepository getJobRepository() throws Exception {
-			if (this.jobRepository == null) {
-				this.factory.afterPropertiesSet();
-				this.jobRepository = this.factory.getObject();
-			}
-			return this.jobRepository;
-		}
-
-		@Override
-		public PlatformTransactionManager getTransactionManager() {
-			return new ResourcelessTransactionManager();
-		}
-
-		@Override
-		public JobLauncher getJobLauncher() {
-			SimpleJobLauncher launcher = new SimpleJobLauncher();
-			launcher.setJobRepository(this.jobRepository);
-			return launcher;
-		}
-
-		@Override
-		public JobExplorer getJobExplorer() throws Exception {
-			MapJobExplorerFactoryBean explorer = new MapJobExplorerFactoryBean(this.factory);
-			explorer.afterPropertiesSet();
-			return explorer.getObject();
 		}
 
 	}

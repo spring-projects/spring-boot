@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,13 +31,11 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.core.explore.JobExplorer;
-import org.springframework.batch.core.explore.support.MapJobExplorerFactoryBean;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.RunIdIncrementer;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
-import org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean;
 import org.springframework.batch.core.step.tasklet.Tasklet;
 import org.springframework.batch.support.transaction.ResourcelessTransactionManager;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -201,13 +199,14 @@ class JobLauncherApplicationRunnerTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
+	@SuppressWarnings("deprecation")
 	static class BatchConfiguration implements BatchConfigurer {
 
 		private ResourcelessTransactionManager transactionManager = new ResourcelessTransactionManager();
 
 		private JobRepository jobRepository;
 
-		private MapJobRepositoryFactoryBean jobRepositoryFactory = new MapJobRepositoryFactoryBean(
+		private org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean jobRepositoryFactory = new org.springframework.batch.core.repository.support.MapJobRepositoryFactoryBean(
 				this.transactionManager);
 
 		BatchConfiguration() throws Exception {
@@ -238,7 +237,8 @@ class JobLauncherApplicationRunnerTests {
 
 		@Override
 		public JobExplorer getJobExplorer() throws Exception {
-			return new MapJobExplorerFactoryBean(this.jobRepositoryFactory).getObject();
+			return new org.springframework.batch.core.explore.support.MapJobExplorerFactoryBean(
+					this.jobRepositoryFactory).getObject();
 		}
 
 	}
