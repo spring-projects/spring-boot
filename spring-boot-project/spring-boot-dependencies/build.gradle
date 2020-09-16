@@ -179,7 +179,7 @@ bom {
 			]
 		}
 	}
-	library("Commons Codec", "1.14") {
+	library("Commons Codec", "1.15") {
 		group("commons-codec") {
 			modules = [
 				"commons-codec"
