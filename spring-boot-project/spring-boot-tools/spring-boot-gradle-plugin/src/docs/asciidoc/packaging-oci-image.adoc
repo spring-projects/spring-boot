@@ -36,6 +36,37 @@ On Linux and macOS, these environment variables can be set using the command `ev
 
 
 
+[[build-image-docker-registry]]
+=== Docker Registry
+If the Docker images specified by the `builder` or `runImage` parameters are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.registry` properties.
+Properties are provided for user authentication or identity token authentication.
+Consult the documentation for the Docker registry being used to store builder or run images for further information on supported authentication methods.
+
+The following table summarizes the available properties:
+
+|===
+| Property | Description
+
+| `username`
+| Username for the Docker image registry user. Required for user authentication.
+
+| `password`
+| Password for the Docker image registry user. Required for user authentication.
+
+| `url`
+| Address of the Docker image registry. Optional for user authentication.
+
+| `email`
+| E-mail address for the Docker image registry user. Optional for user authentication.
+
+| `token`
+| Identity token for the Docker image registry user. Required for token authentication.
+|===
+
+For more details, see also <<build-image-example-docker,examples>>.
+
+
+
 [[build-image-customization]]
 === Image Customizations
 The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
@@ -185,4 +216,34 @@ The image name can be specified on the command line as well, as shown in this ex
 [indent=0]
 ----
 	$ gradle bootBuildImage --imageName=example.com/library/my-app:v1
+----
+
+[[build-image-example-docker]]
+==== Docker Configuration
+If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-build-image-docker-auth-user.gradle[tags=docker-auth-user]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-build-image-docker-auth-user.gradle.kts[tags=docker-auth-user]
+----
+
+If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided as shown in the following example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-build-image-docker-auth-token.gradle[tags=docker-auth-token]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-build-image-docker-auth-token.gradle.kts[tags=docker-auth-token]
 ----

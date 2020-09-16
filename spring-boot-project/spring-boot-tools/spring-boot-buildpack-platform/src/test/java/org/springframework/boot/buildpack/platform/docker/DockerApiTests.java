@@ -113,6 +113,12 @@ class DockerApiTests {
 		};
 	}
 
+	@Test
+	void createDockerApi() {
+		DockerApi api = new DockerApi();
+		assertThat(api).isNotNull();
+	}
+
 	@Nested
 	class ImageDockerApiTests {
 

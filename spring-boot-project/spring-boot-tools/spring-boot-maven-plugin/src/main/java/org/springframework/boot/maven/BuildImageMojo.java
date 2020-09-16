@@ -44,6 +44,7 @@ import org.springframework.boot.buildpack.platform.build.Builder;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.loader.tools.EntryWriter;
@@ -135,6 +136,13 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	@Parameter(property = "spring-boot.build-image.pullPolicy", readonly = true)
 	PullPolicy pullPolicy;
 
+	/**
+	 * Docker configuration options.
+	 * @since 2.4.0
+	 */
+	@Parameter
+	private Docker docker;
+
 	@Override
 	public void execute() throws MojoExecutionException {
 		if (this.project.getPackaging().equals("pom")) {
@@ -151,7 +159,9 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private void buildImage() throws MojoExecutionException {
 		Libraries libraries = getLibraries(Collections.emptySet());
 		try {
-			Builder builder = new Builder(new MojoBuildLog(this::getLog));
+			DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.asDockerConfiguration()
+					: null;
+			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
 			BuildRequest request = getBuildRequest(libraries);
 			builder.build(request);
 		}

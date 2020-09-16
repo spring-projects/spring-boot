@@ -24,6 +24,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -48,8 +49,16 @@ public class Builder {
 		this(BuildLog.toSystemOut());
 	}
 
+	public Builder(DockerConfiguration dockerConfiguration) {
+		this(BuildLog.toSystemOut(), dockerConfiguration);
+	}
+
 	public Builder(BuildLog log) {
 		this(log, new DockerApi());
+	}
+
+	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
+		this(log, new DockerApi(dockerConfiguration));
 	}
 
 	Builder(BuildLog log, DockerApi docker) {

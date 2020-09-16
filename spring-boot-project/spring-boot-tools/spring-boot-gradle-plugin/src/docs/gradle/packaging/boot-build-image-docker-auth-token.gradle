@@ -1,0 +1,18 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::docker-auth-token[]
+bootBuildImage {
+	docker {
+		registry {
+			token = "9cbaf023786cd7..."
+		}
+	}
+}
+// end::docker-auth-token[]

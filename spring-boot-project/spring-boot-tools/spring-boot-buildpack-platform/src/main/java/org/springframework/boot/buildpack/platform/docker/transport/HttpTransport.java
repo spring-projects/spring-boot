@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.system.Environment;
 
@@ -84,7 +85,17 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create() {
-		return create(Environment.SYSTEM);
+		return create(DockerConfiguration.withDefaults());
+	}
+
+	/**
+	 * Create the most suitable {@link HttpTransport} based on the
+	 * {@link Environment#SYSTEM system environment}.
+	 * @param dockerConfiguration the Docker engine configuration
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create(DockerConfiguration dockerConfiguration) {
+		return create(Environment.SYSTEM, dockerConfiguration);
 	}
 
 	/**
@@ -94,8 +105,19 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create(Environment environment) {
-		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment);
-		return (remote != null) ? remote : LocalHttpClientTransport.create(environment);
+		return create(environment, DockerConfiguration.withDefaults());
+	}
+
+	/**
+	 * Create the most suitable {@link HttpTransport} based on the given
+	 * {@link Environment} and {@link DockerConfiguration}.
+	 * @param environment the source environment
+	 * @param dockerConfiguration the Docker engine configuration
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create(Environment environment, DockerConfiguration dockerConfiguration) {
+		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment, dockerConfiguration);
+		return (remote != null) ? remote : LocalHttpClientTransport.create(environment, dockerConfiguration);
 	}
 
 	/**

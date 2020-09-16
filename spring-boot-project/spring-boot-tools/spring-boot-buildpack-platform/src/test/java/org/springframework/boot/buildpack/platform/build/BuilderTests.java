@@ -60,7 +60,14 @@ class BuilderTests {
 
 	@Test
 	void createWhenLogIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new Builder(null)).withMessage("Log must not be null");
+		assertThatIllegalArgumentException().isThrownBy(() -> new Builder((BuildLog) null))
+				.withMessage("Log must not be null");
+	}
+
+	@Test
+	void createWithDockerConfiguration() {
+		Builder builder = new Builder(BuildLog.toSystemOut());
+		assertThat(builder).isNotNull();
 	}
 
 	@Test

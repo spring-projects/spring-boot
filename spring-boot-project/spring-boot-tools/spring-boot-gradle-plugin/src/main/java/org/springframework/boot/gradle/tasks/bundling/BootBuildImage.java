@@ -20,6 +20,8 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import groovy.lang.Closure;
+import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
@@ -27,9 +29,11 @@ import org.gradle.api.Task;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.options.Option;
+import org.gradle.util.ConfigureUtil;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.Builder;
@@ -71,6 +75,8 @@ public class BootBuildImage extends DefaultTask {
 	private boolean verboseLogging;
 
 	private PullPolicy pullPolicy;
+
+	private DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
@@ -246,9 +252,37 @@ public class BootBuildImage extends DefaultTask {
 		this.pullPolicy = pullPolicy;
 	}
 
+	/**
+	 * Returns the Docker configuration the builder will use.
+	 * @return docker configuration.
+	 * @since 2.4.0
+	 */
+	@Nested
+	public DockerSpec getDocker() {
+		return this.docker;
+	}
+
+	/**
+	 * Configures the Docker connection using the given {@code action}.
+	 * @param action the action to apply
+	 * @since 2.4.0
+	 */
+	public void docker(Action<DockerSpec> action) {
+		action.execute(this.docker);
+	}
+
+	/**
+	 * Configures the Docker connection using the given {@code closure}.
+	 * @param closure the closure to apply
+	 * @since 2.4.0
+	 */
+	public void docker(Closure<?> closure) {
+		docker(ConfigureUtil.configureUsing(closure));
+	}
+
 	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
-		Builder builder = new Builder();
+		Builder builder = new Builder(this.docker.asDockerConfiguration());
 		BuildRequest request = createRequest();
 		builder.build(request);
 	}
