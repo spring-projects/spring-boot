@@ -12,6 +12,10 @@ bomr:
         versions:
           # 10.15 requires Java 9
           - '[10.15,)'
+      - project: kotlin-coroutines
+        versions:
+          # 1.3.9 requires Kotlin 1.4
+          - '[1.3.9,)'
   verify:
     ignored-dependencies:
       # Avoid conflicting transitive requirements for
