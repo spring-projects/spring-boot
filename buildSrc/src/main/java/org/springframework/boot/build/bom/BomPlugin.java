@@ -168,7 +168,10 @@ public class BomPlugin implements Plugin<Project> {
 						Node plugin = new Node(plugins, "plugin");
 						plugin.appendNode("groupId", group.getId());
 						plugin.appendNode("artifactId", pluginName);
-						plugin.appendNode("version", "${" + library.getVersionProperty() + "}");
+						String versionProperty = library.getVersionProperty();
+						String value = (versionProperty != null) ? "${" + versionProperty + "}"
+								: library.getVersion().toString();
+						plugin.appendNode("version", value);
 					}
 				}
 			}
