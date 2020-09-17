@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.env;
+package org.springframework.boot;
 
 import java.util.Collections;
 import java.util.function.Consumer;
