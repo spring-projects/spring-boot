@@ -23,6 +23,9 @@ import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapContext;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.boot.util.Instantiator;
@@ -50,28 +53,31 @@ class ConfigDataLocationResolvers {
 	/**
 	 * Create a new {@link ConfigDataLocationResolvers} instance.
 	 * @param logFactory a {@link DeferredLogFactory} used to inject {@link Log} instances
+	 * @param bootstrapContext the bootstrap context
 	 * @param locationNotFoundAction the action to take if a
 	 * {@link ConfigDataLocationNotFoundException} is thrown
 	 * @param binder a binder providing values from the initial {@link Environment}
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
 	 */
-	ConfigDataLocationResolvers(DeferredLogFactory logFactory, ConfigDataLocationNotFoundAction locationNotFoundAction,
-			Binder binder, ResourceLoader resourceLoader) {
-		this(logFactory, locationNotFoundAction, binder, resourceLoader,
+	ConfigDataLocationResolvers(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
+			ConfigDataLocationNotFoundAction locationNotFoundAction, Binder binder, ResourceLoader resourceLoader) {
+		this(logFactory, bootstrapContext, locationNotFoundAction, binder, resourceLoader,
 				SpringFactoriesLoader.loadFactoryNames(ConfigDataLocationResolver.class, null));
 	}
 
 	/**
 	 * Create a new {@link ConfigDataLocationResolvers} instance.
 	 * @param logFactory a {@link DeferredLogFactory} used to inject {@link Log} instances
+	 * @param bootstrapContext the bootstrap context
 	 * @param locationNotFoundAction the action to take if a
 	 * {@link ConfigDataLocationNotFoundException} is thrown
 	 * @param binder {@link Binder} providing values from the initial {@link Environment}
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
 	 * @param names the {@link ConfigDataLocationResolver} class names
 	 */
-	ConfigDataLocationResolvers(DeferredLogFactory logFactory, ConfigDataLocationNotFoundAction locationNotFoundAction,
-			Binder binder, ResourceLoader resourceLoader, List<String> names) {
+	ConfigDataLocationResolvers(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
+			ConfigDataLocationNotFoundAction locationNotFoundAction, Binder binder, ResourceLoader resourceLoader,
+			List<String> names) {
 		this.logger = logFactory.getLog(getClass());
 		this.locationNotFoundAction = locationNotFoundAction;
 		Instantiator<ConfigDataLocationResolver<?>> instantiator = new Instantiator<>(ConfigDataLocationResolver.class,
@@ -79,6 +85,9 @@ class ConfigDataLocationResolvers {
 					availableParameters.add(Log.class, logFactory::getLog);
 					availableParameters.add(Binder.class, binder);
 					availableParameters.add(ResourceLoader.class, resourceLoader);
+					availableParameters.add(ConfigurableBootstrapContext.class, bootstrapContext);
+					availableParameters.add(BootstrapContext.class, bootstrapContext);
+					availableParameters.add(BootstrapRegistry.class, bootstrapContext);
 				});
 		this.resolvers = reorder(instantiator.instantiate(names));
 	}

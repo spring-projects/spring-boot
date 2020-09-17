@@ -28,6 +28,11 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.BootstrapContext;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.Ordered;
@@ -50,6 +55,8 @@ class ConfigDataLocationResolversTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
 
+	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+
 	@Mock
 	private Binder binder;
 
@@ -63,7 +70,7 @@ class ConfigDataLocationResolversTests {
 
 	@Test
 	void createWhenInjectingBinderCreatesResolver() {
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory,
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
 				ConfigDataLocationNotFoundAction.FAIL, this.binder, this.resourceLoader,
 				Collections.singletonList(TestBoundResolver.class.getName()));
 		assertThat(resolvers.getResolvers()).hasSize(1);
@@ -73,7 +80,7 @@ class ConfigDataLocationResolversTests {
 
 	@Test
 	void createWhenNotInjectingBinderCreatesResolver() {
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory,
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
 				ConfigDataLocationNotFoundAction.FAIL, this.binder, this.resourceLoader,
 				Collections.singletonList(TestResolver.class.getName()));
 		assertThat(resolvers.getResolvers()).hasSize(1);
@@ -81,9 +88,16 @@ class ConfigDataLocationResolversTests {
 	}
 
 	@Test
+	void createWhenResolverHasBootstrapParametersInjectsBootstrapContext() {
+		new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext, ConfigDataLocationNotFoundAction.FAIL,
+				this.binder, this.resourceLoader, Collections.singletonList(TestBootstrappingResolver.class.getName()));
+		assertThat(this.bootstrapContext.get(String.class)).isEqualTo("boot");
+	}
+
+	@Test
 	void createWhenNameIsNotConfigDataLocationResolverThrowsException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ConfigDataLocationResolvers(this.logFactory,
+				.isThrownBy(() -> new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
 						ConfigDataLocationNotFoundAction.FAIL, this.binder, this.resourceLoader,
 						Collections.singletonList(InputStream.class.getName())))
 				.withMessageContaining("Unable to instantiate").havingCause().withMessageContaining("not assignable");
@@ -95,7 +109,7 @@ class ConfigDataLocationResolversTests {
 		names.add(TestResolver.class.getName());
 		names.add(LowestTestResolver.class.getName());
 		names.add(HighestTestResolver.class.getName());
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory,
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
 				ConfigDataLocationNotFoundAction.FAIL, this.binder, this.resourceLoader, names);
 		assertThat(resolvers.getResolvers().get(0)).isExactlyInstanceOf(HighestTestResolver.class);
 		assertThat(resolvers.getResolvers().get(1)).isExactlyInstanceOf(TestResolver.class);
@@ -104,7 +118,7 @@ class ConfigDataLocationResolversTests {
 
 	@Test
 	void resolveAllResolvesUsingFirstSupportedResolver() {
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory,
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
 				ConfigDataLocationNotFoundAction.FAIL, this.binder, this.resourceLoader,
 				Arrays.asList(LowestTestResolver.class.getName(), HighestTestResolver.class.getName()));
 		List<ConfigDataLocation> resolved = resolvers.resolveAll(this.context,
@@ -118,7 +132,7 @@ class ConfigDataLocationResolversTests {
 
 	@Test
 	void resolveAllWhenProfileMergesResolvedLocations() {
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory,
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
 				ConfigDataLocationNotFoundAction.FAIL, this.binder, this.resourceLoader,
 				Arrays.asList(LowestTestResolver.class.getName(), HighestTestResolver.class.getName()));
 		List<ConfigDataLocation> resolved = resolvers.resolveAll(this.context,
@@ -136,7 +150,7 @@ class ConfigDataLocationResolversTests {
 
 	@Test
 	void resolveWhenNoResolverThrowsException() {
-		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory,
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
 				ConfigDataLocationNotFoundAction.FAIL, this.binder, this.resourceLoader,
 				Arrays.asList(LowestTestResolver.class.getName(), HighestTestResolver.class.getName()));
 		assertThatExceptionOfType(UnsupportedConfigDataLocationException.class)
@@ -177,6 +191,19 @@ class ConfigDataLocationResolversTests {
 
 		Binder getBinder() {
 			return this.binder;
+		}
+
+	}
+
+	static class TestBootstrappingResolver extends TestResolver {
+
+		TestBootstrappingResolver(ConfigurableBootstrapContext configurableBootstrapContext,
+				BootstrapRegistry bootstrapRegistry, BootstrapContext bootstrapContext) {
+			assertThat(configurableBootstrapContext).isNotNull();
+			assertThat(bootstrapRegistry).isNotNull();
+			assertThat(bootstrapContext).isNotNull();
+			assertThat(configurableBootstrapContext).isEqualTo(bootstrapRegistry).isEqualTo(bootstrapContext);
+			bootstrapRegistry.register(String.class, InstanceSupplier.of("boot"));
 		}
 
 	}

@@ -24,6 +24,11 @@ import java.util.function.Supplier;
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.BootstrapContext;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.ConfigurableBootstrapContext;
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockPropertySource;
@@ -42,19 +47,28 @@ class ConfigDataLoadersTests {
 
 	private DeferredLogFactory logFactory = Supplier::get;
 
+	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+
 	private ConfigDataLoaderContext context = mock(ConfigDataLoaderContext.class);
 
 	@Test
 	void createWhenLoaderHasLogParameterInjectsLog() {
-		new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
+		new ConfigDataLoaders(this.logFactory, this.bootstrapContext, ConfigDataLocationNotFoundAction.FAIL,
 				Arrays.asList(LoggingConfigDataLoader.class.getName()));
+	}
+
+	@Test
+	void createWhenLoaderHasBootstrapParametersInjectsBootstrapContext() {
+		new ConfigDataLoaders(this.logFactory, this.bootstrapContext, ConfigDataLocationNotFoundAction.FAIL,
+				Arrays.asList(BootstrappingConfigDataLoader.class.getName()));
+		assertThat(this.bootstrapContext.get(String.class)).isEqualTo("boot");
 	}
 
 	@Test
 	void loadWhenSingleLoaderSupportsLocationReturnsLoadedConfigData() throws Exception {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
-				Arrays.asList(TestConfigDataLoader.class.getName()));
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+				ConfigDataLocationNotFoundAction.FAIL, Arrays.asList(TestConfigDataLoader.class.getName()));
 		ConfigData loaded = loaders.load(this.context, location);
 		assertThat(getLoader(loaded)).isInstanceOf(TestConfigDataLoader.class);
 	}
@@ -62,7 +76,8 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenMultipleLoadersSupportLocationThrowsException() throws Exception {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+				ConfigDataLocationNotFoundAction.FAIL,
 				Arrays.asList(LoggingConfigDataLoader.class.getName(), TestConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
 				.withMessageContaining("Multiple loaders found for location test");
@@ -71,8 +86,8 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenNoLoaderSupportsLocationThrowsException() {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
-				Arrays.asList(NonLoadableConfigDataLoader.class.getName()));
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+				ConfigDataLocationNotFoundAction.FAIL, Arrays.asList(NonLoadableConfigDataLoader.class.getName()));
 		assertThatIllegalStateException().isThrownBy(() -> loaders.load(this.context, location))
 				.withMessage("No loader found for location 'test'");
 	}
@@ -80,7 +95,8 @@ class ConfigDataLoadersTests {
 	@Test
 	void loadWhenGenericTypeDoesNotMatchSkipsLoader() throws Exception {
 		TestConfigDataLocation location = new TestConfigDataLocation("test");
-		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, ConfigDataLocationNotFoundAction.FAIL,
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+				ConfigDataLocationNotFoundAction.FAIL,
 				Arrays.asList(OtherConfigDataLoader.class.getName(), SpecificConfigDataLoader.class.getName()));
 		ConfigData loaded = loaders.load(this.context, location);
 		assertThat(getLoader(loaded)).isInstanceOf(SpecificConfigDataLoader.class);
@@ -122,6 +138,24 @@ class ConfigDataLoadersTests {
 
 		LoggingConfigDataLoader(Log log) {
 			assertThat(log).isNotNull();
+		}
+
+		@Override
+		public ConfigData load(ConfigDataLoaderContext context, ConfigDataLocation location) throws IOException {
+			throw new AssertionError("Unexpected call");
+		}
+
+	}
+
+	static class BootstrappingConfigDataLoader implements ConfigDataLoader<ConfigDataLocation> {
+
+		BootstrappingConfigDataLoader(ConfigurableBootstrapContext configurableBootstrapContext,
+				BootstrapRegistry bootstrapRegistry, BootstrapContext bootstrapContext) {
+			assertThat(configurableBootstrapContext).isNotNull();
+			assertThat(bootstrapRegistry).isNotNull();
+			assertThat(bootstrapContext).isNotNull();
+			assertThat(configurableBootstrapContext).isEqualTo(bootstrapRegistry).isEqualTo(bootstrapContext);
+			bootstrapRegistry.register(String.class, InstanceSupplier.of("boot"));
 		}
 
 		@Override

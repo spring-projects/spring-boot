@@ -27,8 +27,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -60,7 +60,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	@Spy
 	private ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(Supplier::get,
-			new DefaultBootstrapRegisty());
+			new DefaultBootstrapContext());
 
 	@Captor
 	private ArgumentCaptor<Set<String>> additionalProfilesCaptor;

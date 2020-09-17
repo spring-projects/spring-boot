@@ -21,6 +21,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapContext;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -36,6 +39,9 @@ import org.springframework.core.io.ResourceLoader;
  * <li>{@link Binder} - if the resolver needs to obtain values from the initial
  * {@link Environment}</li>
  * <li>{@link ResourceLoader} - if the resolver needs a resource loader</li>
+ * <li>{@link ConfigurableBootstrapContext} - A bootstrap context that can be used to
+ * store objects that may be expensive to create, or need to be shared
+ * ({@link BootstrapContext} or {@link BootstrapRegistry} may also be used).</li>
  * </ul>
  * <p>
  * Resolvers may implement {@link Ordered} or use the {@link Order @Order} annotation. The

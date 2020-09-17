@@ -41,6 +41,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.slf4j.bridge.SLF4JBridgeHandler;
 import org.slf4j.impl.StaticLoggerBinder;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationStartingEvent;
@@ -97,6 +98,8 @@ class LoggingApplicationListenerTests {
 
 	private final ch.qos.logback.classic.Logger logger = this.loggerContext.getLogger(getClass());
 
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+
 	private final SpringApplication springApplication = new SpringApplication();
 
 	private final GenericApplicationContext context = new GenericApplicationContext();
@@ -113,7 +116,7 @@ class LoggingApplicationListenerTests {
 		this.output = output;
 		this.logFile = new File(this.tempDir.toFile(), "foo.log");
 		LogManager.getLogManager().readConfiguration(JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
-		multicastEvent(new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
+		multicastEvent(new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		new File(this.tempDir.toFile(), "spring.log").delete();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		ConfigurationPropertySources.attach(environment);
@@ -372,7 +375,8 @@ class LoggingApplicationListenerTests {
 	void parseArgsDoesntReplace() {
 		this.initializer.setSpringBootLogging(LogLevel.ERROR);
 		this.initializer.setParseArgs(false);
-		multicastEvent(new ApplicationStartingEvent(this.springApplication, new String[] { "--debug" }));
+		multicastEvent(new ApplicationStartingEvent(this.bootstrapContext, this.springApplication,
+				new String[] { "--debug" }));
 		this.initializer.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		this.logger.debug("testatdebug");
 		assertThat(this.output).doesNotContain("testatdebug");
@@ -406,7 +410,7 @@ class LoggingApplicationListenerTests {
 	void shutdownHookIsNotRegisteredByDefault() {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
-		multicastEvent(listener, new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
+		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNull();
 	}
@@ -416,7 +420,7 @@ class LoggingApplicationListenerTests {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		System.setProperty(LoggingSystem.class.getName(), TestShutdownHandlerLoggingSystem.class.getName());
 		addPropertiesToEnvironment(this.context, "logging.register_shutdown_hook=true");
-		multicastEvent(listener, new ApplicationStartingEvent(new SpringApplication(), NO_ARGS));
+		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNotNull();
 		listener.shutdownHook.start();
@@ -426,7 +430,7 @@ class LoggingApplicationListenerTests {
 	@Test
 	void closingContextCleansUpLoggingSystem() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
-		multicastEvent(new ApplicationStartingEvent(this.springApplication, new String[0]));
+		multicastEvent(new ApplicationStartingEvent(this.bootstrapContext, this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
@@ -437,7 +441,7 @@ class LoggingApplicationListenerTests {
 	@Test
 	void closingChildContextDoesNotCleanUpLoggingSystem() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
-		multicastEvent(new ApplicationStartingEvent(this.springApplication, new String[0]));
+		multicastEvent(new ApplicationStartingEvent(this.bootstrapContext, this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();
@@ -496,7 +500,7 @@ class LoggingApplicationListenerTests {
 	@Test
 	void applicationFailedEventCleansUpLoggingSystem() {
 		System.setProperty(LoggingSystem.SYSTEM_PROPERTY, TestCleanupLoggingSystem.class.getName());
-		multicastEvent(new ApplicationStartingEvent(this.springApplication, new String[0]));
+		multicastEvent(new ApplicationStartingEvent(this.bootstrapContext, this.springApplication, new String[0]));
 		TestCleanupLoggingSystem loggingSystem = (TestCleanupLoggingSystem) ReflectionTestUtils
 				.getField(this.initializer, "loggingSystem");
 		assertThat(loggingSystem.cleanedUp).isFalse();

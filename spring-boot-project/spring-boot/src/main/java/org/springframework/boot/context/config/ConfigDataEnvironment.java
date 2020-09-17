@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributors.BinderOption;
 import org.springframework.boot.context.properties.bind.BindException;
@@ -33,7 +34,6 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.env.BootstrapRegistry;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -97,7 +97,7 @@ class ConfigDataEnvironment {
 
 	private final Log logger;
 
-	private final BootstrapRegistry bootstrapRegistry;
+	private final ConfigurableBootstrapContext bootstrapContext;
 
 	private final ConfigurableEnvironment environment;
 
@@ -112,12 +112,12 @@ class ConfigDataEnvironment {
 	/**
 	 * Create a new {@link ConfigDataEnvironment} instance.
 	 * @param logFactory the deferred log factory
-	 * @param bootstrapRegistry the bootstrap registry
+	 * @param bootstrapContext the bootstrap context
 	 * @param environment the Spring {@link Environment}.
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
 	 * @param additionalProfiles any additional profiles to activate
 	 */
-	ConfigDataEnvironment(DeferredLogFactory logFactory, BootstrapRegistry bootstrapRegistry,
+	ConfigDataEnvironment(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
 			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles) {
 		Binder binder = Binder.get(environment);
 		UseLegacyConfigProcessingException.throwIfRequested(binder);
@@ -126,17 +126,20 @@ class ConfigDataEnvironment {
 				.orElse(ConfigDataLocationNotFoundAction.FAIL);
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
-		this.bootstrapRegistry = bootstrapRegistry;
+		this.bootstrapContext = bootstrapContext;
 		this.environment = environment;
-		this.resolvers = createConfigDataLocationResolvers(logFactory, locationNotFoundAction, binder, resourceLoader);
+		this.resolvers = createConfigDataLocationResolvers(logFactory, bootstrapContext, locationNotFoundAction, binder,
+				resourceLoader);
 		this.additionalProfiles = additionalProfiles;
-		this.loaders = new ConfigDataLoaders(logFactory, locationNotFoundAction);
+		this.loaders = new ConfigDataLoaders(logFactory, bootstrapContext, locationNotFoundAction);
 		this.contributors = createContributors(binder);
 	}
 
 	protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
-			ConfigDataLocationNotFoundAction locationNotFoundAction, Binder binder, ResourceLoader resourceLoader) {
-		return new ConfigDataLocationResolvers(logFactory, locationNotFoundAction, binder, resourceLoader);
+			ConfigurableBootstrapContext bootstrapContext, ConfigDataLocationNotFoundAction locationNotFoundAction,
+			Binder binder, ResourceLoader resourceLoader) {
+		return new ConfigDataLocationResolvers(logFactory, bootstrapContext, locationNotFoundAction, binder,
+				resourceLoader);
 	}
 
 	private ConfigDataEnvironmentContributors createContributors(Binder binder) {
@@ -159,7 +162,7 @@ class ConfigDataEnvironment {
 			this.logger.trace("Creating wrapped config data contributor for default property source");
 			contributors.add(ConfigDataEnvironmentContributor.ofExisting(defaultPropertySource));
 		}
-		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapRegistry, contributors);
+		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapContext, contributors);
 	}
 
 	ConfigDataEnvironmentContributors getContributors() {

@@ -30,6 +30,8 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.Bootstrapper;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -394,6 +396,18 @@ public class SpringApplicationBuilder {
 	 */
 	public SpringApplicationBuilder setAddConversionService(boolean addConversionService) {
 		this.application.setAddConversionService(addConversionService);
+		return this;
+	}
+
+	/**
+	 * Adds a {@link Bootstrapper} that can be used to initialize the
+	 * {@link BootstrapRegistry}.
+	 * @param bootstrapper the bootstraper
+	 * @return the current builder
+	 * @since 2.4.0
+	 */
+	public SpringApplicationBuilder addBootstrapper(Bootstrapper bootstrapper) {
+		this.application.addBootstrapper(bootstrapper);
 		return this;
 	}
 

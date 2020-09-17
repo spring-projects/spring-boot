@@ -24,6 +24,8 @@ import java.util.function.Supplier;
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -40,7 +42,7 @@ class ReflectionEnvironmentPostProcessorsFactoryTests {
 
 	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private final BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
 	@Test
 	void createWithClassesCreatesFactory() {
@@ -96,7 +98,7 @@ class ReflectionEnvironmentPostProcessorsFactoryTests {
 		ReflectionEnvironmentPostProcessorsFactory factory = new ReflectionEnvironmentPostProcessorsFactory(
 				BadEnvironmentPostProcessor.class.getName());
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> factory.getEnvironmentPostProcessors(this.logFactory, this.bootstrapRegistry))
+				.isThrownBy(() -> factory.getEnvironmentPostProcessors(this.logFactory, this.bootstrapContext))
 				.withMessageContaining("Unable to instantiate");
 	}
 
@@ -115,7 +117,7 @@ class ReflectionEnvironmentPostProcessorsFactoryTests {
 		void createsSinglePostProcessor(Class<?> expectedType) {
 			List<EnvironmentPostProcessor> processors = this.factory.getEnvironmentPostProcessors(
 					ReflectionEnvironmentPostProcessorsFactoryTests.this.logFactory,
-					ReflectionEnvironmentPostProcessorsFactoryTests.this.bootstrapRegistry);
+					ReflectionEnvironmentPostProcessorsFactoryTests.this.bootstrapContext);
 			assertThat(processors).hasSize(1);
 			assertThat(processors.get(0)).isInstanceOf(expectedType);
 		}

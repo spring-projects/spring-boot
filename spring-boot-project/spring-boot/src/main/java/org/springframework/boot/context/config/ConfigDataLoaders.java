@@ -23,6 +23,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapContext;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.core.ResolvableType;
@@ -48,27 +51,36 @@ class ConfigDataLoaders {
 
 	/**
 	 * Create a new {@link ConfigDataLoaders} instance.
+	 * @param logFactory the deferred log factory
+	 * @param bootstrapContext the bootstrap context
 	 * @param locationNotFoundAction the action to take if a
 	 * {@link ConfigDataLocationNotFoundException} is thrown
-	 * @param logFactory the deferred log factory
 	 */
-	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigDataLocationNotFoundAction locationNotFoundAction) {
-		this(logFactory, locationNotFoundAction, SpringFactoriesLoader.loadFactoryNames(ConfigDataLoader.class, null));
+	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
+			ConfigDataLocationNotFoundAction locationNotFoundAction) {
+		this(logFactory, bootstrapContext, locationNotFoundAction,
+				SpringFactoriesLoader.loadFactoryNames(ConfigDataLoader.class, null));
 	}
 
 	/**
 	 * Create a new {@link ConfigDataLoaders} instance.
 	 * @param logFactory the deferred log factory
+	 * @param bootstrapContext the bootstrap context
 	 * @param locationNotFoundAction the action to take if a
 	 * {@link ConfigDataLocationNotFoundException} is thrown
 	 * @param names the {@link ConfigDataLoader} class names instantiate
 	 */
-	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigDataLocationNotFoundAction locationNotFoundAction,
-			List<String> names) {
+	ConfigDataLoaders(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
+			ConfigDataLocationNotFoundAction locationNotFoundAction, List<String> names) {
 		this.logger = logFactory.getLog(getClass());
 		this.locationNotFoundAction = locationNotFoundAction;
 		Instantiator<ConfigDataLoader<?>> instantiator = new Instantiator<>(ConfigDataLoader.class,
-				(availableParameters) -> availableParameters.add(Log.class, logFactory::getLog));
+				(availableParameters) -> {
+					availableParameters.add(Log.class, logFactory::getLog);
+					availableParameters.add(ConfigurableBootstrapContext.class, bootstrapContext);
+					availableParameters.add(BootstrapContext.class, bootstrapContext);
+					availableParameters.add(BootstrapRegistry.class, bootstrapContext);
+				});
 		this.loaders = instantiator.instantiate(names);
 		this.locationTypes = getLocationTypes(this.loaders);
 	}
