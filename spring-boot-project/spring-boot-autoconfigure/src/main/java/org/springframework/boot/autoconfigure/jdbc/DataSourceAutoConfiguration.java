@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Phillip Webb
  * @author Stephane Nicoll
  * @author Kazuki Shimizu
+ * @author Fabio Grassi
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -69,8 +70,8 @@ public class DataSourceAutoConfiguration {
 	@Conditional(PooledDataSourceCondition.class)
 	@ConditionalOnMissingBean({ DataSource.class, XADataSource.class })
 	@Import({ DataSourceConfiguration.Hikari.class, DataSourceConfiguration.Tomcat.class,
-			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Generic.class,
-			DataSourceJmxConfiguration.class })
+			DataSourceConfiguration.Dbcp2.class, DataSourceConfiguration.Ucp.class,
+			DataSourceConfiguration.Generic.class, DataSourceJmxConfiguration.class })
 	protected static class PooledDataSourceConfiguration {
 
 	}

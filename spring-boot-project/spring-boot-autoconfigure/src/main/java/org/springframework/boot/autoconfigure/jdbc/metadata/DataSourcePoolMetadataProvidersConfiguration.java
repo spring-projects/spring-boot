@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jdbc.metadata;
 
 import com.zaxxer.hikari.HikariDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -25,6 +26,7 @@ import org.springframework.boot.jdbc.metadata.CommonsDbcp2DataSourcePoolMetadata
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.jdbc.metadata.HikariDataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.TomcatDataSourcePoolMetadata;
+import org.springframework.boot.jdbc.metadata.UcpDataSourcePoolMetadata;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -33,6 +35,7 @@ import org.springframework.context.annotation.Configuration;
  * sources.
  *
  * @author Stephane Nicoll
+ * @author Fabio Grassi
  * @since 1.2.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -83,6 +86,23 @@ public class DataSourcePoolMetadataProvidersConfiguration {
 				BasicDataSource dbcpDataSource = DataSourceUnwrapper.unwrap(dataSource, BasicDataSource.class);
 				if (dbcpDataSource != null) {
 					return new CommonsDbcp2DataSourcePoolMetadata(dbcpDataSource);
+				}
+				return null;
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(PoolDataSource.class)
+	static class UcpPoolDataSourceMetadataProviderConfiguration {
+
+		@Bean
+		DataSourcePoolMetadataProvider UcpPoolDataSourceMetadataProvider() {
+			return (dataSource) -> {
+				PoolDataSource ucpDataSource = DataSourceUnwrapper.unwrap(dataSource, PoolDataSource.class);
+				if (ucpDataSource != null) {
+					return new UcpDataSourcePoolMetadata(ucpDataSource);
 				}
 				return null;
 			};

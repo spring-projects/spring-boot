@@ -16,9 +16,13 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
+import java.sql.SQLException;
+
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -27,6 +31,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.util.StringUtils;
 
 /**
@@ -35,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Dave Syer
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Fabio Grassi
  */
 abstract class DataSourceConfiguration {
 
@@ -105,6 +111,33 @@ abstract class DataSourceConfiguration {
 		@ConfigurationProperties(prefix = "spring.datasource.dbcp2")
 		org.apache.commons.dbcp2.BasicDataSource dataSource(DataSourceProperties properties) {
 			return createDataSource(properties, org.apache.commons.dbcp2.BasicDataSource.class);
+		}
+
+	}
+
+	/**
+	 * UCP DataSource configuration.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(PoolDataSource.class)
+	@ConditionalOnMissingBean(DataSource.class)
+	@ConditionalOnProperty(name = "spring.datasource.type", havingValue = "oracle.ucp.jdbc.PoolDataSource",
+			matchIfMissing = true)
+	static class Ucp {
+
+		@Bean
+		@ConfigurationProperties(prefix = "spring.datasource.ucp")
+		PoolDataSource dataSource(DataSourceProperties properties) {
+			PoolDataSource dataSource = createDataSource(properties, PoolDataSourceImpl.class);
+			if (StringUtils.hasText(properties.getName())) {
+				try {
+					dataSource.setConnectionPoolName(properties.getName());
+				}
+				catch (SQLException se) {
+					throw new InvalidDataAccessApiUsageException("Error setting property connectionPoolName", se);
+				}
+			}
+			return dataSource;
 		}
 
 	}
