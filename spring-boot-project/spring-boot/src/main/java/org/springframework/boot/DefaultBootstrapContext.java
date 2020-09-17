@@ -88,7 +88,12 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 		synchronized (this.instanceSuppliers) {
 			InstanceSupplier<?> instanceSupplier = this.instanceSuppliers.get(type);
 			Assert.state(instanceSupplier != null, () -> type.getName() + " has not been registered");
-			return (T) this.instances.computeIfAbsent(type, (key) -> instanceSupplier.get(this));
+			T instance = (T) this.instances.get(type);
+			if (instance == null) {
+				instance = (T) instanceSupplier.get(this);
+				this.instances.put(type, instance);
+			}
+			return instance;
 		}
 	}
 
