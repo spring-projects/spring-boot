@@ -239,8 +239,8 @@ class HttpClientTransportTests {
 
 	@Test
 	void getWithDockerRegistryUserAuthWillSendAuthHeader() throws IOException {
-		DockerConfiguration dockerConfiguration = DockerConfiguration.withRegistryUserAuthentication("user", "secret",
-				"https://docker.example.com", "docker@example.com");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration().withRegistryUserAuthentication("user",
+				"secret", "https://docker.example.com", "docker@example.com");
 		this.http = new TestHttpClientTransport(this.client, dockerConfiguration);
 		givenClientWillReturnResponse();
 		given(this.entity.getContent()).willReturn(this.content);
@@ -261,7 +261,7 @@ class HttpClientTransportTests {
 
 	@Test
 	void getWithDockerRegistryTokenAuthWillSendAuthHeader() throws IOException {
-		DockerConfiguration dockerConfiguration = DockerConfiguration.withRegistryTokenAuthentication("token");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration().withRegistryTokenAuthentication("token");
 		this.http = new TestHttpClientTransport(this.client, dockerConfiguration);
 		givenClientWillReturnResponse();
 		given(this.entity.getContent()).willReturn(this.content);
@@ -300,7 +300,7 @@ class HttpClientTransportTests {
 		}
 
 		protected TestHttpClientTransport(CloseableHttpClient client, DockerConfiguration dockerConfiguration) {
-			super(client, HttpHost.create("docker://localhost"), dockerConfiguration);
+			super(client, HttpHost.create("docker://localhost"), dockerConfiguration.getRegistryAuthentication());
 		}
 
 	}

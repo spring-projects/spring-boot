@@ -69,7 +69,7 @@ public class DockerApi {
 	 * Create a new {@link DockerApi} instance.
 	 */
 	public DockerApi() {
-		this(DockerConfiguration.withDefaults());
+		this(new DockerConfiguration());
 	}
 
 	/**

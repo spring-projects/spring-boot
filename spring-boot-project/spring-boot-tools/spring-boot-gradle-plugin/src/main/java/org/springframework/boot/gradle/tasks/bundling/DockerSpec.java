@@ -35,6 +35,12 @@ import org.springframework.boot.buildpack.platform.docker.configuration.DockerCo
  */
 public class DockerSpec {
 
+	private String host;
+
+	private boolean tlsVerify;
+
+	private String certPath;
+
 	private final DockerRegistrySpec registry;
 
 	public DockerSpec() {
@@ -43,6 +49,36 @@ public class DockerSpec {
 
 	DockerSpec(DockerRegistrySpec registry) {
 		this.registry = registry;
+	}
+
+	@Input
+	@Optional
+	public String getHost() {
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	@Input
+	@Optional
+	public Boolean isTlsVerify() {
+		return this.tlsVerify;
+	}
+
+	public void setTlsVerify(boolean tlsVerify) {
+		this.tlsVerify = tlsVerify;
+	}
+
+	@Input
+	@Optional
+	public String getCertPath() {
+		return this.certPath;
+	}
+
+	public void setCertPath(String certPath) {
+		this.certPath = certPath;
 	}
 
 	/**
@@ -77,14 +113,28 @@ public class DockerSpec {
 	 * @return the Docker configuration
 	 */
 	DockerConfiguration asDockerConfiguration() {
+		DockerConfiguration dockerConfiguration = new DockerConfiguration();
+		dockerConfiguration = customizeHost(dockerConfiguration);
+		dockerConfiguration = customizeAuthentication(dockerConfiguration);
+		return dockerConfiguration;
+	}
+
+	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
+		if (this.host != null) {
+			return dockerConfiguration.withHost(this.host, this.tlsVerify, this.certPath);
+		}
+		return dockerConfiguration;
+	}
+
+	private DockerConfiguration customizeAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.registry == null || this.registry.hasEmptyAuth()) {
-			return null;
+			return dockerConfiguration;
 		}
 		if (this.registry.hasTokenAuth() && !this.registry.hasUserAuth()) {
-			return DockerConfiguration.withRegistryTokenAuthentication(this.registry.getToken());
+			return dockerConfiguration.withRegistryTokenAuthentication(this.registry.getToken());
 		}
 		if (this.registry.hasUserAuth() && !this.registry.hasTokenAuth()) {
-			return DockerConfiguration.withRegistryUserAuthentication(this.registry.getUsername(),
+			return dockerConfiguration.withRegistryUserAuthentication(this.registry.getUsername(),
 					this.registry.getPassword(), this.registry.getUrl(), this.registry.getEmail());
 		}
 		throw new GradleException(

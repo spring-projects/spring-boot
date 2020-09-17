@@ -57,6 +57,24 @@ The following table shows the environment variables and their values:
 
 On Linux and macOS, these environment variables can be set using the command `eval $(minikube docker-env)` after minikube has been started.
 
+Docker daemon connection information can also be provided using `docker` parameters in the plugin configuration.
+The following table summarizes the available parameters:
+
+|===
+| Parameter | Description
+
+| `host`
+| URL containing the host and port for the Docker daemon - e.g. `tcp://192.168.99.100:2376`
+
+| `tlsVerify`
+| Enable secure HTTPS protocol when set to `true` (optional)
+
+| `certPath`
+| Path to certificate and key files for HTTPS (required if `tlsVerify` is `true`, ignored otherwise)
+|===
+
+For more details, see also <<build-image-example-docker,examples>>.
+
 
 
 [[build-image-docker-registry]]
@@ -287,7 +305,31 @@ The image name can be specified on the command line as well, as shown in this ex
 
 [[build-image-example-docker]]
 ==== Docker Configuration
-If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided as shown in the following example:
+If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` parameters as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<docker>
+							<host>tcp://192.168.99.100:2376</host>
+							<tlsVerify>true</tlsVerify>
+							<certPath>/home/user/.minikube/certs</certPath>
+						</docker>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.registry` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -314,7 +356,7 @@ If the builder or run image are stored in a private Docker registry that support
 	</project>
 ----
 
-If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided as shown in the following example:
+If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.registry` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----

@@ -1,0 +1,18 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClassName 'com.example.ExampleApplication'
+}
+
+// tag::docker-host[]
+bootBuildImage {
+	docker {
+		host = "tcp://192.168.99.100:2376"
+		tlsVerify = true
+		certPath = "/home/users/.minikube/certs"
+	}
+}
+// end::docker-host[]

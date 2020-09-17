@@ -30,13 +30,13 @@ public class DockerConfigurationTests {
 
 	@Test
 	void createDockerConfigurationWithDefaults() {
-		DockerConfiguration configuration = DockerConfiguration.withDefaults();
+		DockerConfiguration configuration = new DockerConfiguration();
 		assertThat(configuration.getRegistryAuthentication()).isNull();
 	}
 
 	@Test
 	void createDockerConfigurationWithUserAuth() {
-		DockerConfiguration configuration = DockerConfiguration.withRegistryUserAuthentication("user", "secret",
+		DockerConfiguration configuration = new DockerConfiguration().withRegistryUserAuthentication("user", "secret",
 				"https://docker.example.com", "docker@example.com");
 		DockerRegistryAuthentication auth = configuration.getRegistryAuthentication();
 		assertThat(auth).isNotNull();
@@ -50,7 +50,7 @@ public class DockerConfigurationTests {
 
 	@Test
 	void createDockerConfigurationWithTokenAuth() {
-		DockerConfiguration configuration = DockerConfiguration.withRegistryTokenAuthentication("token");
+		DockerConfiguration configuration = new DockerConfiguration().withRegistryTokenAuthentication("token");
 		DockerRegistryAuthentication auth = configuration.getRegistryAuthentication();
 		assertThat(auth).isNotNull();
 		assertThat(auth).isInstanceOf(DockerRegistryTokenAuthentication.class);

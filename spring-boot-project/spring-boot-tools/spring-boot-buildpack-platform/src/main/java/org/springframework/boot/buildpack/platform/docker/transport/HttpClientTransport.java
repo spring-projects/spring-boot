@@ -36,7 +36,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
@@ -60,12 +59,13 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private final String registryAuthHeader;
 
-	protected HttpClientTransport(CloseableHttpClient client, HttpHost host, DockerConfiguration dockerConfiguration) {
+	protected HttpClientTransport(CloseableHttpClient client, HttpHost host,
+			DockerRegistryAuthentication authentication) {
 		Assert.notNull(client, "Client must not be null");
 		Assert.notNull(host, "Host must not be null");
 		this.client = client;
 		this.host = host;
-		this.registryAuthHeader = buildRegistryAuthHeader(dockerConfiguration);
+		this.registryAuthHeader = buildRegistryAuthHeader(authentication);
 	}
 
 	/**
@@ -122,9 +122,7 @@ abstract class HttpClientTransport implements HttpTransport {
 		return execute(new HttpDelete(uri));
 	}
 
-	private String buildRegistryAuthHeader(DockerConfiguration dockerConfiguration) {
-		DockerRegistryAuthentication authentication = (dockerConfiguration != null)
-				? dockerConfiguration.getRegistryAuthentication() : null;
+	private String buildRegistryAuthHeader(DockerRegistryAuthentication authentication) {
 		String authHeader = (authentication != null) ? authentication.createAuthHeader() : null;
 		return (StringUtils.hasText(authHeader)) ? authHeader : null;
 	}

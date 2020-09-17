@@ -85,7 +85,7 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create() {
-		return create(DockerConfiguration.withDefaults());
+		return create(new DockerConfiguration());
 	}
 
 	/**
@@ -105,7 +105,7 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create(Environment environment) {
-		return create(environment, DockerConfiguration.withDefaults());
+		return create(environment, new DockerConfiguration());
 	}
 
 	/**

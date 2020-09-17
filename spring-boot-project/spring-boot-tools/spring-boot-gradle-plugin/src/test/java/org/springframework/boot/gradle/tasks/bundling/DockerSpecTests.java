@@ -20,6 +20,7 @@ import org.gradle.api.GradleException;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.util.Base64Utils;
 
@@ -35,15 +36,36 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 public class DockerSpecTests {
 
 	@Test
-	void asDockerConfigurationWithoutRegistry() {
+	void asDockerConfigurationWithDefaults() {
 		DockerSpec dockerSpec = new DockerSpec();
-		assertThat(dockerSpec.asDockerConfiguration()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getHost()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getRegistryAuthentication()).isNull();
 	}
 
 	@Test
-	void asDockerConfigurationWithEmptyRegistry() {
-		DockerSpec dockerSpec = new DockerSpec(new DockerSpec.DockerRegistrySpec());
-		assertThat(dockerSpec.asDockerConfiguration()).isNull();
+	void asDockerConfigurationWithHostConfiguration() {
+		DockerSpec dockerSpec = new DockerSpec();
+		dockerSpec.setHost("docker.example.com");
+		dockerSpec.setTlsVerify(true);
+		dockerSpec.setCertPath("/tmp/ca-cert");
+		DockerConfiguration dockerConfiguration = dockerSpec.asDockerConfiguration();
+		DockerHost host = dockerConfiguration.getHost();
+		assertThat(host.getAddress()).isEqualTo("docker.example.com");
+		assertThat(host.isSecure()).isEqualTo(true);
+		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
+		assertThat(dockerSpec.asDockerConfiguration().getRegistryAuthentication()).isNull();
+	}
+
+	@Test
+	void asDockerConfigurationWithHostConfigurationNoTlsVerify() {
+		DockerSpec dockerSpec = new DockerSpec();
+		dockerSpec.setHost("docker.example.com");
+		DockerConfiguration dockerConfiguration = dockerSpec.asDockerConfiguration();
+		DockerHost host = dockerConfiguration.getHost();
+		assertThat(host.getAddress()).isEqualTo("docker.example.com");
+		assertThat(host.isSecure()).isEqualTo(false);
+		assertThat(host.getCertificatePath()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getRegistryAuthentication()).isNull();
 	}
 
 	@Test
@@ -61,6 +83,7 @@ public class DockerSpecTests {
 				.contains("\"username\" : \"user\"").contains("\"password\" : \"secret\"")
 				.contains("\"email\" : \"docker@example.com\"")
 				.contains("\"serveraddress\" : \"https://docker.example.com\"");
+		assertThat(dockerSpec.asDockerConfiguration().getHost()).isNull();
 	}
 
 	@Test

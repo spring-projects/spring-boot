@@ -47,7 +47,7 @@ class RemoteHttpClientTransportTests {
 
 	private final Map<String, String> environment = new LinkedHashMap<>();
 
-	private final DockerConfiguration dockerConfiguration = DockerConfiguration.withDefaults();
+	private final DockerConfiguration dockerConfiguration = new DockerConfiguration();
 
 	@Test
 	void createIfPossibleWhenDockerHostIsNotSetReturnsNull() {
@@ -57,7 +57,13 @@ class RemoteHttpClientTransportTests {
 	}
 
 	@Test
-	void createIfPossibleWhenDockerHostIsFileReturnsNull(@TempDir Path tempDir) throws IOException {
+	void createIfPossibleWithoutDockerConfigurationReturnsNull() {
+		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get, null);
+		assertThat(transport).isNull();
+	}
+
+	@Test
+	void createIfPossibleWhenDockerHostInEnvironmentIsFileReturnsNull(@TempDir Path tempDir) throws IOException {
 		String dummySocketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath()
 				.toString();
 		this.environment.put("DOCKER_HOST", dummySocketFilePath);
@@ -67,7 +73,16 @@ class RemoteHttpClientTransportTests {
 	}
 
 	@Test
-	void createIfPossibleWhenDockerHostIsAddressReturnsTransport() {
+	void createIfPossibleWhenDockerHostInConfigurationIsFileReturnsNull(@TempDir Path tempDir) throws IOException {
+		String dummySocketFilePath = Files.createTempFile(tempDir, "remote-transport", null).toAbsolutePath()
+				.toString();
+		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get,
+				this.dockerConfiguration.withHost(dummySocketFilePath, false, null));
+		assertThat(transport).isNull();
+	}
+
+	@Test
+	void createIfPossibleWhenDockerHostInEnvironmentIsAddressReturnsTransport() {
 		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get,
 				this.dockerConfiguration);
@@ -75,12 +90,27 @@ class RemoteHttpClientTransportTests {
 	}
 
 	@Test
-	void createIfPossibleWhenTlsVerifyWithMissingCertPathThrowsException() {
+	void createIfPossibleWhenDockerHostInConfigurationIsAddressReturnsTransport() {
+		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get,
+				this.dockerConfiguration.withHost("tcp://192.168.1.2:2376", false, null));
+		assertThat(transport).isNotNull();
+	}
+
+	@Test
+	void createIfPossibleWhenTlsVerifyInEnvironmentWithMissingCertPathThrowsException() {
 		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
 		this.environment.put("DOCKER_TLS_VERIFY", "1");
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> RemoteHttpClientTransport.createIfPossible(this.environment::get, this.dockerConfiguration))
-				.withMessageContaining("DOCKER_CERT_PATH");
+				.withMessageContaining("Docker host TLS verification requires trust material");
+	}
+
+	@Test
+	void createIfPossibleWhenTlsVerifyInConfigurationWithMissingCertPathThrowsException() {
+		assertThatIllegalArgumentException()
+				.isThrownBy(() -> RemoteHttpClientTransport.createIfPossible(this.environment::get,
+						this.dockerConfiguration.withHost("tcp://192.168.1.2:2376", true, null)))
+				.withMessageContaining("Docker host TLS verification requires trust material");
 	}
 
 	@Test
@@ -92,7 +122,7 @@ class RemoteHttpClientTransportTests {
 	}
 
 	@Test
-	void createIfPossibleWhenTlsVerifyUsesHttps() throws Exception {
+	void createIfPossibleWhenTlsVerifyInEnvironmentUsesHttps() throws Exception {
 		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
 		this.environment.put("DOCKER_TLS_VERIFY", "1");
 		this.environment.put("DOCKER_CERT_PATH", "/test-cert-path");
@@ -104,10 +134,20 @@ class RemoteHttpClientTransportTests {
 	}
 
 	@Test
+	void createIfPossibleWhenTlsVerifyInConfigurationUsesHttps() throws Exception {
+		SslContextFactory sslContextFactory = mock(SslContextFactory.class);
+		given(sslContextFactory.forDirectory("/test-cert-path")).willReturn(SSLContext.getDefault());
+		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get,
+				this.dockerConfiguration.withHost("tcp://192.168.1.2:2376", true, "/test-cert-path"),
+				sslContextFactory);
+		assertThat(transport.getHost()).satisfies(hostOf("https", "192.168.1.2", 2376));
+	}
+
+	@Test
 	void createIfPossibleWithDockerConfigurationUserAuthReturnsTransport() {
 		this.environment.put("DOCKER_HOST", "tcp://192.168.1.2:2376");
 		RemoteHttpClientTransport transport = RemoteHttpClientTransport.createIfPossible(this.environment::get,
-				DockerConfiguration.withRegistryUserAuthentication("user", "secret", "http://docker.example.com",
+				new DockerConfiguration().withRegistryUserAuthentication("user", "secret", "http://docker.example.com",
 						"docker@example.com"));
 		assertThat(transport).isNotNull();
 	}

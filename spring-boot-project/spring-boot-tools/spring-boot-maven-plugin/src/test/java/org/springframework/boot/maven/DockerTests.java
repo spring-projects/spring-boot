@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.util.Base64Utils;
 
@@ -34,17 +35,24 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 public class DockerTests {
 
 	@Test
-	void asDockerConfigurationWithoutRegistry() {
+	void asDockerConfigurationWithDefaults() {
 		Docker docker = new Docker();
-		assertThat(docker.asDockerConfiguration()).isNull();
+		assertThat(docker.asDockerConfiguration().getHost()).isNull();
+		assertThat(docker.asDockerConfiguration().getRegistryAuthentication()).isNull();
 	}
 
 	@Test
-	void asDockerConfigurationWithEmptyRegistry() {
-		Docker.DockerRegistry dockerRegistry = new Docker.DockerRegistry();
+	void asDockerConfigurationWithHostConfiguration() {
 		Docker docker = new Docker();
-		docker.setRegistry(dockerRegistry);
-		assertThat(docker.asDockerConfiguration()).isNull();
+		docker.setHost("docker.example.com");
+		docker.setTlsVerify(true);
+		docker.setCertPath("/tmp/ca-cert");
+		DockerConfiguration dockerConfiguration = docker.asDockerConfiguration();
+		DockerHost host = dockerConfiguration.getHost();
+		assertThat(host.getAddress()).isEqualTo("docker.example.com");
+		assertThat(host.isSecure()).isEqualTo(true);
+		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
+		assertThat(docker.asDockerConfiguration().getRegistryAuthentication()).isNull();
 	}
 
 	@Test

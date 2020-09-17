@@ -27,30 +27,42 @@ import org.springframework.util.Assert;
  */
 public final class DockerConfiguration {
 
+	private final DockerHost host;
+
 	private final DockerRegistryAuthentication authentication;
 
-	private DockerConfiguration(DockerRegistryAuthentication authentication) {
+	public DockerConfiguration() {
+		this(null, null);
+	}
+
+	private DockerConfiguration(DockerHost host, DockerRegistryAuthentication authentication) {
+		this.host = host;
 		this.authentication = authentication;
+	}
+
+	public DockerHost getHost() {
+		return this.host;
 	}
 
 	public DockerRegistryAuthentication getRegistryAuthentication() {
 		return this.authentication;
 	}
 
-	public static DockerConfiguration withDefaults() {
-		return new DockerConfiguration(null);
+	public DockerConfiguration withHost(String address, boolean secure, String certificatePath) {
+		Assert.notNull(address, "Address must not be null");
+		return new DockerConfiguration(new DockerHost(address, secure, certificatePath), this.authentication);
 	}
 
-	public static DockerConfiguration withRegistryTokenAuthentication(String token) {
+	public DockerConfiguration withRegistryTokenAuthentication(String token) {
 		Assert.notNull(token, "Token must not be null");
-		return new DockerConfiguration(new DockerRegistryTokenAuthentication(token));
+		return new DockerConfiguration(this.host, new DockerRegistryTokenAuthentication(token));
 	}
 
-	public static DockerConfiguration withRegistryUserAuthentication(String username, String password, String url,
+	public DockerConfiguration withRegistryUserAuthentication(String username, String password, String url,
 			String email) {
 		Assert.notNull(username, "Username must not be null");
 		Assert.notNull(password, "Password must not be null");
-		return new DockerConfiguration(new DockerRegistryUserAuthentication(username, password, url, email));
+		return new DockerConfiguration(this.host, new DockerRegistryUserAuthentication(username, password, url, email));
 	}
 
 }

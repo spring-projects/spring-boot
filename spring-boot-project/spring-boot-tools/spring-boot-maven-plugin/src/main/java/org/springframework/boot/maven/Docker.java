@@ -27,7 +27,37 @@ import org.springframework.boot.buildpack.platform.docker.configuration.DockerCo
  */
 public class Docker {
 
+	private String host;
+
+	private boolean tlsVerify;
+
+	private String certPath;
+
 	private DockerRegistry registry;
+
+	public String getHost() {
+		return this.host;
+	}
+
+	public void setHost(String host) {
+		this.host = host;
+	}
+
+	public boolean isTlsVerify() {
+		return this.tlsVerify;
+	}
+
+	public void setTlsVerify(boolean tlsVerify) {
+		this.tlsVerify = tlsVerify;
+	}
+
+	public String getCertPath() {
+		return this.certPath;
+	}
+
+	public void setCertPath(String certPath) {
+		this.certPath = certPath;
+	}
 
 	/**
 	 * Sets the {@link DockerRegistry} that configures registry authentication.
@@ -44,17 +74,30 @@ public class Docker {
 	 * @return the Docker configuration
 	 */
 	DockerConfiguration asDockerConfiguration() {
+		DockerConfiguration dockerConfiguration = new DockerConfiguration();
+		dockerConfiguration = customizeHost(dockerConfiguration);
+		dockerConfiguration = customizeAuthentication(dockerConfiguration);
+		return dockerConfiguration;
+	}
+
+	private DockerConfiguration customizeHost(DockerConfiguration dockerConfiguration) {
+		if (this.host != null) {
+			return dockerConfiguration.withHost(this.host, this.tlsVerify, this.certPath);
+		}
+		return dockerConfiguration;
+	}
+
+	private DockerConfiguration customizeAuthentication(DockerConfiguration dockerConfiguration) {
 		if (this.registry == null || this.registry.isEmpty()) {
-			return null;
+			return dockerConfiguration;
 		}
 		if (this.registry.hasTokenAuth() && !this.registry.hasUserAuth()) {
-			return DockerConfiguration.withRegistryTokenAuthentication(this.registry.getToken());
+			return dockerConfiguration.withRegistryTokenAuthentication(this.registry.getToken());
 		}
 		if (this.registry.hasUserAuth() && !this.registry.hasTokenAuth()) {
-			return DockerConfiguration.withRegistryUserAuthentication(this.registry.getUsername(),
+			return dockerConfiguration.withRegistryUserAuthentication(this.registry.getUsername(),
 					this.registry.getPassword(), this.registry.getUrl(), this.registry.getEmail());
 		}
-
 		throw new IllegalArgumentException(
 				"Invalid Docker registry configuration, either token or username/password must be provided");
 	}
