@@ -25,6 +25,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributors.BinderOption;
@@ -198,8 +199,12 @@ class ConfigDataEnvironment {
 	 */
 	void processAndApply() {
 		ConfigDataImporter importer = new ConfigDataImporter(this.resolvers, this.loaders);
+		this.bootstrapContext.register(Binder.class, InstanceSupplier
+				.from(() -> this.contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE)));
 		ConfigDataEnvironmentContributors contributors = processInitial(this.contributors, importer);
-		ConfigDataActivationContext activationContext = createActivationContext(contributors);
+		Binder initialBinder = contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
+		this.bootstrapContext.register(Binder.class, InstanceSupplier.of(initialBinder));
+		ConfigDataActivationContext activationContext = createActivationContext(initialBinder);
 		contributors = processWithoutProfiles(contributors, importer, activationContext);
 		activationContext = withProfiles(contributors, activationContext);
 		contributors = processWithProfiles(contributors, importer, activationContext);
@@ -212,11 +217,10 @@ class ConfigDataEnvironment {
 		return contributors.withProcessedImports(importer, null);
 	}
 
-	private ConfigDataActivationContext createActivationContext(ConfigDataEnvironmentContributors contributors) {
+	private ConfigDataActivationContext createActivationContext(Binder initialBinder) {
 		this.logger.trace("Creating config data activation context from initial contributions");
-		Binder binder = contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		try {
-			return new ConfigDataActivationContext(this.environment, binder);
+			return new ConfigDataActivationContext(this.environment, initialBinder);
 		}
 		catch (BindException ex) {
 			if (ex.getCause() instanceof InactiveConfigDataAccessException) {

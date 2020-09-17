@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  */
-class ConfigDataEnvironmentPostProcessorBootstrapRegistryIntegrationTests {
+class ConfigDataEnvironmentPostProcessorBootstrapContextIntegrationTests {
 
 	private SpringApplication application;
 
@@ -50,6 +50,7 @@ class ConfigDataEnvironmentPostProcessorBootstrapRegistryIntegrationTests {
 				.run("--spring.config.import=classpath:application-bootstrap-registry-integration-tests.properties")) {
 			LoaderHelper bean = context.getBean(TestConfigDataBootstrap.LoaderHelper.class);
 			assertThat(bean).isNotNull();
+			assertThat(bean.getBound()).isEqualTo("igotbound");
 			assertThat(bean.getLocation().getResolverHelper().getLocation()).isEqualTo("testbootstrap:test");
 		}
 	}
