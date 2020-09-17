@@ -74,7 +74,8 @@ public class DockerApi {
 
 	/**
 	 * Create a new {@link DockerApi} instance.
-	 * @param dockerConfiguration the Docker configuration options
+	 * @param dockerConfiguration the docker configuration
+	 * @since 2.4.0
 	 */
 	public DockerApi(DockerConfiguration dockerConfiguration) {
 		this(HttpTransport.create(dockerConfiguration));

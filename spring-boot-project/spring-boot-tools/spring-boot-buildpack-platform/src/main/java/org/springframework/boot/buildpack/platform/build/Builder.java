@@ -45,18 +45,36 @@ public class Builder {
 
 	private final DockerApi docker;
 
+	/**
+	 * Create a new builder instance.
+	 */
 	public Builder() {
 		this(BuildLog.toSystemOut());
 	}
 
+	/**
+	 * Create a new builder instance.
+	 * @param dockerConfiguration the docker configuration
+	 * @since 2.4.0
+	 */
 	public Builder(DockerConfiguration dockerConfiguration) {
 		this(BuildLog.toSystemOut(), dockerConfiguration);
 	}
 
+	/**
+	 * Create a new builder instance.
+	 * @param log a logger used to record output
+	 */
 	public Builder(BuildLog log) {
 		this(log, new DockerApi());
 	}
 
+	/**
+	 * Create a new builder instance.
+	 * @param log a logger used to record output
+	 * @param dockerConfiguration the docker configuration
+	 * @since 2.4.0
+	 */
 	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
 		this(log, new DockerApi(dockerConfiguration));
 	}

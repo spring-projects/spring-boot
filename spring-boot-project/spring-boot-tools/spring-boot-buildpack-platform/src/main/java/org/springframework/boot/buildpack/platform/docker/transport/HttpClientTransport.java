@@ -37,6 +37,7 @@ import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
@@ -122,11 +123,9 @@ abstract class HttpClientTransport implements HttpTransport {
 	}
 
 	private String buildRegistryAuthHeader(DockerConfiguration dockerConfiguration) {
-		if (dockerConfiguration == null || dockerConfiguration.getRegistryAuthentication() == null) {
-			return null;
-		}
-
-		String authHeader = dockerConfiguration.getRegistryAuthentication().createAuthHeader();
+		DockerRegistryAuthentication authentication = (dockerConfiguration != null)
+				? dockerConfiguration.getRegistryAuthentication() : null;
+		String authHeader = (authentication != null) ? authentication.createAuthHeader() : null;
 		return (StringUtils.hasText(authHeader)) ? authHeader : null;
 	}
 

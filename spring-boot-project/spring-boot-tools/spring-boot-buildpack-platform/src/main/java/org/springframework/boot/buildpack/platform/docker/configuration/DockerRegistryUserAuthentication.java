@@ -23,7 +23,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
  *
  * @author Scott Frederick
  */
-class DockerRegistryUserAuthentication extends DockerRegistryAuthentication {
+class DockerRegistryUserAuthentication extends JsonEncodedDockerRegistryAuthentication {
 
 	@JsonProperty
 	private final String username;

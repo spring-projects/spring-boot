@@ -16,26 +16,18 @@
 
 package org.springframework.boot.buildpack.platform.docker.configuration;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-
-import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
-import org.springframework.util.Base64Utils;
-
 /**
  * Docker registry authentication configuration.
  *
  * @author Scott Frederick
  * @since 2.4.0
  */
-public abstract class DockerRegistryAuthentication {
+public interface DockerRegistryAuthentication {
 
-	public String createAuthHeader() {
-		try {
-			return Base64Utils.encodeToUrlSafeString(SharedObjectMapper.get().writeValueAsBytes(this));
-		}
-		catch (JsonProcessingException ex) {
-			throw new IllegalStateException("Error creating Docker registry authentication header", ex);
-		}
-	}
+	/**
+	 * Create the auth header that should be used for docker authentication.
+	 * @return the auth header
+	 */
+	String createAuthHeader();
 
 }
