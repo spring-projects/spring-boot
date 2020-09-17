@@ -78,7 +78,7 @@ public class BintrayService {
 		logger.debug("Checking if distribution is started");
 		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 1);
 		try {
-			logger.debug("Checking bintray");
+			logger.debug("Checking Bintray");
 			this.restTemplate.exchange(request, PackageFile[].class).getBody();
 			return true;
 		}
@@ -100,7 +100,7 @@ public class BintrayService {
 		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 0);
 		try {
 			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
-				logger.debug("Checking bintray");
+				logger.debug("Checking Bintray");
 				try {
 					PackageFile[] published = this.restTemplate.exchange(request, PackageFile[].class).getBody();
 					return hasPublishedAll(published, requiredDigests);
@@ -111,7 +111,7 @@ public class BintrayService {
 			});
 		}
 		catch (ConditionTimeoutException ex) {
-			logger.debug("Timeout checking bintray");
+			logger.debug("Timeout checking Bintray");
 			return false;
 		}
 		return true;
@@ -132,7 +132,7 @@ public class BintrayService {
 			logger.debug("Found all required digests");
 			return true;
 		}
-		logger.debug("Some digests have not been published:");
+		logger.debug(remaining.size() + " digests have not been published:");
 		remaining.forEach(logger::debug);
 		return false;
 	}
@@ -148,7 +148,7 @@ public class BintrayService {
 	 * @param releaseInfo the release information
 	 */
 	public void publishGradlePlugin(ReleaseInfo releaseInfo) {
-		logger.debug("Publishing Gradle Pluging");
+		logger.debug("Publishing Gradle plugin");
 		RequestEntity<String> requestEntity = RequestEntity
 				.post(URI.create(BINTRAY_URL + "packages/" + this.bintrayProperties.getSubject() + "/"
 						+ this.bintrayProperties.getRepo() + "/" + releaseInfo.getGroupId() + "/versions/"
@@ -156,10 +156,10 @@ public class BintrayService {
 				.contentType(MediaType.APPLICATION_JSON).body(GRADLE_PLUGIN_REQUEST);
 		try {
 			this.restTemplate.exchange(requestEntity, Object.class);
-			logger.debug("Publishing Gradle Pluging complete");
+			logger.debug("Publishing Gradle plugin complete");
 		}
 		catch (HttpClientErrorException ex) {
-			logger.info("Failed to add attribute to gradle plugin.");
+			logger.info("Failed to add attribute to Gradle plugin");
 			throw ex;
 		}
 	}
@@ -184,7 +184,7 @@ public class BintrayService {
 			logger.debug("Sync complete");
 		}
 		catch (HttpClientErrorException ex) {
-			logger.info("Failed to sync.");
+			logger.info("Failed to sync");
 			throw ex;
 		}
 	}
