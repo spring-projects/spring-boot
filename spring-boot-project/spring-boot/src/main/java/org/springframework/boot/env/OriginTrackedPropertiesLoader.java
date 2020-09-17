@@ -57,8 +57,7 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	/**
-	 * Load {@code .properties} data and return a map of {@code String} ->
-	 * {@link OriginTrackedValue}.
+	 * Load {@code .properties} data and return a list of documents.
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
@@ -79,7 +78,7 @@ class OriginTrackedPropertiesLoader {
 		try (CharacterReader reader = new CharacterReader(this.resource)) {
 			StringBuilder buffer = new StringBuilder();
 			while (reader.read()) {
-				if (reader.getCharacter() == '#') {
+				if (reader.isPoundCharacter()) {
 					if (isNewDocument(reader)) {
 						if (!document.isEmpty()) {
 							result.add(document);
@@ -150,12 +149,13 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	boolean isNewDocument(CharacterReader reader) throws IOException {
-		boolean result = reader.isPoundCharacter();
+		boolean result = reader.getLocation().getColumn() == 0 && reader.isPoundCharacter();
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
-		result = result && readAndExpect(reader, reader::isEndOfLine);
-		return result;
+		reader.read();
+		reader.skipWhitespace();
+		return result && reader.isEndOfLine();
 	}
 
 	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
@@ -198,7 +198,7 @@ class OriginTrackedPropertiesLoader {
 			this.character = this.reader.read();
 			this.columnNumber++;
 			if (this.columnNumber == 0) {
-				skipLeadingWhitespace();
+				skipWhitespace();
 				if (!wrappedLine) {
 					if (this.character == '!') {
 						skipComment();
@@ -215,7 +215,7 @@ class OriginTrackedPropertiesLoader {
 			return !isEndOfFile();
 		}
 
-		private void skipLeadingWhitespace() throws IOException {
+		private void skipWhitespace() throws IOException {
 			while (isWhiteSpace()) {
 				this.character = this.reader.read();
 				this.columnNumber++;

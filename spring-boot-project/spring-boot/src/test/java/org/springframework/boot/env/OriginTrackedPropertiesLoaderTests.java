@@ -16,6 +16,7 @@
 
 package org.springframework.boot.env;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Properties;
 
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.env.OriginTrackedPropertiesLoader.Document;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.support.PropertiesLoaderUtils;
 
@@ -178,6 +180,34 @@ class OriginTrackedPropertiesLoaderTests {
 		OriginTrackedValue value = getFromFirst("test-multiline-immediate");
 		assertThat(getValue(value)).isEqualTo("foo");
 		assertThat(getLocation(value)).isEqualTo("32:1");
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithoutWhitespaceLoadsMultiDoc() throws IOException {
+		String content = "a=a\n#---\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(2);
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithLeadingWhitespaceLoadsSingleDoc() throws IOException {
+		String content = "a=a\n \t#---\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithTrailingWhitespaceLoadsMultiDoc() throws IOException {
+		String content = "a=a\n#--- \t \nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(2);
+	}
+
+	@Test
+	void loadWhenMultiDocumentWithTrailingCharsLoadsSingleDoc() throws IOException {
+		String content = "a=a\n#--- \tcomment\nb=b";
+		List<Document> loaded = new OriginTrackedPropertiesLoader(new ByteArrayResource(content.getBytes())).load();
+		assertThat(loaded).hasSize(1);
 	}
 
 	@Test
