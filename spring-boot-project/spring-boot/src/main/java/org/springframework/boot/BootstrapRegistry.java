@@ -18,8 +18,6 @@ package org.springframework.boot;
 
 import java.util.function.Supplier;
 
-import io.undertow.servlet.api.InstanceFactory;
-
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
@@ -73,7 +71,7 @@ public interface BootstrapRegistry {
 	<T> boolean isRegistered(Class<T> type);
 
 	/**
-	 * Return any existing {@link InstanceFactory} for the given type.
+	 * Return any existing {@link InstanceSupplier} for the given type.
 	 * @param <T> the instance type
 	 * @param type the instance type
 	 * @return the registered {@link InstanceSupplier} or {@code null}
@@ -104,22 +102,22 @@ public interface BootstrapRegistry {
 		T get(BootstrapContext context);
 
 		/**
-		 * Factory method that can be used to create a {@link InstanceFactory} for a given
-		 * instance.
+		 * Factory method that can be used to create a {@link InstanceSupplier} for a
+		 * given instance.
 		 * @param <T> the instance type
 		 * @param instance the instance
-		 * @return a new {@link InstanceFactory}
+		 * @return a new {@link InstanceSupplier}
 		 */
 		static <T> InstanceSupplier<T> of(T instance) {
 			return (registry) -> instance;
 		}
 
 		/**
-		 * Factory method that can be used to create a {@link InstanceFactory} from a
+		 * Factory method that can be used to create a {@link InstanceSupplier} from a
 		 * {@link Supplier}.
 		 * @param <T> the instance type
 		 * @param supplier the supplier that will provide the instance
-		 * @return a new {@link InstanceFactory}
+		 * @return a new {@link InstanceSupplier}
 		 */
 		static <T> InstanceSupplier<T> from(Supplier<T> supplier) {
 			return (registry) -> (supplier != null) ? supplier.get() : null;
