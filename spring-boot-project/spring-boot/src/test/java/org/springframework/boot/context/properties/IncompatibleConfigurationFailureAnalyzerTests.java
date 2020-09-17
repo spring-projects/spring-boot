@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics.analyzer;
+package org.springframework.boot.context.properties;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
 import static org.assertj.core.api.Assertions.assertThat;

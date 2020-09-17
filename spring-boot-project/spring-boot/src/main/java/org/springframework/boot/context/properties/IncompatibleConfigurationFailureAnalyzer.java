@@ -14,11 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.diagnostics.analyzer;
+package org.springframework.boot.context.properties;
 
 import java.util.stream.Collectors;
 
-import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.boot.diagnostics.AbstractFailureAnalyzer;
 import org.springframework.boot.diagnostics.FailureAnalysis;
 
