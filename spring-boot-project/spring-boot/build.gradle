@@ -21,6 +21,7 @@ dependencies {
 	optional("com.atomikos:transactions-jta")
 	optional("com.fasterxml.jackson.core:jackson-databind")
 	optional("com.google.code.gson:gson")
+	optional("com.oracle.ojdbc:ucp")
 	optional("com.samskivert:jmustache")
 	optional("com.zaxxer:HikariCP")
 	optional("io.netty:netty-tcnative-boringssl-static")
