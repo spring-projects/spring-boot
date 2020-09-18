@@ -145,10 +145,6 @@ public class FlywayAutoConfiguration {
 				String user = getProperty(properties::getUser, dataSourceProperties::determineUsername);
 				String password = getProperty(properties::getPassword, dataSourceProperties::determinePassword);
 				configuration.dataSource(url, user, password);
-				if (!CollectionUtils.isEmpty(properties.getInitSqls())) {
-					String initSql = StringUtils.collectionToDelimitedString(properties.getInitSqls(), "\n");
-					configuration.initSql(initSql);
-				}
 			}
 			else if (flywayDataSource != null) {
 				configuration.dataSource(flywayDataSource);
@@ -206,6 +202,9 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
+			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
+					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
+					.to(configuration::initSql);
 			// Pro properties
 			map.from(properties.getBatch()).whenNonNull().to(configuration::batch);
 			map.from(properties.getDryRunOutput()).whenNonNull().to(configuration::dryRunOutput);
