@@ -65,7 +65,7 @@ dependencies {
 	optional("org.codehaus.groovy:groovy-templates")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")
-	optional("com.oracle.ojdbc:ucp")
+	optional("com.oracle.database.jdbc:ucp")
 	optional("com.sendgrid:sendgrid-java")
 	optional("com.unboundid:unboundid-ldapsdk")
 	optional("com.zaxxer:HikariCP")
