@@ -15,23 +15,17 @@
  */
 package org.springframework.boot.actuate.autoconfigure.metrics.cassandra;
 
-import java.net.InetSocketAddress;
 import java.time.Duration;
-import java.util.concurrent.TimeUnit;
 
 import com.datastax.oss.driver.api.core.ConsistencyLevel;
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import com.datastax.oss.driver.api.core.metrics.DefaultNodeMetric;
 import com.datastax.oss.driver.api.core.metrics.DefaultSessionMetric;
 import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
-import org.rnorth.ducttape.TimeoutException;
-import org.rnorth.ducttape.unreliables.Unreliables;
 import org.testcontainers.containers.CassandraContainer;
-import org.testcontainers.containers.ContainerLaunchException;
-import org.testcontainers.containers.wait.strategy.AbstractWaitStrategy;
+import org.testcontainers.containers.wait.CassandraQueryWaitStrategy;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
@@ -52,7 +46,7 @@ public class CassandraMetricsAutoConfigurationIntegrationTests {
 
 	@Container
 	static final CassandraContainer<?> cassandra = new CassandraContainer<>().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10)).waitingFor(new CassandraWaitStrategy());
+			.withStartupTimeout(Duration.ofMinutes(10)).waitingFor(new CassandraQueryWaitStrategy());
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner().with(MetricsRun.simple())
 			.withConfiguration(
@@ -97,31 +91,6 @@ public class CassandraMetricsAutoConfigurationIntegrationTests {
 					.isGreaterThan(1d);
 
 		});
-	}
-
-	static final class CassandraWaitStrategy extends AbstractWaitStrategy {
-
-		@Override
-		protected void waitUntilReady() {
-			try {
-				Unreliables.retryUntilSuccess((int) this.startupTimeout.getSeconds(), TimeUnit.SECONDS, () -> {
-					getRateLimiter().doWhenReady(() -> cqlSessionBuilder().build());
-					return true;
-				});
-			}
-			catch (TimeoutException ex) {
-				throw new ContainerLaunchException(
-						"Timed out waiting for Cassandra to be accessible for query execution");
-			}
-		}
-
-		private CqlSessionBuilder cqlSessionBuilder() {
-			return CqlSession.builder()
-					.addContactPoint(new InetSocketAddress(this.waitStrategyTarget.getHost(),
-							this.waitStrategyTarget.getFirstMappedPort()))
-					.withLocalDatacenter("datacenter1").withAuthCredentials("cassandra", "cassandra");
-		}
-
 	}
 
 }
