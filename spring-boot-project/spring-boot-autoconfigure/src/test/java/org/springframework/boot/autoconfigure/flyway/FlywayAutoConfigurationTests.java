@@ -502,6 +502,24 @@ class FlywayAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void initSqlsWithDataSource() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.init-sqls=SELECT 1").run((context) -> {
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getConfiguration().getInitSql()).isEqualTo("SELECT 1");
+				});
+	}
+
+	@Test
+	void initSqlsWithFlywayUrl() {
+		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:h2:mem:" + UUID.randomUUID(),
+				"spring.flyway.init-sqls=SELECT 1").run((context) -> {
+					Flyway flyway = context.getBean(Flyway.class);
+					assertThat(flyway.getConfiguration().getInitSql()).isEqualTo("SELECT 1");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class FlywayDataSourceConfiguration {
 
