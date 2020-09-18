@@ -5,6 +5,7 @@ Andy Wilkinson
 :toclevels: 4
 :source-highlighter: prettify
 :numbered:
+:sectanchors:
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
