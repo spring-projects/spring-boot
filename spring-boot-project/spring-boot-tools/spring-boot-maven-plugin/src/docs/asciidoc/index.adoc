@@ -4,6 +4,7 @@ Stephane Nicoll, Andy Wilkinson, Scott Frederick
 :toc: left
 :toclevels: 4
 :numbered:
+:sectanchors:
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
