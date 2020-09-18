@@ -115,6 +115,14 @@ class ImageTests {
 		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.NEVER);
 	}
 
+	@Test
+	void getBuildRequestWhenHasPublishUsesPublish() {
+		Image image = new Image();
+		image.publish = true;
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.isPublish()).isTrue();
+	}
+
 	private Artifact createArtifact() {
 		return new DefaultArtifact("com.example", "my-app", VersionRange.createFromVersion("0.0.1-SNAPSHOT"), "compile",
 				"jar", null, new DefaultArtifactHandler());

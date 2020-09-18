@@ -73,6 +73,11 @@ public class Image {
 	 */
 	PullPolicy pullPolicy;
 
+	/**
+	 * If the built image should be pushed to a registry.
+	 */
+	Boolean publish;
+
 	void setName(String name) {
 		this.name = name;
 	}
@@ -87,6 +92,10 @@ public class Image {
 
 	public void setPullPolicy(PullPolicy pullPolicy) {
 		this.pullPolicy = pullPolicy;
+	}
+
+	public void setPublish(Boolean publish) {
+		this.publish = publish;
 	}
 
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
@@ -115,6 +124,9 @@ public class Image {
 		request = request.withVerboseLogging(this.verboseLogging);
 		if (this.pullPolicy != null) {
 			request = request.withPullPolicy(this.pullPolicy);
+		}
+		if (this.publish != null) {
+			request = request.withPublish(this.publish);
 		}
 		return request;
 	}

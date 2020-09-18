@@ -23,6 +23,7 @@ import java.util.Map;
 import groovy.lang.Closure;
 import org.gradle.api.Action;
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -75,6 +76,8 @@ public class BootBuildImage extends DefaultTask {
 	private boolean verboseLogging;
 
 	private PullPolicy pullPolicy;
+
+	private boolean publish;
 
 	private DockerSpec docker = new DockerSpec();
 
@@ -253,6 +256,24 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
+	 * Whether the built image should be pushed to a registry.
+	 * @return whether the built image should be pushed
+	 */
+	@Input
+	public boolean isPublish() {
+		return this.publish;
+	}
+
+	/**
+	 * Sets whether the built image should be pushed to a registry.
+	 * @param publish {@code true} the push the built image to a registry. {@code false}.
+	 */
+	@Option(option = "publishImage", description = "Publish the built image to a registry")
+	public void setPublish(boolean publish) {
+		this.publish = publish;
+	}
+
+	/**
 	 * Returns the Docker configuration the builder will use.
 	 * @return docker configuration.
 	 * @since 2.4.0
@@ -312,6 +333,7 @@ public class BootBuildImage extends DefaultTask {
 		request = request.withCleanCache(this.cleanCache);
 		request = request.withVerboseLogging(this.verboseLogging);
 		request = customizePullPolicy(request);
+		request = customizePublish(request);
 		return request;
 	}
 
@@ -351,6 +373,16 @@ public class BootBuildImage extends DefaultTask {
 		if (this.pullPolicy != null) {
 			request = request.withPullPolicy(this.pullPolicy);
 		}
+		return request;
+	}
+
+	private BuildRequest customizePublish(BuildRequest request) {
+		boolean publishRegistryAuthNotConfigured = this.docker == null || this.docker.getPublishRegistry() == null
+				|| this.docker.getPublishRegistry().hasEmptyAuth();
+		if (this.publish && publishRegistryAuthNotConfigured) {
+			throw new GradleException("Publishing an image requires docker.publishRegistry to be configured");
+		}
+		request = request.withPublish(this.publish);
 		return request;
 	}
 

@@ -178,6 +178,15 @@ class BootBuildImageIntegrationTests {
 				.containsPattern("example/Invalid-Image-Name");
 	}
 
+	@TestTemplate
+	void failsWithPublishMissingPublishRegistry() {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--publishImage");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("requires docker.publishRegistry");
+	}
+
 	private void writeMainClass() {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/example");
 		examplePackage.mkdirs();

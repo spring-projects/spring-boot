@@ -23,6 +23,7 @@ import java.io.OutputStream;
 import java.net.URI;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.system.Environment;
 
@@ -50,6 +51,15 @@ public interface HttpTransport {
 	 * @throws IOException on IO error
 	 */
 	Response post(URI uri) throws IOException;
+
+	/**
+	 * Perform a HTTP POST operation.
+	 * @param uri the destination URI (excluding any host/port)
+	 * @param registryAuth registry authentication credentials
+	 * @return the operation response
+	 * @throws IOException on IO error
+	 */
+	Response post(URI uri, String registryAuth) throws IOException;
 
 	/**
 	 * Perform a HTTP POST operation.
@@ -85,17 +95,17 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create() {
-		return create(new DockerConfiguration());
+		return create(Environment.SYSTEM);
 	}
 
 	/**
 	 * Create the most suitable {@link HttpTransport} based on the
 	 * {@link Environment#SYSTEM system environment}.
-	 * @param dockerConfiguration the Docker engine configuration
+	 * @param dockerHost the Docker engine host configuration
 	 * @return a {@link HttpTransport} instance
 	 */
-	static HttpTransport create(DockerConfiguration dockerConfiguration) {
-		return create(Environment.SYSTEM, dockerConfiguration);
+	static HttpTransport create(DockerHost dockerHost) {
+		return create(Environment.SYSTEM, dockerHost);
 	}
 
 	/**
@@ -105,19 +115,19 @@ public interface HttpTransport {
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create(Environment environment) {
-		return create(environment, new DockerConfiguration());
+		return create(environment, null);
 	}
 
 	/**
 	 * Create the most suitable {@link HttpTransport} based on the given
 	 * {@link Environment} and {@link DockerConfiguration}.
 	 * @param environment the source environment
-	 * @param dockerConfiguration the Docker engine configuration
+	 * @param dockerHost the Docker engine host configuration
 	 * @return a {@link HttpTransport} instance
 	 */
-	static HttpTransport create(Environment environment, DockerConfiguration dockerConfiguration) {
-		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment, dockerConfiguration);
-		return (remote != null) ? remote : LocalHttpClientTransport.create(environment, dockerConfiguration);
+	static HttpTransport create(Environment environment, DockerHost dockerHost) {
+		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment, dockerHost);
+		return (remote != null) ? remote : LocalHttpClientTransport.create(environment);
 	}
 
 	/**

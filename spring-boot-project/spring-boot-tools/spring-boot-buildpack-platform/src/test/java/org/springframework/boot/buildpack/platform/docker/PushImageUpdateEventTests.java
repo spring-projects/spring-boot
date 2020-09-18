@@ -23,22 +23,28 @@ import org.springframework.boot.buildpack.platform.docker.ProgressUpdateEvent.Pr
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link LoadImageUpdateEvent}.
+ * Tests for {@link PushImageUpdateEvent}.
  *
- * @author Phillip Webb
  * @author Scott Frederick
  */
-class LoadImageUpdateEventTests extends ProgressUpdateEventTests<LoadImageUpdateEvent> {
+class PushImageUpdateEventTests extends ProgressUpdateEventTests<PushImageUpdateEvent> {
 
 	@Test
-	void getStreamReturnsStream() {
-		LoadImageUpdateEvent event = createEvent();
-		assertThat(event.getStream()).isEqualTo("stream");
+	void getIdReturnsId() {
+		PushImageUpdateEvent event = createEvent();
+		assertThat(event.getId()).isEqualTo("id");
+	}
+
+	@Test
+	void getErrorReturnsErrorDetail() {
+		PushImageUpdateEvent event = new PushImageUpdateEvent(null, null, null, null,
+				new PushImageUpdateEvent.ErrorDetail("test message"));
+		assertThat(event.getErrorDetail().getMessage()).isEqualTo("test message");
 	}
 
 	@Override
-	protected LoadImageUpdateEvent createEvent(String status, ProgressDetail progressDetail, String progress) {
-		return new LoadImageUpdateEvent("stream", status, progressDetail, progress);
+	protected PushImageUpdateEvent createEvent(String status, ProgressDetail progressDetail, String progress) {
+		return new PushImageUpdateEvent("id", status, progressDetail, progress, null);
 	}
 
 }

@@ -28,9 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
@@ -51,23 +49,21 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 
 	private static final String DOCKER_CERT_PATH = "DOCKER_CERT_PATH";
 
-	private RemoteHttpClientTransport(CloseableHttpClient client, HttpHost host,
-			DockerRegistryAuthentication authentication) {
-		super(client, host, authentication);
+	private RemoteHttpClientTransport(CloseableHttpClient client, HttpHost host) {
+		super(client, host);
 	}
 
-	static RemoteHttpClientTransport createIfPossible(Environment environment,
-			DockerConfiguration dockerConfiguration) {
-		return createIfPossible(environment, dockerConfiguration, new SslContextFactory());
+	static RemoteHttpClientTransport createIfPossible(Environment environment, DockerHost dockerHost) {
+		return createIfPossible(environment, dockerHost, new SslContextFactory());
 	}
 
-	static RemoteHttpClientTransport createIfPossible(Environment environment, DockerConfiguration dockerConfiguration,
+	static RemoteHttpClientTransport createIfPossible(Environment environment, DockerHost dockerHost,
 			SslContextFactory sslContextFactory) {
-		DockerHost host = getHost(environment, dockerConfiguration);
+		DockerHost host = getHost(environment, dockerHost);
 		if (host == null || host.getAddress() == null || isLocalFileReference(host.getAddress())) {
 			return null;
 		}
-		return create(host, dockerConfiguration, sslContextFactory, HttpHost.create(host.getAddress()));
+		return create(host, sslContextFactory, HttpHost.create(host.getAddress()));
 	}
 
 	private static boolean isLocalFileReference(String host) {
@@ -80,16 +76,15 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		}
 	}
 
-	private static RemoteHttpClientTransport create(DockerHost host, DockerConfiguration dockerConfiguration,
-			SslContextFactory sslContextFactory, HttpHost tcpHost) {
+	private static RemoteHttpClientTransport create(DockerHost host, SslContextFactory sslContextFactory,
+			HttpHost tcpHost) {
 		HttpClientBuilder builder = HttpClients.custom();
 		if (host.isSecure()) {
 			builder.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory));
 		}
 		String scheme = host.isSecure() ? "https" : "http";
 		HttpHost httpHost = new HttpHost(tcpHost.getHostName(), tcpHost.getPort(), scheme);
-		return new RemoteHttpClientTransport(builder.build(), httpHost,
-				(dockerConfiguration != null) ? dockerConfiguration.getRegistryAuthentication() : null);
+		return new RemoteHttpClientTransport(builder.build(), httpHost);
 	}
 
 	private static LayeredConnectionSocketFactory getSecureConnectionSocketFactory(DockerHost host,
@@ -101,14 +96,11 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		return new SSLConnectionSocketFactory(sslContext);
 	}
 
-	private static DockerHost getHost(Environment environment, DockerConfiguration dockerConfiguration) {
+	private static DockerHost getHost(Environment environment, DockerHost dockerHost) {
 		if (environment.get(DOCKER_HOST) != null) {
 			return new EnvironmentDockerHost(environment);
 		}
-		if (dockerConfiguration != null && dockerConfiguration.getHost() != null) {
-			return dockerConfiguration.getHost();
-		}
-		return null;
+		return dockerHost;
 	}
 
 	private static class EnvironmentDockerHost extends DockerHost {

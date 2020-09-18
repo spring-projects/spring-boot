@@ -38,8 +38,6 @@ import org.apache.http.impl.conn.BasicHttpClientConnectionManager;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.Args;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.socket.DomainSocket;
 import org.springframework.boot.buildpack.platform.socket.NamedPipeSocket;
 import org.springframework.boot.buildpack.platform.system.Environment;
@@ -58,16 +56,15 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 	private static final HttpHost LOCAL_DOCKER_HOST = HttpHost.create("docker://localhost");
 
-	private LocalHttpClientTransport(CloseableHttpClient client, DockerRegistryAuthentication authentication) {
-		super(client, LOCAL_DOCKER_HOST, authentication);
+	private LocalHttpClientTransport(CloseableHttpClient client) {
+		super(client, LOCAL_DOCKER_HOST);
 	}
 
-	static LocalHttpClientTransport create(Environment environment, DockerConfiguration dockerConfiguration) {
+	static LocalHttpClientTransport create(Environment environment) {
 		HttpClientBuilder builder = HttpClients.custom();
 		builder.setConnectionManager(new LocalConnectionManager(socketFilePath(environment)));
 		builder.setSchemePortResolver(new LocalSchemePortResolver());
-		return new LocalHttpClientTransport(builder.build(),
-				(dockerConfiguration != null) ? dockerConfiguration.getRegistryAuthentication() : null);
+		return new LocalHttpClientTransport(builder.build());
 	}
 
 	private static String socketFilePath(Environment environment) {

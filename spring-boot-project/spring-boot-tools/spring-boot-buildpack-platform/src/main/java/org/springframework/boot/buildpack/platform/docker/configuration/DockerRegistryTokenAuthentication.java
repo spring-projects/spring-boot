@@ -30,6 +30,7 @@ class DockerRegistryTokenAuthentication extends JsonEncodedDockerRegistryAuthent
 
 	DockerRegistryTokenAuthentication(String token) {
 		this.token = token;
+		createAuthHeader();
 	}
 
 	String getToken() {

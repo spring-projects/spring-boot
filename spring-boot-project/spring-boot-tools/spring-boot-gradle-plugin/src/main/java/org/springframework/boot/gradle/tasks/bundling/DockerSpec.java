@@ -41,14 +41,18 @@ public class DockerSpec {
 
 	private String certPath;
 
-	private final DockerRegistrySpec registry;
+	private final DockerRegistrySpec builderRegistry;
+
+	private final DockerRegistrySpec publishRegistry;
 
 	public DockerSpec() {
-		this.registry = new DockerRegistrySpec();
+		this.builderRegistry = new DockerRegistrySpec();
+		this.publishRegistry = new DockerRegistrySpec();
 	}
 
-	DockerSpec(DockerRegistrySpec registry) {
-		this.registry = registry;
+	DockerSpec(DockerRegistrySpec builderRegistry, DockerRegistrySpec publishRegistry) {
+		this.builderRegistry = builderRegistry;
+		this.publishRegistry = publishRegistry;
 	}
 
 	@Input
@@ -82,28 +86,59 @@ public class DockerSpec {
 	}
 
 	/**
-	 * Returns the {@link DockerRegistrySpec} that configures registry authentication.
+	 * Returns the {@link DockerRegistrySpec} that configures authentication to the
+	 * builder registry.
 	 * @return the registry spec
 	 */
 	@Nested
-	public DockerRegistrySpec getRegistry() {
-		return this.registry;
+	public DockerRegistrySpec getBuilderRegistry() {
+		return this.builderRegistry;
 	}
 
 	/**
-	 * Customizes the {@link DockerRegistrySpec} that configures registry authentication.
+	 * Customizes the {@link DockerRegistrySpec} that configures authentication to the
+	 * builder registry.
 	 * @param action the action to apply
 	 */
-	public void registry(Action<DockerRegistrySpec> action) {
-		action.execute(this.registry);
+	public void builderRegistry(Action<DockerRegistrySpec> action) {
+		action.execute(this.builderRegistry);
 	}
 
 	/**
-	 * Customizes the {@link DockerRegistrySpec} that configures registry authentication.
+	 * Customizes the {@link DockerRegistrySpec} that configures authentication to the
+	 * builder registry.
 	 * @param closure the closure to apply
 	 */
-	public void registry(Closure<?> closure) {
-		registry(ConfigureUtil.configureUsing(closure));
+	public void builderRegistry(Closure<?> closure) {
+		builderRegistry(ConfigureUtil.configureUsing(closure));
+	}
+
+	/**
+	 * Returns the {@link DockerRegistrySpec} that configures authentication to the
+	 * publishing registry.
+	 * @return the registry spec
+	 */
+	@Nested
+	public DockerRegistrySpec getPublishRegistry() {
+		return this.publishRegistry;
+	}
+
+	/**
+	 * Customizes the {@link DockerRegistrySpec} that configures authentication to the
+	 * publishing registry.
+	 * @param action the action to apply
+	 */
+	public void publishRegistry(Action<DockerRegistrySpec> action) {
+		action.execute(this.publishRegistry);
+	}
+
+	/**
+	 * Customizes the {@link DockerRegistrySpec} that configures authentication to the
+	 * publishing registry.
+	 * @param closure the closure to apply
+	 */
+	public void publishRegistry(Closure<?> closure) {
+		publishRegistry(ConfigureUtil.configureUsing(closure));
 	}
 
 	/**
@@ -115,7 +150,8 @@ public class DockerSpec {
 	DockerConfiguration asDockerConfiguration() {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
-		dockerConfiguration = customizeAuthentication(dockerConfiguration);
+		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
+		dockerConfiguration = customizePublishAuthentication(dockerConfiguration);
 		return dockerConfiguration;
 	}
 
@@ -126,19 +162,34 @@ public class DockerSpec {
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeAuthentication(DockerConfiguration dockerConfiguration) {
-		if (this.registry == null || this.registry.hasEmptyAuth()) {
+	private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
+		if (this.builderRegistry == null || this.builderRegistry.hasEmptyAuth()) {
 			return dockerConfiguration;
 		}
-		if (this.registry.hasTokenAuth() && !this.registry.hasUserAuth()) {
-			return dockerConfiguration.withRegistryTokenAuthentication(this.registry.getToken());
+		if (this.builderRegistry.hasTokenAuth() && !this.builderRegistry.hasUserAuth()) {
+			return dockerConfiguration.withBuilderRegistryTokenAuthentication(this.builderRegistry.getToken());
 		}
-		if (this.registry.hasUserAuth() && !this.registry.hasTokenAuth()) {
-			return dockerConfiguration.withRegistryUserAuthentication(this.registry.getUsername(),
-					this.registry.getPassword(), this.registry.getUrl(), this.registry.getEmail());
+		if (this.builderRegistry.hasUserAuth() && !this.builderRegistry.hasTokenAuth()) {
+			return dockerConfiguration.withBuilderRegistryUserAuthentication(this.builderRegistry.getUsername(),
+					this.builderRegistry.getPassword(), this.builderRegistry.getUrl(), this.builderRegistry.getEmail());
 		}
 		throw new GradleException(
-				"Invalid Docker registry configuration, either token or username/password must be provided");
+				"Invalid Docker builder registry configuration, either token or username/password must be provided");
+	}
+
+	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
+		if (this.publishRegistry == null || this.publishRegistry.hasEmptyAuth()) {
+			return dockerConfiguration;
+		}
+		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
+			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken());
+		}
+		if (this.publishRegistry.hasUserAuth() && !this.publishRegistry.hasTokenAuth()) {
+			return dockerConfiguration.withPublishRegistryUserAuthentication(this.publishRegistry.getUsername(),
+					this.publishRegistry.getPassword(), this.publishRegistry.getUrl(), this.publishRegistry.getEmail());
+		}
+		throw new GradleException(
+				"Invalid Docker publish registry configuration, either token or username/password must be provided");
 	}
 
 	/**
@@ -155,6 +206,20 @@ public class DockerSpec {
 		private String email;
 
 		private String token;
+
+		public DockerRegistrySpec() {
+		}
+
+		DockerRegistrySpec(String username, String password, String url, String email) {
+			this.username = username;
+			this.password = password;
+			this.url = url;
+			this.email = email;
+		}
+
+		DockerRegistrySpec(String token) {
+			this.token = token;
+		}
 
 		/**
 		 * Returns the username to use when authenticating to the Docker registry.

@@ -10,7 +10,7 @@ bootJar {
 // tag::docker-auth-token[]
 bootBuildImage {
 	docker {
-		registry {
+		builderRegistry {
 			token = "9cbaf023786cd7..."
 		}
 	}

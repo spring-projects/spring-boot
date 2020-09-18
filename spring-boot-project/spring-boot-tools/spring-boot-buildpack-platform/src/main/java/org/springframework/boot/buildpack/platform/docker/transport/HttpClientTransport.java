@@ -36,7 +36,6 @@ import org.apache.http.client.methods.HttpUriRequest;
 import org.apache.http.entity.AbstractHttpEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
@@ -53,19 +52,17 @@ import org.springframework.util.StringUtils;
  */
 abstract class HttpClientTransport implements HttpTransport {
 
+	static final String REGISTRY_AUTH_HEADER = "X-Registry-Auth";
+
 	private final CloseableHttpClient client;
 
 	private final HttpHost host;
 
-	private final String registryAuthHeader;
-
-	protected HttpClientTransport(CloseableHttpClient client, HttpHost host,
-			DockerRegistryAuthentication authentication) {
+	protected HttpClientTransport(CloseableHttpClient client, HttpHost host) {
 		Assert.notNull(client, "Client must not be null");
 		Assert.notNull(host, "Host must not be null");
 		this.client = client;
 		this.host = host;
-		this.registryAuthHeader = buildRegistryAuthHeader(authentication);
 	}
 
 	/**
@@ -86,6 +83,17 @@ abstract class HttpClientTransport implements HttpTransport {
 	@Override
 	public Response post(URI uri) {
 		return execute(new HttpPost(uri));
+	}
+
+	/**
+	 * Perform a HTTP POST operation.
+	 * @param uri the destination URI
+	 * @param registryAuth registry authentication credentials
+	 * @return the operation response
+	 */
+	@Override
+	public Response post(URI uri, String registryAuth) {
+		return execute(new HttpPost(uri), registryAuth);
 	}
 
 	/**
@@ -122,11 +130,6 @@ abstract class HttpClientTransport implements HttpTransport {
 		return execute(new HttpDelete(uri));
 	}
 
-	private String buildRegistryAuthHeader(DockerRegistryAuthentication authentication) {
-		String authHeader = (authentication != null) ? authentication.createAuthHeader() : null;
-		return (StringUtils.hasText(authHeader)) ? authHeader : null;
-	}
-
 	private Response execute(HttpEntityEnclosingRequestBase request, String contentType,
 			IOConsumer<OutputStream> writer) {
 		request.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
@@ -134,11 +137,15 @@ abstract class HttpClientTransport implements HttpTransport {
 		return execute(request);
 	}
 
+	private Response execute(HttpEntityEnclosingRequestBase request, String registryAuth) {
+		if (StringUtils.hasText(registryAuth)) {
+			request.setHeader(REGISTRY_AUTH_HEADER, registryAuth);
+		}
+		return execute(request);
+	}
+
 	private Response execute(HttpUriRequest request) {
 		try {
-			if (this.registryAuthHeader != null) {
-				request.addHeader("X-Registry-Auth", this.registryAuthHeader);
-			}
 			CloseableHttpResponse response = this.client.execute(this.host, request);
 			StatusLine statusLine = response.getStatusLine();
 			int statusCode = statusLine.getStatusCode();

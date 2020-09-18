@@ -56,11 +56,14 @@ For more details, see also <<build-image-example-docker,examples>>.
 
 [[build-image-docker-registry]]
 === Docker Registry
-If the Docker images specified by the `builder` or `runImage` parameters are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.registry` properties.
-Properties are provided for user authentication or identity token authentication.
-Consult the documentation for the Docker registry being used to store builder or run images for further information on supported authentication methods.
+If the Docker images specified by the `builder` or `runImage` properties are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.builderRegistry` properties.
 
-The following table summarizes the available properties:
+If the generated Docker image is to be published to a Docker image registry, the authentication credentials can be provided using `docker.publishRegistry` properties.
+
+Properties are provided for user authentication or identity token authentication.
+Consult the documentation for the Docker registry being used to store images for further information on supported authentication methods.
+
+The following table summarizes the available properties for `docker.builderRegistry` and `docker.publishRegistry`:
 
 |===
 | Property | Description
@@ -132,6 +135,11 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `verboseLogging`
 |
 | Enables verbose logging of builder operations.
+| `false`
+
+| `publish`
+| `--publishImage`
+| Whether to publish the generated image to a Docker registry.
 | `false`
 |===
 
@@ -236,6 +244,29 @@ The image name can be specified on the command line as well, as shown in this ex
 	$ gradle bootBuildImage --imageName=example.com/library/my-app:v1
 ----
 
+[[build-image-example-publish]]
+==== Image Publishing
+The generated image can be published to a Docker registry by enabling a `publish` option and configuring authentication for the registry using `docker.publishRegistry` properties.
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-build-image-publish.gradle[tags=publish]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-build-image-publish.gradle.kts[tags=publish]
+----
+
+The publish option can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+	$ gradle bootBuildImage --imageName=docker.example.com/library/my-app:v1 --publishImage
+----
+
 [[build-image-example-docker]]
 ==== Docker Configuration
 If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` properties as shown in the following example:
@@ -252,7 +283,7 @@ include::../gradle/packaging/boot-build-image-docker-host.gradle[tags=docker-hos
 include::../gradle/packaging/boot-build-image-docker-host.gradle.kts[tags=docker-host]
 ----
 
-If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.registry` properties as shown in the following example:
+If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.buiderRegistry` properties as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -266,7 +297,7 @@ include::../gradle/packaging/boot-build-image-docker-auth-user.gradle[tags=docke
 include::../gradle/packaging/boot-build-image-docker-auth-user.gradle.kts[tags=docker-auth-user]
 ----
 
-If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.registry` as shown in the following example:
+If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.builderRegistry` as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

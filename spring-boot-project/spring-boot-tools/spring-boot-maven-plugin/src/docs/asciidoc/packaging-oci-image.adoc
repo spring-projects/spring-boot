@@ -79,11 +79,14 @@ For more details, see also <<build-image-example-docker,examples>>.
 
 [[build-image-docker-registry]]
 === Docker Registry
-If the Docker images specified by the `builder` or `runImage` parameters are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.registry` parameters.
-Parameters are provided for user authentication or identity token authentication.
-Consult the documentation for the Docker registry being used to store builder or run images for further information on supported authentication methods.
+If the Docker images specified by the `builder` or `runImage` parameters are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.builderRegistry` parameters.
 
-The following table summarizes the available parameters:
+If the generated Docker image is to be published to a Docker image registry, the authentication credentials can be provided using `docker.publishRegistry` parameters.
+
+Parameters are provided for user authentication or identity token authentication.
+Consult the documentation for the Docker registry being used to store images for further information on supported authentication methods.
+
+The following table summarizes the available parameters for `docker.builderRegistry` and `docker.publishRegistry`:
 
 |===
 | Parameter | Description
@@ -155,6 +158,11 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 | `verboseLogging`
 | Enables verbose logging of builder operations.
 |
+| `false`
+
+| `publish`
+| Whether to publish the generated image to a Docker registry.
+| `spring-boot.build-image.publish`
 | `false`
 |===
 
@@ -303,6 +311,48 @@ The image name can be specified on the command line as well, as shown in this ex
 
 
 
+[[build-image-example-publish]]
+==== Image Publishing
+The generated image can be published to a Docker registry by enabling a `publish` option and configuring authentication for the registry using `docker.publishRegistry` parameters.
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<version>{gradle-project-version}</version>
+					<configuration>
+						<image>
+							<name>docker.example.com/library/${project.artifactId}</name>
+							<publish>true</publish>
+						</image>
+						<docker>
+							<publishRegistry>
+								<username>user</username>
+								<password>secret</password>
+								<url>https://docker.example.com/v1/</url>
+								<email>user@example.com</email>
+							</builderpublish>
+						</docker>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+The `publish` option can be specified on the command line as well, as shown in this example:
+
+[indent=0]
+----
+	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=docker.example.com/library/my-app:v1 -Dspring-boot.build-image.publish=true
+----
+
+
+
 [[build-image-example-docker]]
 ==== Docker Configuration
 If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` parameters as shown in the following example:
@@ -329,7 +379,7 @@ If you need the plugin to communicate with the Docker daemon using a remote conn
 	</project>
 ----
 
-If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.registry` parameters as shown in the following example:
+If the builder or run image are stored in a private Docker registry that supports user authentication, authentication details can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -342,12 +392,12 @@ If the builder or run image are stored in a private Docker registry that support
 					<version>{gradle-project-version}</version>
 					<configuration>
 						<docker>
-							<registry>
+							<builderRegistry>
 								<username>user</username>
 								<password>secret</password>
 								<url>https://docker.example.com/v1/</url>
 								<email>user@example.com</email>
-							</registry>
+							</builderRegistry>
 						</docker>
 					</configuration>
 				</plugin>
@@ -356,7 +406,7 @@ If the builder or run image are stored in a private Docker registry that support
 	</project>
 ----
 
-If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.registry` parameters as shown in the following example:
+If the builder or run image is stored in a private Docker registry that supports token authentication, the token value can be provided using `docker.builderRegistry` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -369,9 +419,9 @@ If the builder or run image is stored in a private Docker registry that supports
 					<version>{gradle-project-version}</version>
 					<configuration>
 						<docker>
-							<registry>
+							<builderRegistry>
 								<token>9cbaf023786cd7...</token>
-							</registry>
+							</builderRegistry>
 						</docker>
 					</configuration>
 				</plugin>

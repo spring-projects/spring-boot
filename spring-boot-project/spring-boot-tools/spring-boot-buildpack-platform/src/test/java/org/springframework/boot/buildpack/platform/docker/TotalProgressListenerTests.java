@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
@@ -33,13 +34,14 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TotalProgressPullListener}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-class TotalProgressPullListenerTests extends AbstractJsonTests {
+class TotalProgressListenerTests extends AbstractJsonTests {
 
 	@Test
 	void totalProgress() throws Exception {
 		List<Integer> progress = new ArrayList<>();
-		TotalProgressPullListener listener = new TotalProgressPullListener((event) -> progress.add(event.getPercent()));
+		TestTotalProgressListener listener = new TestTotalProgressListener((event) -> progress.add(event.getPercent()));
 		run(listener);
 		int last = 0;
 		for (Integer update : progress) {
@@ -52,32 +54,40 @@ class TotalProgressPullListenerTests extends AbstractJsonTests {
 	@Test
 	@Disabled("For visual inspection")
 	void totalProgressUpdatesSmoothly() throws Exception {
-		TestTotalProgressPullListener listener = new TestTotalProgressPullListener(
-				new TotalProgressBar("Pulling layers:"));
+		TestTotalProgressListener listener = new TestTotalProgressListener(new TotalProgressBar("Pulling layers:"));
 		run(listener);
 	}
 
-	private void run(TotalProgressPullListener listener) throws IOException {
+	private void run(TestTotalProgressListener listener) throws IOException {
 		JsonStream jsonStream = new JsonStream(getObjectMapper());
 		listener.onStart();
-		jsonStream.get(getContent("pull-stream.json"), PullImageUpdateEvent.class, listener::onUpdate);
+		jsonStream.get(getContent("pull-stream.json"), TestImageUpdateEvent.class, listener::onUpdate);
 		listener.onFinish();
 	}
 
-	private static class TestTotalProgressPullListener extends TotalProgressPullListener {
+	private static class TestTotalProgressListener extends TotalProgressListener<TestImageUpdateEvent> {
 
-		TestTotalProgressPullListener(Consumer<TotalProgressEvent> consumer) {
-			super(consumer);
+		TestTotalProgressListener(Consumer<TotalProgressEvent> consumer) {
+			super(consumer, new String[] { "Pulling", "Downloading", "Extracting" });
 		}
 
 		@Override
-		public void onUpdate(PullImageUpdateEvent event) {
+		public void onUpdate(TestImageUpdateEvent event) {
 			super.onUpdate(event);
 			try {
 				Thread.sleep(10);
 			}
 			catch (InterruptedException ex) {
 			}
+		}
+
+	}
+
+	private static class TestImageUpdateEvent extends ImageProgressUpdateEvent {
+
+		@JsonCreator
+		TestImageUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress) {
+			super(id, status, progressDetail, progress);
 		}
 
 	}

@@ -78,7 +78,7 @@ public class DockerApi {
 	 * @since 2.4.0
 	 */
 	public DockerApi(DockerConfiguration dockerConfiguration) {
-		this(HttpTransport.create(dockerConfiguration));
+		this(HttpTransport.create((dockerConfiguration != null) ? dockerConfiguration.getHost() : null));
 	}
 
 	/**
@@ -156,19 +156,59 @@ public class DockerApi {
 		 * @throws IOException on IO error
 		 */
 		public Image pull(ImageReference reference, UpdateListener<PullImageUpdateEvent> listener) throws IOException {
+			return pull(reference, listener, null);
+		}
+
+		/**
+		 * Pull an image from a registry.
+		 * @param reference the image reference to pull
+		 * @param listener a pull listener to receive update events
+		 * @param registryAuth registry authentication credentials
+		 * @return the {@link ImageApi pulled image} instance
+		 * @throws IOException on IO error
+		 */
+		public Image pull(ImageReference reference, UpdateListener<PullImageUpdateEvent> listener, String registryAuth)
+				throws IOException {
 			Assert.notNull(reference, "Reference must not be null");
 			Assert.notNull(listener, "Listener must not be null");
 			URI createUri = buildUrl("/images/create", "fromImage", reference.toString());
 			DigestCaptureUpdateListener digestCapture = new DigestCaptureUpdateListener();
 			listener.onStart();
 			try {
-				try (Response response = http().post(createUri)) {
+				try (Response response = http().post(createUri, registryAuth)) {
 					jsonStream().get(response.getContent(), PullImageUpdateEvent.class, (event) -> {
 						digestCapture.onUpdate(event);
 						listener.onUpdate(event);
 					});
 				}
 				return inspect(reference.withDigest(digestCapture.getCapturedDigest()));
+			}
+			finally {
+				listener.onFinish();
+			}
+		}
+
+		/**
+		 * Push an image to a registry.
+		 * @param reference the image reference to push
+		 * @param listener a push listener to receive update events
+		 * @param registryAuth registry authentication credentials
+		 * @throws IOException on IO error
+		 */
+		public void push(ImageReference reference, UpdateListener<PushImageUpdateEvent> listener, String registryAuth)
+				throws IOException {
+			Assert.notNull(reference, "Reference must not be null");
+			Assert.notNull(listener, "Listener must not be null");
+			URI pushUri = buildUrl("/images/" + reference + "/push");
+			ErrorCaptureUpdateListener errorListener = new ErrorCaptureUpdateListener();
+			listener.onStart();
+			try {
+				try (Response response = http().post(pushUri, registryAuth)) {
+					jsonStream().get(response.getContent(), PushImageUpdateEvent.class, (event) -> {
+						errorListener.onUpdate(event);
+						listener.onUpdate(event);
+					});
+				}
 			}
 			finally {
 				listener.onFinish();
@@ -394,6 +434,20 @@ public class DockerApi {
 
 		String getCapturedStream() {
 			return this.stream;
+		}
+
+	}
+
+	/**
+	 * {@link UpdateListener} used to capture the details of an error in a response
+	 * stream.
+	 */
+	private static class ErrorCaptureUpdateListener implements UpdateListener<PushImageUpdateEvent> {
+
+		@Override
+		public void onUpdate(PushImageUpdateEvent event) {
+			Assert.state(event.getErrorDetail() == null,
+					() -> "Error response received when pushing image: " + event.getErrorDetail().getMessage());
 		}
 
 	}

@@ -29,13 +29,15 @@ import org.springframework.util.StreamUtils;
 
 /**
  * Tests for {@link DockerRegistryTokenAuthentication}.
+ *
+ * @author Scott Frederick
  */
 class DockerRegistryTokenAuthenticationTests extends AbstractJsonTests {
 
 	@Test
 	void createAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryTokenAuthentication auth = new DockerRegistryTokenAuthentication("tokenvalue");
-		String header = auth.createAuthHeader();
+		String header = auth.getAuthHeader();
 		String expectedJson = StreamUtils.copyToString(getContent("auth-token.json"), StandardCharsets.UTF_8);
 		JSONAssert.assertEquals(expectedJson, new String(Base64Utils.decodeFromUrlSafeString(header)), false);
 	}

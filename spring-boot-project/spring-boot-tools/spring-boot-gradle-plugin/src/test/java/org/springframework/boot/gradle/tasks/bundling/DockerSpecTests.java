@@ -21,7 +21,6 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
-import org.springframework.boot.buildpack.platform.docker.configuration.DockerRegistryAuthentication;
 import org.springframework.util.Base64Utils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,7 +38,8 @@ public class DockerSpecTests {
 	void asDockerConfigurationWithDefaults() {
 		DockerSpec dockerSpec = new DockerSpec();
 		assertThat(dockerSpec.asDockerConfiguration().getHost()).isNull();
-		assertThat(dockerSpec.asDockerConfiguration().getRegistryAuthentication()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
 	}
 
 	@Test
@@ -53,7 +53,8 @@ public class DockerSpecTests {
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
 		assertThat(host.isSecure()).isEqualTo(true);
 		assertThat(host.getCertificatePath()).isEqualTo("/tmp/ca-cert");
-		assertThat(dockerSpec.asDockerConfiguration().getRegistryAuthentication()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
 	}
 
 	@Test
@@ -65,59 +66,71 @@ public class DockerSpecTests {
 		assertThat(host.getAddress()).isEqualTo("docker.example.com");
 		assertThat(host.isSecure()).isEqualTo(false);
 		assertThat(host.getCertificatePath()).isNull();
-		assertThat(dockerSpec.asDockerConfiguration().getRegistryAuthentication()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getBuilderRegistryAuthentication()).isNull();
+		assertThat(dockerSpec.asDockerConfiguration().getPublishRegistryAuthentication()).isNull();
 	}
 
 	@Test
 	void asDockerConfigurationWithUserAuth() {
-		DockerSpec.DockerRegistrySpec dockerRegistry = new DockerSpec.DockerRegistrySpec();
-		dockerRegistry.setUsername("user");
-		dockerRegistry.setPassword("secret");
-		dockerRegistry.setUrl("https://docker.example.com");
-		dockerRegistry.setEmail("docker@example.com");
-		DockerSpec dockerSpec = new DockerSpec(dockerRegistry);
+		DockerSpec dockerSpec = new DockerSpec(
+				new DockerSpec.DockerRegistrySpec("user1", "secret1", "https://docker1.example.com",
+						"docker1@example.com"),
+				new DockerSpec.DockerRegistrySpec("user2", "secret2", "https://docker2.example.com",
+						"docker2@example.com"));
 		DockerConfiguration dockerConfiguration = dockerSpec.asDockerConfiguration();
-		DockerRegistryAuthentication registryAuthentication = dockerConfiguration.getRegistryAuthentication();
-		assertThat(registryAuthentication).isNotNull();
-		assertThat(new String(Base64Utils.decodeFromString(registryAuthentication.createAuthHeader())))
-				.contains("\"username\" : \"user\"").contains("\"password\" : \"secret\"")
-				.contains("\"email\" : \"docker@example.com\"")
-				.contains("\"serveraddress\" : \"https://docker.example.com\"");
+		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"user1\"").contains("\"password\" : \"secret1\"")
+				.contains("\"email\" : \"docker1@example.com\"")
+				.contains("\"serveraddress\" : \"https://docker1.example.com\"");
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"username\" : \"user2\"").contains("\"password\" : \"secret2\"")
+				.contains("\"email\" : \"docker2@example.com\"")
+				.contains("\"serveraddress\" : \"https://docker2.example.com\"");
 		assertThat(dockerSpec.asDockerConfiguration().getHost()).isNull();
 	}
 
 	@Test
-	void asDockerConfigurationWithIncompleteUserAuthFails() {
-		DockerSpec.DockerRegistrySpec dockerRegistry = new DockerSpec.DockerRegistrySpec();
-		dockerRegistry.setUsername("user");
-		dockerRegistry.setUrl("https://docker.example.com");
-		dockerRegistry.setEmail("docker@example.com");
-		DockerSpec dockerSpec = new DockerSpec(dockerRegistry);
+	void asDockerConfigurationWithIncompleteBuilderUserAuthFails() {
+		DockerSpec.DockerRegistrySpec builderRegistry = new DockerSpec.DockerRegistrySpec("user", null,
+				"https://docker.example.com", "docker@example.com");
+		DockerSpec dockerSpec = new DockerSpec(builderRegistry, null);
 		assertThatExceptionOfType(GradleException.class).isThrownBy(dockerSpec::asDockerConfiguration)
-				.withMessageContaining("Invalid Docker registry configuration");
+				.withMessageContaining("Invalid Docker builder registry configuration");
+	}
+
+	@Test
+	void asDockerConfigurationWithIncompletePublishUserAuthFails() {
+		DockerSpec.DockerRegistrySpec publishRegistry = new DockerSpec.DockerRegistrySpec("user2", null,
+				"https://docker2.example.com", "docker2@example.com");
+		DockerSpec dockerSpec = new DockerSpec(null, publishRegistry);
+		assertThatExceptionOfType(GradleException.class).isThrownBy(dockerSpec::asDockerConfiguration)
+				.withMessageContaining("Invalid Docker publish registry configuration");
 	}
 
 	@Test
 	void asDockerConfigurationWithTokenAuth() {
-		DockerSpec.DockerRegistrySpec dockerRegistry = new DockerSpec.DockerRegistrySpec();
-		dockerRegistry.setToken("token");
-		DockerSpec dockerSpec = new DockerSpec(dockerRegistry);
+		DockerSpec dockerSpec = new DockerSpec(new DockerSpec.DockerRegistrySpec("token1"),
+				new DockerSpec.DockerRegistrySpec("token2"));
 		DockerConfiguration dockerConfiguration = dockerSpec.asDockerConfiguration();
-		DockerRegistryAuthentication registryAuthentication = dockerConfiguration.getRegistryAuthentication();
-		assertThat(registryAuthentication).isNotNull();
-		assertThat(new String(Base64Utils.decodeFromString(registryAuthentication.createAuthHeader())))
-				.contains("\"identitytoken\" : \"token\"");
+		assertThat(decoded(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader()))
+				.contains("\"identitytoken\" : \"token1\"");
+		assertThat(decoded(dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader()))
+				.contains("\"identitytoken\" : \"token2\"");
 	}
 
 	@Test
 	void asDockerConfigurationWithUserAndTokenAuthFails() {
-		DockerSpec.DockerRegistrySpec dockerRegistry = new DockerSpec.DockerRegistrySpec();
-		dockerRegistry.setUsername("user");
-		dockerRegistry.setPassword("secret");
-		dockerRegistry.setToken("token");
-		DockerSpec dockerSpec = new DockerSpec(dockerRegistry);
+		DockerSpec.DockerRegistrySpec builderRegistry = new DockerSpec.DockerRegistrySpec();
+		builderRegistry.setUsername("user");
+		builderRegistry.setPassword("secret");
+		builderRegistry.setToken("token");
+		DockerSpec dockerSpec = new DockerSpec(builderRegistry, null);
 		assertThatExceptionOfType(GradleException.class).isThrownBy(dockerSpec::asDockerConfiguration)
-				.withMessageContaining("Invalid Docker registry configuration");
+				.withMessageContaining("Invalid Docker builder registry configuration");
+	}
+
+	String decoded(String value) {
+		return new String(Base64Utils.decodeFromString(value));
 	}
 
 }

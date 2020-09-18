@@ -100,8 +100,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private String classifier;
 
 	/**
-	 * Image configuration, with `builder`, `runImage`, `name`, `env`, `cleanCache` and
-	 * `verboseLogging` options.
+	 * Image configuration, with `builder`, `runImage`, `name`, `env`, `cleanCache`,
+	 * `verboseLogging`, and `publish` options.
 	 * @since 2.3.0
 	 */
 	@Parameter
@@ -137,6 +137,12 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	PullPolicy pullPolicy;
 
 	/**
+	 * Alias for {@link Image#publish} to support configuration via command-line property.
+	 */
+	@Parameter(property = "spring-boot.build-image.publish", readonly = true)
+	Boolean publish;
+
+	/**
 	 * Docker configuration options.
 	 * @since 2.4.0
 	 */
@@ -170,7 +176,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		}
 	}
 
-	private BuildRequest getBuildRequest(Libraries libraries) {
+	private BuildRequest getBuildRequest(Libraries libraries) throws MojoExecutionException {
 		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries);
 		Image image = (this.image != null) ? this.image : new Image();
 		if (image.name == null && this.imageName != null) {
@@ -185,7 +191,18 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		if (image.pullPolicy == null && this.pullPolicy != null) {
 			image.setPullPolicy(this.pullPolicy);
 		}
+		if (image.publish == null && this.publish != null) {
+			image.setPublish(this.publish);
+		}
+		if (image.publish != null && image.publish && publishRegistryNotConfigured()) {
+			throw new MojoExecutionException("Publishing an image requires docker.publishRegistry to be configured");
+		}
 		return customize(image.getBuildRequest(this.project.getArtifact(), content));
+	}
+
+	private boolean publishRegistryNotConfigured() {
+		return this.docker == null || this.docker.getPublishRegistry() == null
+				|| this.docker.getPublishRegistry().isEmpty();
 	}
 
 	private TarArchive getApplicationContent(Owner owner, Libraries libraries) {

@@ -22,17 +22,23 @@ import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Base64Utils;
 
 /**
- * {@link DockerRegistryAuthentication} that uses creates a Base64 encoded auth header
- * value based on the JSON created from the instance.
+ * {@link DockerRegistryAuthentication} that uses a Base64 encoded auth header value based
+ * on the JSON created from the instance.
  *
  * @author Scott Frederick
  */
 class JsonEncodedDockerRegistryAuthentication implements DockerRegistryAuthentication {
 
+	private String authHeader;
+
 	@Override
-	public String createAuthHeader() {
+	public String getAuthHeader() {
+		return this.authHeader;
+	}
+
+	protected void createAuthHeader() {
 		try {
-			return Base64Utils.encodeToUrlSafeString(SharedObjectMapper.get().writeValueAsBytes(this));
+			this.authHeader = Base64Utils.encodeToUrlSafeString(SharedObjectMapper.get().writeValueAsBytes(this));
 		}
 		catch (JsonProcessingException ex) {
 			throw new IllegalStateException("Error creating Docker registry authentication header", ex);

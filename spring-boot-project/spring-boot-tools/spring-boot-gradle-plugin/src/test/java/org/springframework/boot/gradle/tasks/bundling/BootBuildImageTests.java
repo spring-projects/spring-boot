@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -30,6 +31,7 @@ import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BootBuildImage}.
@@ -172,6 +174,18 @@ class BootBuildImageTests {
 	void whenCleanCacheIsEnabledThenRequestHasCleanCacheEnabled() {
 		this.buildImage.setCleanCache(true);
 		assertThat(this.buildImage.createRequest().isCleanCache()).isTrue();
+	}
+
+	@Test
+	void whenUsingDefaultConfigurationThenRequestHasPublishDisabled() {
+		assertThat(this.buildImage.createRequest().isPublish()).isFalse();
+	}
+
+	@Test
+	void whenPublishIsEnabledWithoutPublishRegistryThenExceptionIsThrown() {
+		this.buildImage.setPublish(true);
+		assertThatExceptionOfType(GradleException.class).isThrownBy(this.buildImage::createRequest)
+				.withMessageContaining("Publishing an image requires docker.publishRegistry to be configured");
 	}
 
 	@Test

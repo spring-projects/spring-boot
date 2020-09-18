@@ -7,10 +7,12 @@ bootJar {
 	mainClassName 'com.example.ExampleApplication'
 }
 
-// tag::docker-auth-user[]
+// tag::publish[]
 bootBuildImage {
+	imageName = "docker.example.com/library/${project.name}"
+	publish = true
 	docker {
-		builderRegistry {
+		publishRegistry {
 			username = "user"
 			password = "secret"
 			url = "https://docker.example.com/v1/"
@@ -18,4 +20,4 @@ bootBuildImage {
 		}
 	}
 }
-// end::docker-auth-user[]
+// end::publish[]

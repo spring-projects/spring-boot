@@ -14,38 +14,30 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.buildpack.platform.docker.configuration;
+package org.springframework.boot.buildpack.platform.docker;
 
 /**
- * Docker host connection options.
+ * A {@link ProgressUpdateEvent} fired for image events.
  *
+ * @author Phillip Webb
  * @author Scott Frederick
  * @since 2.4.0
  */
-public class DockerHost {
+public class ImageProgressUpdateEvent extends ProgressUpdateEvent {
 
-	private final String address;
+	private final String id;
 
-	private final boolean secure;
-
-	private final String certificatePath;
-
-	public DockerHost(String address, boolean secure, String certificatePath) {
-		this.address = address;
-		this.secure = secure;
-		this.certificatePath = certificatePath;
+	protected ImageProgressUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress) {
+		super(status, progressDetail, progress);
+		this.id = id;
 	}
 
-	public String getAddress() {
-		return this.address;
-	}
-
-	public boolean isSecure() {
-		return this.secure;
-	}
-
-	public String getCertificatePath() {
-		return this.certificatePath;
+	/**
+	 * Returns the ID of the image layer being updated if available.
+	 * @return the ID of the updated layer or {@code null}
+	 */
+	public String getId() {
+		return this.id;
 	}
 
 }

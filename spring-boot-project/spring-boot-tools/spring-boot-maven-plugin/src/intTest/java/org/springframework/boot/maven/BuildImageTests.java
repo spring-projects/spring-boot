@@ -149,6 +149,12 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void failsWhenPublishWithoutPublishRegistryConfigured(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image").goals("package").systemProperty("spring-boot.build-image.publish", "true")
+				.executeAndFail((project) -> assertThat(buildLog(project)).contains("requires docker.publishRegistry"));
+	}
+
+	@TestTemplate
 	void failsWhenBuilderFails(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-builder-error").goals("package")
 				.executeAndFail((project) -> assertThat(buildLog(project)).contains("Building image")

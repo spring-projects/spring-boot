@@ -13,7 +13,7 @@ tasks.getByName<BootJar>("bootJar") {
 // tag::docker-auth-user[]
 tasks.getByName<BootBuildImage>("bootBuildImage") {
 	docker {
-		registry {
+		builderRegistry {
 			username = "user"
 			password = "secret"
 			url = "https://docker.example.com/v1/"

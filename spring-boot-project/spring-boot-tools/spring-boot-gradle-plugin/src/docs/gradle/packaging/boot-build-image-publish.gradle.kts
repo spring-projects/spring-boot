@@ -10,12 +10,17 @@ tasks.getByName<BootJar>("bootJar") {
 	mainClassName = "com.example.ExampleApplication"
 }
 
-// tag::docker-auth-token[]
+// tag::publish[]
 tasks.getByName<BootBuildImage>("bootBuildImage") {
+	imageName = "docker.example.com/library/${project.name}"
+	publish = true
 	docker {
-		builderRegistry {
-			token = "9cbaf023786cd7..."
+		publishRegistry {
+			username = "user"
+			password = "secret"
+			url = "https://docker.example.com/v1/"
+			email = "user@example.com"
 		}
 	}
 }
-// end::docker-auth-token[]
+// end::publish[]

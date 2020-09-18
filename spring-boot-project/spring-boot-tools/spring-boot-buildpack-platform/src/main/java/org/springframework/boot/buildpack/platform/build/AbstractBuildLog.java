@@ -76,6 +76,16 @@ public abstract class AbstractBuildLog implements BuildLog {
 	}
 
 	@Override
+	public Consumer<TotalProgressEvent> pushingImage(ImageReference imageReference) {
+		return getProgressConsumer(String.format(" > Pushing image '%s'", imageReference));
+	}
+
+	@Override
+	public void pushedImage(ImageReference imageReference) {
+		log(String.format(" > Pushed image '%s'", imageReference));
+	}
+
+	@Override
 	public void executingLifecycle(BuildRequest request, LifecycleVersion version, VolumeName buildCacheVolume) {
 		log(" > Executing lifecycle version " + version);
 		log(" > Using build cache volume '" + buildCacheVolume + "'");

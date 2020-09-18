@@ -42,6 +42,7 @@ class DockerRegistryUserAuthentication extends JsonEncodedDockerRegistryAuthenti
 		this.password = password;
 		this.url = url;
 		this.email = email;
+		createAuthHeader();
 	}
 
 	String getUsername() {

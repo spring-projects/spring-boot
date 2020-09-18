@@ -33,7 +33,9 @@ public class Docker {
 
 	private String certPath;
 
-	private DockerRegistry registry;
+	private DockerRegistry builderRegistry;
+
+	private DockerRegistry publishRegistry;
 
 	public String getHost() {
 		return this.host;
@@ -59,12 +61,30 @@ public class Docker {
 		this.certPath = certPath;
 	}
 
+	DockerRegistry getBuilderRegistry() {
+		return this.builderRegistry;
+	}
+
 	/**
-	 * Sets the {@link DockerRegistry} that configures registry authentication.
-	 * @param registry the registry configuration
+	 * Sets the {@link DockerRegistry} that configures authentication to the builder
+	 * registry.
+	 * @param builderRegistry the registry configuration
 	 */
-	public void setRegistry(DockerRegistry registry) {
-		this.registry = registry;
+	public void setBuilderRegistry(DockerRegistry builderRegistry) {
+		this.builderRegistry = builderRegistry;
+	}
+
+	DockerRegistry getPublishRegistry() {
+		return this.publishRegistry;
+	}
+
+	/**
+	 * Sets the {@link DockerRegistry} that configures authentication to the publishing
+	 * registry.
+	 * @param builderRegistry the registry configuration
+	 */
+	public void setPublishRegistry(DockerRegistry builderRegistry) {
+		this.publishRegistry = builderRegistry;
 	}
 
 	/**
@@ -76,7 +96,8 @@ public class Docker {
 	DockerConfiguration asDockerConfiguration() {
 		DockerConfiguration dockerConfiguration = new DockerConfiguration();
 		dockerConfiguration = customizeHost(dockerConfiguration);
-		dockerConfiguration = customizeAuthentication(dockerConfiguration);
+		dockerConfiguration = customizeBuilderAuthentication(dockerConfiguration);
+		dockerConfiguration = customizePublishAuthentication(dockerConfiguration);
 		return dockerConfiguration;
 	}
 
@@ -87,19 +108,34 @@ public class Docker {
 		return dockerConfiguration;
 	}
 
-	private DockerConfiguration customizeAuthentication(DockerConfiguration dockerConfiguration) {
-		if (this.registry == null || this.registry.isEmpty()) {
+	private DockerConfiguration customizeBuilderAuthentication(DockerConfiguration dockerConfiguration) {
+		if (this.builderRegistry == null || this.builderRegistry.isEmpty()) {
 			return dockerConfiguration;
 		}
-		if (this.registry.hasTokenAuth() && !this.registry.hasUserAuth()) {
-			return dockerConfiguration.withRegistryTokenAuthentication(this.registry.getToken());
+		if (this.builderRegistry.hasTokenAuth() && !this.builderRegistry.hasUserAuth()) {
+			return dockerConfiguration.withBuilderRegistryTokenAuthentication(this.builderRegistry.getToken());
 		}
-		if (this.registry.hasUserAuth() && !this.registry.hasTokenAuth()) {
-			return dockerConfiguration.withRegistryUserAuthentication(this.registry.getUsername(),
-					this.registry.getPassword(), this.registry.getUrl(), this.registry.getEmail());
+		if (this.builderRegistry.hasUserAuth() && !this.builderRegistry.hasTokenAuth()) {
+			return dockerConfiguration.withBuilderRegistryUserAuthentication(this.builderRegistry.getUsername(),
+					this.builderRegistry.getPassword(), this.builderRegistry.getUrl(), this.builderRegistry.getEmail());
 		}
 		throw new IllegalArgumentException(
-				"Invalid Docker registry configuration, either token or username/password must be provided");
+				"Invalid Docker builder registry configuration, either token or username/password must be provided");
+	}
+
+	private DockerConfiguration customizePublishAuthentication(DockerConfiguration dockerConfiguration) {
+		if (this.publishRegistry == null || this.publishRegistry.isEmpty()) {
+			return dockerConfiguration;
+		}
+		if (this.publishRegistry.hasTokenAuth() && !this.publishRegistry.hasUserAuth()) {
+			return dockerConfiguration.withPublishRegistryTokenAuthentication(this.publishRegistry.getToken());
+		}
+		if (this.publishRegistry.hasUserAuth() && !this.publishRegistry.hasTokenAuth()) {
+			return dockerConfiguration.withPublishRegistryUserAuthentication(this.publishRegistry.getUsername(),
+					this.publishRegistry.getPassword(), this.publishRegistry.getUrl(), this.publishRegistry.getEmail());
+		}
+		throw new IllegalArgumentException(
+				"Invalid Docker publish registry configuration, either token or username/password must be provided");
 	}
 
 	/**
@@ -116,6 +152,20 @@ public class Docker {
 		private String email;
 
 		private String token;
+
+		public DockerRegistry() {
+		}
+
+		public DockerRegistry(String username, String password, String url, String email) {
+			this.username = username;
+			this.password = password;
+			this.url = url;
+			this.email = email;
+		}
+
+		public DockerRegistry(String token) {
+			this.token = token;
+		}
 
 		String getUsername() {
 			return this.username;

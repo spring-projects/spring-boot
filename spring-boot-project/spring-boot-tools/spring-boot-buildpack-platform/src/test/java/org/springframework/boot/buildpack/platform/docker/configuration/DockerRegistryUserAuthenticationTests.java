@@ -29,6 +29,8 @@ import org.springframework.util.StreamUtils;
 
 /**
  * Tests for {@link DockerRegistryUserAuthentication}.
+ *
+ * @author Scott Frederick
  */
 class DockerRegistryUserAuthenticationTests extends AbstractJsonTests {
 
@@ -36,13 +38,13 @@ class DockerRegistryUserAuthenticationTests extends AbstractJsonTests {
 	void createMinimalAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryUserAuthentication auth = new DockerRegistryUserAuthentication("user", "secret",
 				"https://docker.example.com", "docker@example.com");
-		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(auth.createAuthHeader()), false);
+		JSONAssert.assertEquals(jsonContent("auth-user-full.json"), decoded(auth.getAuthHeader()), false);
 	}
 
 	@Test
 	void createFullAuthHeaderReturnsEncodedHeader() throws IOException, JSONException {
 		DockerRegistryUserAuthentication auth = new DockerRegistryUserAuthentication("user", "secret", null, null);
-		JSONAssert.assertEquals(jsonContent("auth-user-minimal.json"), decoded(auth.createAuthHeader()), false);
+		JSONAssert.assertEquals(jsonContent("auth-user-minimal.json"), decoded(auth.getAuthHeader()), false);
 	}
 
 	private String jsonContent(String s) throws IOException {
