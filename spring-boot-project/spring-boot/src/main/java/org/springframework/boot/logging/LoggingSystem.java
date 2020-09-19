@@ -21,11 +21,8 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 
-import org.springframework.boot.logging.java.JavaLoggingSystem;
-import org.springframework.boot.logging.log4j2.Log4J2LoggingSystem;
-import org.springframework.boot.logging.logback.LogbackLoggingSystem;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -58,21 +55,7 @@ public abstract class LoggingSystem {
 	 */
 	public static final String ROOT_LOGGER_NAME = "ROOT";
 
-	private static final Function<ClassLoader, LoggingSystem> SYSTEM_FACTORY = getSystemFactory();
-
-	private static Function<ClassLoader, LoggingSystem> getSystemFactory() {
-		ClassLoader classLoader = LoggingSystem.class.getClassLoader();
-		if (ClassUtils.isPresent("ch.qos.logback.core.Appender", classLoader)) {
-			return LogbackLoggingSystem::new;
-		}
-		if (ClassUtils.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", classLoader)) {
-			return Log4J2LoggingSystem::new;
-		}
-		if (ClassUtils.isPresent("java.util.logging.LogManager", classLoader)) {
-			return JavaLoggingSystem::new;
-		}
-		throw new IllegalStateException("No suitable logging system located");
-	}
+	private static final LoggingSystemFactory SYSTEM_FACTORY = LoggingSystemFactory.fromSpringFactories();
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
@@ -155,19 +138,21 @@ public abstract class LoggingSystem {
 	 * @return the logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
-		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
-		if (StringUtils.hasLength(loggingSystem)) {
-			if (NONE.equals(loggingSystem)) {
+		String loggingSystemClassName = System.getProperty(SYSTEM_PROPERTY);
+		if (StringUtils.hasLength(loggingSystemClassName)) {
+			if (NONE.equals(loggingSystemClassName)) {
 				return new NoOpLoggingSystem();
 			}
-			return get(classLoader, loggingSystem);
+			return get(classLoader, loggingSystemClassName);
 		}
-		return SYSTEM_FACTORY.apply(classLoader);
+		LoggingSystem loggingSystem = SYSTEM_FACTORY.getLoggingSystem(classLoader);
+		Assert.state(loggingSystem != null, "No suitable logging system located");
+		return loggingSystem;
 	}
 
-	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
+	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClassName) {
 		try {
-			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
+			Class<?> systemClass = ClassUtils.forName(loggingSystemClassName, classLoader);
 			Constructor<?> constructor = systemClass.getDeclaredConstructor(ClassLoader.class);
 			constructor.setAccessible(true);
 			return (LoggingSystem) constructor.newInstance(classLoader);
