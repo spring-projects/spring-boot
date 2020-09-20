@@ -26,7 +26,6 @@ import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.impl.matchers.GroupMatcher;
-
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzDescriptor;
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzKey;
 
@@ -98,4 +97,5 @@ public class QuartzTriggerDelegate implements QuartzDelegate {
 	public boolean delete(QuartzKey key) throws SchedulerException {
 		return this.scheduler.unscheduleJob(key.toTriggerKey());
 	}
+
 }

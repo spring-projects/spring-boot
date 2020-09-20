@@ -36,7 +36,6 @@ import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerBuilder;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzDescriptor;
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzKey;
@@ -56,6 +55,7 @@ import org.springframework.context.annotation.Configuration;
  */
 
 class QuartzEndpointTests {
+
 	private final static String JOB_NAME = "JOB_NAME";
 
 	private final static String JOB_GROUP_NAME = "JOB_GROUP_NAME";
@@ -76,8 +76,8 @@ class QuartzEndpointTests {
 		this.contextRunner.run((context) -> {
 			Assertions.assertThat(context).hasSingleBean(QuartzEndpoint.class);
 			QuartzEndpoint endpoint = context.getBean(QuartzEndpoint.class);
-			Assertions.assertThatThrownBy(() -> endpoint.findAll("INVALID"))
-					.isInstanceOf(SpringQuartzException.class).hasMessage("URL should be /quartz/job OR /quartz/triggers");
+			Assertions.assertThatThrownBy(() -> endpoint.findAll("INVALID")).isInstanceOf(SpringQuartzException.class)
+					.hasMessage("URL should be /quartz/job OR /quartz/triggers");
 		});
 	}
 
@@ -184,8 +184,8 @@ class QuartzEndpointTests {
 
 			Assertions.assertThat(context).hasSingleBean(QuartzEndpoint.class);
 			QuartzEndpoint endpoint = context.getBean(QuartzEndpoint.class);
-			QuartzDescriptor searchByGroupAndName = endpoint.findByGroupAndName(TRIGGER_DELEGATE,
-					TRIGGER_GROUP_NAME, TRIGGER_NAME);
+			QuartzDescriptor searchByGroupAndName = endpoint.findByGroupAndName(TRIGGER_DELEGATE, TRIGGER_GROUP_NAME,
+					TRIGGER_NAME);
 			Assertions.assertThat(searchByGroupAndName.getTriggerKey().getName()).isEqualTo(TRIGGER_NAME);
 			Assertions.assertThat(searchByGroupAndName.getTriggerKey().getGroup()).isEqualTo(TRIGGER_GROUP_NAME);
 		});
@@ -201,8 +201,8 @@ class QuartzEndpointTests {
 			// In pause
 			Assertions.assertThat(context).hasSingleBean(QuartzEndpoint.class);
 			QuartzEndpoint endpoint = context.getBean(QuartzEndpoint.class);
-			Assertions.assertThat(
-					endpoint.pauseOrResumeKey(TRIGGER_DELEGATE, TRIGGER_GROUP_NAME, TRIGGER_NAME)).isNotNull();
+			Assertions.assertThat(endpoint.pauseOrResumeKey(TRIGGER_DELEGATE, TRIGGER_GROUP_NAME, TRIGGER_NAME))
+					.isNotNull();
 			Assertions.assertThat(scheduler.getTriggerState(simpleTrigger.getKey())).isEqualTo(TriggerState.PAUSED);
 
 			// Resume
@@ -241,8 +241,8 @@ class QuartzEndpointTests {
 				.from(LocalDateTime.now().plusSeconds(15).atZone(ZoneId.systemDefault()).toInstant());
 
 		SimpleTrigger sampleTrigger = TriggerBuilder.newTrigger().forJob(jobDetail)
-				.withIdentity(TRIGGER_NAME, TRIGGER_GROUP_NAME)
-				.withSchedule(SimpleScheduleBuilder.simpleSchedule()).startAt(start).build();
+				.withIdentity(TRIGGER_NAME, TRIGGER_GROUP_NAME).withSchedule(SimpleScheduleBuilder.simpleSchedule())
+				.startAt(start).build();
 
 		scheduler.scheduleJob(jobDetail, sampleTrigger);
 		return sampleTrigger;
@@ -257,12 +257,16 @@ class QuartzEndpointTests {
 			return new QuartzEndpoint(scheduler.getIfAvailable());
 
 		}
+
 	}
 
 	public static class SampleJob implements Job {
+
 		@Override
 		public void execute(JobExecutionContext context) throws JobExecutionException {
 			// Do nothing
 		}
+
 	}
+
 }

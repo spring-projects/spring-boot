@@ -32,7 +32,6 @@ import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
 import org.quartz.Trigger;
 import org.quartz.TriggerKey;
-
 import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
@@ -41,9 +40,10 @@ import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.util.Assert;
 
 /**
- * {@link Endpoint} that provides access to {@link Scheduler} informations.
+ * {@link Endpoint} that provides access to {@link Scheduler} information.
  *
  * @author Jordan Couret
+ * @author Philipp Tölle
  * @since 2.4.0
  */
 @Endpoint(id = "quartz")
@@ -60,8 +60,8 @@ public class QuartzEndpoint {
 	/**
 	 * Retrieve all {@link Job}'s key OR {@link Trigger}'s key registered
 	 * @param delegateName : define the target (should be 'jobs' or 'triggers')
-	 * @throws SpringQuartzException if invalid delegateName or if SchedulerExcepetion was thrown during scheduler
-	 * access
+	 * @throws SpringQuartzException if invalid delegateName or if SchedulerException was
+	 * thrown during scheduler access
 	 * @return list of key
 	 */
 	@ReadOperation
@@ -69,16 +69,17 @@ public class QuartzEndpoint {
 		try {
 
 			QuartzDelegate delegate = this.getDelegate(delegateName);
-			return delegate.getGroupName().stream().map(delegate::getKeys)
-					.flatMap(List::stream).collect(Collectors.toList());
+			return delegate.getGroupName().stream().map(delegate::getKeys).flatMap(List::stream)
+					.collect(Collectors.toList());
 		}
-		catch (SchedulerException e) {
-			throw new SpringQuartzException(e);
+		catch (SchedulerException schedulerException) {
+			throw new SpringQuartzException(schedulerException);
 		}
 	}
 
 	/**
-	 * Retrieve all {@link Job}'s key OR {@link Trigger}'s key registered with a specific group
+	 * Retrieve all {@link Job}'s key OR {@link Trigger}'s key registered with a specific
+	 * group.
 	 * @param delegateName : define the target (should be 'jobs' or 'triggers')
 	 * @param group : the given group
 	 * @return list of key
@@ -89,12 +90,13 @@ public class QuartzEndpoint {
 	}
 
 	/**
-	 * Return a {@link QuartzDescriptor} with details information about the {@link Job} or {@link Trigger}.
+	 * Return a {@link QuartzDescriptor} with details information about the {@link Job} or
+	 * {@link Trigger}.
 	 * @param delegateName : define the target (should be 'jobs' or 'triggers')
 	 * @param group : the given group
 	 * @param name : the given name
-	 * @throws SpringQuartzException if invalid delegateName or if SchedulerExcepetion was thrown during scheduler
-	 * access
+	 * @throws SpringQuartzException if invalid delegateName or if
+	 * {@link SchedulerException} was thrown during scheduler access
 	 * @return a quartz descriptor
 	 */
 	@ReadOperation
@@ -106,18 +108,19 @@ public class QuartzEndpoint {
 			QuartzKey key = delegate.getKey(group, name);
 			return delegate.exist(key) ? delegate.getDescriptor(key) : null;
 		}
-		catch (SchedulerException e) {
-			throw new SpringQuartzException(e);
+		catch (SchedulerException schedulerException) {
+			throw new SpringQuartzException(schedulerException);
 		}
 	}
 
 	/**
-	 * According to the current state of {@link Job} or {@link Trigger}, it will pause or resume the given item.
+	 * According to the current state of {@link Job} or {@link Trigger}, it will pause or
+	 * resume the given item.
 	 * @param delegateName : define the target (should be 'jobs' or 'triggers')
 	 * @param group : the given group
 	 * @param name : the given name
-	 * @throws SpringQuartzException if invalid delegateName or if SchedulerExcepetion was thrown during scheduler
-	 * access
+	 * @throws SpringQuartzException if invalid delegateName or if
+	 * {@link SchedulerException} was thrown during scheduler access
 	 * @return a quartz descriptor with the new state
 	 */
 	@WriteOperation
@@ -137,8 +140,8 @@ public class QuartzEndpoint {
 				return delegate.getDescriptor(key);
 			}
 		}
-		catch (SchedulerException e) {
-			throw new SpringQuartzException(e);
+		catch (SchedulerException schedulerException) {
+			throw new SpringQuartzException(schedulerException);
 		}
 
 		return null;
@@ -149,8 +152,8 @@ public class QuartzEndpoint {
 	 * @param delegateName : define the target (should be 'jobs' or 'triggers')
 	 * @param group : the given group
 	 * @param name : the given name
-	 * @throws SpringQuartzException if invalid delegateName or if SchedulerExcepetion was thrown during scheduler
-	 * access
+	 * @throws SpringQuartzException if invalid delegateName or if
+	 * {@link SchedulerException} was thrown during scheduler access
 	 * @return a quartz descriptor with the new state
 	 */
 	@DeleteOperation
@@ -160,8 +163,8 @@ public class QuartzEndpoint {
 			QuartzKey key = delegate.getKey(group, name);
 			return delegate.exist(key) && delegate.delete(key);
 		}
-		catch (SchedulerException e) {
-			throw new SpringQuartzException(e);
+		catch (SchedulerException schedulerException) {
+			throw new SpringQuartzException(schedulerException);
 		}
 	}
 
@@ -171,20 +174,20 @@ public class QuartzEndpoint {
 	}
 
 	/**
-	 * Generic object to retrieve details informations about a {@link Job} or a {@link Trigger}, primarily intended
-	 * for serialization to JSON.
+	 * Generic object to retrieve detailed information about a {@link Job} or a
+	 * {@link Trigger}, primarily intended for serialization to JSON.
 	 */
 	public static class QuartzDescriptor {
 
-		private QuartzKey jobKey;
+		private final QuartzKey jobKey;
 
 		private QuartzKey triggerKey;
 
-		private String description;
+		private final String description;
 
-		private Class<? extends Job> jobClass;
+		private final Class<? extends Job> jobClass;
 
-		private Map<String, Object> data;
+		private final Map<String, Object> data;
 
 		private LocalDateTime nextFireDate;
 
@@ -194,8 +197,7 @@ public class QuartzEndpoint {
 			this.jobKey = new QuartzKey(jobDetail.getKey().getName(), jobDetail.getKey().getGroup());
 			this.description = jobDetail.getDescription();
 			this.jobClass = jobDetail.getJobClass();
-			this.data = Optional.ofNullable(jobDetail.getJobDataMap()).orElse(new JobDataMap())
-					.getWrappedMap();
+			this.data = Optional.ofNullable(jobDetail.getJobDataMap()).orElse(new JobDataMap()).getWrappedMap();
 			this.nextFireDate = trigger.getNextFireTime().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
 			this.triggerKey = new QuartzKey(trigger.getKey().getName(), trigger.getKey().getGroup());
 			this.triggerState = triggerState;
@@ -205,8 +207,7 @@ public class QuartzEndpoint {
 			this.jobKey = new QuartzKey(jobDetail.getKey().getName(), jobDetail.getKey().getGroup());
 			this.description = jobDetail.getDescription();
 			this.jobClass = jobDetail.getJobClass();
-			this.data = Optional.ofNullable(jobDetail.getJobDataMap()).orElse(new JobDataMap())
-					.getWrappedMap();
+			this.data = Optional.ofNullable(jobDetail.getJobDataMap()).orElse(new JobDataMap()).getWrappedMap();
 		}
 
 		public QuartzKey getJobKey() {
@@ -236,13 +237,15 @@ public class QuartzEndpoint {
 		public String getTriggerState() {
 			return triggerState;
 		}
+
 	}
 
 	/**
-	 * A representation of {@link org.quartz.utils.Key}, primarily intended for serialization to
-	 * JSON.
+	 * A representation of {@link org.quartz.utils.Key}, primarily intended for
+	 * serialization to JSON.
 	 */
 	public static class QuartzKey {
+
 		private final String name;
 
 		private final String group;
@@ -253,11 +256,11 @@ public class QuartzEndpoint {
 		}
 
 		public String getName() {
-			return name;
+			return this.name;
 		}
 
 		public String getGroup() {
-			return group;
+			return this.group;
 		}
 
 		public JobKey toJobKey() {
@@ -267,5 +270,7 @@ public class QuartzEndpoint {
 		public TriggerKey toTriggerKey() {
 			return new TriggerKey(this.getName(), this.getGroup());
 		}
+
 	}
+
 }
