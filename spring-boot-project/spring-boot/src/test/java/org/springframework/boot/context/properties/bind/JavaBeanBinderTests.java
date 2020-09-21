@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -540,6 +540,24 @@ class JavaBeanBinderTests {
 		assertThat(bean.getProperty()).isEqualTo("test");
 	}
 
+	@Test // gh-23007
+	void bindWhenBeanWithGetSetIsMethodsFoundUsesGetterThatMatchesSetter() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.names", "spring,boot");
+		this.sources.add(source);
+		JavaBeanWithGetSetIs bean = this.binder.bind("test", Bindable.of(JavaBeanWithGetSetIs.class)).get();
+		assertThat(bean.getNames()).containsExactly("spring", "boot");
+	}
+
+	@Test // gh-23007
+	void bindWhenBeanWithGetIsMethodsFoundDoesNotUseIsGetter() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("test.names", "spring,boot");
+		this.sources.add(source);
+		JavaBeanWithGetIs bean = this.binder.bind("test", Bindable.of(JavaBeanWithGetIs.class)).get();
+		assertThat(bean.getNames()).containsExactly("spring", "boot");
+	}
+
 	static class ExampleValueBean {
 
 		private int intValue;
@@ -1032,6 +1050,38 @@ class JavaBeanBinderTests {
 
 		void setProperty(String property) {
 			this.property = property;
+		}
+
+	}
+
+	static class JavaBeanWithGetSetIs {
+
+		private List<String> names = new ArrayList<>();
+
+		List<String> getNames() {
+			return this.names;
+		}
+
+		void setNames(List<String> names) {
+			this.names = names;
+		}
+
+		boolean isNames() {
+			return !this.names.isEmpty();
+		}
+
+	}
+
+	static class JavaBeanWithGetIs {
+
+		private List<String> names = new ArrayList<>();
+
+		boolean isNames() {
+			return !this.names.isEmpty();
+		}
+
+		List<String> getNames() {
+			return this.names;
 		}
 
 	}
