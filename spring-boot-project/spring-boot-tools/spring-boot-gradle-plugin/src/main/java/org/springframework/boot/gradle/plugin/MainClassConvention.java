@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Method;
 import java.util.Objects;
 import java.util.concurrent.Callable;
 import java.util.function.Supplier;
@@ -26,6 +27,7 @@ import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.plugins.JavaApplication;
+import org.gradle.api.provider.Property;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
@@ -54,11 +56,36 @@ final class MainClassConvention implements Callable<Object> {
 		if (springBootExtension != null && springBootExtension.getMainClassName() != null) {
 			return springBootExtension.getMainClassName();
 		}
+		String javaApplicationMainClass = getJavaApplicationMainClass();
+		return (javaApplicationMainClass != null) ? javaApplicationMainClass : resolveMainClass();
+	}
+
+	@SuppressWarnings("unchecked")
+	private String getJavaApplicationMainClass() {
 		JavaApplication javaApplication = this.project.getConvention().findByType(JavaApplication.class);
-		if (javaApplication != null && javaApplication.getMainClassName() != null) {
-			return javaApplication.getMainClassName();
+		if (javaApplication == null) {
+			return null;
 		}
-		return resolveMainClass();
+		Method getMainClass = findMethod(JavaApplication.class, "getMainClass");
+		if (getMainClass != null) {
+			try {
+				Property<String> mainClass = (Property<String>) getMainClass.invoke(javaApplication);
+				return mainClass.getOrElse(null);
+			}
+			catch (Exception ex) {
+				// Continue
+			}
+		}
+		return javaApplication.getMainClassName();
+	}
+
+	private static Method findMethod(Class<?> type, String name) {
+		for (Method candidate : type.getMethods()) {
+			if (candidate.getName().equals(name)) {
+				return candidate;
+			}
+		}
+		return null;
 	}
 
 	private String resolveMainClass() {
