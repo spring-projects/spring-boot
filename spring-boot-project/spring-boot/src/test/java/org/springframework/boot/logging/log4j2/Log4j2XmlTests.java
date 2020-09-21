@@ -24,6 +24,8 @@ import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -36,6 +38,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 class Log4j2XmlTests {
+
+	private Configuration configuration;
+
+	@BeforeEach
+	void prepareConfiguration() {
+		this.configuration = initializeConfiguration();
+	}
+
+	@AfterEach
+	void stopConfiguration() {
+		this.configuration.stop();
+	}
 
 	@Test
 	void whenLogExceptionConversionWordIsNotConfiguredThenConsoleUsesDefault() {
@@ -66,8 +80,8 @@ class Log4j2XmlTests {
 
 	@Test
 	void whenLogDateformatPatternIsSetThenConsoleUsesIt() {
-		withSystemProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN, "custom",
-				() -> assertThat(consolePattern()).contains("custom"));
+		withSystemProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN, "dd-MM-yyyy",
+				() -> assertThat(consolePattern()).contains("dd-MM-yyyy"));
 	}
 
 	protected void withSystemProperty(String name, String value, Runnable action) {
