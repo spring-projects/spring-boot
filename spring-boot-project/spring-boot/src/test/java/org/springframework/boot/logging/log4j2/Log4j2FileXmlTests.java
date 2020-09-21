@@ -36,13 +36,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class Log4j2FileXmlTests extends Log4j2XmlTests {
 
+	@TempDir
+	File temp;
+
+	@Override
 	@BeforeEach
-	void configureLogFile(@TempDir File temp) {
-		System.setProperty(LoggingSystemProperties.LOG_FILE, new File(temp, "test.log").getAbsolutePath());
+	void prepareConfiguration() {
+		System.setProperty(LoggingSystemProperties.LOG_FILE, new File(this.temp, "test.log").getAbsolutePath());
+		super.prepareConfiguration();
 	}
 
+	@Override
 	@AfterEach
-	void clearLogFile() {
+	void stopConfiguration() {
+		super.stopConfiguration();
 		System.clearProperty(LoggingSystemProperties.LOG_FILE);
 	}
 
@@ -75,8 +82,8 @@ class Log4j2FileXmlTests extends Log4j2XmlTests {
 
 	@Test
 	void whenLogDateformatPatternIsSetThenFileAppenderUsesIt() {
-		withSystemProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN, "custom",
-				() -> assertThat(fileAppenderPattern()).contains("custom"));
+		withSystemProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN, "dd-MM-yyyy",
+				() -> assertThat(fileAppenderPattern()).contains("dd-MM-yyyy"));
 	}
 
 	@Override
