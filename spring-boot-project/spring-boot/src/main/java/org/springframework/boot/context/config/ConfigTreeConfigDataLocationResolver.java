@@ -24,8 +24,9 @@ import java.util.List;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.4.0
  */
-class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationResolver<ConfigTreeConfigDataLocation> {
+public class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationResolver<ConfigTreeConfigDataLocation> {
 
 	private static final String PREFIX = "configtree:";
 

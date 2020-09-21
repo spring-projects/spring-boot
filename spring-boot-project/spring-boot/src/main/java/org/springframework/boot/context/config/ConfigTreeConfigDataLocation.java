@@ -28,9 +28,10 @@ import org.springframework.util.Assert;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.4.0
  * @see ConfigTreePropertySource
  */
-class ConfigTreeConfigDataLocation extends ConfigDataLocation {
+public class ConfigTreeConfigDataLocation extends ConfigDataLocation {
 
 	private final Path path;
 

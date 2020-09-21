@@ -50,8 +50,10 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.4.0
  */
-class ResourceConfigDataLocationResolver implements ConfigDataLocationResolver<ResourceConfigDataLocation>, Ordered {
+public class ResourceConfigDataLocationResolver
+		implements ConfigDataLocationResolver<ResourceConfigDataLocation>, Ordered {
 
 	private static final String PREFIX = "resource:";
 
@@ -83,7 +85,7 @@ class ResourceConfigDataLocationResolver implements ConfigDataLocationResolver<R
 	 * @param binder a binder backed by the initial {@link Environment}
 	 * @param resourceLoader a {@link ResourceLoader} used to load resources
 	 */
-	ResourceConfigDataLocationResolver(Log logger, Binder binder, ResourceLoader resourceLoader) {
+	public ResourceConfigDataLocationResolver(Log logger, Binder binder, ResourceLoader resourceLoader) {
 		this.logger = logger;
 		this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
 				getClass().getClassLoader());

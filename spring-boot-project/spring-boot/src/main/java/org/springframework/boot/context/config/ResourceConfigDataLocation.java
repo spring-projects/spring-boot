@@ -33,8 +33,9 @@ import org.springframework.util.Assert;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.4.0
  */
-class ResourceConfigDataLocation extends ConfigDataLocation {
+public class ResourceConfigDataLocation extends ConfigDataLocation {
 
 	private final String name;
 

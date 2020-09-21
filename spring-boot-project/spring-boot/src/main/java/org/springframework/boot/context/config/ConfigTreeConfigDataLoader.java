@@ -27,8 +27,9 @@ import org.springframework.boot.env.ConfigTreePropertySource;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @since 2.4.0
  */
-class ConfigTreeConfigDataLoader implements ConfigDataLoader<ConfigTreeConfigDataLocation> {
+public class ConfigTreeConfigDataLoader implements ConfigDataLoader<ConfigTreeConfigDataLocation> {
 
 	@Override
 	public ConfigData load(ConfigDataLoaderContext context, ConfigTreeConfigDataLocation location) throws IOException {

@@ -25,8 +25,9 @@ import org.springframework.core.io.Resource;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @since 2.4.0
  */
-class ResourceConfigDataLoader implements ConfigDataLoader<ResourceConfigDataLocation> {
+public class ResourceConfigDataLoader implements ConfigDataLoader<ResourceConfigDataLocation> {
 
 	@Override
 	public ConfigData load(ConfigDataLoaderContext context, ResourceConfigDataLocation location) throws IOException {
