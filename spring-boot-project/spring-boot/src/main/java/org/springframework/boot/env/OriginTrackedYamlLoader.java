@@ -105,15 +105,15 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 		@Override
 		protected Object constructObject(Node node) {
+			if (node instanceof CollectionNode && ((CollectionNode<?>) node).getValue().isEmpty()) {
+				return constructTrackedObject(node, super.constructObject(node));
+			}
 			if (node instanceof ScalarNode) {
 				if (!(node instanceof KeyScalarNode)) {
 					return constructTrackedObject(node, super.constructObject(node));
 				}
 			}
-			else if (node instanceof CollectionNode && ((CollectionNode<?>) node).getValue().isEmpty()) {
-				return constructTrackedObject(node, super.constructObject(node));
-			}
-			else if (node instanceof MappingNode) {
+			if (node instanceof MappingNode) {
 				replaceMappingNodeKeys((MappingNode) node);
 			}
 			return super.constructObject(node);

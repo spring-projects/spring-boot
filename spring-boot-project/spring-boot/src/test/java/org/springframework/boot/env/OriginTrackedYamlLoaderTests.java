@@ -125,8 +125,8 @@ class OriginTrackedYamlLoaderTests {
 	void processEmptyListAndMap() {
 		OriginTrackedValue emptymap = getValue("emptymap");
 		OriginTrackedValue emptylist = getValue("emptylist");
-		assertThat(emptymap.getValue()).isEqualTo(Collections.EMPTY_MAP);
-		assertThat(emptylist.getValue()).isEqualTo(Collections.EMPTY_LIST);
+		assertThat(emptymap.getValue()).isEqualTo(Collections.emptyMap());
+		assertThat(emptylist.getValue()).isEqualTo(Collections.emptyList());
 	}
 
 	@Test
