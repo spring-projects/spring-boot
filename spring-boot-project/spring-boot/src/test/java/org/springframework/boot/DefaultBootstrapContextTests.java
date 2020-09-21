@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.io.IOException;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import org.assertj.core.api.AbstractAssert;
@@ -29,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.StaticApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
@@ -148,6 +150,63 @@ class DefaultBootstrapContextTests {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
 		assertThat(this.context.get(Integer.class)).isEqualTo(0);
 		assertThat(this.context.get(Integer.class)).isEqualTo(0);
+	}
+
+	@Test
+	void getOrElseWhenNoRegistrationReturnsOther() {
+		this.context.register(Number.class, InstanceSupplier.of(1));
+		assertThat(this.context.getOrElse(Long.class, -1L)).isEqualTo(-1);
+	}
+
+	@Test
+	void getOrElseWhenRegisteredAsNullReturnsNull() {
+		this.context.register(Number.class, InstanceSupplier.of(null));
+		assertThat(this.context.getOrElse(Number.class, -1)).isNull();
+	}
+
+	@Test
+	void getOrElseCreatesReturnsOnlyOneInstance() {
+		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
+		assertThat(this.context.getOrElse(Integer.class, -1)).isEqualTo(0);
+		assertThat(this.context.getOrElse(Integer.class, -1)).isEqualTo(0);
+	}
+
+	@Test
+	void getOrElseSupplyWhenNoRegistrationReturnsSupplied() {
+		this.context.register(Number.class, InstanceSupplier.of(1));
+		assertThat(this.context.getOrElseSupply(Long.class, () -> -1L)).isEqualTo(-1);
+	}
+
+	@Test
+	void getOrElseSupplyWhenRegisteredAsNullReturnsNull() {
+		this.context.register(Number.class, InstanceSupplier.of(null));
+		assertThat(this.context.getOrElseSupply(Number.class, () -> -1L)).isNull();
+	}
+
+	@Test
+	void getOrElseSupplyCreatesOnlyOneInstance() {
+		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
+		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isEqualTo(0);
+		assertThat(this.context.getOrElseSupply(Integer.class, () -> -1)).isEqualTo(0);
+	}
+
+	@Test
+	void getOrElseThrowWhenNoRegistrationThrowsSuppliedException() {
+		this.context.register(Number.class, InstanceSupplier.of(1));
+		assertThatIOException().isThrownBy(() -> this.context.getOrElseThrow(Long.class, IOException::new));
+	}
+
+	@Test
+	void getOrElseThrowWhenRegisteredAsNullReturnsNull() {
+		this.context.register(Number.class, InstanceSupplier.of(null));
+		assertThat(this.context.getOrElseThrow(Number.class, RuntimeException::new)).isNull();
+	}
+
+	@Test
+	void getOrElseThrowCreatesOnlyOneInstance() {
+		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
+		assertThat(this.context.getOrElseThrow(Integer.class, RuntimeException::new)).isEqualTo(0);
+		assertThat(this.context.getOrElseThrow(Integer.class, RuntimeException::new)).isEqualTo(0);
 	}
 
 	@Test

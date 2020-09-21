@@ -18,6 +18,7 @@ package org.springframework.boot;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.function.Supplier;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
@@ -83,18 +84,42 @@ public class DefaultBootstrapContext implements ConfigurableBootstrapContext {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
 	public <T> T get(Class<T> type) throws IllegalStateException {
+		return getOrElseThrow(type, () -> new IllegalStateException(type.getName() + " has not been registered"));
+	}
+
+	@Override
+	public <T> T getOrElse(Class<T> type, T other) {
+		return getOrElseSupply(type, () -> other);
+	}
+
+	@Override
+	public <T> T getOrElseSupply(Class<T> type, Supplier<T> other) {
 		synchronized (this.instanceSuppliers) {
 			InstanceSupplier<?> instanceSupplier = this.instanceSuppliers.get(type);
-			Assert.state(instanceSupplier != null, () -> type.getName() + " has not been registered");
-			T instance = (T) this.instances.get(type);
-			if (instance == null) {
-				instance = (T) instanceSupplier.get(this);
-				this.instances.put(type, instance);
-			}
-			return instance;
+			return (instanceSupplier != null) ? getInstance(type, instanceSupplier) : other.get();
 		}
+	}
+
+	@Override
+	public <T, X extends Throwable> T getOrElseThrow(Class<T> type, Supplier<? extends X> exceptionSupplier) throws X {
+		synchronized (this.instanceSuppliers) {
+			InstanceSupplier<?> instanceSupplier = this.instanceSuppliers.get(type);
+			if (instanceSupplier == null) {
+				throw exceptionSupplier.get();
+			}
+			return getInstance(type, instanceSupplier);
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T> T getInstance(Class<T> type, InstanceSupplier<?> instanceSupplier) {
+		T instance = (T) this.instances.get(type);
+		if (instance == null) {
+			instance = (T) instanceSupplier.get(this);
+			this.instances.put(type, instance);
+		}
+		return instance;
 	}
 
 	/**
