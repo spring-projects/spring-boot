@@ -154,6 +154,10 @@ include::../gradle/packaging/boot-jar-manifest-main-class.gradle[tags=main-class
 include::../gradle/packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-class]
 ----
 
+NOTE: If the main class is written in Kotlin, the name of the generated Java class should be used.
+By default, this is the name of the Kotlin class with the `Kt` suffix added.
+For example, `ExampleApplication` becomes `ExampleApplicationKt`.
+If another name is defined using `@JvmName` then that name should be used.
 
 [[packaging-executable-configuring-excluding-devtools]]
 ==== Excluding Devtools
