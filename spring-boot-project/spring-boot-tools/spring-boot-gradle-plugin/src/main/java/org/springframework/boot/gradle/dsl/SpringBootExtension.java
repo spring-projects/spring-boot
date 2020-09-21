@@ -96,16 +96,16 @@ public class SpringBootExtension {
 		TaskProvider<BuildInfo> bootBuildInfo = tasks.register("bootBuildInfo", BuildInfo.class,
 				this::configureBuildInfoTask);
 		this.project.getPlugins().withType(JavaPlugin.class, (plugin) -> {
-			tasks.getByName(JavaPlugin.CLASSES_TASK_NAME).dependsOn(bootBuildInfo.get());
-			this.project.afterEvaluate((evaluated) -> {
-				BuildInfoProperties properties = bootBuildInfo.get().getProperties();
+			tasks.named(JavaPlugin.CLASSES_TASK_NAME).configure((task) -> task.dependsOn(bootBuildInfo));
+			this.project.afterEvaluate((evaluated) -> bootBuildInfo.configure((buildInfo) -> {
+				BuildInfoProperties properties = buildInfo.getProperties();
 				if (properties.getArtifact() == null) {
 					properties.setArtifact(determineArtifactBaseName());
 				}
-			});
+			}));
 		});
 		if (configurer != null) {
-			configurer.execute(bootBuildInfo.get());
+			bootBuildInfo.configure(configurer);
 		}
 	}
 
