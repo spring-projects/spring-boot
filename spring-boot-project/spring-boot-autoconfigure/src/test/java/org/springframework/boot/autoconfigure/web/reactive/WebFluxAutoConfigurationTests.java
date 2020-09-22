@@ -73,6 +73,8 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
+import org.springframework.web.server.i18n.LocaleContextResolver;
 import org.springframework.web.util.pattern.PathPattern;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -452,6 +454,13 @@ class WebFluxAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void customLocaleContextResolver() {
+		this.contextRunner.withUserConfiguration(LocaleContextResolverConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(LocaleContextResolver.class)
+						.hasBean("customLocaleContextResolver"));
+	}
+
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
 		HandlerMapping mapping = context.getBean("resourceHandlerMapping", HandlerMapping.class);
 		if (mapping instanceof SimpleUrlHandlerMapping) {
@@ -672,6 +681,16 @@ class WebFluxAutoConfigurationTests {
 		@Override
 		public Example parse(String source, Locale locale) {
 			return new Example(source, new Date());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class LocaleContextResolverConfiguration {
+
+		@Bean
+		LocaleContextResolver customLocaleContextResolver() {
+			return new AcceptHeaderLocaleContextResolver();
 		}
 
 	}

@@ -69,6 +69,7 @@ import org.springframework.web.reactive.result.method.annotation.ArgumentResolve
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.i18n.LocaleContextResolver;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link EnableWebFlux WebFlux}.
@@ -262,6 +263,13 @@ public class WebFluxAutoConfiguration {
 				return this.webFluxRegistrations.getRequestMappingHandlerMapping();
 			}
 			return super.createRequestMappingHandlerMapping();
+		}
+
+		@Bean
+		@Override
+		@ConditionalOnMissingBean
+		public LocaleContextResolver localeContextResolver() {
+			return super.localeContextResolver();
 		}
 
 	}
