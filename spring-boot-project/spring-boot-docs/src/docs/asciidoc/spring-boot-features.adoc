@@ -669,7 +669,7 @@ Set the value to `ignore` using `SpringApplication.setDefaultProperties(...)` or
 [[boot-features-external-config-files-wildcards]]
 ==== Wildcard Locations
 If a config file location includes the `{asterisk}` character for the last path segment, it is considered a wildcard location.
-Wildcards are expanded when the config is loaded so that immediate subdirectories are are also checked.
+Wildcards are expanded when the config is loaded so that immediate subdirectories are also checked.
 Wildcard locations are particularly useful in an environment such as Kubernetes when there are multiple sources of config properties.
 
 For example, if you have some Redis configuration and some MySQL configuration, you might want to keep those two pieces of configuration separate, while requiring that both those are present in an `application.properties` file.
