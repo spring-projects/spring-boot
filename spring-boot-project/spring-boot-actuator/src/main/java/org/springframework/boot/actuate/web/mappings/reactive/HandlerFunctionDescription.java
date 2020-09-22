@@ -29,7 +29,13 @@ public class HandlerFunctionDescription {
 	private final String className;
 
 	HandlerFunctionDescription(HandlerFunction<?> handlerFunction) {
-		this.className = handlerFunction.getClass().getCanonicalName();
+		this.className = getHandlerFunctionClassName(handlerFunction);
+	}
+
+	private static String getHandlerFunctionClassName(HandlerFunction<?> handlerFunction) {
+		Class<?> functionClass = handlerFunction.getClass();
+		String canonicalName = functionClass.getCanonicalName();
+		return (canonicalName != null) ? canonicalName : functionClass.getName();
 	}
 
 	public String getClassName() {
