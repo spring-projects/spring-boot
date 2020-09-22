@@ -25,7 +25,6 @@ import org.apache.logging.log4j.core.config.ConfigurationFactory;
 import org.apache.logging.log4j.core.config.ConfigurationSource;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystemProperties;
@@ -39,12 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class Log4j2XmlTests {
 
-	private Configuration configuration;
-
-	@BeforeEach
-	void prepareConfiguration() {
-		this.configuration = initializeConfiguration();
-	}
+	protected Configuration configuration;
 
 	@AfterEach
 	void stopConfiguration() {
@@ -96,8 +90,13 @@ class Log4j2XmlTests {
 	}
 
 	private String consolePattern() {
-		Configuration configuration = initializeConfiguration();
-		return ((PatternLayout) configuration.getAppender("Console").getLayout()).getConversionPattern();
+		prepareConfiguration();
+		return ((PatternLayout) this.configuration.getAppender("Console").getLayout()).getConversionPattern();
+	}
+
+	protected void prepareConfiguration() {
+		this.configuration = initializeConfiguration();
+		this.configuration.start();
 	}
 
 	protected Configuration initializeConfiguration() {
