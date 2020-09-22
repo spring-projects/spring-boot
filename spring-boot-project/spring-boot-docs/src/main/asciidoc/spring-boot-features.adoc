@@ -2337,11 +2337,10 @@ There are several <<boot-features-jsp-limitations, known limitations>> when usin
 
 When you use one of these templating engines with the default configuration, your templates are picked up automatically from `src/main/resources/templates`.
 
-TIP: Depending on how you run your application, IntelliJ IDEA orders the classpath differently.
+TIP: Depending on how you run your application, your IDE may order the classpath differently.
 Running your application in the IDE from its main method results in a different ordering than when you run your application by using Maven or Gradle or from its packaged jar.
-This can cause Spring Boot to fail to find the templates on the classpath.
+This can cause Spring Boot to fail to find the expected template.
 If you have this problem, you can reorder the classpath in the IDE to place the module's classes and resources first.
-Alternatively, you can configure the template prefix to search every `templates` directory on the classpath, as follows: `classpath*:/templates/`.
 
 
 
