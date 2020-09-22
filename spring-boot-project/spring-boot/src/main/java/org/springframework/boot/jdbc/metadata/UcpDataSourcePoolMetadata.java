@@ -20,10 +20,10 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import oracle.ucp.jdbc.PoolDataSource;
-
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.util.StringUtils;
+
+import oracle.ucp.jdbc.PoolDataSource;
 
 /**
  * {@link DataSourcePoolMetadata} for a Oracle UCP {@link DataSource}.
@@ -42,8 +42,8 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 		try {
 			return getDataSource().getBorrowedConnectionsCount();
 		}
-		catch (SQLException e) {
-			throw new InvalidDataAccessApiUsageException("Error while reading property borrowedConnectionsCount", e);
+		catch (SQLException se) {
+			throw new InvalidDataAccessApiUsageException("Error while reading property borrowedConnectionsCount", se);
 		}
 	}
 
@@ -52,8 +52,8 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 		try {
 			return getDataSource().getAvailableConnectionsCount();
 		}
-		catch (SQLException e) {
-			throw new InvalidDataAccessApiUsageException("Error while reading property availableConnectionsCount", e);
+		catch (SQLException se) {
+			throw new InvalidDataAccessApiUsageException("Error while reading property availableConnectionsCount", se);
 		}
 	}
 
@@ -74,7 +74,7 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 
 	@Override
 	public Boolean getDefaultAutoCommit() {
-		String ac = getDataSource().getConnectionProperties().getProperty("AutoCommit");
+		String ac = getDataSource().getConnectionProperty("autoCommit");
 		return StringUtils.hasText(ac) ? Boolean.valueOf(ac) : null;
 	}
 

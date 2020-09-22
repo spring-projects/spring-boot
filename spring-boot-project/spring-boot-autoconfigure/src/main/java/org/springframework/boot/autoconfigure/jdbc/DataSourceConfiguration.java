@@ -133,8 +133,8 @@ abstract class DataSourceConfiguration {
 				try {
 					dataSource.setConnectionPoolName(properties.getName());
 				}
-				catch (SQLException e) {
-					throw new InvalidDataAccessApiUsageException("Error setting property connectionPoolName", e);
+				catch (SQLException se) {
+					throw new InvalidDataAccessApiUsageException("Error setting property connectionPoolName", se);
 				}
 			}
 			return dataSource;
