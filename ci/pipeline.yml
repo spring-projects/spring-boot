@@ -364,7 +364,7 @@ jobs:
       params: { state: "pending", commit: "git-repo" }
     - do:
       - task: build-project
-        image: spring-boot-jdk15-ci-image
+        image: ci-image-jdk15
         <<: *build-project-task-params
       on_failure:
         do:
