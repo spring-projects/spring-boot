@@ -130,24 +130,24 @@ resources:
     uri: ((github-repo))
     branch: ((branch))
     paths: ["ci/images/*"]
-- name: spring-boot-ci-image
+- name: ci-image
   type: docker-image
   icon: docker
   source:
     <<: *docker-resource-source
-    repository: ((docker-hub-organization))/spring-boot-ci-image
-- name: spring-boot-jdk11-ci-image
+    repository: ((docker-hub-organization))/((ci-image-name))
+- name: ci-image-jdk11
   type: docker-image
   icon: docker
   source:
     <<: *docker-resource-source
-    repository: ((docker-hub-organization))/spring-boot-jdk11-ci-image
-- name: spring-boot-jdk15-ci-image
+    repository: ((docker-hub-organization))/((ci-image-name))-jdk11
+- name: ci-image-jdk15
   type: docker-image
   icon: docker
   source:
     <<: *docker-resource-source
-    repository: ((docker-hub-organization))/spring-boot-jdk15-ci-image
+    repository: ((docker-hub-organization))/((ci-image-name))-jdk15
 - name: artifactory-repo
   type: artifactory-resource
   icon: package-variant
@@ -197,44 +197,44 @@ resources:
   icon: clock-outline
   source: { interval: "24h" }
 jobs:
-- name: build-spring-boot-ci-images
+- name: build-ci-images
   plan:
   - get: ci-images-git-repo
     trigger: true
   - in_parallel:
-    - put: spring-boot-ci-image
+    - put: ci-image
       params:
         build: ci-images-git-repo/ci/images
-        dockerfile: ci-images-git-repo/ci/images/spring-boot-ci-image/Dockerfile
-    - put: spring-boot-jdk11-ci-image
+        dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
+    - put: ci-image-jdk11
       params:
         build: ci-images-git-repo/ci/images
-        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk11-ci-image/Dockerfile
-    - put: spring-boot-jdk15-ci-image
+        dockerfile: ci-images-git-repo/ci/images/ci-image-jdk11/Dockerfile
+    - put: ci-image-jdk15
       params:
         build: ci-images-git-repo/ci/images
-        dockerfile: ci-images-git-repo/ci/images/spring-boot-jdk15-ci-image/Dockerfile
+        dockerfile: ci-images-git-repo/ci/images/ci-image-jdk15/Dockerfile
 - name: detect-jdk-updates
   plan:
   - get: git-repo
   - get: every-wednesday
     trigger: true
-  - get: spring-boot-ci-image
+  - get: ci-image
   - in_parallel:
     - task: detect-jdk8-update
-      image: spring-boot-ci-image
+      image: ci-image
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
         <<: *github-task-params
         JDK_VERSION: java8
     - task: detect-jdk11-update
-      image: spring-boot-ci-image
+      image: ci-image
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
         <<: *github-task-params
         JDK_VERSION: java11
     - task: detect-jdk15-update
-      image: spring-boot-ci-image
+      image: ci-image
       file: git-repo/ci/tasks/detect-jdk-updates.yml
       params:
         <<: *github-task-params
@@ -244,10 +244,10 @@ jobs:
   - get: git-repo
   - get: every-wednesday
     trigger: true
-  - get: spring-boot-ci-image
+  - get: ci-image
   - do:
     - task: detect-ubuntu-image-updates
-      image: spring-boot-ci-image
+      image: ci-image
       file: git-repo/ci/tasks/detect-ubuntu-image-updates.yml
       params:
         <<: *github-task-params
@@ -256,10 +256,10 @@ jobs:
   - get: git-repo
   - get: every-wednesday
     trigger: true
-  - get: spring-boot-ci-image
+  - get: ci-image
   - do:
     - task: detect-docker-updates
-      image: spring-boot-ci-image
+      image: ci-image
       file: git-repo/ci/tasks/detect-docker-updates.yml
       params:
         <<: *github-task-params
@@ -267,30 +267,30 @@ jobs:
   serial: true
   public: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: true
   - put: repo-status-build
     params: { state: "pending", commit: "git-repo" }
   - do:
     - task: build-project
-      image: spring-boot-ci-image
+      image: ci-image
       <<: *build-project-task-params
     - in_parallel:
       - task: build-smoke-tests
-        image: spring-boot-ci-image
+        image: ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
       - task: build-integration-tests
-        image: spring-boot-ci-image
+        image: ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
-        image: spring-boot-ci-image
+        image: ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
@@ -319,7 +319,7 @@ jobs:
   serial: true
   public: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     resource: git-pull-request
     trigger: true
@@ -330,20 +330,20 @@ jobs:
         path: git-repo
         status: pending
     - task: build-project
-      image: spring-boot-ci-image
+      image: ci-image
       file: git-repo/ci/tasks/build-pr-project.yml
       timeout: ((task-timeout))
     - in_parallel:
       - task: build-smoke-tests
-        image: spring-boot-ci-image
+        image: ci-image
         file: git-repo/ci/tasks/build-smoke-tests.yml
         timeout: ((task-timeout))
       - task: build-integration-tests
-        image: spring-boot-ci-image
+        image: ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
       - task: build-deployment-tests
-        image: spring-boot-ci-image
+        image: ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
     on_success:
@@ -360,30 +360,30 @@ jobs:
   serial: true
   public: true
   plan:
-  - get: spring-boot-jdk11-ci-image
+  - get: ci-image-jdk11
   - get: git-repo
     trigger: true
   - put: repo-status-jdk11-build
     params: { state: "pending", commit: "git-repo" }
   - do:
     - task: build-project
-      image: spring-boot-jdk11-ci-image
+      image: ci-image-jdk11
       <<: *build-project-task-params
     - in_parallel:
       - task: build-smoke-tests
-        image: spring-boot-jdk11-ci-image
+        image: ci-image-jdk11
         file: git-repo/ci/tasks/build-smoke-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
       - task: build-integration-tests
-        image: spring-boot-jdk11-ci-image
+        image: ci-image-jdk11
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
       - task: build-deployment-tests
-        image: spring-boot-jdk11-ci-image
+        image: ci-image-jdk11
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
@@ -404,31 +404,31 @@ jobs:
   serial: true
   public: true
   plan:
-    - get: spring-boot-jdk15-ci-image
+    - get: ci-image-jdk15
     - get: git-repo
       trigger: true
     - put: repo-status-jdk15-build
       params: { state: "pending", commit: "git-repo" }
     - do:
         - task: build-project
-          image: spring-boot-jdk15-ci-image
+          image: ci-image-jdk15
           <<: *build-project-task-params
         - in_parallel:
             - task: build-smoke-tests
               timeout: ((task-timeout))
-              image: spring-boot-jdk15-ci-image
+              image: ci-image-jdk15
               file: git-repo/ci/tasks/build-smoke-tests.yml
               params:
                 <<: *gradle-enterprise-task-params
             - task: build-integration-tests
               timeout: ((task-timeout))
-              image: spring-boot-jdk15-ci-image
+              image: ci-image-jdk15
               file: git-repo/ci/tasks/build-integration-tests.yml
               params:
                 <<: *gradle-enterprise-task-params
             - task: build-deployment-tests
               timeout: ((task-timeout))
-              image: spring-boot-jdk15-ci-image
+              image: ci-image-jdk15
               file: git-repo/ci/tasks/build-deployment-tests.yml
               params:
                 <<: *gradle-enterprise-task-params
@@ -471,11 +471,11 @@ jobs:
 - name: stage-milestone
   serial: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: false
   - task: stage
-    image: spring-boot-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: M
@@ -492,11 +492,11 @@ jobs:
 - name: stage-rc
   serial: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: false
   - task: stage
-    image: spring-boot-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RC
@@ -513,11 +513,11 @@ jobs:
 - name: stage-release
   serial: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: false
   - task: stage
-    image: spring-boot-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RELEASE
@@ -534,7 +534,7 @@ jobs:
 - name: promote-milestone
   serial: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -544,7 +544,7 @@ jobs:
       download_artifacts: false
       save_build_info: true
   - task: promote
-    image: spring-boot-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: M
@@ -563,7 +563,7 @@ jobs:
 - name: promote-rc
   serial: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -573,7 +573,7 @@ jobs:
       download_artifacts: false
       save_build_info: true
   - task: promote
-    image: spring-boot-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: RC
@@ -592,7 +592,7 @@ jobs:
 - name: promote-release
   serial: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
     trigger: false
   - get: artifactory-repo
@@ -602,7 +602,7 @@ jobs:
       download_artifacts: false
       save_build_info: true
   - task: promote
-    image: spring-boot-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: RELEASE
@@ -611,7 +611,7 @@ jobs:
 - name: sync-to-maven-central
   serial: true
   plan:
-  - get: spring-boot-ci-image
+  - get: ci-image
   - get: git-repo
   - get: artifactory-repo
     trigger: true
@@ -620,7 +620,7 @@ jobs:
       download_artifacts: false
       save_build_info: true
   - task: sync-to-maven-central
-    image: spring-boot-ci-image
+    image: ci-image
     file: git-repo/ci/tasks/sync-to-maven-central.yml
     params:
       <<: *bintray-task-params
@@ -637,11 +637,11 @@ jobs:
       tag: generated-release-notes/tag
       body: generated-release-notes/release-notes.md
 groups:
-- name: "Build"
+- name: "builds"
   jobs: ["build", "jdk11-build", "jdk15-build", "windows-build"]
-- name: "Release"
+- name: "releases"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
-- name: "CI Images"
-  jobs: ["build-spring-boot-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
-- name: "Build Pull Requests"
+- name: "ci-images"
+  jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
+- name: "pull-requests"
   jobs: ["build-pull-requests"]
