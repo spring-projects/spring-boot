@@ -18,10 +18,8 @@ package org.springframework.boot.logging.log4j2;
 
 import java.io.File;
 
-import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
@@ -38,13 +36,6 @@ class Log4j2FileXmlTests extends Log4j2XmlTests {
 
 	@TempDir
 	File temp;
-
-	@Override
-	@BeforeEach
-	void prepareConfiguration() {
-		System.setProperty(LoggingSystemProperties.LOG_FILE, new File(this.temp, "test.log").getAbsolutePath());
-		super.prepareConfiguration();
-	}
 
 	@Override
 	@AfterEach
@@ -91,9 +82,15 @@ class Log4j2FileXmlTests extends Log4j2XmlTests {
 		return "log4j2-file.xml";
 	}
 
+	@Override
+	protected void prepareConfiguration() {
+		System.setProperty(LoggingSystemProperties.LOG_FILE, new File(this.temp, "test.log").getAbsolutePath());
+		super.prepareConfiguration();
+	}
+
 	private String fileAppenderPattern() {
-		Configuration configuration = initializeConfiguration();
-		return ((PatternLayout) configuration.getAppender("File").getLayout()).getConversionPattern();
+		prepareConfiguration();
+		return ((PatternLayout) this.configuration.getAppender("File").getLayout()).getConversionPattern();
 	}
 
 }
