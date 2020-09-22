@@ -158,10 +158,8 @@ class MetricsAutoConfigurationIntegrationTests {
 
 		@Bean
 		CompositeMeterRegistry compositeMeterRegistry() {
-			CompositeMeterRegistry compositeMeterRegistry = new CompositeMeterRegistry(new MockClock(),
+			return new CompositeMeterRegistry(new MockClock(),
 					Arrays.asList(new SimpleMeterRegistry(), new SimpleMeterRegistry()));
-			System.out.println(compositeMeterRegistry.getRegistries());
-			return compositeMeterRegistry;
 		}
 
 	}
