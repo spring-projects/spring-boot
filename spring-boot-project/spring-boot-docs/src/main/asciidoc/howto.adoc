@@ -1448,7 +1448,7 @@ And the following example shows one way to set up the starters in Gradle:
 
 NOTE: The Log4j starters gather together the dependencies for common logging requirements (such as having Tomcat use `java.util.logging` but configuring the output using Log4j 2).
 
-NOTE: To ensure that debug logging performed using `java.util.logging` is routed into Log4j 2, configure its https://logging.apache.org/log4j/2.0/log4j-jul/index.html[JDK logging adapter] by setting the `java.util.logging.manager` system property to `org.apache.logging.log4j.jul.LogManager`.
+NOTE: To ensure that debug logging performed using `java.util.logging` is routed into Log4j 2, configure its https://logging.apache.org/log4j/2.x/log4j-jul/index.html[JDK logging adapter] by setting the `java.util.logging.manager` system property to `org.apache.logging.log4j.jul.LogManager`.
 
 
 
