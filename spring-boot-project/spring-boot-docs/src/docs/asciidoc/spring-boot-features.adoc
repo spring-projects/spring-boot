@@ -855,7 +855,7 @@ See the <<boot-features-external-config-file-activation-properties, next section
 It's sometimes useful to only activate a given get of properties when certain conditions are met.
 For example, you might have properties that are only relevant when a specific profile is active.
 
-You can conditionally active a properties document using `spring.config.activate.*`.
+You can conditionally activate a properties document using `spring.config.activate.*`.
 
 The following activation properties are available:
 
@@ -4248,7 +4248,7 @@ The following example shows how to manually override the database port while the
 	}
 ----
 
-The following examples shows how to set some PostgreSQL connection options:
+The following examples show how to set some PostgreSQL connection options:
 
 [source,java,indent=0]
 ----
@@ -4377,7 +4377,7 @@ There is a `spring-boot-starter-data-redis` "`Starter`" for collecting the depen
 By default, it uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
 That starter handles both traditional and reactive applications.
 
-TIP: we also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for consistency with the other stores with reactive support.
+TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for consistency with the other stores with reactive support.
 
 
 
