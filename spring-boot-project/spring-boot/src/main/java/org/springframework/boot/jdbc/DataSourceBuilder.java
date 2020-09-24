@@ -206,8 +206,16 @@ public final class DataSourceBuilder<T extends DataSource> {
 					create(classLoader, "org.apache.tomcat.jdbc.pool.DataSource", DataSourceSettings::new));
 			addIfAvailable(providers,
 					create(classLoader, "org.apache.commons.dbcp2.BasicDataSource", DataSourceSettings::new));
-			addIfAvailable(providers,
-					create(classLoader, "oracle.ucp.jdbc.PoolDataSourceImpl", DataSourceSettings::new));
+			addIfAvailable(providers, create(classLoader, "oracle.ucp.jdbc.PoolDataSourceImpl", (type) -> {
+				// Unfortunately Oracle UCP has an import on the Oracle driver itself
+				if (ClassUtils.isPresent("oracle.jdbc.OracleConnection", classLoader)) {
+					return new DataSourceSettings(type, (aliases) -> {
+						aliases.addAliases("username", "user");
+						aliases.addAliases("driver-class-name", "connection-factory-class-name");
+					});
+				}
+				return null;
+			}));
 			return providers;
 		}
 

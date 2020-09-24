@@ -16,8 +16,6 @@
 
 package org.springframework.boot.jdbc;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
@@ -29,15 +27,15 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
-import com.zaxxer.hikari.HikariDataSource;
-
-import oracle.ucp.jdbc.PoolDataSourceImpl;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DataSourceBuilder}.
@@ -80,7 +78,7 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
-	void defaultToUcpAsLastResort() {
+	void defaultToOracleUcpAsLastResort() {
 		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari",
 				"org.apache.tomcat.jdbc.pool", "org.apache.commons.dbcp2")).url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
@@ -112,6 +110,16 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
+	void dataSourceCanBeCreatedWithOracleUcpDataSource() {
+		this.dataSource = DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
+				.type(PoolDataSourceImpl.class).username("test").build();
+		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
+		PoolDataSourceImpl upcDataSource = (PoolDataSourceImpl) this.dataSource;
+		assertThat(upcDataSource.getConnectionFactoryClassName()).isEqualTo("org.hsqldb.jdbc.JDBCDriver");
+		assertThat(upcDataSource.getUser()).isEqualTo("test");
+	}
+
+	@Test
 	void dataSourceAliasesAreOnlyAppliedToRelevantDataSource() {
 		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(TestDataSource.class).username("test")
 				.build();
@@ -123,15 +131,6 @@ class DataSourceBuilderTests {
 		assertThat(testDataSource.getUser()).isNull();
 		assertThat(testDataSource.getDriverClassName()).isEqualTo(Driver.class.getName());
 		assertThat(testDataSource.getDriverClass()).isNull();
-	}
-
-	@Test
-	void UcpCanBeCreatedByDriverClassNamee() {
-		this.dataSource = DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
-				.type(PoolDataSourceImpl.class).build();
-		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
-		assertThat(((PoolDataSourceImpl) this.dataSource).getConnectionFactoryClassName())
-				.isEqualTo("org.hsqldb.jdbc.JDBCDriver");
 	}
 
 	final class HidePackagesClassLoader extends URLClassLoader {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,19 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.springframework.dao.InvalidDataAccessApiUsageException;
-import org.springframework.util.StringUtils;
-
 import oracle.ucp.jdbc.PoolDataSource;
 
+import org.springframework.util.StringUtils;
+
 /**
- * {@link DataSourcePoolMetadata} for a Oracle UCP {@link DataSource}.
+ * {@link DataSourcePoolMetadata} for an Oracle UCP {@link DataSource}.
  *
  * @author Fabio Grassi
- * @since 2.3.4
+ * @since 2.4.0
  */
-public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<PoolDataSource> {
+public class OracleUcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<PoolDataSource> {
 
-	public UcpDataSourcePoolMetadata(PoolDataSource dataSource) {
+	public OracleUcpDataSourcePoolMetadata(PoolDataSource dataSource) {
 		super(dataSource);
 	}
 
@@ -42,8 +41,8 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 		try {
 			return getDataSource().getBorrowedConnectionsCount();
 		}
-		catch (SQLException se) {
-			throw new InvalidDataAccessApiUsageException("Error while reading property borrowedConnectionsCount", se);
+		catch (SQLException ex) {
+			return null;
 		}
 	}
 
@@ -52,8 +51,8 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 		try {
 			return getDataSource().getAvailableConnectionsCount();
 		}
-		catch (SQLException se) {
-			throw new InvalidDataAccessApiUsageException("Error while reading property availableConnectionsCount", se);
+		catch (SQLException ex) {
+			return null;
 		}
 	}
 
@@ -74,8 +73,8 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 
 	@Override
 	public Boolean getDefaultAutoCommit() {
-		String ac = getDataSource().getConnectionProperty("autoCommit");
-		return StringUtils.hasText(ac) ? Boolean.valueOf(ac) : null;
+		String autoCommit = getDataSource().getConnectionProperty("autoCommit");
+		return StringUtils.hasText(autoCommit) ? Boolean.valueOf(autoCommit) : null;
 	}
 
 }

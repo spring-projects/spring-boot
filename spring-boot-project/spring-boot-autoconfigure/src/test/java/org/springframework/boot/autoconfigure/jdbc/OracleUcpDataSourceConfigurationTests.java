@@ -16,25 +16,26 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import java.sql.Connection;
 
 import javax.sql.DataSource;
 
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-import oracle.ucp.jdbc.PoolDataSource;
-import oracle.ucp.jdbc.PoolDataSourceImpl;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DataSourceAutoConfiguration} with Oracle UCP.
  *
  * @author Fabio Grassi
+ * @author Stephane Nicoll
  */
-class UcpDataSourceConfigurationTests {
-
-	private static final String PREFIX = "spring.datasource.ucp.";
+class OracleUcpDataSourceConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
@@ -46,13 +47,16 @@ class UcpDataSourceConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBeansOfType(DataSource.class)).hasSize(1);
 			assertThat(context.getBeansOfType(PoolDataSourceImpl.class)).hasSize(1);
+			try (Connection connection = context.getBean(DataSource.class).getConnection()) {
+				assertThat(connection.isValid(1000)).isTrue();
+			}
 		});
 	}
 
 	@Test
 	void testDataSourcePropertiesOverridden() {
-		this.contextRunner.withPropertyValues(PREFIX + "URL=jdbc:foo//bar/spam", PREFIX + "maxIdleTime=1234")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("spring.datasource.oracleucp.url=jdbc:foo//bar/spam",
+				"spring.datasource.oracleucp.max-idle-time=1234").run((context) -> {
 					PoolDataSourceImpl ds = context.getBean(PoolDataSourceImpl.class);
 					assertThat(ds.getURL()).isEqualTo("jdbc:foo//bar/spam");
 					assertThat(ds.getMaxIdleTime()).isEqualTo(1234);
@@ -61,11 +65,11 @@ class UcpDataSourceConfigurationTests {
 
 	@Test
 	void testDataSourceConnectionPropertiesOverridden() {
-		this.contextRunner.withPropertyValues(PREFIX + "connectionProperties.autoCommit=false").run((context) -> {
-			PoolDataSourceImpl ds = context.getBean(PoolDataSourceImpl.class);
-			assertThat(ds.getConnectionProperty("autoCommit")).isEqualTo("false");
-
-		});
+		this.contextRunner.withPropertyValues("spring.datasource.oracleucp.connection-properties.autoCommit=false")
+				.run((context) -> {
+					PoolDataSourceImpl ds = context.getBean(PoolDataSourceImpl.class);
+					assertThat(ds.getConnectionProperty("autoCommit")).isEqualTo("false");
+				});
 	}
 
 	@Test
@@ -89,16 +93,15 @@ class UcpDataSourceConfigurationTests {
 		this.contextRunner.withPropertyValues("spring.datasource.name=myDS").run((context) -> {
 			PoolDataSourceImpl ds = context.getBean(PoolDataSourceImpl.class);
 			assertThat(ds.getConnectionPoolName()).isEqualTo("myDS");
-
 		});
 	}
 
 	@Test
-	void connectionPoolNameTakesPrecedenceOverName() {
-		this.contextRunner.withPropertyValues("spring.datasource.name=myDS", PREFIX + "connectionPoolName=myUcpDS")
-				.run((context) -> {
+	void poolNameTakesPrecedenceOverName() {
+		this.contextRunner.withPropertyValues("spring.datasource.name=myDS",
+				"spring.datasource.oracleucp.connection-pool-name=myOracleUcpDS").run((context) -> {
 					PoolDataSourceImpl ds = context.getBean(PoolDataSourceImpl.class);
-					assertThat(ds.getConnectionPoolName()).isEqualTo("myUcpDS");
+					assertThat(ds.getConnectionPoolName()).isEqualTo("myOracleUcpDS");
 				});
 	}
 
