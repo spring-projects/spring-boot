@@ -64,6 +64,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public boolean isNewerThan(DependencyVersion other) {
+		if (other instanceof CalendarVersionDependencyVersion) {
+			return false;
+		}
 		if (!(other instanceof ReleaseTrainDependencyVersion)) {
 			return true;
 		}
@@ -78,6 +81,9 @@ final class ReleaseTrainDependencyVersion implements DependencyVersion {
 
 	@Override
 	public boolean isSameMinorAndNewerThan(DependencyVersion other) {
+		if (other instanceof CalendarVersionDependencyVersion) {
+			return false;
+		}
 		if (!(other instanceof ReleaseTrainDependencyVersion)) {
 			return true;
 		}

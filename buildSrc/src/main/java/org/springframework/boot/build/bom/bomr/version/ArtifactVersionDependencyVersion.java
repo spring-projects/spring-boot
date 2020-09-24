@@ -80,7 +80,7 @@ class ArtifactVersionDependencyVersion extends AbstractDependencyVersion {
 		return this.artifactVersion.toString();
 	}
 
-	private Optional<ArtifactVersionDependencyVersion> extractArtifactVersionDependencyVersion(
+	protected Optional<ArtifactVersionDependencyVersion> extractArtifactVersionDependencyVersion(
 			DependencyVersion other) {
 		ArtifactVersionDependencyVersion artifactVersion = null;
 		if (other instanceof ArtifactVersionDependencyVersion) {
