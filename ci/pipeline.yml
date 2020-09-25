@@ -85,12 +85,12 @@ resource_types:
 resources:
 - name: git-repo
   type: git
-  icon: github-circle
+  icon: github
   source:
     <<: *git-repo-resource-source
 - name: git-repo-windows
   type: git
-  icon: github-circle
+  icon: github
   source: 
     <<: *git-repo-resource-source
     git_config:
@@ -122,7 +122,7 @@ resources:
     pre_release: false
 - name: ci-images-git-repo
   type: git
-  icon: github-circle
+  icon: github
   source:
     uri: ((github-repo))
     branch: ((branch))
