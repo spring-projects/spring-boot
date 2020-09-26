@@ -44,7 +44,6 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
-import org.springframework.util.Assert;
 
 /**
  * {@link Launcher} for archives with user-configured classpath and main class via a
@@ -374,7 +373,9 @@ public class PropertiesLauncher extends Launcher {
 		if (classLoader == null) {
 			classLoader = newClassLoader(type, NO_PARAMS);
 		}
-		Assert.notNull(classLoader, () -> "Unable to create class loader for " + className);
+		if (classLoader == null) {
+			throw new IllegalArgumentException("Unable to create class loader for " + className);
+		}
 		return classLoader;
 	}
 
