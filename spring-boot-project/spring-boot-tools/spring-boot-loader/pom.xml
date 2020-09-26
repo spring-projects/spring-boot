@@ -19,12 +19,7 @@
 		<developerConnection>${git.developerConnection}</developerConnection>
 	</scm>
 	<dependencies>
-		<!-- Optional (must never have compile/runtime time dependencies) -->
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-core</artifactId>
-			<optional>true</optional>
-		</dependency>
+		<!-- Mmust never have compile/runtime time dependencies -->
 		<!-- Test -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>

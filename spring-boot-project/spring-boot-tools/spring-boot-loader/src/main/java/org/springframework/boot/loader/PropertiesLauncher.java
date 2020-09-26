@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ import org.springframework.boot.loader.archive.Archive.EntryFilter;
 import org.springframework.boot.loader.archive.ExplodedArchive;
 import org.springframework.boot.loader.archive.JarFileArchive;
 import org.springframework.boot.loader.util.SystemPropertyUtils;
-import org.springframework.util.Assert;
 
 /**
  * {@link Launcher} for archives with user-configured classpath and main class via a
@@ -370,7 +369,9 @@ public class PropertiesLauncher extends Launcher {
 		if (classLoader == null) {
 			classLoader = newClassLoader(type, NO_PARAMS);
 		}
-		Assert.notNull(classLoader, "Unable to create class loader for " + className);
+		if (classLoader == null) {
+			throw new IllegalArgumentException("Unable to create class loader for " + className);
+		}
 		return classLoader;
 	}
 
