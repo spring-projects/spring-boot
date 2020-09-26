@@ -16,8 +16,6 @@
 
 package org.springframework.boot.jdbc;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
@@ -26,15 +24,17 @@ import java.util.Arrays;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
+import oracle.ucp.jdbc.PoolDataSource;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
-import com.zaxxer.hikari.HikariDataSource;
-
-import oracle.ucp.jdbc.PoolDataSourceImpl;
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DataSourceBuilder}.
@@ -78,7 +78,7 @@ class DataSourceBuilderTests {
 	void defaultToUcpAsLastResort() {
 		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari",
 				"org.apache.tomcat.jdbc.pool", "org.apache.commons.dbcp2")).url("jdbc:h2:test").build();
-		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
+		assertThat(this.dataSource).isInstanceOf(PoolDataSource.class);
 	}
 
 	@Test
@@ -99,8 +99,8 @@ class DataSourceBuilderTests {
 	void UcpCanBeCreatedByDriverClassNamee() {
 		this.dataSource = DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
 				.type(PoolDataSourceImpl.class).build();
-		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
-		assertThat(((PoolDataSourceImpl) this.dataSource).getConnectionFactoryClassName())
+		assertThat(this.dataSource).isInstanceOf(PoolDataSource.class);
+		assertThat(((PoolDataSource) this.dataSource).getConnectionFactoryClassName())
 				.isEqualTo("org.hsqldb.jdbc.JDBCDriver");
 	}
 

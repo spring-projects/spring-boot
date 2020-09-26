@@ -16,19 +16,18 @@
 
 package org.springframework.boot.jdbc;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyNameAliases;
-import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
-import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
+import org.springframework.beans.BeanWrapper;
+import org.springframework.beans.BeanWrapperImpl;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 /**
  * Convenience class for building a {@link DataSource} with common implementations and
@@ -47,9 +46,26 @@ import org.springframework.util.ClassUtils;
  */
 public final class DataSourceBuilder<T extends DataSource> {
 
+	private static final String PROPERTY_URL = "url";
+
+	private static final String PROPERTY_DRIVER_CLASS_NAME = "driverClassName";
+
+	private static final String PROPERTY_USER_NAME = "username";
+
+	private static final String PROPERTY_PASSWORD = "password";
+
 	private static final String[] DATA_SOURCE_TYPE_NAMES = new String[] { "com.zaxxer.hikari.HikariDataSource",
 			"org.apache.tomcat.jdbc.pool.DataSource", "org.apache.commons.dbcp2.BasicDataSource",
 			"oracle.ucp.jdbc.PoolDataSourceImpl" };
+
+	private static final MultiValueMap<String, String> PROPERTY_NAME_ALIASES;
+	static {
+		PROPERTY_NAME_ALIASES = new LinkedMultiValueMap<>(3);
+		PROPERTY_NAME_ALIASES.addAll(PROPERTY_DRIVER_CLASS_NAME,
+				Arrays.asList("driverClass", "connectionFactoryClassName"));
+		PROPERTY_NAME_ALIASES.addAll(PROPERTY_URL, Arrays.asList("jdbcUrl", "URL"));
+		PROPERTY_NAME_ALIASES.addAll(PROPERTY_USER_NAME, Arrays.asList("user"));
+	}
 
 	private Class<? extends DataSource> type;
 
@@ -79,21 +95,27 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	private void maybeGetDriverClassName() {
-		if (!this.properties.containsKey("driverClassName") && this.properties.containsKey("url")) {
+		if (!this.properties.containsKey(PROPERTY_DRIVER_CLASS_NAME) && this.properties.containsKey(PROPERTY_URL)) {
 			String url = this.properties.get("url");
 			String driverClass = DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
-			this.properties.put("driverClassName", driverClass);
+			this.properties.put(PROPERTY_DRIVER_CLASS_NAME, driverClass);
 		}
 	}
 
 	private void bind(DataSource result) {
-		ConfigurationPropertySource source = new MapConfigurationPropertySource(this.properties);
-		ConfigurationPropertyNameAliases aliases = new ConfigurationPropertyNameAliases();
-		aliases.addAliases("driver-class-name", "driver-class", "connection-factory-class-name");
-		aliases.addAliases("url", "jdbc-url");
-		aliases.addAliases("username", "user");
-		Binder binder = new Binder(source.withAliases(aliases));
-		binder.bind(ConfigurationPropertyName.EMPTY, Bindable.ofInstance(result));
+		BeanWrapper beanWrapper = new BeanWrapperImpl(result);
+		Map<String, String> props = new HashMap<>(this.properties);
+		for (String origPropName : PROPERTY_NAME_ALIASES.keySet()) {
+			if (props.containsKey(origPropName) && !beanWrapper.isWritableProperty(origPropName)) {
+				for (String aliasCandidate : PROPERTY_NAME_ALIASES.get(origPropName)) {
+					if (beanWrapper.isWritableProperty(aliasCandidate)) {
+						props.put(aliasCandidate, props.remove(origPropName));
+						break;
+					}
+				}
+			}
+		}
+		beanWrapper.setPropertyValues(props);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -103,22 +125,22 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	public DataSourceBuilder<T> url(String url) {
-		this.properties.put("url", url);
+		this.properties.put(PROPERTY_URL, url);
 		return this;
 	}
 
 	public DataSourceBuilder<T> driverClassName(String driverClassName) {
-		this.properties.put("driverClassName", driverClassName);
+		this.properties.put(PROPERTY_DRIVER_CLASS_NAME, driverClassName);
 		return this;
 	}
 
 	public DataSourceBuilder<T> username(String username) {
-		this.properties.put("username", username);
+		this.properties.put(PROPERTY_USER_NAME, username);
 		return this;
 	}
 
 	public DataSourceBuilder<T> password(String password) {
-		this.properties.put("password", password);
+		this.properties.put(PROPERTY_PASSWORD, password);
 		return this;
 	}
 

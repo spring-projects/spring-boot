@@ -41,8 +41,7 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 	public Integer getActive() {
 		try {
 			return getDataSource().getBorrowedConnectionsCount();
-		}
-		catch (SQLException se) {
+		} catch (SQLException se) {
 			throw new InvalidDataAccessApiUsageException("Error while reading property borrowedConnectionsCount", se);
 		}
 	}
@@ -51,8 +50,7 @@ public class UcpDataSourcePoolMetadata extends AbstractDataSourcePoolMetadata<Po
 	public Integer getIdle() {
 		try {
 			return getDataSource().getAvailableConnectionsCount();
-		}
-		catch (SQLException se) {
+		} catch (SQLException se) {
 			throw new InvalidDataAccessApiUsageException("Error while reading property availableConnectionsCount", se);
 		}
 	}
