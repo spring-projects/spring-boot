@@ -73,14 +73,14 @@ do as they were designed before this was clarified.
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
+| https://github.com/Allurx/desensitization[desensitization]
+| https://github.com/Allurx/desensitization-spring-boot
+
 | https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
 | https://github.com/jliu666/docker-api-spring-boot
 
 | https://dozermapper.github.io/[Dozer]
 | https://github.com/DozerMapper/dozer
-
-| https://github.com/Allurx/desensitization[desensitization]
-| https://github.com/Allurx/desensitization-spring-boot
 
 | Elegant Error Handling for Spring Boot
 | https://github.com/alimate/errors-spring-boot-starter
