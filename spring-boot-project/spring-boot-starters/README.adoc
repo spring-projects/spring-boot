@@ -79,6 +79,9 @@ do as they were designed before this was clarified.
 | https://dozermapper.github.io/[Dozer]
 | https://github.com/DozerMapper/dozer
 
+| https://github.com/Allurx/desensitization[desensitization]
+| https://github.com/Allurx/desensitization-spring-boot
+
 | Elegant Error Handling for Spring Boot
 | https://github.com/alimate/errors-spring-boot-starter
 
