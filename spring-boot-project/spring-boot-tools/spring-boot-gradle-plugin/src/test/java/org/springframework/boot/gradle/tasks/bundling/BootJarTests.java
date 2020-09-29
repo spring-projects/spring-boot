@@ -21,7 +21,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -32,6 +31,7 @@ import java.util.zip.ZipEntry;
 import org.gradle.api.Action;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.artifacts.ResolvedModuleVersion;
@@ -40,11 +40,12 @@ import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
 import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.gradle.tasks.bundling.BootJarTests.TestBootJar;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -55,10 +56,10 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  * @author Paddy Drury
  */
-class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
+class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
 	BootJarTests() {
-		super(TestBootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/");
+		super(BootJar.class, "org.springframework.boot.loader.JarLauncher", "BOOT-INF/lib/", "BOOT-INF/classes/");
 	}
 
 	@Test
@@ -272,8 +273,9 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		return getTask().getArchiveFile().get().getAsFile();
 	}
 
+	@SuppressWarnings("unchecked")
 	private void addContent() throws IOException {
-		TestBootJar bootJar = getTask();
+		BootJar bootJar = getTask();
 		bootJar.setMainClassName("com.example.Main");
 		File classesJavaMain = new File(this.temp, "classes/java/main");
 		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
@@ -302,9 +304,15 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		ResolvedConfiguration resolvedConfiguration = mock(ResolvedConfiguration.class);
 		given(resolvedConfiguration.getResolvedArtifacts()).willReturn(artifacts);
 		Configuration configuration = mock(Configuration.class);
-		given(configuration.isCanBeResolved()).willReturn(true);
 		given(configuration.getResolvedConfiguration()).willReturn(resolvedConfiguration);
-		bootJar.setConfiguration(Collections.singleton(configuration));
+		ResolvableDependencies resolvableDependencies = mock(ResolvableDependencies.class);
+		given(configuration.getIncoming()).willReturn(resolvableDependencies);
+		willAnswer((invocation) -> {
+			invocation.getArgument(0, Action.class).execute(resolvableDependencies);
+			return null;
+		}).given(resolvableDependencies).afterResolve(any(Action.class));
+		given(configuration.getIncoming()).willReturn(resolvableDependencies);
+		bootJar.getResolvedDependencies().processConfiguration(configuration);
 	}
 
 	private ResolvedArtifact mockLibraryArtifact(String fileName, String group, String module, String version) {
@@ -334,7 +342,6 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		given(moduleVersion.getId()).willReturn(moduleVersionIdentifier);
 		ResolvedArtifact libraryArtifact = mock(ResolvedArtifact.class);
 		File file = new File(this.temp, fileName).getAbsoluteFile();
-		System.out.println(file);
 		given(libraryArtifact.getFile()).willReturn(file);
 		given(libraryArtifact.getModuleVersion()).willReturn(moduleVersion);
 		return libraryArtifact;
@@ -360,21 +367,6 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 	@Override
 	protected void executeTask() {
 		getTask().copy();
-	}
-
-	public static class TestBootJar extends BootJar {
-
-		private Iterable<Configuration> configurations = Collections.emptySet();
-
-		@Override
-		protected Iterable<Configuration> getConfigurations() {
-			return this.configurations;
-		}
-
-		void setConfiguration(Iterable<Configuration> configurations) {
-			this.configurations = configurations;
-		}
-
 	}
 
 }
