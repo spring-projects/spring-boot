@@ -40,7 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataMongoTestReactiveIntegrationTests {
 
 	@Container
-	static final MongoDBContainer mongoDB = new MongoDBContainer("mongo:4.0.10").withStartupAttempts(5)
+	static final MongoDBContainer mongoDB = new MongoDBContainer().withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
