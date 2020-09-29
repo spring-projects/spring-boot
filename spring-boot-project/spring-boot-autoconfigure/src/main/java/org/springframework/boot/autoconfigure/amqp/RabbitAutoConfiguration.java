@@ -44,6 +44,7 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.io.ResourceLoader;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link RabbitTemplate}.
@@ -97,12 +98,11 @@ public class RabbitAutoConfiguration {
 
 		@Bean
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties properties,
-				ObjectProvider<CredentialsProvider> credentialsProvider,
+				ResourceLoader resourceLoader, ObjectProvider<CredentialsProvider> credentialsProvider,
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService,
 				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) throws Exception {
-			CachingConnectionFactory factory = new CachingConnectionFactory(
-					getRabbitConnectionFactoryBean(properties, credentialsProvider, credentialsRefreshService)
-							.getObject());
+			CachingConnectionFactory factory = new CachingConnectionFactory(getRabbitConnectionFactoryBean(properties,
+					resourceLoader, credentialsProvider, credentialsRefreshService).getObject());
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::determineAddresses).to(factory::setAddresses);
 			map.from(properties::getAddressShuffleMode).whenNonNull().to(factory::setAddressShuffleMode);
@@ -120,9 +120,10 @@ public class RabbitAutoConfiguration {
 		}
 
 		private RabbitConnectionFactoryBean getRabbitConnectionFactoryBean(RabbitProperties properties,
-				ObjectProvider<CredentialsProvider> credentialsProvider,
-				ObjectProvider<CredentialsRefreshService> credentialsRefreshService) throws Exception {
+				ResourceLoader resourceLoader, ObjectProvider<CredentialsProvider> credentialsProvider,
+				ObjectProvider<CredentialsRefreshService> credentialsRefreshService) {
 			RabbitConnectionFactoryBean factory = new RabbitConnectionFactoryBean();
+			factory.setResourceLoader(resourceLoader);
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::determineHost).whenNonNull().to(factory::setHost);
 			map.from(properties::determinePort).to(factory::setPort);
