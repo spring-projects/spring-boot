@@ -235,7 +235,7 @@ public class ServerProperties {
 		/**
 		 * Whether to register the default Servlet with the container.
 		 */
-		private boolean registerDefaultServlet = true;
+		private boolean registerDefaultServlet = false;
 
 		@NestedConfigurationProperty
 		private final Encoding encoding = new Encoding();

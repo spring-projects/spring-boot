@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,8 @@ public interface ConfigurableServletWebServerFactory extends ConfigurableWebServ
 	void setSession(Session session);
 
 	/**
-	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
-	 * files from the {@link #setDocumentRoot(File) document root} will be served.
+	 * Set if the DefaultServlet should be registered. Defaults to {@code false} since
+	 * 2.4.
 	 * @param registerDefaultServlet if the default servlet should be registered
 	 */
 	void setRegisterDefaultServlet(boolean registerDefaultServlet);
