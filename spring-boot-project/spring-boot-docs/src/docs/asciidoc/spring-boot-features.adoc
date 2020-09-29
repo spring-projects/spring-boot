@@ -3826,7 +3826,8 @@ Spring Boot uses the following algorithm for choosing a specific implementation:
 . We prefer https://github.com/brettwooldridge/HikariCP[HikariCP] for its performance and concurrency.
   If HikariCP is available, we always choose it.
 . Otherwise, if the Tomcat pooling `DataSource` is available, we use it.
-. If neither HikariCP nor the Tomcat pooling datasource are available and if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
+. Otherwise, if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
+. If none of HikariCP, Tomcat, and DBCP2 are available and if Oracle UCP is available, we use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` "`starters`", you automatically get a dependency to `HikariCP`.
 
@@ -3857,7 +3858,7 @@ In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.D
 
 See {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[`DataSourceProperties`] for more of the supported options.
 These are the standard options that work regardless of the actual implementation.
-It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, and `+spring.datasource.dbcp2.*+`).
+It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
 Refer to the documentation of the connection pool implementation you are using for more details.
 
 For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:

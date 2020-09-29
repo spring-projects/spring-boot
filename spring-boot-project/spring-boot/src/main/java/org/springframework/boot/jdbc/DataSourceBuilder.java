@@ -37,16 +37,17 @@ import org.springframework.util.ClassUtils;
 
 /**
  * Convenience class for building a {@link DataSource} with common implementations and
- * properties. If HikariCP, Tomcat or Commons DBCP are on the classpath one of them will
- * be selected (in that order with Hikari first). In the interest of a uniform interface,
- * and so that there can be a fallback to an embedded database if one can be detected on
- * the classpath, only a small set of common configuration properties are supported. To
- * inject additional properties into the result you can downcast it, or use
+ * properties. If HikariCP, Tomcat, Commons DBCP or Oracle UCP are on the classpath one of
+ * them will be selected (in that order with Hikari first). In the interest of a uniform
+ * interface, and so that there can be a fallback to an embedded database if one can be
+ * detected on the classpath, only a small set of common configuration properties are
+ * supported. To inject additional properties into the result you can downcast it, or use
  * {@code @ConfigurationProperties}.
  *
  * @param <T> type of DataSource produced by the builder
  * @author Dave Syer
  * @author Madhura Bhave
+ * @author Fabio Grassi
  * @since 2.0.0
  */
 public final class DataSourceBuilder<T extends DataSource> {
@@ -166,9 +167,9 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	}
 
-	private static class OracleDataSourceSettings extends DataSourceSettings {
+	private static class OracleCommonDataSourceSettings extends DataSourceSettings {
 
-		OracleDataSourceSettings(Class<? extends DataSource> type) {
+		OracleCommonDataSourceSettings(Class<? extends DataSource> type) {
 			super(type, (aliases) -> aliases.addAliases("username", "user"));
 		}
 
@@ -194,7 +195,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 							(type) -> new DataSourceSettings(type,
 									(aliases) -> aliases.addAliases("driver-class-name", "driver-class"))));
 			addIfAvailable(this.allDataSourceSettings, create(classLoader,
-					"oracle.jdbc.datasource.OracleCommonDataSource", OracleDataSourceSettings::new));
+					"oracle.jdbc.datasource.OracleCommonDataSource", OracleCommonDataSourceSettings::new));
 		}
 
 		private static List<DataSourceSettings> resolveAvailableDataSourceSettings(ClassLoader classLoader) {
@@ -205,6 +206,16 @@ public final class DataSourceBuilder<T extends DataSource> {
 					create(classLoader, "org.apache.tomcat.jdbc.pool.DataSource", DataSourceSettings::new));
 			addIfAvailable(providers,
 					create(classLoader, "org.apache.commons.dbcp2.BasicDataSource", DataSourceSettings::new));
+			addIfAvailable(providers, create(classLoader, "oracle.ucp.jdbc.PoolDataSourceImpl", (type) -> {
+				// Unfortunately Oracle UCP has an import on the Oracle driver itself
+				if (ClassUtils.isPresent("oracle.jdbc.OracleConnection", classLoader)) {
+					return new DataSourceSettings(type, (aliases) -> {
+						aliases.addAliases("username", "user");
+						aliases.addAliases("driver-class-name", "connection-factory-class-name");
+					});
+				}
+				return null;
+			}));
 			return providers;
 		}
 

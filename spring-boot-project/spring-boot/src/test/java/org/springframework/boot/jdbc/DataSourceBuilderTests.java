@@ -27,6 +27,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.h2.Driver;
 import org.junit.jupiter.api.AfterEach;
@@ -40,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DataSourceBuilder}.
  *
  * @author Stephane Nicoll
+ * @author Fabio Grassi
  */
 class DataSourceBuilderTests {
 
@@ -68,11 +70,18 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
-	void defaultToCommonsDbcp2AsLastResort() {
+	void defaultToCommonsDbcp2IfNeitherHikariNorTomcatIsNotAvailable() {
 		this.dataSource = DataSourceBuilder
 				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
 				.url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
+	}
+
+	@Test
+	void defaultToOracleUcpAsLastResort() {
+		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari",
+				"org.apache.tomcat.jdbc.pool", "org.apache.commons.dbcp2")).url("jdbc:h2:test").build();
+		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
 	}
 
 	@Test
@@ -98,6 +107,16 @@ class DataSourceBuilderTests {
 		OracleDataSource oracleDataSource = (OracleDataSource) this.dataSource;
 		assertThat(oracleDataSource.getURL()).isEqualTo("jdbc:oracle:thin:@localhost:1521:xe");
 		assertThat(oracleDataSource.getUser()).isEqualTo("test");
+	}
+
+	@Test
+	void dataSourceCanBeCreatedWithOracleUcpDataSource() {
+		this.dataSource = DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
+				.type(PoolDataSourceImpl.class).username("test").build();
+		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
+		PoolDataSourceImpl upcDataSource = (PoolDataSourceImpl) this.dataSource;
+		assertThat(upcDataSource.getConnectionFactoryClassName()).isEqualTo("org.hsqldb.jdbc.JDBCDriver");
+		assertThat(upcDataSource.getUser()).isEqualTo("test");
 	}
 
 	@Test
