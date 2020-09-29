@@ -37,7 +37,7 @@ public class ElasticProperties extends StepRegistryProperties {
 	/**
 	 * Index to export metrics to.
 	 */
-	private String index = "metrics";
+	private String index = "micrometer-metrics";
 
 	/**
 	 * Index date format used for rolling indices. Appended to the index name.
