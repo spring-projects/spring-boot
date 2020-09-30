@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.logback;
 
 import java.lang.reflect.Method;
+import java.nio.charset.Charset;
 
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
@@ -117,6 +118,7 @@ class DefaultLogbackConfiguration {
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		String logPattern = this.patterns.getProperty("logging.pattern.console", CONSOLE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
+		setPatternCharsetIf(encoder);
 		config.start(encoder);
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);
@@ -128,12 +130,20 @@ class DefaultLogbackConfiguration {
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		String logPattern = this.patterns.getProperty("logging.pattern.file", FILE_LOG_PATTERN);
 		encoder.setPattern(OptionHelper.substVars(logPattern, config.getContext()));
+		setPatternCharsetIf(encoder);
 		appender.setEncoder(encoder);
 		config.start(encoder);
 		appender.setFile(logFile);
 		setRollingPolicy(appender, config, logFile);
 		config.appender("FILE", appender);
 		return appender;
+	}
+
+	private void setPatternCharsetIf(final PatternLayoutEncoder encoder) {
+		final String charset = this.patterns.getProperty("logging.pattern.charset");
+		if (charset != null) {
+			encoder.setCharset(Charset.forName(charset));
+		}
 	}
 
 	private void setRollingPolicy(RollingFileAppender<ILoggingEvent> appender, LogbackConfigurator config,
