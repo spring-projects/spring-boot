@@ -25,6 +25,7 @@ import org.springframework.boot.jdbc.DataSourceInitializationMode;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Vedran Pavic
+ * @author Glenn Renfro
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.batch")
@@ -47,6 +48,11 @@ public class BatchProperties {
 	 * Database schema initialization mode.
 	 */
 	private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
+
+	/**
+	 * Contains Job Parameters in a JSON format.
+	 */
+	private String jobParameters;
 
 	private final Job job = new Job();
 
@@ -76,6 +82,14 @@ public class BatchProperties {
 
 	public Job getJob() {
 		return this.job;
+	}
+
+	public String getJobParameters() {
+		return this.jobParameters;
+	}
+
+	public void setJobParameters(String jobParameters) {
+		this.jobParameters = jobParameters;
 	}
 
 	public static class Job {

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
+import java.util.Collections;
 import java.util.List;
 
 import javax.sql.DataSource;
@@ -23,6 +24,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobInstance;
 import org.springframework.batch.core.JobParameters;
@@ -40,6 +42,8 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.JobRestartException;
 import org.springframework.batch.core.step.builder.StepBuilder;
 import org.springframework.batch.core.step.tasklet.Tasklet;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -62,13 +66,14 @@ import static org.assertj.core.api.Assertions.fail;
  * @author Jean-Pierre Bergamin
  * @author Mahmoud Ben Hassine
  * @author Stephane Nicoll
+ * @author Glenn Renfro
  */
 class JobLauncherApplicationRunnerTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class))
-			.withUserConfiguration(BatchConfiguration.class)
+			.withUserConfiguration(BatchConfiguration.class, BatchProperties.class)
 			.withPropertyValues("spring.datasource.initialization-mode=never");
 
 	@Test
@@ -79,6 +84,43 @@ class JobLauncherApplicationRunnerTests {
 			assertThat(jobLauncherContext.jobInstances()).hasSize(1);
 			jobLauncherContext.executeJob(new JobParametersBuilder().addLong("id", 1L).toJobParameters());
 			assertThat(jobLauncherContext.jobInstances()).hasSize(2);
+		});
+	}
+
+	@Test
+	void testJobParameters() {
+		this.contextRunner.run((context) -> {
+			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
+			jobLauncherContext.runJob("--foo=bar", "baz=boo");
+			JobExecution jobExecution = jobLauncherContext.lastJobExecution();
+			assertThat(jobExecution.getJobParameters().getString("jobparm")).isEqualTo("testval");
+			assertThat(jobExecution.getJobParameters().getString("baz")).isEqualTo("boo");
+			assertThat(jobExecution.getJobParameters().getString("-foo")).isEqualTo("bar");
+		});
+	}
+
+	@Test
+	void testJobParametersForAppArgs() {
+		this.contextRunner.run((context) -> {
+			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
+			ApplicationArguments args = new DefaultApplicationArguments("--foo=bar", "baz=boo");
+			jobLauncherContext.runJob(args);
+			JobExecution jobExecution = jobLauncherContext.lastJobExecution();
+			assertThat(jobExecution.getJobParameters().getString("jobparm")).isEqualTo("testval");
+			assertThat(jobExecution.getJobParameters().getString("baz")).isEqualTo("boo");
+		});
+	}
+
+	@Test
+	void testJobParametersForAppArgsSingleDash() {
+		this.contextRunner.run((context) -> {
+			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
+			ApplicationArguments args = new DefaultApplicationArguments("-foo=bar", "baz=boo");
+			jobLauncherContext.runJob(args);
+			JobExecution jobExecution = jobLauncherContext.lastJobExecution();
+			assertThat(jobExecution.getJobParameters().getString("jobparm")).isEqualTo("testval");
+			assertThat(jobExecution.getJobParameters().getString("baz")).isEqualTo("boo");
+			assertThat(jobExecution.getJobParameters().getString("foo")).isEqualTo("bar");
 		});
 	}
 
@@ -191,14 +233,36 @@ class JobLauncherApplicationRunnerTests {
 			this.job = this.jobs.get("job").start(this.step).build();
 			this.jobExplorer = context.getBean(JobExplorer.class);
 			this.runner = new JobLauncherApplicationRunner(jobLauncher, this.jobExplorer, jobRepository);
+			this.runner.setBatchJobParameters("{\"jobparm\":\"testval\"}");
 		}
 
 		List<JobInstance> jobInstances() {
 			return this.jobExplorer.getJobInstances("job", 0, 100);
 		}
 
+		List<JobExecution> jobExecutions(JobInstance jobInstance) {
+			return this.jobExplorer.getJobExecutions(jobInstance);
+		}
+
+		JobExecution lastJobExecution() {
+			assertThat(jobInstances()).hasSize(1);
+			JobInstance jobInstance = jobInstances().get(0);
+			List<JobExecution> jobExecutions = jobExecutions(jobInstance);
+			return jobExecutions.get(jobExecutions.size() - 1);
+		}
+
 		void executeJob(JobParameters jobParameters) throws JobExecutionException {
 			this.runner.execute(this.job, jobParameters);
+		}
+
+		void runJob(String... args) throws JobExecutionException {
+			this.runner.setJobs(Collections.singletonList(this.job));
+			this.runner.run(args);
+		}
+
+		void runJob(ApplicationArguments args) throws Exception {
+			this.runner.setJobs(Collections.singletonList(this.job));
+			this.runner.run(args);
 		}
 
 		JobBuilder jobBuilder() {

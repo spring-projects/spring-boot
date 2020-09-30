@@ -77,6 +77,10 @@ public class BatchAutoConfiguration {
 		if (StringUtils.hasText(jobNames)) {
 			runner.setJobNames(jobNames);
 		}
+		String jobParameters = properties.getJobParameters();
+		if (StringUtils.hasText(jobParameters)) {
+			runner.setBatchJobParameters(jobParameters);
+		}
 		return runner;
 	}
 

@@ -24,6 +24,9 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Properties;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -66,9 +69,12 @@ import org.springframework.util.StringUtils;
  * @author Jean-Pierre Bergamin
  * @author Mahmoud Ben Hassine
  * @author Stephane Nicoll
+ * @author Glenn Renfro
  * @since 2.3.0
  */
 public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered, ApplicationEventPublisherAware {
+
+	private String batchJobParameters;
 
 	/**
 	 * The default order for the command line runner.
@@ -152,11 +158,28 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 
 	public void run(String... args) throws JobExecutionException {
 		logger.info("Running default command line with: " + Arrays.asList(args));
+
 		launchJobFromProperties(StringUtils.splitArrayElementsIntoProperties(args, "="));
 	}
 
 	protected void launchJobFromProperties(Properties properties) throws JobExecutionException {
-		JobParameters jobParameters = this.converter.getJobParameters(properties);
+		Properties batchProperties = new Properties();
+		if (this.batchJobParameters != null) {
+			ObjectMapper objectMapper = new ObjectMapper();
+			try {
+				Map<String, Object> batchMap = objectMapper.readValue(this.batchJobParameters,
+						new TypeReference<Map<String, Object>>() {
+						});
+				batchProperties.putAll(batchMap);
+			}
+			catch (JsonProcessingException exception) {
+				throw new JobExecutionException("Unable to parse spring.batch.job-parameters", exception);
+			}
+		}
+		if (properties != null) {
+			batchProperties.putAll(properties);
+		}
+		JobParameters jobParameters = this.converter.getJobParameters(batchProperties);
 		executeLocalJobs(jobParameters);
 		executeRegisteredJobs(jobParameters);
 	}
@@ -243,6 +266,14 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		merged.putAll(parameters.getParameters());
 		merged.putAll(additionals.getParameters());
 		return new JobParameters(merged);
+	}
+
+	public String getBatchJobParameters() {
+		return this.batchJobParameters;
+	}
+
+	public void setBatchJobParameters(String batchJobParameters) {
+		this.batchJobParameters = batchJobParameters;
 	}
 
 }
