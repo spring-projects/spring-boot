@@ -134,11 +134,8 @@ class ArtifactsLibrariesTests {
 	@Test
 	void libraryCoordinatesVersionUsesBaseVersionOfArtifact() throws IOException {
 		Artifact snapshotArtifact = mock(Artifact.class);
-		given(snapshotArtifact.getType()).willReturn("jar");
 		given(snapshotArtifact.getScope()).willReturn("compile");
-		given(snapshotArtifact.getGroupId()).willReturn("g1");
 		given(snapshotArtifact.getArtifactId()).willReturn("artifact");
-		given(snapshotArtifact.getVersion()).willReturn("1.0-20200929.090327-28");
 		given(snapshotArtifact.getBaseVersion()).willReturn("1.0-SNAPSHOT");
 		given(snapshotArtifact.getFile()).willReturn(new File("a"));
 		given(snapshotArtifact.getArtifactHandler()).willReturn(this.artifactHandler);
