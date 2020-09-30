@@ -56,6 +56,7 @@ public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealth
 		return this.client.execute(this::getHealth).flatMap((response) -> doHealthCheck(builder, response));
 	}
 
+	@SuppressWarnings("deprecation") // Requires an update in ReactiveElasticsearchClient
 	private Mono<ClientResponse> getHealth(WebClient webClient) {
 		return webClient.get().uri("/_cluster/health/").exchange();
 	}
