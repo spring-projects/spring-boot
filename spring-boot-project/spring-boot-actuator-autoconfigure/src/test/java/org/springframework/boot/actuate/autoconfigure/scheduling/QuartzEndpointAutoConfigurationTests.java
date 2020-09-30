@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.scheduling;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration;
@@ -51,4 +50,5 @@ class QuartzEndpointAutoConfigurationTests {
 		this.contextRunner.withPropertyValues("management.endpoint.quartz.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
+
 }

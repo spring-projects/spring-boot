@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.scheduling;
 import org.quartz.SchedulerException;
 
 public class SpringQuartzException extends RuntimeException {
+
 	public SpringQuartzException(String message) {
 		super(message);
 	}
@@ -30,4 +31,5 @@ public class SpringQuartzException extends RuntimeException {
 	public SpringQuartzException(SchedulerException e) {
 		super(e.getMessage(), e.getCause());
 	}
+
 }

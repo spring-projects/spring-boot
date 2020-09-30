@@ -36,7 +36,6 @@ import org.quartz.SchedulerException;
 import org.quartz.SimpleScheduleBuilder;
 import org.quartz.SimpleTrigger;
 import org.quartz.TriggerBuilder;
-
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -75,8 +74,7 @@ public class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentati
 			fieldWithPath("jobClass").description("Simple class name of the job."),
 			fieldWithPath("data").description("Map that's represent the job's JobDataMap."),
 			fieldWithPath("triggerState").description("State of the job."),
-			fieldWithPath("nextFireDate").description("The next fire date of the job.")
-	);
+			fieldWithPath("nextFireDate").description("The next fire date of the job."));
 
 	@Override
 	@BeforeEach
@@ -89,7 +87,6 @@ public class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	void clean() throws SchedulerException {
 		this.cleanJob();
 	}
-
 
 	@Test
 	void allJobs() throws Exception {
@@ -161,15 +158,15 @@ public class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentati
 
 	private void generateJob() {
 		try {
-			JobDetail jobDetail = JobBuilder.newJob(SampleJob.class).withIdentity(jobKey)
-					.usingJobData(new JobDataMap()).build();
+			JobDetail jobDetail = JobBuilder.newJob(SampleJob.class).withIdentity(jobKey).usingJobData(new JobDataMap())
+					.build();
 
 			java.util.Date start = Date
 					.from(LocalDateTime.now().plusYears(1).atZone(ZoneId.systemDefault()).toInstant());
 
 			SimpleTrigger sampleTrigger = TriggerBuilder.newTrigger().forJob(jobDetail)
-					.withIdentity("triggerName", "triggerGroup")
-					.withSchedule(SimpleScheduleBuilder.simpleSchedule()).startAt(start).build();
+					.withIdentity("triggerName", "triggerGroup").withSchedule(SimpleScheduleBuilder.simpleSchedule())
+					.startAt(start).build();
 
 			scheduler.scheduleJob(jobDetail, sampleTrigger);
 		}
@@ -197,9 +194,12 @@ public class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentati
 	}
 
 	public static class SampleJob implements Job {
+
 		@Override
 		public void execute(JobExecutionContext context) {
 			// Do nothing
 		}
+
 	}
+
 }

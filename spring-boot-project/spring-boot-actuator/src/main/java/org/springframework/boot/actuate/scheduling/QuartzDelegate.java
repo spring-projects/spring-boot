@@ -20,7 +20,6 @@ import java.util.List;
 
 import org.quartz.Scheduler;
 import org.quartz.SchedulerException;
-
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzDescriptor;
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzKey;
 
@@ -49,4 +48,5 @@ public interface QuartzDelegate {
 	void pause(QuartzKey key) throws SchedulerException;
 
 	boolean delete(QuartzKey key) throws SchedulerException;
+
 }

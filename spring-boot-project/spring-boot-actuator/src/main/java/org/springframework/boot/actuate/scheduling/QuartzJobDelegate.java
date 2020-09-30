@@ -30,7 +30,6 @@ import org.quartz.Trigger;
 import org.quartz.Trigger.TriggerState;
 import org.quartz.TriggerKey;
 import org.quartz.impl.matchers.GroupMatcher;
-
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzDescriptor;
 import org.springframework.boot.actuate.scheduling.QuartzEndpoint.QuartzKey;
 
@@ -91,8 +90,8 @@ public class QuartzJobDelegate implements QuartzDelegate {
 	@Override
 	public boolean isInPausedMode(QuartzKey key) throws SchedulerException {
 		List<? extends Trigger> triggersOfJob = this.scheduler.getTriggersOfJob(key.toJobKey());
-		return triggersOfJob.stream().map(Trigger::getKey).map(getGetTriggerState())
-				.filter(Objects::nonNull).allMatch(TriggerState.PAUSED::equals);
+		return triggersOfJob.stream().map(Trigger::getKey).map(getGetTriggerState()).filter(Objects::nonNull)
+				.allMatch(TriggerState.PAUSED::equals);
 	}
 
 	@Override
@@ -120,4 +119,5 @@ public class QuartzJobDelegate implements QuartzDelegate {
 			}
 		};
 	}
+
 }
