@@ -67,7 +67,6 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -270,7 +269,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 							"cloudFoundrySecurityService");
 					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
 							"webClient");
-					webClient.get().uri("https://self-signed.badssl.com/").exchangeToMono(ClientResponse::releaseBody)
+					webClient.get().uri("https://self-signed.badssl.com/").retrieve().toBodilessEntity()
 							.block(Duration.ofSeconds(30));
 				});
 	}
@@ -288,8 +287,8 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
 							"webClient");
 					assertThatExceptionOfType(RuntimeException.class)
-							.isThrownBy(() -> webClient.get().uri("https://self-signed.badssl.com/")
-									.exchangeToMono(ClientResponse::releaseBody).block(Duration.ofSeconds(30)))
+							.isThrownBy(() -> webClient.get().uri("https://self-signed.badssl.com/").retrieve()
+									.toBodilessEntity().block(Duration.ofSeconds(30)))
 							.withCauseInstanceOf(SSLException.class);
 				});
 	}

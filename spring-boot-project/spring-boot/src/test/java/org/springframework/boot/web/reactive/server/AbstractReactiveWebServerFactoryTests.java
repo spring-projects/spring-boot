@@ -70,7 +70,6 @@ import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.util.SocketUtils;
 import org.springframework.util.unit.DataSize;
 import org.springframework.web.reactive.function.BodyInserters;
-import org.springframework.web.reactive.function.client.ClientResponse;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 
@@ -282,16 +281,14 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	@Test
 	protected void compressionOfResponseToGetRequest() {
 		WebClient client = prepareCompressionTest();
-		ResponseEntity<Void> response = client.get().exchangeToMono(ClientResponse::toBodilessEntity)
-				.block(Duration.ofSeconds(30));
+		ResponseEntity<Void> response = client.get().retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 		assertResponseIsCompressed(response);
 	}
 
 	@Test
 	protected void compressionOfResponseToPostRequest() {
 		WebClient client = prepareCompressionTest();
-		ResponseEntity<Void> response = client.post().exchangeToMono(ClientResponse::toBodilessEntity)
-				.block(Duration.ofSeconds(30));
+		ResponseEntity<Void> response = client.post().retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 		assertResponseIsCompressed(response);
 	}
 
@@ -301,8 +298,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		compression.setEnabled(true);
 		compression.setMinResponseSize(DataSize.ofBytes(3001));
 		WebClient client = prepareCompressionTest(compression);
-		ResponseEntity<Void> response = client.get().exchangeToMono(ClientResponse::toBodilessEntity)
-				.block(Duration.ofSeconds(30));
+		ResponseEntity<Void> response = client.get().retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 
@@ -312,8 +308,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		compression.setEnabled(true);
 		compression.setMimeTypes(new String[] { "application/json" });
 		WebClient client = prepareCompressionTest(compression);
-		ResponseEntity<Void> response = client.get().exchangeToMono(ClientResponse::toBodilessEntity)
-				.block(Duration.ofSeconds(30));
+		ResponseEntity<Void> response = client.get().retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 
@@ -323,8 +318,8 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		compression.setEnabled(true);
 		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
 		WebClient client = prepareCompressionTest(compression);
-		ResponseEntity<Void> response = client.get().header("User-Agent", "testUserAgent")
-				.exchangeToMono(ClientResponse::toBodilessEntity).block(Duration.ofSeconds(30));
+		ResponseEntity<Void> response = client.get().header("User-Agent", "testUserAgent").retrieve().toBodilessEntity()
+				.block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 
@@ -334,8 +329,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		compression.setEnabled(true);
 		compression.setMimeTypes(new String[] { "application/json" });
 		WebClient client = prepareCompressionTest(compression, "test~plain");
-		ResponseEntity<Void> response = client.get().exchangeToMono(ClientResponse::toBodilessEntity)
-				.block(Duration.ofSeconds(30));
+		ResponseEntity<Void> response = client.get().retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 		assertResponseIsNotCompressed(response);
 	}
 
