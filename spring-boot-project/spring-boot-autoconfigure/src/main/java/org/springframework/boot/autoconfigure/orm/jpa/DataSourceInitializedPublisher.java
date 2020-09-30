@@ -35,7 +35,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceSchemaCreatedEvent;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.JpaDialect;
 import org.springframework.orm.jpa.JpaVendorAdapter;
@@ -194,11 +193,7 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		@Override
 		public void postProcessEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
 			this.delegate.postProcessEntityManagerFactory(entityManagerFactory);
-			AsyncTaskExecutor bootstrapExecutor = this.factoryBean.getBootstrapExecutor();
-			if (bootstrapExecutor != null) {
-				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this
-						.publishEventIfRequired(this.factoryBean, entityManagerFactory));
-			}
+			publishEventIfRequired(this.factoryBean, entityManagerFactory);
 		}
 
 	}
