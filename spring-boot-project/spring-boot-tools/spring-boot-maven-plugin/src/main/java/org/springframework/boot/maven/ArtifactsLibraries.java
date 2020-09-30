@@ -144,7 +144,7 @@ public class ArtifactsLibraries implements Libraries {
 
 		@Override
 		public String getVersion() {
-			return this.artifact.getVersion();
+			return this.artifact.getBaseVersion();
 		}
 
 		@Override
