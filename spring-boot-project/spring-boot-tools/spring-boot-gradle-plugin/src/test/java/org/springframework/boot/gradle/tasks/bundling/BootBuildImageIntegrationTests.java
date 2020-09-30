@@ -28,14 +28,13 @@ import java.util.Random;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
-import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
+import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 
@@ -47,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
-@ExtendWith(GradleCompatibilityExtension.class)
+@GradleCompatibility
 @DisabledIfDockerUnavailable
 class BootBuildImageIntegrationTests {
 

@@ -37,7 +37,7 @@ import org.springframework.boot.gradle.testkit.GradleBuildExtension;
  *
  * @author Andy Wilkinson
  */
-public final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
+final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
 
 	private static final List<String> GRADLE_VERSIONS;
 

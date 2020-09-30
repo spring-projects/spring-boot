@@ -26,9 +26,8 @@ import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
+import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.boot.loader.tools.FileUtils;
 
@@ -39,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(GradleCompatibilityExtension.class)
+@GradleCompatibility
 class BuildInfoIntegrationTests {
 
 	GradleBuild gradleBuild;

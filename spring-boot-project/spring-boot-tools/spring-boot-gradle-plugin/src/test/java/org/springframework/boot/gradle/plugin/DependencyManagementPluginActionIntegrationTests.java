@@ -18,9 +18,8 @@ package org.springframework.boot.gradle.plugin;
 
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.gradle.junit.GradleCompatibilityExtension;
+import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,7 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@ExtendWith(GradleCompatibilityExtension.class)
+@GradleCompatibility
 class DependencyManagementPluginActionIntegrationTests {
 
 	GradleBuild gradleBuild;
