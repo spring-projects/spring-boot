@@ -168,10 +168,13 @@ public class DispatcherServletAutoConfiguration {
 		}
 
 		private ConditionOutcome checkDefaultDispatcherName(ConfigurableListableBeanFactory beanFactory) {
+			boolean containsDispatcherBean = beanFactory.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
+			if (!containsDispatcherBean) {
+				return ConditionOutcome.match();
+			}
 			List<String> servlets = Arrays
 					.asList(beanFactory.getBeanNamesForType(DispatcherServlet.class, false, false));
-			boolean containsDispatcherBean = beanFactory.containsBean(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME);
-			if (containsDispatcherBean && !servlets.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
+			if (!servlets.contains(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)) {
 				return ConditionOutcome.noMatch(
 						startMessage().found("non dispatcher servlet").items(DEFAULT_DISPATCHER_SERVLET_BEAN_NAME));
 			}
