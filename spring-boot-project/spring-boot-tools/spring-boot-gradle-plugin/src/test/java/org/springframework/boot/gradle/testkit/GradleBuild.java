@@ -72,6 +72,8 @@ public class GradleBuild {
 
 	private GradleVersion expectDeprecationWarnings;
 
+	private boolean configurationCache = false;
+
 	public GradleBuild() {
 		this(Dsl.GROOVY);
 	}
@@ -124,6 +126,11 @@ public class GradleBuild {
 		return this;
 	}
 
+	public GradleBuild configurationCache() {
+		this.configurationCache = true;
+		return this;
+	}
+
 	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();
@@ -169,6 +176,9 @@ public class GradleBuild {
 		allArguments.addAll(Arrays.asList(arguments));
 		allArguments.add("--warning-mode");
 		allArguments.add("all");
+		if (this.configurationCache) {
+			allArguments.add("--configuration-cache");
+		}
 		return gradleRunner.withArguments(allArguments);
 	}
 
