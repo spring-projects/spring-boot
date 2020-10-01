@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link EmbeddedDatabaseConnection}.
  *
  * @author Stephane Nicoll
+ * @author Nidhi Desai
  */
 class EmbeddedDatabaseConnectionTests {
 
@@ -41,19 +42,39 @@ class EmbeddedDatabaseConnectionTests {
 	}
 
 	@Test
+	@Deprecated
 	void hsqlCustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.HSQL.getUrl("myhsql")).isEqualTo("jdbc:hsqldb:mem:myhsql");
 	}
 
 	@Test
+	@Deprecated
 	void getUrlWithNullDatabaseName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 
 	@Test
+	@Deprecated
 	void getUrlWithEmptyDatabaseName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+				.withMessageContaining("DatabaseName must not be empty");
+	}
+
+	@Test
+	void hsqldbCustomDatabaseName() {
+		assertThat(EmbeddedDatabaseConnection.HSQLDB.getUrl("myhsqldb")).isEqualTo("jdbc:hsqldb:mem:myhsqldb");
+	}
+
+	@Test
+	void getUrlWithNullDatabaseNameForHsqldb() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl(null))
+				.withMessageContaining("DatabaseName must not be empty");
+	}
+
+	@Test
+	void getUrlWithEmptyDatabaseNameForHsqldb() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl("  "))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 

@@ -163,7 +163,7 @@ class LiquibaseEndpointTests {
 
 		private DataSource createEmbeddedDatabase() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseConnection.HSQL.getType()).build();
+					.setType(EmbeddedDatabaseConnection.HSQLDB.getType()).build();
 		}
 
 		private SpringLiquibase createSpringLiquibase(String changeLog, DataSource dataSource) {

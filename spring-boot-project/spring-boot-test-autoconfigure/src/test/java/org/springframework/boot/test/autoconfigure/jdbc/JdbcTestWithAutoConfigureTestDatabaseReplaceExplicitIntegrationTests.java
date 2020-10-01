@@ -37,7 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  */
 @JdbcTest
-@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQL)
+@AutoConfigureTestDatabase(connection = EmbeddedDatabaseConnection.HSQLDB)
 class JdbcTestWithAutoConfigureTestDatabaseReplaceExplicitIntegrationTests {
 
 	@Autowired
