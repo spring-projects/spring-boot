@@ -119,6 +119,11 @@ public class RabbitProperties {
 	 * Connection timeout. Set it to zero to wait forever.
 	 */
 	private Duration connectionTimeout;
+	
+	/**
+	 * Channel RPC timeout.
+	 */
+	private Duration channelRpcTimeout;
 
 	/**
 	 * Cache configuration.
@@ -323,6 +328,10 @@ public class RabbitProperties {
 	public Duration getConnectionTimeout() {
 		return this.connectionTimeout;
 	}
+	
+	public Duration getChannelRpcTimeout() {
+		return this.channelRpcTimeout;
+	}
 
 	public void setPublisherConfirmType(ConfirmType publisherConfirmType) {
 		this.publisherConfirmType = publisherConfirmType;
@@ -334,6 +343,10 @@ public class RabbitProperties {
 
 	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
+	}
+	
+	public void setChannelRpcTimeout(Duration channelRpcTimeout) {
+		this.channelRpcTimeout = channelRpcTimeout;
 	}
 
 	public Cache getCache() {
