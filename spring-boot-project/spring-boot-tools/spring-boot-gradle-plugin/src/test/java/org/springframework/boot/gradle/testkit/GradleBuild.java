@@ -24,7 +24,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.JarFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -74,8 +77,12 @@ public class GradleBuild {
 
 	private boolean configurationCache = false;
 
+	private Map<String, String> scriptProperties = new HashMap<>();
+
 	public GradleBuild() {
 		this(Dsl.GROOVY);
+		this.scriptProperties.put("bootVersion", getBootVersion());
+		this.scriptProperties.put("dependencyManagementPluginVersion", getDependencyManagementPluginVersion());
 	}
 
 	public GradleBuild(Dsl dsl) {
@@ -131,6 +138,11 @@ public class GradleBuild {
 		return this;
 	}
 
+	public GradleBuild scriptProperty(String key, String value) {
+		this.scriptProperties.put(key, value);
+		return this;
+	}
+
 	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();
@@ -155,9 +167,10 @@ public class GradleBuild {
 	}
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
-		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
-				.replace("{version}", getBootVersion())
-				.replace("{dependency-management-plugin-version}", getDependencyManagementPluginVersion());
+		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script));
+		for (Entry<String, String> property : this.scriptProperties.entrySet()) {
+			scriptContent = scriptContent.replace("{" + property.getKey() + "}", property.getValue());
+		}
 		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
 		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
 				new File(this.projectDir, "repository"));
