@@ -74,7 +74,7 @@ public class H2ConsoleAutoConfiguration {
 				logger.info("H2 console available at '" + path + "'. Database available at '"
 						+ connection.getMetaData().getURL() + "'");
 			}
-			catch (SQLException ex) {
+			catch (Exception ex) {
 				// Continue
 			}
 		});
