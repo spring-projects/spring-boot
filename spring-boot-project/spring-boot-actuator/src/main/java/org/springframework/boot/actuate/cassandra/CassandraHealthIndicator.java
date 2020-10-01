@@ -32,7 +32,9 @@ import org.springframework.util.Assert;
  * @author Julien Dubois
  * @author Alexandre Dutra
  * @since 2.0.0
+ * @deprecated since 2.4.0 in favor of {@link CassandraDriverHealthIndicator}
  */
+@Deprecated
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	private static final SimpleStatement SELECT = SimpleStatement
