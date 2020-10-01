@@ -5,5 +5,5 @@ plugins {
 
 bootWar {
 	mainClass = 'com.example.Application'
-	{launchScript}
+	launchScript()
 }

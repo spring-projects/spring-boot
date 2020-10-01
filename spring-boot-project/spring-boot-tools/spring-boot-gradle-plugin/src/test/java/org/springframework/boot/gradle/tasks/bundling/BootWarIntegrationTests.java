@@ -23,7 +23,7 @@ import org.springframework.boot.gradle.junit.GradleCompatibility;
  *
  * @author Andy Wilkinson
  */
-@GradleCompatibility
+@GradleCompatibility(configurationCache = true)
 class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootWarIntegrationTests() {

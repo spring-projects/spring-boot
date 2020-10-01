@@ -4,4 +4,4 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-mainClassName = 'com.example.CustomMain'
+mainClass = 'com.example.CustomMain'
