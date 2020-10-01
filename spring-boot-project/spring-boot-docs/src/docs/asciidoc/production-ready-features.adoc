@@ -1287,7 +1287,7 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 	management.server.port=-1
 ----
 
-This can be achieved using the configprop:management.endpoints.web.exposure.exclude[] property as well, as shown in following example:
+This can be achieved using the configprop:management.endpoints.web.exposure.exclude[] property as well, as shown in the following example:
 
 [source,properties,indent=0,configprops]
 ----
@@ -1695,7 +1695,7 @@ You can also change the interval at which metrics are sent to New Relic:
 	management.metrics.export.newrelic.step=30s
 ----
 
-By default, metrics are published via REST calls but it also possible to use the Java Agent API if you have it on the classpath:
+By default, metrics are published via REST calls but it is also possible to use the Java Agent API if you have it on the classpath:
 
 [source,properties,indent=0,configprops]
 ----
