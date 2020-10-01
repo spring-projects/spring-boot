@@ -17,7 +17,7 @@
 package org.springframework.boot.actuate.cassandra;
 
 import java.util.Collection;
-import java.util.Objects;
+import java.util.Optional;
 
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.metadata.Node;
@@ -54,12 +54,9 @@ public class CassandraDriverHealthIndicator extends AbstractHealthIndicator {
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
 		Collection<Node> nodes = this.session.getMetadata().getNodes().values();
-		boolean atLeastOneUp = nodes.stream().map(Node::getState).anyMatch((state) -> state == NodeState.UP);
-		builder.status(atLeastOneUp ? Status.UP : Status.DOWN);
-
-		// fill details with version of the first node (if the version is not null)
-		nodes.stream().map(Node::getCassandraVersion).filter(Objects::nonNull).findFirst()
-				.ifPresent((version) -> builder.withDetail("version", version));
+		Optional<Node> nodeUp = nodes.stream().filter((node) -> node.getState() == NodeState.UP).findAny();
+		builder.status(nodeUp.isPresent() ? Status.UP : Status.DOWN);
+		nodeUp.map(Node::getCassandraVersion).ifPresent((version) -> builder.withDetail("version", version));
 	}
 
 }
