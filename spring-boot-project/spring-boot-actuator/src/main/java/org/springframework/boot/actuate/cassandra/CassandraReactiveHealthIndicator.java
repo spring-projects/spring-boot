@@ -15,31 +15,26 @@
  */
 package org.springframework.boot.actuate.cassandra;
 
-import java.util.Collection;
-import java.util.Objects;
-
-import com.datastax.oss.driver.api.core.metadata.Metadata;
-import com.datastax.oss.driver.api.core.metadata.Node;
-import com.datastax.oss.driver.api.core.metadata.NodeState;
-import com.datastax.oss.driver.internal.core.context.DefaultDriverContext;
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
-import org.springframework.boot.actuate.health.Health.Builder;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
 import org.springframework.data.cassandra.core.ReactiveCassandraOperations;
-import org.springframework.data.cassandra.core.cql.ReactiveSessionCallback;
 import org.springframework.util.Assert;
 
 /**
  * A {@link ReactiveHealthIndicator} for Cassandra.
  *
  * @author Artsiom Yudovin
- * @author Tomasz Lelek
  * @since 2.1.0
  */
 public class CassandraReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
+
+	private static final SimpleStatement SELECT = SimpleStatement
+			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private final ReactiveCassandraOperations reactiveCassandraOperations;
 
@@ -55,30 +50,8 @@ public class CassandraReactiveHealthIndicator extends AbstractReactiveHealthIndi
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-
-		return this.reactiveCassandraOperations.getReactiveCqlOperations().execute(extractMetadata()).single()
-				.map((metadata) -> buildHealth(builder, metadata));
-	}
-
-	protected Health buildHealth(Builder builder, Metadata metadata) {
-		Collection<Node> nodes = metadata.getNodes().values();
-		boolean atLeastOneUp = nodes.stream().map(Node::getState).anyMatch((state) -> state == NodeState.UP);
-		if (atLeastOneUp) {
-			builder.up();
-		}
-		else {
-			builder.down();
-		}
-
-		// fill details with version of the first node (if the version is not null)
-		nodes.stream().map(Node::getCassandraVersion).filter(Objects::nonNull).findFirst()
-				.ifPresent((version) -> builder.withDetail("version", version));
-		return builder.build();
-	}
-
-	protected ReactiveSessionCallback<Metadata> extractMetadata() {
-		return (session) -> Mono
-				.fromSupplier(() -> ((DefaultDriverContext) session.getContext()).getMetadataManager().getMetadata());
+		return this.reactiveCassandraOperations.getReactiveCqlOperations().queryForObject(SELECT, String.class)
+				.map((version) -> builder.up().withDetail("version", version).build()).single();
 	}
 
 }

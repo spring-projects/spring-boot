@@ -16,13 +16,8 @@
 
 package org.springframework.boot.actuate.cassandra;
 
-import java.util.Collection;
-import java.util.Objects;
-
-import com.datastax.oss.driver.api.core.metadata.Metadata;
-import com.datastax.oss.driver.api.core.metadata.Node;
-import com.datastax.oss.driver.api.core.metadata.NodeState;
-import com.datastax.oss.driver.api.core.session.Session;
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -36,10 +31,12 @@ import org.springframework.util.Assert;
  *
  * @author Julien Dubois
  * @author Alexandre Dutra
- * @author Tomasz Lelek
  * @since 2.0.0
  */
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
+
+	private static final SimpleStatement SELECT = SimpleStatement
+			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private CassandraOperations cassandraOperations;
 
@@ -59,23 +56,8 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Metadata metadata = this.cassandraOperations.getCqlOperations().execute(Session::getMetadata);
-		if (metadata == null) {
-			throw new IllegalStateException("The CqlSession metadata was null; cannot perform health check.");
-		}
-		Collection<Node> nodes = metadata.getNodes().values();
-		boolean atLeastOneUp = nodes.stream().map(Node::getState).anyMatch((state) -> state == NodeState.UP);
-		if (atLeastOneUp) {
-			builder.up();
-		}
-		else {
-			builder.down();
-		}
-
-		// fill details with version of the first node (if the version is not null)
-		nodes.stream().map(Node::getCassandraVersion).filter(Objects::nonNull).findFirst()
-				.ifPresent((version) -> builder.withDetail("version", version));
-
+		String version = this.cassandraOperations.getCqlOperations().queryForObject(SELECT, String.class);
+		builder.up().withDetail("version", version);
 	}
 
 }
