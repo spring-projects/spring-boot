@@ -59,7 +59,14 @@ public enum EmbeddedDatabaseConnection {
 	/**
 	 * HSQL Database Connection.
 	 */
+	@Deprecated
 	HSQL(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "org.hsqldb.jdbcDriver",
+			"jdbc:hsqldb:mem:%s"),
+
+	/**
+	 * HSQL Database Connection.
+	 */
+	HSQLDB(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "org.hsqldb.jdbcDriver",
 			"jdbc:hsqldb:mem:%s");
 
 	private final EmbeddedDatabaseType type;
@@ -114,8 +121,8 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the driver class is one of the embedded types
 	 */
 	public static boolean isEmbedded(String driverClass) {
-		return driverClass != null
-				&& (matches(HSQL, driverClass) || matches(H2, driverClass) || matches(DERBY, driverClass));
+		return driverClass != null && (matches(HSQL, driverClass) || matches(H2, driverClass)
+				|| matches(DERBY, driverClass) || matches(HSQLDB, driverClass));
 	}
 
 	private static boolean matches(EmbeddedDatabaseConnection candidate, String driverClass) {
