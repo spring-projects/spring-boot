@@ -74,7 +74,7 @@ public class CommandCompleter extends StringsCompleter {
 		int completionIndex = super.complete(buffer, cursor, candidates);
 		int spaceIndex = buffer.indexOf(' ');
 		String commandName = ((spaceIndex != -1) ? buffer.substring(0, spaceIndex) : "");
-		if (!"".equals(commandName.trim())) {
+		if (commandName != null && !commandName.isEmpty()) {
 			for (Command command : this.commands) {
 				if (command.getName().equals(commandName)) {
 					if (cursor == buffer.length() && buffer.endsWith(" ")) {

@@ -180,8 +180,8 @@ class MetadataGenerationEnvironment {
 			reason = (String) elementValues.get("reason");
 			replacement = (String) elementValues.get("replacement");
 		}
-		reason = "".equals(reason) ? null : reason;
-		replacement = "".equals(replacement) ? null : replacement;
+		reason = (reason == null || reason.isEmpty()) ? null : reason;
+		replacement = (replacement == null || replacement.isEmpty()) ? null : replacement;
 		return new ItemDeprecation(reason, replacement);
 	}
 

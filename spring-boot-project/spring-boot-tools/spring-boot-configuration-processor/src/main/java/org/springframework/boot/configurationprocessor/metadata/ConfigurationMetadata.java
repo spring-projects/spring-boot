@@ -171,7 +171,7 @@ public class ConfigurationMetadata {
 	public static String nestedPrefix(String prefix, String name) {
 		String nestedPrefix = (prefix != null) ? prefix : "";
 		String dashedName = toDashedCase(name);
-		nestedPrefix += "".equals(nestedPrefix) ? dashedName : "." + dashedName;
+		nestedPrefix += (nestedPrefix == null || nestedPrefix.isEmpty()) ? dashedName : "." + dashedName;
 		return nestedPrefix;
 	}
 

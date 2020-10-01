@@ -285,7 +285,7 @@ public class RabbitProperties {
 	}
 
 	public void setVirtualHost(String virtualHost) {
-		this.virtualHost = "".equals(virtualHost) ? "/" : virtualHost;
+		this.virtualHost = (virtualHost == null || virtualHost.isEmpty()) ? "/" : virtualHost;
 	}
 
 	public AddressShuffleMode getAddressShuffleMode() {
