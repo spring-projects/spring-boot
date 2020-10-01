@@ -298,7 +298,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 	private void processEndpoint(AnnotationMirror annotation, TypeElement element) {
 		Map<String, Object> elementValues = this.metadataEnv.getAnnotationElementValues(annotation);
 		String endpointId = (String) elementValues.get("id");
-		if (endpointId == null || "".equals(endpointId)) {
+		if (endpointId == null || endpointId.isEmpty()) {
 			return; // Can't process that endpoint
 		}
 		String endpointKey = ItemMetadata.newItemMetadataPrefix("management.endpoint.", endpointId);
