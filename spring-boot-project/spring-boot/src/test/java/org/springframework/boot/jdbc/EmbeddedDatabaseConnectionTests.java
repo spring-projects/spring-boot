@@ -40,20 +40,41 @@ class EmbeddedDatabaseConnectionTests {
 				.isEqualTo("jdbc:derby:memory:myderbydb;create=true");
 	}
 
+	@Deprecated
 	@Test
 	void hsqlCustomDatabaseName() {
 		assertThat(EmbeddedDatabaseConnection.HSQL.getUrl("myhsql")).isEqualTo("jdbc:hsqldb:mem:myhsql");
 	}
 
+	@Deprecated
 	@Test
 	void getUrlWithNullDatabaseName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl(null))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 
+	@Deprecated
 	@Test
 	void getUrlWithEmptyDatabaseName() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQL.getUrl("  "))
+				.withMessageContaining("DatabaseName must not be empty");
+	}
+
+// HSQLDB connection tests added
+	@Test
+	void hsqldbCustomDatabaseName() {
+		assertThat(EmbeddedDatabaseConnection.HSQLDB.getUrl("myhsqldb")).isEqualTo("jdbc:hsqldb:mem:myhsqldb");
+	}
+
+	@Test
+	void getUrlWithNullDatabaseNameForHsqldb() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl(null))
+				.withMessageContaining("DatabaseName must not be empty");
+	}
+
+	@Test
+	void getUrlWithEmptyDatabaseNameForHsqldb() {
+		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl("  "))
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 
