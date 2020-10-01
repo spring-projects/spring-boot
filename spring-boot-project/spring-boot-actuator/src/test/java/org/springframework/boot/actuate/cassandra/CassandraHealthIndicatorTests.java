@@ -38,6 +38,7 @@ import static org.mockito.Mockito.mock;
  * @author Oleksii Bondar
  * @author Stephane Nicoll
  */
+@Deprecated
 class CassandraHealthIndicatorTests {
 
 	@Test
