@@ -35,6 +35,7 @@ import org.springframework.util.ClassUtils;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Nidhi Desai
  * @since 1.0.0
  * @see #get(ClassLoader)
  */
@@ -58,6 +59,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * HSQL Database Connection.
+	 * @deprecated since 2.4.0 in favor of {@link EmbeddedDatabaseConnection#HSQLDB}.
 	 */
 	@Deprecated
 	HSQL(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "org.hsqldb.jdbcDriver",
