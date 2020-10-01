@@ -32,7 +32,6 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
 
-import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.boot.loader.tools.FileUtils;
 
@@ -43,7 +42,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@GradleCompatibility
 abstract class AbstractBootArchiveIntegrationTests {
 
 	private final String taskName;
@@ -99,25 +97,25 @@ abstract class AbstractBootArchiveIntegrationTests {
 
 	@TestTemplate
 	void notUpToDateWhenLaunchScriptWasNotIncludedAndThenIsIncluded() {
-		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
+		assertThat(this.gradleBuild.scriptProperty("launchScript", "").build(this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("launchScript", "launchScript()").build(this.taskName)
+				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenLaunchScriptWasIncludedAndThenIsNotIncluded() {
-		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
+		assertThat(this.gradleBuild.scriptProperty("launchScript", "launchScript()").build(this.taskName)
+				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("launchScript", "").build(this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenLaunchScriptPropertyChanges() {
-		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", "-PlaunchScriptProperty=foo", this.taskName)
+		assertThat(this.gradleBuild.scriptProperty("launchScriptProperty", "alpha").build(this.taskName)
 				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", "-PlaunchScriptProperty=bar", this.taskName)
+		assertThat(this.gradleBuild.scriptProperty("launchScriptProperty", "bravo").build(this.taskName)
 				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 

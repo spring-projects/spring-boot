@@ -1,0 +1,11 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootWar {
+	mainClassName = 'com.example.Application'
+	launchScript {
+		properties 'prop' : '{launchScriptProperty}'
+	}
+}
