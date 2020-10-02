@@ -15,7 +15,10 @@
  */
 package org.springframework.boot.actuate.cassandra;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -35,16 +38,13 @@ import org.springframework.boot.actuate.health.Status;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.BDDMockito.willAnswer;
 import static org.mockito.Mockito.mock;
-import static org.mockito.BDDMockito.when;
 
 /**
  * Tests for {@link CassandraDriverReactiveHealthIndicator}.
  *
  * @author Alexandre Dutra
- * @author Tomasz Lelek
- * @since 2.4.0
+ * @author Stephane Nicoll
  */
 class CassandraDriverReactiveHealthIndicatorTests {
 
@@ -54,13 +54,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void oneHealthyNodeShouldReturnUp() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		Node healthyNode = mock(Node.class);
-		given(healthyNode.getState()).willReturn(NodeState.UP);
-		given(session.getMetadata()).willReturn(metadata);
-		given(metadata.getNodes()).willReturn(createNodesMap(healthyNode));
+	void healthWithOneHealthyNodeShouldReturnUp() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
@@ -68,13 +63,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void oneUnhealthyNodeShouldReturnDown() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		Node unhealthyNode = mock(Node.class);
-		given(unhealthyNode.getState()).willReturn(NodeState.DOWN);
-		given(session.getMetadata()).willReturn(metadata);
-		given(metadata.getNodes()).willReturn(createNodesMap(unhealthyNode));
+	void healthWithOneUnhealthyNodeShouldReturnDown() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
@@ -82,13 +72,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void oneUnknownNodeShouldReturnDown() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		Node unknownNode = mock(Node.class);
-		given(unknownNode.getState()).willReturn(NodeState.UNKNOWN);
-		given(session.getMetadata()).willReturn(metadata);
-		given(metadata.getNodes()).willReturn(createNodesMap(unknownNode));
+	void healthWithOneUnknownNodeShouldReturnDown() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.UNKNOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
@@ -96,13 +81,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void oneForcedDownNodeShouldReturnDown() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		Node forcedDownNode = mock(Node.class);
-		given(forcedDownNode.getState()).willReturn(NodeState.FORCED_DOWN);
-		given(session.getMetadata()).willReturn(metadata);
-		given(metadata.getNodes()).willReturn(createNodesMap(forcedDownNode));
+	void healthWithOneForcedDownNodeShouldReturnDown() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.FORCED_DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.DOWN))
@@ -110,15 +90,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void oneHealthyNodeAndOneUnhealthyNodeShouldReturnUp() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		Node healthyNode = mock(Node.class);
-		Node unhealthyNode = mock(Node.class);
-		given(healthyNode.getState()).willReturn(NodeState.UP);
-		given(unhealthyNode.getState()).willReturn(NodeState.DOWN);
-		given(session.getMetadata()).willReturn(metadata);
-		given(metadata.getNodes()).willReturn(createNodesMap(healthyNode, unhealthyNode));
+	void healthWithOneHealthyNodeAndOneUnhealthyNodeShouldReturnUp() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
@@ -126,15 +99,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void oneHealthyNodeAndOneUnknownNodeShouldReturnUp() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		Node healthyNode = mock(Node.class);
-		Node unknownNode = mock(Node.class);
-		given(healthyNode.getState()).willReturn(NodeState.UP);
-		given(unknownNode.getState()).willReturn(NodeState.UNKNOWN);
-		given(session.getMetadata()).willReturn(metadata);
-		given(metadata.getNodes()).willReturn(createNodesMap(healthyNode, unknownNode));
+	void healthWithOneHealthyNodeAndOneUnknownNodeShouldReturnUp() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.UNKNOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
@@ -142,15 +108,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void oneHealthyNodeAndOneForcedDownNodeShouldReturnUp() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		Node healthyNode = mock(Node.class);
-		Node forcedDownNode = mock(Node.class);
-		given(healthyNode.getState()).willReturn(NodeState.UP);
-		given(forcedDownNode.getState()).willReturn(NodeState.FORCED_DOWN);
-		given(session.getMetadata()).willReturn(metadata);
-		given(metadata.getNodes()).willReturn(createNodesMap(healthyNode, forcedDownNode));
+	void healthWithOneHealthyNodeAndOneForcedDownNodeShouldReturnUp() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP, NodeState.FORCED_DOWN);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> assertThat(h.getStatus()).isEqualTo(Status.UP))
@@ -158,15 +117,14 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void addVersionToDetailsIfReportedNotNull() {
+	void healthWithNodeVersionShouldAddVersionDetail() {
 		CqlSession session = mock(CqlSession.class);
 		Metadata metadata = mock(Metadata.class);
-		when(session.getMetadata()).thenReturn(metadata);
+		given(session.getMetadata()).willReturn(metadata);
 		Node node = mock(Node.class);
-		when(node.getState()).thenReturn(NodeState.UP);
-		when(node.getCassandraVersion()).thenReturn(Version.V4_0_0);
-		when(metadata.getNodes()).thenReturn(createNodesMap(node));
-
+		given(node.getState()).willReturn(NodeState.UP);
+		given(node.getCassandraVersion()).willReturn(Version.V4_0_0);
+		given(metadata.getNodes()).willReturn(createNodesWithRandomUUID(Collections.singletonList(node)));
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
@@ -177,14 +135,8 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void doNotAddVersionToDetailsIfReportedNull() {
-		CqlSession session = mock(CqlSession.class);
-		Metadata metadata = mock(Metadata.class);
-		when(session.getMetadata()).thenReturn(metadata);
-		Node node = mock(Node.class);
-		when(node.getState()).thenReturn(NodeState.UP);
-		when(metadata.getNodes()).thenReturn(createNodesMap(node));
-
+	void healthWithoutNodeVersionShouldNotAddVersionDetail() {
+		CqlSession session = mockCqlSessionWithNodeState(NodeState.UP);
 		CassandraDriverReactiveHealthIndicator healthIndicator = new CassandraDriverReactiveHealthIndicator(session);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
@@ -194,10 +146,9 @@ class CassandraDriverReactiveHealthIndicatorTests {
 	}
 
 	@Test
-	void testCassandraIsDown() {
+	void healthWithCassandraDownShouldReturnDown() {
 		CqlSession session = mock(CqlSession.class);
 		given(session.getMetadata()).willThrow(new DriverTimeoutException("Test Exception"));
-
 		CassandraDriverReactiveHealthIndicator cassandraReactiveHealthIndicator = new CassandraDriverReactiveHealthIndicator(
 				session);
 		Mono<Health> health = cassandraReactiveHealthIndicator.health();
@@ -209,12 +160,24 @@ class CassandraDriverReactiveHealthIndicatorTests {
 		}).verifyComplete();
 	}
 
-	private static Map<UUID, Node> createNodesMap(Node... nodes) {
-		Map<UUID, Node> nodesMap = new HashMap<>();
-		for (Node n : nodes) {
-			nodesMap.put(UUID.randomUUID(), n);
+	private CqlSession mockCqlSessionWithNodeState(NodeState... nodeStates) {
+		CqlSession session = mock(CqlSession.class);
+		Metadata metadata = mock(Metadata.class);
+		List<Node> nodes = new ArrayList<>();
+		for (NodeState nodeState : nodeStates) {
+			Node node = mock(Node.class);
+			given(node.getState()).willReturn(nodeState);
+			nodes.add(node);
 		}
-		return nodesMap;
+		given(session.getMetadata()).willReturn(metadata);
+		given(metadata.getNodes()).willReturn(createNodesWithRandomUUID(nodes));
+		return session;
+	}
+
+	private Map<UUID, Node> createNodesWithRandomUUID(List<Node> nodes) {
+		Map<UUID, Node> indexedNodes = new HashMap<>();
+		nodes.forEach((node) -> indexedNodes.put(UUID.randomUUID(), node));
+		return indexedNodes;
 	}
 
 }
