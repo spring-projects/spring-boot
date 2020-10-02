@@ -86,7 +86,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		FAIL_ON_WRITE_ERROR_PROPERTIES = Collections.unmodifiableList(properties);
 	}
 
-	private static final AtomicBoolean created = new AtomicBoolean(false);
+	private static final AtomicBoolean created = new AtomicBoolean();
 
 	private int order = Ordered.HIGHEST_PRECEDENCE + 13;
 

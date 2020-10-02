@@ -74,7 +74,7 @@ public class ContextIdApplicationContextInitializer
 	 */
 	static class ContextId {
 
-		private final AtomicLong children = new AtomicLong(0);
+		private final AtomicLong children = new AtomicLong();
 
 		private final String id;
 

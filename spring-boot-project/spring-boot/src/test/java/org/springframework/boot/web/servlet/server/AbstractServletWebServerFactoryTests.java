@@ -1355,7 +1355,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	private class TestGzipInputStreamFactory implements InputStreamFactory {
 
-		private final AtomicBoolean requested = new AtomicBoolean(false);
+		private final AtomicBoolean requested = new AtomicBoolean();
 
 		@Override
 		public InputStream create(InputStream in) throws IOException {

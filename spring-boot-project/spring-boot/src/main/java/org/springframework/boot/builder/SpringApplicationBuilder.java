@@ -79,7 +79,7 @@ public class SpringApplicationBuilder {
 
 	private SpringApplicationBuilder parent;
 
-	private final AtomicBoolean running = new AtomicBoolean(false);
+	private final AtomicBoolean running = new AtomicBoolean();
 
 	private final Set<Class<?>> sources = new LinkedHashSet<>();
 

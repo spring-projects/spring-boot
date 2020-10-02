@@ -28,7 +28,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
-	private static final AtomicInteger snakeIds = new AtomicInteger(0);
+	private static final AtomicInteger snakeIds = new AtomicInteger();
 
 	private static final Random random = new Random();
 

@@ -38,7 +38,7 @@ public final class OnlyOnceLoggingDenyMeterFilter implements MeterFilter {
 
 	private static final Log logger = LogFactory.getLog(OnlyOnceLoggingDenyMeterFilter.class);
 
-	private final AtomicBoolean alreadyWarned = new AtomicBoolean(false);
+	private final AtomicBoolean alreadyWarned = new AtomicBoolean();
 
 	private final Supplier<String> message;
 

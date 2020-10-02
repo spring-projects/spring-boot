@@ -1506,7 +1506,7 @@ class SpringApplicationTests {
 
 		@Bean
 		AtomicInteger counter() {
-			return new AtomicInteger(0);
+			return new AtomicInteger();
 		}
 
 		@Bean
@@ -1529,7 +1529,7 @@ class SpringApplicationTests {
 
 		@Bean
 		AtomicInteger counter() {
-			return new AtomicInteger(0);
+			return new AtomicInteger();
 		}
 
 		@Bean
@@ -1553,7 +1553,7 @@ class SpringApplicationTests {
 
 		@Bean
 		AtomicInteger counter() {
-			return new AtomicInteger(0);
+			return new AtomicInteger();
 		}
 
 		@Bean
