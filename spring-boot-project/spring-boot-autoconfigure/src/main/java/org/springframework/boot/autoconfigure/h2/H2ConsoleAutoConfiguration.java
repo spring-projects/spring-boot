@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.h2;
 
 import java.sql.Connection;
-import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -69,7 +68,7 @@ public class H2ConsoleAutoConfiguration {
 				logger.info("H2 console available at '" + path + "'. Database available at '"
 						+ connection.getMetaData().getURL() + "'");
 			}
-			catch (SQLException ex) {
+			catch (Exception ex) {
 				// Continue
 			}
 		});
