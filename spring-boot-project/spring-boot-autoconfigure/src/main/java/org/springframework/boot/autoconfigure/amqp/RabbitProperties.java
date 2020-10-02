@@ -121,6 +121,11 @@ public class RabbitProperties {
 	private Duration connectionTimeout;
 
 	/**
+	 * Continuation timeout for RPC calls in channels. Set it to zero to wait forever.
+	 */
+	private Duration channelRpcTimeout = Duration.ofMinutes(10);
+
+	/**
 	 * Cache configuration.
 	 */
 	private final Cache cache = new Cache();
@@ -334,6 +339,14 @@ public class RabbitProperties {
 
 	public void setConnectionTimeout(Duration connectionTimeout) {
 		this.connectionTimeout = connectionTimeout;
+	}
+
+	public Duration getChannelRpcTimeout() {
+		return this.channelRpcTimeout;
+	}
+
+	public void setChannelRpcTimeout(Duration channelRpcTimeout) {
+		this.channelRpcTimeout = channelRpcTimeout;
 	}
 
 	public Cache getCache() {

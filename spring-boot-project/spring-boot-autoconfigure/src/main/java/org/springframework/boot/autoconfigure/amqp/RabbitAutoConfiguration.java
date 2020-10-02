@@ -149,6 +149,8 @@ public class RabbitAutoConfiguration {
 			}
 			map.from(properties::getConnectionTimeout).whenNonNull().asInt(Duration::toMillis)
 					.to(factory::setConnectionTimeout);
+			map.from(properties::getChannelRpcTimeout).whenNonNull().asInt(Duration::toMillis)
+					.to(factory::setChannelRpcTimeout);
 			map.from(credentialsProvider::getIfUnique).whenNonNull().to(factory::setCredentialsProvider);
 			map.from(credentialsRefreshService::getIfUnique).whenNonNull().to(factory::setCredentialsRefreshService);
 			factory.afterPropertiesSet();

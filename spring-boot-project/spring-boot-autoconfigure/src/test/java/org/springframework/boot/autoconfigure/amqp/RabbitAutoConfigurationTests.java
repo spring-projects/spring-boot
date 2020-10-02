@@ -108,6 +108,8 @@ class RabbitAutoConfigurationTests {
 					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
 			assertThat(connectionFactory.isPublisherConfirms()).isFalse();
 			assertThat(connectionFactory.isPublisherReturns()).isFalse();
+			assertThat(connectionFactory.getRabbitConnectionFactory().getChannelRpcTimeout())
+					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_RPC_TIMEOUT);
 			assertThat(context.containsBean("rabbitListenerContainerFactory"))
 					.as("Listener container factory should be created by default").isTrue();
 		});
@@ -140,7 +142,7 @@ class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
 						"spring.rabbitmq.address-shuffle-mode=random", "spring.rabbitmq.username:alice",
 						"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost",
-						"spring.rabbitmq.connection-timeout:123")
+						"spring.rabbitmq.connection-timeout:123", "spring.rabbitmq.channel-rpc-timeout:140")
 				.run((context) -> {
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 					assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
@@ -150,6 +152,7 @@ class RabbitAutoConfigurationTests {
 					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
 					com.rabbitmq.client.ConnectionFactory rcf = connectionFactory.getRabbitConnectionFactory();
 					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
+					assertThat(rcf.getChannelRpcTimeout()).isEqualTo(140);
 					assertThat((List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses")).hasSize(1);
 				});
 	}
