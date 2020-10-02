@@ -23,7 +23,6 @@ import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
@@ -37,6 +36,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -45,6 +45,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Marten Deinum
  * @author Stephane Nicoll
+ * @author Shraddha Yeole
  */
 class H2ConsoleAutoConfigurationTests {
 
@@ -123,24 +124,22 @@ class H2ConsoleAutoConfigurationTests {
 	}
 
 	@Test
-	void testDataSource() {
-		this.contextRunner.withUserConfiguration(DataSourceAvailable.class)
-				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> {
-					assertThat(context.isRunning()).isTrue();
-				});
+	void h2ConsoleShouldNotFailIfDatabaseConnectionFails() {
+		this.contextRunner.withUserConfiguration(CustomDataSourceConfiguration.class)
+				.withPropertyValues("spring.h2.console.enabled=true")
+				.run((context) -> assertThat(context.isRunning()).isTrue());
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class DataSourceAvailable {
+	static class CustomDataSourceConfiguration {
 
 		@Bean
-		public DataSource dataSource() throws SQLException {
+		DataSource dataSource() throws SQLException {
 			DataSource dataSource = mock(DataSource.class);
-			BDDMockito.when(dataSource.getConnection()).thenThrow(IllegalStateException.class);
+			given(dataSource.getConnection()).willThrow(IllegalStateException.class);
 			return dataSource;
 		}
 
 	}
-
 
 }
