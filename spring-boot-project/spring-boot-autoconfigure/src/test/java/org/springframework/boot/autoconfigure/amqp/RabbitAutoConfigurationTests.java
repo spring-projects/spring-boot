@@ -108,6 +108,8 @@ class RabbitAutoConfigurationTests {
 					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
 			assertThat(connectionFactory.isPublisherConfirms()).isFalse();
 			assertThat(connectionFactory.isPublisherReturns()).isFalse();
+			assertThat(connectionFactory.getRabbitConnectionFactory().getChannelRpcTimeout())
+					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_RPC_TIMEOUT);
 			assertThat(context.containsBean("rabbitListenerContainerFactory"))
 					.as("Listener container factory should be created by default").isTrue();
 		});
