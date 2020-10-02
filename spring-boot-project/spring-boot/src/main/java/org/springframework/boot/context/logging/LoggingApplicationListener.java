@@ -170,7 +170,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class, ApplicationContext.class };
 
-	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
+	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean();
 
 	private final Log logger = LogFactory.getLog(getClass());
 
