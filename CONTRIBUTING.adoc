@@ -55,7 +55,7 @@ added after the original pull request but before a merge.
   `./gradlew format`. Note that if you have format violations in `buildSrc`, you can fix
   them by running `./gradlew -p buildSrc format` from the project root directory.
 * The build includes checkstyle rules for many of our code conventions. Run
-  `./gradlew checkstyleMain checkstyleTest` if you want to check you changes are
+  `./gradlew checkstyleMain checkstyleTest` if you want to check your changes are
   compliant.
 * Make sure all new `.java` files have a Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
