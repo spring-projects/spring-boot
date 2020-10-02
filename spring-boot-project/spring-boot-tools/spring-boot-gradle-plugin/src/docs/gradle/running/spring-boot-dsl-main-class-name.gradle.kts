@@ -11,9 +11,3 @@ springBoot {
 	mainClass.set("com.example.ExampleApplication")
 }
 // end::main-class[]
-
-task("configuredMainClass") {
-	doLast {
-		println(tasks.getByName<BootRun>("bootRun").main)
-	}
-}

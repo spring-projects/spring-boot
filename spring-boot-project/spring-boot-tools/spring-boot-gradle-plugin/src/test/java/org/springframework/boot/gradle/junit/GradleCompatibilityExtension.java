@@ -66,7 +66,8 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 			boolean configurationCache = AnnotationUtils
 					.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class).get()
 					.configurationCache();
-			if (configurationCache && GradleVersion.version(version).compareTo(GradleVersion.version("6.6")) >= 0) {
+			if (configurationCache
+					&& GradleVersion.version(version).compareTo(GradleVersion.version("6.7-rc-1")) >= 0) {
 				invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, true));
 			}
 			return invocationContexts.stream();

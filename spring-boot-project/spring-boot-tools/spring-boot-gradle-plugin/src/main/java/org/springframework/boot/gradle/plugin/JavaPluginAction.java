@@ -17,6 +17,10 @@
 package org.springframework.boot.gradle.plugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
@@ -33,16 +37,21 @@ import org.gradle.api.attributes.Bundling;
 import org.gradle.api.attributes.LibraryElements;
 import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
 
+import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
 import org.springframework.boot.gradle.tasks.run.BootRun;
@@ -77,7 +86,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 		TaskProvider<BootJar> bootJar = configureBootJarTask(project);
 		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
-		configureBootRunTask(project);
+		TaskProvider<ResolveMainClassName> resolveMainClassName = configureResolveMainClassNameTask(project);
+		configureBootRunTask(project, resolveMainClassName);
 		configureUtf8Encoding(project);
 		configureParametersCompilerArg(project);
 		configureAdditionalMetadataLocations(project);
@@ -90,6 +100,39 @@ final class JavaPluginAction implements PluginApplicationAction {
 	private void configureBuildTask(Project project) {
 		project.getTasks().named(BasePlugin.ASSEMBLE_TASK_NAME)
 				.configure((task) -> task.dependsOn(this.singlePublishedArtifact));
+	}
+
+	private TaskProvider<ResolveMainClassName> configureResolveMainClassNameTask(Project project) {
+		Convention convention = project.getConvention();
+		return project.getTasks().register("resolveMainClassName", ResolveMainClassName.class,
+				(resolveMainClassName) -> {
+					resolveMainClassName.setClasspath(
+							javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
+									.getRuntimeClasspath().filter(new JarTypeFileSpec()));
+					resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
+						JavaApplication javaApplication = convention.findByType(JavaApplication.class);
+						String javaApplicationMainClass = null;
+						if (javaApplication != null) {
+							try {
+								javaApplicationMainClass = javaApplication.getMainClass().getOrNull();
+							}
+							catch (NoSuchMethodError ex) {
+								javaApplicationMainClass = javaApplication.getMainClassName();
+							}
+						}
+						if (javaApplicationMainClass != null) {
+							return javaApplicationMainClass;
+						}
+						SpringBootExtension springBootExtension = project.getExtensions()
+								.findByType(SpringBootExtension.class);
+						if (springBootExtension != null) {
+							return springBootExtension.getMainClass().getOrNull();
+						}
+						return null;
+					}));
+					resolveMainClassName.getOutputFile()
+							.set(project.getLayout().getBuildDirectory().file("spring-boot-main-class-name"));
+				});
 	}
 
 	private TaskProvider<BootJar> configureBootJarTask(Project project) {
@@ -129,7 +172,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		this.singlePublishedArtifact.addCandidate(artifact);
 	}
 
-	private void configureBootRunTask(Project project) {
+	private void configureBootRunTask(Project project, TaskProvider<ResolveMainClassName> resolveMainClassName) {
 		project.getTasks().register("bootRun", BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
@@ -141,7 +184,30 @@ final class JavaPluginAction implements PluginApplicationAction {
 				}
 				return Collections.emptyList();
 			});
-			run.conventionMapping("main", new MainClassConvention(project, run::getClasspath));
+			run.dependsOn(resolveMainClassName);
+			run.getInputs().file(resolveMainClassName.map((task) -> task.getOutputFile()));
+			try {
+				run.getMainClass().set(resolveMainClassName.flatMap((task) -> readMainClassName(task.getOutputFile())));
+			}
+			catch (NoSuchMethodError ex) {
+				run.conventionMapping("main",
+						() -> resolveMainClassName.flatMap((task) -> readMainClassName(task.getOutputFile())).get());
+			}
+		});
+	}
+
+	private Provider<String> readMainClassName(RegularFileProperty outputFile) {
+		return outputFile.map((file) -> {
+			Path output = file.getAsFile().toPath();
+			if (!Files.exists(output)) {
+				return null;
+			}
+			try {
+				return new String(Files.readAllBytes(output), StandardCharsets.UTF_8);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException("Failed to read main class name from '" + output + "'");
+			}
 		});
 	}
 
