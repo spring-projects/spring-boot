@@ -28,7 +28,7 @@ public class TestFormatter extends Formatter {
 
 	@Override
 	public String format(LogRecord record) {
-		return String.format("foo: %s -- %s\n", record.getLoggerName(), record.getMessage());
+		return String.format("foo: %s -- %s%n", record.getLoggerName(), record.getMessage());
 	}
 
 }
