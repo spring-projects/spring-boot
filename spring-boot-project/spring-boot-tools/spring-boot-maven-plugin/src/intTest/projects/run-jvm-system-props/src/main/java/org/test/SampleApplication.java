@@ -32,7 +32,7 @@ public class SampleApplication {
 			throw new IllegalStateException("property1 system property mismatch (got [" + property1 + "]");
 		}
 		String property2 = System.getProperty("property2");
-		if (property2 != null && !property2.isEmpty()) {
+		if (!"".equals(property2)) {
 			throw new IllegalStateException("property2 system property mismatch (got [" + property2 + "]");
 		}
 		String property3 = System.getProperty("property3");
