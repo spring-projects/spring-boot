@@ -365,7 +365,7 @@ public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor 
 			return (String) prefix;
 		}
 		Object value = elementValues.get("value");
-		if (value != null && !"".equals(value)) {
+		if ((value instanceof String) && !"".equals(value)) {
 			return (String) value;
 		}
 		return null;

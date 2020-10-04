@@ -38,7 +38,11 @@ import org.springframework.core.annotation.AliasFor;
 @Repeatable(ImportAsConfigurationPropertiesBeans.class)
 public @interface ImportAsConfigurationPropertiesBean {
 
-	Class<?>[] type();
+	@AliasFor("type")
+	Class<?>[] value() default {};
+
+	@AliasFor("value")
+	Class<?>[] type() default {};
 
 	@AliasFor(annotation = ConfigurationProperties.class)
 	String prefix() default "";

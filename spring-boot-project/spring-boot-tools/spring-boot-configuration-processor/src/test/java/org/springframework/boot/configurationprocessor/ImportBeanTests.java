@@ -24,6 +24,7 @@ import org.springframework.boot.configurationsample.ImportAsConfigurationPropert
 import org.springframework.boot.configurationsample.ImportAsConfigurationPropertiesBeans;
 import org.springframework.boot.configurationsample.importbean.ImportAnnotatedJavaBean;
 import org.springframework.boot.configurationsample.importbean.ImportJavaBeanConfigurationPropertiesBean;
+import org.springframework.boot.configurationsample.importbean.ImportJavaBeanWithoutPrefixUsingValueConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportMultipleTypeConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportRepeatedConfigurationPropertiesBean;
 import org.springframework.boot.configurationsample.importbean.ImportValueObjectConfigurationPropertiesBean;
@@ -76,6 +77,13 @@ public class ImportBeanTests extends AbstractMetadataGenerationTests {
 		ConfigurationMetadata metadata = compile(ImportAnnotatedJavaBean.class);
 		assertThat(metadata)
 				.has(Metadata.withProperty("test.name", String.class).fromSource(ImportedAnnotatedJavaBean.class));
+	}
+
+	@Test
+	void importJavaBeanConfigurationWithoutPrefixUsingValuePropertiesBean() {
+		ConfigurationMetadata metadata = compile(
+				ImportJavaBeanWithoutPrefixUsingValueConfigurationPropertiesBean.class);
+		assertThat(metadata).has(Metadata.withProperty("name", String.class).fromSource(ImportedJavaBean.class));
 	}
 
 }
