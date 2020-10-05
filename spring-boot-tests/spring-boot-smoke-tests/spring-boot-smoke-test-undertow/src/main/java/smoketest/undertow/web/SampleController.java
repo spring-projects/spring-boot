@@ -16,10 +16,10 @@
 
 package smoketest.undertow.web;
 
-import java.util.concurrent.Callable;
-
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.concurrent.Callable;
 
 @RestController
 public class SampleController {
@@ -31,7 +31,14 @@ public class SampleController {
 
 	@GetMapping("/async")
 	public Callable<String> helloWorldAsync() {
-		return () -> "async: Hello World";
+		return () -> {
+			Thread.sleep(10);
+			return "async: Hello World";
+		};
 	}
 
+	@GetMapping("/forwardToAsync")
+	public String helloWorldForwardToAsync() {
+		return "forward:/async";
+	}
 }

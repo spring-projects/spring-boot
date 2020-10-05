@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Ivan Sopov
  * @author Andy Wilkinson
+ * @author Orange
  */
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SampleUndertowApplicationTests {
@@ -55,6 +56,11 @@ class SampleUndertowApplicationTests {
 	@Test
 	void testAsync() {
 		assertOkResponse("/async", "async: Hello World");
+	}
+
+	@Test
+	void testForwardToAsync() {
+		assertOkResponse("/forwardToAsync", "async: Hello World");
 	}
 
 	@Test
