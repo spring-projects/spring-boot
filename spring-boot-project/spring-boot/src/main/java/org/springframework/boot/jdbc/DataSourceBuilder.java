@@ -17,12 +17,14 @@
 package org.springframework.boot.jdbc;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.stream.Stream;
 
 import javax.sql.DataSource;
 
@@ -34,6 +36,8 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.util.ClassUtils;
+
+import static java.util.Optional.ofNullable;
 
 /**
  * Convenience class for building a {@link DataSource} with common implementations and
@@ -122,20 +126,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	public static Class<? extends DataSource> findType(ClassLoader classLoader) {
-		DataSourceSettings preferredDataSourceSettings = new DataSourceSettingsResolver(classLoader)
-				.getPreferredDataSourceSettings();
-		return (preferredDataSourceSettings != null) ? preferredDataSourceSettings.getType() : null;
+		return new DataSourceSettingsResolver(classLoader).getPreferredType();
 	}
 
 	private Class<? extends DataSource> getType() {
-		if (this.type != null) {
-			return this.type;
-		}
-		DataSourceSettings preferredDataSourceSettings = this.settingsResolver.getPreferredDataSourceSettings();
-		if (preferredDataSourceSettings != null) {
-			return preferredDataSourceSettings.getType();
-		}
-		throw new IllegalStateException("No supported DataSource type found");
+		return Stream.of(this.type, this.settingsResolver.getPreferredType()).filter( Objects::nonNull ).findFirst().orElseThrow(() -> new IllegalStateException("No supported DataSource type found"));
 	}
 
 	private static class DataSourceSettings {
@@ -146,67 +141,46 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		DataSourceSettings(Class<? extends DataSource> type,
 				Consumer<ConfigurationPropertyNameAliases> aliasesCustomizer) {
-			this.type = type;
-			this.aliasesCustomizer = aliasesCustomizer;
+			this.type = Objects.requireNonNull(type);
+			this.aliasesCustomizer = Objects.requireNonNull(aliasesCustomizer);
 		}
 
 		DataSourceSettings(Class<? extends DataSource> type) {
-			this(type, (aliases) -> {
+			this(type, (aliases) -> {});
+		}
+
+		DataSourceSettings(Class<? extends DataSource> type, String propertyName, String propertyAlias) {
+			this(type, new Consumer<ConfigurationPropertyNameAliases>() {
+				@Override
+				public void accept(ConfigurationPropertyNameAliases aliases) {
+					aliases.addAliases(Objects.requireNonNull(propertyName), Objects.requireNonNull(propertyAlias));
+				}
 			});
 		}
 
 		Class<? extends DataSource> getType() {
-			return this.type;
+			return this.type.isInterface() ? null : this.type;
 		}
 
 		void registerAliases(DataSource candidate, ConfigurationPropertyNameAliases aliases) {
-			if (this.type != null && this.type.isInstance(candidate)) {
+			if (this.type.isInstance(candidate)) {
 				this.aliasesCustomizer.accept(aliases);
 			}
 		}
 
 	}
 
-	private static class OracleCommonDataSourceSettings extends DataSourceSettings {
-
-		OracleCommonDataSourceSettings(Class<? extends DataSource> type) {
-			super(type, (aliases) -> aliases.addAliases("username", "user"));
-		}
-
-		@Override
-		public Class<? extends DataSource> getType() {
-			return null; // Base interface
-		}
-
-	}
-
 	private static class DataSourceSettingsResolver {
 
-		private final DataSourceSettings preferredDataSourceSettings;
+		private final List<DataSourceSettings> allDataSourceSettings = new ArrayList<>();
 
-		private final List<DataSourceSettings> allDataSourceSettings;
+		private final Class<? extends DataSource> preferredType;
 
 		DataSourceSettingsResolver(ClassLoader classLoader) {
-			List<DataSourceSettings> supportedProviders = resolveAvailableDataSourceSettings(classLoader);
-			this.preferredDataSourceSettings = (!supportedProviders.isEmpty()) ? supportedProviders.get(0) : null;
-			this.allDataSourceSettings = new ArrayList<>(supportedProviders);
-			addIfAvailable(this.allDataSourceSettings,
-					create(classLoader, "org.springframework.jdbc.datasource.SimpleDriverDataSource",
-							(type) -> new DataSourceSettings(type,
-									(aliases) -> aliases.addAliases("driver-class-name", "driver-class"))));
-			addIfAvailable(this.allDataSourceSettings, create(classLoader,
-					"oracle.jdbc.datasource.OracleCommonDataSource", OracleCommonDataSourceSettings::new));
-		}
-
-		private static List<DataSourceSettings> resolveAvailableDataSourceSettings(ClassLoader classLoader) {
-			List<DataSourceSettings> providers = new ArrayList<>();
-			addIfAvailable(providers, create(classLoader, "com.zaxxer.hikari.HikariDataSource",
-					(type) -> new DataSourceSettings(type, (aliases) -> aliases.addAliases("url", "jdbc-url"))));
-			addIfAvailable(providers,
-					create(classLoader, "org.apache.tomcat.jdbc.pool.DataSource", DataSourceSettings::new));
-			addIfAvailable(providers,
-					create(classLoader, "org.apache.commons.dbcp2.BasicDataSource", DataSourceSettings::new));
-			addIfAvailable(providers, create(classLoader, "oracle.ucp.jdbc.PoolDataSourceImpl", (type) -> {
+			createAndAddIfAvailable(classLoader, "com.zaxxer.hikari.HikariDataSource", (type) -> new DataSourceSettings(type, "url", "jdbc-url"));
+			createAndAddIfAvailable(classLoader, "org.apache.tomcat.jdbc.pool.DataSource", DataSourceSettings::new);
+			createAndAddIfAvailable(classLoader, "org.apache.commons.dbcp2.BasicDataSource", DataSourceSettings::new);
+			createAndAddIfAvailable(classLoader, "oracle.ucp.jdbc.PoolDataSourceImpl", (type) -> {
 				// Unfortunately Oracle UCP has an import on the Oracle driver itself
 				if (ClassUtils.isPresent("oracle.jdbc.OracleConnection", classLoader)) {
 					return new DataSourceSettings(type, (aliases) -> {
@@ -215,34 +189,40 @@ public final class DataSourceBuilder<T extends DataSource> {
 					});
 				}
 				return null;
-			}));
-			return providers;
+			});
+
+			this.preferredType =  this.allDataSourceSettings.isEmpty() ? null : this.allDataSourceSettings.get(0).getType();
+
+			createAndAddIfAvailable(classLoader, "org.springframework.jdbc.datasource.SimpleDriverDataSource", (type) -> new DataSourceSettings(type, "driver-class-name", "driver-class"));
+			createAndAddIfAvailable(classLoader, "oracle.jdbc.datasource.OracleDataSource", (type) -> new DataSourceSettings(type, "username", "user"));
+		}
+
+		private void createAndAddIfAvailable(ClassLoader classLoader, String target,
+				Function<Class<? extends DataSource>, DataSourceSettings> factory) {
+			findDataSourceClass(classLoader, target).ifPresent((dataSourceClass) -> {ofNullable(factory.apply(dataSourceClass)).ifPresent(this.allDataSourceSettings::add);});
 		}
 
 		@SuppressWarnings("unchecked")
-		private static DataSourceSettings create(ClassLoader classLoader, String target,
-				Function<Class<? extends DataSource>, DataSourceSettings> factory) {
-			if (ClassUtils.isPresent(target, classLoader)) {
-				try {
-					Class<? extends DataSource> type = (Class<? extends DataSource>) ClassUtils.forName(target,
-							classLoader);
-					return factory.apply(type);
-				}
-				catch (Exception ex) {
-					// Ignore
-				}
+		private static Optional<Class<? extends DataSource>> findDataSourceClass(ClassLoader classLoader, String target) {
+			Class<?> candidateClass = null;
+			
+			try {
+				candidateClass = ClassUtils.forName(target, classLoader);
+			} catch (Exception ex) {
+				// Swallow and let candidateClass set to null
 			}
-			return null;
+			
+			Class<? extends DataSource> result = null;
+			
+			if (candidateClass != null && DataSource.class.isAssignableFrom(candidateClass)) {
+				result = (Class<? extends DataSource>) candidateClass;
+			} 
+				
+			return ofNullable(result);
 		}
-
-		private static void addIfAvailable(Collection<DataSourceSettings> list, DataSourceSettings dataSourceSettings) {
-			if (dataSourceSettings != null) {
-				list.add(dataSourceSettings);
-			}
-		}
-
-		DataSourceSettings getPreferredDataSourceSettings() {
-			return this.preferredDataSourceSettings;
+		
+		Class<? extends DataSource> getPreferredType() {
+			return this.preferredType;
 		}
 
 		void registerAliases(DataSource result, ConfigurationPropertyNameAliases aliases) {
