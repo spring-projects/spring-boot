@@ -41,6 +41,7 @@ public interface ConfigurableRSocketServerFactory {
 	 * Specify the maximum transmission unit. Frames larger than the specified
 	 * {@code fragmentSize} are fragmented.
 	 * @param fragmentSize the fragment size
+	 * @since 2.4.0
 	 */
 	void setFragmentSize(DataSize fragmentSize);
 
