@@ -519,6 +519,61 @@ class FlywayAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void cherryPickIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.cherry-pick=1.1").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" migrations ");
+				});
+	}
+
+	@Test
+	void jdbcPropertiesAreCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.jdbc-properties.prop=value").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" jdbcProperties ");
+				});
+	}
+
+	@Test
+	void oracleKerberosCacheFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" oracle.kerberosCacheFile ");
+				});
+	}
+
+	@Test
+	void oracleKerberosConfigFileIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" oracle.kerberosConfigFile ");
+				});
+	}
+
+	@Test
+	void skipExecutingMigrationsIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.skip-executing-migrations=true").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" skipExecutingMigrations ");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class FlywayDataSourceConfiguration {
 

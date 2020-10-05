@@ -115,9 +115,6 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "shouldCreateSchemas");
 		// Getters for the DataSource settings rather than actual properties
 		ignoreProperties(configuration, "password", "url", "user");
-		// Flyway 7.0 properties that are not yet supported
-		ignoreProperties(configuration, "cherryPick", "jdbcProperties", "oracleKerberosCacheFile",
-				"oracleKerberosConfigFile", "skipExecutingMigrations");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());

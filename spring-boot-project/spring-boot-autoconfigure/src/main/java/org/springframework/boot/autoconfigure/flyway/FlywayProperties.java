@@ -290,6 +290,33 @@ public class FlywayProperties {
 	 */
 	private String undoSqlMigrationPrefix;
 
+	/**
+	 * Migrations that Flyway should consider when migrating or undoing. When empty all
+	 * available migrations are considered. Requires Flyway Teams.
+	 */
+	private String[] cherryPick;
+
+	/**
+	 * Properties to pass to the JDBC driver. Requires Flyway Teams.
+	 */
+	private Map<String, String> jdbcProperties = new HashMap<>();
+
+	/**
+	 * Path of the Oracle Kerberos cache file. Requires Flyway Teams.
+	 */
+	private String oracleKerberosCacheFile;
+
+	/**
+	 * Path of the Oracle Kerberos config file. Requires Flyway Teams.
+	 */
+	private String oracleKerberosConfigFile;
+
+	/**
+	 * Whether Flyway should skip executing the contents of the migrations and only update
+	 * the schema history table. Requires Flyway teams.
+	 */
+	private Boolean skipExecutingMigrations;
+
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -676,6 +703,46 @@ public class FlywayProperties {
 
 	public void setUndoSqlMigrationPrefix(String undoSqlMigrationPrefix) {
 		this.undoSqlMigrationPrefix = undoSqlMigrationPrefix;
+	}
+
+	public String[] getCherryPick() {
+		return this.cherryPick;
+	}
+
+	public void setCherryPick(String[] cherryPick) {
+		this.cherryPick = cherryPick;
+	}
+
+	public Map<String, String> getJdbcProperties() {
+		return this.jdbcProperties;
+	}
+
+	public void setJdbcProperties(Map<String, String> jdbcProperties) {
+		this.jdbcProperties = jdbcProperties;
+	}
+
+	public String getOracleKerberosCacheFile() {
+		return this.oracleKerberosCacheFile;
+	}
+
+	public void setOracleKerberosCacheFile(String oracleKerberosCacheFile) {
+		this.oracleKerberosCacheFile = oracleKerberosCacheFile;
+	}
+
+	public String getOracleKerberosConfigFile() {
+		return this.oracleKerberosConfigFile;
+	}
+
+	public void setOracleKerberosConfigFile(String oracleKerberosConfigFile) {
+		this.oracleKerberosConfigFile = oracleKerberosConfigFile;
+	}
+
+	public Boolean getSkipExecutingMigrations() {
+		return this.skipExecutingMigrations;
+	}
+
+	public void setSkipExecutingMigrations(Boolean skipExecutingMigrations) {
+		this.skipExecutingMigrations = skipExecutingMigrations;
 	}
 
 }
