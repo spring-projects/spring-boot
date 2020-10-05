@@ -248,48 +248,45 @@ public class FlywayProperties {
 	private boolean validateOnMigrate = true;
 
 	/**
-	 * Whether to batch SQL statements when executing them. Requires Flyway Pro or Flyway
-	 * Enterprise.
+	 * Whether to batch SQL statements when executing them. Requires Flyway Teams.
 	 */
 	private Boolean batch;
 
 	/**
 	 * File to which the SQL statements of a migration dry run should be output. Requires
-	 * Flyway Pro or Flyway Enterprise.
+	 * Flyway Teams.
 	 */
 	private File dryRunOutput;
 
 	/**
 	 * Rules for the built-in error handling to override specific SQL states and error
-	 * codes. Requires Flyway Pro or Flyway Enterprise.
+	 * codes. Requires Flyway Teams.
 	 */
 	private String[] errorOverrides;
 
 	/**
-	 * Licence key for Flyway Pro or Flyway Enterprise.
+	 * Licence key for Flyway Teams.
 	 */
 	private String licenseKey;
 
 	/**
-	 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Pro or
-	 * Flyway Enterprise.
+	 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Teams.
 	 */
 	private Boolean oracleSqlplus;
 
 	/**
 	 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
-	 * SQL*Plus statement is encountered. Requires Flyway Pro or Flyway Enterprise.
+	 * SQL*Plus statement is encountered. Requires Flyway Teams.
 	 */
 	private Boolean oracleSqlplusWarn;
 
 	/**
-	 * Whether to stream SQL migrations when executing them. Requires Flyway Pro or Flyway
-	 * Enterprise.
+	 * Whether to stream SQL migrations when executing them. Requires Flyway Teams.
 	 */
 	private Boolean stream;
 
 	/**
-	 * File name prefix for undo SQL migrations. Requires Flyway Pro or Flyway Enterprise.
+	 * File name prefix for undo SQL migrations. Requires Flyway Teams.
 	 */
 	private String undoSqlMigrationPrefix;
 
