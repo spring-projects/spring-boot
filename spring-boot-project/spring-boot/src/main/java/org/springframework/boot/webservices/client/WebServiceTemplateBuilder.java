@@ -424,7 +424,7 @@ public class WebServiceTemplateBuilder {
 	 * @see #configure(WebServiceTemplate)
 	 */
 	public WebServiceTemplate build() {
-		return build(WebServiceTemplate.class);
+		return configure(new WebServiceTemplate());
 	}
 
 	/**
