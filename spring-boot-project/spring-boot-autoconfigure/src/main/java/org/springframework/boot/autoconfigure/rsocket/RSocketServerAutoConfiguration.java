@@ -97,6 +97,7 @@ public class RSocketServerAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(properties.getServer().getAddress()).to(factory::setAddress);
 			map.from(properties.getServer().getPort()).to(factory::setPort);
+			map.from(properties.getServer().getFragmentSize()).to(factory::setFragmentSize);
 			map.from(properties.getServer().getSsl()).to(factory::setSsl);
 			factory.setRSocketServerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
 			return factory;

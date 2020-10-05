@@ -33,6 +33,7 @@ import reactor.core.publisher.Mono;
 import reactor.netty.http.server.HttpServer;
 import reactor.netty.tcp.TcpServer;
 
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.rsocket.server.ConfigurableRSocketServerFactory;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
@@ -42,6 +43,7 @@ import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.util.Assert;
+import org.springframework.util.unit.DataSize;
 
 /**
  * {@link RSocketServerFactory} that can be used to create {@link RSocketServer}s backed
@@ -54,6 +56,8 @@ import org.springframework.util.Assert;
 public class NettyRSocketServerFactory implements RSocketServerFactory, ConfigurableRSocketServerFactory {
 
 	private int port = 9898;
+
+	private DataSize fragmentSize;
 
 	private InetAddress address;
 
@@ -72,6 +76,11 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	@Override
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	@Override
+	public void setFragmentSize(DataSize fragmentSize) {
+		this.fragmentSize = fragmentSize;
 	}
 
 	@Override
@@ -138,9 +147,15 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	public NettyRSocketServer create(SocketAcceptor socketAcceptor) {
 		ServerTransport<CloseableChannel> transport = createTransport();
 		io.rsocket.core.RSocketServer server = io.rsocket.core.RSocketServer.create(socketAcceptor);
-		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
+		configureServer(server);
 		Mono<CloseableChannel> starter = server.bind(transport);
 		return new NettyRSocketServer(starter, this.lifecycleTimeout);
+	}
+
+	private void configureServer(io.rsocket.core.RSocketServer server) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(this.fragmentSize).asInt(DataSize::toBytes).to(server::fragment);
+		this.rSocketServerCustomizers.forEach((customizer) -> customizer.customize(server));
 	}
 
 	private ServerTransport<CloseableChannel> createTransport() {
