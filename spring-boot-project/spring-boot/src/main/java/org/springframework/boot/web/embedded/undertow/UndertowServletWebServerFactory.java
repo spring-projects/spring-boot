@@ -75,6 +75,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Marcos Barbero
  * @author Eddú Meléndez
+ * @author 橙 子
  * @since 2.0.0
  * @see UndertowServletWebServer
  */
@@ -283,6 +284,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		deployment.setResourceManager(getDocumentRootResourceManager());
 		deployment.setTempDir(createTempDir("undertow"));
 		deployment.setEagerFilterInit(this.eagerInitFilters);
+		deployment.setPreservePathOnForward(false);
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
