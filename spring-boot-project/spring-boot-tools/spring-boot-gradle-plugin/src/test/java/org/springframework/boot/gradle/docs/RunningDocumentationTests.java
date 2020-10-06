@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,6 +66,19 @@ class RunningDocumentationTests {
 	void bootRunDisableOptimizedLaunch() throws IOException {
 		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-disable-optimized-launch")
 				.build("optimizedLaunch").getOutput()).contains("false");
+	}
+
+	@TestTemplate
+	void bootRunSystemPropertyDefaultValue() throws IOException {
+		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-system-property")
+				.build("configuredSystemProperties").getOutput()).contains("com.example.property = default");
+	}
+
+	@TestTemplate
+	void bootRunSystemPropetry() throws IOException {
+		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-system-property")
+				.build("-Pexample=custom", "configuredSystemProperties").getOutput())
+						.contains("com.example.property = custom");
 	}
 
 }

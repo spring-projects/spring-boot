@@ -92,9 +92,34 @@ See {gradle-api}/org/gradle/api/tasks/JavaExec.html#setArgsString-java.lang.Stri
 [[running-your-application-passing-system-properties]]
 === Passing System properties to your application
 Since `bootRun` is a standard `JavaExec` task, system properties can be passed to the application's JVM by specifying them in the build script.
-The values can be parameterized and passed as properties on the command line using the `-P` flag.
+To make that value of a system property to be configurable set its value using a {gradle-dsl}/org.gradle.api.Project.html#N14FE1[project property].
+To allow a project property to be optional, reference it using `findProperty`.
+Doing so also allows a default value to be provided using the `?:` Elvis operator, as shown in the following example:
 
-See {gradle-api}/org/gradle/api/tasks/JavaExec.html#systemProperty-java.lang.String-java.lang.Object-[the javadoc for `JavaExec.systemProperty`] for further details.
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/running/boot-run-system-property.gradle[tags=system-property]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/running/boot-run-system-property.gradle.kts[tags=system-property]
+----
+
+The preceding example sets that `com.example.property` system property to the value of the `example` project property.
+If the `example` project property has not been set, the value of the system property will be `default`.
+
+Gradle allows project properties to be set in a variety of ways, including on the command line using the `-P` flag, as shown in the following example:
+
+[source,bash,indent=0,subs="verbatim,attributes"]
+----
+$ ./gradlew -Pexample=custom
+----
+
+The preceding example sets the value of the `example` project property to `custom`.
+`bootRun` will then use this as the value of the `com.example.property` system property.
 
 
 
