@@ -72,7 +72,8 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void supportedAnnotations() {
 		assertThat(new ConfigurationMetadataAnnotationProcessor().getSupportedAnnotationTypes())
 				.containsExactlyInAnyOrder("org.springframework.boot.context.properties.ConfigurationProperties",
-						"org.springframework.context.annotation.Configuration");
+						"org.springframework.context.annotation.Configuration",
+						"org.springframework.boot.actuate.endpoint.annotation.Endpoint");
 	}
 
 	@Test

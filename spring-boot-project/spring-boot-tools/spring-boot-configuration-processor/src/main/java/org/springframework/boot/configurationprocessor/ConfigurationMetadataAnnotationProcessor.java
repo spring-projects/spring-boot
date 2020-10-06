@@ -60,6 +60,7 @@ import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
  * @since 1.2.0
  */
 @SupportedAnnotationTypes({ ConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
+		ConfigurationMetadataAnnotationProcessor.ENDPOINT_ANNOTATION,
 		"org.springframework.context.annotation.Configuration" })
 public class ConfigurationMetadataAnnotationProcessor extends AbstractProcessor {
 
