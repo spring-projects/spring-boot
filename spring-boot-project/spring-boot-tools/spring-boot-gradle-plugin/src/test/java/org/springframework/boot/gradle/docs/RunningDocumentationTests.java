@@ -71,4 +71,17 @@ class RunningDocumentationTests {
 				.build("optimizedLaunch").getOutput()).contains("false");
 	}
 
+	@TestTemplate
+	void bootRunSystemPropertyDefaultValue() throws IOException {
+		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-system-property")
+				.build("configuredSystemProperties").getOutput()).contains("com.example.property = default");
+	}
+
+	@TestTemplate
+	void bootRunSystemPropetry() throws IOException {
+		assertThat(this.gradleBuild.script("src/main/gradle/running/boot-run-system-property")
+				.build("-Pexample=custom", "configuredSystemProperties").getOutput())
+						.contains("com.example.property = custom");
+	}
+
 }
