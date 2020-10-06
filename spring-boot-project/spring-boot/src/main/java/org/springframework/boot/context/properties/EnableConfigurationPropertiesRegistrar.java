@@ -48,11 +48,9 @@ class EnableConfigurationPropertiesRegistrar implements ImportBeanDefinitionRegi
 				.filter((type) -> void.class != type).collect(Collectors.toSet());
 	}
 
-	@SuppressWarnings("deprecation")
 	static void registerInfrastructureBeans(BeanDefinitionRegistry registry) {
 		ConfigurationPropertiesBindingPostProcessor.register(registry);
 		BoundConfigurationProperties.register(registry);
-		ConfigurationBeanFactoryMetadata.register(registry);
 	}
 
 }

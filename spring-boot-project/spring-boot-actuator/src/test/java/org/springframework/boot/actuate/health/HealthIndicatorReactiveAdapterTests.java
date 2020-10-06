@@ -29,7 +29,6 @@ import static org.mockito.Mockito.mock;
  *
  * @author Stephane Nicoll
  */
-@SuppressWarnings("deprecation")
 class HealthIndicatorReactiveAdapterTests {
 
 	@Test

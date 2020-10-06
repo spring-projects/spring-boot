@@ -39,7 +39,6 @@ class ReactiveHealthContributorTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void adaptWhenHealthIndicatorReturnsHealthIndicatorReactiveAdapter() {
 		HealthIndicator indicator = () -> Health.outOfService().build();
 		ReactiveHealthContributor adapted = ReactiveHealthContributor.adapt(indicator);
