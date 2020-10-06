@@ -69,6 +69,13 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
 
 	@Test
+	void supportedAnnotations() {
+		assertThat(new ConfigurationMetadataAnnotationProcessor().getSupportedAnnotationTypes())
+				.containsExactlyInAnyOrder("org.springframework.boot.context.properties.ConfigurationProperties",
+						"org.springframework.context.annotation.Configuration");
+	}
+
+	@Test
 	void notAnnotated() {
 		ConfigurationMetadata metadata = compile(NotAnnotated.class);
 		assertThat(metadata.getItems()).isEmpty();
