@@ -6,7 +6,12 @@
 	<groupId>org.springframework.boot</groupId>
 	<artifactId>spring-boot-build</artifactId>
 	<version>${revision}</version>
-	<packaging>pom</packaging>
+    <modules>
+        <module>spring-boot-tests/spring-boot-hexc-test</module>
+		<module>spring-boot-tests/spring-boot-hexc-tests</module>
+		<module>spring-boot-tests/spring-boot-hexc-tests/spring-boot-hexc-mvc-test</module>
+	</modules>
+    <packaging>pom</packaging>
 	<name>Spring Boot Build</name>
 	<description>Spring Boot Build</description>
 	<properties>
