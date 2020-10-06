@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ public @interface EnableConfigurationProperties {
 	 * {@link ConfigurationProperties @ConfigurationProperties} annotated beans with
 	 * Spring. Standard Spring Beans will also be scanned regardless of this value.
 	 * @return {@code @ConfigurationProperties} annotated beans to register
-	 * @see ImportAsConfigurationPropertiesBean
 	 */
 	Class<?>[] value() default {};
 

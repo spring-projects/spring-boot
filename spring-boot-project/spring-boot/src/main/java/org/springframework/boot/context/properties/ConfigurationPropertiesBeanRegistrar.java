@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean.BindMethod;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -46,14 +47,16 @@ final class ConfigurationPropertiesBeanRegistrar {
 		this.beanFactory = (BeanFactory) this.registry;
 	}
 
-	void register(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation, boolean deduceBindConstructor) {
-		MergedAnnotation<ConfigurationProperties> typeAnnotation = MergedAnnotations
+	void register(Class<?> type) {
+		MergedAnnotation<ConfigurationProperties> annotation = MergedAnnotations
 				.from(type, SearchStrategy.TYPE_HIERARCHY).get(ConfigurationProperties.class);
-		annotation = (!typeAnnotation.isPresent()) ? annotation : typeAnnotation;
-		annotation = (annotation != null) ? annotation : MergedAnnotation.missing();
+		register(type, annotation);
+	}
+
+	void register(Class<?> type, MergedAnnotation<ConfigurationProperties> annotation) {
 		String name = getName(type, annotation);
 		if (!containsBeanDefinition(name)) {
-			registerBeanDefinition(name, type, annotation, deduceBindConstructor);
+			registerBeanDefinition(name, type, annotation);
 		}
 	}
 
@@ -78,20 +81,19 @@ final class ConfigurationPropertiesBeanRegistrar {
 	}
 
 	private void registerBeanDefinition(String beanName, Class<?> type,
-			MergedAnnotation<ConfigurationProperties> annotation, boolean deduceBindConstructor) {
+			MergedAnnotation<ConfigurationProperties> annotation) {
 		Assert.state(annotation.isPresent(), () -> "No " + ConfigurationProperties.class.getSimpleName()
 				+ " annotation found on  '" + type.getName() + "'.");
-		this.registry.registerBeanDefinition(beanName,
-				createBeanDefinition(beanName, type, annotation, deduceBindConstructor));
+		this.registry.registerBeanDefinition(beanName, createBeanDefinition(beanName, type));
 	}
 
-	private BeanDefinition createBeanDefinition(String beanName, Class<?> type,
-			MergedAnnotation<ConfigurationProperties> annotation, boolean deduceBindConstructor) {
-		if (BindMethod.forType(type, deduceBindConstructor) == BindMethod.VALUE_OBJECT) {
-			return new ConfigurationPropertiesValueObjectBeanDefinition(this.beanFactory, beanName, type, annotation,
-					deduceBindConstructor);
+	private BeanDefinition createBeanDefinition(String beanName, Class<?> type) {
+		if (BindMethod.forType(type) == BindMethod.VALUE_OBJECT) {
+			return new ConfigurationPropertiesValueObjectBeanDefinition(this.beanFactory, beanName, type);
 		}
-		return new ConfigurationPropertiesBeanDefinition(type, annotation);
+		GenericBeanDefinition definition = new GenericBeanDefinition();
+		definition.setBeanClass(type);
+		return definition;
 	}
 
 }

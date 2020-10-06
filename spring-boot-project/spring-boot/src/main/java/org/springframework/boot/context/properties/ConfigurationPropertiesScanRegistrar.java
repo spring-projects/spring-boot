@@ -108,7 +108,7 @@ class ConfigurationPropertiesScanRegistrar implements ImportBeanDefinitionRegist
 
 	private void register(ConfigurationPropertiesBeanRegistrar registrar, Class<?> type) {
 		if (!isComponent(type)) {
-			registrar.register(type, null, false);
+			registrar.register(type);
 		}
 	}
 

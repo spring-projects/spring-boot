@@ -74,9 +74,9 @@ class PropertyDescriptorResolverTests {
 				Arrays.asList(HierarchicalPropertiesParent.class, HierarchicalPropertiesGrandparent.class),
 				(type, metadataEnv) -> {
 					PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
-					assertThat(resolver.resolve(type, false, null).map(PropertyDescriptor::getName))
-							.containsExactly("third", "second", "first");
-					assertThat(resolver.resolve(type, false, null)
+					assertThat(resolver.resolve(type, null).map(PropertyDescriptor::getName)).containsExactly("third",
+							"second", "first");
+					assertThat(resolver.resolve(type, null)
 							.map((descriptor) -> descriptor.resolveItemMetadata("test", metadataEnv))
 							.map(ItemMetadata::getDefaultValue)).containsExactly("three", "two", "one");
 				});
@@ -155,7 +155,7 @@ class PropertyDescriptorResolverTests {
 			Consumer<Stream<PropertyDescriptor<?>>> stream) {
 		return (element, metadataEnv) -> {
 			PropertyDescriptorResolver resolver = new PropertyDescriptorResolver(metadataEnv);
-			stream.accept(resolver.resolve(element, false, null));
+			stream.accept(resolver.resolve(element, null));
 		};
 	}
 
