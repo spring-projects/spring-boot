@@ -40,6 +40,18 @@ If you find problems with the docs or if you want to improve them, please {sprin
 
 
 
+[[boot-documentation-upgrading]]
+== Upgrading from an Earlier Version
+Instructions for how to upgrade from earlier versions of Spring Boot are provided on the project {github-wiki}[wiki].
+Follow the links in the in the {github-wiki}#release-notes[release notes] section to find the version that you want to upgrade to.
+
+Upgrading instructions are always the first item in the release notes.
+If you are more than one release behind, please make sure that you also review the release notes of the versions that you jumped.
+
+You should always ensure that you are running a {github-wiki}/Supported-Versions[supported version] of Spring Boot.
+
+
+
 [[boot-documentation-first-steps]]
 == First Steps
 If you are getting started with Spring Boot or 'Spring' in general, start with <<getting-started.adoc#getting-started, the following topics>>:
