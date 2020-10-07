@@ -30,6 +30,7 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.format.Formatter;
 
 /**
  * Utility to deduce the {@link ConversionService} to use for configuration properties
@@ -62,9 +63,13 @@ class ConversionServiceDeducer {
 
 		private final List<GenericConverter> genericConverters;
 
+		@SuppressWarnings("rawtypes")
+		private final List<Formatter> formatters;
+
 		Factory(BeanFactory beanFactory) {
 			this.converters = beans(beanFactory, Converter.class, ConfigurationPropertiesBinding.VALUE);
 			this.genericConverters = beans(beanFactory, GenericConverter.class, ConfigurationPropertiesBinding.VALUE);
+			this.formatters = beans(beanFactory, Formatter.class, ConfigurationPropertiesBinding.VALUE);
 		}
 
 		private <T> List<T> beans(BeanFactory beanFactory, Class<T> type, String qualifier) {
@@ -80,7 +85,7 @@ class ConversionServiceDeducer {
 		}
 
 		ConversionService create() {
-			if (this.converters.isEmpty() && this.genericConverters.isEmpty()) {
+			if (this.converters.isEmpty() && this.genericConverters.isEmpty() && this.formatters.isEmpty()) {
 				return ApplicationConversionService.getSharedInstance();
 			}
 			ApplicationConversionService conversionService = new ApplicationConversionService();
@@ -89,6 +94,9 @@ class ConversionServiceDeducer {
 			}
 			for (GenericConverter genericConverter : this.genericConverters) {
 				conversionService.addConverter(genericConverter);
+			}
+			for (Formatter<?> formatter : this.formatters) {
+				conversionService.addFormatter(formatter);
 			}
 			return conversionService;
 		}
