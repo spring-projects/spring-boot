@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import com.github.dockerjava.api.DockerClient;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.testcontainers.containers.GenericContainer;
@@ -40,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @ExtendWith(MavenBuildExtension.class)
 @Testcontainers(disabledWithoutDocker = true)
+@Disabled("Disabled until differences between running locally and in CI can be diagnosed")
 public class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrationTests {
 
 	@Container

@@ -25,6 +25,7 @@ import java.time.Duration;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.TestTemplate;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -46,6 +47,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @GradleCompatibility
 @Testcontainers(disabledWithoutDocker = true)
+@Disabled("Disabled until differences between running locally and in CI can be diagnosed")
 public class BootBuildImageRegistryIntegrationTests {
 
 	@Container
