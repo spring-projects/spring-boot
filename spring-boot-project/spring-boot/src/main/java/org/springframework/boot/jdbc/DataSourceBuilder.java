@@ -167,9 +167,9 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	}
 
-	private static class OracleCommonDataSourceSettings extends DataSourceSettings {
+	private static class OracleDataSourceSettings extends DataSourceSettings {
 
-		OracleCommonDataSourceSettings(Class<? extends DataSource> type) {
+		OracleDataSourceSettings(Class<? extends DataSource> type) {
 			super(type, (aliases) -> aliases.addAliases("username", "user"));
 		}
 
@@ -194,8 +194,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 					create(classLoader, "org.springframework.jdbc.datasource.SimpleDriverDataSource",
 							(type) -> new DataSourceSettings(type,
 									(aliases) -> aliases.addAliases("driver-class-name", "driver-class"))));
-			addIfAvailable(this.allDataSourceSettings, create(classLoader, "oracle.jdbc.datasource.OracleDataSource",
-					OracleCommonDataSourceSettings::new));
+			addIfAvailable(this.allDataSourceSettings,
+					create(classLoader, "oracle.jdbc.datasource.OracleDataSource", OracleDataSourceSettings::new));
 		}
 
 		private static List<DataSourceSettings> resolveAvailableDataSourceSettings(ClassLoader classLoader) {
