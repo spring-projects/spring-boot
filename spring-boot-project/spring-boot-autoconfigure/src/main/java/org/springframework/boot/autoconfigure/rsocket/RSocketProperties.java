@@ -34,6 +34,7 @@ import org.springframework.util.unit.DataSize;
 @ConfigurationProperties("spring.rsocket")
 public class RSocketProperties {
 
+	@NestedConfigurationProperty
 	private final Server server = new Server();
 
 	public Server getServer() {
