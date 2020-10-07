@@ -161,18 +161,25 @@ By default, all endpoints except for `shutdown` are enabled.
 To configure the enablement of an endpoint, use its `management.endpoint.<id>.enabled` property.
 The following example enables the `shutdown` endpoint:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.shutdown.enabled=true
+	management:
+	  endpoint:
+	    shutdown:
+	      enabled: true
 ----
 
 If you prefer endpoint enablement to be opt-in rather than opt-out, set the configprop:management.endpoints.enabled-by-default[] property to `false` and use individual endpoint `enabled` properties to opt back in.
 The following example enables the `info` endpoint and disables all other endpoints:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.enabled-by-default=false
-	management.endpoint.info.enabled=true
+	management:
+	  endpoints:
+	    enabled-by-default: false
+	  endpoint:
+	    info:
+	      enabled: true
 ----
 
 NOTE: Disabled endpoints are removed entirely from the application context.
@@ -312,33 +319,29 @@ Both `include` and `exclude` properties can be configured with a list of endpoin
 
 For example, to stop exposing all endpoints over JMX and only expose the `health` and `info` endpoints, use the following property:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.jmx.exposure.include=health,info
+	management:
+	  endpoints:
+	    jmx:
+	      exposure:
+	        include: "health,info"
 ----
 
 `*` can be used to select all endpoints.
 For example, to expose everything over HTTP except the `env` and `beans` endpoints, use the following properties:
 
-[source,properties,indent=0,configprops]
-----
-	management.endpoints.web.exposure.include=*
-	management.endpoints.web.exposure.exclude=env,beans
-----
-
-[NOTE]
-====
-`*` has a special meaning in YAML, so be sure to add quotes if you want to include (or exclude) all endpoints, as shown in the following example:
-
-[source,yaml,indent=0]
+[source,yaml,indent=0,configprops,configblocks]
 ----
 	management:
 	  endpoints:
 	    web:
 	      exposure:
 	        include: "*"
+	        exclude: "env,beans"
 ----
-====
+
+NOTE: `*` has a special meaning in YAML, so be sure to add quotes if you want to include (or exclude) all endpoints.
 
 NOTE: If your application is exposed publicly, we strongly recommend that you also <<production-ready-endpoints-security, secure your endpoints>>.
 
@@ -377,9 +380,13 @@ If you deploy applications behind a firewall, you may prefer that all your actua
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
 
 .application.properties
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.web.exposure.include=*
+	management:
+	  endpoints:
+	    web:
+	      exposure:
+	        include: "*"
 ----
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints as shown in the following example:
@@ -407,9 +414,13 @@ To configure the amount of time for which an endpoint will cache a response, use
 The following example sets the time-to-live of the `beans` endpoint's cache to 10 seconds:
 
 .application.properties
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.beans.cache.time-to-live=10s
+	management:
+	  endpoint:
+	    beans:
+	      cache:
+	        time-to-live: "10s"
 ----
 
 NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the endpoint that is being configured.
@@ -435,10 +446,14 @@ If you use Spring MVC or Spring WebFlux, Actuator's web endpoints can be configu
 CORS support is disabled by default and is only enabled once the configprop:management.endpoints.web.cors.allowed-origins[] property has been set.
 The following configuration permits `GET` and `POST` calls from the `example.com` domain:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.web.cors.allowed-origins=https://example.com
-	management.endpoints.web.cors.allowed-methods=GET,POST
+	management:
+	  endpoints:
+	    web:
+	      cors:
+	        allowed-origins: "https://example.com"
+	        allowed-methods: "GET,POST"
 ----
 
 TIP: See {spring-boot-actuator-autoconfigure-module-code}/endpoint/web/CorsEndpointProperties.java[CorsEndpointProperties] for a complete list of options.
@@ -798,9 +813,13 @@ In such cases, a custom implementation of the {spring-boot-actuator-module-code}
 For example, assume a new `Status` with code `FATAL` is being used in one of your `HealthIndicator` implementations.
 To configure the severity order, add the following property to your application properties:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.health.status.order=fatal,down,out-of-service,unknown,up
+	management:
+	  endpoint:
+	    health:
+	      status:
+	        order: "fatal,down,out-of-service,unknown,up"
 ----
 
 The HTTP status code in the response reflects the overall health status.
@@ -811,11 +830,16 @@ Configuring a custom mapping disables the defaults mappings for `DOWN` and `OUT_
 If you want to retain the default mappings they must be configured explicitly alongside any custom mappings.
 For example, the following property maps `FATAL` to 503 (service unavailable) and retains the default mappings for `DOWN` and `OUT_OF_SERVICE`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.health.status.http-mapping.down=503
-	management.endpoint.health.status.http-mapping.fatal=503
-	management.endpoint.health.status.http-mapping.out-of-service=503
+	management:
+	  endpoint:
+	    health:
+	      status:
+	        http-mapping:
+	          down: 503
+	          fatal: 503
+	          out-of-service: 503
 ----
 
 TIP: If you need more control, you can define your own `HttpCodeStatusMapper` bean.
@@ -908,30 +932,47 @@ It's sometimes useful to organize health indicators into groups that can be used
 To create a health indicator group you can use the `management.endpoint.health.group.<name>` property and specify a list of health indicator IDs to `include` or `exclude`.
 For example, to create a group that includes only database indicators you can define the following:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.health.group.custom.include=db
+	management:
+	  endpoint:
+	    health:
+	      group:
+	        custom:
+	          include: "db"
 ----
 
 You can then check the result by hitting `http://localhost:8080/actuator/health/custom`.
 
 Similarly, to create a group that excludes the database indicators from the group and includes all the other indicators, you can define the following:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.health.group.custom.exclude=db
+	management:
+	  endpoint:
+	    health:
+	      group:
+	        custom:
+	          exclude: "db"
 ----
 
 By default groups will inherit the same `StatusAggregator` and `HttpCodeStatusMapper` settings as the system health, however, these can also be defined on a per-group basis.
 It's also possible to override the `show-details` and `roles` properties if required:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.health.group.custom.show-details=when-authorized
-	management.endpoint.health.group.custom.roles=admin
-	management.endpoint.health.group.custom.status.order=fatal,up
-	management.endpoint.health.group.custom.status.http-mapping.fatal=500
-	management.endpoint.health.group.custom.status.http-mapping.out-of-service=500
+	management:
+	  endpoint:
+	    health:
+	      group:
+	        custom:
+	          show-details: "when-authorized"
+	          roles: "admin"
+	          status:
+	            order: "fatal,up"
+	            http-mapping:
+	              fatal: 500
+	              out-of-service: 500
 ----
 
 TIP: You can use `@Qualifier("groupname")` if you need to register custom `StatusAggregator` or `HttpCodeStatusMapper` beans for use with the group.
@@ -986,9 +1027,14 @@ In this case, a probe check could be successful even if the main application doe
 Actuator configures the "liveness" and "readiness" probes as Health Groups; this means that all the <<production-ready-health-groups, Health Groups features>> are available for them.
 You can, for example, configure additional Health Indicators:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.health.group.readiness.include=readinessState,customCheck
+	management:
+	  endpoint:
+	    health:
+	      group:
+	        readiness:
+	          include: "readinessState,customCheck"
 ----
 
 By default, Spring Boot does not add other Health Indicators to these groups.
@@ -1101,11 +1147,14 @@ You can customize the data exposed by the `info` endpoint by setting `+info.*+` 
 All `Environment` properties under the `info` key are automatically exposed.
 For example, you could add the following settings to your `application.properties` file:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	info.app.encoding=UTF-8
-	info.app.java.source=1.8
-	info.app.java.target=1.8
+	info:
+	  app:
+	    encoding: "UTF-8"
+	    java:
+	      source: "11"
+	      target: "11"
 ----
 
 [TIP]
@@ -1114,11 +1163,14 @@ Rather than hardcoding those values, you could also <<howto.adoc#howto-automatic
 
 Assuming you use Maven, you could rewrite the preceding example as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	info.app.encoding=@project.build.sourceEncoding@
-	info.app.java.source=@java.version@
-	info.app.java.target=@java.version@
+	info:
+	  app:
+	    encoding: "@project.build.sourceEncoding@"
+	    java:
+	      source: "@java.version@"
+	      target: "@java.version@"
 ----
 ====
 
@@ -1134,9 +1186,12 @@ See "<<howto.adoc#howto-git-info,Generate git information>>" for more details.
 
 If you want to display the full git information (that is, the full content of `git.properties`), use the configprop:management.info.git.mode[] property, as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.info.git.mode=full
+	management:
+	  info:
+	    git:
+	      mode: "full"
 ----
 
 
@@ -1209,9 +1264,12 @@ Sometimes, it is useful to customize the prefix for the management endpoints.
 For example, your application might already use `/actuator` for another purpose.
 You can use the configprop:management.endpoints.web.base-path[] property to change the prefix for your management endpoint, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.web.base-path=/manage
+	management:
+	  endpoints:
+	    web:
+	      base-path: "/manage"
 ----
 
 The preceding `application.properties` example changes the endpoint from `/actuator/\{id}` to `/manage/\{id}` (for example, `/manage/info`).
@@ -1224,10 +1282,14 @@ If you want to map endpoints to a different path, you can use the configprop:man
 The following example remaps `/actuator/health` to `/healthcheck`:
 
 .application.properties
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.web.base-path=/
-	management.endpoints.web.path-mapping.health=healthcheck
+	management:
+	  endpoints:
+	    web:
+	      base-path: "/"
+	      path-mapping:
+	        health: "healthcheck"
 ----
 
 
@@ -1239,9 +1301,11 @@ If, however, your application runs inside your own data center, you may prefer t
 
 You can set the configprop:management.server.port[] property to change the HTTP port, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.server.port=8081
+	management:
+	  server:
+	    port: 8081
 ----
 
 NOTE: On Cloud Foundry, applications only receive requests on port 8080 for both HTTP and TCP routing, by default.
@@ -1254,28 +1318,38 @@ If you want to use a custom management port on Cloud Foundry, you will need to e
 When configured to use a custom port, the management server can also be configured with its own SSL by using the various `management.server.ssl.*` properties.
 For example, doing so lets a management server be available over HTTP while the main application uses HTTPS, as shown in the following property settings:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	server.port=8443
-	server.ssl.enabled=true
-	server.ssl.key-store=classpath:store.jks
-	server.ssl.key-password=secret
-	management.server.port=8080
-	management.server.ssl.enabled=false
+	server:
+	  port: 8443
+	  ssl:
+	    enabled: true
+	    key-store: "classpath:store.jks"
+	    key-password: secret
+	management:
+	  server:
+	    port: 8080
+	    ssl:
+	      enabled: false
 ----
 
 Alternatively, both the main server and the management server can use SSL but with different key stores, as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	server.port=8443
-	server.ssl.enabled=true
-	server.ssl.key-store=classpath:main.jks
-	server.ssl.key-password=secret
-	management.server.port=8080
-	management.server.ssl.enabled=true
-	management.server.ssl.key-store=classpath:management.jks
-	management.server.ssl.key-password=secret
+	server:
+	  port: 8443
+	  ssl:
+	    enabled: true
+	    key-store: "classpath:main.jks"
+	    key-password: "secret"
+	management:
+	  server:
+	    port: 8080
+	    ssl:
+	      enabled: true
+	      key-store: "classpath:management.jks"
+	      key-password: "secret"
 ----
 
 
@@ -1289,10 +1363,12 @@ NOTE: You can listen on a different address only when the port differs from the 
 
 The following example `application.properties` does not allow remote management connections:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.server.port=8081
-	management.server.address=127.0.0.1
+	management:
+	  server:
+	    port: 8081
+	    address: "127.0.0.1"
 ----
 
 
@@ -1301,16 +1377,22 @@ The following example `application.properties` does not allow remote management 
 === Disabling HTTP Endpoints
 If you do not want to expose endpoints over HTTP, you can set the management port to `-1`, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.server.port=-1
+	management:
+	  server:
+	    port: -1
 ----
 
 This can be achieved using the configprop:management.endpoints.web.exposure.exclude[] property as well, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.web.exposure.exclude=*
+	management:
+	  endpoints:
+	    web:
+	      exposure:
+	        exclude: "*"
 ----
 
 
@@ -1334,10 +1416,15 @@ To solve this problem, you can set the configprop:spring.jmx.unique-names[] prop
 You can also customize the JMX domain under which endpoints are exposed.
 The following settings show an example of doing so in `application.properties`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.jmx.unique-names=true
-	management.endpoints.jmx.domain=com.example.myapp
+	spring:
+	  jmx:
+	    unique-names: true
+	management:
+	  endpoints:
+	    jmx:
+	      domain: "com.example.myapp"
 ----
 
 
@@ -1346,9 +1433,13 @@ The following settings show an example of doing so in `application.properties`:
 === Disabling JMX Endpoints
 If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoints.jmx.exposure.exclude=*
+	management:
+	  endpoints:
+	    jmx:
+	      exposure:
+	        exclude: "*"
 ----
 
 
@@ -1382,9 +1473,13 @@ Jolokia has a number of settings that you would traditionally configure by setti
 With Spring Boot, you can use your `application.properties` file.
 To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.jolokia.config.debug=true
+	management:
+	  endpoint:
+	    jolokia:
+	      config:
+	        debug: true
 ----
 
 
@@ -1393,9 +1488,12 @@ To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as sh
 ==== Disabling Jolokia
 If you use Jolokia but do not want Spring Boot to configure it, set the configprop:management.endpoint.jolokia.enabled[] property to `false`, as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.endpoint.jolokia.enabled=false
+	management:
+	  endpoint:
+	    jolokia:
+	      enabled: false
 ----
 
 
@@ -1470,23 +1568,33 @@ Most registries share common features.
 For instance, you can disable a particular registry even if the Micrometer registry implementation is on the classpath.
 For example, to disable Datadog:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.datadog.enabled=false
+	management:
+	  metrics:
+	    export:
+	      datadog:
+	        enabled: false
 ----
 
 You can also disable all registries unless stated otherwise by the registry-specific property, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.defaults.enabled=false
+	management:
+	  metrics:
+	    export:
+	      defaults:
+	        enabled: false
 ----
 
 Spring Boot will also add any auto-configured registries to the global static composite registry on the `Metrics` class unless you explicitly tell it not to:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.use-global-registry=false
+	management:
+	  metrics:
+	    use-global-registry: false
 ----
 
 You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
@@ -1523,9 +1631,13 @@ Spring Boot also <<production-ready-metrics-meter,configures built-in instrument
 By default, the AppOptics registry pushes metrics to `https://api.appoptics.com/v1/measurements` periodically.
 To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your API token must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.appoptics.api-token=YOUR_TOKEN
+	management:
+	  metrics:
+	    export:
+	      appoptics:
+	        api-token: "YOUR_TOKEN"
 ----
 
 
@@ -1535,9 +1647,13 @@ To export metrics to SaaS {micrometer-registry-docs}/appOptics[AppOptics], your 
 By default, metrics are exported to {micrometer-registry-docs}/atlas[Atlas] running on your local machine.
 The location of the https://github.com/Netflix/atlas[Atlas server] to use can be provided using:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.atlas.uri=https://atlas.example.com:7101/api/v1/publish
+	management:
+	  metrics:
+	    export:
+	      atlas:
+	        uri: "https://atlas.example.com:7101/api/v1/publish"
 ----
 
 
@@ -1547,16 +1663,24 @@ The location of the https://github.com/Netflix/atlas[Atlas server] to use can be
 Datadog registry pushes metrics to https://www.datadoghq.com[datadoghq] periodically.
 To export metrics to {micrometer-registry-docs}/datadog[Datadog], your API key must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.datadog.api-key=YOUR_KEY
+	management:
+	  metrics:
+	    export:
+	      datadog:
+	        api-key: "YOUR_KEY"
 ----
 
 You can also change the interval at which metrics are sent to Datadog:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.datadog.step=30s
+	management:
+	  metrics:
+	    export:
+	      datadog:
+	        step: "30s"
 ----
 
 
@@ -1566,18 +1690,26 @@ You can also change the interval at which metrics are sent to Datadog:
 Dynatrace registry pushes metrics to the configured URI periodically.
 To export metrics to {micrometer-registry-docs}/dynatrace[Dynatrace], your API token, device ID, and URI must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.dynatrace.api-token=YOUR_TOKEN
-	management.metrics.export.dynatrace.device-id=YOUR_DEVICE_ID
-	management.metrics.export.dynatrace.uri=YOUR_URI
+	management:
+	  metrics:
+	    export:
+	      dynatrace:
+	        api-token: "YOUR_TOKEN"
+	        device-id: "YOUR_DEVICE_ID"
+	        uri: "YOUR_URI"
 ----
 
 You can also change the interval at which metrics are sent to Dynatrace:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.dynatrace.step=30s
+	management:
+	  metrics:
+	    export:
+	      dynatrace:
+	        step: "30s"
 ----
 
 
@@ -1587,9 +1719,13 @@ You can also change the interval at which metrics are sent to Dynatrace:
 By default, metrics are exported to {micrometer-registry-docs}/elastic[Elastic] running on your local machine.
 The location of the Elastic server to use can be provided using the following property:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.elastic.host=https://elastic.example.com:8086
+	management:
+	  metrics:
+	    export:
+	      elastic:
+	        host: "https://elastic.example.com:8086"
 ----
 
 
@@ -1599,10 +1735,14 @@ The location of the Elastic server to use can be provided using the following pr
 By default, metrics are exported to {micrometer-registry-docs}/ganglia[Ganglia] running on your local machine.
 The http://ganglia.sourceforge.net[Ganglia server] host and port to use can be provided using:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.ganglia.host=ganglia.example.com
-	management.metrics.export.ganglia.port=9649
+	management:
+	  metrics:
+	    export:
+	      ganglia:
+	        host: "ganglia.example.com"
+	        port: 9649
 ----
 
 
@@ -1612,10 +1752,14 @@ The http://ganglia.sourceforge.net[Ganglia server] host and port to use can be p
 By default, metrics are exported to {micrometer-registry-docs}/graphite[Graphite] running on your local machine.
 The https://graphiteapp.org[Graphite server] host and port to use can be provided using:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.graphite.host=graphite.example.com
-	management.metrics.export.graphite.port=9004
+	management:
+	  metrics:
+	     export:
+	       graphite:
+	         host: "graphite.example.com"
+	         port: 9004
 ----
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
@@ -1638,17 +1782,26 @@ public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock 
 By default, the Humio registry pushes metrics to https://cloud.humio.com periodically.
 To export metrics to SaaS {micrometer-registry-docs}/humio[Humio], your API token must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.humio.api-token=YOUR_TOKEN
+	management:
+	  metrics:
+	    export:
+	      humio:
+	        api-token: "YOUR_TOKEN"
 ----
 
 You should also configure one or more tags to identify the data source to which metrics will be pushed:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.humio.tags.alpha=a
-	management.metrics.export.humio.tags.bravo=b
+	management:
+	  metrics:
+	    export:
+	      humio:
+	        tags:
+	          alpha: "a"
+	          bravo: "b"
 ----
 
 
@@ -1658,9 +1811,13 @@ You should also configure one or more tags to identify the data source to which 
 By default, metrics are exported to {micrometer-registry-docs}/influx[Influx] running on your local machine.
 The location of the https://www.influxdata.com[Influx server] to use can be provided using:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.influx.uri=https://influx.example.com:8086
+	management:
+	  metrics:
+	    export:
+	      influx:
+	        uri: "https://influx.example.com:8086"
 ----
 
 
@@ -1671,9 +1828,13 @@ Micrometer provides a hierarchical mapping to {micrometer-registry-docs}/jmx[JMX
 By default, metrics are exported to the `metrics` JMX domain.
 The domain to use can be provided using:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.jmx.domain=com.example.app.metrics
+	management:
+	  metrics:
+	    export:
+	      jmx:
+	        domain: "com.example.app.metrics"
 ----
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
@@ -1696,9 +1857,13 @@ public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
 By default, metrics are exported to {micrometer-registry-docs}/kairos[KairosDB] running on your local machine.
 The location of the https://kairosdb.github.io/[KairosDB server] to use can be provided using:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.kairos.uri=https://kairosdb.example.com:8080/api/v1/datapoints
+	management:
+	  metrics:
+	    export:
+	      kairos:
+	        uri: "https://kairosdb.example.com:8080/api/v1/datapoints"
 ----
 
 
@@ -1708,24 +1873,36 @@ The location of the https://kairosdb.github.io/[KairosDB server] to use can be p
 New Relic registry pushes metrics to {micrometer-registry-docs}/new-relic[New Relic] periodically.
 To export metrics to https://newrelic.com[New Relic], your API key and account id must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.newrelic.api-key=YOUR_KEY
-	management.metrics.export.newrelic.account-id=YOUR_ACCOUNT_ID
+	management:
+	  metrics:
+	    export:
+	      newrelic:
+	        api-key: "YOUR_KEY"
+	        account-id: "YOUR_ACCOUNT_ID"
 ----
 
 You can also change the interval at which metrics are sent to New Relic:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.newrelic.step=30s
+	management:
+	  metrics:
+	    export:
+	      newrelic:
+	        step: "30s"
 ----
 
 By default, metrics are published via REST calls but it is also possible to use the Java Agent API if you have it on the classpath:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.newrelic.client-provider-type=insights-agent
+	management:
+	  metrics:
+	    export:
+	      newrelic:
+	        client-provider-type: "insights-agent"
 ----
 
 Finally, you can take full control by defining your own `NewRelicClientProvider` bean.
@@ -1774,16 +1951,24 @@ For advanced configuration, you can also provide your own `PrometheusPushGateway
 SignalFx registry pushes metrics to {micrometer-registry-docs}/signalFx[SignalFx] periodically.
 To export metrics to https://www.signalfx.com[SignalFx], your access token must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.signalfx.access-token=YOUR_ACCESS_TOKEN
+	management:
+	  metrics:
+	    export:
+	      signalfx:
+	        access-token: "YOUR_ACCESS_TOKEN"
 ----
 
 You can also change the interval at which metrics are sent to SignalFx:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.signalfx.step=30s
+	management:
+	  metrics:
+	    export:
+	      signalfx:
+	        step: "30s"
 ----
 
 
@@ -1796,9 +1981,13 @@ This allows you to see what metrics are collected in the <<production-ready-metr
 The in-memory backend disables itself as soon as you're using any of the other available backend.
 You can also disable it explicitly:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.simple.enabled=false
+	management:
+	  metrics:
+	    export:
+	      simple:
+	        enabled: false
 ----
 
 
@@ -1808,16 +1997,24 @@ You can also disable it explicitly:
 Stackdriver registry pushes metrics to https://cloud.google.com/stackdriver/[Stackdriver] periodically.
 To export metrics to SaaS {micrometer-registry-docs}/stackdriver[Stackdriver], your Google Cloud project id must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.stackdriver.project-id=my-project
+	management:
+	  metrics:
+	    export:
+	      stackdriver:
+	        project-id: "my-project"
 ----
 
 You can also change the interval at which metrics are sent to Stackdriver:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.stackdriver.step=30s
+	management:
+	  metrics:
+	    export:
+	      stackdriver:
+	        step: "30s"
 ----
 
 
@@ -1828,18 +2025,26 @@ The StatsD registry pushes metrics over UDP to a StatsD agent eagerly.
 By default, metrics are exported to a {micrometer-registry-docs}/statsD[StatsD] agent running on your local machine.
 The StatsD agent host, port, and protocol to use can be provided using:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.statsd.host=statsd.example.com
-	management.metrics.export.statsd.port=9125
-	management.metrics.export.statsd.protocol=udp
+	management:
+	  metrics:
+	    export:
+	      statsd:
+	        host: "statsd.example.com"
+	        port: 9125
+	        protocol: "udp"
 ----
 
 You can also change the StatsD line protocol to use (default to Datadog):
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.statsd.flavor=etsy
+	management:
+	  metrics:
+	    export:
+	      statsd:
+	        flavor: "etsy"
 ----
 
 
@@ -1849,25 +2054,37 @@ You can also change the StatsD line protocol to use (default to Datadog):
 Wavefront registry pushes metrics to {micrometer-registry-docs}/wavefront[Wavefront] periodically.
 If you are exporting metrics to https://www.wavefront.com/[Wavefront] directly, your API token must be provided:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.wavefront.api-token=YOUR_API_TOKEN
+	management:
+	  metrics:
+	    export:
+	      wavefront:
+	        api-token: "YOUR_API_TOKEN"
 ----
 
 Alternatively, you may use a Wavefront sidecar or an internal proxy set up in your environment that forwards metrics data to the Wavefront API host:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.wavefront.uri=proxy://localhost:2878
+	management:
+	  metrics:
+	    export:
+	      wavefront:
+	        uri: "proxy://localhost:2878"
 ----
 
 TIP: If publishing metrics to a Wavefront proxy (as described in https://docs.wavefront.com/proxies_installing.html[the documentation]), the host must be in the `proxy://HOST:PORT` format.
 
 You can also change the interval at which metrics are sent to Wavefront:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.export.wavefront.step=30s
+	management:
+	  metrics:
+	    export:
+	      wavefront:
+	        step: "30s"
 ----
 
 
@@ -2119,9 +2336,12 @@ Metrics are also tagged by the name of the `EntityManagerFactory` that is derive
 To enable statistics, the standard JPA property `hibernate.generate_statistics` must be set to `true`.
 You can enable that on the auto-configured `EntityManagerFactory` as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.jpa.properties.hibernate.generate_statistics=true
+	spring:
+	  jpa:
+	    properties:
+	      "[hibernate.generate_statistics]": true
 ----
 
 
@@ -2180,10 +2400,13 @@ include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=confi
 Common tags are generally used for dimensional drill-down on the operating environment like host, instance, region, stack, etc.
 Commons tags are applied to all meters and can be configured as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.tags.region=us-east-1
-	management.metrics.tags.stack=prod
+	management:
+	  metrics:
+	    tags:
+	      region: "us-east-1"
+	      stack: "prod"
 ----
 
 The example above adds `region` and `stack` tags to all meters with a value of `us-east-1` and `prod` respectively.
@@ -2198,9 +2421,13 @@ In addition to `MeterFilter` beans, it's also possible to apply a limited set of
 Per-meter customizations apply to any all meter IDs that start with the given name.
 For example, the following will disable any meters that have an ID starting with `example.remote`
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.metrics.enable.example.remote=false
+	management:
+	  metrics:
+	    enable:
+	      example:
+	        remote: false
 ----
 
 The following properties allow per-meter customization:
@@ -2347,9 +2574,11 @@ If you want to fully disable the `/cloudfoundryapplication` endpoints, you can a
 
 
 .application.properties
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.cloudfoundry.enabled=false
+	management:
+	  cloudfoundry:
+	    enabled: false
 ----
 
 
@@ -2360,9 +2589,11 @@ By default, the security verification for `/cloudfoundryapplication` endpoints m
 If your Cloud Foundry UAA or Cloud Controller services use self-signed certificates, you need to set the following property:
 
 .application.properties
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	management.cloudfoundry.skip-ssl-validation=true
+	management:
+	  cloudfoundry:
+	    skip-ssl-validation: true
 ----
 
 

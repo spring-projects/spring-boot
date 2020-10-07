@@ -630,9 +630,12 @@ The report shows the changes to your application's auto-configuration as you mak
 
 To disable the logging of the report, set the following property:
 
-[indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	spring.devtools.restart.log-condition-evaluation-delta=false
+	spring:
+	  devtools:
+	    restart:
+	      log-condition-evaluation-delta: false
 ----
 
 
@@ -644,9 +647,12 @@ By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/re
 If you want to customize these exclusions, you can use the configprop:spring.devtools.restart.exclude[] property.
 For example, to exclude only `/static` and `/public` you would set the following property:
 
-[indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	spring.devtools.restart.exclude=static/**,public/**
+	spring:
+	  devtools:
+	    restart:
+	      exclude: "static/**,public/**"
 ----
 
 TIP: If you want to keep those defaults and _add_ additional exclusions, use the configprop:spring.devtools.restart.additional-exclude[] property instead.
@@ -700,9 +706,12 @@ For example, if you have a project with the following structure:
 
 Then your `trigger-file` property would be:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.devtools.restart.trigger-file=.reloadtrigger
+	spring:
+	  devtools:
+	    restart:
+	      trigger-file: ".reloadtrigger"
 ----
 
 Restarts will now only happen when the `src/main/resources/.reloadtrigger` is updated.
@@ -730,10 +739,13 @@ The `spring-devtools.properties` file can contain properties prefixed with `rest
 The `include` elements are items that should be pulled up into the "`restart`" classloader, and the `exclude` elements are items that should be pushed down into the "`base`" classloader.
 The value of the property is a regex pattern that is applied to the classpath, as shown in the following example:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	restart.exclude.companycommonlibs=/mycorp-common-[\\w\\d-\.]+\.jar
-	restart.include.projectcommon=/mycorp-myproj-[\\w\\d-\.]+\.jar
+	restart:
+	  exclude:
+	    companycommonlibs: "/mycorp-common-[\\w\\d-\\.]+\\.jar"
+	  include:
+	    projectcommon: "/mycorp-myproj-[\\w\\d-\\.]+\\.jar"
 ----
 
 NOTE: All property keys must be unique.
@@ -776,12 +788,14 @@ You can configure global devtools settings by adding any of the following files 
 . `spring-boot-devtools.yml`
 
 Any properties added to these file apply to _all_ Spring Boot applications on your machine that use devtools.
-For example, to configure restart to always use a <<using-boot-devtools-restart-triggerfile, trigger file>>, you would add the following property:
+For example, to configure restart to always use a <<using-boot-devtools-restart-triggerfile, trigger file>>, you would add the following property to your `spring-boot-devtools` file:
 
-.~/.config/spring-boot/spring-boot-devtools.properties
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.devtools.restart.trigger-file=.reloadtrigger
+	spring:
+	  devtools:
+	    restart:
+	      trigger-file: ".reloadtrigger"
 ----
 
 NOTE: If devtools configuration files are not found in `$HOME/.config/spring-boot`, the root of the `$HOME` directory is searched for the presence of a `.spring-boot-devtools.properties` file.
@@ -803,10 +817,13 @@ Profile specific filenames (of the form `spring-boot-devtools-<profile>.properti
 Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.devtools.restart.poll-interval=2s
-	spring.devtools.restart.quiet-period=1s
+	spring:
+	  devtools:
+	    restart:
+	      poll-interval: "2s"
+	      quiet-period: "1s"
 ----
 
 The monitored classpath directories are now polled every 2 seconds for changes, and a 1 second quiet period is maintained to make sure there are no additional class changes.

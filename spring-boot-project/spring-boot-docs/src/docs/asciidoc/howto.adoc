@@ -85,7 +85,7 @@ See "`<<spring-boot-features.adoc#boot-features-application-events-and-listeners
 It is also possible to customize the `Environment` before the application context is refreshed by using `EnvironmentPostProcessor`.
 Each implementation should be registered in `META-INF/spring.factories`, as shown in the following example:
 
-[source,properties,indent=0]
+[indent=0]
 ----
 	org.springframework.boot.env.EnvironmentPostProcessor=com.example.YourEnvironmentPostProcessor
 ----
@@ -145,10 +145,12 @@ This is possible in both Maven and Gradle.
 You can automatically expand properties from the Maven project by using resource filtering.
 If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	app.encoding=@project.build.sourceEncoding@
-	app.java.version=@java.version@
+	app:
+	  encoding: "@project.build.sourceEncoding@"
+	  java:
+	    version: "@java.version@"
 ----
 
 NOTE: Only production configuration is filtered that way (in other words, no filtering is applied on `src/test/resources`).
@@ -205,10 +207,11 @@ You can automatically expand properties from the Gradle project by configuring t
 
 You can then refer to your Gradle project's properties by using placeholders, as shown in the following example:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	app.name=${name}
-	app.description=${description}
+	app:
+	  name: "${name}"
+	  description: "${description}"
 ----
 
 NOTE: Gradle's `expand` method uses Groovy's `SimpleTemplateEngine`, which transforms `${..}` tokens.
@@ -223,10 +226,12 @@ A `SpringApplication` has bean properties (mainly setters), so you can use its J
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.main.web-application-type=none
-	spring.main.banner-mode=off
+	spring:
+	  main:
+	    web-application-type: "none"
+	    banner-mode: "off"
 ----
 
 Then the Spring Boot banner is not printed on startup, and the application is not starting an embedded web server.
@@ -244,10 +249,12 @@ Consider the following application:
 
 Now consider the following configuration:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.main.sources=com.acme.Config,com.acme.ExtraConfig
-	spring.main.banner-mode=console
+	spring:
+	  main:
+	    sources: "com.acme.Config,com.acme.ExtraConfig"
+	    banner-mode: "console"
 ----
 
 The actual application _now_ shows the banner (as overridden by configuration) and uses three sources for the `ApplicationContext` (in the following order): `demo.MyApp`, `com.acme.Config`, and `com.acme.ExtraConfig`.
@@ -278,9 +285,10 @@ See {spring-boot-module-code}/context/config/ConfigFileApplicationListener.java[
 Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to set configuration properties on the command line.
 You can enable this behavior by using placeholders in `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	server.port=${port:8080}
+	server:
+	  port: "${port:8080}"
 ----
 
 TIP: If you inherit from the `spring-boot-starter-parent` POM, the default filter token of the `maven-resources-plugins` has been changed from `+${*}+` to `@` (that is, `@maven.token@` instead of `${maven.token}`) to prevent conflicts with Spring-style placeholders.
@@ -298,13 +306,13 @@ YAML is a superset of JSON and, as such, is a convenient syntax for storing exte
 [source,yaml,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	spring:
-		application:
-			name: cruncher
-		datasource:
-			driverClassName: com.mysql.jdbc.Driver
-			url: jdbc:mysql://localhost/test
+	  application:
+	    name: "cruncher"
+	  datasource:
+	    driver-class-name: "com.mysql.jdbc.Driver"
+	    url: "jdbc:mysql://localhost/test"
 	server:
-		port: 9000
+	  port: 9000
 ----
 
 Create a file called `application.yml` and put it in the root of your classpath.
@@ -337,9 +345,11 @@ Also, you can launch your application with a `-D` argument (remember to put it b
 
 In Spring Boot, you can also set the active profile in `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.profiles.active=production
+	spring:
+	  profiles:
+	    active: "production"
 ----
 
 A value set this way is replaced by the System property or environment variable setting but not by the `SpringApplicationBuilder.profiles()` method.
@@ -356,15 +366,24 @@ Spring Boot supports multi-document YAML and Properties files (see <<spring-boot
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
 If the profile expression matches then that document is included in the final merge (otherwise, it is not), as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	server.port: 9000
+	server:
+	  port: 9000
 	---
-	spring.config.activate.on-profile: development
-	server.port: 9001
+	spring:
+	  config:
+	    activate:
+	      on-profile: "development"
+	server:
+	  port: 9001
 	---
-	spring.config.activate.on-profile: production
-	server.port: 0
+	spring:
+	  config:
+	    activate:
+	      on-profile: "production"
+	server:
+	  port: 0
 ----
 
 In the preceding example, the default port is 9000.
@@ -461,9 +480,11 @@ NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` cla
 If your classpath contains the necessary bits to start a web server, Spring Boot will automatically start it.
 To disable this behavior configure the `WebApplicationType` in your `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.main.web-application-type=none
+	spring:
+	  main:
+	    web-application-type: "none"
 ----
 
 
@@ -520,9 +541,11 @@ Contrary to a test, application code callbacks are processed early (before the v
 HTTP response compression is supported by Jetty, Tomcat, and Undertow.
 It can be enabled in `application.properties`, as follows:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	server.compression.enabled=true
+	server:
+	  compression:
+	    enabled: true
 ----
 
 By default, responses must be at least 2048 bytes in length for compression to be performed.
@@ -548,12 +571,14 @@ You can configure this behavior by setting the configprop:server.compression.mim
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
 The following example shows setting SSL properties in `application.properties`:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	server.port=8443
-	server.ssl.key-store=classpath:keystore.jks
-	server.ssl.key-store-password=secret
-	server.ssl.key-password=another-secret
+	server:
+	  port: 8443
+	  ssl:
+	    key-store: "classpath:keystore.jks"
+	    key-store-password: "secret"
+	    key-password: "another-secret"
 ----
 
 See {spring-boot-module-code}/web/server/Ssl.java[`Ssl`] for details of all of the supported properties.
@@ -742,11 +767,14 @@ Access logs can be configured for Tomcat, Undertow, and Jetty through their resp
 
 For instance, the following settings log access on Tomcat with a {tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	server.tomcat.basedir=my-tomcat
-	server.tomcat.accesslog.enabled=true
-	server.tomcat.accesslog.pattern=%t %a "%r" %s (%D ms)
+	server:
+	  tomcat:
+	    basedir: "my-tomcat"
+	    accesslog:
+	      enabled: true
+	      pattern: "%t %a %r %s (%D ms)"
 ----
 
 NOTE: The default location for logs is a `logs` directory relative to the Tomcat base directory.
@@ -755,10 +783,13 @@ In the preceding example, the logs are available in `my-tomcat/logs` relative to
 
 Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	server.undertow.accesslog.enabled=true
-	server.undertow.accesslog.pattern=%t %a "%r" %s (%D ms)
+	server:
+	  undertow:
+	    accesslog:
+	      enabled: true
+	      pattern: "%t %a %r %s (%D ms)"
 ----
 
 Logs are stored in a `logs` directory relative to the working directory of the application.
@@ -766,10 +797,13 @@ You can customize this location by setting the configprop:server.undertow.access
 
 Finally, access logging for Jetty can also be configured as follows:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	server.jetty.accesslog.enabled=true
-	server.jetty.accesslog.filename=/var/log/jetty-access.log
+	server:
+	  jetty:
+	    accesslog:
+	      enabled: true
+	      filename: "/var/log/jetty-access.log"
 ----
 
 By default, logs are redirected to `System.err`.
@@ -801,23 +835,26 @@ In all other instances, it defaults to `NONE`.
 ==== Customize Tomcat's Proxy Configuration
 If you use Tomcat, you can additionally configure the names of the headers used to carry "`forwarded`" information, as shown in the following example:
 
-[indent=0]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	server.tomcat.remoteip.remote-ip-header=x-your-remote-ip-header
-	server.tomcat.remoteip.protocol-header=x-your-protocol-header
+	server:
+	  tomcat:
+	    remoteip:
+	      remote-ip-header: "x-your-remote-ip-header"
+	      protocol-header: "x-your-protocol-header"
 ----
 
 Tomcat is also configured with a default regular expression that matches internal proxies that are to be trusted.
 By default, IP addresses in `10/8`, `192.168/16`, `169.254/16` and `127/8` are trusted.
 You can customize the valve's configuration by adding an entry to `application.properties`, as shown in the following example:
 
-[indent=0]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	server.tomcat.remoteip.internal-proxies=192\\.168\\.\\d{1,3}\\.\\d{1,3}
+	server:
+	  tomcat:
+	    remoteip:
+	      internal-proxies: "192\\.168\\.\\d{1,3}\\.\\d{1,3}"
 ----
-
-NOTE: The double backslashes are required only when you use a properties file for configuration.
-If you use YAML, single backslashes are sufficient, and a value equivalent to that shown in the preceding example would be `192\.168\.\d{1,3}\.\d{1,3}`.
 
 NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but do not do so in production).
 
@@ -890,9 +927,12 @@ Embedded Tomcat's MBean registry is disabled by default.
 This minimizes Tomcat's memory footprint.
 If you want to use Tomcat's MBeans, for example so that they can be used to expose metrics via Micrometer, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-server.tomcat.mbeanregistry.enabled=true
+server:
+  tomcat:
+    mbeanregistry:
+      enabled: true
 ----
 
 
@@ -1110,9 +1150,12 @@ NOTE: It is recommended to use the container's built-in support for multipart up
 By default, all content is served from the root of your application (`/`).
 If you would rather map to a different path, you can configure one as follows:
 
-[source,properties,indent=0,subs="verbatim",configprops]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring.mvc.servlet.path=/acme
+	spring:
+	  mvc:
+	    servlet:
+	      path: "/acme"
 ----
 
 If you have additional servlets you can declare a `@Bean` of type `Servlet` or `ServletRegistrationBean` for each and Spring Boot will register them transparently to the container.
@@ -1299,13 +1342,15 @@ If Logback is available, it is the first choice.
 
 If the only change you need to make to logging is to set the levels of various loggers, you can do so in `application.properties` by using the "logging.level" prefix, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	logging.level.org.springframework.web=DEBUG
-	logging.level.org.hibernate=ERROR
+	logging:
+	  level:
+	    org.springframework.web: "debug"
+	    org.hibernate: "error"
 ----
 
-You can also set the location of a file to which to write the log (in addition to the console) by using "logging.file.name".
+You can also set the location of a file to which to write the log (in addition to the console) by using `logging.file.name`.
 
 To configure the more fine-grained settings of a logging system, you need to use the native configuration format supported by the `LoggingSystem` in question.
 By default, Spring Boot picks up the native configuration from its default location for the system (such as `classpath:logback.xml` for Logback), but you can set the location of the config file by using the configprop:logging.config[] property.
@@ -1382,11 +1427,13 @@ If you want to disable console logging and write output only to a file, you need
 	</configuration>
 ----
 
-You also need to add `logging.file.name` to your `application.properties`, as shown in the following example:
+You also need to add `logging.file.name` to your `application.properties` or `application.yaml`, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	logging.file.name=myapplication.log
+	logging:
+	  file:
+	    name: "myapplication.log"
 ----
 
 
@@ -1492,11 +1539,13 @@ The following example shows how to define a data source in a bean:
 
 The following example shows how to define a data source by setting properties:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	app.datasource.url=jdbc:h2:mem:mydb
-	app.datasource.username=sa
-	app.datasource.pool-size=30
+	app:
+	  datasource:
+	    url: "jdbc:h2:mem:mydb"
+	    username: "sa"
+	    pool-size: 30
 ----
 
 Assuming that your `FancyDataSource` has regular JavaBean properties for the URL, the username, and the pool size, these settings are bound automatically before the `DataSource` is made available to other components.
@@ -1519,12 +1568,14 @@ Check the implementation that is going to be used at runtime for more details.
 
 The following example shows how to define a JDBC data source by setting properties:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	app.datasource.url=jdbc:mysql://localhost/test
-	app.datasource.username=dbuser
-	app.datasource.password=dbpass
-	app.datasource.pool-size=30
+	app:
+	  datasource:
+	    url: "jdbc:mysql://localhost/test"
+	    username: "dbuser"
+	    password: "dbpass"
+	    pool-size: 30
 ----
 
 However, there is a catch.
@@ -1532,12 +1583,14 @@ Because the actual type of the connection pool is not exposed, no keys are gener
 Also, if you happen to have Hikari on the classpath, this basic setup does not work, because Hikari has no `url` property (but does have a `jdbcUrl` property).
 In that case, you must rewrite your configuration as follows:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	app.datasource.jdbc-url=jdbc:mysql://localhost/test
-	app.datasource.username=dbuser
-	app.datasource.password=dbpass
-	app.datasource.maximum-pool-size=30
+	app:
+	  datasource:
+	    jdbc-url: "jdbc:mysql://localhost/test"
+	    username: "dbuser"
+	    password: "dbpass"
+	    pool-size: 30
 ----
 
 You can fix that by forcing the connection pool to use and return a dedicated implementation rather than `DataSource`.
@@ -1563,12 +1616,15 @@ include::{code-examples}/jdbc/ConfigurableDataSourceExample.java[tag=configurati
 This setup puts you _in sync_ with what Spring Boot does for you by default, except that a dedicated connection pool is chosen (in code) and its settings are exposed in the `app.datasource.configuration` sub namespace.
 Because `DataSourceProperties` is taking care of the `url`/`jdbcUrl` translation for you, you can configure it as follows:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	app.datasource.url=jdbc:mysql://localhost/test
-	app.datasource.username=dbuser
-	app.datasource.password=dbpass
-	app.datasource.configuration.maximum-pool-size=30
+	app:
+	  datasource:
+	    url: "jdbc:mysql://localhost/test"
+	    username: "dbuser"
+	    password: "dbpass"
+	    configuration:
+	      maximum-pool-size: 30
 ----
 
 TIP: Spring Boot will expose Hikari-specific settings to `spring.datasource.hikari`.
@@ -1599,17 +1655,22 @@ TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the dat
 Both data sources are also bound for advanced customizations.
 For instance, you could configure them as follows:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
-	app.datasource.first.url=jdbc:mysql://localhost/first
-	app.datasource.first.username=dbuser
-	app.datasource.first.password=dbpass
-	app.datasource.first.configuration.maximum-pool-size=30
+	app:
+	  datasource:
+	    first:
+	      url: "jdbc:mysql://localhost/first"
+	      username: "dbuser"
+	      password: "dbpass"
+	      configuration:
+	        maximum-pool-size: 30
 
-	app.datasource.second.url=jdbc:mysql://localhost/second
-	app.datasource.second.username=dbuser
-	app.datasource.second.password=dbpass
-	app.datasource.second.max-total=30
+	    second:
+	      url: "jdbc:mysql://localhost/second"
+	      username: "dbuser"
+	      password: "dbpass"
+	      max-total: 30
 ----
 
 You can apply the same concept to the secondary `DataSource` as well, as shown in the following example:
@@ -1673,10 +1734,14 @@ If you prefer to set the dialect yourself, set the configprop:spring.jpa.databas
 
 The most common options to set are shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.jpa.hibernate.naming.physical-strategy=com.example.MyPhysicalNamingStrategy
-	spring.jpa.show-sql=true
+	spring:
+	  jpa:
+	    hibernate:
+	      naming:
+	        physical-strategy: "com.example.MyPhysicalNamingStrategy"
+	    show-sql: true
 ----
 
 In addition, all properties in `+spring.jpa.properties.*+` are passed through as normal JPA properties (with the prefix stripped) when the local `EntityManagerFactory` is created.
@@ -1993,12 +2058,14 @@ Spring Boot can detect your database type and execute those scripts on startup.
 If you use an embedded database, this happens by default.
 You can also enable it for any database type, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.batch.initialize-schema=always
+	spring:
+	  batch:
+	    initialize-schema: "always"
 ----
 
-You can also switch off the initialization explicitly by setting `spring.batch.initialize-schema=never`.
+You can also switch off the initialization explicitly by setting `spring.batch.initialize-schema` to `never`.
 
 
 
@@ -2017,17 +2084,21 @@ By default, they are in a directory called `classpath:db/migration`, but you can
 This is a comma-separated list of one or more `classpath:` or `filesystem:` locations.
 For example, the following configuration would search for scripts in both the default classpath location and the `/opt/migration` directory:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.flyway.locations=classpath:db/migration,filesystem:/opt/migration
+	spring:
+	  flyway:
+	    locations: "classpath:db/migration,filesystem:/opt/migration"
 ----
 
 You can also add a special `\{vendor}` placeholder to use vendor-specific scripts.
 Assume the following:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.flyway.locations=classpath:db/migration/{vendor}
+	spring:
+	  flyway:
+	    locations: "classpath:db/migration/{vendor}"
 ----
 
 Rather than using `db/migration`, the preceding configuration sets the directory to use according to the type of the database (such as `db/migration/mysql` for MySQL).
@@ -2061,9 +2132,11 @@ For example, you can place test-specific migrations in `src/test/resources` and 
 Also, you can use profile-specific configuration to customize `spring.flyway.locations` so that certain migrations run only when a particular profile is active.
 For example, in `application-dev.properties`, you might specify the following setting:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.flyway.locations=classpath:/db/migration,classpath:/dev/db/migration
+	spring:
+	  flyway:
+	    locations: "classpath:/db/migration,classpath:/dev/db/migration"
 ----
 
 With that setup, migrations in `dev/db/migration` run only when the `dev` profile is active.
@@ -2287,10 +2360,13 @@ If you use Tomcat as a servlet container, then Spring Boot adds Tomcat's own `Re
 The standard behavior is determined by the presence or absence of certain request headers (`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should work with most front-end proxies.
 You can switch on the valve by adding some entries to `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	server.tomcat.remoteip.remote-ip-header=x-forwarded-for
-	server.tomcat.remoteip.protocol-header=x-forwarded-proto
+	server:
+	  tomcat:
+	    remoteip:
+	      remote-ip-header: "x-forwarded-for"
+	      protocol-header: "x-forwarded-proto"
 ----
 
 (The presence of either of those properties switches on the valve.
