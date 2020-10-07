@@ -2303,6 +2303,7 @@ The following cache libraries are supported:
 * EhCache 2
 * Hazelcast
 * Any compliant JCache (JSR-107) implementation
+* Redis
 
 Metrics are tagged by the name of the cache and by the name of the `CacheManager` that is derived from the bean name.
 

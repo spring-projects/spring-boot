@@ -63,6 +63,9 @@ class RedisCacheConfiguration {
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
+		if (cacheProperties.getRedis().isEnableStatistics()) {
+			builder.enableStatistics();
+		}
 		redisCacheManagerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return cacheManagerCustomizers.customize(builder.build());
 	}
