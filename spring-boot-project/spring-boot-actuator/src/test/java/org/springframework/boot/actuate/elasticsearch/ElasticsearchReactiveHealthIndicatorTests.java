@@ -32,7 +32,6 @@ import org.springframework.data.elasticsearch.client.reactive.ReactiveElasticsea
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
-import org.springframework.web.reactive.function.client.WebClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.entry;
@@ -41,12 +40,11 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link ElasticsearchReactiveHealthIndicator}
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  */
 class ElasticsearchReactiveHealthIndicatorTests {
 
 	private MockWebServer server;
-
-	private WebClient.Builder builder;
 
 	private ElasticsearchReactiveHealthIndicator healthIndicator;
 
@@ -54,7 +52,6 @@ class ElasticsearchReactiveHealthIndicatorTests {
 	void setup() throws Exception {
 		this.server = new MockWebServer();
 		this.server.start();
-		this.builder = WebClient.builder().baseUrl(this.server.url("/").toString());
 		ReactiveElasticsearchClient client = DefaultReactiveElasticsearchClient
 				.create(ClientConfiguration.create(this.server.getHostName() + ":" + this.server.getPort()));
 		this.healthIndicator = new ElasticsearchReactiveHealthIndicator(client);
