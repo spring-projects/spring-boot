@@ -1,9 +1,10 @@
 [[build-image]]
 == Packaging OCI Images
-The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from executable jars using https://buildpacks.io[Cloud Native Buildpacks].
+The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from executable jars using https://buildpacks.io[Cloud Native Buildpacks] (CNB).
 Images can be built using the `bootBuildImage` task.
 
-NOTE: For security reasons, images build and run as non-root users, see https://buildpacks.io/docs/reference/spec/platform-api/#users[this section fore more details].
+NOTE: For security reasons, images build and run as non-root users.
+See the {buildpacks-reference}/reference/spec/platform-api/#users[CNB specification] for more details.
 
 The task is automatically created when the `java` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
 
@@ -144,8 +145,8 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 |===
 
 NOTE: The plugin detects the target Java compatibility of the project using the JavaPlugin's `targetCompatibility` property.
-By default, the plugin instructs the buildpacks to install the same Java version.
-You can override this behaviour by setting the `BP_JVM_VERSION` environment variable, see <<build-image-example-builder-configuration,builder configuration>>.
+When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
+You can override this behaviour as shown in the <<build-image-example-builder-configuration,builder configuration>> examples.
 
 
 
@@ -185,8 +186,7 @@ The builder and run image can be specified on the command line as well, as shown
 ==== Builder Configuration
 If the builder exposes configuration options, those can be set using the `environment` property.
 
-The following example assumes that the default builder recognizes a `BP_JVM_VERSION` property.
-This property is typically used to customize the JDK version the image should use by specifying the major version and a wildcard for the rest of the version:
+The following is an example of {paketo-java-reference}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -200,8 +200,10 @@ include::../gradle/packaging/boot-build-image-env.gradle[tags=env]
 include::../gradle/packaging/boot-build-image-env.gradle.kts[tags=env]
 ----
 
+Refer to the {paketo-java-reference}[Paketo documentation] for additional configuration options supported by Paketo Java buildpacks.
+
 If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
-When using the default builder, this can be accomplished by setting the `HTTPS_PROXY` and/or `HTTP_PROXY` environment variables as show in the following example:
+When using the Paketo builder, this can be accomplished by setting the `HTTPS_PROXY` and/or `HTTP_PROXY` environment variables as show in the following example:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
