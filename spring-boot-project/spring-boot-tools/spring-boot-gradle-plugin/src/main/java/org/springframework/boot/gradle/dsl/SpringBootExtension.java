@@ -20,9 +20,11 @@ import java.io.File;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.model.ReplacedBy;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskContainer;
 import org.gradle.api.tasks.TaskProvider;
@@ -42,7 +44,7 @@ public class SpringBootExtension {
 
 	private final Project project;
 
-	private String mainClassName;
+	private final Property<String> mainClass;
 
 	/**
 	 * Creates a new {@code SpringBootPluginExtension} that is associated with the given
@@ -51,22 +53,38 @@ public class SpringBootExtension {
 	 */
 	public SpringBootExtension(Project project) {
 		this.project = project;
+		this.mainClass = this.project.getObjects().property(String.class);
 	}
 
 	/**
-	 * Returns the main class name of the application.
-	 * @return the name of the application's main class
+	 * Returns the fully-qualified name of the application's main class.
+	 * @return the fully-qualified name of the application's main class
+	 * @since 2.4.0
 	 */
+	public Property<String> getMainClass() {
+		return this.mainClass;
+	}
+
+	/**
+	 * Returns the fully-qualified main class name of the application.
+	 * @return the fully-qualified name of the application's main class
+	 * @deprecated since 2.4.0 in favor of {@link #getMainClass()}.
+	 */
+	@Deprecated
+	@ReplacedBy("mainClass")
 	public String getMainClassName() {
-		return this.mainClassName;
+		return this.mainClass.getOrNull();
 	}
 
 	/**
-	 * Sets the main class name of the application.
-	 * @param mainClassName the name of the application's main class
+	 * Sets the fully-qualified main class name of the application.
+	 * @param mainClassName the fully-qualified name of the application's main class
+	 * @deprecated since 2.4.0 in favour of {@link #getMainClass} and
+	 * {@link Property#set(Object)}
 	 */
+	@Deprecated
 	public void setMainClassName(String mainClassName) {
-		this.mainClassName = mainClassName;
+		this.mainClass.set(mainClassName);
 	}
 
 	/**

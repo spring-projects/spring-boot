@@ -10,7 +10,7 @@ subprojects {
 }
 
 bootJar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 	layered {
 		application {
 			intoLayer("static") {

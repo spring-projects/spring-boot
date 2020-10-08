@@ -12,7 +12,7 @@ dependencies {
 }
 
 bootJar {
-	mainClassName 'com.example.ExampleApplication'
+	mainClass = 'com.example.ExampleApplication'
 }
 
 // tag::requires-unpack[]

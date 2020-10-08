@@ -65,7 +65,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Test
 	void contentCanBeAddedToBootInfUsingCopySpecFromGetter() throws IOException {
 		BootJar bootJar = getTask();
-		bootJar.setMainClassName("com.example.Application");
+		bootJar.getMainClass().set("com.example.Application");
 		bootJar.getBootInf().into("test").from(new File("build.gradle").getAbsolutePath());
 		bootJar.copy();
 		try (JarFile jarFile = new JarFile(bootJar.getArchiveFile().get().getAsFile())) {
@@ -76,7 +76,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Test
 	void contentCanBeAddedToBootInfUsingCopySpecAction() throws IOException {
 		BootJar bootJar = getTask();
-		bootJar.setMainClassName("com.example.Application");
+		bootJar.getMainClass().set("com.example.Application");
 		bootJar.bootInf((copySpec) -> copySpec.into("test").from(new File("build.gradle").getAbsolutePath()));
 		bootJar.copy();
 		try (JarFile jarFile = new JarFile(bootJar.getArchiveFile().get().getAsFile())) {
@@ -276,7 +276,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@SuppressWarnings("unchecked")
 	private void addContent() throws IOException {
 		BootJar bootJar = getTask();
-		bootJar.setMainClassName("com.example.Main");
+		bootJar.getMainClass().set("com.example.Main");
 		File classesJavaMain = new File(this.temp, "classes/java/main");
 		File applicationClass = new File(classesJavaMain, "com/example/Application.class");
 		applicationClass.getParentFile().mkdirs();

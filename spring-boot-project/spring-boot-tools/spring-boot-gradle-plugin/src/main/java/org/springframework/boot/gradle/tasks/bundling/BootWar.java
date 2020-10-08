@@ -26,6 +26,7 @@ import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Optional;
@@ -50,7 +51,7 @@ public class BootWar extends War implements BootArchive {
 
 	private final BootArchiveSupport support;
 
-	private String mainClassName;
+	private final Property<String> mainClass;
 
 	private FileCollection providedClasspath;
 
@@ -59,6 +60,7 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public BootWar() {
 		this.support = new BootArchiveSupport(LAUNCHER, this::isLibrary, this::resolveZipCompression);
+		this.mainClass = getProject().getObjects().property(String.class);
 		getWebInf().into("lib-provided", fromCallTo(this::getProvidedLibFiles));
 		this.support.moveModuleInfoToRoot(getRootSpec());
 		getRootSpec().eachFile(this.support::excludeNonZipLibraryFiles);
@@ -70,7 +72,8 @@ public class BootWar extends War implements BootArchive {
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(getManifest(), getMainClassName(), CLASSES_DIRECTORY, LIB_DIRECTORY, null, null);
+		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY, null,
+				null);
 		super.copy();
 	}
 
@@ -80,19 +83,20 @@ public class BootWar extends War implements BootArchive {
 	}
 
 	@Override
-	public String getMainClassName() {
-		if (this.mainClassName == null) {
-			String manifestStartClass = (String) getManifest().getAttributes().get("Start-Class");
-			if (manifestStartClass != null) {
-				setMainClassName(manifestStartClass);
-			}
-		}
-		return this.mainClassName;
+	public Property<String> getMainClass() {
+		return this.mainClass;
 	}
 
 	@Override
-	public void setMainClassName(String mainClass) {
-		this.mainClassName = mainClass;
+	@Deprecated
+	public String getMainClassName() {
+		return this.mainClass.getOrNull();
+	}
+
+	@Override
+	@Deprecated
+	public void setMainClassName(String mainClassName) {
+		this.mainClass.set(mainClassName);
 	}
 
 	@Override

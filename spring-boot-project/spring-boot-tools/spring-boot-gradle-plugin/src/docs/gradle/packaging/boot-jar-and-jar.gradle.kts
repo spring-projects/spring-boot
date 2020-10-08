@@ -18,5 +18,5 @@ tasks.getByName<BootJar>("bootJar") {
 // end::classifier[]
 
 tasks.getByName<BootJar>("bootJar") {
-	mainClassName = "com.example.Application"
+	mainClass.set("com.example.Application")
 }

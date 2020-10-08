@@ -91,7 +91,7 @@ A number of configuration options that are specific to executable jars and wars 
 ==== Configuring the Main Class
 By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in directories on the task's classpath.
 
-The main class can also be configured explicitly using the task's `mainClassName` property:
+The main class can also be configured explicitly using the task's `mainClass` property:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -105,7 +105,7 @@ include::../gradle/packaging/boot-jar-main-class.gradle[tags=main-class]
 include::../gradle/packaging/boot-jar-main-class.gradle.kts[tags=main-class]
 ----
 
-Alternatively, the main class name can be configured project-wide using the `mainClassName` property of the Spring Boot DSL:
+Alternatively, the main class name can be configured project-wide using the `mainClass` property of the Spring Boot DSL:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

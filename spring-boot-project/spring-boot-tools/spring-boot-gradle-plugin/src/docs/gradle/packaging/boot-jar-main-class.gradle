@@ -5,6 +5,6 @@ plugins {
 
 // tag::main-class[]
 bootJar {
-	mainClassName = 'com.example.ExampleApplication'
+	mainClass = 'com.example.ExampleApplication'
 }
 // end::main-class[]

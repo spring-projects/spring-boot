@@ -27,7 +27,7 @@ include::../gradle/running/boot-run-main.gradle[tags=main]
 include::../gradle/running/boot-run-main.gradle.kts[tags=main]
 ----
 
-Alternatively, the main class name can be configured project-wide using the `mainClassName` property of the Spring Boot DSL:
+Alternatively, the main class name can be configured project-wide using the `mainClass` property of the Spring Boot DSL:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy

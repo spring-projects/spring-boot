@@ -107,7 +107,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 				return mainSourceSet.getRuntimeClasspath().minus((developmentOnly.minus(productionRuntimeClasspath)))
 						.filter(new JarTypeFileSpec());
 			});
-			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
+			bootJar.getMainClass().convention(project.provider(() -> {
+				String manifestStartClass = (String) bootJar.getManifest().getAttributes().get("Start-Class");
+				return (manifestStartClass != null) ? manifestStartClass
+						: new MainClassConvention(project, bootJar::getClasspath).call();
+			}));
 		});
 	}
 

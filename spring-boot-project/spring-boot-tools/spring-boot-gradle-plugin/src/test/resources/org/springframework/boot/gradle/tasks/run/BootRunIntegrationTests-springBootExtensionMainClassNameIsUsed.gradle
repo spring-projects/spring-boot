@@ -4,7 +4,7 @@ plugins {
 }
 
 springBoot {
-	mainClassName = 'com.example.CustomMainClass'
+	mainClass = 'com.example.CustomMainClass'
 }
 
 task echoMainClassName {

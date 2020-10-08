@@ -71,7 +71,11 @@ class WarPluginAction implements PluginApplicationAction {
 					.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
 			bootWar.setClasspath(bootWar.getClasspath().minus((developmentOnly.minus(productionRuntimeClasspath)))
 					.filter(new JarTypeFileSpec()));
-			bootWar.conventionMapping("mainClassName", new MainClassConvention(project, bootWar::getClasspath));
+			bootWar.getMainClass().convention(project.provider(() -> {
+				String manifestStartClass = (String) bootWar.getManifest().getAttributes().get("Start-Class");
+				return (manifestStartClass != null) ? manifestStartClass
+						: new MainClassConvention(project, bootWar::getClasspath).call();
+			}));
 		});
 	}
 
