@@ -50,7 +50,7 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
-	static class DataSourceTransactionManagerConfiguration {
+	static class JdbcTransactionManagerConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(TransactionManager.class)
