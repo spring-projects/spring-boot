@@ -52,7 +52,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 			assertThat(jar).isFile();
 			File original = new File(project, "target/build-image-0.0.1.BUILD-SNAPSHOT.jar.original");
 			assertThat(original).doesNotExist();
-			assertThat(buildLog(project)).contains("Building image").contains("paketo-buildpacks/builder")
+			assertThat(buildLog(project)).contains("Building image").contains("paketobuildpacks/builder")
 					.contains("docker.io/library/build-image:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 			ImageReference imageReference = ImageReference.of(ImageName.of("build-image"), "0.0.1.BUILD-SNAPSHOT");
@@ -94,13 +94,13 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 		mavenBuild.project("build-image").goals("package")
 				.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
 				.systemProperty("spring-boot.build-image.builder",
-						"gcr.io/paketo-buildpacks/builder:full-cf-platform-api-0.3")
-				.systemProperty("spring-boot.build-image.runImage", "gcr.io/paketo-buildpacks/run:full-cnb-cf")
+						"paketobuildpacks/builder:full")
+				.systemProperty("spring-boot.build-image.runImage", "paketobuildpacks/run:full-cnb")
 				.execute((project) -> {
 					assertThat(buildLog(project)).contains("Building image")
 							.contains("example.com/test/cmd-property-name:v1")
-							.contains("paketo-buildpacks/builder:full-cf-platform-api-0.3")
-							.contains("paketo-buildpacks/run:full-cnb-cf").contains("Successfully built image");
+							.contains("paketobuildpacks/builder:full")
+							.contains("paketobuildpacks/run:full-cnb").contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of("example.com/test/cmd-property-name:v1");
 					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -115,8 +115,8 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void whenBuildImageIsInvokedWithCustomBuilderImageAndRunImage(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-custom-builder").goals("package").execute((project) -> {
 			assertThat(buildLog(project)).contains("Building image")
-					.contains("paketo-buildpacks/builder:full-cf-platform-api-0.3")
-					.contains("paketo-buildpacks/run:full-cnb-cf")
+					.contains("paketobuildpacks/builder:full")
+					.contains("paketobuildpacks/run:full-cnb")
 					.contains("docker.io/library/build-image-v2-builder:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 			ImageReference imageReference = ImageReference
@@ -134,7 +134,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void whenBuildImageIsInvokedWithEmptyEnvEntry(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-empty-env-entry").goals("package").prepare(this::writeLongNameResource)
 				.execute((project) -> {
-					assertThat(buildLog(project)).contains("Building image").contains("paketo-buildpacks/builder")
+					assertThat(buildLog(project)).contains("Building image").contains("paketobuildpacks/builder")
 							.contains("docker.io/library/build-image-empty-env-entry:0.0.1.BUILD-SNAPSHOT")
 							.contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of(ImageName.of("build-image-empty-env-entry"),
