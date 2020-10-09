@@ -301,6 +301,7 @@ public class CacheProperties {
 		public void setEnableStatistics(boolean enableStatistics) {
 			this.enableStatistics = enableStatistics;
 		}
+
 	}
 
 }
