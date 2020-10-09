@@ -183,6 +183,7 @@ The following is an example of {paketo-java-reference}/#configuring-the-jvm-vers
 	</project>
 ----
 
+In a similar way, Paketo Java buildpacks support {paketo-java-reference}/#runtime-jvm-configuration[configuring JVM runtime behavior].
 Refer to the {paketo-java-reference}[Paketo documentation] for additional configuration options supported by Paketo Java buildpacks.
 
 If there is a network proxy between the Docker daemon the builder runs in and network locations that buildpacks download artifacts from, you will need to configure the builder to use the proxy.
