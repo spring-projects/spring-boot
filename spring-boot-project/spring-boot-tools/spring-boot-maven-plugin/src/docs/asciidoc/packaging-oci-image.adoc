@@ -338,7 +338,7 @@ The generated image can be published to a Docker registry by enabling a `publish
 								<password>secret</password>
 								<url>https://docker.example.com/v1/</url>
 								<email>user@example.com</email>
-							</builderpublish>
+							</publishRegistry>
 						</docker>
 					</configuration>
 				</plugin>
