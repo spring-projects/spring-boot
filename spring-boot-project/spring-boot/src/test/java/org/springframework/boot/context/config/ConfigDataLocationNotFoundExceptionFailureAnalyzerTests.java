@@ -17,15 +17,14 @@ class ConfigDataLocationNotFoundExceptionFailureAnalyzerTests {
 	private final ConfigDataLocationNotFoundExceptionFailureAnalyzer analyzer = new ConfigDataLocationNotFoundExceptionFailureAnalyzer();
 
 	@Test
-	void failureAnalysisfor() {
+	void failureAnalysisForConfigDataLocationNotFound() {
 		ConfigDataLocation location = mock(ConfigDataLocation.class);
 		ConfigDataLocationNotFoundException exception = new ConfigDataLocationNotFoundException(location);
 
 		FailureAnalysis result = analyzer.analyze(exception);
 
 		assertThat(result.getDescription()).isEqualTo("Config data location '" + location + "' does not exist");
-		assertThat(result.getAction())
-				.isEqualTo("Make sure a config file is present at the configured path or the path itself is correct.");
+		assertThat(result.getAction()).isNull();
 	}
 
 }
