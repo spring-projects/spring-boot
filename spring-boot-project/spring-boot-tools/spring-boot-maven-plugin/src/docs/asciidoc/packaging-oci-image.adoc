@@ -128,7 +128,7 @@ The following table summarizes the available parameters and their default values
 | `builder`
 | Name of the Builder image to use.
 | `spring-boot.build-image.builder`
-| `gcr.io/paketo-buildpacks/builder:base-platform-api-0.3`
+| `paketobuildpacks/builder:base`
 
 | `runImage`
 | Name of the run image to use.
