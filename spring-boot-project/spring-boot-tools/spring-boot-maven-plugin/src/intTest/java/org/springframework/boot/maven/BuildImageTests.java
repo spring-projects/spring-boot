@@ -93,14 +93,12 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void whenBuildImageIsInvokedWithCommandLineParameters(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image").goals("package")
 				.systemProperty("spring-boot.build-image.imageName", "example.com/test/cmd-property-name:v1")
-				.systemProperty("spring-boot.build-image.builder",
-						"paketobuildpacks/builder:full")
+				.systemProperty("spring-boot.build-image.builder", "paketobuildpacks/builder:full")
 				.systemProperty("spring-boot.build-image.runImage", "paketobuildpacks/run:full-cnb")
 				.execute((project) -> {
 					assertThat(buildLog(project)).contains("Building image")
-							.contains("example.com/test/cmd-property-name:v1")
-							.contains("paketobuildpacks/builder:full")
-							.contains("paketobuildpacks/run:full-cnb").contains("Successfully built image");
+							.contains("example.com/test/cmd-property-name:v1").contains("paketobuildpacks/builder:full")
+							.contains("paketobuildpacks/run:full").contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of("example.com/test/cmd-property-name:v1");
 					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -114,9 +112,8 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	@TestTemplate
 	void whenBuildImageIsInvokedWithCustomBuilderImageAndRunImage(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-custom-builder").goals("package").execute((project) -> {
-			assertThat(buildLog(project)).contains("Building image")
-					.contains("paketobuildpacks/builder:full")
-					.contains("paketobuildpacks/run:full-cnb")
+			assertThat(buildLog(project)).contains("Building image").contains("paketobuildpacks/builder:full")
+					.contains("paketobuildpacks/run:full")
 					.contains("docker.io/library/build-image-v2-builder:0.0.1.BUILD-SNAPSHOT")
 					.contains("Successfully built image");
 			ImageReference imageReference = ImageReference

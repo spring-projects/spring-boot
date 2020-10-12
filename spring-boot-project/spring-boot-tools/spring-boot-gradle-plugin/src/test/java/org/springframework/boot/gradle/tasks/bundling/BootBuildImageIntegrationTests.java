@@ -60,7 +60,7 @@ class BootBuildImageIntegrationTests {
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
-		assertThat(result.getOutput()).contains("paketo-buildpacks/builder");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder");
 		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -77,7 +77,7 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-name");
-		assertThat(result.getOutput()).contains("paketo-buildpacks/builder");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder");
 		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-name"));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -94,8 +94,8 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-custom");
-		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:full-cf-platform-api-0.3");
-		assertThat(result.getOutput()).contains("paketo-buildpacks/run:full-cnb-cf");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder:full");
+		assertThat(result.getOutput()).contains("paketobuildpacks/run:full");
 		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-custom"));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -110,12 +110,11 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=example/test-image-cmd",
-				"--builder=gcr.io/paketo-buildpacks/builder:full-cf-platform-api-0.3",
-				"--runImage=gcr.io/paketo-buildpacks/run:full-cnb-cf");
+				"--builder=paketobuildpacks/builder:full", "--runImage=paketobuildpacks/run:full-cnb");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-cmd");
-		assertThat(result.getOutput()).contains("paketo-buildpacks/builder:full-cf-platform-api-0.3");
-		assertThat(result.getOutput()).contains("paketo-buildpacks/run:full-cnb-cf");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder:full");
+		assertThat(result.getOutput()).contains("paketobuildpacks/run:full");
 		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-cmd"));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
