@@ -91,6 +91,11 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			this.factoryBean.setAutoStartup(this.properties.getStreams().isAutoStartup());
+
+			KafkaProperties.Cleanup cleanup = this.properties.getStreams().getCleanup();
+			if (cleanup != null) {
+				this.factoryBean.setCleanupConfig(cleanup.buildCleanupConfig());
+			}
 		}
 
 	}
