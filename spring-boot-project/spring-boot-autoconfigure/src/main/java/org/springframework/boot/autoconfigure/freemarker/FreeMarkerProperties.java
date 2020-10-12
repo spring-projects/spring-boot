@@ -49,7 +49,7 @@ public class FreeMarkerProperties extends AbstractTemplateViewResolverProperties
 	private String[] templateLoaderPath = new String[] { DEFAULT_TEMPLATE_LOADER_PATH };
 
 	/**
-	 * Whether to prefer file system access for template loading to enables hot detection
+	 * Whether to prefer file system access for template loading to enable hot detection
 	 * of template changes. When a template path is detected as a directory, templates are
 	 * loaded from the directory only and other matching classpath locations will not be
 	 * considered.

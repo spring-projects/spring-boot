@@ -137,9 +137,9 @@ This example shows how you can customize the port in case `9001` is already used
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<version>{gradle-project-version}</version>
-                    <configuration>
-                        <jmxPort>9009</jmxPort>
-                    </configuration>
+					<configuration>
+						<jmxPort>9009</jmxPort>
+					</configuration>
 					<executions>
 						<execution>
 							<id>pre-integration-test</id>
