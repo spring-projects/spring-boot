@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -241,6 +241,17 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getBuilderCustomizers()).hasSize(1);
 		});
+	}
+
+	@Test
+	void undertowServletWebServerFactoryCustomizerIsAutoConfigured() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
+						.withPropertyValues("server.port:0");
+		runner.run((context) -> assertThat(context).hasSingleBean(UndertowServletWebServerFactoryCustomizer.class));
 	}
 
 	@Test

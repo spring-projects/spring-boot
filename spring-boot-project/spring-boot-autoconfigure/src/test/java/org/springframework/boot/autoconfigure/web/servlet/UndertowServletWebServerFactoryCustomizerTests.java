@@ -16,29 +16,28 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * {@link WebServerFactoryCustomizer} to apply {@link ServerProperties} to Undertow
- * Servlet web servers.
+ * Tests for {@link UndertowServletWebServerFactoryCustomizer}
  *
  * @author Andy Wilkinson
- * @since 2.1.7
  */
-public class UndertowServletWebServerFactoryCustomizer
-		implements WebServerFactoryCustomizer<UndertowServletWebServerFactory> {
+class UndertowServletWebServerFactoryCustomizerTests {
 
-	private final ServerProperties serverProperties;
-
-	public UndertowServletWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		this.serverProperties = serverProperties;
-	}
-
-	@Override
-	public void customize(UndertowServletWebServerFactory factory) {
-		factory.setEagerInitFilters(this.serverProperties.getUndertow().isEagerFilterInit());
+	@Test
+	void eagerFilterInitCanBeDisabled() {
+		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory(0);
+		assertThat(factory.isEagerInitFilters()).isTrue();
+		ServerProperties serverProperties = new ServerProperties();
+		serverProperties.getUndertow().setEagerFilterInit(false);
+		new UndertowServletWebServerFactoryCustomizer(serverProperties).customize(factory);
+		assertThat(factory.isEagerInitFilters()).isFalse();
 	}
 
 }
