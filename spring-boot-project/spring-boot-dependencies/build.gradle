@@ -1290,7 +1290,7 @@ bom {
 			]
 		}
 	}
-	library("QueryDSL", "4.3.1") {
+	library("QueryDSL", "4.4.0") {
 		group("com.querydsl") {
 			modules = [
 				"querydsl-apt",
