@@ -244,6 +244,17 @@ class ServletWebServerFactoryAutoConfigurationTests {
 	}
 
 	@Test
+	void undertowServletWebServerFactoryCustomizerIsAutoConfigured() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
+						.withPropertyValues("server.port:0");
+		runner.run((context) -> assertThat(context).hasSingleBean(UndertowServletWebServerFactoryCustomizer.class));
+	}
+
+	@Test
 	void tomcatConnectorCustomizerBeanIsAddedToFactory() {
 		WebApplicationContextRunner runner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
