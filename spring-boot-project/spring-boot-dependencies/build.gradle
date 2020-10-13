@@ -929,7 +929,7 @@ bom {
 			]
 		}
 	}
-	library("Lettuce", "6.0.0.RC2") {
+	library("Lettuce", "6.0.0.RELEASE") {
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
