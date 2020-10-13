@@ -312,6 +312,12 @@ public class FlywayProperties {
 	private String oracleKerberosConfigFile;
 
 	/**
+	 * Whether Flyway should output a table with the results of queries when executing
+	 * migrations. Requires Flyway Teams.
+	 */
+	private boolean outputQueryResults = true;
+
+	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
 	 * the schema history table. Requires Flyway teams.
 	 */
@@ -735,6 +741,14 @@ public class FlywayProperties {
 
 	public void setOracleKerberosConfigFile(String oracleKerberosConfigFile) {
 		this.oracleKerberosConfigFile = oracleKerberosConfigFile;
+	}
+
+	public boolean isOutputQueryResults() {
+		return this.outputQueryResults;
+	}
+
+	public void setOutputQueryResults(boolean outputQueryResults) {
+		this.outputQueryResults = outputQueryResults;
 	}
 
 	public Boolean getSkipExecutingMigrations() {
