@@ -1626,7 +1626,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.4.0") {
+	library("Spring Security", "5.4.1") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
