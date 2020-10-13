@@ -233,6 +233,9 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getOracleKerberosConfigFile()).whenNonNull()
 					.to((configFile) -> configuration.orackeKerberosConfigFile(configFile));
 			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getOutputQueryResults()).whenNonNull()
+					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
+			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getSkipExecutingMigrations()).whenNonNull()
 					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
 		}

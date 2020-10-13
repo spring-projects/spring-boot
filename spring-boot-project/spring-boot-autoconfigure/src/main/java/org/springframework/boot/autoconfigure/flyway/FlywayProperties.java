@@ -315,7 +315,7 @@ public class FlywayProperties {
 	 * Whether Flyway should output a table with the results of queries when executing
 	 * migrations. Requires Flyway Teams.
 	 */
-	private boolean outputQueryResults = true;
+	private Boolean outputQueryResults;
 
 	/**
 	 * Whether Flyway should skip executing the contents of the migrations and only update
@@ -743,11 +743,11 @@ public class FlywayProperties {
 		this.oracleKerberosConfigFile = oracleKerberosConfigFile;
 	}
 
-	public boolean isOutputQueryResults() {
+	public Boolean getOutputQueryResults() {
 		return this.outputQueryResults;
 	}
 
-	public void setOutputQueryResults(boolean outputQueryResults) {
+	public void setOutputQueryResults(Boolean outputQueryResults) {
 		this.outputQueryResults = outputQueryResults;
 	}
 

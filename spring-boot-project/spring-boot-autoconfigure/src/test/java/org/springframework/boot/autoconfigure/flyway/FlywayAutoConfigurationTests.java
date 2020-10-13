@@ -564,6 +564,17 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
+	void outputQueryResultsIsCorrectlyMapped() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.output-query-results=false").run((context) -> {
+					assertThat(context).hasFailed();
+					Throwable failure = context.getStartupFailure();
+					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
+					assertThat(failure).hasMessageContaining(" outputQueryResults ");
+				});
+	}
+
+	@Test
 	void skipExecutingMigrationsIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.skip-executing-migrations=true").run((context) -> {
