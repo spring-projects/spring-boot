@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 @ClassPathExclusions("kotlin-daemon-client-*.jar")
-public class SpringBootPluginTests {
+class SpringBootPluginTests {
 
 	@TempDir
 	File temp;
