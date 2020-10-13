@@ -21,12 +21,12 @@ import org.apache.commons.logging.Log;
 import org.springframework.core.log.LogMessage;
 
 /**
- * Action to take when an uncaught {@link ConfigDataLocationNotFoundException} is thrown.
+ * Action to take when an uncaught {@link ConfigDataNotFoundException} is thrown.
  *
  * @author Phillip Webb
  * @since 2.4.0
  */
-public enum ConfigDataLocationNotFoundAction {
+public enum ConfigDataNotFoundAction {
 
 	/**
 	 * Throw the exception to fail startup.
@@ -34,7 +34,7 @@ public enum ConfigDataLocationNotFoundAction {
 	FAIL {
 
 		@Override
-		void handle(Log logger, Object location, ConfigDataLocationNotFoundException ex) {
+		void handle(Log logger, ConfigDataNotFoundException ex) {
 			throw ex;
 		}
 
@@ -46,19 +46,17 @@ public enum ConfigDataLocationNotFoundAction {
 	IGNORE {
 
 		@Override
-		void handle(Log logger, Object location, ConfigDataLocationNotFoundException ex) {
-			logger.trace(LogMessage.format("Ignoring missing resource from location %s", location));
+		void handle(Log logger, ConfigDataNotFoundException ex) {
+			logger.trace(LogMessage.format("Ignoring missing config data %s", ex.getReferenceDescription()));
 		}
 
 	};
 
 	/**
 	 * Handle the given exception.
-	 * @param logger the logger used for output
-	 * @param location the location being checked (a {@link ConfigDataLocation} or
-	 * {@code String})
+	 * @param logger the logger used for output {@code ConfigDataLocation})
 	 * @param ex the exception to handle
 	 */
-	abstract void handle(Log logger, Object location, ConfigDataLocationNotFoundException ex);
+	abstract void handle(Log logger, ConfigDataNotFoundException ex);
 
 }

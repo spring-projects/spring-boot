@@ -38,19 +38,19 @@ class ConfigTreeConfigDataLocationResolverTests {
 
 	@Test
 	void isResolvableWhenPrefixMatchesReturnsTrue() {
-		assertThat(this.resolver.isResolvable(this.context, "configtree:/etc/config")).isTrue();
+		assertThat(this.resolver.isResolvable(this.context, ConfigDataLocation.of("configtree:/etc/config"))).isTrue();
 	}
 
 	@Test
 	void isResolvableWhenPrefixDoesNotMatchReturnsFalse() {
-		assertThat(this.resolver.isResolvable(this.context, "http://etc/config")).isFalse();
-		assertThat(this.resolver.isResolvable(this.context, "/etc/config")).isFalse();
+		assertThat(this.resolver.isResolvable(this.context, ConfigDataLocation.of("http://etc/config"))).isFalse();
+		assertThat(this.resolver.isResolvable(this.context, ConfigDataLocation.of("/etc/config"))).isFalse();
 	}
 
 	@Test
 	void resolveReturnsConfigVolumeMountLocation() {
-		List<ConfigTreeConfigDataLocation> locations = this.resolver.resolve(this.context, "configtree:/etc/config",
-				false);
+		List<ConfigTreeConfigDataResource> locations = this.resolver.resolve(this.context,
+				ConfigDataLocation.of("configtree:/etc/config"));
 		assertThat(locations.size()).isEqualTo(1);
 		assertThat(locations).extracting(Object::toString)
 				.containsExactly("config tree [" + new File("/etc/config").getAbsolutePath() + "]");

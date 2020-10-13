@@ -378,8 +378,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		List<String> names = StreamSupport.stream(context.getEnvironment().getPropertySources().spliterator(), false)
 				.map(org.springframework.core.env.PropertySource::getName).collect(Collectors.toList());
 		assertThat(names).contains(
-				"Resource config 'classpath:configdata/profiles/testsetprofiles.yml' imported via location \"classpath:configdata/profiles/\" (document #0)",
-				"Resource config 'classpath:configdata/profiles/testsetprofiles.yml' imported via location \"classpath:configdata/profiles/\" (document #1)");
+				"Config resource 'classpath:configdata/profiles/testsetprofiles.yml' via location 'classpath:configdata/profiles/' (document #0)",
+				"Config resource 'classpath:configdata/profiles/testsetprofiles.yml' via location 'classpath:configdata/profiles/' (document #1)");
 	}
 
 	@Test
@@ -406,8 +406,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		String location = "file:src/test/resources/specificlocation.properties";
 		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
 		assertThat(context.getEnvironment()).has(matchingPropertySource(
-				"Resource config 'file:src/test/resources/specificlocation.properties' imported via location \""
-						+ location + "\""));
+				"Config resource 'file:src/test/resources/specificlocation.properties' via location '" + location
+						+ "'"));
 	}
 
 	@Test
@@ -415,8 +415,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		String location = "src/test/resources/specificlocation.properties";
 		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
 		assertThat(context.getEnvironment()).has(matchingPropertySource(
-				"Resource config 'src/test/resources/specificlocation.properties' imported via location \"" + location
-						+ "\""));
+				"Config resource 'src/test/resources/specificlocation.properties' via location '" + location + "'"));
 	}
 
 	@Test
@@ -519,7 +518,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenConfigLocationHasNonOptionalMissingDirectoryThrowsException() {
 		String location = "classpath:application.unknown/";
-		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
+		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
 				.isThrownBy(() -> this.application.run("--spring.config.location=" + location));
 	}
 
@@ -553,13 +552,13 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	@Test
 	void runWhenHasNonOptionalImportThrowsException() {
-		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
+		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class).isThrownBy(
 				() -> this.application.run("--spring.config.location=classpath:missing-appplication.properties"));
 	}
 
 	@Test
 	void runWhenHasNonOptionalImportAndIgnoreNotFoundPropertyDoesNotThrowException() {
-		this.application.run("--spring.config.on-location-not-found=ignore",
+		this.application.run("--spring.config.on-not-found=ignore",
 				"--spring.config.location=classpath:missing-appplication.properties");
 	}
 
@@ -613,6 +612,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 			@Override
 			public boolean matches(ConfigurableEnvironment value) {
+				value.getPropertySources().forEach((ps) -> System.out.println(ps.getName()));
 				return value.getPropertySources().contains(sourceName);
 			}
 

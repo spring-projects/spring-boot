@@ -12,12 +12,12 @@ org.springframework.boot.env.YamlPropertySourceLoader
 # ConfigData Location Resolvers
 org.springframework.boot.context.config.ConfigDataLocationResolver=\
 org.springframework.boot.context.config.ConfigTreeConfigDataLocationResolver,\
-org.springframework.boot.context.config.ResourceConfigDataLocationResolver
+org.springframework.boot.context.config.StandardConfigDataLocationResolver
 
 # ConfigData Loaders
 org.springframework.boot.context.config.ConfigDataLoader=\
 org.springframework.boot.context.config.ConfigTreeConfigDataLoader,\
-org.springframework.boot.context.config.ResourceConfigDataLoader
+org.springframework.boot.context.config.StandardConfigDataLoader
 
 # Run Listeners
 org.springframework.boot.SpringApplicationRunListener=\

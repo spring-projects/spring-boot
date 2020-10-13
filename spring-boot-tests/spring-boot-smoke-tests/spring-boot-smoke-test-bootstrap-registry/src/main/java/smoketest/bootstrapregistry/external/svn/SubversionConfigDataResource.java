@@ -14,26 +14,32 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.context.config;
+package smoketest.bootstrapregistry.external.svn;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.boot.context.config.ConfigDataResource;
 
 /**
- * {@link ConfigDataLocation} wrapper used to indicate that it's optional.
+ * A subversion {@link ConfigDataResource}.
  *
  * @author Phillip Webb
  */
-class OptionalConfigDataLocation extends ConfigDataLocation {
+class SubversionConfigDataResource extends ConfigDataResource {
 
-	private ConfigDataLocation location;
+	private final String location;
 
-	OptionalConfigDataLocation(ConfigDataLocation location) {
+	private final SubversionServerCertificate serverCertificate;
+
+	SubversionConfigDataResource(String location, String serverCertificate) {
 		this.location = location;
+		this.serverCertificate = SubversionServerCertificate.of(serverCertificate);
 	}
 
-	ConfigDataLocation getLocation() {
+	String getLocation() {
 		return this.location;
+	}
+
+	SubversionServerCertificate getServerCertificate() {
+		return this.serverCertificate;
 	}
 
 	@Override
@@ -44,7 +50,7 @@ class OptionalConfigDataLocation extends ConfigDataLocation {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		OptionalConfigDataLocation other = (OptionalConfigDataLocation) obj;
+		SubversionConfigDataResource other = (SubversionConfigDataResource) obj;
 		return this.location.equals(other.location);
 	}
 
@@ -55,18 +61,7 @@ class OptionalConfigDataLocation extends ConfigDataLocation {
 
 	@Override
 	public String toString() {
-		return this.location.toString();
-	}
-
-	static List<ConfigDataLocation> wrapAll(List<ConfigDataLocation> locations) {
-		List<ConfigDataLocation> wrapped = new ArrayList<>(locations.size());
-		locations.forEach((location) -> wrapped.add(new OptionalConfigDataLocation(location)));
-		return wrapped;
-	}
-
-	@SuppressWarnings("unchecked")
-	static <L extends ConfigDataLocation> L unwrap(ConfigDataLocation wrapped) {
-		return (L) ((OptionalConfigDataLocation) wrapped).getLocation();
+		return this.location;
 	}
 
 }

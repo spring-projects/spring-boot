@@ -39,7 +39,6 @@ import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.logging.DeferredLogFactory;
-import org.springframework.boot.origin.Origin;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.ObjectUtils;
 
@@ -114,12 +113,12 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			ConfigDataLocationResolverContext locationResolverContext = new ContributorConfigDataLocationResolverContext(
 					result, contributor, activationContext);
 			ConfigDataLoaderContext loaderContext = new ContributorDataLoaderContext(this);
-			List<String> imports = contributor.getImports();
+			List<ConfigDataLocation> imports = contributor.getImports();
 			this.logger.trace(LogMessage.format("Processing imports %s", imports));
-			Map<ConfigDataLocation, ConfigData> imported = importer.resolveAndLoad(activationContext,
+			Map<ConfigDataResource, ConfigData> imported = importer.resolveAndLoad(activationContext,
 					locationResolverContext, loaderContext, imports);
 			this.logger.trace(LogMessage.of(() -> imported.isEmpty() ? "Nothing imported" : "Imported "
-					+ imported.size() + " location " + ((imported.size() != 1) ? "s" : "") + imported.keySet()));
+					+ imported.size() + " resource " + ((imported.size() != 1) ? "s" : "") + imported.keySet()));
 			ConfigDataEnvironmentContributor contributorAndChildren = contributor.withChildren(importPhase,
 					asContributors(imported));
 			result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapContext,
@@ -148,7 +147,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return contributor.isActive(activationContext) && contributor.hasUnprocessedImports(importPhase);
 	}
 
-	private List<ConfigDataEnvironmentContributor> asContributors(Map<ConfigDataLocation, ConfigData> imported) {
+	private List<ConfigDataEnvironmentContributor> asContributors(Map<ConfigDataResource, ConfigData> imported) {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>(imported.size() * 5);
 		imported.forEach((location, data) -> {
 			for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
@@ -259,18 +258,13 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		}
 
 		@Override
-		public ConfigDataLocation getParent() {
-			return this.contributor.getLocation();
+		public ConfigDataResource getParent() {
+			return this.contributor.getResource();
 		}
 
 		@Override
 		public ConfigurableBootstrapContext getBootstrapContext() {
 			return this.contributors.getBootstrapContext();
-		}
-
-		@Override
-		public Origin getLocationOrigin(String location) {
-			return this.contributor.getImportOrigin(location);
 		}
 
 	}

@@ -19,7 +19,6 @@ package org.springframework.boot.context.config;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.origin.Origin;
 
 /**
  * Context provided to {@link ConfigDataLocationResolver} methods.
@@ -38,11 +37,11 @@ public interface ConfigDataLocationResolverContext {
 	Binder getBinder();
 
 	/**
-	 * Provides access to the parent location that triggered the resolve or {@code null}
-	 * if there is no available parent.
+	 * Provides access to the parent {@link ConfigDataResource} that triggered the resolve
+	 * or {@code null} if there is no available parent.
 	 * @return the parent location
 	 */
-	ConfigDataLocation getParent();
+	ConfigDataResource getParent();
 
 	/**
 	 * Provides access to the {@link ConfigurableBootstrapContext} shared across all
@@ -50,12 +49,5 @@ public interface ConfigDataLocationResolverContext {
 	 * @return the bootstrap context
 	 */
 	ConfigurableBootstrapContext getBootstrapContext();
-
-	/**
-	 * Return the {@link Origin} of a location that's being resolved.
-	 * @param location the location being resolved
-	 * @return the {@link Origin} of the location or {@code null}
-	 */
-	Origin getLocationOrigin(String location);
 
 }

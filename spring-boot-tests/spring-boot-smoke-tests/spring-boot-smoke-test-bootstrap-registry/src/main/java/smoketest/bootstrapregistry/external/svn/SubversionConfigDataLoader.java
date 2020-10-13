@@ -36,7 +36,7 @@ import org.springframework.core.env.PropertySource;
  *
  * @author Phillip Webb
  */
-class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDataLocation> {
+class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDataResource> {
 
 	private static final ApplicationListener<BootstrapContextClosedEvent> closeListener = SubversionConfigDataLoader::onBootstrapContextClosed;
 
@@ -50,12 +50,12 @@ class SubversionConfigDataLoader implements ConfigDataLoader<SubversionConfigDat
 	}
 
 	@Override
-	public ConfigData load(ConfigDataLoaderContext context, SubversionConfigDataLocation location)
+	public ConfigData load(ConfigDataLoaderContext context, SubversionConfigDataResource resource)
 			throws IOException, ConfigDataLocationNotFoundException {
 		context.getBootstrapContext().registerIfAbsent(SubversionServerCertificate.class,
-				InstanceSupplier.of(location.getServerCertificate()));
+				InstanceSupplier.of(resource.getServerCertificate()));
 		SubversionClient client = context.getBootstrapContext().get(SubversionClient.class);
-		String loaded = client.load(location.getLocation());
+		String loaded = client.load(resource.getLocation());
 		PropertySource<?> propertySource = new MapPropertySource("svn", Collections.singletonMap("svn", loaded));
 		return new ConfigData(Collections.singleton(propertySource));
 	}

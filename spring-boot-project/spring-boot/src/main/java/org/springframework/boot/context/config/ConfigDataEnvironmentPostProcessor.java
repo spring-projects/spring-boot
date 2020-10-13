@@ -53,9 +53,9 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	/**
 	 * Property used to determine what action to take when a
 	 * {@code ConfigDataLocationNotFoundException} is thrown.
-	 * @see ConfigDataLocationNotFoundAction
+	 * @see ConfigDataNotFoundAction
 	 */
-	public static final String ON_LOCATION_NOT_FOUND_PROPERTY = ConfigDataEnvironment.ON_LOCATION_NOT_FOUND_PROPERTY;
+	public static final String ON_LOCATION_NOT_FOUND_PROPERTY = ConfigDataEnvironment.ON_NOT_FOUND_PROPERTY;
 
 	private final DeferredLogFactory logFactory;
 

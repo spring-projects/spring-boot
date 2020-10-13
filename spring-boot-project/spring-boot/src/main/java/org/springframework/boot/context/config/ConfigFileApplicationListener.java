@@ -426,23 +426,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private void load(Profile profile, DocumentFilterFactory filterFactory, DocumentConsumer consumer) {
 			getSearchLocations().forEach((location) -> {
+				String nonOptionalLocation = ConfigDataLocation.of(location).getValue();
 				boolean isDirectory = location.endsWith("/");
 				Set<String> names = isDirectory ? getSearchNames() : NO_SEARCH_NAMES;
-				names.forEach((name) -> load(stripOptionalPrefix(location), name, profile, filterFactory, consumer));
+				names.forEach((name) -> load(nonOptionalLocation, name, profile, filterFactory, consumer));
 			});
-		}
-
-		/**
-		 * Strip the optional prefix from the location. When using the legacy method, all
-		 * locations are optional.
-		 * @param location the location to strip
-		 * @return the stripped location
-		 */
-		private String stripOptionalPrefix(String location) {
-			if (location != null && location.startsWith(ConfigDataLocation.OPTIONAL_PREFIX)) {
-				return location.substring(ConfigDataLocation.OPTIONAL_PREFIX.length());
-			}
-			return location;
 		}
 
 		private void load(String location, String name, Profile profile, DocumentFilterFactory filterFactory,
@@ -552,9 +540,9 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			}
 		}
 
-		private String getLocationName(String location, Resource resource) {
-			if (!location.contains("*")) {
-				return location;
+		private String getLocationName(String locationReference, Resource resource) {
+			if (!locationReference.contains("*")) {
+				return locationReference;
 			}
 			if (resource instanceof FileSystemResource) {
 				return ((FileSystemResource) resource).getPath();
@@ -562,24 +550,24 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			return resource.getDescription();
 		}
 
-		private Resource[] getResources(String location) {
+		private Resource[] getResources(String locationReference) {
 			try {
-				if (location.contains("*")) {
-					return getResourcesFromPatternLocation(location);
+				if (locationReference.contains("*")) {
+					return getResourcesFromPatternLocationReference(locationReference);
 				}
-				return new Resource[] { this.resourceLoader.getResource(location) };
+				return new Resource[] { this.resourceLoader.getResource(locationReference) };
 			}
 			catch (Exception ex) {
 				return EMPTY_RESOURCES;
 			}
 		}
 
-		private Resource[] getResourcesFromPatternLocation(String location) throws IOException {
-			String directoryPath = location.substring(0, location.indexOf("*/"));
+		private Resource[] getResourcesFromPatternLocationReference(String locationReference) throws IOException {
+			String directoryPath = locationReference.substring(0, locationReference.indexOf("*/"));
 			Resource resource = this.resourceLoader.getResource(directoryPath);
 			File[] files = resource.getFile().listFiles(File::isDirectory);
 			if (files != null) {
-				String fileName = location.substring(location.lastIndexOf("/") + 1);
+				String fileName = locationReference.substring(locationReference.lastIndexOf("/") + 1);
 				Arrays.sort(files, FILE_COMPARATOR);
 				return Arrays.stream(files).map((file) -> file.listFiles((dir, name) -> name.equals(fileName)))
 						.filter(Objects::nonNull).flatMap((Function<File[], Stream<File>>) Arrays::stream)
@@ -622,7 +610,8 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			}).collect(Collectors.toList());
 		}
 
-		private StringBuilder getDescription(String prefix, String location, Resource resource, Profile profile) {
+		private StringBuilder getDescription(String prefix, String locationReference, Resource resource,
+				Profile profile) {
 			StringBuilder result = new StringBuilder(prefix);
 			try {
 				if (resource != null) {
@@ -630,12 +619,12 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 					result.append("'");
 					result.append(uri);
 					result.append("' (");
-					result.append(location);
+					result.append(locationReference);
 					result.append(")");
 				}
 			}
 			catch (IOException ex) {
-				result.append(location);
+				result.append(locationReference);
 			}
 			if (profile != null) {
 				result.append(" for profile ");

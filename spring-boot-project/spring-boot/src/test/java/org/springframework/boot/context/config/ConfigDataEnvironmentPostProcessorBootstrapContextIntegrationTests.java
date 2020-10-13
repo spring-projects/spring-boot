@@ -51,7 +51,8 @@ class ConfigDataEnvironmentPostProcessorBootstrapContextIntegrationTests {
 			LoaderHelper bean = context.getBean(TestConfigDataBootstrap.LoaderHelper.class);
 			assertThat(bean).isNotNull();
 			assertThat(bean.getBound()).isEqualTo("igotbound");
-			assertThat(bean.getLocation().getResolverHelper().getLocation()).isEqualTo("testbootstrap:test");
+			assertThat(bean.getLocation().getResolverHelper().getLocation())
+					.isEqualTo(ConfigDataLocation.of("testbootstrap:test"));
 		}
 	}
 

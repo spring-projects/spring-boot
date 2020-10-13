@@ -214,11 +214,9 @@ class ConfigDataEnvironmentTests {
 
 		@Override
 		protected ConfigDataLocationResolvers createConfigDataLocationResolvers(DeferredLogFactory logFactory,
-				ConfigurableBootstrapContext bootstrapContext, ConfigDataLocationNotFoundAction locationNotFoundAction,
-				Binder binder, ResourceLoader resourceLoader) {
+				ConfigurableBootstrapContext bootstrapContext, Binder binder, ResourceLoader resourceLoader) {
 			this.configDataLocationResolversBinder = binder;
-			return super.createConfigDataLocationResolvers(logFactory, bootstrapContext, locationNotFoundAction, binder,
-					resourceLoader);
+			return super.createConfigDataLocationResolvers(logFactory, bootstrapContext, binder, resourceLoader);
 		}
 
 		Binder getConfigDataLocationResolversBinder() {

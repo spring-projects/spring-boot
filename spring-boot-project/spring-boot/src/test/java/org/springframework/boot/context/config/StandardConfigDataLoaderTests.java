@@ -29,36 +29,43 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ResourceConfigDataLoader}.
+ * Tests for {@link StandardConfigDataLoader}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class ResourceConfigDataLoaderTests {
+public class StandardConfigDataLoaderTests {
 
-	private ResourceConfigDataLoader loader = new ResourceConfigDataLoader();
+	private StandardConfigDataLoader loader = new StandardConfigDataLoader();
 
 	private ConfigDataLoaderContext loaderContext = mock(ConfigDataLoaderContext.class);
 
 	@Test
 	void loadWhenLocationResultsInMultiplePropertySourcesAddsAllToConfigData() throws IOException {
-		ResourceConfigDataLocation location = new ResourceConfigDataLocation("application.yml",
-				new ClassPathResource("configdata/yaml/application.yml"), null, new YamlPropertySourceLoader());
+		ClassPathResource resource = new ClassPathResource("configdata/yaml/application.yml");
+		StandardConfigDataReference reference = new StandardConfigDataReference(
+				ConfigDataLocation.of("classpath:configdata/yaml/application.yml"), null,
+				"classpath:configdata/yaml/application", null, "yml", new YamlPropertySourceLoader());
+		StandardConfigDataResource location = new StandardConfigDataResource(reference, resource);
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(2);
 		PropertySource<?> source1 = configData.getPropertySources().get(0);
 		PropertySource<?> source2 = configData.getPropertySources().get(1);
-		assertThat(source1.getName()).isEqualTo("application.yml (document #0)");
+		assertThat(source1.getName()).isEqualTo("Config resource 'classpath:configdata/yaml/application.yml' "
+				+ "via location 'classpath:configdata/yaml/application.yml' (document #0)");
 		assertThat(source1.getProperty("foo")).isEqualTo("bar");
-		assertThat(source2.getName()).isEqualTo("application.yml (document #1)");
+		assertThat(source2.getName()).isEqualTo("Config resource 'classpath:configdata/yaml/application.yml' "
+				+ "via location 'classpath:configdata/yaml/application.yml' (document #1)");
 		assertThat(source2.getProperty("hello")).isEqualTo("world");
 	}
 
 	@Test
 	void loadWhenPropertySourceIsEmptyAddsNothingToConfigData() throws IOException {
-		ResourceConfigDataLocation location = new ResourceConfigDataLocation("testproperties.properties",
-				new ClassPathResource("config/0-empty/testproperties.properties"), null,
-				new PropertiesPropertySourceLoader());
+		ClassPathResource resource = new ClassPathResource("config/0-empty/testproperties.properties");
+		StandardConfigDataReference reference = new StandardConfigDataReference(
+				ConfigDataLocation.of("classpath:config/0-empty/testproperties.properties"), null,
+				"config/0-empty/testproperties", null, "properties", new PropertiesPropertySourceLoader());
+		StandardConfigDataResource location = new StandardConfigDataResource(reference, resource);
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(0);
 	}

@@ -35,7 +35,7 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 
 	private final PropertySource<?> propertySource;
 
-	private final ConfigDataLocation location;
+	private final ConfigDataResource location;
 
 	private final String propertyName;
 
@@ -44,12 +44,12 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 	/**
 	 * Create a new {@link InactiveConfigDataAccessException} instance.
 	 * @param propertySource the inactive property source
-	 * @param location the {@link ConfigDataLocation} of the property source or
+	 * @param location the {@link ConfigDataResource} of the property source or
 	 * {@code null} if the source was not loaded from {@link ConfigData}.
 	 * @param propertyName the name of the property
 	 * @param origin the origin or the property or {@code null}
 	 */
-	InactiveConfigDataAccessException(PropertySource<?> propertySource, ConfigDataLocation location,
+	InactiveConfigDataAccessException(PropertySource<?> propertySource, ConfigDataResource location,
 			String propertyName, Origin origin) {
 		super(getMessage(propertySource, location, propertyName, origin), null);
 		this.propertySource = propertySource;
@@ -58,7 +58,7 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 		this.origin = origin;
 	}
 
-	private static String getMessage(PropertySource<?> propertySource, ConfigDataLocation location, String propertyName,
+	private static String getMessage(PropertySource<?> propertySource, ConfigDataResource location, String propertyName,
 			Origin origin) {
 		StringBuilder message = new StringBuilder("Inactive property source '");
 		message.append(propertySource.getName());
@@ -86,11 +86,11 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 	}
 
 	/**
-	 * Return the {@link ConfigDataLocation} of the property source or {@code null} if the
+	 * Return the {@link ConfigDataResource} of the property source or {@code null} if the
 	 * source was not loaded from {@link ConfigData}.
 	 * @return the config data location or {@code null}
 	 */
-	public ConfigDataLocation getLocation() {
+	public ConfigDataResource getLocation() {
 		return this.location;
 	}
 
@@ -121,7 +121,7 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 		ConfigurationProperty property = (source != null) ? source.getConfigurationProperty(name) : null;
 		if (property != null) {
 			PropertySource<?> propertySource = contributor.getPropertySource();
-			ConfigDataLocation location = contributor.getLocation();
+			ConfigDataResource location = contributor.getResource();
 			throw new InactiveConfigDataAccessException(propertySource, location, name.toString(),
 					property.getOrigin());
 		}

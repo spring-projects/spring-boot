@@ -29,9 +29,9 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
 /**
- * Configuration data that has been loaded from an external {@link ConfigDataLocation
- * location} and may ultimately contribute {@link PropertySource property sources} to
- * Spring's {@link Environment}.
+ * Configuration data that has been loaded from a {@link ConfigDataResource} and may
+ * ultimately contribute {@link PropertySource property sources} to Spring's
+ * {@link Environment}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave

@@ -16,32 +16,29 @@
 
 package org.springframework.boot.context.config;
 
+import org.springframework.boot.origin.OriginProvider;
+
 /**
- * Exception throw if a {@link ConfigDataLocation} is not supported.
+ * {@link ConfigDataNotFoundException} thrown when a {@link ConfigData} cannot be found.
  *
  * @author Phillip Webb
- * @author Madhura Bhave
  * @since 2.4.0
  */
-public class UnsupportedConfigDataLocationException extends ConfigDataException {
-
-	private final ConfigDataLocation location;
+public abstract class ConfigDataNotFoundException extends ConfigDataException implements OriginProvider {
 
 	/**
-	 * Create a new {@link UnsupportedConfigDataLocationException} instance.
-	 * @param location the unsupported location
+	 * Create a new {@link ConfigDataNotFoundException} instance.
+	 * @param message the exception message
+	 * @param cause the exception cause
 	 */
-	UnsupportedConfigDataLocationException(ConfigDataLocation location) {
-		super("Unsupported config data location '" + location + "'", null);
-		this.location = location;
+	ConfigDataNotFoundException(String message, Throwable cause) {
+		super(message, cause);
 	}
 
 	/**
-	 * Return the unsupported location reference.
-	 * @return the unsupported location reference
+	 * Return a description of actual referenced item that could not be found.
+	 * @return a description of the referenced items
 	 */
-	public ConfigDataLocation getLocation() {
-		return this.location;
-	}
+	public abstract String getReferenceDescription();
 
 }

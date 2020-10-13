@@ -24,18 +24,18 @@ import org.springframework.boot.env.ConfigTreePropertySource;
 import org.springframework.util.Assert;
 
 /**
- * {@link ConfigDataLocation} backed by a config tree directory.
+ * {@link ConfigDataResource} backed by a config tree directory.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  * @since 2.4.0
  * @see ConfigTreePropertySource
  */
-public class ConfigTreeConfigDataLocation extends ConfigDataLocation {
+public class ConfigTreeConfigDataResource extends ConfigDataResource {
 
 	private final Path path;
 
-	ConfigTreeConfigDataLocation(String path) {
+	ConfigTreeConfigDataResource(String path) {
 		Assert.notNull(path, "Path must not be null");
 		this.path = Paths.get(path).toAbsolutePath();
 	}
@@ -52,7 +52,7 @@ public class ConfigTreeConfigDataLocation extends ConfigDataLocation {
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ConfigTreeConfigDataLocation other = (ConfigTreeConfigDataLocation) obj;
+		ConfigTreeConfigDataResource other = (ConfigTreeConfigDataResource) obj;
 		return Objects.equals(this.path, other.path);
 	}
 

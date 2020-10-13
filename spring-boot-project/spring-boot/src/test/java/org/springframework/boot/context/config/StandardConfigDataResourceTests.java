@@ -18,7 +18,6 @@ package org.springframework.boot.context.config;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
@@ -27,47 +26,34 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link ResourceConfigDataLocation}.
+ * Tests for {@link StandardConfigDataResource}.
  *
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-public class ResourceConfigDataLocationTests {
+public class StandardConfigDataResourceTests {
 
-	private final String location = "location";
+	StandardConfigDataReference reference = mock(StandardConfigDataReference.class);
 
 	private final Resource resource = mock(Resource.class);
 
-	private final PropertySourceLoader propertySourceLoader = mock(PropertySourceLoader.class);
-
 	@Test
-	void constructorWhenNameIsNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ResourceConfigDataLocation(null, this.resource, null, this.propertySourceLoader))
-				.withMessage("Name must not be null");
+	void createWhenReferenceIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(null, this.resource))
+				.withMessage("Reference must not be null");
 	}
 
 	@Test
-	void constructorWhenResourceIsNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ResourceConfigDataLocation(this.location, null, null, this.propertySourceLoader))
+	void createWhenResourceIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new StandardConfigDataResource(this.reference, null))
 				.withMessage("Resource must not be null");
-	}
-
-	@Test
-	void constructorWhenLoaderIsNullThrowsException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new ResourceConfigDataLocation(this.location, this.resource, null, null))
-				.withMessage("PropertySourceLoader must not be null");
 	}
 
 	@Test
 	void equalsWhenResourceIsTheSameReturnsTrue() {
 		Resource resource = new ClassPathResource("config/");
-		ResourceConfigDataLocation location = new ResourceConfigDataLocation("my-location", resource, null,
-				this.propertySourceLoader);
-		ResourceConfigDataLocation other = new ResourceConfigDataLocation("other-location", resource, null,
-				this.propertySourceLoader);
+		StandardConfigDataResource location = new StandardConfigDataResource(this.reference, resource);
+		StandardConfigDataResource other = new StandardConfigDataResource(this.reference, resource);
 		assertThat(location).isEqualTo(other);
 	}
 
@@ -75,10 +61,8 @@ public class ResourceConfigDataLocationTests {
 	void equalsWhenResourceIsDifferentReturnsFalse() {
 		Resource resource1 = new ClassPathResource("config/");
 		Resource resource2 = new ClassPathResource("configdata/");
-		ResourceConfigDataLocation location = new ResourceConfigDataLocation("my-location", resource1, null,
-				this.propertySourceLoader);
-		ResourceConfigDataLocation other = new ResourceConfigDataLocation("other-location", resource2, null,
-				this.propertySourceLoader);
+		StandardConfigDataResource location = new StandardConfigDataResource(this.reference, resource1);
+		StandardConfigDataResource other = new StandardConfigDataResource(this.reference, resource2);
 		assertThat(location).isNotEqualTo(other);
 	}
 

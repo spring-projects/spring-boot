@@ -31,9 +31,10 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ResourceLoader;
 
 /**
- * Strategy interface used to resolve {@link ConfigDataLocation locations} from a String
- * based location address. Implementations should be added as a {@code spring.factories}
- * entries. The following constructor parameter types are supported:
+ * Strategy interface used to resolve {@link ConfigDataLocation locations} into one or
+ * more {@link ConfigDataResource resources}. Implementations should be added as a
+ * {@code spring.factories} entries. The following constructor parameter types are
+ * supported:
  * <ul>
  * <li>{@link Log} - if the resolver needs deferred logging</li>
  * <li>{@link Binder} - if the resolver needs to obtain values from the initial
@@ -47,12 +48,12 @@ import org.springframework.core.io.ResourceLoader;
  * Resolvers may implement {@link Ordered} or use the {@link Order @Order} annotation. The
  * first resolver that supports the given location will be used.
  *
- * @param <L> the location type
+ * @param <R> the location type
  * @author Phillip Webb
  * @author Madhura Bhave
  * @since 2.4.0
  */
-public interface ConfigDataLocationResolver<L extends ConfigDataLocation> {
+public interface ConfigDataLocationResolver<R extends ConfigDataResource> {
 
 	/**
 	 * Returns if the specified location address can be resolved by this resolver.
@@ -60,35 +61,34 @@ public interface ConfigDataLocationResolver<L extends ConfigDataLocation> {
 	 * @param location the location to check.
 	 * @return if the location is supported by this resolver
 	 */
-	boolean isResolvable(ConfigDataLocationResolverContext context, String location);
+	boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location);
 
 	/**
-	 * Resolve a location string into one or more {@link ConfigDataLocation} instances.
+	 * Resolve a {@link ConfigDataLocation} into one or more {@link ConfigDataResource}
+	 * instances.
 	 * @param context the location resolver context
 	 * @param location the location that should be resolved
-	 * @param optional if the location is optional
-	 * @return a list of resolved locations in ascending priority order. If the same key
-	 * is contained in more than one of the location, then the later source will win.
+	 * @return a list of {@link ConfigDataResource resources} in ascending priority order.
 	 * @throws ConfigDataLocationNotFoundException on a non-optional location that cannot
 	 * be found
+	 * @throws ConfigDataResourceNotFoundException if a resolved resource cannot be found
 	 */
-	List<L> resolve(ConfigDataLocationResolverContext context, String location, boolean optional)
-			throws ConfigDataLocationNotFoundException;
+	List<R> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location)
+			throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException;
 
 	/**
-	 * Resolve a location string into one or more {@link ConfigDataLocation} instances
-	 * based on available profiles. This method is called once profiles have been deduced
-	 * from the contributed values. By default this method returns an empty list.
+	 * Resolve a {@link ConfigDataLocation} into one or more {@link ConfigDataResource}
+	 * instances based on available profiles. This method is called once profiles have
+	 * been deduced from the contributed values. By default this method returns an empty
+	 * list.
 	 * @param context the location resolver context
 	 * @param location the location that should be resolved
-	 * @param optional if the location is optional
 	 * @param profiles profile information
-	 * @return a list of resolved locations in ascending priority order.If the same key is
-	 * contained in more than one of the location, then the later source will win.
+	 * @return a list of resolved locations in ascending priority order.
 	 * @throws ConfigDataLocationNotFoundException on a non-optional location that cannot
 	 * be found
 	 */
-	default List<L> resolveProfileSpecific(ConfigDataLocationResolverContext context, String location, boolean optional,
+	default List<R> resolveProfileSpecific(ConfigDataLocationResolverContext context, ConfigDataLocation location,
 			Profiles profiles) throws ConfigDataLocationNotFoundException {
 		return Collections.emptyList();
 	}

@@ -16,23 +16,29 @@
 
 package org.springframework.boot.context.config;
 
-import java.io.IOException;
-
-import org.springframework.core.io.Resource;
-
 /**
- * {@link ConfigDataLoader} for {@link Resource} backed locations.
+ * Result returned from {@link ConfigDataLocationResolvers} containing both the
+ * {@link ConfigDataResource} and the original {@link ConfigDataLocation}.
  *
  * @author Phillip Webb
- * @author Madhura Bhave
- * @since 2.4.0
  */
-public class ResourceConfigDataLoader implements ConfigDataLoader<ResourceConfigDataLocation> {
+class ConfigDataResolutionResult {
 
-	@Override
-	public ConfigData load(ConfigDataLoaderContext context, ResourceConfigDataLocation location) throws IOException {
-		ConfigDataLocationNotFoundException.throwIfDoesNotExist(location, location.getResource());
-		return new ConfigData(location.load());
+	private final ConfigDataLocation location;
+
+	private final ConfigDataResource resource;
+
+	ConfigDataResolutionResult(ConfigDataLocation location, ConfigDataResource resource) {
+		this.location = location;
+		this.resource = resource;
+	}
+
+	ConfigDataLocation getLocation() {
+		return this.location;
+	}
+
+	ConfigDataResource getResource() {
+		return this.resource;
 	}
 
 }
