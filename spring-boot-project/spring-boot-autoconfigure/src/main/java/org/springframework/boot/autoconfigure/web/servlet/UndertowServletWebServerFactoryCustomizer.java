@@ -39,6 +39,7 @@ public class UndertowServletWebServerFactoryCustomizer
 	@Override
 	public void customize(UndertowServletWebServerFactory factory) {
 		factory.setEagerInitFilters(this.serverProperties.getUndertow().isEagerFilterInit());
+		factory.setPreservePathOnForward(this.serverProperties.getUndertow().isPreservePathOnForward());
 	}
 
 }

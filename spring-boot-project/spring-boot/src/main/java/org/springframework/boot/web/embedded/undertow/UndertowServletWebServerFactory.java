@@ -93,6 +93,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private boolean eagerInitFilters = true;
 
+	private boolean preservePathOnForward = false;
+
 	/**
 	 * Create a new {@link UndertowServletWebServerFactory} instance.
 	 */
@@ -261,6 +263,26 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		this.eagerInitFilters = eagerInitFilters;
 	}
 
+	/**
+	 * Return where the request path should be preserved on forward.
+	 * @return {@code true} if the path should be preserved when a request is forwarded,
+	 * otherwise {@code false}.
+	 * @since 2.4.0
+	 */
+	public boolean isPreservePathOnForward() {
+		return this.preservePathOnForward;
+	}
+
+	/**
+	 * Set whether the request path should be preserved on forward.
+	 * @param preservePathOnForward {@code true} if the path should be preserved when a
+	 * request is forwarded, otherwise {@code false}.
+	 * @since 2.4.0
+	 */
+	public void setPreservePathOnForward(boolean preservePathOnForward) {
+		this.preservePathOnForward = preservePathOnForward;
+	}
+
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
 		Builder builder = this.delegate.createBuilder(this);
@@ -283,6 +305,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		deployment.setResourceManager(getDocumentRootResourceManager());
 		deployment.setTempDir(createTempDir("undertow"));
 		deployment.setEagerFilterInit(this.eagerInitFilters);
+		deployment.setPreservePathOnForward(this.preservePathOnForward);
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);

@@ -1548,6 +1548,11 @@ public class ServerProperties {
 		 */
 		private Duration noRequestTimeout;
 
+		/**
+		 * Whether to preserve the path of a request when it is forwarded.
+		 */
+		private boolean preservePathOnForward = false;
+
 		private final Accesslog accesslog = new Accesslog();
 
 		/**
@@ -1673,6 +1678,14 @@ public class ServerProperties {
 
 		public void setNoRequestTimeout(Duration noRequestTimeout) {
 			this.noRequestTimeout = noRequestTimeout;
+		}
+
+		public boolean isPreservePathOnForward() {
+			return this.preservePathOnForward;
+		}
+
+		public void setPreservePathOnForward(boolean preservePathOnForward) {
+			this.preservePathOnForward = preservePathOnForward;
 		}
 
 		public Accesslog getAccesslog() {
