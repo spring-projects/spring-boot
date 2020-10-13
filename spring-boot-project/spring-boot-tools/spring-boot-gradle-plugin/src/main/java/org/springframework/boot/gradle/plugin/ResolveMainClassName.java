@@ -20,21 +20,29 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
 import java.util.Objects;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
+import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.RegularFileProperty;
+import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.Convention;
+import org.gradle.api.plugins.JavaApplication;
 import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.TaskAction;
+import org.gradle.api.tasks.TaskProvider;
 
+import org.springframework.boot.gradle.dsl.SpringBootExtension;
 import org.springframework.boot.loader.tools.MainClassFinder;
 
 /**
@@ -102,11 +110,11 @@ public class ResolveMainClassName extends DefaultTask {
 
 	@TaskAction
 	void resolveAndStoreMainClassName() throws IOException {
-		String mainClassName = resolveMainClassName();
 		File outputFile = this.outputFile.getAsFile().get();
 		outputFile.getParentFile().mkdirs();
-		Files.write(this.outputFile.get().getAsFile().toPath(), mainClassName.getBytes(StandardCharsets.UTF_8),
-				StandardOpenOption.WRITE, StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
+		String mainClassName = resolveMainClassName();
+		Files.write(outputFile.toPath(), mainClassName.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE,
+				StandardOpenOption.CREATE, StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 	private String resolveMainClassName() {
@@ -115,8 +123,7 @@ public class ResolveMainClassName extends DefaultTask {
 			return configuredMainClass;
 		}
 		return getClasspath().filter(File::isDirectory).getFiles().stream().map(this::findMainClass)
-				.filter(Objects::nonNull).findFirst().orElseThrow(() -> new InvalidUserDataException(
-						"Main class name has not been configured and it could not be resolved"));
+				.filter(Objects::nonNull).findFirst().orElse("");
 	}
 
 	private String findMainClass(File file) {
@@ -125,6 +132,60 @@ public class ResolveMainClassName extends DefaultTask {
 		}
 		catch (IOException ex) {
 			return null;
+		}
+	}
+
+	Provider<String> readMainClassName() {
+		return this.outputFile.map((file) -> {
+			if (file.getAsFile().length() == 0) {
+				throw new InvalidUserDataException(
+						"Main class name has not been configured and it could not be resolved");
+			}
+			Path output = file.getAsFile().toPath();
+			try {
+				return new String(Files.readAllBytes(output), StandardCharsets.UTF_8);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException("Failed to read main class name from '" + output + "'");
+			}
+		});
+	}
+
+	static TaskProvider<ResolveMainClassName> registerForTask(String taskName, Project project,
+			FileCollection classpath) {
+		TaskProvider<ResolveMainClassName> resolveMainClassNameProvider = project.getTasks()
+				.register(taskName + "MainClassName", ResolveMainClassName.class, (resolveMainClassName) -> {
+					Convention convention = project.getConvention();
+					resolveMainClassName.setDescription(
+							"Resolves the name of the application's main class for the " + taskName + " task.");
+					resolveMainClassName.setGroup(BasePlugin.BUILD_GROUP);
+					resolveMainClassName.setClasspath(classpath);
+					resolveMainClassName.getConfiguredMainClassName().convention(project.provider(() -> {
+						String javaApplicationMainClass = getJavaApplicationMainClass(convention);
+						if (javaApplicationMainClass != null) {
+							return javaApplicationMainClass;
+						}
+						SpringBootExtension springBootExtension = project.getExtensions()
+								.findByType(SpringBootExtension.class);
+						return springBootExtension.getMainClass().getOrNull();
+					}));
+					resolveMainClassName.getOutputFile()
+							.set(project.getLayout().getBuildDirectory().file(taskName + "MainClassName"));
+				});
+		return resolveMainClassNameProvider;
+	}
+
+	@SuppressWarnings("deprecation")
+	private static String getJavaApplicationMainClass(Convention convention) {
+		JavaApplication javaApplication = convention.findByType(JavaApplication.class);
+		if (javaApplication == null) {
+			return null;
+		}
+		try {
+			return javaApplication.getMainClass().getOrNull();
+		}
+		catch (NoSuchMethodError ex) {
+			return javaApplication.getMainClassName();
 		}
 	}
 
