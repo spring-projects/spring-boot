@@ -32,6 +32,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -119,6 +120,12 @@ class ServletWebServerFactoryConfiguration {
 					.addAll(deploymentInfoCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getBuilderCustomizers().addAll(builderCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
+		}
+
+		@Bean
+		UndertowServletWebServerFactoryCustomizer undertowServletWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new UndertowServletWebServerFactoryCustomizer(serverProperties);
 		}
 
 	}
