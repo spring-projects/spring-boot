@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link ContainerConfig}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ContainerConfigTests extends AbstractJsonTests {
 
@@ -56,6 +57,8 @@ class ContainerConfigTests extends AbstractJsonTests {
 			update.withArgs("-h");
 			update.withLabel("spring", "boot");
 			update.withBind("bind-source", "bind-dest");
+			update.withEnv("name1", "value1");
+			update.withEnv("name2", "value2");
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		containerConfig.writeTo(outputStream);

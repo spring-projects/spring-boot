@@ -42,6 +42,8 @@ class Lifecycle implements Closeable {
 
 	private static final LifecycleVersion LOGGING_MINIMUM_VERSION = LifecycleVersion.parse("0.0.5");
 
+	private static final String PLATFORM_API_VERSION_KEY = "CNB_PLATFORM_API";
+
 	private final BuildLog log;
 
 	private final DockerApi docker;
@@ -79,12 +81,11 @@ class Lifecycle implements Closeable {
 		this.request = request;
 		this.builder = builder;
 		this.lifecycleVersion = LifecycleVersion.parse(builder.getBuilderMetadata().getLifecycle().getVersion());
-		this.platformVersion = ApiVersion.parse(builder.getBuilderMetadata().getLifecycle().getApi().getPlatform());
+		this.platformVersion = getPlatformVersion(builder.getBuilderMetadata().getLifecycle());
 		this.layersVolume = createRandomVolumeName("pack-layers-");
 		this.applicationVolume = createRandomVolumeName("pack-app-");
 		this.buildCacheVolume = createCacheVolumeName(request, ".build");
 		this.launchCacheVolume = createCacheVolumeName(request, ".launch");
-		checkPlatformVersion(this.platformVersion);
 	}
 
 	protected VolumeName createRandomVolumeName(String prefix) {
@@ -95,8 +96,13 @@ class Lifecycle implements Closeable {
 		return VolumeName.basedOn(request.getName(), ImageReference::toLegacyString, "pack-cache-", suffix, 6);
 	}
 
-	private void checkPlatformVersion(ApiVersion platformVersion) {
-		ApiVersions.SUPPORTED_PLATFORMS.assertSupports(platformVersion);
+	private ApiVersion getPlatformVersion(BuilderMetadata.Lifecycle lifecycle) {
+		if (lifecycle.getApis().getPlatform() != null) {
+			String[] supportedVersions = lifecycle.getApis().getPlatform();
+			return ApiVersions.SUPPORTED_PLATFORMS.findLatestSupported(supportedVersions);
+		}
+		String version = lifecycle.getApi().getPlatform();
+		return ApiVersions.SUPPORTED_PLATFORMS.findLatestSupported(version);
 	}
 
 	/**
@@ -133,6 +139,7 @@ class Lifecycle implements Closeable {
 		phase.withBinds(this.applicationVolume, Directory.APPLICATION);
 		phase.withBinds(this.buildCacheVolume, Directory.CACHE);
 		phase.withBinds(this.launchCacheVolume, Directory.LAUNCH_CACHE);
+		phase.withEnv(PLATFORM_API_VERSION_KEY, this.platformVersion.toString());
 		return phase;
 	}
 

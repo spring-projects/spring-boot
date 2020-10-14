@@ -6,6 +6,10 @@
 		"-l",
 		"-h"
 	],
+	"Env": [
+		"name1=value1",
+		"name2=value2"
+	],
 	"Labels": {
 		"spring": "boot"
 	},

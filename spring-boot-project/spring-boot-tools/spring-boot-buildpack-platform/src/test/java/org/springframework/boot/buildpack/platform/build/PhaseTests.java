@@ -117,4 +117,18 @@ class PhaseTests {
 		verifyNoMoreInteractions(update);
 	}
 
+	@Test
+	void applyWhenWithEnvUpdatesConfigurationWithEnv() {
+		Phase phase = new Phase("test", false);
+		phase.withEnv("name1", "value1");
+		phase.withEnv("name2", "value2");
+		Update update = mock(Update.class);
+		phase.apply(update);
+		verify(update).withCommand("/cnb/lifecycle/test");
+		verify(update).withLabel("author", "spring-boot");
+		verify(update).withEnv("name1", "value1");
+		verify(update).withEnv("name2", "value2");
+		verifyNoMoreInteractions(update);
+	}
+
 }

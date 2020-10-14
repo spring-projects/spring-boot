@@ -105,7 +105,7 @@ final class ApiVersion {
 
 	@Override
 	public String toString() {
-		return "v" + this.major + "." + this.minor;
+		return this.major + "." + this.minor;
 	}
 
 	/**
