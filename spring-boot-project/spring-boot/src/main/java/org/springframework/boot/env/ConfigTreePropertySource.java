@@ -25,6 +25,7 @@ import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -192,7 +193,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
-				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isRegularFile).forEach((path) -> {
+				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile).forEach((path) -> {
 					String name = getName(sourceDirectory.relativize(path));
 					if (StringUtils.hasText(name)) {
 						if (options.contains(Option.USE_LOWERCASE_NAMES)) {
@@ -208,8 +209,18 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 			}
 		}
 
-		private static boolean isRegularFile(Path path, BasicFileAttributes attributes) {
-			return attributes.isRegularFile();
+		private static boolean isPropertyFile(Path path, BasicFileAttributes attributes) {
+			return !hasHiddenPathElement(path) && (attributes.isRegularFile() || attributes.isSymbolicLink());
+		}
+
+		private static boolean hasHiddenPathElement(Path path) {
+			Iterator<Path> iterator = path.iterator();
+			while (iterator.hasNext()) {
+				if (iterator.next().toString().startsWith(".")) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private static String getName(Path relativePath) {
