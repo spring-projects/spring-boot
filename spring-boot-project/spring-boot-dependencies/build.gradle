@@ -1191,13 +1191,6 @@ bom {
 			]
 		}
 	}
-	library("NIO Multipart Parser", "1.1.0") {
-		group("org.synchronoss.cloud") {
-			modules = [
-				"nio-multipart-parser"
-			]
-		}
-	}
 	library("OAuth2 OIDC SDK", "8.22") {
 		group("com.nimbusds") {
 			modules = [
