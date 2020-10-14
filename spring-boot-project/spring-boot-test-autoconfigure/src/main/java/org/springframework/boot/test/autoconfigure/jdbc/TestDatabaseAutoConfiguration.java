@@ -80,7 +80,6 @@ public class TestDatabaseAutoConfiguration {
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, registry,
 					"Test Database Auto-configuration can only be used with a ConfigurableListableBeanFactory");
-			process(registry, (ConfigurableListableBeanFactory) registry);
 		}
 
 		@Override
