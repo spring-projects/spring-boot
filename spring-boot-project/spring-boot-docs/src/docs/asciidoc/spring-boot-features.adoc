@@ -7605,6 +7605,9 @@ If that is not what you want, you can disable transaction management for a test 
 	}
 ----
 
+NOTE: Transactional tests are not supported with reactive access.
+If you are using this style, you must configure `@DataNeo4jTest` tests as described above.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-redis-test]]
