@@ -36,6 +36,7 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -50,6 +51,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -337,6 +339,26 @@ class KafkaAutoConfigurationTests {
 							.setAutoStartup(false);
 					verify(context.getBean("&secondStreamsBuilderFactoryBean", StreamsBuilderFactoryBean.class),
 							never()).setAutoStartup(false);
+				});
+	}
+
+	@Test
+	void streamsWithCleanupConfig() {
+		this.contextRunner
+				.withUserConfiguration(EnableKafkaStreamsConfiguration.class, TestKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.cleanup.on-startup=true",
+						"spring.kafka.streams.cleanup.on-shutdown=false")
+				.run((context) -> {
+					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
+							.getBean(StreamsBuilderFactoryBean.class);
+					assertThat(streamsBuilderFactoryBean)
+							.extracting("cleanupConfig", InstanceOfAssertFactories.type(CleanupConfig.class))
+							.satisfies((cleanupConfig) -> {
+								assertThat(cleanupConfig.cleanupOnStart()).isTrue();
+								assertThat(cleanupConfig.cleanupOnStop()).isFalse();
+							});
 				});
 	}
 

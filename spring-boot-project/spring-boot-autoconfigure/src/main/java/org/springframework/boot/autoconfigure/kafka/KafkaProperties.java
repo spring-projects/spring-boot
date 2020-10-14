@@ -37,7 +37,6 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.core.io.Resource;
-import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.listener.ContainerProperties.AckMode;
 import org.springframework.kafka.security.jaas.KafkaJaasLoginModuleInitializer;
 import org.springframework.util.CollectionUtils;
@@ -686,6 +685,8 @@ public class KafkaProperties {
 
 		private final Security security = new Security();
 
+		private final Cleanup cleanup = new Cleanup();
+
 		/**
 		 * Kafka streams application.id property; default spring.application.name.
 		 */
@@ -724,11 +725,6 @@ public class KafkaProperties {
 		private String stateDir;
 
 		/**
-		 * Cleanup configuration for the state stores.
-		 */
-		private Cleanup cleanup;
-
-		/**
 		 * Additional Kafka properties used to configure the streams.
 		 */
 		private final Map<String, String> properties = new HashMap<>();
@@ -739,6 +735,10 @@ public class KafkaProperties {
 
 		public Security getSecurity() {
 			return this.security;
+		}
+
+		public Cleanup getCleanup() {
+			return this.cleanup;
 		}
 
 		public String getApplicationId() {
@@ -795,14 +795,6 @@ public class KafkaProperties {
 
 		public void setStateDir(String stateDir) {
 			this.stateDir = stateDir;
-		}
-
-		public Cleanup getCleanup() {
-			return cleanup;
-		}
-
-		public void setCleanup(Cleanup cleanup) {
-			this.cleanup = cleanup;
 		}
 
 		public Map<String, String> getProperties() {
@@ -1248,6 +1240,36 @@ public class KafkaProperties {
 
 	}
 
+	public static class Cleanup {
+
+		/**
+		 * Cleanup the application’s local state directory on startup.
+		 */
+		private boolean onStartup = false;
+
+		/**
+		 * Cleanup the application’s local state directory on shutdown.
+		 */
+		private boolean onShutdown = true;
+
+		public boolean isOnStartup() {
+			return this.onStartup;
+		}
+
+		public void setOnStartup(boolean onStartup) {
+			this.onStartup = onStartup;
+		}
+
+		public boolean isOnShutdown() {
+			return this.onShutdown;
+		}
+
+		public void setOnShutdown(boolean onShutdown) {
+			this.onShutdown = onShutdown;
+		}
+
+	}
+
 	public enum IsolationLevel {
 
 		/**
@@ -1269,32 +1291,6 @@ public class KafkaProperties {
 
 		public byte id() {
 			return this.id;
-		}
-
-	}
-
-	public static class Cleanup {
-
-		/**
-		 * Cleanup the application's state on start.
-		 */
-		private boolean onStart = false;
-
-		/**
-		 * Cleanup the application's state on stop.
-		 */
-		private boolean onStop = true;
-
-		public CleanupConfig buildCleanupConfig() {
-			return new CleanupConfig(this.onStart, this.onStop);
-		}
-
-		public boolean isOnStart() {
-			return onStart;
-		}
-
-		public boolean isOnStop() {
-			return onStop;
 		}
 
 	}
