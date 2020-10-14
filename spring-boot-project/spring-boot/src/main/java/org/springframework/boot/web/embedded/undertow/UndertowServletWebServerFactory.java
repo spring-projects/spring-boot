@@ -91,7 +91,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private ResourceLoader resourceLoader;
 
-	private boolean eagerInitFilters = true;
+	private boolean eagerFilterInit = true;
 
 	private boolean preservePathOnForward = false;
 
@@ -248,9 +248,11 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * Return if filters should be initialized eagerly.
 	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
 	 * @since 2.0.0
+	 * @deprecated since 2.4.0 in favor of #isEagerFilterInit
 	 */
+	@Deprecated
 	public boolean isEagerInitFilters() {
-		return this.eagerInitFilters;
+		return this.eagerFilterInit;
 	}
 
 	/**
@@ -258,9 +260,30 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
 	 * {@code false}.
 	 * @since 2.0.0
+	 * @deprecated since 2.4.0 in favor of #isEagerFilterInit
 	 */
+	@Deprecated
 	public void setEagerInitFilters(boolean eagerInitFilters) {
-		this.eagerInitFilters = eagerInitFilters;
+		this.eagerFilterInit = eagerInitFilters;
+	}
+
+	/**
+	 * Return if filters should be eagerly initialized.
+	 * @return {@code true} if filters are eagerly initialized, otherwise {@code false}.
+	 * @since 2.4.0
+	 */
+	public boolean isEagerFilterInit() {
+		return this.eagerFilterInit;
+	}
+
+	/**
+	 * Set whether filters should be eagerly initialized.
+	 * @param eagerFilterInit {@code true} if filters are eagerly initialized, otherwise
+	 * {@code false}.
+	 * @since 2.4.0
+	 */
+	public void setEagerFilterInit(boolean eagerFilterInit) {
+		this.eagerFilterInit = eagerFilterInit;
 	}
 
 	/**
@@ -304,7 +327,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
 		deployment.setTempDir(createTempDir("undertow"));
-		deployment.setEagerFilterInit(this.eagerInitFilters);
+		deployment.setEagerFilterInit(this.eagerFilterInit);
 		deployment.setPreservePathOnForward(this.preservePathOnForward);
 		configureMimeMappings(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
