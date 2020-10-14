@@ -4791,6 +4791,17 @@ When Project Reactor is available on the classpath, the reactive style is also a
 
 You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
 
+[NOTE]
+====
+In an application using the reactive style, a `ReactiveTransactionManager` is not auto-configured.
+To enable transaction management, the following bean must be defined in your configuration:
+
+[source,java,indent=0]
+----
+include::{code-examples}/neo4j/Neo4jReactiveTransactionManagerExample.java[tag=configuration]
+----
+====
+
 
 
 [[boot-features-solr]]
