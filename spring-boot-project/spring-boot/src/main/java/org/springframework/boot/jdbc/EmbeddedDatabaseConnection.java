@@ -123,7 +123,8 @@ public enum EmbeddedDatabaseConnection {
 	 * @param driverClass the driver class
 	 * @return true if the driver class is one of the embedded types
 	 */
-	@Deprecated public static boolean isEmbedded(String driverClass) {
+	@Deprecated
+	public static boolean isEmbedded(String driverClass) {
 		return driverClass != null && (matches(HSQL, driverClass) || matches(H2, driverClass)
 				|| matches(DERBY, driverClass) || matches(HSQLDB, driverClass));
 	}
@@ -134,7 +135,7 @@ public enum EmbeddedDatabaseConnection {
 	 * @param url the jdbc url
 	 * @return true if the driver class is one of the embedded types
 	 */
-	public static boolean isEmbedded(String driverClass, String url) {
+	public static boolean isEmbedded(String driverClass, String url){
 		return (driverClass != null && (matches(HSQL, driverClass) || ( matches(H2, driverClass) && !StringUtils.hasText("mem"))
 				|| matches(DERBY, driverClass) || matches(HSQLDB, driverClass)));
 	}

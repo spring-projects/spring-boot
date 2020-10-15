@@ -246,7 +246,6 @@ class LiquibaseAutoConfigurationTests {
 				.run(assertLiquibase((liquibase) -> {
 					DataSource dataSource = liquibase.getDataSource();
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
-					assertThat(((HikariDataSource) dataSource).getUsername()).isEqualTo("sa");
 					assertThat(((HikariDataSource) dataSource).getPassword()).isEqualTo("");
 				}));
 	}
