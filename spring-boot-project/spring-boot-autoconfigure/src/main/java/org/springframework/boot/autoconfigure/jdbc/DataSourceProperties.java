@@ -322,12 +322,13 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * @since 1.4.0
 	 */
 	public String determineUsername() {
-		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName()) && !StringUtils.hasText(determineUrl())) {
-			return "sa";
-		}
-		else {
+		if (StringUtils.hasText(this.username)) {
 			return this.username;
 		}
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+			return "sa";
+		}
+		return null;
 	}
 
 	/**
@@ -349,12 +350,13 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	 * @since 1.4.0
 	 */
 	public String determinePassword() {
-		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName()) && !StringUtils.hasText(determineUrl())) {
-			return "";
-		}
-		else {
+		if (StringUtils.hasText(this.password)) {
 			return this.password;
 		}
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+			return "";
+		}
+		return null;
 	}
 
 	public String getJndiName() {
