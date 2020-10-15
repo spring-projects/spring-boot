@@ -20,6 +20,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 
 import org.springframework.beans.factory.ListableBeanFactory;
+import org.springframework.core.KotlinDetector;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
@@ -120,6 +121,10 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new NumberToDataSizeConverter());
 		registry.addConverter(new StringToFileConverter());
 		registry.addConverter(new InputStreamSourceToByteArrayConverter());
+		registry.addConverter(new StringToPatternConverter());
+		if (KotlinDetector.isKotlinPresent()) {
+			registry.addConverter(StringToRegexConverter.INSTANCE);
+		}
 		registry.addConverterFactory(new LenientStringToEnumConverterFactory());
 		registry.addConverterFactory(new LenientBooleanToEnumConverterFactory());
 	}
