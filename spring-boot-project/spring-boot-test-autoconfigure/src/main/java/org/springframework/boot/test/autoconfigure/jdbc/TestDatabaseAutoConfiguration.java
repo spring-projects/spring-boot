@@ -101,7 +101,7 @@ public class TestDatabaseAutoConfiguration {
 
 		private BeanDefinition createEmbeddedBeanDefinition(boolean primary) {
 			BeanDefinition beanDefinition = new RootBeanDefinition(EmbeddedDataSourceFactoryBean.class);
-			beanDefinition.setPrimary(primary);
+			beanDefinition.setPrimary(true);
 			return beanDefinition;
 		}
 
