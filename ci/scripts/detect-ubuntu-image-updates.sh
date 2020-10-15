@@ -4,7 +4,7 @@ ISSUE_TITLE="Upgrade Ubuntu version in CI images"
 
 ubuntu="focal"
 latest=$( curl -s "https://hub.docker.com/v2/repositories/library/ubuntu/tags/?page_size=1&page=1&name=$ubuntu" | jq -c -r '.results[0].name' | awk '{split($0, parts, "-"); print parts[2]}' )
-current=$( grep "ubuntu:$ubuntu" git-repo/ci/images/spring-boot-ci-image/Dockerfile | awk '{split($0, parts, "-"); print parts[2]}' )
+current=$( grep "ubuntu:$ubuntu" git-repo/ci/images/ci-image/Dockerfile | awk '{split($0, parts, "-"); print parts[2]}' )
 
 if [[ $current = $latest ]]; then
 	echo "Already up-to-date"
