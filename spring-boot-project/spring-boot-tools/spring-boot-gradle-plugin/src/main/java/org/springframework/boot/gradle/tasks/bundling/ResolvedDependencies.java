@@ -19,9 +19,12 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
 
@@ -42,15 +45,19 @@ class ResolvedDependencies {
 	private final Map<Configuration, ResolvedConfigurationDependencies> configurationDependencies = new LinkedHashMap<>();
 
 	void processConfiguration(Configuration configuration) {
+		Set<String> projectDependencyIds = configuration.getAllDependencies().withType(ProjectDependency.class).stream()
+				.map((projectDependency) -> projectDependency.getGroup() + ":" + projectDependency.getName() + ":"
+						+ projectDependency.getVersion())
+				.collect(Collectors.toSet());
 		this.configurationDependencies.put(configuration,
-				new ResolvedConfigurationDependencies(configuration.getResolvedConfiguration()));
+				new ResolvedConfigurationDependencies(projectDependencyIds, configuration.getResolvedConfiguration()));
 	}
 
-	LibraryCoordinates find(File file) {
+	DependencyDescriptor find(File file) {
 		for (ResolvedConfigurationDependencies dependencies : this.configurationDependencies.values()) {
-			LibraryCoordinates coordinates = dependencies.find(file);
-			if (coordinates != null) {
-				return coordinates;
+			DependencyDescriptor dependency = dependencies.find(file);
+			if (dependency != null) {
+				return dependency;
 			}
 		}
 		return null;
@@ -61,19 +68,23 @@ class ResolvedDependencies {
 	 */
 	private static class ResolvedConfigurationDependencies {
 
-		private final Map<File, LibraryCoordinates> artifactCoordinates = new LinkedHashMap<>();
+		private final Map<File, DependencyDescriptor> dependencies = new LinkedHashMap<>();
 
-		ResolvedConfigurationDependencies(ResolvedConfiguration resolvedConfiguration) {
+		ResolvedConfigurationDependencies(Set<String> projectDependencyIds,
+				ResolvedConfiguration resolvedConfiguration) {
 			if (!resolvedConfiguration.hasError()) {
 				for (ResolvedArtifact resolvedArtifact : resolvedConfiguration.getResolvedArtifacts()) {
-					this.artifactCoordinates.put(resolvedArtifact.getFile(),
-							new ModuleVersionIdentifierLibraryCoordinates(resolvedArtifact.getModuleVersion().getId()));
+					ModuleVersionIdentifier id = resolvedArtifact.getModuleVersion().getId();
+					boolean projectDependency = projectDependencyIds
+							.contains(id.getGroup() + ":" + id.getName() + ":" + id.getVersion());
+					this.dependencies.put(resolvedArtifact.getFile(), new DependencyDescriptor(
+							new ModuleVersionIdentifierLibraryCoordinates(id), projectDependency));
 				}
 			}
 		}
 
-		LibraryCoordinates find(File file) {
-			return this.artifactCoordinates.get(file);
+		DependencyDescriptor find(File file) {
+			return this.dependencies.get(file);
 		}
 
 	}
@@ -107,6 +118,30 @@ class ResolvedDependencies {
 		@Override
 		public String toString() {
 			return this.identifier.toString();
+		}
+
+	}
+
+	/**
+	 * Describes a dependency in a {@link ResolvedConfiguration}.
+	 */
+	static final class DependencyDescriptor {
+
+		private final LibraryCoordinates coordinates;
+
+		private final boolean projectDependency;
+
+		private DependencyDescriptor(LibraryCoordinates coordinates, boolean projectDependency) {
+			this.coordinates = coordinates;
+			this.projectDependency = projectDependency;
+		}
+
+		LibraryCoordinates getCoordinates() {
+			return this.coordinates;
+		}
+
+		boolean isProjectDependency() {
+			return this.projectDependency;
 		}
 
 	}

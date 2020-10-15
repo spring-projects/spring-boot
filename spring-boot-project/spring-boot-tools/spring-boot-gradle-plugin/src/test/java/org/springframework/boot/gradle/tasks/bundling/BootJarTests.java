@@ -29,8 +29,11 @@ import java.util.stream.Collectors;
 import java.util.zip.ZipEntry;
 
 import org.gradle.api.Action;
+import org.gradle.api.DomainObjectSet;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.ProjectDependency;
 import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.artifacts.ResolvedArtifact;
 import org.gradle.api.artifacts.ResolvedConfiguration;
@@ -41,6 +44,7 @@ import org.gradle.api.artifacts.component.ProjectComponentIdentifier;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -56,6 +60,7 @@ import static org.mockito.Mockito.mock;
  * @author Scott Frederick
  * @author Paddy Drury
  */
+@ClassPathExclusions("kotlin-daemon-client-*")
 class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
 	BootJarTests() {
@@ -307,6 +312,10 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		given(configuration.getResolvedConfiguration()).willReturn(resolvedConfiguration);
 		ResolvableDependencies resolvableDependencies = mock(ResolvableDependencies.class);
 		given(configuration.getIncoming()).willReturn(resolvableDependencies);
+		DependencySet dependencies = mock(DependencySet.class);
+		DomainObjectSet<ProjectDependency> projectDependencies = mock(DomainObjectSet.class);
+		given(dependencies.withType(ProjectDependency.class)).willReturn(projectDependencies);
+		given(configuration.getAllDependencies()).willReturn(dependencies);
 		willAnswer((invocation) -> {
 			invocation.getArgument(0, Action.class).execute(resolvableDependencies);
 			return null;

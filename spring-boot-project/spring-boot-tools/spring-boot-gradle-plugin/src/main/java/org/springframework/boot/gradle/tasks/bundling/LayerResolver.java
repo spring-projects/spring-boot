@@ -21,9 +21,9 @@ import java.io.File;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
 
+import org.springframework.boot.gradle.tasks.bundling.ResolvedDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
-import org.springframework.boot.loader.tools.LibraryCoordinates;
 
 /**
  * Resolver backed by a {@link LayeredSpec} that provides the destination {@link Layer}
@@ -76,8 +76,10 @@ class LayerResolver {
 
 	private Library asLibrary(FileCopyDetails details) {
 		File file = details.getFile();
-		LibraryCoordinates coordinates = this.resolvedDependencies.find(file);
-		return new Library(null, file, null, coordinates, false);
+		DependencyDescriptor dependency = this.resolvedDependencies.find(file);
+		return (dependency != null)
+				? new Library(null, file, null, dependency.getCoordinates(), false, dependency.isProjectDependency())
+				: new Library(file, null);
 	}
 
 }

@@ -11,27 +11,6 @@ subprojects {
 
 bootJar {
 	mainClass = 'com.example.Application'
-	layered {
-		application {
-			intoLayer("static") {
-				include "META-INF/resources/**", "resources/**", "static/**", "public/**"
-			}
-			intoLayer("app")
-		}
-		dependencies {
-			intoLayer("subproject-dependencies") {
-				includeProjectDependencies()
-			}
-			intoLayer("snapshot-dependencies") {
-				include "*:*:*SNAPSHOT"
-			}
-			intoLayer("commons-dependencies") {
-				include "org.apache.commons:*" 
-			}
-			intoLayer("dependencies")
-		}
-		layerOrder = ["dependencies", "commons-dependencies", "snapshot-dependencies", "subproject-dependencies", "static", "app"]
-	}
 }
 
 repositories {

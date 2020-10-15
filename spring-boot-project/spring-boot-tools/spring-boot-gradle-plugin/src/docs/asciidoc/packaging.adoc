@@ -282,10 +282,10 @@ Layered jars use the same layout as regular boot packaged jars, but include an a
 
 By default, the following layers are defined:
 
-* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
+* `dependencies` for any non-project dependency whose version does not contain `SNAPSHOT`.
 * `spring-boot-loader` for the jar loader classes.
-* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
-* `application` for application classes and resources.
+* `snapshot-dependencies` for any non-project dependency whose version contains `SNAPSHOT`.
+* `application` for project dependencies, application classes, and resources.
 
 The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
 The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
@@ -355,13 +355,15 @@ Any content not claimed by an earlier `intoLayer` closure remains available for 
 The `intoLayer` closure claims content using nested `include` and `exclude` calls.
 The `application` closure uses Ant-style patch matching for include/exclude parameters.
 The `dependencies` section uses `group:artifact[:version]` patterns.
+It also provides `includeProjectDependencies()` and `excludeProjectDependencies()` methods that can be used to include or exclude project dependencies.
 
 If no `include` call is made, then all content (not claimed by an earlier closure) is considered.
 
 If no `exclude` call is made, then no exclusions are applied.
 
-Looking at the `dependencies` closure in the example above, we can see that the first `intoLayer` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
-The subsequent `intoLayer` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
+Looking at the `dependencies` closure in the example above, we can see that the first `intoLayer` will claim all project dependencies for the `application` layer.
+The next `intoLayer` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
+The third and final `intoLayer` will claim anything left (in this case, any dependency that is not a project dependency or a SNAPSHOT) for the `dependencies` layer.
 
 The `application` closure has similar rules.
 First claiming `org/springframework/boot/loader/**` content for the `spring-boot-loader` layer.
