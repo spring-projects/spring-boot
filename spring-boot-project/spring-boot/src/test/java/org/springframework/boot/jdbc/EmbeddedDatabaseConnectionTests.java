@@ -78,4 +78,15 @@ class EmbeddedDatabaseConnectionTests {
 				.withMessageContaining("DatabaseName must not be empty");
 	}
 
+	@Test
+	void isEmbeddedForh2CustomDatabaseName() {
+		assertThat(EmbeddedDatabaseConnection.isEmbedded("org.h2.Driver", "jdbc:h2:~/test")).isFalse();
+	}
+
+	@Test
+	void isEmbeddedForh2EmbeddedDatabaseName() {
+		assertThat(EmbeddedDatabaseConnection.isEmbedded("org.h2.Driver",
+				"jdbc:h2:mem:b3c7d078-1362-4be7-a088-e25dcc3aee32;DB_CLOSE_DELAY=-1")).isTrue();
+	}
+
 }

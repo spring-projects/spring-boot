@@ -28,7 +28,6 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.StringUtils;
 
 /**
  * Connection details for {@link EmbeddedDatabaseType embedded databases}.
@@ -128,17 +127,19 @@ public enum EmbeddedDatabaseConnection {
 		return driverClass != null && (matches(HSQL, driverClass) || matches(H2, driverClass)
 				|| matches(DERBY, driverClass) || matches(HSQLDB, driverClass));
 	}
+
 	/**
-	 * Convenience method to determine if a given driver class name and url represents an embedded
-	 * database type.The exception is made for the H2 database for embedded types.
+	 * Convenience method to determine if a given driver class name and url represents an
+	 * embedded database type.The exception is made for the H2 database for embedded
+	 * types.
 	 * @param driverClass the driver class
 	 * @param url the jdbc url
 	 * @return true if the driver class is one of the embedded types
 	 */
-	public static boolean isEmbedded(String driverClass, String url)
-	{
-		return (driverClass != null && (matches(HSQL, driverClass) || ( matches(H2, driverClass) && !StringUtils.hasText("mem"))
-				|| matches(DERBY, driverClass) || matches(HSQLDB, driverClass)));
+	public static boolean isEmbedded(String driverClass, String url) {
+		return (driverClass != null
+				&& (matches(HSQL, driverClass) || (matches(H2, driverClass) && url.contains(":h2:mem"))
+						|| matches(DERBY, driverClass) || matches(HSQLDB, driverClass)));
 	}
 
 	private static boolean matches(EmbeddedDatabaseConnection candidate, String driverClass) {

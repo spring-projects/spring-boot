@@ -79,6 +79,32 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	void determineIsEmbeddedWithExplicitConfigforH2() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUrl("jdbc:h2:~/test");
+		properties.setUsername("");
+		properties.setPassword("");
+		properties.afterPropertiesSet();
+		assertThat(properties.getUrl()).isEqualTo("jdbc:h2:~/test");
+		assertThat(properties.determineUrl()).isEqualTo("jdbc:h2:~/test");
+		assertThat(properties.determineUsername()).isEqualTo("");
+		assertThat(properties.determinePassword()).isEqualTo("");
+	}
+
+	@Test
+	void determineWithExplicitConfigforH2WithCustomJdbcUrl() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUrl("jdbc:h2:~/test");
+		properties.setUsername("as");
+		properties.setPassword("as");
+		properties.afterPropertiesSet();
+		assertThat(properties.getUrl()).isEqualTo("jdbc:h2:~/test");
+		assertThat(properties.determineUrl()).isEqualTo("jdbc:h2:~/test");
+		assertThat(properties.determineUsername()).isEqualTo("as");
+		assertThat(properties.determinePassword()).isEqualTo("as");
+	}
+
+	@Test
 	void determineUrlWithGenerateUniqueName() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
@@ -95,6 +121,25 @@ class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
 		assertThat(properties.getUsername()).isNull();
+		assertThat(properties.determineUsername()).isEqualTo("sa");
+	}
+
+	@Test
+	void determineUsernameWhenEmpty() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUsername("");
+		properties.afterPropertiesSet();
+		assertThat(properties.getUsername());
+		assertThat(properties.determineUsername()).isEqualTo("sa");
+	}
+
+	@Test
+	void determineUsernameWhenNull() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUsername(null);
+		properties.afterPropertiesSet();
+		assertThat(properties.getUsername());
+		assertThat(properties.determineUsername()).isEqualTo("sa");
 	}
 
 	@Test
