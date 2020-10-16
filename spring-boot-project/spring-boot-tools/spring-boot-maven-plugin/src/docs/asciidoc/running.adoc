@@ -77,7 +77,8 @@ For more details, see <<repackage-example-exclude-dependency,the dedicated examp
 Sometimes it is useful to include test dependencies when running the application.
 For example, if you want to run your application in a test mode that uses stub classes.
 If you wish to do this, you can set the `useTestClasspath` parameter to true.
-Note that this is only applied when you run an application: the `repackage` goal will not add test dependencies to the resulting JAR/WAR.
+
+NOTE: This is only applied when you run an application: the `repackage` goal will not add test dependencies to the resulting JAR/WAR.
 
 include::goals/run.adoc[leveloffset=+1]
 
