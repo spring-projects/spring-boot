@@ -287,7 +287,7 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	/**
-	 * Return where the request path should be preserved on forward.
+	 * Return whether the request path should be preserved on forward.
 	 * @return {@code true} if the path should be preserved when a request is forwarded,
 	 * otherwise {@code false}.
 	 * @since 2.4.0

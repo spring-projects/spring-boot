@@ -24,7 +24,7 @@ import org.springframework.boot.origin.Origin;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ConfigDataNotFoundFailureAnalyzer}
+ * Tests for {@link ConfigDataNotFoundFailureAnalyzer}.
  *
  * @author Michal Mlak
  * @author Phillip Webb
