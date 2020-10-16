@@ -16,10 +16,24 @@
 
 package org.springframework.boot.jdbc;
 
+import java.sql.Connection;
+import java.sql.DatabaseMetaData;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.MethodSource;
+
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link EmbeddedDatabaseConnection}.
@@ -76,6 +90,67 @@ class EmbeddedDatabaseConnectionTests {
 	void getUrlWithEmptyDatabaseNameForHsqldb() {
 		assertThatIllegalArgumentException().isThrownBy(() -> EmbeddedDatabaseConnection.HSQLDB.getUrl("  "))
 				.withMessageContaining("DatabaseName must not be empty");
+	}
+
+	@ParameterizedTest(name = "{1}")
+	@MethodSource("embeddedDriverAndUrlParameters")
+	void isEmbeddedWithDriverAndUrl(EmbeddedDatabaseConnection connection, String url, boolean embedded) {
+		assertThat(EmbeddedDatabaseConnection.isEmbedded(connection.getDriverClassName(), url)).isEqualTo(embedded);
+	}
+
+	static Object[] embeddedDriverAndUrlParameters() {
+		return new Object[] { new Object[] { EmbeddedDatabaseConnection.H2, "jdbc:h2:~/test", false },
+				new Object[] { EmbeddedDatabaseConnection.H2, "jdbc:h2:mem:test;DB_CLOSE_DELAY=-1", true },
+				new Object[] { EmbeddedDatabaseConnection.HSQLDB, "jdbc:hsqldb:hsql://localhost", false },
+				new Object[] { EmbeddedDatabaseConnection.HSQLDB, "jdbc:hsqldb:mem:test", true },
+				new Object[] { EmbeddedDatabaseConnection.DERBY, "jdbc:derby:memory:test", true } };
+	}
+
+	@Test
+	void isEmbeddedWithH2DataSource() {
+		testEmbeddedDatabase(new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2).build());
+	}
+
+	@Test
+	void isEmbeddedWithHsqlDataSource() {
+		testEmbeddedDatabase(new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.HSQL).build());
+	}
+
+	@Test
+	void isEmbeddedWithDerbyDataSource() {
+		testEmbeddedDatabase(new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.DERBY).build());
+	}
+
+	void testEmbeddedDatabase(EmbeddedDatabase database) {
+		try {
+			assertThat(EmbeddedDatabaseConnection.isEmbedded(database)).isTrue();
+		}
+		finally {
+			database.shutdown();
+		}
+	}
+
+	@Test
+	void isEmbeddedWithUnknownDataSource() throws SQLException {
+		assertThat(EmbeddedDatabaseConnection.isEmbedded(mockDataSource("unknown-db", null))).isFalse();
+	}
+
+	@Test
+	void isEmbeddedWithH2File() throws SQLException {
+		assertThat(EmbeddedDatabaseConnection
+				.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), "jdbc:h2:~/test")))
+						.isFalse();
+	}
+
+	DataSource mockDataSource(String productName, String connectionUrl) throws SQLException {
+		DatabaseMetaData metaData = mock(DatabaseMetaData.class);
+		given(metaData.getDatabaseProductName()).willReturn(productName);
+		given(metaData.getURL()).willReturn(connectionUrl);
+		Connection connection = mock(Connection.class);
+		given(connection.getMetaData()).willReturn(metaData);
+		DataSource dataSource = mock(DataSource.class);
+		given(dataSource.getConnection()).willReturn(connection);
+		return dataSource;
 	}
 
 }
