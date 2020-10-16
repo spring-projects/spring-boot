@@ -38,60 +38,100 @@ import org.springframework.util.StringUtils;
  */
 public class Image {
 
-	/**
-	 * The name of the created image.
-	 */
 	String name;
 
-	/**
-	 * The builder used to create the image.
-	 */
 	String builder;
 
-	/**
-	 * The run image used to launch the built image.
-	 */
 	String runImage;
 
-	/**
-	 * Environment properties that should be passed to the builder.
-	 */
 	Map<String, String> env;
 
-	/**
-	 * If the cache should be cleaned before building.
-	 */
 	boolean cleanCache;
 
-	/**
-	 * If verbose logging is required.
-	 */
 	boolean verboseLogging;
 
-	/**
-	 * If images should be pulled from a remote repository during image build.
-	 */
 	PullPolicy pullPolicy;
 
-	/**
-	 * If the built image should be pushed to a registry.
-	 */
 	Boolean publish;
+
+	/**
+	 * The name of the created image.
+	 * @return the image name
+	 */
+	public String getName() {
+		return this.name;
+	}
 
 	void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * The name of the builder image to use to create the image.
+	 * @return the builder image name
+	 */
+	public String getBuilder() {
+		return this.builder;
 	}
 
 	void setBuilder(String builder) {
 		this.builder = builder;
 	}
 
+	/**
+	 * The name of the run image to use to create the image.
+	 * @return the builder image name
+	 */
+	public String getRunImage() {
+		return this.runImage;
+	}
+
 	void setRunImage(String runImage) {
 		this.runImage = runImage;
 	}
 
+	/**
+	 * Environment properties that should be passed to the builder.
+	 * @return the environment properties
+	 */
+	public Map<String, String> getEnv() {
+		return this.env;
+	}
+
+	/**
+	 * If the cache should be cleaned before building.
+	 * @return {@code true} if the cache should be cleaned
+	 */
+	public boolean isCleanCache() {
+		return this.cleanCache;
+	}
+
+	/**
+	 * If verbose logging is required.
+	 * @return {@code true} for verbose logging
+	 */
+	public boolean isVerboseLogging() {
+		return this.verboseLogging;
+	}
+
+	/**
+	 * If images should be pulled from a remote repository during image build.
+	 * @return the pull policy
+	 */
+	public PullPolicy getPullPolicy() {
+		return this.pullPolicy;
+	}
+
 	public void setPullPolicy(PullPolicy pullPolicy) {
 		this.pullPolicy = pullPolicy;
+	}
+
+	/**
+	 * If the built image should be pushed to a registry.
+	 * @return {@code true} if the image should be published
+	 */
+	public Boolean getPublish() {
+		return this.publish;
 	}
 
 	public void setPublish(Boolean publish) {

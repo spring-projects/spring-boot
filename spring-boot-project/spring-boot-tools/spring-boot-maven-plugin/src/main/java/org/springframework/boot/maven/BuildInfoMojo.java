@@ -62,7 +62,7 @@ public class BuildInfoMojo extends AbstractMojo {
 	private MavenProject project;
 
 	/**
-	 * The location of the generated build-info.properties.
+	 * The location of the generated {@code build-info.properties} file.
 	 */
 	@Parameter(defaultValue = "${project.build.outputDirectory}/META-INF/build-info.properties")
 	private File outputFile;
@@ -77,8 +77,8 @@ public class BuildInfoMojo extends AbstractMojo {
 	private String time;
 
 	/**
-	 * Additional properties to store in the build-info.properties. Each entry is prefixed
-	 * by {@code build.} in the generated build-info.properties.
+	 * Additional properties to store in the {@code build-info.properties} file. Each
+	 * entry is prefixed by {@code build.} in the generated {@code build-info.properties}.
 	 */
 	@Parameter
 	private Map<String, String> additionalProperties;

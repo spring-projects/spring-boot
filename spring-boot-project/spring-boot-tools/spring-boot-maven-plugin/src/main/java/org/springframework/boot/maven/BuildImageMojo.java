@@ -100,8 +100,9 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private String classifier;
 
 	/**
-	 * Image configuration, with `builder`, `runImage`, `name`, `env`, `cleanCache`,
-	 * `verboseLogging`, and `publish` options.
+	 * Image configuration, with {@code builder}, {@code runImage}, {@code name},
+	 * {@code env}, {@code cleanCache}, {@code verboseLogging}, {@code pullPolicy}, and
+	 * {@code publish} options.
 	 * @since 2.3.0
 	 */
 	@Parameter

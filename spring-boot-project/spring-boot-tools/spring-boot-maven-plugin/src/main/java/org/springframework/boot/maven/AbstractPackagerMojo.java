@@ -75,7 +75,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 
 	/**
 	 * The name of the main class. If not specified the first compiled class found that
-	 * contains a 'main' method will be used.
+	 * contains a {@code main} method will be used.
 	 * @since 1.0.0
 	 */
 	@Parameter
@@ -83,8 +83,8 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 
 	/**
 	 * The type of archive (which corresponds to how the dependencies are laid out inside
-	 * it). Possible values are JAR, WAR, ZIP, DIR, NONE. Defaults to a guess based on the
-	 * archive type.
+	 * it). Possible values are {@code JAR}, {@code WAR}, {@code ZIP}, {@code DIR},
+	 * {@code NONE}. Defaults to a guess based on the archive type.
 	 * @since 1.0.0
 	 */
 	@Parameter(property = "spring-boot.repackage.layout")
@@ -114,7 +114,8 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	public boolean includeSystemScope;
 
 	/**
-	 * Layer configuration with the option to exclude layer tools jar.
+	 * Layer configuration with options to disable layer creation, exclude layer tools
+	 * jar, and provide a custom layers configuration file.
 	 * @since 2.3.0
 	 */
 	@Parameter
@@ -211,7 +212,7 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 		ZIP(new Expanded()),
 
 		/**
-		 * Dir Layout.
+		 * Directory Layout.
 		 */
 		DIR(new Expanded()),
 

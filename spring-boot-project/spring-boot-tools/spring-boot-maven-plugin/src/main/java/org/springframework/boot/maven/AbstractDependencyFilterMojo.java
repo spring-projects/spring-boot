@@ -40,7 +40,8 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
 	 * Collection of artifact definitions to include. The {@link Include} element defines
-	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
+	 * mandatory {@code groupId} and {@code artifactId} properties and an optional
+	 * mandatory {@code groupId} and {@code artifactId} properties and an optional
 	 * {@code classifier} property.
 	 * @since 1.2.0
 	 */
@@ -49,7 +50,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 
 	/**
 	 * Collection of artifact definitions to exclude. The {@link Exclude} element defines
-	 * a {@code groupId} and {@code artifactId} mandatory properties and an optional
+	 * mandatory {@code groupId} and {@code artifactId} properties and an optional
 	 * {@code classifier} property.
 	 * @since 1.1.0
 	 */
