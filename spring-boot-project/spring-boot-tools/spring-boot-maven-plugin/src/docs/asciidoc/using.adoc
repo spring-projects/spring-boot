@@ -12,7 +12,7 @@ This dependency management lets you omit `<version>` tags for those dependencies
 * Sensible plugin configuration (https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
 
-Note that, since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
+NOTE: Since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
 (You can override that by setting a Maven property called `resource.delimiter`.)
 
 

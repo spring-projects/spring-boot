@@ -239,7 +239,7 @@ You can take control over the name, as shown in the following example:
 	</project>
 ----
 
-Note that this configuration does not provide an explicit tag so `latest` is used.
+NOTE: This configuration does not provide an explicit tag so `latest` is used.
 It is possible to specify a tag as well, either using `${project.version}`, any property available in the build or a hardcoded version.
 
 The image name can be specified on the command line as well, as shown in this example:
