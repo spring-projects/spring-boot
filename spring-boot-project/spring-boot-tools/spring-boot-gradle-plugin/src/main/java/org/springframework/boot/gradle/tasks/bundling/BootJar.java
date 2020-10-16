@@ -124,6 +124,7 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	@Internal
+	@Deprecated
 	protected Iterable<Configuration> getConfigurations() {
 		return getProject().getConfigurations();
 	}
