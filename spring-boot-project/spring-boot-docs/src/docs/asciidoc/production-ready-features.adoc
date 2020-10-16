@@ -379,7 +379,6 @@ See the API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-
 If you deploy applications behind a firewall, you may prefer that all your actuator endpoints can be accessed without requiring authentication.
 You can do so by changing the configprop:management.endpoints.web.exposure.include[] property, as follows:
 
-.application.properties
 [source,yaml,indent=0,configprops,configblocks]
 ----
 	management:
@@ -413,7 +412,6 @@ Endpoints automatically cache responses to read operations that do not take any 
 To configure the amount of time for which an endpoint will cache a response, use its `cache.time-to-live` property.
 The following example sets the time-to-live of the `beans` endpoint's cache to 10 seconds:
 
-.application.properties
 [source,yaml,indent=0,configprops,configblocks]
 ----
 	management:
@@ -1281,7 +1279,6 @@ If you want to map endpoints to a different path, you can use the configprop:man
 
 The following example remaps `/actuator/health` to `/healthcheck`:
 
-.application.properties
 [source,yaml,indent=0,configprops,configblocks]
 ----
 	management:
