@@ -21,7 +21,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.function.Function;
 
-import org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration;
@@ -67,7 +67,7 @@ public final class MetricsRun {
 	}
 
 	private static final AutoConfigurations AUTO_CONFIGURATIONS = AutoConfigurations.of(MetricsAutoConfiguration.class,
-			MeterRegistryAutoConfiguration.class);
+			CompositeMeterRegistryAutoConfiguration.class);
 
 	private MetricsRun() {
 	}

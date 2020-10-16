@@ -36,7 +36,7 @@ import org.springframework.context.annotation.Configuration;
  * @since 2.1.0
  */
 @Configuration(proxyBeanMethods = false)
-@AutoConfigureAfter({ MetricsAutoConfiguration.class, MeterRegistryAutoConfiguration.class })
+@AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @ConditionalOnClass(MeterRegistry.class)
 @ConditionalOnBean(MeterRegistry.class)
 public class SystemMetricsAutoConfiguration {

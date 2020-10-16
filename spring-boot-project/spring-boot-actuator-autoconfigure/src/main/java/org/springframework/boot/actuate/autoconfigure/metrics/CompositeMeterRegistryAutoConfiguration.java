@@ -19,17 +19,20 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 import io.micrometer.core.instrument.composite.CompositeMeterRegistry;
 
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 
 /**
- * Deprecate {@link EnableAutoConfiguration Auto-configuration} for a
- * {@link CompositeMeterRegistry}. Provided only to issue a deprecation warning if used as
- * an exclude.
+ * {@link EnableAutoConfiguration Auto-configuration} for a
+ * {@link CompositeMeterRegistry}.
  *
  * @author Andy Wilkinson
  * @since 2.0.0
- * @deprecated since 2.4.0 in favor of {@link MeterRegistryAutoConfiguration}.
  */
-@Deprecated
+@Configuration(proxyBeanMethods = false)
+@Import({ NoOpMeterRegistryConfiguration.class, CompositeMeterRegistryConfiguration.class })
+@ConditionalOnClass(CompositeMeterRegistry.class)
 public class CompositeMeterRegistryAutoConfiguration {
 
 }

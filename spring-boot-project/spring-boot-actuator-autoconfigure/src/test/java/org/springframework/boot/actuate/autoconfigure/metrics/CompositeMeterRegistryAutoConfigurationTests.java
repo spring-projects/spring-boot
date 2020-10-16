@@ -32,18 +32,18 @@ import org.springframework.context.annotation.Primary;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link MeterRegistryAutoConfiguration}.
+ * Tests for {@link CompositeMeterRegistryAutoConfiguration}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
  */
-class MeterRegistryAutoConfigurationTests {
+class CompositeMeterRegistryAutoConfigurationTests {
 
 	private static final String COMPOSITE_NAME = "compositeMeterRegistry";
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(BaseConfig.class)
-			.withConfiguration(AutoConfigurations.of(MeterRegistryAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(CompositeMeterRegistryAutoConfiguration.class));
 
 	@Test
 	void registerWhenHasNoMeterRegistryShouldRegisterEmptyNoOpComposite() {
