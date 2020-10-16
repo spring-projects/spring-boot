@@ -133,6 +133,9 @@ do as they were designed before this was clarified.
 | https://javers.org[JaVers]
 | https://github.com/javers/javers
 
+| https://www.jobrunr.io[JobRunr]
+| https://github.com/jobrunr/jobrunr
+
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
 
