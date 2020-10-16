@@ -33,8 +33,8 @@ public class Layers {
 	private File configuration;
 
 	/**
-	 * Whether a layers.idx file should be added to the jar.
-	 * @return true if a layers.idx file should be added.
+	 * Whether a {@code layers.idx} file should be added to the jar.
+	 * @return true if a {@code layers.idx} file should be added.
 	 */
 	public boolean isEnabled() {
 		return this.enabled;
