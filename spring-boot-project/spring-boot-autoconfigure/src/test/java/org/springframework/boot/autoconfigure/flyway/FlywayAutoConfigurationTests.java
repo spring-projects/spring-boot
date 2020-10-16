@@ -127,6 +127,7 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					DataSource dataSource = context.getBean(Flyway.class).getConfiguration().getDataSource();
 					assertThat(dataSource).isNotNull();
+					assertThat(dataSource).hasFieldOrPropertyWithValue("user", "sa");
 					assertThat(dataSource).hasFieldOrPropertyWithValue("password", "");
 				});
 	}

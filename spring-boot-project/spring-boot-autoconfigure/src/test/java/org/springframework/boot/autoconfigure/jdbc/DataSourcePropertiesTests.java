@@ -79,32 +79,6 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
-	void determineIsEmbeddedWithExplicitConfigforH2() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setUrl("jdbc:h2:~/test");
-		properties.setUsername("");
-		properties.setPassword("");
-		properties.afterPropertiesSet();
-		assertThat(properties.getUrl()).isEqualTo("jdbc:h2:~/test");
-		assertThat(properties.determineUrl()).isEqualTo("jdbc:h2:~/test");
-		assertThat(properties.determineUsername()).isEqualTo("");
-		assertThat(properties.determinePassword()).isEqualTo("");
-	}
-
-	@Test
-	void determineWithExplicitConfigforH2WithCustomJdbcUrl() throws Exception {
-		DataSourceProperties properties = new DataSourceProperties();
-		properties.setUrl("jdbc:h2:~/test");
-		properties.setUsername("as");
-		properties.setPassword("as");
-		properties.afterPropertiesSet();
-		assertThat(properties.getUrl()).isEqualTo("jdbc:h2:~/test");
-		assertThat(properties.determineUrl()).isEqualTo("jdbc:h2:~/test");
-		assertThat(properties.determineUsername()).isEqualTo("as");
-		assertThat(properties.determinePassword()).isEqualTo("as");
-	}
-
-	@Test
 	void determineUrlWithGenerateUniqueName() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
@@ -152,10 +126,20 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	void determineUsernameWithNonEmbeddedUrl() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUrl("jdbc:h2:~/test");
+		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determineUsername()).isNull();
+	}
+
+	@Test
 	void determinePassword() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.afterPropertiesSet();
 		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determinePassword()).isEqualTo("");
 	}
 
 	@Test
@@ -165,6 +149,15 @@ class DataSourcePropertiesTests {
 		properties.afterPropertiesSet();
 		assertThat(properties.getPassword()).isEqualTo("bar");
 		assertThat(properties.determinePassword()).isEqualTo("bar");
+	}
+
+	@Test
+	void determinePasswordWithNonEmbeddedUrl() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUrl("jdbc:h2:~/test");
+		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determinePassword()).isNull();
 	}
 
 	@Test
