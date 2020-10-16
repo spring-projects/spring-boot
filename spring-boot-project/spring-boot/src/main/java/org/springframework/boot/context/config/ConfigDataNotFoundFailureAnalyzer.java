@@ -33,8 +33,7 @@ class ConfigDataNotFoundFailureAnalyzer extends AbstractFailureAnalyzer<ConfigDa
 	protected FailureAnalysis analyze(Throwable rootFailure, ConfigDataNotFoundException cause) {
 		ConfigDataLocation location = getLocation(cause);
 		Origin origin = Origin.from(location);
-		StringBuilder message = new StringBuilder(
-				String.format("Config data %s does not exist", cause.getReferenceDescription()));
+		String message = String.format("Config data %s does not exist", cause.getReferenceDescription());
 		StringBuilder action = new StringBuilder("Check that the value ");
 		if (location != null) {
 			action.append(String.format("'%s' ", location));
@@ -46,7 +45,7 @@ class ConfigDataNotFoundFailureAnalyzer extends AbstractFailureAnalyzer<ConfigDa
 		if (location != null && !location.isOptional()) {
 			action.append(String.format(", or prefix it with '%s'", ConfigDataLocation.OPTIONAL_PREFIX));
 		}
-		return new FailureAnalysis(message.toString(), action.toString(), cause);
+		return new FailureAnalysis(message, action.toString(), cause);
 	}
 
 	private ConfigDataLocation getLocation(ConfigDataNotFoundException cause) {

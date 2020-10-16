@@ -71,6 +71,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * HSQL Database Connection.
+	 * @since 2.4.0
 	 */
 	HSQLDB(EmbeddedDatabaseType.HSQL, DatabaseDriver.HSQLDB.getDriverClassName(), "org.hsqldb.jdbcDriver",
 			"jdbc:hsqldb:mem:%s", (url) -> url.contains(":hsqldb:mem:"));
