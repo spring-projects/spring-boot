@@ -347,6 +347,7 @@ class BootJarTests extends AbstractBootArchiveTests<TestBootJar> {
 		private Iterable<Configuration> configurations = Collections.emptySet();
 
 		@Override
+		@SuppressWarnings("deprecation")
 		protected Iterable<Configuration> getConfigurations() {
 			return this.configurations;
 		}
