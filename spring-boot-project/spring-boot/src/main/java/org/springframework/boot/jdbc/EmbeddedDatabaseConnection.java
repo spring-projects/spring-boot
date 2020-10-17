@@ -139,7 +139,7 @@ public enum EmbeddedDatabaseConnection {
 	 * database type.
 	 * @param driverClass the driver class
 	 * @return true if the driver class is one of the embedded types
-	 * @deprecated since 2.4.0 in favor of {@link #isEmbedded(String, String)}
+	 * @deprecated since 2.3.5 in favor of {@link #isEmbedded(String, String)}
 	 */
 	@Deprecated
 	public static boolean isEmbedded(String driverClass) {
@@ -154,7 +154,14 @@ public enum EmbeddedDatabaseConnection {
 	 * @return true if the driver class and url refer to an embedded database
 	 */
 	public static boolean isEmbedded(String driverClass, String url) {
-		return driverClass != null && getEmbeddedDatabaseConnection(driverClass).isEmbeddedUrl(url);
+		if (driverClass == null) {
+			return false;
+		}
+		EmbeddedDatabaseConnection connection = getEmbeddedDatabaseConnection(driverClass);
+		if (connection == NONE) {
+			return false;
+		}
+		return (url == null || connection.isEmbeddedUrl(url));
 	}
 
 	private static EmbeddedDatabaseConnection getEmbeddedDatabaseConnection(String driverClass) {
