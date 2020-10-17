@@ -151,6 +151,17 @@ class EmbeddedDatabaseConnectionTests {
 						.isFalse();
 	}
 
+	@Test
+	void isEmbeddedWithMissingDriverClassMetadata() throws SQLException {
+		assertThat(EmbeddedDatabaseConnection.isEmbedded(mockDataSource(null, "jdbc:h2:meme:test"))).isFalse();
+	}
+
+	@Test
+	void isEmbeddedWithMissingUrlMetadata() throws SQLException {
+		assertThat(EmbeddedDatabaseConnection
+				.isEmbedded(mockDataSource(EmbeddedDatabaseConnection.H2.getDriverClassName(), null))).isTrue();
+	}
+
 	DataSource mockDataSource(String productName, String connectionUrl) throws SQLException {
 		DatabaseMetaData metaData = mock(DatabaseMetaData.class);
 		given(metaData.getDatabaseProductName()).willReturn(productName);
