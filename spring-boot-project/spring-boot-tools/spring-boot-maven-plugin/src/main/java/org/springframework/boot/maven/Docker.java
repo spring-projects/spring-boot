@@ -37,30 +37,47 @@ public class Docker {
 
 	private DockerRegistry publishRegistry;
 
+	/**
+	 * The host address of the Docker daemon.
+	 * @return the Docker host
+	 */
 	public String getHost() {
 		return this.host;
 	}
 
-	public void setHost(String host) {
+	void setHost(String host) {
 		this.host = host;
 	}
 
+	/**
+	 * Whether the Docker daemon requires TLS communication.
+	 * @return {@code true} to enable TLS
+	 */
 	public boolean isTlsVerify() {
 		return this.tlsVerify;
 	}
 
-	public void setTlsVerify(boolean tlsVerify) {
+	void setTlsVerify(boolean tlsVerify) {
 		this.tlsVerify = tlsVerify;
 	}
 
+	/**
+	 * The path to TLS certificate and key files required for TLS communication with the
+	 * Docker daemon.
+	 * @return the TLS certificate path
+	 */
 	public String getCertPath() {
 		return this.certPath;
 	}
 
-	public void setCertPath(String certPath) {
+	void setCertPath(String certPath) {
 		this.certPath = certPath;
 	}
 
+	/**
+	 * Configuration of the Docker registry where builder and run images are stored.
+	 * @return the registry configuration
+	 */
 	DockerRegistry getBuilderRegistry() {
 		return this.builderRegistry;
 	}
@@ -70,10 +87,14 @@ public class Docker {
 	 * registry.
 	 * @param builderRegistry the registry configuration
 	 */
-	public void setBuilderRegistry(DockerRegistry builderRegistry) {
+	void setBuilderRegistry(DockerRegistry builderRegistry) {
 		this.builderRegistry = builderRegistry;
 	}
 
+	/**
+	 * Configuration of the Docker registry where the generated image will be published.
+	 * @return the registry configuration
+	 */
 	DockerRegistry getPublishRegistry() {
 		return this.publishRegistry;
 	}
@@ -83,7 +104,7 @@ public class Docker {
 	 * registry.
 	 * @param builderRegistry the registry configuration
 	 */
-	public void setPublishRegistry(DockerRegistry builderRegistry) {
+	void setPublishRegistry(DockerRegistry builderRegistry) {
 		this.publishRegistry = builderRegistry;
 	}
 
@@ -167,43 +188,63 @@ public class Docker {
 			this.token = token;
 		}
 
-		String getUsername() {
+		/**
+		 * The username that will be used for user authentication to the registry.
+		 * @return the username
+		 */
+		public String getUsername() {
 			return this.username;
 		}
 
-		public void setUsername(String username) {
+		void setUsername(String username) {
 			this.username = username;
 		}
 
-		String getPassword() {
+		/**
+		 * The password that will be used for user authentication to the registry.
+		 * @return the password
+		 */
+		public String getPassword() {
 			return this.password;
 		}
 
-		public void setPassword(String password) {
+		void setPassword(String password) {
 			this.password = password;
 		}
 
-		String getEmail() {
+		/**
+		 * The email address that will be used for user authentication to the registry.
+		 * @return the email address
+		 */
+		public String getEmail() {
 			return this.email;
 		}
 
-		public void setEmail(String email) {
+		void setEmail(String email) {
 			this.email = email;
 		}
 
+		/**
+		 * The URL of the registry.
+		 * @return the registry URL
+		 */
 		String getUrl() {
 			return this.url;
 		}
 
-		public void setUrl(String url) {
+		void setUrl(String url) {
 			this.url = url;
 		}
 
-		String getToken() {
+		/**
+		 * The token that will be used for token authentication to the registry.
+		 * @return the authentication token
+		 */
+		public String getToken() {
 			return this.token;
 		}
 
-		public void setToken(String token) {
+		void setToken(String token) {
 			this.token = token;
 		}
 

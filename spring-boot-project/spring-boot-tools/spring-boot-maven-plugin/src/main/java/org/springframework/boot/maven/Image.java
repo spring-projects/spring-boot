@@ -122,7 +122,7 @@ public class Image {
 		return this.pullPolicy;
 	}
 
-	public void setPullPolicy(PullPolicy pullPolicy) {
+	void setPullPolicy(PullPolicy pullPolicy) {
 		this.pullPolicy = pullPolicy;
 	}
 
@@ -134,7 +134,7 @@ public class Image {
 		return this.publish;
 	}
 
-	public void setPublish(Boolean publish) {
+	void setPublish(Boolean publish) {
 		this.publish = publish;
 	}
 
