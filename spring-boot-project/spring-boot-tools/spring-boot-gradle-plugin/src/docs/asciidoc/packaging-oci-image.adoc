@@ -129,7 +129,7 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 |
 
 | `cleanCache`
-|
+| `--cleanCache`
 | Whether to clean the cache before building.
 | `false`
 
