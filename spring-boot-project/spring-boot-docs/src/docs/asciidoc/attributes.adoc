@@ -83,7 +83,7 @@
 :spring-data-solr-docs: https://docs.spring.io/spring-data/solr/docs/{spring-data-solr-version}/reference/html/
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
-:spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/spring-framework-reference
+:spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/reference/html
 :spring-initializr-docs: https://docs.spring.io/initializr/docs/current/reference/html
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
