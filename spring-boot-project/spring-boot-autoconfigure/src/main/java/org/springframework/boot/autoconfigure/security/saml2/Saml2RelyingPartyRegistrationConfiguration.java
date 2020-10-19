@@ -42,7 +42,6 @@ import org.springframework.security.saml2.provider.service.registration.RelyingP
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
-import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -74,8 +73,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
 				.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri()).registrationId(id)
 				: RelyingPartyRegistration.withRegistrationId(id);
-		builder.assertionConsumerServiceLocation(
-				"{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
+		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
+		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
 		builder.assertingPartyDetails(mapIdentityProvider(properties, usingMetadata));
 		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
 				.map(this::asSigningCredential).forEach(credentials::add));
