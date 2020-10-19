@@ -63,7 +63,7 @@ final class MainClassConvention implements Callable<String> {
 		return (javaApplicationMainClass != null) ? javaApplicationMainClass : resolveMainClass();
 	}
 
-	@SuppressWarnings("unchecked")
+	@SuppressWarnings({ "unchecked", "deprecation" })
 	private String getJavaApplicationMainClass() {
 		JavaApplication javaApplication = this.project.getConvention().findByType(JavaApplication.class);
 		if (javaApplication == null) {

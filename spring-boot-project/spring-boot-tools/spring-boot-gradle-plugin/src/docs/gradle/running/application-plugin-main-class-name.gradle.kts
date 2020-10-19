@@ -8,7 +8,7 @@ plugins {
 
 // tag::main-class[]
 application {
-	mainClassName = "com.example.ExampleApplication"
+	mainClass.set("com.example.ExampleApplication")
 }
 // end::main-class[]
 

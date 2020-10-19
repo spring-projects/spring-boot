@@ -55,7 +55,7 @@ class MainClassConventionTests {
 	void javaApplicationExtensionMainClassNameIsUsed() throws Exception {
 		this.project.getPlugins().apply(ApplicationPlugin.class);
 		JavaApplication extension = this.project.getExtensions().findByType(JavaApplication.class);
-		extension.setMainClassName("com.example.MainClass");
+		extension.getMainClass().set("com.example.MainClass");
 		assertThat(this.convention.call()).isEqualTo("com.example.MainClass");
 	}
 
@@ -71,7 +71,7 @@ class MainClassConventionTests {
 	void springBootExtensionMainClassNameIsUsedInPreferenceToJavaApplicationExtensionMainClassName() throws Exception {
 		this.project.getPlugins().apply(ApplicationPlugin.class);
 		JavaApplication javaApplication = this.project.getExtensions().findByType(JavaApplication.class);
-		javaApplication.setMainClassName("com.example.JavaApplicationMainClass");
+		javaApplication.getMainClass().set("com.example.JavaApplicationMainClass");
 		SpringBootExtension extension = this.project.getExtensions().create("springBoot", SpringBootExtension.class,
 				this.project);
 		extension.getMainClass().set("com.example.SpringBootExtensionMainClass");
