@@ -89,6 +89,16 @@ class LifecycleTests {
 	}
 
 	@Test
+	void executeExecutesPhasesWithPlatformApi03() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		createLifecycle("builder-metadata-platform-api-0.3.json").execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-platform-api-0.3.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
 	void executeOnlyUploadsContentOnce() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
@@ -136,7 +146,7 @@ class LifecycleTests {
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
 				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute())
-				.withMessage("Detected platform API versions '0.2' are not included in supported versions '0.3'");
+				.withMessage("Detected platform API versions '0.2' are not included in supported versions '0.3,0.4'");
 	}
 
 	@Test
@@ -145,8 +155,8 @@ class LifecycleTests {
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
 		assertThatIllegalStateException()
-				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute())
-				.withMessage("Detected platform API versions '0.4,0.5' are not included in supported versions '0.3'");
+				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute()).withMessage(
+						"Detected platform API versions '0.5,0.6' are not included in supported versions '0.3,0.4'");
 	}
 
 	@Test

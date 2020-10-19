@@ -134,6 +134,9 @@ class Lifecycle implements Closeable {
 		if (this.request.isCleanCache()) {
 			phase.withArgs("-skip-restore");
 		}
+		if (requiresProcessTypeDefault()) {
+			phase.withArgs("-process-type=web");
+		}
 		phase.withArgs(this.request.getName());
 		phase.withBinds(this.layersVolume, Directory.LAYERS);
 		phase.withBinds(this.applicationVolume, Directory.APPLICATION);
@@ -145,6 +148,10 @@ class Lifecycle implements Closeable {
 
 	private boolean isVerboseLogging() {
 		return this.request.isVerboseLogging() && this.lifecycleVersion.isEqualOrGreaterThan(LOGGING_MINIMUM_VERSION);
+	}
+
+	private boolean requiresProcessTypeDefault() {
+		return this.platformVersion.supports(ApiVersion.of(0, 4));
 	}
 
 	private void run(Phase phase) throws IOException {

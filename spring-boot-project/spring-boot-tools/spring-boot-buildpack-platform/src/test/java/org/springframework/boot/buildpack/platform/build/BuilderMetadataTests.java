@@ -87,7 +87,7 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		assertThat(metadata.getStack().getRunImage().getMirrors()).isEmpty();
 		assertThat(metadata.getLifecycle().getVersion()).isEqualTo("0.7.2");
 		assertThat(metadata.getLifecycle().getApi().getBuildpack()).isEqualTo("0.2");
-		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.3");
+		assertThat(metadata.getLifecycle().getApi().getPlatform()).isEqualTo("0.4");
 		assertThat(metadata.getLifecycle().getApis().getBuildpack()).isNull();
 		assertThat(metadata.getLifecycle().getApis().getPlatform()).isNull();
 	}
