@@ -214,6 +214,7 @@ public class BootBuildImage extends DefaultTask {
 	 * Sets whether caches should be cleaned before packaging.
 	 * @param cleanCache {@code true} to clean the cache, otherwise {@code false}.
 	 */
+	@Option(option = "cleanCache", description = "Clean caches before packaging")
 	public void setCleanCache(boolean cleanCache) {
 		this.cleanCache = cleanCache;
 	}
