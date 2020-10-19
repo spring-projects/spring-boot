@@ -415,7 +415,6 @@ public class SpringApplication {
 	}
 
 	private void refreshContext(ConfigurableApplicationContext context) {
-		refresh((ApplicationContext) context);
 		if (this.registerShutdownHook) {
 			try {
 				context.registerShutdownHook();
@@ -424,6 +423,7 @@ public class SpringApplication {
 				// Not allowed in some environments.
 			}
 		}
+		refresh((ApplicationContext) context);
 	}
 
 	private void configureHeadlessProperty() {
