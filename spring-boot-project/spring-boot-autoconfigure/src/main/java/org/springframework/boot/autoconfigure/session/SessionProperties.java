@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,6 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
-
-import javax.annotation.PostConstruct;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -64,13 +62,6 @@ public class SessionProperties {
 		this.serverProperties = serverProperties.getIfUnique();
 	}
 
-	@PostConstruct
-	public void checkSessionTimeout() {
-		if (this.timeout == null && this.serverProperties != null) {
-			this.timeout = this.serverProperties.getServlet().getSession().getTimeout();
-		}
-	}
-
 	public StoreType getStoreType() {
 		return this.storeType;
 	}
@@ -85,7 +76,8 @@ public class SessionProperties {
 	 * @see Session#getTimeout()
 	 */
 	public Duration getTimeout() {
-		return this.timeout;
+		return (this.timeout == null && this.serverProperties != null)
+				? this.serverProperties.getServlet().getSession().getTimeout() : this.timeout;
 	}
 
 	public void setTimeout(Duration timeout) {
