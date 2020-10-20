@@ -887,6 +887,8 @@ NOTE: You can only run one LiveReload server at a time.
 Before starting your application, ensure that no other LiveReload servers are running.
 If you start multiple applications from your IDE, only the first has LiveReload support.
 
+WARNING: To trigger LiveReload when a file changes, <<using-boot-devtools-restart>> must be enabled.
+
 
 
 [[using-boot-devtools-globalsettings]]
