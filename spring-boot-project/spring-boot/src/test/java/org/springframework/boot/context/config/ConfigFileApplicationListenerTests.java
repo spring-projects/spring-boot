@@ -75,6 +75,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Madhura Bhave
+ * @author Scott Frederick
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ConfigFileApplicationListenerTests {
@@ -1081,6 +1082,16 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	void locationsWithWildcardDirectoriesShouldIgnoreHiddenDirectories() {
+		String location = "file:src/test/resources/config/*/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("fourth.property")).isNull();
+	}
+
+	@Test
 	void locationsWithWildcardDirectoriesShouldLoadAllFilesThatMatch() {
 		String location = "file:src/test/resources/config/*/";
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
@@ -1122,6 +1133,16 @@ class ConfigFileApplicationListenerTests {
 		String second = this.environment.getProperty("second.property");
 		assertThat(first).isEqualTo("apple");
 		assertThat(second).isEqualTo("ball");
+	}
+
+	@Test
+	void locationsWithWildcardFilesShouldIgnoreHiddenDirectories() {
+		String location = "file:src/test/resources/config/*/testproperties.properties";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("fourth.property")).isNull();
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
