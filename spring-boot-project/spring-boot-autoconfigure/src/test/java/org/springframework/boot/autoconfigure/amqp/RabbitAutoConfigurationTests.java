@@ -34,6 +34,7 @@ import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
 
+import org.mockito.InOrder;
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
 import org.springframework.amqp.core.Message;
@@ -75,8 +76,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
-import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.*;
 
 /**
  * Tests for {@link RabbitAutoConfiguration}.
@@ -538,15 +538,21 @@ class RabbitAutoConfigurationTests {
 				.withPropertyValues("spring.rabbitmq.listener.type:direct",
 						"spring.rabbitmq.listener.simple.concurrency:5",
 						"spring.rabbitmq.listener.simple.maxConcurrency:10",
-						"spring.rabbitmq.listener.simple.prefetch:40")
+						"spring.rabbitmq.listener.simple.prefetch:40",
+						"spring.rabbitmq.listener.simple.consumer-batch-enabled:true",
+						"spring.rabbitmq.listener.simple.de-batching-enabled:false")
 				.run((context) -> {
 					SimpleRabbitListenerContainerFactoryConfigurer configurer = context
 							.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
 					SimpleRabbitListenerContainerFactory factory = mock(SimpleRabbitListenerContainerFactory.class);
 					configurer.configure(factory, mock(ConnectionFactory.class));
+					InOrder inOrder = inOrder(factory);
 					verify(factory).setConcurrentConsumers(5);
 					verify(factory).setMaxConcurrentConsumers(10);
 					verify(factory).setPrefetchCount(40);
+					verify(factory).setConsumerBatchEnabled(true);
+					inOrder.verify(factory).setDeBatchingEnabled(false);
+					inOrder.verify(factory).setDeBatchingEnabled(true);
 				});
 	}
 
@@ -555,7 +561,8 @@ class RabbitAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.listener.type:simple",
 						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
-						"spring.rabbitmq.listener.direct.prefetch:40")
+						"spring.rabbitmq.listener.direct.prefetch:40",
+						"spring.rabbitmq.listener.direct.de-batching-enabled:false")
 				.run((context) -> {
 					DirectRabbitListenerContainerFactoryConfigurer configurer = context
 							.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);
@@ -563,6 +570,7 @@ class RabbitAutoConfigurationTests {
 					configurer.configure(factory, mock(ConnectionFactory.class));
 					verify(factory).setConsumersPerQueue(5);
 					verify(factory).setPrefetchCount(40);
+					verify(factory).setDeBatchingEnabled(false);
 				});
 	}
 
