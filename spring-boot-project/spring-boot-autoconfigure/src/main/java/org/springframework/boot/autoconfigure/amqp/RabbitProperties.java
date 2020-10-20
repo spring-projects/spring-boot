@@ -663,6 +663,11 @@ public class RabbitProperties {
 		private Duration idleEventInterval;
 
 		/**
+		 * Whether to present batched messages (created by a BatchingRabbitTemplate) as discrete messages.
+		 */
+		private boolean deBatchingEnabled = true;
+
+		/**
 		 * Optional properties for a retry interceptor.
 		 */
 		private final ListenerRetry retry = new ListenerRetry();
@@ -709,6 +714,14 @@ public class RabbitProperties {
 
 		public abstract boolean isMissingQueuesFatal();
 
+		public boolean isDeBatchingEnabled() {
+			return deBatchingEnabled;
+		}
+
+		public void setDeBatchingEnabled(boolean deBatchingEnabled) {
+			this.deBatchingEnabled = deBatchingEnabled;
+		}
+
 		public ListenerRetry getRetry() {
 			return this.retry;
 		}
@@ -743,6 +756,13 @@ public class RabbitProperties {
 		 */
 		private boolean missingQueuesFatal = true;
 
+		/**
+		 * When true, the container will create a batch of messages based on the 'receiveTimeout' and 'batchSize'.
+		 * Coerces 'deBatchingEnabled' to true to include the contents of a producer created batch in the batch as
+		 * discrete records.
+		 */
+		private boolean consumerBatchEnabled;
+
 		public Integer getConcurrency() {
 			return this.concurrency;
 		}
@@ -774,6 +794,14 @@ public class RabbitProperties {
 
 		public void setMissingQueuesFatal(boolean missingQueuesFatal) {
 			this.missingQueuesFatal = missingQueuesFatal;
+		}
+
+		public boolean isConsumerBatchEnabled() {
+			return consumerBatchEnabled;
+		}
+
+		public void setConsumerBatchEnabled(boolean consumerBatchEnabled) {
+			this.consumerBatchEnabled = consumerBatchEnabled;
 		}
 
 	}
