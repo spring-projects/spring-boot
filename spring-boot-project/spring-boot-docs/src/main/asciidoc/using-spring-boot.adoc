@@ -890,6 +890,7 @@ If you start multiple applications from your IDE, only the first has LiveReload 
 WARNING: To trigger LiveReload when a file changes, <<using-boot-devtools-restart>> must be enabled.
 
 
+
 [[using-boot-devtools-globalsettings]]
 === Global Settings
 You can configure global devtools settings by adding any of the following files to the `$HOME/.config/spring-boot` folder:
