@@ -103,7 +103,7 @@ class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUsername("");
 		properties.afterPropertiesSet();
-		assertThat(properties.getUsername());
+		assertThat(properties.getUsername()).isEqualTo("");
 		assertThat(properties.determineUsername()).isEqualTo("sa");
 	}
 
@@ -112,7 +112,7 @@ class DataSourcePropertiesTests {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUsername(null);
 		properties.afterPropertiesSet();
-		assertThat(properties.getUsername());
+		assertThat(properties.getUsername()).isNull();
 		assertThat(properties.determineUsername()).isEqualTo("sa");
 	}
 
