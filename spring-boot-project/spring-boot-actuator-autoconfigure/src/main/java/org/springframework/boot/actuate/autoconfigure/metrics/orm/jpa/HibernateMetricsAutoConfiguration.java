@@ -26,6 +26,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jpa.HibernateMetrics;
 import org.hibernate.SessionFactory;
 
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
@@ -50,11 +51,25 @@ import org.springframework.util.StringUtils;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
-public class HibernateMetricsAutoConfiguration {
+public class HibernateMetricsAutoConfiguration implements SmartInitializingSingleton {
 
 	private static final String ENTITY_MANAGER_FACTORY_SUFFIX = "entityManagerFactory";
 
+	private Map<String, EntityManagerFactory> entityManagerFactories;
+
+	private MeterRegistry meterRegistry;
+
 	@Autowired
+	void injectDependencies(Map<String, EntityManagerFactory> entityManagerFactories, MeterRegistry meterRegistry) {
+		this.entityManagerFactories = entityManagerFactories;
+		this.meterRegistry = meterRegistry;
+	}
+
+	@Override
+	public void afterSingletonsInstantiated() {
+		bindEntityManagerFactoriesToRegistry(this.entityManagerFactories, this.meterRegistry);
+	}
+
 	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
 			MeterRegistry registry) {
 		entityManagerFactories.forEach((name, factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));
