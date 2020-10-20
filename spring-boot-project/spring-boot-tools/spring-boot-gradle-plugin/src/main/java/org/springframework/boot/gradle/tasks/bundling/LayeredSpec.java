@@ -369,7 +369,7 @@ public class LayeredSpec {
 			List<ContentFilter<Library>> excludeFilters = getExcludes().stream().map(filterFactory)
 					.collect(Collectors.toList());
 			if (this.excludeProjectDependencies) {
-				excludeFilters = new ArrayList<>(includeFilters);
+				excludeFilters = new ArrayList<>(excludeFilters);
 				excludeFilters.add(Library::isLocal);
 			}
 			return new IncludeExcludeContentSelector<>(layer, includeFilters, excludeFilters);

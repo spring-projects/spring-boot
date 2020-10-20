@@ -19,11 +19,12 @@ bootJar {
 			intoLayer("app")
 		}
 		dependencies {
-			intoLayer("subproject-dependencies") {
-				includeProjectDependencies()
-			}
 			intoLayer("snapshot-dependencies") {
 				include "*:*:*SNAPSHOT"
+				excludeProjectDependencies()
+			}
+			intoLayer("subproject-dependencies") {
+				includeProjectDependencies()
 			}
 			intoLayer("commons-dependencies") {
 				include "org.apache.commons:*" 
