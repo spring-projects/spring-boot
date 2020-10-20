@@ -27,6 +27,7 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
@@ -58,12 +59,38 @@ public class ArtifactsLibraries implements Libraries {
 
 	private final Set<Artifact> artifacts;
 
+	private final Collection<MavenProject> localProjects;
+
 	private final Collection<Dependency> unpacks;
 
 	private final Log log;
 
+	/**
+	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
+	 * @param artifacts the artifacts to represent as libraries
+	 * @param unpacks artifacts that should be unpacked on launch
+	 * @param log the log
+	 * @deprecated since 2.4.0 in favour of
+	 * {@link #ArtifactsLibraries(Set, Collection, Collection, Log)}
+	 */
+	@Deprecated
 	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks, Log log) {
+		this(artifacts, Collections.emptyList(), unpacks, log);
+	}
+
+	/**
+	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
+	 * @param artifacts the artifacts to represent as libraries
+	 * @param localProjects projects for which {@link Library#isLocal() local} libraries
+	 * should be created
+	 * @param unpacks artifacts that should be unpacked on launch
+	 * @param log the log
+	 * @since 2.4.0
+	 */
+	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<MavenProject> localProjects,
+			Collection<Dependency> unpacks, Log log) {
 		this.artifacts = artifacts;
+		this.localProjects = localProjects;
 		this.unpacks = unpacks;
 		this.log = log;
 	}
@@ -81,7 +108,8 @@ public class ArtifactsLibraries implements Libraries {
 					this.log.debug("Renamed to: " + name);
 				}
 				LibraryCoordinates coordinates = new ArtifactLibraryCoordinates(artifact);
-				callback.library(new Library(name, artifact.getFile(), scope, coordinates, isUnpackRequired(artifact)));
+				callback.library(new Library(name, artifact.getFile(), scope, coordinates, isUnpackRequired(artifact),
+						isLocal(artifact)));
 			}
 		}
 	}
@@ -103,6 +131,20 @@ public class ArtifactsLibraries implements Libraries {
 			for (Dependency unpack : this.unpacks) {
 				if (artifact.getGroupId().equals(unpack.getGroupId())
 						&& artifact.getArtifactId().equals(unpack.getArtifactId())) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
+	private boolean isLocal(Artifact artifact) {
+		for (MavenProject localProject : this.localProjects) {
+			if (localProject.getArtifact().equals(artifact)) {
+				return true;
+			}
+			for (Artifact attachedArtifact : localProject.getAttachedArtifacts()) {
+				if (attachedArtifact.equals(artifact)) {
 					return true;
 				}
 			}

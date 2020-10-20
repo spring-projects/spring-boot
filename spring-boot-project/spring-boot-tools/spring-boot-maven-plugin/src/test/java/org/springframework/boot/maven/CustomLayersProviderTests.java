@@ -57,9 +57,12 @@ public class CustomLayersProviderTests {
 		Library snapshot = mockLibrary("test-SNAPSHOT.jar", "org.foo", "1.0.0-SNAPSHOT");
 		Library groupId = mockLibrary("my-library", "com.acme", null);
 		Library otherDependency = mockLibrary("other-library", "org.foo", null);
+		Library localSnapshotDependency = mockLibrary("local-library", "org.foo", "1.0-SNAPSHOT");
+		given(localSnapshotDependency.isLocal()).willReturn(true);
 		assertThat(layers.getLayer(snapshot).toString()).isEqualTo("snapshot-dependencies");
 		assertThat(layers.getLayer(groupId).toString()).isEqualTo("my-deps");
 		assertThat(layers.getLayer(otherDependency).toString()).isEqualTo("my-dependencies-name");
+		assertThat(layers.getLayer(localSnapshotDependency).toString()).isEqualTo("application");
 		assertThat(layers.getLayer("META-INF/resources/test.css").toString()).isEqualTo("my-resources");
 		assertThat(layers.getLayer("application.yml").toString()).isEqualTo("configuration");
 		assertThat(layers.getLayer("test").toString()).isEqualTo("application");

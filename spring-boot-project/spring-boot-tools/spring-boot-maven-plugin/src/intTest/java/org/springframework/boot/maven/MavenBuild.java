@@ -170,6 +170,7 @@ class MavenBuild {
 			request.setUserSettingsFile(new File(this.temp, "settings.xml"));
 			request.setUpdateSnapshots(true);
 			request.setBatchMode(true);
+			// request.setMavenOpts("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000");
 			File target = new File(this.temp, "target");
 			target.mkdirs();
 			if (this.preparation != null) {

@@ -86,7 +86,10 @@ By default, the following layers are defined:
 * `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
 * `spring-boot-loader` for the jar loader classes.
 * `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
-* `application` for application classes and resources.
+* `application` for local module dependencies, application classes, and resources.
+
+Module dependencies are identified by looking at all of the modules that are part of the current build.
+If a module dependency can only be resolved because it has been installed into Maven's local cache and it is not part of the current build, it will be identified as regular dependency.
 
 The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
 The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
@@ -159,6 +162,9 @@ The following example shows how the default ordering described above can be defi
 			<into layer="application" />
 		</application>
 		<dependencies>
+			<into layer="application">
+				<includeModuleDependencies />
+			</into>
 			<into layer="snapshot-dependencies">
 				<include>*:*:*SNAPSHOT</include>
 			</into>
@@ -187,13 +193,15 @@ Any content not claimed by an earlier block remains available for subsequent blo
 The `<into>` block claims content using nested `<include>` and `<exclude>` elements.
 The `<application>` section uses Ant-style patch matching for include/exclude expressions.
 The `<dependencies>` section uses `group:artifact[:version]` patterns.
+It also provides `<includeModuleDependencies />` and `<excludeModuleDependencies />` elements that can be used to include or exclude local module dependencies.
 
 If no `<include>` is defined, then all content (not claimed by an earlier block) is considered.
 
 If no `<exclude>` is defined, then no exclusions are applied.
 
-Looking at the `<dependencies>` example above, we can see that the first `<into>` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
-The subsequent `<into>` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
+Looking at the `<dependencies>` example above, we can see that the first `<into>` will claim all module dependencies for the `application.layer`.
+The next `<into>` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
+The final `<into>` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
 
 The `<application>` block has similar rules.
 First claiming `org/springframework/boot/loader/**` content for the `spring-boot-loader` layer.

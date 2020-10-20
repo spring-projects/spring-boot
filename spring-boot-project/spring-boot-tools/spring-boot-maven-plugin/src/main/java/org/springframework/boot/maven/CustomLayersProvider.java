@@ -53,11 +53,11 @@ class CustomLayersProvider {
 	}
 
 	private List<ContentSelector<String>> getApplicationSelectors(Element root) {
-		return getSelectors(root, "application", ApplicationContentFilter::new);
+		return getSelectors(root, "application", (element) -> getSelector(element, ApplicationContentFilter::new));
 	}
 
 	private List<ContentSelector<Library>> getLibrarySelectors(Element root) {
-		return getSelectors(root, "dependencies", LibraryContentFilter::new);
+		return getSelectors(root, "dependencies", (element) -> getLibrarySelector(element, LibraryContentFilter::new));
 	}
 
 	private List<Layer> getLayers(Element root) {
@@ -69,7 +69,7 @@ class CustomLayersProvider {
 	}
 
 	private <T> List<ContentSelector<T>> getSelectors(Element root, String elementName,
-			Function<String, ContentFilter<T>> filterFactory) {
+			Function<Element, ContentSelector<T>> selectorFactory) {
 		Element element = getChildElement(root, elementName);
 		if (element == null) {
 			return Collections.emptyList();
@@ -79,7 +79,7 @@ class CustomLayersProvider {
 		for (int i = 0; i < children.getLength(); i++) {
 			Node child = children.item(i);
 			if (child instanceof Element) {
-				ContentSelector<T> selector = getSelector((Element) child, filterFactory);
+				ContentSelector<T> selector = selectorFactory.apply((Element) child);
 				selectors.add(selector);
 			}
 		}
@@ -91,6 +91,26 @@ class CustomLayersProvider {
 		List<String> includes = getChildNodeTextContent(element, "include");
 		List<String> excludes = getChildNodeTextContent(element, "exclude");
 		return new IncludeExcludeContentSelector<>(layer, includes, excludes, filterFactory);
+	}
+
+	private <T> ContentSelector<Library> getLibrarySelector(Element element,
+			Function<String, ContentFilter<Library>> filterFactory) {
+		Layer layer = new Layer(element.getAttribute("layer"));
+		List<String> includes = getChildNodeTextContent(element, "include");
+		List<String> excludes = getChildNodeTextContent(element, "exclude");
+		Element includeModuleDependencies = getChildElement(element, "includeModuleDependencies");
+		Element excludeModuleDependencies = getChildElement(element, "excludeModuleDependencies");
+		List<ContentFilter<Library>> includeFilters = includes.stream().map(filterFactory).collect(Collectors.toList());
+		if (includeModuleDependencies != null) {
+			includeFilters = new ArrayList<>(includeFilters);
+			includeFilters.add(Library::isLocal);
+		}
+		List<ContentFilter<Library>> excludeFilters = excludes.stream().map(filterFactory).collect(Collectors.toList());
+		if (excludeModuleDependencies != null) {
+			excludeFilters = new ArrayList<>(excludeFilters);
+			excludeFilters.add(Library::isLocal);
+		}
+		return new IncludeExcludeContentSelector<>(layer, includeFilters, excludeFilters);
 	}
 
 	private List<String> getChildNodeTextContent(Element element, String tagName) {
