@@ -19,7 +19,9 @@ package org.springframework.boot.logging.logback;
 import java.io.File;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -79,8 +81,11 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private LoggingInitializationContext initializationContext;
 
+	private Set<Object> systemPropertyNames;
+
 	@BeforeEach
 	void setup() {
+		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.loggingSystem.cleanUp();
 		this.logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).getLogger(getClass());
 		MockEnvironment environment = new MockEnvironment();
@@ -89,6 +94,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@AfterEach
 	void cleanUp() {
+		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 		this.loggingSystem.cleanUp();
 		((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).stop();
 	}
@@ -302,6 +308,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	void testLevelPatternProperty(CapturedOutput output) {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.pattern.level", "X%clr(%p)X");
+		new LoggingSystemProperties(environment).apply();
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(environment);
 		this.loggingSystem.initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
@@ -514,6 +521,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	void testDateformatPatternProperty(CapturedOutput output) {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("logging.pattern.dateformat", "yyyy-MM-dd'T'hh:mm:ss.SSSZ");
+		new LoggingSystemProperties(environment).apply();
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(environment);
 		this.loggingSystem.initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
