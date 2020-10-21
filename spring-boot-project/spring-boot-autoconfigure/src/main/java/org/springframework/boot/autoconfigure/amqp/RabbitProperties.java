@@ -663,7 +663,8 @@ public class RabbitProperties {
 		private Duration idleEventInterval;
 
 		/**
-		 * Whether to present batched messages (created by a BatchingRabbitTemplate) as discrete messages.
+		 * Whether the container should present batched messages as discrete messages or
+		 * call the listener with the batch.
 		 */
 		private boolean deBatchingEnabled = true;
 
@@ -715,7 +716,7 @@ public class RabbitProperties {
 		public abstract boolean isMissingQueuesFatal();
 
 		public boolean isDeBatchingEnabled() {
-			return deBatchingEnabled;
+			return this.deBatchingEnabled;
 		}
 
 		public void setDeBatchingEnabled(boolean deBatchingEnabled) {
@@ -757,9 +758,10 @@ public class RabbitProperties {
 		private boolean missingQueuesFatal = true;
 
 		/**
-		 * When true, the container will create a batch of messages based on the 'receiveTimeout' and 'batchSize'.
-		 * Coerces 'deBatchingEnabled' to true to include the contents of a producer created batch in the batch as
-		 * discrete records.
+		 * Whether the container creates a batch of messages based on the
+		 * 'receive-timeout' and 'batch-size'. Coerces 'de-batching-enabled' to true to
+		 * include the contents of a producer created batch in the batch as discrete
+		 * records.
 		 */
 		private boolean consumerBatchEnabled;
 
@@ -797,7 +799,7 @@ public class RabbitProperties {
 		}
 
 		public boolean isConsumerBatchEnabled() {
-			return consumerBatchEnabled;
+			return this.consumerBatchEnabled;
 		}
 
 		public void setConsumerBatchEnabled(boolean consumerBatchEnabled) {
