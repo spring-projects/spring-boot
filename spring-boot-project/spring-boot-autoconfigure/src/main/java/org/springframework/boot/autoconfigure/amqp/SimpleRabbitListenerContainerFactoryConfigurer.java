@@ -40,9 +40,6 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 		map.from(config::getMaxConcurrency).whenNonNull().to(factory::setMaxConcurrentConsumers);
 		map.from(config::getBatchSize).whenNonNull().to(factory::setBatchSize);
 		map.from(config::isConsumerBatchEnabled).to(factory::setConsumerBatchEnabled);
-		if (config.isConsumerBatchEnabled()) {
-			factory.setDeBatchingEnabled(true);
-		}
 	}
 
 }
