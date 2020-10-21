@@ -271,7 +271,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * @param classLoader the classloader
 	 */
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
-		new LoggingSystemProperties(environment).apply();
+		getLoggingSystemProperties(environment).apply();
 		this.logFile = LogFile.get(environment);
 		if (this.logFile != null) {
 			this.logFile.applyToSystemProperties();
@@ -281,6 +281,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		initializeSystem(environment, this.loggingSystem, this.logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
+	}
+
+	private LoggingSystemProperties getLoggingSystemProperties(ConfigurableEnvironment environment) {
+		return (this.loggingSystem != null) ? this.loggingSystem.getSystemProperties(environment)
+				: new LoggingSystemProperties(environment);
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {

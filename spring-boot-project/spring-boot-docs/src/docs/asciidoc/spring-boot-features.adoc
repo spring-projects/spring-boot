@@ -2040,14 +2040,37 @@ The following table shows how the `logging.*` properties can be used together:
 |===
 
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
-Size limits can be changed using the configprop:logging.file.max-size[] property.
-Rotated log files of the last 7 days are kept by default unless the configprop:logging.file.max-history[] property has been set.
-The total size of log archives can be capped using configprop:logging.file.total-size-cap[].
-When the total size of log archives exceeds that threshold, backups will be deleted.
-To force log archive cleanup on application startup, use the configprop:logging.file.clean-history-on-start[] property.
 
 TIP: Logging properties are independent of the actual logging infrastructure.
 As a result, specific configuration keys (such as `logback.configurationFile` for Logback) are not managed by spring Boot.
+
+
+
+[[boot-features-logging-file-rotation]]
+=== File Rotation
+If you are using the Logback, it's possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
+For all other logging system, you'll need to configure rotation settings directly yourself (for example, if you use Log4J2 then you could add a `log4j.xml` file).
+
+The following rotation policy properties are supported:
+
+|===
+| Name | Description
+
+| configprop:logging.logback.rollingpolicy.file-name-pattern[]
+| The filename pattern used to create log archives.
+
+| configprop:logging.logback.rollingpolicy.clean-history-on-start[]
+| If log archive cleanup should occur when the application starts.
+
+| configprop:logging.logback.rollingpolicy.max-file-size[]
+| The maximum size of log file before it's archived.
+
+| configprop:logging.logback.rollingpolicy.total-size-cap[]
+| The maximum amount of size log archives can take before being deleted.
+
+| configprop:logging.logback.rollingpolicy.max-history[]
+| The number of days to keep log archives (defaults to 7)
+|===
 
 
 
@@ -2165,63 +2188,61 @@ To help with the customization, some other properties are transferred from the S
 | `LOG_EXCEPTION_CONVERSION_WORD`
 | The conversion word used when logging exceptions.
 
-| configprop:logging.file.clean-history-on-start[]
-| `LOG_FILE_CLEAN_HISTORY_ON_START`
-| Whether to clean the archive log files on startup (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
-
 | configprop:logging.file.name[]
 | `LOG_FILE`
 | If defined, it is used in the default log configuration.
-
-| configprop:logging.file.max-size[]
-| `LOG_FILE_MAX_SIZE`
-| Maximum log file size (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
-
-| configprop:logging.file.max-history[]
-| `LOG_FILE_MAX_HISTORY`
-| Maximum number of archive log files to keep (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
 
 | configprop:logging.file.path[]
 | `LOG_PATH`
 | If defined, it is used in the default log configuration.
 
-| configprop:logging.file.total-size-cap[]
-| `LOG_FILE_TOTAL_SIZE_CAP`
-| Total size of log backups to be kept (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
-
 | configprop:logging.pattern.console[]
 | `CONSOLE_LOG_PATTERN`
 | The log pattern to use on the console (stdout).
-  (Only supported with the default Logback setup.)
 
 | configprop:logging.pattern.dateformat[]
 | `LOG_DATEFORMAT_PATTERN`
 | Appender pattern for log date format.
-  (Only supported with the default Logback setup.)
 
 | configprop:logging.pattern.file[]
 | `FILE_LOG_PATTERN`
 | The log pattern to use in a file (if `LOG_FILE` is enabled).
-  (Only supported with the default Logback setup.)
 
 | configprop:logging.pattern.level[]
 | `LOG_LEVEL_PATTERN`
 | The format to use when rendering the log level (default `%5p`).
-  (Only supported with the default Logback setup.)
-
-| configprop:logging.pattern.rolling-file-name[]
-| `ROLLING_FILE_NAME_PATTERN`
-| Pattern for rolled-over log file names (default `$\{LOG_FILE}.%d\{yyyy-MM-dd}.%i.gz`).
-  (Only supported with the default Logback setup.)
 
 | `PID`
 | `PID`
 | The current process ID (discovered if possible and when not already defined as an OS environment variable).
 |===
+
+If you're using Logback, the following properties are also transfered:
+
+|===
+| Spring Environment | System Property | Comments
+
+| configprop:logging.logback.rollingpolicy.file-name-pattern[]
+| `LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN`
+| Pattern for rolled-over log file names (default `$\{LOG_FILE}.%d\{yyyy-MM-dd}.%i.gz`).
+
+| configprop:logging.logback.rollingpolicy.clean-history-on-start[]
+| `LOGBACK_ROLLINGPOLICY_CLEAN_HISTORY_ON_START`
+| Whether to clean the archive log files on startup.
+
+| configprop:logging.logback.rollingpolicy.max-file-size[]
+| `LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE`
+| Maximum log file size.
+
+| configprop:logging.logback.rollingpolicy.total-size-cap[]
+| `LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP`
+| Total size of log backups to be kept.
+
+| configprop:logging.logback.rollingpolicy.max-history[]
+| `LOGBACK_ROLLINGPOLICY_MAX_HISTORY`
+| Maximum number of archive log files to keep.
+|===
+
 
 All the supported logging systems can consult System properties when parsing their configuration files.
 See the default configurations in `spring-boot.jar` for examples:

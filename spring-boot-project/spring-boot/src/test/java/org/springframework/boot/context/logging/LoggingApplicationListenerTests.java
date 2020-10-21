@@ -21,8 +21,10 @@ import java.io.IOException;
 import java.nio.file.Path;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Handler;
@@ -109,10 +111,13 @@ class LoggingApplicationListenerTests {
 
 	private File logFile;
 
+	private Set<Object> systemPropertyNames;
+
 	private CapturedOutput output;
 
 	@BeforeEach
 	void init(CapturedOutput output) throws SecurityException, IOException {
+		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.output = output;
 		this.logFile = new File(this.tempDir.toFile(), "foo.log");
 		LogManager.getLogManager().readConfiguration(JavaLoggingSystem.class.getResourceAsStream("logging.properties"));
@@ -131,15 +136,8 @@ class LoggingApplicationListenerTests {
 			loggingSystem.getShutdownHandler().run();
 		}
 		System.clearProperty(LoggingSystem.class.getName());
-		System.clearProperty(LoggingSystemProperties.LOG_FILE);
-		System.clearProperty(LoggingSystemProperties.LOG_PATH);
-		System.clearProperty(LoggingSystemProperties.PID_KEY);
-		System.clearProperty(LoggingSystemProperties.EXCEPTION_CONVERSION_WORD);
-		System.clearProperty(LoggingSystemProperties.CONSOLE_LOG_PATTERN);
-		System.clearProperty(LoggingSystemProperties.FILE_LOG_PATTERN);
-		System.clearProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN);
-		System.clearProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN);
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
+		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 		if (this.context != null) {
 			this.context.close();
 		}
@@ -467,9 +465,14 @@ class LoggingApplicationListenerTests {
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE)).isEqualTo(this.logFile.getAbsolutePath());
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN)).isEqualTo("level");
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_PATH)).isEqualTo("path");
+		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
+		assertDeprecated();
+	}
+
+	@SuppressWarnings("deprecation")
+	private void assertDeprecated() {
 		assertThat(System.getProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN))
 				.isEqualTo("my.log.%d{yyyyMMdd}.%i.gz");
-		assertThat(System.getProperty(LoggingSystemProperties.PID_KEY)).isNotNull();
 	}
 
 	@Test

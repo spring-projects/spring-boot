@@ -22,6 +22,7 @@ import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
 
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
@@ -56,6 +57,16 @@ public abstract class LoggingSystem {
 	public static final String ROOT_LOGGER_NAME = "ROOT";
 
 	private static final LoggingSystemFactory SYSTEM_FACTORY = LoggingSystemFactory.fromSpringFactories();
+
+	/**
+	 * Return the {@link LoggingSystemProperties} that should be applied.
+	 * @param environment the {@link ConfigurableEnvironment} used to obtain value
+	 * @return the {@link LoggingSystemProperties} to apply
+	 * @since 2.4.0
+	 */
+	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
+		return new LoggingSystemProperties(environment);
+	}
 
 	/**
 	 * Reset the logging system to be limit output. This method may be called before
