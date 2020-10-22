@@ -258,7 +258,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private String getSubName(String name) {
-		if (StringUtils.isEmpty(name)) {
+		if (!StringUtils.hasLength(name)) {
 			return null;
 		}
 		int nested = name.lastIndexOf('$');

@@ -123,7 +123,7 @@ public class UndertowServletWebServer extends UndertowWebServer {
 	@Override
 	protected HttpHandler createHttpHandler() {
 		HttpHandler handler = super.createHttpHandler();
-		if (!StringUtils.isEmpty(this.contextPath)) {
+		if (StringUtils.hasLength(this.contextPath)) {
 			handler = Handlers.path().addPrefixPath(this.contextPath, handler);
 		}
 		return handler;

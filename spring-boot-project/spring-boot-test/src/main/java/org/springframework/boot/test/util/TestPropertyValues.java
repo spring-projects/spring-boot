@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -277,10 +277,10 @@ public final class TestPropertyValues {
 		}
 
 		private static Pair of(String name, String value) {
-			if (StringUtils.isEmpty(name) && StringUtils.isEmpty(value)) {
-				return null;
+			if (StringUtils.hasLength(name) || StringUtils.hasLength(value)) {
+				return new Pair(name, value);
 			}
-			return new Pair(name, value);
+			return null;
 		}
 
 	}
@@ -309,7 +309,7 @@ public final class TestPropertyValues {
 
 		private String setOrClear(String name, String value) {
 			Assert.notNull(name, "Name must not be null");
-			if (StringUtils.isEmpty(value)) {
+			if (!StringUtils.hasLength(value)) {
 				return (String) System.getProperties().remove(name);
 			}
 			return (String) System.getProperties().setProperty(name, value);
