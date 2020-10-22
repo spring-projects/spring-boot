@@ -582,23 +582,10 @@ This support depends on the chosen web server and the application environment, s
 
 [NOTE]
 ====
-Spring Boot does not support `h2c`, the cleartext version of the HTTP/2 protocol.
-So you must <<howto-configure-ssl, configure SSL first>>.
+Spring Boot does not advise using `h2c`, the cleartext version of the HTTP/2 protocol.
+As a result, the next sections require to <<howto-configure-ssl, configure SSL first>>.
+If you still choose to use `h2c`, you can check <<howto-configure-http2-h2c, the dedicated section>>.
 ====
-
-
-
-[[howto-configure-http2-undertow]]
-==== HTTP/2 with Undertow
-As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on JDK8.
-
-
-
-[[howto-configure-http2-jetty]]
-==== HTTP/2 with Jetty
-As of Jetty 9.4.8, HTTP/2 is also supported with the https://www.conscrypt.org/[Conscrypt library].
-To enable that support, your application needs to have two additional dependencies: `org.eclipse.jetty:jetty-alpn-conscrypt-server` and `org.eclipse.jetty.http2:http2-server`.
-
 
 
 [[howto-configure-http2-tomcat]]
@@ -621,6 +608,13 @@ This error is not fatal, and the application still starts with HTTP/1.1 SSL supp
 
 
 
+[[howto-configure-http2-jetty]]
+==== HTTP/2 with Jetty
+As of Jetty 9.4.8, HTTP/2 is also supported with the https://www.conscrypt.org/[Conscrypt library].
+To enable that support, your application needs to have two additional dependencies: `org.eclipse.jetty:jetty-alpn-conscrypt-server` and `org.eclipse.jetty.http2:http2-server`.
+
+
+
 [[howto-configure-http2-netty]]
 ==== HTTP/2 with Reactor Netty
 The `spring-boot-webflux-starter` is using by default Reactor Netty as a server.
@@ -630,6 +624,71 @@ To enable that, your application needs to have an additional dependency.
 
 Spring Boot manages the version for the `io.netty:netty-tcnative-boringssl-static` "uber jar", containing native libraries for all platforms.
 Developers can choose to import only the required dependencies using a classifier (see https://netty.io/wiki/forked-tomcat-native.html[the Netty official documentation]).
+
+
+
+[[howto-configure-http2-undertow]]
+==== HTTP/2 with Undertow
+As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on JDK8.
+
+
+
+[[howto-configure-http2-h2c]]
+==== h2c with supported servers
+To enable `h2c`, you need to leave the configprop:server.http2.enabled[] property set to `false`,
+and instead apply a customizer specific to your choice of server:
+
+For Tomcat, we need to add an upgrade protocol:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public TomcatConnectorCustomizer connectorCustomizer() {
+		return (connector) -> connector.addUpgradeProtocol(new Http2Protocol());
+	}
+----
+
+For Jetty, we need to add a connection factory to the existing connector:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public JettyServerCustomizer serverCustomizer() {
+		return (server) -> {
+			HttpConfiguration configuration = new HttpConfiguration();
+			configuration.setSendServerVersion(false);
+			Arrays.stream(server.getConnectors())
+					.filter(connector -> connector instanceof ServerConnector)
+					.map(ServerConnector.class::cast)
+					.forEach(connector -> {
+						connector.addConnectionFactory(new HTTP2CServerConnectionFactory(configuration));
+					});
+		};
+	}
+----
+
+For Netty, we need to add `h2c` as a supported protocol:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public NettyServerCustomizer serverCustomizer() {
+		return (server) -> server.protocol(HttpProtocol.H2C);
+	}
+----
+
+For Undertow, we need to enable the HTTP2 option:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+	@Bean
+	public UndertowBuilderCustomizer builderCustomizer() {
+		return (builder) -> {
+			builder.setServerOption(ENABLE_HTTP2, true);
+		};
+	}
+----
+
 
 
 
