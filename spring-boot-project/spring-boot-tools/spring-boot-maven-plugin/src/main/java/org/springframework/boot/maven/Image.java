@@ -102,7 +102,7 @@ public class Image {
 	 * If the cache should be cleaned before building.
 	 * @return {@code true} if the cache should be cleaned
 	 */
-	public Boolean isCleanCache() {
+	public Boolean getCleanCache() {
 		return this.cleanCache;
 	}
 
