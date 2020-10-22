@@ -49,6 +49,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.4.0
  */
 public class StandardConfigDataLocationResolver
@@ -304,7 +305,7 @@ public class StandardConfigDataLocationResolver
 			return new Resource[] { directoryResource };
 		}
 		File directory = getDirectory(resourceLocationPattern, directoryResource);
-		File[] subDirectories = directory.listFiles(File::isDirectory);
+		File[] subDirectories = directory.listFiles(this::isVisibleDirectory);
 		if (subDirectories == null) {
 			return EMPTY_RESOURCES;
 		}
@@ -338,6 +339,10 @@ public class StandardConfigDataLocationResolver
 			throw new IllegalStateException(
 					"Unable to load config data resource from pattern '" + patternLocation + "'", ex);
 		}
+	}
+
+	private boolean isVisibleDirectory(File file) {
+		return file.isDirectory() && !file.getName().startsWith(".");
 	}
 
 }
