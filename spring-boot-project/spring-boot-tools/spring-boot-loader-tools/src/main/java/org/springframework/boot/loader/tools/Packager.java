@@ -29,7 +29,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
@@ -168,9 +167,7 @@ public abstract class Packager {
 	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
 		Assert.notNull(libraries, "Libraries must not be null");
 		WritableLibraries writeableLibraries = new WritableLibraries(libraries);
-		if (this.layers != null) {
-			writer = new LayerTrackingEntryWriter(writer);
-		}
+		writer.useLayers(this.layers, this.layersIndex);
 		writer.writeManifest(buildManifest(sourceJar));
 		writeLoaderClasses(writer);
 		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
@@ -418,35 +415,6 @@ public abstract class Packager {
 				return name.equals("META-INF/aop.xml") || name.endsWith(".kotlin_module");
 			}
 			return !name.startsWith("BOOT-INF/") && !name.equals("module-info.class");
-		}
-
-	}
-
-	/**
-	 * Decorator to track the layers as entries are written.
-	 */
-	private final class LayerTrackingEntryWriter extends AbstractJarWriter {
-
-		private final AbstractJarWriter writer;
-
-		private LayerTrackingEntryWriter(AbstractJarWriter writer) {
-			this.writer = writer;
-		}
-
-		@Override
-		public void writeNestedLibrary(String location, Library library) throws IOException {
-			this.writer.writeNestedLibrary(location, library);
-			Layer layer = Packager.this.layers.getLayer(library);
-			Packager.this.layersIndex.add(layer, location + library.getName());
-		}
-
-		@Override
-		protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
-			this.writer.writeToArchive(entry, entryWriter);
-			if (!entry.getName().endsWith("/")) {
-				Layer layer = Packager.this.layers.getLayer(entry.getName());
-				Packager.this.layersIndex.add(layer, entry.getName());
-			}
 		}
 
 	}

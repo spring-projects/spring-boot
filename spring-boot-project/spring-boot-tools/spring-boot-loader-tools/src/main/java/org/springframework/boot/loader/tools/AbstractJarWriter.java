@@ -60,6 +60,20 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 
 	private final Set<String> writtenEntries = new HashSet<>();
 
+	private Layers layers;
+
+	private LayersIndex layersIndex;
+
+	/**
+	 * Update this writer to use specific layers.
+	 * @param layers the layers to use
+	 * @param layersIndex the layers index to update
+	 */
+	void useLayers(Layers layers, LayersIndex layersIndex) {
+		this.layers = layers;
+		this.layersIndex = layersIndex;
+	}
+
 	/**
 	 * Write the specified manifest.
 	 * @param manifest the manifest to write
@@ -89,7 +103,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
 				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
 				if (transformedEntry != null) {
-					writeEntry(transformedEntry, entryWriter, unpackHandler);
+					writeEntry(transformedEntry, entryWriter, unpackHandler, true);
 				}
 			}
 		}
@@ -144,7 +158,15 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		entry.setTime(getNestedLibraryTime(library));
 		new CrcAndSize(library::openStream).setupStoredEntry(entry);
 		try (InputStream inputStream = library.openStream()) {
-			writeEntry(entry, new InputStreamEntryWriter(inputStream), new LibraryUnpackHandler(library));
+			writeEntry(entry, new InputStreamEntryWriter(inputStream), new LibraryUnpackHandler(library), false);
+			updateLayerIndex(entry.getName(), library);
+		}
+	}
+
+	private void updateLayerIndex(String name, Library library) {
+		if (this.layers != null) {
+			Layer layer = this.layers.getLayer(library);
+			this.layersIndex.add(layer, name);
 		}
 	}
 
@@ -225,7 +247,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	}
 
 	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter) throws IOException {
-		writeEntry(entry, entryWriter, UnpackHandler.NEVER);
+		writeEntry(entry, entryWriter, UnpackHandler.NEVER, true);
 	}
 
 	/**
@@ -234,10 +256,11 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * @param entry the entry to write
 	 * @param entryWriter the entry writer or {@code null} if there is no content
 	 * @param unpackHandler handles possible unpacking for the entry
+	 * @param updateLayerIndex if the layer index should be updated
 	 * @throws IOException in case of I/O errors
 	 */
-	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter, UnpackHandler unpackHandler)
-			throws IOException {
+	private void writeEntry(JarArchiveEntry entry, EntryWriter entryWriter, UnpackHandler unpackHandler,
+			boolean updateLayerIndex) throws IOException {
 		String name = entry.getName();
 		writeParentDirectoryEntries(name);
 		if (this.writtenEntries.add(name)) {
@@ -248,7 +271,17 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 				entry.setSize(entryWriter.size());
 			}
 			entryWriter = addUnpackCommentIfNecessary(entry, entryWriter, unpackHandler);
+			if (updateLayerIndex) {
+				updateLayerIndex(entry);
+			}
 			writeToArchive(entry, entryWriter);
+		}
+	}
+
+	private void updateLayerIndex(JarArchiveEntry entry) {
+		if (this.layers != null && !entry.getName().endsWith("/")) {
+			Layer layer = this.layers.getLayer(entry.getName());
+			this.layersIndex.add(layer, entry.getName());
 		}
 	}
 
@@ -259,7 +292,7 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 		while (parent.lastIndexOf('/') != -1) {
 			parent = parent.substring(0, parent.lastIndexOf('/'));
 			if (!parent.isEmpty()) {
-				writeEntry(new JarArchiveEntry(parent + "/"), null, UnpackHandler.NEVER);
+				writeEntry(new JarArchiveEntry(parent + "/"), null, UnpackHandler.NEVER, false);
 			}
 		}
 	}
