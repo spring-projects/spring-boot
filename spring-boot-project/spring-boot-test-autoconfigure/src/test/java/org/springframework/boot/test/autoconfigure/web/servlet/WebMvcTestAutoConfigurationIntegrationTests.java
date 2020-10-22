@@ -24,6 +24,7 @@ import org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAuto
 import org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration;
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -74,6 +75,11 @@ class WebMvcTestAutoConfigurationIntegrationTests {
 		assertThat(this.applicationContext.getBeansOfType(AsyncTaskExecutor.class)).hasSize(1);
 		assertThat(ReflectionTestUtils.getField(this.applicationContext.getBean(RequestMappingHandlerAdapter.class),
 				"taskExecutor")).isSameAs(this.applicationContext.getBean("applicationTaskExecutor"));
+	}
+
+	@Test
+	void httpEncodingAutoConfigurationWasImported() {
+		assertThat(this.applicationContext).has(importedAutoConfiguration(HttpEncodingAutoConfiguration.class));
 	}
 
 }

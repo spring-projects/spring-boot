@@ -152,6 +152,7 @@ org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\
 org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.error.ErrorMvcAutoConfiguration,\
+org.springframework.boot.autoconfigure.web.servlet.HttpEncodingAutoConfiguration,\
 org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration
 
 # DefaultTestExecutionListenersPostProcessors
