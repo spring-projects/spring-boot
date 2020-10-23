@@ -90,7 +90,8 @@ public class BootBuildImage extends DefaultTask {
 		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
 		this.projectName = getProject().getName();
 		this.projectVersion = getProject().getObjects().property(String.class);
-		this.projectVersion.set(getProject().provider(() -> getProject().getVersion().toString()));
+		Project project = getProject();
+		this.projectVersion.set(getProject().provider(() -> project.getVersion().toString()));
 	}
 
 	/**
