@@ -50,7 +50,7 @@ public enum StaticResourceLocation {
 	/**
 	 * The {@code "favicon.ico"} resource.
 	 */
-	FAVICON("/**/favicon.ico");
+	FAVICON("/favicon.*", "/*/icon-*");
 
 	private final String[] patterns;
 
