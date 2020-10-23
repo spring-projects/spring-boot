@@ -57,6 +57,7 @@ import org.springframework.util.SystemPropertyUtils;
  * @author Christian Dupuis
  * @author Madhura Bhave
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @Endpoint(id = "env")
@@ -143,7 +144,7 @@ public class EnvironmentEndpoint {
 			PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
 		Origin origin = ((source instanceof OriginLookup) ? ((OriginLookup<Object>) source).getOrigin(name) : null);
-		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
+		return new PropertyValueDescriptor(stringifyIfNecessary(sanitize(name, resolved)), origin);
 	}
 
 	private PlaceholdersResolver getResolver() {
@@ -180,6 +181,16 @@ public class EnvironmentEndpoint {
 
 	public Object sanitize(String name, Object object) {
 		return this.sanitizer.sanitize(name, object);
+	}
+
+	protected Object stringifyIfNecessary(Object value) {
+		if (value == null || value.getClass().isPrimitive()) {
+			return value;
+		}
+		if (CharSequence.class.isAssignableFrom(value.getClass())) {
+			return value.toString();
+		}
+		return "Complex property type " + value.getClass().getName();
 	}
 
 	/**
