@@ -2462,7 +2462,6 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Support for `HttpMessageConverters` (covered <<boot-features-spring-mvc-message-converters,later in this document>>).
 * Automatic registration of `MessageCodesResolver` (covered <<boot-features-spring-message-codes,later in this document>>).
 * Static `index.html` support.
-* Custom `Favicon` support (covered <<boot-features-spring-mvc-favicon,later in this document>>).
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<boot-features-spring-mvc-web-binding-initializer,later in this document>>).
 
 If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
