@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -59,17 +60,62 @@ public final class TestPropertyValues {
 	}
 
 	/**
-	 * Builder method to add more properties.
+	 * Return a new {@link TestPropertyValues} instance with additional entries.
+	 * Name-value pairs can be specified with colon (":") or equals ("=") separators.
 	 * @param pairs the property pairs to add
 	 * @return a new {@link TestPropertyValues} instance
 	 */
 	public TestPropertyValues and(String... pairs) {
-		return and(Arrays.stream(pairs).map(Pair::parse));
+		return and(Arrays.stream(pairs), Pair::parse);
 	}
 
-	private TestPropertyValues and(Stream<Pair> pairs) {
+	/**
+	 * Return a new {@link TestPropertyValues} instance with additional entries.
+	 * Name-value pairs can be specified with colon (":") or equals ("=") separators.
+	 * @param pairs the property pairs to add
+	 * @return a new {@link TestPropertyValues} instance
+	 * @since 2.4.0
+	 */
+	public TestPropertyValues and(Iterable<String> pairs) {
+		return (pairs != null) ? and(StreamSupport.stream(pairs.spliterator(), false)) : this;
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} instance with additional entries.
+	 * Name-value pairs can be specified with colon (":") or equals ("=") separators.
+	 * @param pairs the property pairs to add
+	 * @return a new {@link TestPropertyValues} instance
+	 * @since 2.4.0
+	 */
+	public TestPropertyValues and(Stream<String> pairs) {
+		return (pairs != null) ? and(pairs, Pair::parse) : this;
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} instance with additional entries.
+	 * @param map the map of properties that need to be added to the environment
+	 * @return a new {@link TestPropertyValues} instance
+	 * @since 2.4.0
+	 */
+	public TestPropertyValues and(Map<String, String> map) {
+		return (map != null) ? and(map.entrySet().stream(), Pair::fromMapEntry) : this;
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} instance with additional entries.
+	 * @param <T> the stream element type
+	 * @param stream the elements that need to be added to the environment
+	 * @param mapper a mapper function to convert an element from the stream into a
+	 * {@link Pair}
+	 * @return a new {@link TestPropertyValues} instance
+	 * @since 2.4.0
+	 */
+	public <T> TestPropertyValues and(Stream<T> stream, Function<T, Pair> mapper) {
+		if (stream == null) {
+			return this;
+		}
 		Map<String, Object> properties = new LinkedHashMap<>(this.properties);
-		pairs.filter(Objects::nonNull).forEach((pair) -> pair.addTo(properties));
+		stream.map(mapper).filter(Objects::nonNull).forEach((pair) -> pair.addTo(properties));
 		return new TestPropertyValues(properties);
 	}
 
@@ -174,10 +220,7 @@ public final class TestPropertyValues {
 	 * @return the new instance
 	 */
 	public static TestPropertyValues of(Iterable<String> pairs) {
-		if (pairs == null) {
-			return empty();
-		}
-		return of(StreamSupport.stream(pairs.spliterator(), false));
+		return (pairs != null) ? of(StreamSupport.stream(pairs.spliterator(), false)) : empty();
 	}
 
 	/**
@@ -189,10 +232,30 @@ public final class TestPropertyValues {
 	 * @return the new instance
 	 */
 	public static TestPropertyValues of(Stream<String> pairs) {
-		if (pairs == null) {
-			return empty();
-		}
-		return empty().and(pairs.map(Pair::parse));
+		return (pairs != null) ? of(pairs, Pair::parse) : empty();
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
+	 * given map entries.
+	 * @param map the map of properties that need to be added to the environment
+	 * @return the new instance
+	 */
+	public static TestPropertyValues of(Map<String, String> map) {
+		return (map != null) ? of(map.entrySet().stream(), Pair::fromMapEntry) : empty();
+	}
+
+	/**
+	 * Return a new {@link TestPropertyValues} with the underlying map populated with the
+	 * given stream.
+	 * @param <T> the stream element type
+	 * @param stream the elements that need to be added to the environment
+	 * @param mapper a mapper function to convert an element from the stream into a
+	 * {@link Pair}
+	 * @return the new instance
+	 */
+	public static <T> TestPropertyValues of(Stream<T> stream, Function<T, Pair> mapper) {
+		return (stream != null) ? empty().and(stream, mapper) : empty();
 	}
 
 	/**
@@ -247,6 +310,13 @@ public final class TestPropertyValues {
 
 		private String value;
 
+		/**
+		 * Create a new {@link Pair} instance.
+		 * @param name the name
+		 * @param value the value
+		 * @deprecated since 2.4.0 in favor of {@link #of(String, String)}
+		 */
+		@Deprecated
 		public Pair(String name, String value) {
 			Assert.hasLength(name, "Name must not be empty");
 			this.name = name;
@@ -276,7 +346,24 @@ public final class TestPropertyValues {
 			return Math.min(colonIndex, equalIndex);
 		}
 
-		private static Pair of(String name, String value) {
+		/**
+		 * Factory method to create a {@link Pair} from a {@code Map.Entry}.
+		 * @param entry the map entry
+		 * @return the {@link Pair} instance or {@code null}
+		 * @since 2.4.0
+		 */
+		public static Pair fromMapEntry(Map.Entry<String, String> entry) {
+			return (entry != null) ? of(entry.getKey(), entry.getValue()) : null;
+		}
+
+		/**
+		 * Factory method to create a {@link Pair} from a name and value.
+		 * @param name the name
+		 * @param value the value
+		 * @return the {@link Pair} instance or {@code null}
+		 * @since 2.4.0
+		 */
+		public static Pair of(String name, String value) {
 			if (StringUtils.hasLength(name) || StringUtils.hasLength(value)) {
 				return new Pair(name, value);
 			}
