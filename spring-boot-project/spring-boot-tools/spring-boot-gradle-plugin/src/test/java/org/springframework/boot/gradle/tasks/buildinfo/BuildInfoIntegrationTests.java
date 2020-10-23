@@ -19,9 +19,13 @@ package org.springframework.boot.gradle.tasks.buildinfo;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
+import java.time.Instant;
 import java.util.Properties;
 
-import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
@@ -38,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@GradleCompatibility
+@GradleCompatibility(configurationCache = true)
 class BuildInfoIntegrationTests {
 
 	GradleBuild gradleBuild;
@@ -69,7 +73,14 @@ class BuildInfoIntegrationTests {
 	@TestTemplate
 	void notUpToDateWhenExecutedTwiceAsTimeChanges() {
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Properties first = buildInfoProperties();
+		String firstBuildTime = first.getProperty("build.time");
+		assertThat(firstBuildTime).isNotNull();
 		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Properties second = buildInfoProperties();
+		String secondBuildTime = second.getProperty("build.time");
+		assertThat(secondBuildTime).isNotNull();
+		assertThat(Instant.parse(firstBuildTime).isBefore(Instant.parse(secondBuildTime)));
 	}
 
 	@TestTemplate
@@ -81,11 +92,22 @@ class BuildInfoIntegrationTests {
 	}
 
 	@TestTemplate
-	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() {
-		assertThat(this.gradleBuild.build("buildInfo", "-PnullTime").task(":buildInfo").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		BuildResult result = this.gradleBuild.build("buildInfo", "-PnullTime", "-PprojectVersion=0.2.0");
-		assertThat(result.task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedProjectVersion() throws IOException {
+		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.1.0").build("buildInfo").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("projectVersion", "0.2.0").build("buildInfo").task(":buildInfo")
+				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
+	void notUpToDateWhenExecutedTwiceWithFixedTimeAndChangedGradlePropertiesProjectVersion() throws IOException {
+		Path gradleProperties = new File(this.gradleBuild.getProjectDir(), "gradle.properties").toPath();
+		Files.write(gradleProperties, "version=0.1.0".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE,
+				StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Files.write(gradleProperties, "version=0.2.0".getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE,
+				StandardOpenOption.WRITE, StandardOpenOption.TRUNCATE_EXISTING);
+		assertThat(this.gradleBuild.build("buildInfo").task(":buildInfo").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate

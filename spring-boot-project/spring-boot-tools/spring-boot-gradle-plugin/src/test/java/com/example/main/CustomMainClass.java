@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.tasks.bundling;
-
-import org.springframework.boot.gradle.junit.GradleCompatibility;
+package com.example.main;
 
 /**
- * Integration tests for {@link BootJar}.
+ * Application used for testing {@code BootRun}'s main class configuration.
  *
  * @author Andy Wilkinson
  */
-@GradleCompatibility(configurationCache = true)
-class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
+public class CustomMainClass {
 
-	BootWarIntegrationTests() {
-		super("bootWar", "WEB-INF/lib/", "WEB-INF/classes/");
+	protected CustomMainClass() {
+
+	}
+
+	public static void main(String[] args) {
+		System.out.println(CustomMainClass.class.getName());
 	}
 
 }

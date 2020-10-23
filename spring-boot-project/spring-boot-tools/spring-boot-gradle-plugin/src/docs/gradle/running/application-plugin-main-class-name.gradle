@@ -10,8 +10,3 @@ application {
 }
 // end::main-class[]
 
-task configuredMainClass {
-	doLast {
-		println bootRun.main
-	}
-}

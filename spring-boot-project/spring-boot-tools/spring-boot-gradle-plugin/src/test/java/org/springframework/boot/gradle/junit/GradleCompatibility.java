@@ -41,4 +41,11 @@ import org.springframework.boot.gradle.testkit.GradleBuild;
 @ExtendWith(GradleCompatibilityExtension.class)
 public @interface GradleCompatibility {
 
+	/**
+	 * Whether to include running Gradle with {@code --cache-configuration} cache in the
+	 * compatibility matrix.
+	 * @return {@code true} to enable the configuration cache, {@code false} otherwise
+	 */
+	boolean configurationCache() default false;
+
 }

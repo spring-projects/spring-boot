@@ -59,6 +59,10 @@ public class BootBuildImage extends DefaultTask {
 
 	private static final String BUILDPACK_JVM_VERSION_KEY = "BP_JVM_VERSION";
 
+	private final String projectName;
+
+	private final Property<String> projectVersion;
+
 	private RegularFileProperty jar;
 
 	private Property<JavaVersion> targetJavaVersion;
@@ -84,6 +88,9 @@ public class BootBuildImage extends DefaultTask {
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
 		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
+		this.projectName = getProject().getName();
+		this.projectVersion = getProject().getObjects().property(String.class);
+		this.projectVersion.set(getProject().provider(() -> getProject().getVersion().toString()));
 	}
 
 	/**
@@ -318,12 +325,11 @@ public class BootBuildImage extends DefaultTask {
 		if (StringUtils.hasText(this.imageName)) {
 			return ImageReference.of(this.imageName);
 		}
-		ImageName imageName = ImageName.of(getProject().getName());
-		String version = getProject().getVersion().toString();
-		if ("unspecified".equals(version)) {
+		ImageName imageName = ImageName.of(this.projectName);
+		if ("unspecified".equals(this.projectVersion.get())) {
 			return ImageReference.of(imageName);
 		}
-		return ImageReference.of(imageName, version);
+		return ImageReference.of(imageName, this.projectVersion.get());
 	}
 
 	private BuildRequest customize(BuildRequest request) {

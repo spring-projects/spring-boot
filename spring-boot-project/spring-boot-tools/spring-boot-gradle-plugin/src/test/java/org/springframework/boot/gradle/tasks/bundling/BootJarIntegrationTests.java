@@ -43,6 +43,7 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
 
+import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.util.StringUtils;
 
@@ -55,6 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Paddy Drury
  */
+@GradleCompatibility(configurationCache = true)
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootJarIntegrationTests() {
@@ -62,36 +64,31 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void upToDateWhenBuiltTwiceWithLayers() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-	}
-
-	@TestTemplate
 	void upToDateWhenBuiltWithDefaultLayeredAndThenWithExplicitLayered()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(this.gradleBuild.scriptProperty("layered", "").build("bootJar").task(":bootJar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(
+				this.gradleBuild.scriptProperty("layered", "layered {}").build("bootJar").task(":bootJar").getOutcome())
+						.isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenBuiltWithoutLayersAndThenWithLayers()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "-PdisableLayers=true", "bootJar").task(":bootJar")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerEnablement", "enabled = false").build("bootJar")
+				.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerEnablement", "enabled = true").build("bootJar")
+				.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenBuiltWithLayerToolsAndThenWithoutLayerTools()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "-PexcludeTools=true", "bootJar").task(":bootJar")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerTools", "").build("bootJar").task(":bootJar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerTools", "includeLayerTools = false").build("bootJar")
+				.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate

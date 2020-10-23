@@ -46,7 +46,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Scott Frederick
  */
-@GradleCompatibility
+@GradleCompatibility(configurationCache = true)
 @DisabledIfDockerUnavailable
 class BootBuildImageIntegrationTests {
 

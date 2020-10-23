@@ -3,6 +3,7 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-springBoot {
-	mainClass = 'com.example.main.CustomMainClass'
+bootJar {
+	mainClass = 'com.example.Application'
+	{launchScript}
 }
