@@ -33,8 +33,6 @@ import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
-import org.mockito.InOrder;
-import org.mockito.Mockito;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -556,17 +554,13 @@ class RabbitAutoConfigurationTests {
 	void testSimpleRabbitListenerContainerFactoryConfigurerEnableDeBatchingWithConsumerBatchEnabled() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.listener.type:direct",
-						"spring.rabbitmq.listener.simple.consumer-batch-enabled:true",
-						"spring.rabbitmq.listener.simple.de-batching-enabled:false")
+						"spring.rabbitmq.listener.simple.consumer-batch-enabled:true")
 				.run((context) -> {
 					SimpleRabbitListenerContainerFactoryConfigurer configurer = context
 							.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
 					SimpleRabbitListenerContainerFactory factory = mock(SimpleRabbitListenerContainerFactory.class);
 					configurer.configure(factory, mock(ConnectionFactory.class));
-					InOrder inOrder = Mockito.inOrder(factory);
 					verify(factory).setConsumerBatchEnabled(true);
-					inOrder.verify(factory).setDeBatchingEnabled(false);
-					inOrder.verify(factory).setDeBatchingEnabled(true);
 				});
 	}
 
