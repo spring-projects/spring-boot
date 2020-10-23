@@ -33,7 +33,6 @@ import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
