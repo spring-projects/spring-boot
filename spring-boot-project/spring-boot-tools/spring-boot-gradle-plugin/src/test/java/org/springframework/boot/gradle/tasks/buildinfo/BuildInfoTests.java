@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import org.gradle.testfixtures.ProjectBuilder;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -37,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@ClassPathExclusions("kotlin-daemon-client-*")
 class BuildInfoTests {
 
 	@TempDir
@@ -113,7 +116,8 @@ class BuildInfoTests {
 		Instant now = Instant.now();
 		BuildInfo task = createTask(createProject("test"));
 		task.getProperties().setTime(now);
-		assertThat(buildInfoProperties(task)).containsEntry("build.time", DateTimeFormatter.ISO_INSTANT.format(now));
+		assertThat(buildInfoProperties(task)).containsEntry("build.time",
+				DateTimeFormatter.ISO_INSTANT.format(Instant.ofEpochMilli(now.toEpochMilli())));
 	}
 
 	@Test
