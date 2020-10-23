@@ -29,7 +29,6 @@ import java.util.jar.Attributes;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
-import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.jar.JarArchiveEntry;
 
@@ -168,23 +167,16 @@ public abstract class Packager {
 	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
 		Assert.notNull(libraries, "Libraries must not be null");
 		WritableLibraries writeableLibraries = new WritableLibraries(libraries);
-		if (isLayersEnabled()) {
-			writer = new LayerTrackingEntryWriter(writer);
+		if (isLayered()) {
+			writer.useLayers(this.layers, this.layersIndex);
 		}
 		writer.writeManifest(buildManifest(sourceJar));
 		writeLoaderClasses(writer);
 		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
 		writeableLibraries.write(writer);
-		if (isLayersEnabled()) {
+		if (isLayered()) {
 			writeLayerIndex(writer);
 		}
-	}
-
-	private boolean isLayersEnabled() {
-		if (!(getLayout() instanceof Layouts.Jar)) {
-			return false;
-		}
-		return this.layers != null;
 	}
 
 	private void writeLoaderClasses(AbstractJarWriter writer) throws IOException {
@@ -339,7 +331,7 @@ public abstract class Packager {
 		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getRepackagedClassesLocation());
 		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
 		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
-		if (isLayersEnabled()) {
+		if (isLayered()) {
 			putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layout.getLayersIndexFileLocation());
 		}
 	}
@@ -353,6 +345,10 @@ public abstract class Packager {
 		if (StringUtils.hasLength(value)) {
 			attributes.putValue(name, value);
 		}
+	}
+
+	private boolean isLayered() {
+		return this.layers != null && getLayout() instanceof Layouts.Jar;
 	}
 
 	/**
@@ -430,35 +426,6 @@ public abstract class Packager {
 	}
 
 	/**
-	 * Decorator to track the layers as entries are written.
-	 */
-	private final class LayerTrackingEntryWriter extends AbstractJarWriter {
-
-		private final AbstractJarWriter writer;
-
-		private LayerTrackingEntryWriter(AbstractJarWriter writer) {
-			this.writer = writer;
-		}
-
-		@Override
-		public void writeNestedLibrary(String location, Library library) throws IOException {
-			this.writer.writeNestedLibrary(location, library);
-			Layer layer = Packager.this.layers.getLayer(library);
-			Packager.this.layersIndex.add(layer, location + library.getName());
-		}
-
-		@Override
-		protected void writeToArchive(ZipEntry entry, EntryWriter entryWriter) throws IOException {
-			this.writer.writeToArchive(entry, entryWriter);
-			if (!entry.getName().endsWith("/")) {
-				Layer layer = Packager.this.layers.getLayer(entry.getName());
-				Packager.this.layersIndex.add(layer, entry.getName());
-			}
-		}
-
-	}
-
-	/**
 	 * An {@link UnpackHandler} that determines that an entry needs to be unpacked if a
 	 * library that requires unpacking has a matching entry name.
 	 */
@@ -472,7 +439,7 @@ public abstract class Packager {
 					addLibrary(library);
 				}
 			});
-			if (isLayersEnabled() && Packager.this.includeRelevantJarModeJars) {
+			if (isLayered() && Packager.this.includeRelevantJarModeJars) {
 				addLibrary(JarModeLibrary.LAYER_TOOLS);
 			}
 		}
