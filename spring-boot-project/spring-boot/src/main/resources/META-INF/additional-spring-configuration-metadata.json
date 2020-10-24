@@ -22,12 +22,12 @@
     {
       "name": "logging.charset.console",
       "type": "java.nio.Charset",
-      "description": "The charset to use for console output"
+      "description": "Charset to use for console output."
     },
     {
       "name": "logging.charset.file",
       "type": "java.nio.Charset",
-      "description": "The charset to use for file output"
+      "description": "Charset to use for file output."
     },
     {
       "name": "logging.exception-conversion-word",
@@ -858,13 +858,13 @@
     {
       "name": "spring.config.activate.on-cloud-platform",
       "type": "org.springframework.boot.cloud.CloudPlatform",
-      "description": "The cloud platform that required for the document to be included",
+      "description": "Required cloud platform for the document to be included.",
       "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     },
     {
       "name": "spring.config.activate.on-profile",
       "type": "java.lang.String[]",
-      "description": "Profile expressions that should match for the document to be included",
+      "description": "Profile expressions that should match for the document to be included.",
       "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     }
   ],
