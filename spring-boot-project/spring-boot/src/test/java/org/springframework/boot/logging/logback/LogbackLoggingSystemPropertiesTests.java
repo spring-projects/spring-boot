@@ -16,6 +16,7 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.nio.charset.Charset;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -43,6 +44,8 @@ class LogbackLoggingSystemPropertiesTests {
 
 	@BeforeEach
 	void captureSystemPropertyNames() {
+		System.getProperties().remove(LoggingSystemProperties.CONSOLE_LOG_CHARSET);
+		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.environment = new MockEnvironment();
 		this.environment
@@ -92,6 +95,20 @@ class LogbackLoggingSystemPropertiesTests {
 				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_FILE_SIZE, "1024")
 				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_TOTAL_SIZE_CAP, "2048")
 				.containsEntry(LogbackLoggingSystemProperties.ROLLINGPOLICY_MAX_HISTORY, "mh");
+	}
+
+	@Test
+	void consoleCharsetWhenNoPropertyUsesDefault() {
+		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_CHARSET))
+				.isEqualTo(Charset.defaultCharset().name());
+	}
+
+	@Test
+	void fileCharsetWhenNoPropertyUsesDefault() {
+		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_CHARSET))
+				.isEqualTo(Charset.defaultCharset().name());
 	}
 
 }

@@ -20,6 +20,16 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener"
     },
     {
+      "name": "logging.charset.console",
+      "type": "java.nio.Charset",
+      "description": "The charset to use for console output"
+    },
+    {
+      "name": "logging.charset.file",
+      "type": "java.nio.Charset",
+      "description": "The charset to use for file output"
+    },
+    {
       "name": "logging.exception-conversion-word",
       "type": "java.lang.String",
       "description": "Conversion word used when logging exceptions.",

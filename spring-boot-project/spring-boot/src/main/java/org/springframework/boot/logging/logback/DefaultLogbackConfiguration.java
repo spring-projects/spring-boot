@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.nio.charset.Charset;
+
 import ch.qos.logback.classic.Level;
 import ch.qos.logback.classic.encoder.PatternLayoutEncoder;
 import ch.qos.logback.classic.spi.ILoggingEvent;
@@ -87,6 +89,7 @@ class DefaultLogbackConfiguration {
 		ConsoleAppender<ILoggingEvent> appender = new ConsoleAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setPattern(resolve(config, "${CONSOLE_LOG_PATTERN}"));
+		encoder.setCharset(resolveCharset(config, "${CONSOLE_LOG_CHARSET}"));
 		config.start(encoder);
 		appender.setEncoder(encoder);
 		config.appender("CONSOLE", appender);
@@ -97,6 +100,7 @@ class DefaultLogbackConfiguration {
 		RollingFileAppender<ILoggingEvent> appender = new RollingFileAppender<>();
 		PatternLayoutEncoder encoder = new PatternLayoutEncoder();
 		encoder.setPattern(resolve(config, "${FILE_LOG_PATTERN}"));
+		encoder.setCharset(resolveCharset(config, "${FILE_LOG_CHARSET}"));
 		appender.setEncoder(encoder);
 		config.start(encoder);
 		appender.setFile(logFile);
@@ -131,6 +135,10 @@ class DefaultLogbackConfiguration {
 
 	private FileSize resolveFileSize(LogbackConfigurator config, String val) {
 		return FileSize.valueOf(resolve(config, val));
+	}
+
+	private Charset resolveCharset(LogbackConfigurator config, String val) {
+		return Charset.forName(resolve(config, val));
 	}
 
 	private String resolve(LogbackConfigurator config, String val) {

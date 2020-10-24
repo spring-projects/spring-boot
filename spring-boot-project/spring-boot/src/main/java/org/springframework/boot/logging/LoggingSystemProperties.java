@@ -16,6 +16,9 @@
 
 package org.springframework.boot.logging;
 
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
+
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
@@ -62,9 +65,19 @@ public class LoggingSystemProperties {
 	public static final String CONSOLE_LOG_PATTERN = "CONSOLE_LOG_PATTERN";
 
 	/**
+	 * The name of the System property that contains the console log charset.
+	 */
+	public static final String CONSOLE_LOG_CHARSET = "CONSOLE_LOG_CHARSET";
+
+	/**
 	 * The name of the System property that contains the file log pattern.
 	 */
 	public static final String FILE_LOG_PATTERN = "FILE_LOG_PATTERN";
+
+	/**
+	 * The name of the System property that contains the file log charset.
+	 */
+	public static final String FILE_LOG_CHARSET = "FILE_LOG_CHARSET";
 
 	/**
 	 * The name of the System property that contains the rolled-over log file name
@@ -128,6 +141,10 @@ public class LoggingSystemProperties {
 		this.environment = environment;
 	}
 
+	protected Charset getDefaultCharset() {
+		return StandardCharsets.UTF_8;
+	}
+
 	public final void apply() {
 		apply(null);
 	}
@@ -141,8 +158,10 @@ public class LoggingSystemProperties {
 		setSystemProperty(resolver, EXCEPTION_CONVERSION_WORD, "logging.exception-conversion-word");
 		setSystemProperty(PID_KEY, new ApplicationPid().toString());
 		setSystemProperty(resolver, CONSOLE_LOG_PATTERN, "logging.pattern.console");
+		setSystemProperty(resolver, CONSOLE_LOG_CHARSET, "logging.charset.console", getDefaultCharset().name());
 		setSystemProperty(resolver, LOG_DATEFORMAT_PATTERN, "logging.pattern.dateformat");
 		setSystemProperty(resolver, FILE_LOG_PATTERN, "logging.pattern.file");
+		setSystemProperty(resolver, FILE_LOG_CHARSET, "logging.charset.file", getDefaultCharset().name());
 		setSystemProperty(resolver, LOG_LEVEL_PATTERN, "logging.pattern.level");
 		applyDeprecated(resolver);
 		if (logFile != null) {
@@ -170,7 +189,14 @@ public class LoggingSystemProperties {
 	}
 
 	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName) {
-		setSystemProperty(systemPropertyName, resolver.getProperty(propertyName));
+		setSystemProperty(resolver, systemPropertyName, propertyName, null);
+	}
+
+	protected final void setSystemProperty(PropertyResolver resolver, String systemPropertyName, String propertyName,
+			String defaultValue) {
+		String value = resolver.getProperty(propertyName);
+		value = (value != null) ? value : defaultValue;
+		setSystemProperty(systemPropertyName, value);
 	}
 
 	protected final void setSystemProperty(String name, String value) {

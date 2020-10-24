@@ -16,6 +16,8 @@
 
 package org.springframework.boot.logging.logback;
 
+import java.nio.charset.Charset;
+
 import ch.qos.logback.core.util.FileSize;
 
 import org.springframework.boot.logging.LogFile;
@@ -62,6 +64,11 @@ public class LogbackLoggingSystemProperties extends LoggingSystemProperties {
 
 	public LogbackLoggingSystemProperties(Environment environment) {
 		super(environment);
+	}
+
+	@Override
+	protected Charset getDefaultCharset() {
+		return Charset.defaultCharset();
 	}
 
 	@Override

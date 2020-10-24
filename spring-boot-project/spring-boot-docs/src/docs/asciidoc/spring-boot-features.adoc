@@ -2204,9 +2204,17 @@ To help with the customization, some other properties are transferred from the S
 | `LOG_DATEFORMAT_PATTERN`
 | Appender pattern for log date format.
 
+| configprop:logging.charset.console[]
+| `CONSOLE_LOG_CHARSET`
+| The charset to use for console logging.
+
 | configprop:logging.pattern.file[]
 | `FILE_LOG_PATTERN`
 | The log pattern to use in a file (if `LOG_FILE` is enabled).
+
+| configprop:logging.charset.file[]
+| `FILE_LOG_CHARSET`
+| The charset to use for file logging (if `LOG_FILE` is enabled).
 
 | configprop:logging.pattern.level[]
 | `LOG_LEVEL_PATTERN`

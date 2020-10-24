@@ -17,6 +17,7 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
@@ -30,6 +31,7 @@ import ch.qos.logback.classic.Logger;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.spi.LoggerContextListener;
 import ch.qos.logback.core.ConsoleAppender;
+import ch.qos.logback.core.encoder.LayoutWrappingEncoder;
 import ch.qos.logback.core.rolling.RollingFileAppender;
 import ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy;
 import org.junit.jupiter.api.AfterEach;
@@ -562,6 +564,18 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		this.logger.info("Hello world");
 		assertThat(getLineWithText(file, "Hello world")).contains("INFO");
 		assertThat(getRollingPolicy().getFileNamePattern()).isEqualTo(rollingFile);
+	}
+
+	@Test
+	void customCharset() {
+		this.environment.setProperty("logging.charset.console", "UTF-16");
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		File file = new File(tmpDir(), "logback-test.log");
+		LogFile logFile = getLogFile(file.getPath(), null);
+		initialize(loggingInitializationContext, null, logFile);
+		this.logger.info("Hello world");
+		LayoutWrappingEncoder<?> encoder = (LayoutWrappingEncoder<?>) getConsoleAppender().getEncoder();
+		assertThat(encoder.getCharset()).isEqualTo(StandardCharsets.UTF_16);
 	}
 
 	private void initialize(LoggingInitializationContext context, String configLocation, LogFile logFile) {
