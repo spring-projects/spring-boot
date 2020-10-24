@@ -2059,7 +2059,7 @@
         },
         {
           "value": "iso",
-          "description": "ISO-8601 extended local time format"
+          "description": "ISO-8601 extended local time format."
         },
         {
           "value": "iso-offset",
