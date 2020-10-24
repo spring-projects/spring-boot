@@ -305,26 +305,26 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
-		LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
 		String logConfig = StringUtils.trimWhitespace(environment.getProperty(CONFIG_PROPERTY));
-		if (ignoreLogConfig(logConfig)) {
-			system.initialize(initializationContext, null, logFile);
-		}
-		else {
-			try {
+		try {
+			LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
+			if (ignoreLogConfig(logConfig)) {
+				system.initialize(initializationContext, null, logFile);
+			}
+			else {
 				system.initialize(initializationContext, logConfig, logFile);
 			}
-			catch (Exception ex) {
-				Throwable exceptionToReport = ex;
-				while (exceptionToReport != null && !(exceptionToReport instanceof FileNotFoundException)) {
-					exceptionToReport = exceptionToReport.getCause();
-				}
-				exceptionToReport = (exceptionToReport != null) ? exceptionToReport : ex;
-				// NOTE: We can't use the logger here to report the problem
-				System.err.println("Logging system failed to initialize using configuration from '" + logConfig + "'");
-				exceptionToReport.printStackTrace(System.err);
-				throw new IllegalStateException(ex);
+		}
+		catch (Exception ex) {
+			Throwable exceptionToReport = ex;
+			while (exceptionToReport != null && !(exceptionToReport instanceof FileNotFoundException)) {
+				exceptionToReport = exceptionToReport.getCause();
 			}
+			exceptionToReport = (exceptionToReport != null) ? exceptionToReport : ex;
+			// NOTE: We can't use the logger here to report the problem
+			System.err.println("Logging system failed to initialize using configuration from '" + logConfig + "'");
+			exceptionToReport.printStackTrace(System.err);
+			throw new IllegalStateException(ex);
 		}
 	}
 
