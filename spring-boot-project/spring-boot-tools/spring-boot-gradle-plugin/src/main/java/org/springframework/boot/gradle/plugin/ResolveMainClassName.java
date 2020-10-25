@@ -28,7 +28,9 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.Transformer;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.file.RegularFileProperty;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.Convention;
@@ -136,19 +138,7 @@ public class ResolveMainClassName extends DefaultTask {
 	}
 
 	Provider<String> readMainClassName() {
-		return this.outputFile.map((file) -> {
-			if (file.getAsFile().length() == 0) {
-				throw new InvalidUserDataException(
-						"Main class name has not been configured and it could not be resolved");
-			}
-			Path output = file.getAsFile().toPath();
-			try {
-				return new String(Files.readAllBytes(output), StandardCharsets.UTF_8);
-			}
-			catch (IOException ex) {
-				throw new RuntimeException("Failed to read main class name from '" + output + "'");
-			}
-		});
+		return this.outputFile.map(new ClassNameReader());
 	}
 
 	static TaskProvider<ResolveMainClassName> registerForTask(String taskName, Project project,
@@ -187,6 +177,25 @@ public class ResolveMainClassName extends DefaultTask {
 		catch (NoSuchMethodError ex) {
 			return javaApplication.getMainClassName();
 		}
+	}
+
+	private static final class ClassNameReader implements Transformer<String, RegularFile> {
+
+		@Override
+		public String transform(RegularFile file) {
+			if (file.getAsFile().length() == 0) {
+				throw new InvalidUserDataException(
+						"Main class name has not been configured and it could not be resolved");
+			}
+			Path output = file.getAsFile().toPath();
+			try {
+				return new String(Files.readAllBytes(output), StandardCharsets.UTF_8);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException("Failed to read main class name from '" + output + "'");
+			}
+		}
+
 	}
 
 }

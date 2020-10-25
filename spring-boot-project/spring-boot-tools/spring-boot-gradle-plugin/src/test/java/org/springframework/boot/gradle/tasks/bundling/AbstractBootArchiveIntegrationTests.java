@@ -198,6 +198,8 @@ abstract class AbstractBootArchiveIntegrationTests {
 			Attributes mainAttributes = jarFile.getManifest().getMainAttributes();
 			assertThat(mainAttributes.getValue("Start-Class")).isEqualTo("com.example.main.CustomMainClass");
 		}
+		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
+				.isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
 	private void copyMainClassApplication() throws IOException {
