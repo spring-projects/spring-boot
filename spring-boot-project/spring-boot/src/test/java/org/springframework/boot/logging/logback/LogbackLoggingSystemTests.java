@@ -93,6 +93,8 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@BeforeEach
 	void setup() {
+		System.getProperties().remove(LoggingSystemProperties.CONSOLE_LOG_CHARSET);
+		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.loggingSystem.cleanUp();
 		this.logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).getLogger(getClass());
