@@ -63,6 +63,8 @@ public class Saml2RelyingPartyProperties {
 
 		private final Signing signing = new Signing();
 
+		private final Decryption decryption = new Decryption();
+
 		/**
 		 * Remote SAML Identity Provider.
 		 */
@@ -82,6 +84,10 @@ public class Saml2RelyingPartyProperties {
 
 		public Signing getSigning() {
 			return this.signing;
+		}
+
+		public Decryption getDecryption() {
+			return this.decryption;
 		}
 
 		public Identityprovider getIdentityprovider() {
@@ -123,8 +129,7 @@ public class Saml2RelyingPartyProperties {
 		public static class Signing {
 
 			/**
-			 * Credentials used for signing and decrypting the SAML authentication
-			 * request.
+			 * Credentials used for signing the SAML authentication request.
 			 */
 			private List<Credential> credentials = new ArrayList<>();
 
@@ -139,7 +144,7 @@ public class Saml2RelyingPartyProperties {
 			public static class Credential {
 
 				/**
-				 * Private key used for signing or decrypting.
+				 * Private key used for signing.
 				 */
 				private Resource privateKeyLocation;
 
@@ -164,6 +169,53 @@ public class Saml2RelyingPartyProperties {
 					this.certificateLocation = certificate;
 				}
 
+			}
+
+		}
+
+	}
+
+	public static class Decryption {
+
+		/**
+		 * Credentials used for decrypting the SAML authentication request.
+		 */
+		private List<Credential> credentials = new ArrayList<>();
+
+		public List<Credential> getCredentials() {
+			return this.credentials;
+		}
+
+		public void setCredentials(List<Credential> credentials) {
+			this.credentials = credentials;
+		}
+
+		public static class Credential {
+
+			/**
+			 * Private key used for decrypting.
+			 */
+			private Resource privateKeyLocation;
+
+			/**
+			 * Relying Party X509Certificate shared with the identity provider.
+			 */
+			private Resource certificateLocation;
+
+			public Resource getPrivateKeyLocation() {
+				return this.privateKeyLocation;
+			}
+
+			public void setPrivateKeyLocation(Resource privateKey) {
+				this.privateKeyLocation = privateKey;
+			}
+
+			public Resource getCertificateLocation() {
+				return this.certificateLocation;
+			}
+
+			public void setCertificateLocation(Resource certificate) {
+				this.certificateLocation = certificate;
 			}
 
 		}

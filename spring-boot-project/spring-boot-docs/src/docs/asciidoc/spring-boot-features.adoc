@@ -3866,18 +3866,26 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	      relyingparty:
 	        registration:
 	          my-relying-party1:
-	            signing.credentials:
-                - private-key-location: "path-to-private-key"
-	              certificate-location: "path-to-certificate"
+	            signing:
+                  credentials:
+                  - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+	            decryption:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
 	            identityprovider:
 	              verification:
 	                credentials:
 	                - certificate-location: "path-to-verification-cert"
 	              entity-id: "remote-idp-entity-id1"
 	              sso-url: "https://remoteidp1.sso.url"
-
 	          my-relying-party2:
 	            signing:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+                decryption:
 	              credentials:
 	              - private-key-location: "path-to-private-key"
                     certificate-location: "path-to-certificate"

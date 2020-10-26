@@ -98,7 +98,8 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
 					.isEqualTo(Saml2MessageBinding.POST);
 			assertThat(registration.getAssertingPartyDetails().getWantAuthnRequestsSigned()).isEqualTo(false);
-			assertThat(registration.getSigningX509Credentials()).isNotNull();
+			assertThat(registration.getSigningX509Credentials()).hasSize(1);
+			assertThat(registration.getDecryptionX509Credentials()).hasSize(1);
 			assertThat(registration.getAssertingPartyDetails().getVerificationX509Credentials()).isNotNull();
 			assertThat(registration.getEntityId()).isEqualTo("{baseUrl}/saml2/foo-entity-id");
 		});
@@ -182,6 +183,8 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		return new String[] {
 				PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:saml/private-key-location",
 				PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:saml/certificate-location",
+				PREFIX + ".foo.decryption.credentials[0].private-key-location=classpath:saml/private-key-location",
+				PREFIX + ".foo.decryption.credentials[0].certificate-location=classpath:saml/certificate-location",
 				PREFIX + ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
 				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
 				PREFIX + ".foo.identityprovider.singlesignon.sign-request=false",
