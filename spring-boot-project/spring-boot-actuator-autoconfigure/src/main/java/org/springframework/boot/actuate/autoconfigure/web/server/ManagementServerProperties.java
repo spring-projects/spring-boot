@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.net.InetAddress;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.util.Assert;
@@ -48,6 +49,12 @@ public class ManagementServerProperties {
 	 * management.server.port.
 	 */
 	private InetAddress address;
+
+	/**
+	 * Management endpoint base path (for instance, `/management`). Requires a custom
+	 * management.server.port.
+	 */
+	private String basePath = "";
 
 	private final Servlet servlet = new Servlet();
 
@@ -82,6 +89,14 @@ public class ManagementServerProperties {
 		this.address = address;
 	}
 
+	public String getBasePath() {
+		return this.basePath;
+	}
+
+	public void setBasePath(String basePath) {
+		this.basePath = cleanBasePath(basePath);
+	}
+
 	public Ssl getSsl() {
 		return this.ssl;
 	}
@@ -92,6 +107,19 @@ public class ManagementServerProperties {
 
 	public Servlet getServlet() {
 		return this.servlet;
+	}
+
+	private String cleanBasePath(String basePath) {
+		String candidate = StringUtils.trimWhitespace(basePath);
+		if (StringUtils.hasText(candidate)) {
+			if (!candidate.startsWith("/")) {
+				candidate = "/" + candidate;
+			}
+			if (candidate.endsWith("/")) {
+				candidate = candidate.substring(0, candidate.length() - 1);
+			}
+		}
+		return candidate;
 	}
 
 	/**
@@ -109,11 +137,22 @@ public class ManagementServerProperties {
 		 * Return the context path with no trailing slash (i.e. the '/' root context is
 		 * represented as the empty string).
 		 * @return the context path (no trailing slash)
+		 * @deprecated since 2.4.0 in favor of
+		 * {@link ManagementServerProperties#getBasePath()}
 		 */
+		@Deprecated
+		@DeprecatedConfigurationProperty(replacement = "management.server.base-path")
 		public String getContextPath() {
 			return this.contextPath;
 		}
 
+		/**
+		 * Set the context path.
+		 * @param contextPath the context path
+		 * @deprecated since 2.4.0 in favor of
+		 * {@link ManagementServerProperties#setBasePath(String)}
+		 */
+		@Deprecated
 		public void setContextPath(String contextPath) {
 			Assert.notNull(contextPath, "ContextPath must not be null");
 			this.contextPath = cleanContextPath(contextPath);

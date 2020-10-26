@@ -1272,8 +1272,8 @@ You can use the configprop:management.endpoints.web.base-path[] property to chan
 
 The preceding `application.properties` example changes the endpoint from `/actuator/\{id}` to `/manage/\{id}` (for example, `/manage/info`).
 
-NOTE: Unless the management port has been configured to <<production-ready-customizing-management-server-port,expose endpoints by using a different HTTP port>>, `management.endpoints.web.base-path` is relative to `server.servlet.context-path`.
-If `management.server.port` is configured, `management.endpoints.web.base-path` is relative to `management.server.servlet.context-path`.
+NOTE: Unless the management port has been configured to <<production-ready-customizing-management-server-port,expose endpoints by using a different HTTP port>>, `management.endpoints.web.base-path` is relative to `server.servlet.context-path` (Servlet web applications) or `spring.webflux.base-path` (reactive web applications).
+If `management.server.port` is configured, `management.endpoints.web.base-path` is relative to `management.server.base-path`.
 
 If you want to map endpoints to a different path, you can use the configprop:management.endpoints.web.path-mapping[] property.
 

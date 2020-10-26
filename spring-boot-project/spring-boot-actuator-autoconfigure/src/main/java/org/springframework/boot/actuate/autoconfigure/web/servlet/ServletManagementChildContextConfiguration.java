@@ -123,7 +123,13 @@ class ServletManagementChildContextConfiguration {
 		protected void customize(ConfigurableServletWebServerFactory webServerFactory,
 				ManagementServerProperties managementServerProperties, ServerProperties serverProperties) {
 			super.customize(webServerFactory, managementServerProperties, serverProperties);
-			webServerFactory.setContextPath(managementServerProperties.getServlet().getContextPath());
+			webServerFactory.setContextPath(getContextPath(managementServerProperties));
+		}
+
+		@SuppressWarnings("deprecation")
+		private String getContextPath(ManagementServerProperties managementServerProperties) {
+			String basePath = managementServerProperties.getBasePath();
+			return StringUtils.hasText(basePath) ? basePath : managementServerProperties.getServlet().getContextPath();
 		}
 
 	}
