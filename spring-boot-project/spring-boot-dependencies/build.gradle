@@ -1473,7 +1473,7 @@ bom {
 			]
 		}
 	}
-	library("SendGrid", "4.6.6") {
+	library("SendGrid", "4.6.7") {
 		group("com.sendgrid") {
 			modules = [
 				"sendgrid-java"
