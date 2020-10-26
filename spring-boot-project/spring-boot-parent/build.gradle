@@ -123,6 +123,14 @@ bom {
 			]
 		}
 	}
+	library("Scala", "2.12.11") {
+		group("org.scala-lang") {
+			modules = [
+				"scala-library",
+				"scala-reflect"
+			]
+		}
+	}
 	library("Sisu", "2.6.0") {
 		group("org.sonatype.sisu") {
 			modules = [
