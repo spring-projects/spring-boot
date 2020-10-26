@@ -526,7 +526,7 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasFailed();
 					Throwable failure = context.getStartupFailure();
 					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" migrations ");
+					assertThat(failure).hasMessageContaining(" cherryPick ");
 				});
 	}
 
