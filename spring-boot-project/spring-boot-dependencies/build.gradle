@@ -1227,7 +1227,7 @@ bom {
 			]
 		}
 	}
-	library("Neo4j OGM", "3.2.16") {
+	library("Neo4j OGM", "3.2.17") {
 		group("org.neo4j") {
 			modules = [
 				"neo4j-ogm-api",
