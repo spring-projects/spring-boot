@@ -86,9 +86,9 @@ javadoc {
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	attributes	"maven-jar-plugin-version": "1.2.3",
-				"maven-failsafe-plugin-version": "1.2.3",
-				"build-helper-maven-plugin-version": "1.2.3"
+	attributes	"maven-jar-plugin-version": "3.2.0",
+				"maven-failsafe-plugin-version": "2.22.2",
+				"build-helper-maven-plugin-version": "3.2.0"
 }
 
 task zip(type: Zip) {
