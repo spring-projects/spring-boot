@@ -96,22 +96,6 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	}
 
 	@Test
-	void autoConfigWhenSpringSessionTimeoutIsSetShouldUseThat() {
-		this.contextRunner
-				.withUserConfiguration(ServerPropertiesConfiguration.class, SessionRepositoryConfiguration.class)
-				.withPropertyValues("server.servlet.session.timeout=1", "spring.session.timeout=3")
-				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout()).hasSeconds(3));
-	}
-
-	@Test
-	void autoConfigWhenSpringSessionTimeoutIsNotSetShouldUseServerSessionTimeout() {
-		this.contextRunner
-				.withUserConfiguration(ServerPropertiesConfiguration.class, SessionRepositoryConfiguration.class)
-				.withPropertyValues("server.servlet.session.timeout=3")
-				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout()).hasSeconds(3));
-	}
-
-	@Test
 	void filterIsRegisteredWithAsyncErrorAndRequestDispatcherTypes() {
 		this.contextRunner.withUserConfiguration(SessionRepositoryConfiguration.class).run((context) -> {
 			FilterRegistrationBean<?> registration = context.getBean(FilterRegistrationBean.class);

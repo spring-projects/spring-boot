@@ -24,6 +24,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -60,8 +61,10 @@ class JdbcSessionConfiguration {
 	static class SpringBootJdbcHttpSessionConfiguration extends JdbcHttpSessionConfiguration {
 
 		@Autowired
-		void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties) {
-			Duration timeout = sessionProperties.getTimeout();
+		void customize(SessionProperties sessionProperties, JdbcSessionProperties jdbcSessionProperties,
+				ServerProperties serverProperties) {
+			Duration timeout = sessionProperties
+					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}

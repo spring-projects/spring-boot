@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration.SpringBootJdbcHttpSessionConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
@@ -70,6 +71,8 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	private void validateDefaultConfig(AssertableWebApplicationContext context) {
 		JdbcIndexedSessionRepository repository = validateSessionRepository(context,
 				JdbcIndexedSessionRepository.class);
+		assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+				(int) new ServerProperties().getServlet().getSession().getTimeout().getSeconds());
 		assertThat(repository).hasFieldOrPropertyWithValue("tableName", "SPRING_SESSION");
 		assertThat(context.getBean(JdbcSessionProperties.class).getInitializeSchema())
 				.isEqualTo(DataSourceInitializationMode.EMBEDDED);
@@ -101,6 +104,16 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 							.isEqualTo(DataSourceInitializationMode.NEVER);
 					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
 							() -> context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION"));
+				});
+	}
+
+	@Test
+	void customTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc", "spring.session.timeout=1m")
+				.run((context) -> {
+					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+							JdbcIndexedSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
 				});
 	}
 
