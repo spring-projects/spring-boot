@@ -602,8 +602,6 @@ Other devtools features (such as LiveReload and property overrides) can still be
 NOTE: DevTools relies on the application context's shutdown hook to close it during a restart.
 It does not work correctly if you have disabled the shutdown hook (`SpringApplication.setRegisterShutdownHook(false)`).
 
-NOTE: When deciding if an entry on the classpath should trigger a restart when it changes, DevTools automatically ignores projects named `spring-boot`, `spring-boot-devtools`, `spring-boot-autoconfigure`, `spring-boot-actuator`, and `spring-boot-starter`.
-
 NOTE: DevTools needs to customize the `ResourceLoader` used by the `ApplicationContext`.
 If your application provides one already, it is going to be wrapped.
 Direct override of the `getResource` method on the `ApplicationContext` is not supported.
