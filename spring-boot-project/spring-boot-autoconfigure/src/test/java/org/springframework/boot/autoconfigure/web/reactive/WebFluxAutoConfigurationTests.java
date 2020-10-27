@@ -44,6 +44,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.i18n.LocaleContext;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.convert.ConversionService;
@@ -54,7 +55,10 @@ import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
+import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.Validator;
 import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
 import org.springframework.web.filter.reactive.HiddenHttpMethodFilter;
@@ -74,6 +78,7 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
+import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
 import org.springframework.web.util.pattern.PathPattern;
 
@@ -452,6 +457,54 @@ class WebFluxAutoConfigurationTests {
 					assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
 							.extracting("order").isEqualTo(1);
 				});
+	}
+
+	@Test
+	void defaultLocaleContextResolver() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(LocaleContextResolver.class);
+			LocaleContextResolver resolver = context.getBean(LocaleContextResolver.class);
+			assertThat(((AcceptHeaderLocaleContextResolver) resolver).getDefaultLocale()).isNull();
+		});
+	}
+
+	@Test
+	void whenFixedLocalContextResolverIsUsedThenAcceptLanguagesHeaderIsIgnored() {
+		this.contextRunner.withPropertyValues("spring.web.locale:en_UK", "spring.web.locale-resolver=fixed")
+				.run((context) -> {
+					MockServerHttpRequest request = MockServerHttpRequest.get("/")
+							.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL")).build();
+					MockServerWebExchange exchange = MockServerWebExchange.from(request);
+					LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
+					assertThat(localeContextResolver).isInstanceOf(FixedLocaleContextResolver.class);
+					LocaleContext localeContext = localeContextResolver.resolveLocaleContext(exchange);
+					assertThat(localeContext.getLocale()).isEqualTo(StringUtils.parseLocaleString("en_UK"));
+				});
+	}
+
+	@Test
+	void whenAcceptHeaderLocaleContextResolverIsUsedThenAcceptLanguagesHeaderIsHonoured() {
+		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((context) -> {
+			MockServerHttpRequest request = MockServerHttpRequest.get("/")
+					.acceptLanguageAsLocales(StringUtils.parseLocaleString("nl_NL")).build();
+			MockServerWebExchange exchange = MockServerWebExchange.from(request);
+			LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
+			assertThat(localeContextResolver).isInstanceOf(AcceptHeaderLocaleContextResolver.class);
+			LocaleContext localeContext = localeContextResolver.resolveLocaleContext(exchange);
+			assertThat(localeContext.getLocale()).isEqualTo(StringUtils.parseLocaleString("nl_NL"));
+		});
+	}
+
+	@Test
+	void whenAcceptHeaderLocaleContextResolverIsUsedAndHeaderIsAbsentThenConfiguredLocaleIsUsed() {
+		this.contextRunner.withPropertyValues("spring.web.locale:en_UK").run((context) -> {
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+			MockServerWebExchange exchange = MockServerWebExchange.from(request);
+			LocaleContextResolver localeContextResolver = context.getBean(LocaleContextResolver.class);
+			assertThat(localeContextResolver).isInstanceOf(AcceptHeaderLocaleContextResolver.class);
+			LocaleContext localeContext = localeContextResolver.resolveLocaleContext(exchange);
+			assertThat(localeContext.getLocale()).isEqualTo(StringUtils.parseLocaleString("en_UK"));
+		});
 	}
 
 	@Test

@@ -20,6 +20,7 @@ import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Optional;
 
@@ -51,6 +52,7 @@ import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
 import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Format;
@@ -358,11 +360,14 @@ public class WebMvcAutoConfiguration {
 	 * Configuration equivalent to {@code @EnableWebMvc}.
 	 */
 	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(WebProperties.class)
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
 		private final ResourceProperties resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
+
+		private final WebProperties webProperties;
 
 		private final ListableBeanFactory beanFactory;
 
@@ -370,11 +375,12 @@ public class WebMvcAutoConfiguration {
 
 		private ResourceLoader resourceLoader;
 
-		public EnableWebMvcConfiguration(ResourceProperties resourceProperties,
-				ObjectProvider<WebMvcProperties> mvcPropertiesProvider,
-				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider, ListableBeanFactory beanFactory) {
+		public EnableWebMvcConfiguration(ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
+				WebProperties webProperties, ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
+				ListableBeanFactory beanFactory) {
 			this.resourceProperties = resourceProperties;
-			this.mvcProperties = mvcPropertiesProvider.getIfAvailable();
+			this.mvcProperties = mvcProperties;
+			this.webProperties = webProperties;
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
 			this.beanFactory = beanFactory;
 		}
@@ -426,13 +432,18 @@ public class WebMvcAutoConfiguration {
 		@Override
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.mvc", name = "locale", matchIfMissing = true)
+		@SuppressWarnings("deprecation")
 		public LocaleResolver localeResolver() {
+			if (this.webProperties.getLocaleResolver() == WebProperties.LocaleResolver.FIXED) {
+				return new FixedLocaleResolver(this.webProperties.getLocale());
+			}
 			if (this.mvcProperties.getLocaleResolver() == WebMvcProperties.LocaleResolver.FIXED) {
 				return new FixedLocaleResolver(this.mvcProperties.getLocale());
 			}
 			AcceptHeaderLocaleResolver localeResolver = new AcceptHeaderLocaleResolver();
-			localeResolver.setDefaultLocale(this.mvcProperties.getLocale());
+			Locale locale = (this.webProperties.getLocale() != null) ? this.webProperties.getLocale()
+					: this.mvcProperties.getLocale();
+			localeResolver.setDefaultLocale(locale);
 			return localeResolver;
 		}
 

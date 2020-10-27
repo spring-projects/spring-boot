@@ -38,6 +38,8 @@ import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidatorFactory;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
@@ -289,10 +291,11 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void overrideLocale() {
-		this.contextRunner.withPropertyValues("spring.mvc.locale:en_UK", "spring.mvc.locale-resolver=fixed")
-				.run((loader) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "mvc", "web" })
+	void overrideLocale(String mvcOrWeb) {
+		this.contextRunner.withPropertyValues("spring." + mvcOrWeb + ".locale:en_UK",
+				"spring." + mvcOrWeb + ".locale-resolver=fixed").run((loader) -> {
 					// mock request and set user preferred locale
 					MockHttpServletRequest request = new MockHttpServletRequest();
 					request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
@@ -306,9 +309,10 @@ class WebMvcAutoConfigurationTests {
 				});
 	}
 
-	@Test
-	void useAcceptHeaderLocale() {
-		this.contextRunner.withPropertyValues("spring.mvc.locale:en_UK").run((loader) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "mvc", "web" })
+	void useAcceptHeaderLocale(String mvcOrWeb) {
+		this.contextRunner.withPropertyValues("spring." + mvcOrWeb + ".locale:en_UK").run((loader) -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			request.addPreferredLocale(StringUtils.parseLocaleString("nl_NL"));
@@ -321,9 +325,10 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void useDefaultLocaleIfAcceptHeaderNoSet() {
-		this.contextRunner.withPropertyValues("spring.mvc.locale:en_UK").run((context) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "mvc", "web" })
+	void useDefaultLocaleIfAcceptHeaderNoSet(String mvcOrWeb) {
+		this.contextRunner.withPropertyValues("spring." + mvcOrWeb + ".locale:en_UK").run((context) -> {
 			// mock request and set user preferred locale
 			MockHttpServletRequest request = new MockHttpServletRequest();
 			LocaleResolver localeResolver = context.getBean(LocaleResolver.class);
