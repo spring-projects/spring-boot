@@ -796,12 +796,45 @@ To import these properties, you can add the following to your `application.prope
 ----
 	spring:
 	  config:
-	    import: "optional:configtree:/etc/config"
+	    import: "optional:configtree:/etc/config/"
 ----
 
 You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
 
 TIP: Configuration tree values can be bound to both string `String` and `byte[]` types depending on the contents expected.
+
+If you have multiple config trees to import from the same parent folder you can use a wildcard shortcut.
+Any `configtree:` location that ends with `/*/` will import all immediate children as config trees.
+
+For example, given the following volume:
+
+[source,indent=0]
+----
+	etc/
+	  config/
+	    dbconfig/
+	      db/
+	        username
+	        password
+	    mqconfig/
+	      mq/
+	        username
+	        password
+----
+
+You can use `configtree:/etc/config/*/` as the import location:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  config:
+	    import: "optional:configtree:/etc/config/*/"
+----
+
+This will add `db.username`, `db.password`, `mq.username` and `mq.password` properties.
+
+NOTE: Directories loaded using a wildcard are sorted alphabetically.
+If you need a different order, then you should list each location as a separate import
 
 
 

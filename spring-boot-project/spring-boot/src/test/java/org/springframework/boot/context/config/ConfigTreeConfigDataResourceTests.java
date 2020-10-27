@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.io.File;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
 
@@ -32,8 +33,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 public class ConfigTreeConfigDataResourceTests {
 
 	@Test
+	void constructorWhenPathStringIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((String) null))
+				.withMessage("Path must not be null");
+	}
+
+	@Test
 	void constructorWhenPathIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigTreeConfigDataResource((Path) null))
 				.withMessage("Path must not be null");
 	}
 

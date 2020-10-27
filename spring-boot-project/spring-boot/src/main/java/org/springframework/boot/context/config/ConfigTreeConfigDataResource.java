@@ -40,6 +40,11 @@ public class ConfigTreeConfigDataResource extends ConfigDataResource {
 		this.path = Paths.get(path).toAbsolutePath();
 	}
 
+	ConfigTreeConfigDataResource(Path path) {
+		Assert.notNull(path, "Path must not be null");
+		this.path = path.toAbsolutePath();
+	}
+
 	Path getPath() {
 		return this.path;
 	}

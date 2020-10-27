@@ -100,14 +100,14 @@ public class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationWildcardIsSpecifiedForClasspathLocationThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath*:application.properties");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageContaining("Classpath wildcard patterns cannot be used as a search location");
+				.withMessageContaining("Location 'classpath*:application.properties' cannot use classpath wildcards");
 	}
 
 	@Test
 	void resolveWhenLocationWildcardIsNotBeforeLastSlashThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/*/config/");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Search location '").withMessageEndingWith("' must end with '*/'");
+				.withMessageStartingWith("Location '").withMessageEndingWith("' must end with '*/'");
 	}
 
 	@Test
@@ -123,8 +123,7 @@ public class StandardConfigDataLocationResolverTests {
 	void resolveWhenLocationHasMultipleWildcardsThrowsException() {
 		ConfigDataLocation location = ConfigDataLocation.of("file:src/test/resources/config/**/");
 		assertThatIllegalStateException().isThrownBy(() -> this.resolver.resolve(this.context, location))
-				.withMessageStartingWith("Search location '")
-				.withMessageEndingWith("' cannot contain multiple wildcards");
+				.withMessageStartingWith("Location '").withMessageEndingWith("' cannot contain multiple wildcards");
 	}
 
 	@Test

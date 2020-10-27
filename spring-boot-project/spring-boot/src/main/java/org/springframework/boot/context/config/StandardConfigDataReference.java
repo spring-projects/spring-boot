@@ -78,10 +78,6 @@ class StandardConfigDataReference {
 		return this.configDataLocation.isOptional() || this.directory != null || this.profile != null;
 	}
 
-	boolean isPatternLocation() {
-		return this.resourceLocation.contains("*");
-	}
-
 	PropertySourceLoader getPropertySourceLoader() {
 		return this.propertySourceLoader;
 	}

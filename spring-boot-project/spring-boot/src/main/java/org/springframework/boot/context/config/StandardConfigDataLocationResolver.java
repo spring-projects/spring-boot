@@ -16,12 +16,8 @@
 
 package org.springframework.boot.context.config;
 
-import java.io.File;
-import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -30,18 +26,16 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.context.config.LocationResourceLoader.ResourceType;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -61,10 +55,6 @@ public class StandardConfigDataLocationResolver
 
 	private static final String[] DEFAULT_CONFIG_NAMES = { "application" };
 
-	private static final Resource[] EMPTY_RESOURCES = {};
-
-	private static final Comparator<File> FILE_COMPARATOR = Comparator.comparing(File::getAbsolutePath);
-
 	private static final Pattern URL_PREFIX = Pattern.compile("^([a-zA-Z][a-zA-Z0-9*]*?:)(.*$)");
 
 	private static final Pattern EXTENSION_HINT_PATTERN = Pattern.compile("^(.*)\\[(\\.\\w+)\\](?!\\[)$");
@@ -77,7 +67,7 @@ public class StandardConfigDataLocationResolver
 
 	private final String[] configNames;
 
-	private final ResourceLoader resourceLoader;
+	private final LocationResourceLoader resourceLoader;
 
 	/**
 	 * Create a new {@link StandardConfigDataLocationResolver} instance.
@@ -90,7 +80,7 @@ public class StandardConfigDataLocationResolver
 		this.propertySourceLoaders = SpringFactoriesLoader.loadFactories(PropertySourceLoader.class,
 				getClass().getClassLoader());
 		this.configNames = getConfigNames(binder);
-		this.resourceLoader = resourceLoader;
+		this.resourceLoader = new LocationResourceLoader(resourceLoader);
 	}
 
 	private String[] getConfigNames(Binder binder) {
@@ -243,20 +233,20 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private void assertDirectoryExists(StandardConfigDataReference reference) {
-		Resource resource = loadResource(reference.getDirectory());
+		Resource resource = this.resourceLoader.getResource(reference.getDirectory());
 		StandardConfigDataResource configDataResource = new StandardConfigDataResource(reference, resource);
 		ConfigDataResourceNotFoundException.throwIfDoesNotExist(configDataResource, resource);
 	}
 
 	private List<StandardConfigDataResource> resolve(StandardConfigDataReference reference) {
-		if (!reference.isPatternLocation()) {
+		if (!this.resourceLoader.isPattern(reference.getResourceLocation())) {
 			return resolveNonPattern(reference);
 		}
 		return resolvePattern(reference);
 	}
 
 	private List<StandardConfigDataResource> resolveNonPattern(StandardConfigDataReference reference) {
-		Resource resource = loadResource(reference.getResourceLocation());
+		Resource resource = this.resourceLoader.getResource(reference.getResourceLocation());
 		if (!resource.exists() && reference.isSkippable()) {
 			logSkippingResource(reference);
 			return Collections.emptyList();
@@ -265,9 +255,8 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private List<StandardConfigDataResource> resolvePattern(StandardConfigDataReference reference) {
-		validatePatternLocation(reference.getResourceLocation());
 		List<StandardConfigDataResource> resolved = new ArrayList<>();
-		for (Resource resource : getResourcesFromResourceLocationPattern(reference.getResourceLocation())) {
+		for (Resource resource : this.resourceLoader.getResources(reference.getResourceLocation(), ResourceType.FILE)) {
 			if (!resource.exists() && reference.isSkippable()) {
 				logSkippingResource(reference);
 			}
@@ -285,64 +274,6 @@ public class StandardConfigDataLocationResolver
 	private StandardConfigDataResource createConfigResourceLocation(StandardConfigDataReference reference,
 			Resource resource) {
 		return new StandardConfigDataResource(reference, resource);
-	}
-
-	private void validatePatternLocation(String resourceLocation) {
-		Assert.state(!resourceLocation.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX),
-				"Classpath wildcard patterns cannot be used as a search location");
-		Assert.state(StringUtils.countOccurrencesOf(resourceLocation, "*") == 1,
-				() -> "Search location '" + resourceLocation + "' cannot contain multiple wildcards");
-		String directoryPath = resourceLocation.substring(0, resourceLocation.lastIndexOf("/") + 1);
-		Assert.state(directoryPath.endsWith("*/"),
-				() -> "Search location '" + resourceLocation + "' must end with '*/'");
-	}
-
-	private Resource[] getResourcesFromResourceLocationPattern(String resourceLocationPattern) {
-		String directoryPath = resourceLocationPattern.substring(0, resourceLocationPattern.indexOf("*/"));
-		String fileName = resourceLocationPattern.substring(resourceLocationPattern.lastIndexOf("/") + 1);
-		Resource directoryResource = loadResource(directoryPath);
-		if (!directoryResource.exists()) {
-			return new Resource[] { directoryResource };
-		}
-		File directory = getDirectory(resourceLocationPattern, directoryResource);
-		File[] subDirectories = directory.listFiles(this::isVisibleDirectory);
-		if (subDirectories == null) {
-			return EMPTY_RESOURCES;
-		}
-		Arrays.sort(subDirectories, FILE_COMPARATOR);
-		List<Resource> resources = new ArrayList<>();
-		FilenameFilter filter = (dir, name) -> name.equals(fileName);
-		for (File subDirectory : subDirectories) {
-			File[] files = subDirectory.listFiles(filter);
-			if (files != null) {
-				Arrays.stream(files).map(FileSystemResource::new).forEach(resources::add);
-			}
-		}
-		return resources.toArray(EMPTY_RESOURCES);
-	}
-
-	private Resource loadResource(String location) {
-		location = StringUtils.cleanPath(location);
-		if (!ResourceUtils.isUrl(location)) {
-			location = ResourceUtils.FILE_URL_PREFIX + location;
-		}
-		return this.resourceLoader.getResource(location);
-	}
-
-	private File getDirectory(String patternLocation, Resource resource) {
-		try {
-			File directory = resource.getFile();
-			Assert.state(directory.isDirectory(), () -> "'" + directory + "' is not a directory");
-			return directory;
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(
-					"Unable to load config data resource from pattern '" + patternLocation + "'", ex);
-		}
-	}
-
-	private boolean isVisibleDirectory(File file) {
-		return file.isDirectory() && !file.getName().startsWith(".");
 	}
 
 }
