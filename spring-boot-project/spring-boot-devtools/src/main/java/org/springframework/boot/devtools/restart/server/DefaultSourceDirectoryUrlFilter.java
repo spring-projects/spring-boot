@@ -68,12 +68,9 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 
 	private boolean isDirectoryMatch(String directory, String jarName) {
 		if (!jarName.startsWith(directory)) {
-			System.out.println(jarName + " does not start with " + directory);
 			return false;
 		}
-		System.out.println(jarName + " starts with " + directory);
 		String version = jarName.substring(directory.length());
-		System.out.println("Checking version: " + version);
 		return version.isEmpty() || VERSION_PATTERN.matcher(version).matches();
 	}
 
