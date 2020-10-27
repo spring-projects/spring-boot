@@ -16,10 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -39,8 +38,7 @@ import org.springframework.security.web.SecurityFilterChain;
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ SecurityFilterChain.class, HttpSecurity.class })
-@ConditionalOnMissingBean({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
+@ConditionalOnDefaultWebSecurity
 @ConditionalOnWebApplication(type = Type.SERVLET)
 class SpringBootWebSecurityConfiguration {
 

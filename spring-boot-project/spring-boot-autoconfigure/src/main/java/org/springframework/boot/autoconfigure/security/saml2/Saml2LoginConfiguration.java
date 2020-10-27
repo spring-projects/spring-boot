@@ -17,8 +17,7 @@
 package org.springframework.boot.autoconfigure.security.saml2;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,9 +32,8 @@ import org.springframework.security.web.SecurityFilterChain;
  * @author Madhura Bhave
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
+@ConditionalOnDefaultWebSecurity
 @ConditionalOnBean(RelyingPartyRegistrationRepository.class)
-@ConditionalOnClass({ SecurityFilterChain.class, HttpSecurity.class })
 class Saml2LoginConfiguration {
 
 	@Bean
