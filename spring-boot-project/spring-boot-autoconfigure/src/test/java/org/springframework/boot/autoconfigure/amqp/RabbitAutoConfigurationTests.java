@@ -535,7 +535,7 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void testSimpleRabbitListenerContainerFactoryConfigurerUsesConfig() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:direct",
+				.withPropertyValues("spring.rabbitmq.listener.type:simple",
 						"spring.rabbitmq.listener.simple.concurrency:5",
 						"spring.rabbitmq.listener.simple.maxConcurrency:10",
 						"spring.rabbitmq.listener.simple.prefetch:40")
@@ -553,7 +553,7 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void testSimpleRabbitListenerContainerFactoryConfigurerEnableDeBatchingWithConsumerBatchEnabled() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:direct",
+				.withPropertyValues("spring.rabbitmq.listener.type:simple",
 						"spring.rabbitmq.listener.simple.consumer-batch-enabled:true")
 				.run((context) -> {
 					SimpleRabbitListenerContainerFactoryConfigurer configurer = context
@@ -567,7 +567,7 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void testDirectRabbitListenerContainerFactoryConfigurerUsesConfig() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:simple",
+				.withPropertyValues("spring.rabbitmq.listener.type:direct",
 						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
 						"spring.rabbitmq.listener.direct.prefetch:40",
 						"spring.rabbitmq.listener.direct.de-batching-enabled:false")
