@@ -22,7 +22,6 @@
       <plugin>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
         <configuration>
           <arguments>
             <argument>property1</argument>

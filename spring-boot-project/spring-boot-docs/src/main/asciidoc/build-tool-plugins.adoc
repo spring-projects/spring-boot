@@ -34,7 +34,6 @@ To use the Spring Boot Maven Plugin, include the appropriate XML in the `plugins
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{spring-boot-version}</version>
 					<executions>
 						<execution>
 							<goals>

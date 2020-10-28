@@ -177,7 +177,6 @@ You also need to include the following element inside `<plugins/>`:
 	<plugin>
 		<groupId>org.apache.maven.plugins</groupId>
 		<artifactId>maven-resources-plugin</artifactId>
-		<version>2.7</version>
 		<configuration>
 			<delimiters>
 				<delimiter>@</delimiter>
@@ -2460,7 +2459,6 @@ To generate build information with Maven, add an execution for the `build-info` 
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{spring-boot-version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -2572,7 +2570,6 @@ However, you must additionally add an `<executions>` section, as follows:
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{spring-boot-version}</version>
 				<executions>
 					<execution>
 						<goals>

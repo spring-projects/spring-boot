@@ -435,7 +435,6 @@ You can deploy the app (for example, with a Maven plugin) by adding the project 
 	<plugin>
 		<groupId>com.google.cloud.tools</groupId>
 		<artifactId>appengine-maven-plugin</artifactId>
-		<version>1.3.0</version>
 		<configuration>
 			<project>myproject</project>
 		</configuration>

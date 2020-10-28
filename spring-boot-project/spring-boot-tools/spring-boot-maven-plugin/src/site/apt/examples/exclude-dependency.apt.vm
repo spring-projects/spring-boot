@@ -36,7 +36,6 @@
       <plugin>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
         <configuration>
           <excludes>
             <exclude>
@@ -68,7 +67,6 @@
       <plugin>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
         <configuration>
           <excludeGroupIds>com.foo</excludeGroupIds>
         </configuration>

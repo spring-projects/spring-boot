@@ -26,7 +26,6 @@
       <plugin>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
         <executions>
           <execution>
             <id>repackage</id>
@@ -98,7 +97,6 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-jar-plugin</artifactId>
-        <version>@maven-jar-plugin.version@</version>
         <executions>
           <execution>
             <goals>
@@ -114,7 +112,6 @@
       <plugin>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
         <executions>
           <execution>
             <id>repackage</id>

@@ -20,7 +20,6 @@
       <plugin>
         <groupId>${project.groupId}</groupId>
         <artifactId>${project.artifactId}</artifactId>
-        <version>${project.version}</version>
         <configuration>
           <jvmArguments>
             -Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005

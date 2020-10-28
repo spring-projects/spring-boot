@@ -120,7 +120,7 @@ For instance, to upgrade to another Spring Data release train, you could add the
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-releasetrain</artifactId>
-				<version>Fowler-SR2</version>
+				<version>Moore-SR10</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
