@@ -65,11 +65,6 @@ public class FlywayProperties {
 	private int connectRetries;
 
 	/**
-	 * Maximum number of retries when trying to obtain a lock.
-	 */
-	private Integer lockRetryCount;
-
-	/**
 	 * Default schema name managed by Flyway (case-sensitive).
 	 */
 	private String defaultSchema;
@@ -366,14 +361,6 @@ public class FlywayProperties {
 
 	public void setConnectRetries(int connectRetries) {
 		this.connectRetries = connectRetries;
-	}
-
-	public Integer getLockRetryCount() {
-		return this.lockRetryCount;
-	}
-
-	public void setLockRetryCount(Integer lockRetryCount) {
-		this.lockRetryCount = lockRetryCount;
 	}
 
 	public String getDefaultSchema() {

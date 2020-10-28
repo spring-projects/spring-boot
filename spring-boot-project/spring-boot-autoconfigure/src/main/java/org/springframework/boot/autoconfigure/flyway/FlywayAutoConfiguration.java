@@ -173,9 +173,6 @@ public class FlywayAutoConfiguration {
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
-			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getLockRetryCount())
-					.to((lockRetryCount) -> configuration.lockRetryCount(lockRetryCount));
 			// No method reference for compatibility with Flyway 5.x
 			map.from(properties.getDefaultSchema()).to((schema) -> configuration.defaultSchema(schema));
 			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
