@@ -50,7 +50,7 @@ public class ConfigTreeConfigDataLoaderTests {
 	void loadReturnsConfigDataWithPropertySource() throws IOException {
 		File file = this.directory.resolve("hello").toFile();
 		file.getParentFile().mkdirs();
-		FileCopyUtils.copy("world".getBytes(StandardCharsets.UTF_8), file);
+		FileCopyUtils.copy("world\n".getBytes(StandardCharsets.UTF_8), file);
 		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource(this.directory.toString());
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(1);

@@ -199,6 +199,30 @@ class ConfigTreePropertySourceTests {
 		assertThat(propertySource.getProperty("spring")).hasToString("boot");
 	}
 
+	@Test
+	void getPropertyAsStringWhenMultiLinePropertyReturnsNonTrimmed() throws Exception {
+		addProperty("a", "a\nb\n");
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.AUTO_TRIM_TRAILING_NEW_LINE);
+		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a\nb\n");
+	}
+
+	@Test
+	void getPropertyAsStringWhenPropertyEndsWithNewLineReturnsTrimmed() throws Exception {
+		addProperty("a", "a\n");
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.AUTO_TRIM_TRAILING_NEW_LINE);
+		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+	}
+
+	@Test
+	void getPropertyAsStringWhenPropertyEndsWithWindowsNewLineReturnsTrimmed() throws Exception {
+		addProperty("a", "a\r\n");
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.AUTO_TRIM_TRAILING_NEW_LINE);
+		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+	}
+
 	private ConfigTreePropertySource getFlatPropertySource() throws IOException {
 		addProperty("a", "A");
 		addProperty("b", "B");
