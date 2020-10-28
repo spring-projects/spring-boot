@@ -16,13 +16,13 @@
 
 package org.springframework.boot.buildpack.platform.docker.transport;
 
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
 import org.apache.http.HttpEntity;
-import org.apache.http.HttpHeaders;
 import org.apache.http.HttpHost;
 import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
@@ -132,8 +132,7 @@ abstract class HttpClientTransport implements HttpTransport {
 
 	private Response execute(HttpEntityEnclosingRequestBase request, String contentType,
 			IOConsumer<OutputStream> writer) {
-		request.setHeader(HttpHeaders.CONTENT_TYPE, contentType);
-		request.setEntity(new WritableHttpEntity(writer));
+		request.setEntity(new WritableHttpEntity(contentType, writer));
 		return execute(request);
 	}
 
@@ -193,7 +192,8 @@ abstract class HttpClientTransport implements HttpTransport {
 
 		private final IOConsumer<OutputStream> writer;
 
-		WritableHttpEntity(IOConsumer<OutputStream> writer) {
+		WritableHttpEntity(String contentType, IOConsumer<OutputStream> writer) {
+			setContentType(contentType);
 			this.writer = writer;
 		}
 
@@ -204,6 +204,9 @@ abstract class HttpClientTransport implements HttpTransport {
 
 		@Override
 		public long getContentLength() {
+			if (this.contentType != null && this.contentType.getValue().equals("application/json")) {
+				return calculateStringContentLength();
+			}
 			return -1;
 		}
 
@@ -220,6 +223,17 @@ abstract class HttpClientTransport implements HttpTransport {
 		@Override
 		public boolean isStreaming() {
 			return true;
+		}
+
+		private int calculateStringContentLength() {
+			try {
+				ByteArrayOutputStream bytes = new ByteArrayOutputStream();
+				this.writer.accept(bytes);
+				return bytes.toByteArray().length;
+			}
+			catch (IOException ex) {
+				return -1;
+			}
 		}
 
 	}
