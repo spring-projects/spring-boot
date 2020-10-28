@@ -51,7 +51,7 @@ class ReactiveOAuth2ClientConfigurations {
 	static class ReactiveClientRegistrationRepositoryConfiguration {
 
 		@Bean
-		InMemoryReactiveClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
+		ReactiveClientRegistrationRepository clientRegistrationRepository(OAuth2ClientProperties properties) {
 			List<ClientRegistration> registrations = new ArrayList<>(
 					OAuth2ClientPropertiesRegistrationAdapter.getClientRegistrations(properties).values());
 			return new InMemoryReactiveClientRegistrationRepository(registrations);
