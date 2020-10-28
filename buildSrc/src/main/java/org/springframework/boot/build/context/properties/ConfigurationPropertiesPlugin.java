@@ -23,6 +23,7 @@ import java.util.stream.Collectors;
 
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
@@ -37,7 +38,10 @@ import org.springframework.util.StringUtils;
  *
  * <ul>
  * <li>Adding a dependency on the configuration properties annotation processor.
- * <li>Configure the additional metadata locations annotation processor compiler argument
+ * <li>Configuring the additional metadata locations annotation processor compiler
+ * argument.
+ * <li>Adding the outputs of the processResources task as inputs of the compileJava task
+ * to ensure that the additional metadata is available when the annotation processor runs.
  * <li>Defining an artifact for the resulting configuration property metadata so that it
  * can be consumed by downstream projects.
  * </ul>
@@ -83,6 +87,7 @@ public class ConfigurationPropertiesPlugin implements Plugin<Project> {
 	private void configureAdditionalMetadataLocationsCompilerArgument(Project project) {
 		JavaCompile compileJava = project.getTasks().withType(JavaCompile.class)
 				.getByName(JavaPlugin.COMPILE_JAVA_TASK_NAME);
+		((Task) compileJava).getInputs().files(project.getTasks().getByName(JavaPlugin.PROCESS_RESOURCES_TASK_NAME));
 		SourceSet mainSourceSet = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
 				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
 		compileJava.getOptions().getCompilerArgs()
