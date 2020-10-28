@@ -85,12 +85,6 @@ javadoc {
 	}
 }
 
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	attributes	"maven-jar-plugin-version": "1.2.3",
-				"maven-failsafe-plugin-version": "1.2.3",
-				"build-helper-maven-plugin-version": "1.2.3"
-}
-
 task zip(type: Zip) {
 	dependsOn asciidoctor, asciidoctorPdf
 	duplicatesStrategy "fail"

@@ -12,7 +12,6 @@ Packaging an executable archive is performed by the `repackage` goal, as shown i
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -48,7 +47,6 @@ The `Main-Class` in the manifest is controlled by the `layout` property of the S
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<configuration>
 					<mainClass>${start.class}</mainClass>
 					<layout>ZIP</layout>
@@ -106,7 +104,6 @@ To disable this feature, you can do so in the following manner:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
 							<enabled>false</enabled>
@@ -133,7 +130,6 @@ This can be done using a separate configuration file that should be registered a
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
 							<enabled>true</enabled>
@@ -235,7 +231,6 @@ If that is the case or if you prefer to keep the original artifact and attach th
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -292,7 +287,6 @@ The following configuration installs/deploys a single `task` classified artifact
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>{maven-jar-plugin-version}</version>
 					<executions>
 						<execution>
 							<goals>
@@ -308,7 +302,6 @@ The following configuration installs/deploys a single `task` classified artifact
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -378,7 +371,6 @@ If you need the repackaged jar to have a different local name than the one defin
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -410,7 +402,6 @@ If you need to only deploy the original jar and yet be able to run your app with
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -445,7 +436,6 @@ Spring Boot repackages the jar file for this project using a custom layout facto
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -502,7 +492,6 @@ The following example excludes `com.foo:bar`, and only that artifact:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<excludes>
 							<exclude>
@@ -527,7 +516,6 @@ This example excludes any artifact belonging to the `com.foo` group:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<excludeGroupIds>com.foo</excludeGroupIds>
 					</configuration>
@@ -553,7 +541,6 @@ If you wish to exclude this dependency, you can do so in the following manner:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
 							<includeLayerTools>false</includeLayerTools>

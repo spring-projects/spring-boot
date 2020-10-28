@@ -27,7 +27,6 @@ To enable it, just add the following dependency to your project:
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-devtools</artifactId>
-			<version>{gradle-project-version}</version>
 			<optional>true</optional>
 		</dependency>
 	</dependencies>
@@ -55,7 +54,6 @@ You can restore it at any time by configuring your project:
 		<plugin>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-maven-plugin</artifactId>
-			<version>{gradle-project-version}</version>
 			<configuration>
 				<addResources>true</addResources>
 			</configuration>
@@ -103,7 +101,6 @@ The following configuration suspend the process until a debugger has joined on p
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<jvmArguments>
 							-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
@@ -140,7 +137,6 @@ The following example sets `property1` to `test` and `property2` to 42:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<systemPropertyVariables>
 							<property1>test</property1>
@@ -182,7 +178,6 @@ The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<configuration>
 					<environmentVariables>
 						<ENV1>5000</ENV1>
@@ -220,7 +215,6 @@ The following example sets two arguments: `property1` and `property2=42`:
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<configuration>
 					<arguments>
 						<argument>property1</argument>
@@ -258,7 +252,6 @@ The following configuration enables the `foo` and `bar` profiles:
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<configuration>
 					<profiles>
 						<profile>foo</profile>
