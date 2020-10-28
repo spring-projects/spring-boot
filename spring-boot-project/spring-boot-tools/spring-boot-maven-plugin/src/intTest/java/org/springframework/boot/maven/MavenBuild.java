@@ -89,9 +89,9 @@ class MavenBuild {
 		this.pomReplacements.put("maven-toolchains-plugin.version", "3.0.0");
 		this.pomReplacements.put("maven-war-plugin.version", "3.2.3");
 		this.pomReplacements.put("build-helper-maven-plugin.version", "3.0.0");
-		this.pomReplacements.put("spring-framework.version", "5.2.1.RELEASE");
-		this.pomReplacements.put("jakarta-servlet.version", "4.0.2");
-		this.pomReplacements.put("kotlin.version", "1.3.60");
+		this.pomReplacements.put("spring-framework.version", "5.3.0");
+		this.pomReplacements.put("jakarta-servlet.version", "4.0.4");
+		this.pomReplacements.put("kotlin.version", "1.4.10");
 	}
 
 	MavenBuild project(String project) {
