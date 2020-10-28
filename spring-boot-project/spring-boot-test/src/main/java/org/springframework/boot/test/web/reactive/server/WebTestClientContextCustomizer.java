@@ -41,7 +41,6 @@ import org.springframework.core.Ordered;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
-import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
@@ -55,9 +54,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
-		AnnotationDescriptor<SpringBootTest> springBootTest = TestContextAnnotationUtils
-				.findAnnotationDescriptor(mergedConfig.getTestClass(), SpringBootTest.class);
-		if (springBootTest.getAnnotation().webEnvironment().isEmbedded()) {
+		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
+				SpringBootTest.class);
+		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerWebTestClient(context);
 		}
 	}

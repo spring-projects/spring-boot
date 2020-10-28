@@ -23,7 +23,6 @@ import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.TestContextAnnotationUtils;
-import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 import org.springframework.util.ClassUtils;
 
 /**
@@ -38,12 +37,9 @@ class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		AnnotationDescriptor<SpringBootTest> springBootTest = TestContextAnnotationUtils
-				.findAnnotationDescriptor(testClass, SpringBootTest.class);
-		if (springBootTest != null) {
-			return new WebTestClientContextCustomizer();
-		}
-		return null;
+		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				SpringBootTest.class);
+		return (springBootTest != null) ? new WebTestClientContextCustomizer() : null;
 	}
 
 	private boolean isWebClientPresent() {

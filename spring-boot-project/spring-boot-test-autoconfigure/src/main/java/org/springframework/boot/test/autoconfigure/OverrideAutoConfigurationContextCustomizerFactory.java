@@ -26,7 +26,6 @@ import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
-import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 
 /**
  * {@link ContextCustomizerFactory} to support
@@ -39,9 +38,9 @@ class OverrideAutoConfigurationContextCustomizerFactory implements ContextCustom
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configurationAttributes) {
-		AnnotationDescriptor<OverrideAutoConfiguration> descriptor = TestContextAnnotationUtils
-				.findAnnotationDescriptor(testClass, OverrideAutoConfiguration.class);
-		boolean enabled = (descriptor != null) ? descriptor.getAnnotation().enabled() : true;
+		OverrideAutoConfiguration overrideAutoConfiguration = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				OverrideAutoConfiguration.class);
+		boolean enabled = (overrideAutoConfiguration != null) ? overrideAutoConfiguration.enabled() : true;
 		return !enabled ? new DisableAutoConfigurationContextCustomizer() : null;
 	}
 

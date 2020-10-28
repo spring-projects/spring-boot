@@ -40,7 +40,6 @@ import org.springframework.core.Ordered;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContextAnnotationUtils;
-import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 
 /**
  * {@link ContextCustomizer} for {@link TestRestTemplate}.
@@ -53,9 +52,9 @@ class TestRestTemplateContextCustomizer implements ContextCustomizer {
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context,
 			MergedContextConfiguration mergedContextConfiguration) {
-		AnnotationDescriptor<SpringBootTest> springBootTest = TestContextAnnotationUtils
-				.findAnnotationDescriptor(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
-		if (springBootTest.getAnnotation().webEnvironment().isEmbedded()) {
+		SpringBootTest springBootTest = TestContextAnnotationUtils
+				.findMergedAnnotation(mergedContextConfiguration.getTestClass(), SpringBootTest.class);
+		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerTestRestTemplate(context);
 		}
 	}

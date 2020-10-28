@@ -37,7 +37,7 @@ class MetricsExportContextCustomizerFactory implements ContextCustomizerFactory 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		boolean disableMetricsExport = TestContextAnnotationUtils.findAnnotationDescriptor(testClass,
+		boolean disableMetricsExport = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				AutoConfigureMetrics.class) == null;
 		return disableMetricsExport ? new DisableMetricExportContextCustomizer() : null;
 	}

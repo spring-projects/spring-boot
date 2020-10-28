@@ -47,7 +47,6 @@ import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.TestContextAnnotationUtils;
-import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
@@ -320,12 +319,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {
-		AnnotationDescriptor<SpringBootTest> descriptor = TestContextAnnotationUtils.findAnnotationDescriptor(testClass,
-				SpringBootTest.class);
-		if (descriptor != null) {
-			return descriptor.getAnnotation();
-		}
-		return null;
+		return TestContextAnnotationUtils.findMergedAnnotation(testClass, SpringBootTest.class);
 	}
 
 	protected void verifyConfiguration(Class<?> testClass) {

@@ -23,7 +23,6 @@ import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.TestContextAnnotationUtils;
-import org.springframework.test.context.TestContextAnnotationUtils.AnnotationDescriptor;
 
 /**
  * {@link ContextCustomizerFactory} for {@link TestRestTemplate}.
@@ -36,12 +35,9 @@ class TestRestTemplateContextCustomizerFactory implements ContextCustomizerFacto
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		AnnotationDescriptor<SpringBootTest> springBootTest = TestContextAnnotationUtils
-				.findAnnotationDescriptor(testClass, SpringBootTest.class);
-		if (springBootTest != null) {
-			return new TestRestTemplateContextCustomizer();
-		}
-		return null;
+		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				SpringBootTest.class);
+		return (springBootTest != null) ? new TestRestTemplateContextCustomizer() : null;
 	}
 
 }
