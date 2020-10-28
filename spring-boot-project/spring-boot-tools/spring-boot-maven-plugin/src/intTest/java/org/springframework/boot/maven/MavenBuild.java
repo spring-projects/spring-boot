@@ -84,14 +84,14 @@ class MavenBuild {
 		this.pomReplacements.put("project.groupId", "org.springframework.boot");
 		this.pomReplacements.put("project.artifactId", "spring-boot-maven-plugin");
 		this.pomReplacements.put("project.version", determineVersion());
-		this.pomReplacements.put("log4j2.version", "2.12.1");
+		this.pomReplacements.put("log4j2.version", "2.13.3");
 		this.pomReplacements.put("maven-jar-plugin.version", "3.2.0");
 		this.pomReplacements.put("maven-toolchains-plugin.version", "3.0.0");
 		this.pomReplacements.put("maven-war-plugin.version", "3.2.3");
 		this.pomReplacements.put("build-helper-maven-plugin.version", "3.0.0");
-		this.pomReplacements.put("spring-framework.version", "5.2.1.RELEASE");
-		this.pomReplacements.put("jakarta-servlet.version", "4.0.2");
-		this.pomReplacements.put("kotlin.version", "1.3.60");
+		this.pomReplacements.put("spring-framework.version", "5.2.10.RELEASE");
+		this.pomReplacements.put("jakarta-servlet.version", "4.0.4");
+		this.pomReplacements.put("kotlin.version", "1.3.72");
 	}
 
 	MavenBuild project(String project) {
