@@ -286,6 +286,13 @@ class OriginTrackedPropertiesLoaderTests {
 		assertThat(getValue(value)).isEqualTo("trailing ");
 	}
 
+	@Test
+	void existingCommentsAreNotTreatedAsMultiDoc() throws Exception {
+		this.resource = new ClassPathResource("existing-non-multi-document.properties", getClass());
+		this.documents = new OriginTrackedPropertiesLoader(this.resource).load();
+		assertThat(this.documents.size()).isEqualTo(1);
+	}
+
 	private OriginTrackedValue getFromFirst(String key) {
 		return this.documents.get(0).asMap().get(key);
 	}

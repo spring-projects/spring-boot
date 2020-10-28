@@ -886,7 +886,8 @@ For `application.properties` files a special `#---` comment is used to mark the 
 	spring.application.name=MyCloudApp
 ----
 
-NOTE: Property file separators must not have any leading or trailing whitespace and must have exactly three hyphen characters.
+NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
+The lines immediately before and after the separator must not be comments.
 
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the <<boot-features-external-config-file-activation-properties, next section>> for details.
