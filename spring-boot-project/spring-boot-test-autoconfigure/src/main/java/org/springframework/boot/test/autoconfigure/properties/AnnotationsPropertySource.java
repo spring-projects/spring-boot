@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,10 +73,10 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 		return properties;
 	}
 
-	private void collectProperties(String prefix, SkipPropertyMapping defaultSkip, MergedAnnotation<?> annotation,
+	private void collectProperties(String prefix, SkipPropertyMapping skip, MergedAnnotation<?> annotation,
 			Method attribute, Map<String, Object> properties) {
 		MergedAnnotation<?> attributeMapping = MergedAnnotations.from(attribute).get(PropertyMapping.class);
-		SkipPropertyMapping skip = attributeMapping.getValue("skip", SkipPropertyMapping.class).orElse(defaultSkip);
+		skip = attributeMapping.getValue("skip", SkipPropertyMapping.class).orElse(skip);
 		if (skip == SkipPropertyMapping.YES) {
 			return;
 		}
@@ -127,7 +127,8 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 			}
 		}
 		else if (value instanceof MergedAnnotation<?>) {
-			for (Method attribute : ((MergedAnnotation<?>) value).getType().getDeclaredMethods()) {
+			MergedAnnotation<?> annotation = (MergedAnnotation<?>) value;
+			for (Method attribute : annotation.getType().getDeclaredMethods()) {
 				collectProperties(name, defaultSkip, (MergedAnnotation<?>) value, attribute, properties);
 			}
 		}
