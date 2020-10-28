@@ -16,7 +16,6 @@ It is possible to automate the creation of an image whenever the `package` phase
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -131,7 +130,6 @@ If you need to customize the builder used to create the image or the run image u
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
 							<builder>mine/java-cnb-builder</builder>
@@ -169,7 +167,6 @@ The following is an example of {paketo-java-reference}/#configuring-the-jvm-vers
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
 							<env>
@@ -197,7 +194,6 @@ When using the Paketo builder, this can be accomplished by setting the `HTTPS_PR
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
 							<env>
@@ -227,7 +223,6 @@ You can take control over the name, as shown in the following example:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<image>
 							<name>example.com/library/${project.artifactId}</name>
