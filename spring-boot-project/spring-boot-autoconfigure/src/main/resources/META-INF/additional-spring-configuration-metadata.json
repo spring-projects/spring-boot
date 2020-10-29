@@ -857,6 +857,10 @@
       ]
     },
     {
+      "name": "spring.flyway.lock-retry-count",
+      "defaultValue": 50
+    },
+    {
       "name": "spring.flyway.sql-migration-suffix",
       "type": "java.lang.String",
       "deprecation": {
