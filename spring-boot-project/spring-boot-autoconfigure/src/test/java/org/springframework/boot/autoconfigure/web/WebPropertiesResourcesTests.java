@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,20 +20,22 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Cache;
 import org.springframework.http.CacheControl;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ResourceProperties}.
+ * Tests for {@link WebProperties.Resources}.
  *
  * @author Stephane Nicoll
  * @author Kristine Jetzke
  */
 @Deprecated
-class ResourcePropertiesTests {
+class WebPropertiesResourcesTests {
 
-	private final ResourceProperties properties = new ResourceProperties();
+	private final Resources properties = new WebProperties().getResources();
 
 	@Test
 	void resourceChainNoCustomization() {
@@ -78,7 +80,7 @@ class ResourcePropertiesTests {
 
 	@Test
 	void cacheControlAllPropertiesSet() {
-		ResourceProperties.Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
+		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setCachePrivate(true);
 		properties.setCachePublic(true);
@@ -96,7 +98,7 @@ class ResourcePropertiesTests {
 
 	@Test
 	void invalidCacheControlCombination() {
-		ResourceProperties.Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
+		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setNoStore(true);
 		CacheControl cacheControl = properties.toHttpCacheControl();

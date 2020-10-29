@@ -35,8 +35,8 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
@@ -106,11 +106,16 @@ public class WebFluxAutoConfiguration {
 	public static class WelcomePageConfiguration {
 
 		@Bean
+		@SuppressWarnings("deprecation")
 		public RouterFunctionMapping welcomePageRouterFunctionMapping(ApplicationContext applicationContext,
-				WebFluxProperties webFluxProperties, ResourceProperties resourceProperties) {
+				WebFluxProperties webFluxProperties,
+				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+				WebProperties webProperties) {
+			String[] staticLocations = resourceProperties.hasBeenCustomized() ? resourceProperties.getStaticLocations()
+					: webProperties.getResources().getStaticLocations();
 			WelcomePageRouterFunctionFactory factory = new WelcomePageRouterFunctionFactory(
-					new TemplateAvailabilityProviders(applicationContext), applicationContext,
-					resourceProperties.getStaticLocations(), webFluxProperties.getStaticPathPattern());
+					new TemplateAvailabilityProviders(applicationContext), applicationContext, staticLocations,
+					webFluxProperties.getStaticPathPattern());
 			RouterFunction<ServerResponse> routerFunction = factory.createRouterFunction();
 			if (routerFunction != null) {
 				RouterFunctionMapping routerFunctionMapping = new RouterFunctionMapping(routerFunction);
@@ -122,14 +127,16 @@ public class WebFluxAutoConfiguration {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties({ ResourceProperties.class, WebFluxProperties.class })
+	@EnableConfigurationProperties({ org.springframework.boot.autoconfigure.web.ResourceProperties.class,
+			WebProperties.class, WebFluxProperties.class })
 	@Import({ EnableWebFluxConfiguration.class })
 	public static class WebFluxConfig implements WebFluxConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebFluxConfig.class);
 
-		private final ResourceProperties resourceProperties;
+		private final Resources resourceProperties;
 
 		private final WebFluxProperties webFluxProperties;
 
@@ -143,12 +150,14 @@ public class WebFluxAutoConfiguration {
 
 		private final ObjectProvider<ViewResolver> viewResolvers;
 
-		public WebFluxConfig(ResourceProperties resourceProperties, WebFluxProperties webFluxProperties,
-				ListableBeanFactory beanFactory, ObjectProvider<HandlerMethodArgumentResolver> resolvers,
+		public WebFluxConfig(org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+				WebProperties webProperties, WebFluxProperties webFluxProperties, ListableBeanFactory beanFactory,
+				ObjectProvider<HandlerMethodArgumentResolver> resolvers,
 				ObjectProvider<CodecCustomizer> codecCustomizers,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizer,
 				ObjectProvider<ViewResolver> viewResolvers) {
-			this.resourceProperties = resourceProperties;
+			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
+					: webProperties.getResources();
 			this.webFluxProperties = webFluxProperties;
 			this.beanFactory = beanFactory;
 			this.argumentResolvers = resolvers;
@@ -190,7 +199,8 @@ public class WebFluxAutoConfiguration {
 
 		private void configureResourceCaching(ResourceHandlerRegistration registration) {
 			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
-			ResourceProperties.Cache.Cachecontrol cacheControl = this.resourceProperties.getCache().getCachecontrol();
+			WebProperties.Resources.Cache.Cachecontrol cacheControl = this.resourceProperties.getCache()
+					.getCachecontrol();
 			if (cachePeriod != null && cacheControl.getMaxAge() == null) {
 				cacheControl.setMaxAge(cachePeriod);
 			}
@@ -291,8 +301,13 @@ public class WebFluxAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
-		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
-			return new ResourceChainResourceHandlerRegistrationCustomizer();
+		@SuppressWarnings("deprecation")
+		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
+				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+				WebProperties webProperties) {
+			Resources resources = resourceProperties.hasBeenCustomized() ? resourceProperties
+					: webProperties.getResources();
+			return new ResourceChainResourceHandlerRegistrationCustomizer(resources);
 		}
 
 	}

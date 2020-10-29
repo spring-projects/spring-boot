@@ -23,6 +23,8 @@ import java.util.Map;
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.context.properties.bind.BindResult;
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.devtools.logger.DevToolsLogFactory;
 import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
@@ -85,7 +87,9 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 			if (canAddProperties(environment)) {
 				logger.info(LogMessage.format("Devtools property defaults active! Set '%s' to 'false' to disable",
 						ENABLED));
-				environment.getPropertySources().addLast(new MapPropertySource("devtools", PROPERTIES));
+				Map<String, Object> properties = new HashMap<>(PROPERTIES);
+				properties.putAll(getResourceProperties(environment));
+				environment.getPropertySources().addLast(new MapPropertySource("devtools", properties));
 			}
 			if (isWebApplication(environment) && !environment.containsProperty(WEB_LOGGING)) {
 				logger.info(LogMessage.format(
@@ -93,6 +97,28 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 						WEB_LOGGING));
 			}
 		}
+	}
+
+	private Map<String, String> getResourceProperties(Environment environment) {
+		Map<String, String> resourceProperties = new HashMap<>();
+		String prefix = determineResourcePropertiesPrefix(environment);
+		resourceProperties.put(prefix + "cache.period", "0");
+		resourceProperties.put(prefix + "chain.cache", "false");
+		System.out.println(resourceProperties);
+		return resourceProperties;
+	}
+
+	@SuppressWarnings("deprecation")
+	private String determineResourcePropertiesPrefix(Environment environment) {
+		if (ClassUtils.isPresent("org.springframework.boot.autoconfigure.web.ResourceProperties",
+				getClass().getClassLoader())) {
+			BindResult<org.springframework.boot.autoconfigure.web.ResourceProperties> result = Binder.get(environment)
+					.bind("spring.resources", org.springframework.boot.autoconfigure.web.ResourceProperties.class);
+			if (result.isBound() && result.get().hasBeenCustomized()) {
+				return "spring.resources.";
+			}
+		}
+		return "spring.web.resources.";
 	}
 
 	private boolean isLocalApplication(ConfigurableEnvironment environment) {

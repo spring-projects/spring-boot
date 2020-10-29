@@ -33,6 +33,8 @@ import javax.validation.ValidatorFactory;
 
 import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
@@ -167,16 +169,18 @@ class WebFluxAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void shouldNotMapResourcesWhenDisabled() {
-		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void shouldNotMapResourcesWhenDisabled(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + ".add-mappings:false")
 				.run((context) -> assertThat(context.getBean("resourceHandlerMapping"))
 						.isNotInstanceOf(SimpleUrlHandlerMapping.class));
 	}
 
-	@Test
-	void resourceHandlerChainEnabled() {
-		this.contextRunner.withPropertyValues("spring.resources.chain.enabled:true").run((context) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void resourceHandlerChainEnabled(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "chain.enabled:true").run((context) -> {
 			SimpleUrlHandlerMapping hm = context.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
 			assertThat(hm.getUrlMap().get("/**")).isInstanceOf(ResourceWebHandler.class);
 			ResourceWebHandler staticHandler = (ResourceWebHandler) hm.getUrlMap().get("/**");
@@ -406,10 +410,11 @@ class WebFluxAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void cachePeriod() {
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void cachePeriod(String prefix) {
 		Assertions.setExtractBareNamePropertyMethods(false);
-		this.contextRunner.withPropertyValues("spring.resources.cache.period:5").run((context) -> {
+		this.contextRunner.withPropertyValues(prefix + "cache.period:5").run((context) -> {
 			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 			assertThat(handlerMap).hasSize(2);
 			for (Object handler : handlerMap.values()) {
@@ -422,11 +427,12 @@ class WebFluxAutoConfigurationTests {
 		Assertions.setExtractBareNamePropertyMethods(true);
 	}
 
-	@Test
-	void cacheControl() {
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void cacheControl(String prefix) {
 		Assertions.setExtractBareNamePropertyMethods(false);
-		this.contextRunner.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
-				"spring.resources.cache.cachecontrol.proxy-revalidate:true").run((context) -> {
+		this.contextRunner.withPropertyValues(prefix + "cache.cachecontrol.max-age:5",
+				prefix + "cache.cachecontrol.proxy-revalidate:true").run((context) -> {
 					Map<PathPattern, Object> handlerMap = getHandlerMap(context);
 					assertThat(handlerMap).hasSize(2);
 					for (Object handler : handlerMap.values()) {
@@ -449,14 +455,14 @@ class WebFluxAutoConfigurationTests {
 				});
 	}
 
-	@Test
-	void welcomePageHandlerMapping() {
-		this.contextRunner.withPropertyValues("spring.resources.static-locations=classpath:/welcome-page/")
-				.run((context) -> {
-					assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
-					assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
-							.extracting("order").isEqualTo(1);
-				});
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void welcomePageHandlerMapping(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "static-locations=classpath:/welcome-page/").run((context) -> {
+			assertThat(context).getBeans(RouterFunctionMapping.class).hasSize(2);
+			assertThat(context.getBean("welcomePageRouterFunctionMapping", HandlerMapping.class)).isNotNull()
+					.extracting("order").isEqualTo(1);
+		});
 	}
 
 	@Test

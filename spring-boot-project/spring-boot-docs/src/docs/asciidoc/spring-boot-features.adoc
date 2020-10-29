@@ -2608,7 +2608,7 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 	    static-path-pattern: "/resources/**"
 ----
 
-You can also customize the static resource locations by using the configprop:spring.resources.static-locations[] property (replacing the default values with a list of directory locations).
+You can also customize the static resource locations by using the configprop:spring.web.resources.static-locations[] property (replacing the default values with a list of directory locations).
 The root Servlet context path, `"/"`, is automatically added as a location as well.
 
 In addition to the "`standard`" static resource locations mentioned earlier, a special case is made for https://www.webjars.org/[Webjars content].
@@ -2631,12 +2631,13 @@ To use cache busting, the following configuration configures a cache busting sol
 [source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
 	spring:
-	  resources:
-	    chain:
-	      strategy:
-	        content:
-	          enabled: true
-	          paths: "/**"
+	  web:
+	    resources:
+	      chain:
+	        strategy:
+	          content:
+	            enabled: true
+	            paths: "/**"
 ----
 
 NOTE: Links to resources are rewritten in templates at runtime, thanks to a `ResourceUrlEncodingFilter` that is auto-configured for Thymeleaf and FreeMarker.
@@ -2650,16 +2651,17 @@ A "fixed" strategy adds a static version string in the URL without changing the 
 [source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
 	spring:
-	  resources:
-	    chain:
-	      strategy:
-	        content:
-	          enabled: true
-	          paths: "/**"
-	        fixed:
-	          enabled: true
-	          paths: "/js/lib/"
-	          version: "v12"
+	  web:
+	    resources:
+	      chain:
+	        strategy:
+	          content:
+	            enabled: true
+	            paths: "/**"
+	          fixed:
+	            enabled: true
+	            paths: "/js/lib/"
+	            version: "v12"
 ----
 
 With this configuration, JavaScript modules located under `"/js/lib/"` use a fixed versioning strategy (`"/v12/js/lib/mymodule.js"`), while other resources still use the content one (`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`).
@@ -3134,7 +3136,7 @@ For instance, relocating all resources to `/resources/**` can be achieved as fol
 	    static-path-pattern: "/resources/**"
 ----
 
-You can also customize the static resource locations by using `spring.resources.static-locations`.
+You can also customize the static resource locations by using `spring.web.resources.static-locations`.
 Doing so replaces the default values with a list of directory locations.
 If you do so, the default welcome page detection switches to your custom locations.
 So, if there is an `index.html` in any of your locations on startup, it is the home page of the application.

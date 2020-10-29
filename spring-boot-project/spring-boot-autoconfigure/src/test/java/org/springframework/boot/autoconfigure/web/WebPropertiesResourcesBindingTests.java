@@ -20,6 +20,7 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -29,12 +30,11 @@ import org.springframework.context.annotation.Configuration;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Binding tests for {@link ResourceProperties}.
+ * Binding tests for {@link WebProperties.Resources}.
  *
  * @author Stephane Nicoll
  */
-@Deprecated
-class ResourcePropertiesBindingTests {
+class WebPropertiesResourcesBindingTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withUserConfiguration(TestConfiguration.class);
@@ -42,28 +42,26 @@ class ResourcePropertiesBindingTests {
 	@Test
 	void staticLocationsExpandArray() {
 		this.contextRunner
-				.withPropertyValues("spring.resources.static-locations[0]=classpath:/one/",
-						"spring.resources.static-locations[1]=classpath:/two",
-						"spring.resources.static-locations[2]=classpath:/three/",
-						"spring.resources.static-locations[3]=classpath:/four",
-						"spring.resources.static-locations[4]=classpath:/five/",
-						"spring.resources.static-locations[5]=classpath:/six")
+				.withPropertyValues("spring.web.resources.static-locations[0]=classpath:/one/",
+						"spring.web.resources.static-locations[1]=classpath:/two",
+						"spring.web.resources.static-locations[2]=classpath:/three/",
+						"spring.web.resources.static-locations[3]=classpath:/four",
+						"spring.web.resources.static-locations[4]=classpath:/five/",
+						"spring.web.resources.static-locations[5]=classpath:/six")
 				.run(assertResourceProperties((properties) -> assertThat(properties.getStaticLocations()).contains(
 						"classpath:/one/", "classpath:/two/", "classpath:/three/", "classpath:/four/",
 						"classpath:/five/", "classpath:/six/")));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> assertResourceProperties(
-			Consumer<ResourceProperties> consumer) {
+	private ContextConsumer<AssertableApplicationContext> assertResourceProperties(Consumer<Resources> consumer) {
 		return (context) -> {
-			assertThat(context).hasSingleBean(ResourceProperties.class);
-			consumer.accept(context.getBean(ResourceProperties.class));
+			assertThat(context).hasSingleBean(WebProperties.class);
+			consumer.accept(context.getBean(WebProperties.class).getResources());
 		};
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(ResourceProperties.class)
+	@EnableConfigurationProperties(WebProperties.class)
 	static class TestConfiguration {
 
 	}

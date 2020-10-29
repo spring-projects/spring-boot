@@ -33,7 +33,6 @@ import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
@@ -50,9 +49,9 @@ import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvi
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.ConditionalOnEnabledResourceChain;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
-import org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy;
 import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources.Chain.Strategy;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties.Format;
@@ -175,15 +174,17 @@ public class WebMvcAutoConfiguration {
 
 	// Defined as a nested config to ensure WebMvcConfigurer is not read when not
 	// on the classpath
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@Import(EnableWebMvcConfiguration.class)
-	@EnableConfigurationProperties({ WebMvcProperties.class, ResourceProperties.class })
+	@EnableConfigurationProperties({ WebMvcProperties.class,
+			org.springframework.boot.autoconfigure.web.ResourceProperties.class, WebProperties.class })
 	@Order(0)
 	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
 
 		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
 
-		private final ResourceProperties resourceProperties;
+		private final Resources resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
 
@@ -197,12 +198,15 @@ public class WebMvcAutoConfiguration {
 
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		public WebMvcAutoConfigurationAdapter(ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
-				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
+		public WebMvcAutoConfigurationAdapter(
+				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+				WebProperties webProperties, WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
+				ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
 				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations) {
-			this.resourceProperties = resourceProperties;
+			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
+					: webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.messageConvertersProvider = messageConvertersProvider;
@@ -234,7 +238,6 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
 		public void configurePathMatch(PathMatchConfigurer configurer) {
 			if (this.mvcProperties.getPathmatch()
 					.getMatchingStrategy() == WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER) {
@@ -259,7 +262,6 @@ public class WebMvcAutoConfiguration {
 		}
 
 		@Override
-		@SuppressWarnings("deprecation")
 		public void configureContentNegotiation(ContentNegotiationConfigurer configurer) {
 			WebMvcProperties.Contentnegotiation contentnegotiation = this.mvcProperties.getContentnegotiation();
 			configurer.favorPathExtension(contentnegotiation.isFavorPathExtension());
@@ -363,7 +365,7 @@ public class WebMvcAutoConfiguration {
 	@EnableConfigurationProperties(WebProperties.class)
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
-		private final ResourceProperties resourceProperties;
+		private final Resources resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
 
@@ -375,10 +377,13 @@ public class WebMvcAutoConfiguration {
 
 		private ResourceLoader resourceLoader;
 
-		public EnableWebMvcConfiguration(ResourceProperties resourceProperties, WebMvcProperties mvcProperties,
-				WebProperties webProperties, ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
-				ListableBeanFactory beanFactory) {
-			this.resourceProperties = resourceProperties;
+		@SuppressWarnings("deprecation")
+		public EnableWebMvcConfiguration(
+				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+				WebMvcProperties mvcProperties, WebProperties webProperties,
+				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider, ListableBeanFactory beanFactory) {
+			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
+					: webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.webProperties = webProperties;
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
@@ -551,8 +556,12 @@ public class WebMvcAutoConfiguration {
 	static class ResourceChainCustomizerConfiguration {
 
 		@Bean
-		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer() {
-			return new ResourceChainResourceHandlerRegistrationCustomizer();
+		@SuppressWarnings("deprecation")
+		ResourceChainResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer(
+				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+				WebProperties webProperties) {
+			return new ResourceChainResourceHandlerRegistrationCustomizer(
+					resourceProperties.hasBeenCustomized() ? resourceProperties : webProperties.getResources());
 		}
 
 	}
@@ -565,17 +574,20 @@ public class WebMvcAutoConfiguration {
 
 	static class ResourceChainResourceHandlerRegistrationCustomizer implements ResourceHandlerRegistrationCustomizer {
 
-		@Autowired
-		private ResourceProperties resourceProperties = new ResourceProperties();
+		private final Resources resourceProperties;
+
+		ResourceChainResourceHandlerRegistrationCustomizer(Resources resourceProperties) {
+			this.resourceProperties = resourceProperties;
+		}
 
 		@Override
 		public void customize(ResourceHandlerRegistration registration) {
-			ResourceProperties.Chain properties = this.resourceProperties.getChain();
+			Resources.Chain properties = this.resourceProperties.getChain();
 			configureResourceChain(properties, registration.resourceChain(properties.isCache()));
 		}
 
 		@SuppressWarnings("deprecation")
-		private void configureResourceChain(ResourceProperties.Chain properties, ResourceChainRegistration chain) {
+		private void configureResourceChain(Resources.Chain properties, ResourceChainRegistration chain) {
 			Strategy strategy = properties.getStrategy();
 			if (properties.isCompressed()) {
 				chain.addResolver(new EncodedResourceResolver());
@@ -583,12 +595,14 @@ public class WebMvcAutoConfiguration {
 			if (strategy.getFixed().isEnabled() || strategy.getContent().isEnabled()) {
 				chain.addResolver(getVersionResourceResolver(strategy));
 			}
-			if (properties.isHtmlApplicationCache()) {
+			if (properties instanceof org.springframework.boot.autoconfigure.web.ResourceProperties.Chain
+					&& ((org.springframework.boot.autoconfigure.web.ResourceProperties.Chain) properties)
+							.isHtmlApplicationCache()) {
 				chain.addTransformer(new org.springframework.web.servlet.resource.AppCacheManifestTransformer());
 			}
 		}
 
-		private ResourceResolver getVersionResourceResolver(ResourceProperties.Strategy properties) {
+		private ResourceResolver getVersionResourceResolver(Strategy properties) {
 			VersionResourceResolver resolver = new VersionResourceResolver();
 			if (properties.getFixed().isEnabled()) {
 				String version = properties.getFixed().getVersion();

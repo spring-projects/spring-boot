@@ -204,15 +204,17 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void resourceHandlerMappingDisabled() {
-		this.contextRunner.withPropertyValues("spring.resources.add-mappings:false")
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void resourceHandlerMappingDisabled(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "add-mappings:false")
 				.run((context) -> assertThat(getResourceMappingLocations(context)).hasSize(0));
 	}
 
-	@Test
-	void resourceHandlerChainEnabled() {
-		this.contextRunner.withPropertyValues("spring.resources.chain.enabled:true").run((context) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void resourceHandlerChainEnabled(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "chain.enabled:true").run((context) -> {
 			assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(2);
 			assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(1);
 			assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass")
@@ -222,11 +224,13 @@ class WebMvcAutoConfigurationTests {
 		});
 	}
 
-	@Test
-	void resourceHandlerFixedStrategyEnabled() {
-		this.contextRunner.withPropertyValues("spring.resources.chain.strategy.fixed.enabled:true",
-				"spring.resources.chain.strategy.fixed.version:test",
-				"spring.resources.chain.strategy.fixed.paths:/**/*.js").run((context) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void resourceHandlerFixedStrategyEnabled(String prefix) {
+		this.contextRunner
+				.withPropertyValues(prefix + "chain.strategy.fixed.enabled:true",
+						prefix + "chain.strategy.fixed.version:test", prefix + "chain.strategy.fixed.paths:/**/*.js")
+				.run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(2);
 					assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass").containsOnly(
@@ -239,10 +243,11 @@ class WebMvcAutoConfigurationTests {
 				});
 	}
 
-	@Test
-	void resourceHandlerContentStrategyEnabled() {
-		this.contextRunner.withPropertyValues("spring.resources.chain.strategy.content.enabled:true",
-				"spring.resources.chain.strategy.content.paths:/**,/*.png").run((context) -> {
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void resourceHandlerContentStrategyEnabled(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "chain.strategy.content.enabled:true",
+				prefix + "chain.strategy.content.paths:/**,/*.png").run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
 					assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(2);
 					assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass").containsOnly(
@@ -255,25 +260,25 @@ class WebMvcAutoConfigurationTests {
 				});
 	}
 
-	@Test
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
 	@SuppressWarnings("deprecation")
-	void resourceHandlerChainCustomized() {
-		this.contextRunner
-				.withPropertyValues("spring.resources.chain.enabled:true", "spring.resources.chain.cache:false",
-						"spring.resources.chain.strategy.content.enabled:true",
-						"spring.resources.chain.strategy.content.paths:/**,/*.png",
-						"spring.resources.chain.strategy.fixed.enabled:true",
-						"spring.resources.chain.strategy.fixed.version:test",
-						"spring.resources.chain.strategy.fixed.paths:/**/*.js",
-						"spring.resources.chain.html-application-cache:true", "spring.resources.chain.compressed:true")
-				.run((context) -> {
+	void resourceHandlerChainCustomized(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "chain.enabled:true", prefix + "chain.cache:false",
+				prefix + "chain.strategy.content.enabled:true", prefix + "chain.strategy.content.paths:/**,/*.png",
+				prefix + "chain.strategy.fixed.enabled:true", prefix + "chain.strategy.fixed.version:test",
+				prefix + "chain.strategy.fixed.paths:/**/*.js", prefix + "chain.html-application-cache:true",
+				prefix + "chain.compressed:true").run((context) -> {
 					assertThat(getResourceResolvers(context, "/webjars/**")).hasSize(3);
-					assertThat(getResourceTransformers(context, "/webjars/**")).hasSize(2);
+					assertThat(getResourceTransformers(context, "/webjars/**"))
+							.hasSize(prefix.equals("spring.resources.") ? 2 : 1);
 					assertThat(getResourceResolvers(context, "/**")).extractingResultOf("getClass").containsOnly(
 							EncodedResourceResolver.class, VersionResourceResolver.class, PathResourceResolver.class);
-					assertThat(getResourceTransformers(context, "/**")).extractingResultOf("getClass").containsOnly(
-							CssLinkResourceTransformer.class,
-							org.springframework.web.servlet.resource.AppCacheManifestTransformer.class);
+					assertThat(getResourceTransformers(context, "/**")).extractingResultOf("getClass")
+							.containsOnly(prefix.equals("spring.resources.")
+									? new Class<?>[] { CssLinkResourceTransformer.class,
+											org.springframework.web.servlet.resource.AppCacheManifestTransformer.class }
+									: new Class<?>[] { CssLinkResourceTransformer.class });
 					VersionResourceResolver resolver = (VersionResourceResolver) getResourceResolvers(context, "/**")
 							.get(1);
 					Map<String, VersionStrategy> strategyMap = resolver.getStrategyMap();
@@ -597,19 +602,20 @@ class WebMvcAutoConfigurationTests {
 		};
 	}
 
-	@Test
-	void welcomePageHandlerMappingIsAutoConfigured() {
-		this.contextRunner.withPropertyValues("spring.resources.static-locations:classpath:/welcome-page/")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
-					WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
-					assertThat(bean.getRootHandler()).isNotNull();
-				});
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void welcomePageHandlerMappingIsAutoConfigured(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "static-locations:classpath:/welcome-page/").run((context) -> {
+			assertThat(context).hasSingleBean(WelcomePageHandlerMapping.class);
+			WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
+			assertThat(bean.getRootHandler()).isNotNull();
+		});
 	}
 
-	@Test
-	void welcomePageHandlerIncludesCorsConfiguration() {
-		this.contextRunner.withPropertyValues("spring.resources.static-locations:classpath:/welcome-page/")
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void welcomePageHandlerIncludesCorsConfiguration(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "static-locations:classpath:/welcome-page/")
 				.withUserConfiguration(CorsConfigurer.class).run((context) -> {
 					WelcomePageHandlerMapping bean = context.getBean(WelcomePageHandlerMapping.class);
 					UrlBasedCorsConfigurationSource source = (UrlBasedCorsConfigurationSource) ReflectionTestUtils
@@ -732,9 +738,10 @@ class WebMvcAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
 
-	@Test
-	void cachePeriod() {
-		this.contextRunner.withPropertyValues("spring.resources.cache.period:5").run(this::assertCachePeriod);
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void cachePeriod(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "cache.period:5").run(this::assertCachePeriod);
 	}
 
 	private void assertCachePeriod(AssertableWebApplicationContext context) {
@@ -749,10 +756,11 @@ class WebMvcAutoConfigurationTests {
 		}
 	}
 
-	@Test
-	void cacheControl() {
-		this.contextRunner.withPropertyValues("spring.resources.cache.cachecontrol.max-age:5",
-				"spring.resources.cache.cachecontrol.proxy-revalidate:true").run(this::assertCacheControl);
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void cacheControl(String prefix) {
+		this.contextRunner.withPropertyValues(prefix + "cache.cachecontrol.max-age:5",
+				prefix + "cache.cachecontrol.proxy-revalidate:true").run(this::assertCacheControl);
 	}
 
 	@Test
