@@ -833,8 +833,9 @@ bom {
 		group("org.jooq") {
 			modules = [
 				"jooq",
-				"jooq-meta",
-				"jooq-codegen"
+				"jooq-codegen",
+				"jooq-kotlin",
+				"jooq-meta"
 			]
 			plugins = [
 				"jooq-codegen-maven"
