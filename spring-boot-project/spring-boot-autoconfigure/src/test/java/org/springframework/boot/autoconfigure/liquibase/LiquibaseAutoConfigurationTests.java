@@ -73,6 +73,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  * @author András Deák
  * @author Andrii Hrytsiuk
  * @author Ferenc Gratzer
+ * @author Evgeniy Cheban
  */
 @ExtendWith(OutputCaptureExtension.class)
 class LiquibaseAutoConfigurationTests {
@@ -222,6 +223,38 @@ class LiquibaseAutoConfigurationTests {
 					DataSource dataSource = liquibase.getDataSource();
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:liquibase");
+					assertThat(((HikariDataSource) dataSource).getDriverClassName())
+							.isEqualTo("org.hsqldb.jdbc.JDBCDriver");
+				}));
+	}
+
+	@Test
+	void overrideDataSourceAndDriverClassName() {
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase";
+		String driverClassName = "org.hsqldb.jdbcDriver";
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.url:" + jdbcUrl,
+						"spring.liquibase.driver-class-name:" + driverClassName)
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).isEqualTo(jdbcUrl);
+					assertThat(((HikariDataSource) dataSource).getDriverClassName()).isEqualTo(driverClassName);
+				}));
+	}
+
+	@Test
+	void overrideDataSourceWithFallbackDriverClassName() {
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase";
+		String driverClassName = "org.hsqldb.jdbcDriver";
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.url:" + jdbcUrl,
+						"spring.datasource.driver-class-name:" + driverClassName)
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).isEqualTo(jdbcUrl);
+					assertThat(((HikariDataSource) dataSource).getDriverClassName()).isEqualTo(driverClassName);
 				}));
 	}
 

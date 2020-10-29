@@ -30,6 +30,7 @@ import org.springframework.util.Assert;
  * @author Marcel Overdijk
  * @author Eddú Meléndez
  * @author Ferenc Gratzer
+ * @author Evgeniy Cheban
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.liquibase", ignoreUnknownFields = false)
@@ -95,6 +96,11 @@ public class LiquibaseProperties {
 	 * Login password of the database to migrate.
 	 */
 	private String password;
+
+	/**
+	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
+	 */
+	private String driverClassName;
 
 	/**
 	 * JDBC URL of the database to migrate. If not set, the primary configured data source
@@ -224,6 +230,14 @@ public class LiquibaseProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getDriverClassName() {
+		return this.driverClassName;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
 	}
 
 	public String getUrl() {

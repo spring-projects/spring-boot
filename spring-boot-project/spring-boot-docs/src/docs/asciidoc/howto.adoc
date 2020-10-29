@@ -2217,7 +2217,7 @@ In addition to YAML, Liquibase also supports JSON, XML, and SQL change log forma
 By default, Liquibase autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
 If you need to use a different `DataSource`, you can create one and mark its `@Bean` as `@LiquibaseDataSource`.
 If you do so and you want two data sources, remember to create another one and mark it as `@Primary`.
-Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[url,user,password]` in external properties.
+Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[driver-class-name,url,user,password]` in external properties.
 Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own `DataSource`.
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
