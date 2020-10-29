@@ -54,6 +54,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -148,18 +149,24 @@ public class LiquibaseAutoConfiguration {
 			String url = getProperty(this.properties::getUrl, dataSourceProperties::determineUrl);
 			String user = getProperty(this.properties::getUser, dataSourceProperties::determineUsername);
 			String password = getProperty(this.properties::getPassword, dataSourceProperties::determinePassword);
+			String driverClassName = determineDriverClassName(dataSourceProperties, url);
 			return DataSourceBuilder.create().type(determineDataSourceType()).url(url).username(user).password(password)
-					.driverClassName(determineDriverClassName(url)).build();
+					.driverClassName(driverClassName).build();
+		}
+
+		private String determineDriverClassName(DataSourceProperties dataSourceProperties, String url) {
+			if (StringUtils.hasText(this.properties.getDriverClassName())) {
+				return this.properties.getDriverClassName();
+			}
+			if (StringUtils.hasText(dataSourceProperties.getDriverClassName())) {
+				return dataSourceProperties.getDriverClassName();
+			}
+			return StringUtils.hasText(url) ? DatabaseDriver.fromJdbcUrl(url).getDriverClassName() : null;
 		}
 
 		private Class<? extends DataSource> determineDataSourceType() {
 			Class<? extends DataSource> type = DataSourceBuilder.findType(null);
 			return (type != null) ? type : SimpleDriverDataSource.class;
-		}
-
-		private String determineDriverClassName(String url) {
-			String driverClassName = this.properties.getDriverClassName();
-			return (driverClassName != null) ? driverClassName : DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
 		}
 
 		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {

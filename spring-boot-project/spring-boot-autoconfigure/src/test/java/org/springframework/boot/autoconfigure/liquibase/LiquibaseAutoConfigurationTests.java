@@ -244,6 +244,21 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
+	void overrideDataSourceWithFallbackDriverClassName() {
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase";
+		String driverClassName = "org.hsqldb.jdbcDriver";
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.url:" + jdbcUrl,
+						"spring.datasource.driver-class-name:" + driverClassName)
+				.run(assertLiquibase((liquibase) -> {
+					DataSource dataSource = liquibase.getDataSource();
+					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
+					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).isEqualTo(jdbcUrl);
+					assertThat(((HikariDataSource) dataSource).getDriverClassName()).isEqualTo(driverClassName);
+				}));
+	}
+
+	@Test
 	void overrideUser() {
 		String jdbcUrl = "jdbc:hsqldb:mem:normal";
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
