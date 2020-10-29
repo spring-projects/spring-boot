@@ -44,6 +44,7 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -66,6 +67,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Dan Zheng
  * @author András Deák
  * @author Ferenc Gratzer
+ * @author Evgeniy Cheban
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -147,12 +149,17 @@ public class LiquibaseAutoConfiguration {
 			String user = getProperty(this.properties::getUser, dataSourceProperties::determineUsername);
 			String password = getProperty(this.properties::getPassword, dataSourceProperties::determinePassword);
 			return DataSourceBuilder.create().type(determineDataSourceType()).url(url).username(user).password(password)
-					.build();
+					.driverClassName(determineDriverClassName(url)).build();
 		}
 
 		private Class<? extends DataSource> determineDataSourceType() {
 			Class<? extends DataSource> type = DataSourceBuilder.findType(null);
 			return (type != null) ? type : SimpleDriverDataSource.class;
+		}
+
+		private String determineDriverClassName(String url) {
+			String driverClassName = this.properties.getDriverClassName();
+			return (driverClassName != null) ? driverClassName : DatabaseDriver.fromJdbcUrl(url).getDriverClassName();
 		}
 
 		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {
