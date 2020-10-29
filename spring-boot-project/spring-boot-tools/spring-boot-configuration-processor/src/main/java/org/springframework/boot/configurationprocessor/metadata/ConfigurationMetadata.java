@@ -62,7 +62,15 @@ public class ConfigurationMetadata {
 	 * @param itemMetadata the meta-data to add
 	 */
 	public void add(ItemMetadata itemMetadata) {
-		add(this.items, itemMetadata.getName(), itemMetadata);
+		add(this.items, itemMetadata.getName(), itemMetadata, false);
+	}
+
+	/**
+	 * Add item meta-data if it's not already present.
+	 * @param itemMetadata the meta-data to add
+	 */
+	public void addIfMissing(ItemMetadata itemMetadata) {
+		add(this.items, itemMetadata.getName(), itemMetadata, true);
 	}
 
 	/**
@@ -70,7 +78,7 @@ public class ConfigurationMetadata {
 	 * @param itemHint the item hint to add
 	 */
 	public void add(ItemHint itemHint) {
-		add(this.hints, itemHint.getName(), itemHint);
+		add(this.hints, itemHint.getName(), itemHint, false);
 	}
 
 	/**
@@ -131,13 +139,15 @@ public class ConfigurationMetadata {
 			}
 		}
 		else {
-			add(this.items, metadata.getName(), metadata);
+			add(this.items, metadata.getName(), metadata, false);
 		}
 	}
 
-	private <K, V> void add(Map<K, List<V>> map, K key, V value) {
+	private <K, V> void add(Map<K, List<V>> map, K key, V value, boolean ifMissing) {
 		List<V> values = map.computeIfAbsent(key, (k) -> new ArrayList<>());
-		values.add(value);
+		if (!ifMissing || values.isEmpty()) {
+			values.add(value);
+		}
 	}
 
 	private ItemMetadata findMatchingItemMetadata(ItemMetadata metadata) {
