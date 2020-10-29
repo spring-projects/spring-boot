@@ -111,7 +111,7 @@ public class MetadataCollector {
 	}
 
 	private boolean deletedInCurrentBuild(String sourceType) {
-		return this.processingEnvironment.getElementUtils().getTypeElement(sourceType) == null;
+		return this.processingEnvironment.getElementUtils().getTypeElement(sourceType.replace('$', '.')) == null;
 	}
 
 	private boolean processedInCurrentBuild(String sourceType) {

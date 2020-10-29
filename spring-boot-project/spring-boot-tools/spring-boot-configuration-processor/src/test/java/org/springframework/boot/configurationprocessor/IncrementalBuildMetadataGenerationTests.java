@@ -23,6 +23,7 @@ import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.incremental.BarProperties;
 import org.springframework.boot.configurationsample.incremental.FooProperties;
 import org.springframework.boot.configurationsample.incremental.RenamedBarProperties;
+import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -90,6 +91,14 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 				.doesNotHave(Metadata.withProperty("bar.counter").fromSource(BarProperties.class).withDefaultValue(0));
 		assertThat(metadata)
 				.has(Metadata.withProperty("bar.counter").withDefaultValue(0).fromSource(RenamedBarProperties.class));
+	}
+
+	@Test
+	void incrementalBuildDoesNotDeleteItems() throws Exception {
+		TestProject project = new TestProject(this.tempDir, ClassWithNestedProperties.class, FooProperties.class);
+		ConfigurationMetadata initialMetadata = project.fullBuild();
+		ConfigurationMetadata updatedMetadata = project.incrementalBuild(FooProperties.class);
+		assertThat(initialMetadata.getItems()).isEqualTo(updatedMetadata.getItems());
 	}
 
 }
