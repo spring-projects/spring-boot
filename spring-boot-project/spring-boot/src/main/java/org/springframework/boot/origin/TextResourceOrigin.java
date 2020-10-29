@@ -16,6 +16,9 @@
 
 package org.springframework.boot.origin;
 
+import java.io.IOException;
+
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.ObjectUtils;
 
@@ -91,11 +94,36 @@ public class TextResourceOrigin implements Origin {
 	@Override
 	public String toString() {
 		StringBuilder result = new StringBuilder();
-		result.append((this.resource != null) ? this.resource.getDescription() : "unknown resource [?]");
+		result.append(getResourceDescription(this.resource));
 		if (this.location != null) {
-			result.append(":").append(this.location);
+			result.append(" - ").append(this.location);
 		}
 		return result.toString();
+	}
+
+	private String getResourceDescription(Resource resource) {
+		if (resource instanceof OriginTrackedResource) {
+			return getResourceDescription(((OriginTrackedResource) resource).getResource());
+		}
+		if (resource == null) {
+			return "unknown resource [?]";
+		}
+		if (resource instanceof ClassPathResource) {
+			return getResourceDescription((ClassPathResource) resource);
+		}
+		return resource.getDescription();
+	}
+
+	private String getResourceDescription(ClassPathResource resource) {
+		try {
+			JarUri jarUri = JarUri.from(resource.getURI());
+			if (jarUri != null) {
+				return jarUri.getDescription(resource.getDescription());
+			}
+		}
+		catch (IOException ex) {
+		}
+		return resource.getDescription();
 	}
 
 	/**
