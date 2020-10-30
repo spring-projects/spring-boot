@@ -97,7 +97,7 @@ public class BintrayService {
 	public boolean isDistributionComplete(ReleaseInfo releaseInfo, Set<String> requiredDigests, Duration timeout,
 			Duration pollInterval) {
 		logger.debug("Checking if distribution is complete");
-		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 0);
+		RequestEntity<Void> request = getPackageFilesRequest(releaseInfo, 1);
 		try {
 			waitAtMost(timeout).with().pollDelay(Duration.ZERO).pollInterval(pollInterval).until(() -> {
 				logger.debug("Checking Bintray");
