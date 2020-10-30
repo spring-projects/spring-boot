@@ -402,6 +402,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 			while (line != null) {
 				if (line.startsWith("- ")) {
 					layer = line.substring(3, line.length() - 2);
+					index.put(layer, new ArrayList<>());
 				}
 				else if (line.startsWith("  - ")) {
 					index.computeIfAbsent(layer, (key) -> new ArrayList<>()).add(line.substring(5, line.length() - 1));
