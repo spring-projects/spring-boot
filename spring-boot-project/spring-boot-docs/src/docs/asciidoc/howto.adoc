@@ -653,7 +653,7 @@ As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on
 
 [[howto-configure-http2-h2c]]
 ==== HTTP/2 Cleartext with supported servers
-To enable HTTP/2 with cleartext support, you need to leave the `configprop:server.http2.enabled[]` property set to `false`,
+To enable HTTP/2 with cleartext support, you need to leave the configprop:server.http2.enabled[] property set to `false`,
 and instead apply a customizer specific to your choice of server:
 
 For Tomcat, we need to add an upgrade protocol:

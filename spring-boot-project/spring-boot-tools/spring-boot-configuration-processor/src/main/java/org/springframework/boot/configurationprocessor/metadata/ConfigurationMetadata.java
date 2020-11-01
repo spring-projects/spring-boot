@@ -68,6 +68,7 @@ public class ConfigurationMetadata {
 	/**
 	 * Add item meta-data if it's not already present.
 	 * @param itemMetadata the meta-data to add
+	 * @since 2.4.0
 	 */
 	public void addIfMissing(ItemMetadata itemMetadata) {
 		add(this.items, itemMetadata.getName(), itemMetadata, true);
