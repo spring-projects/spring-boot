@@ -1441,7 +1441,7 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 
 | Environment Variables
 | Upper case format with underscore as the delimiter (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>).
-| Numeric values surrounded by underscores (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>)`
+| Numeric values surrounded by underscores (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>)
 
 | System properties
 | Camel case, kebab case, or underscore notation
