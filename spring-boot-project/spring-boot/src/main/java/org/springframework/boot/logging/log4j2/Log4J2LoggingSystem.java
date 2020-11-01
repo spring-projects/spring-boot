@@ -335,9 +335,12 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public static class Factory implements LoggingSystemFactory {
 
+		private static final boolean PRESENT = ClassUtils
+				.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
+
 		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
-			if (ClassUtils.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", classLoader)) {
+			if (PRESENT) {
 				return new Log4J2LoggingSystem(classLoader);
 			}
 			return null;

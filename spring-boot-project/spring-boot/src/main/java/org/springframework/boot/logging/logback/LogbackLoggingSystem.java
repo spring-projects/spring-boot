@@ -339,9 +339,12 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public static class Factory implements LoggingSystemFactory {
 
+		private static final boolean PRESENT = ClassUtils.isPresent("ch.qos.logback.core.Appender",
+				Factory.class.getClassLoader());
+
 		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
-			if (ClassUtils.isPresent("ch.qos.logback.core.Appender", classLoader)) {
+			if (PRESENT) {
 				return new LogbackLoggingSystem(classLoader);
 			}
 			return null;

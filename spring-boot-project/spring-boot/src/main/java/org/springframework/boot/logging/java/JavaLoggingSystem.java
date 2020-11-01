@@ -187,9 +187,12 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public static class Factory implements LoggingSystemFactory {
 
+		private static final boolean PRESENT = ClassUtils.isPresent("java.util.logging.LogManager",
+				Factory.class.getClassLoader());
+
 		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
-			if (ClassUtils.isPresent("java.util.logging.LogManager", classLoader)) {
+			if (PRESENT) {
 				return new JavaLoggingSystem(classLoader);
 			}
 			return null;
