@@ -121,7 +121,7 @@ public final class ConfigDataLocation implements OriginProvider {
 
 	/**
 	 * Create a new {@link ConfigDataLocation} with a specific {@link Origin}.
-	 * @param origin the orgin to set
+	 * @param origin the origin to set
 	 * @return a new {@link ConfigDataLocation} instance.
 	 */
 	ConfigDataLocation withOrigin(Origin origin) {
