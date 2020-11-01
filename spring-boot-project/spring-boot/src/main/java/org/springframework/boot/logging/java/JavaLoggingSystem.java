@@ -56,8 +56,6 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
-	private final Set<Logger> configuredLoggers = Collections.synchronizedSet(new HashSet<>());
-
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.FINEST);
 		LEVELS.map(LogLevel.DEBUG, Level.FINE);
@@ -67,6 +65,8 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		LEVELS.map(LogLevel.FATAL, Level.SEVERE);
 		LEVELS.map(LogLevel.OFF, Level.OFF);
 	}
+
+	private final Set<Logger> configuredLoggers = Collections.synchronizedSet(new HashSet<>());
 
 	public JavaLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
