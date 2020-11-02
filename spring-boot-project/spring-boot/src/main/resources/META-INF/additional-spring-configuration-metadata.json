@@ -120,8 +120,7 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz",
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.file-name-pattern",
-        "level": "error"
+        "replacement": "logging.logback.rollingpolicy.file-name-pattern"
       }
     },
     {
@@ -131,8 +130,7 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": false,
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.clean-history-on-start",
-        "level": "error"
+        "replacement": "logging.logback.rollingpolicy.clean-history-on-start"
       }
     },
     {
@@ -142,8 +140,7 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "10MB",
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.max-file-size",
-        "level": "error"
+        "replacement": "logging.logback.rollingpolicy.max-file-size"
       }
     },
     {
@@ -153,8 +150,7 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": "0B",
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.total-size-cap",
-        "level": "error"
+        "replacement": "logging.logback.rollingpolicy.total-size-cap"
       }
     },
     {
@@ -164,8 +160,7 @@
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": 7,
       "deprecation": {
-        "replacement": "logging.logback.rollingpolicy.max-history",
-        "level": "error"
+        "replacement": "logging.logback.rollingpolicy.max-history"
       }
     },
     {
