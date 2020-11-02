@@ -205,6 +205,10 @@
       "description": "Session tracking modes."
     },
     {
+      "name": "server.shutdown",
+      "defaultValue": "immediate"
+    },
+    {
       "name": "server.ssl.ciphers",
       "description": "Supported SSL ciphers."
     },
@@ -265,9 +269,6 @@
     {
       "name": "server.ssl.trust-store-type",
       "description": "Type of the trust store."
-    },
-    { "name": "server.shutdown",
-      "defaultValue:": "immediate"
     },
     {
       "name": "server.tomcat.max-http-post-size",
@@ -1317,6 +1318,10 @@
       }
     },
     {
+      "name": "spring.kafka.consumer.isolation-level",
+      "defaultValue": "read-uncommitted"
+    },
+    {
       "name": "spring.kafka.consumer.ssl.keystore-location",
       "type": "org.springframework.core.io.Resource",
       "description": "Location of the key store file.",
@@ -1511,6 +1516,14 @@
       "defaultValue": "accept-header"
     },
     {
+      "name": "spring.mvc.pathmatch.matching-strategy",
+      "defaultValue": "ant-path-matcher"
+    },
+    {
+      "name": "spring.neo4j.security.trust-strategy",
+      "defaultValue": "trust-system-ca-signed-certificates"
+    },
+    {
       "name": "spring.neo4j.uri",
       "defaultValue": "bolt://localhost:7687"
     },
@@ -1662,6 +1675,10 @@
     {
       "name": "spring.thymeleaf.suffix",
       "defaultValue": ".html"
+    },
+    {
+      "name": "spring.web.locale-resolver",
+      "defaultValue": "accept-header"
     },
     {
       "name": "spring.webflux.hiddenmethod.filter.enabled",
