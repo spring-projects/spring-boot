@@ -205,6 +205,10 @@
       "description": "Session tracking modes."
     },
     {
+      "name": "server.shutdown",
+      "defaultValue": "immediate"
+    },
+    {
       "name": "server.ssl.ciphers",
       "description": "Supported SSL ciphers."
     },
@@ -265,9 +269,6 @@
     {
       "name": "server.ssl.trust-store-type",
       "description": "Type of the trust store."
-    },
-    { "name": "server.shutdown",
-      "defaultValue:": "immediate"
     },
     {
       "name": "server.tomcat.max-http-post-size",
@@ -1249,6 +1250,10 @@
         "replacement": "spring.kafka.admin.ssl.trust-store-password",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.kafka.consumer.isolation-level",
+      "defaultValue": "read-uncommitted"
     },
     {
       "name": "spring.kafka.consumer.ssl.keystore-location",
