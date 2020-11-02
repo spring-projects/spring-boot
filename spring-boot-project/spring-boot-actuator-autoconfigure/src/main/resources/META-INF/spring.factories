@@ -46,6 +46,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.Log4J2MetricsAutoConfigur
 org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.MongoMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration,\
