@@ -251,7 +251,7 @@ public class ResourceProperties extends Resources {
 
 			@Override
 			@DeprecatedConfigurationProperty(
-					replacement = "spring.web.resources.cache.cachecontrol.stale-while-revaliate")
+					replacement = "spring.web.resources.cache.cachecontrol.stale-while-revalidate")
 			public Duration getStaleWhileRevalidate() {
 				return super.getStaleWhileRevalidate();
 			}
