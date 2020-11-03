@@ -48,7 +48,7 @@ class SessionAutoConfigurationIntegrationTests extends AbstractSessionAutoConfig
 	void severalCandidatesWithNoSessionStore() {
 		this.contextRunner.withUserConfiguration(HazelcastConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
+			assertThat(context).getFailure().hasRootCauseInstanceOf(NonUniqueSessionRepositoryException.class);
 			assertThat(context).getFailure()
 					.hasMessageContaining("Multiple session repository candidates are available");
 			assertThat(context).getFailure()

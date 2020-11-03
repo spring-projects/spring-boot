@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,8 +15,6 @@
  */
 
 package org.springframework.boot.autoconfigure.mustache;
-
-import javax.annotation.PostConstruct;
 
 import com.samskivert.mustache.Mustache;
 import com.samskivert.mustache.Mustache.Collector;
@@ -57,9 +55,9 @@ public class MustacheAutoConfiguration {
 	public MustacheAutoConfiguration(MustacheProperties mustache, ApplicationContext applicationContext) {
 		this.mustache = mustache;
 		this.applicationContext = applicationContext;
+		checkTemplateLocationExists();
 	}
 
-	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (this.mustache.isCheckTemplateLocation()) {
 			TemplateLocation location = new TemplateLocation(this.mustache.getPrefix());
