@@ -388,16 +388,20 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void customRequestMappingHandlerMapping() {
-		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class)
-				.run((context) -> assertThat(context).getBean(RequestMappingHandlerMapping.class)
-						.isInstanceOf(MyRequestMappingHandlerMapping.class));
+		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class).run((context) -> {
+			assertThat(context).getBean(RequestMappingHandlerMapping.class)
+					.isInstanceOf(MyRequestMappingHandlerMapping.class);
+			assertThat(context.getBean(CustomRequestMappingHandlerMapping.class).handlerMappings).isEqualTo(1);
+		});
 	}
 
 	@Test
 	void customRequestMappingHandlerAdapter() {
-		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class)
-				.run((context) -> assertThat(context).getBean(RequestMappingHandlerAdapter.class)
-						.isInstanceOf(MyRequestMappingHandlerAdapter.class));
+		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class).run((context) -> {
+			assertThat(context).getBean(RequestMappingHandlerAdapter.class)
+					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
+			assertThat(context.getBean(CustomRequestMappingHandlerAdapter.class).handlerAdapters).isEqualTo(1);
+		});
 	}
 
 	@Test
@@ -646,12 +650,15 @@ class WebFluxAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerAdapter {
 
+		private int handlerAdapters = 0;
+
 		@Bean
 		WebFluxRegistrations webFluxRegistrationsHandlerAdapter() {
 			return new WebFluxRegistrations() {
 
 				@Override
 				public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+					CustomRequestMappingHandlerAdapter.this.handlerAdapters++;
 					return new WebFluxAutoConfigurationTests.MyRequestMappingHandlerAdapter();
 				}
 
@@ -674,12 +681,15 @@ class WebFluxAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerMapping {
 
+		private int handlerMappings = 0;
+
 		@Bean
 		WebFluxRegistrations webFluxRegistrationsHandlerMapping() {
 			return new WebFluxRegistrations() {
 
 				@Override
 				public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+					CustomRequestMappingHandlerMapping.this.handlerMappings++;
 					return new MyRequestMappingHandlerMapping();
 				}
 
