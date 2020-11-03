@@ -24,6 +24,7 @@ import java.security.Permission;
 import java.util.Enumeration;
 import java.util.jar.JarEntry;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 /**
@@ -65,6 +66,11 @@ class JarFileWrapper extends AbstractJarFile {
 	@Override
 	public Enumeration<JarEntry> entries() {
 		return this.parent.entries();
+	}
+
+	@Override
+	public Stream<JarEntry> stream() {
+		return this.parent.stream();
 	}
 
 	@Override
