@@ -6099,6 +6099,7 @@ It is also possible to provide a custom script by setting the configprop:spring.
 
 To have Quartz use a `DataSource` other than the application's main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@QuartzDataSource`.
 Doing so ensures that the Quartz-specific `DataSource` is used by both the `SchedulerFactoryBean` and for schema initialization.
+Similarly, to have Quartz use a `TransactionManager` other than the application's main `TransactionManager` declare a `TransactionManager` bean, annotating its `@Bean` method with `@QuartzTransactionManager`.
 
 By default, jobs created by configuration will not overwrite already registered jobs that have been read from a persistent job store.
 To enable overwriting existing job definitions set the configprop:spring.quartz.overwrite-existing-jobs[] property.
