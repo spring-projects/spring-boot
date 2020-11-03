@@ -496,7 +496,8 @@ public class WebMvcAutoConfiguration {
 		@Override
 		protected ExceptionHandlerExceptionResolver createExceptionHandlerExceptionResolver() {
 			if (this.mvcRegistrations != null) {
-				ExceptionHandlerExceptionResolver resolver = this.mvcRegistrations.getExceptionHandlerExceptionResolver();
+				ExceptionHandlerExceptionResolver resolver = this.mvcRegistrations
+						.getExceptionHandlerExceptionResolver();
 				if (resolver != null) {
 					return resolver;
 				}
