@@ -25,18 +25,18 @@ import java.lang.annotation.Target;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
- * Qualifier annotation for a DataSource to be injected into Quartz auto-configuration.
- * Can be used on a secondary data source, if there is another one marked as
- * {@code @Primary}.
+ * Qualifier annotation for a TransactionManager to be injected into Quartz
+ * auto-configuration. Can be used on a secondary transaction manager, if there is another
+ * one marked as {@code @Primary}.
  *
- * @author Madhura Bhave
+ * @author Andy Wilkinson
  * @see QuartzDataSource
- * @since 2.0.2
+ * @since 2.2.11
  */
 @Target({ ElementType.FIELD, ElementType.METHOD, ElementType.PARAMETER, ElementType.TYPE, ElementType.ANNOTATION_TYPE })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Qualifier
-public @interface QuartzDataSource {
+public @interface QuartzTransactionManager {
 
 }
