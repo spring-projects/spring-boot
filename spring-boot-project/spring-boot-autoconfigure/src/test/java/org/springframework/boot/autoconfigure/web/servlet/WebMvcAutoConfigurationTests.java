@@ -102,6 +102,7 @@ import org.springframework.web.servlet.handler.HandlerExceptionResolverComposite
 import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
+import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolver;
@@ -538,16 +539,28 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	void customRequestMappingHandlerMapping() {
-		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class)
-				.run((context) -> assertThat(context).getBean(RequestMappingHandlerMapping.class)
-						.isInstanceOf(MyRequestMappingHandlerMapping.class));
+		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerMapping.class).run((context) -> {
+			assertThat(context).getBean(RequestMappingHandlerMapping.class)
+					.isInstanceOf(MyRequestMappingHandlerMapping.class);
+			assertThat(context.getBean(CustomRequestMappingHandlerMapping.class).handlerMappings).isEqualTo(1);
+		});
 	}
 
 	@Test
 	void customRequestMappingHandlerAdapter() {
-		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class)
-				.run((context) -> assertThat(context).getBean(RequestMappingHandlerAdapter.class)
-						.isInstanceOf(MyRequestMappingHandlerAdapter.class));
+		this.contextRunner.withUserConfiguration(CustomRequestMappingHandlerAdapter.class).run((context) -> {
+			assertThat(context).getBean(RequestMappingHandlerAdapter.class)
+					.isInstanceOf(MyRequestMappingHandlerAdapter.class);
+			assertThat(context.getBean(CustomRequestMappingHandlerAdapter.class).handlerAdapters).isEqualTo(1);
+		});
+	}
+
+	@Test
+	void customExceptionHandlerExceptionResolver() {
+		this.contextRunner.withUserConfiguration(CustomExceptionHandlerExceptionResolver.class)
+				.run((context) -> assertThat(
+						context.getBean(CustomExceptionHandlerExceptionResolver.class).exceptionResolvers)
+								.isEqualTo(1));
 	}
 
 	@Test
@@ -1044,12 +1057,15 @@ class WebMvcAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerMapping {
 
+		private int handlerMappings;
+
 		@Bean
 		WebMvcRegistrations webMvcRegistrationsHandlerMapping() {
 			return new WebMvcRegistrations() {
 
 				@Override
 				public RequestMappingHandlerMapping getRequestMappingHandlerMapping() {
+					CustomRequestMappingHandlerMapping.this.handlerMappings++;
 					return new MyRequestMappingHandlerMapping();
 				}
 
@@ -1065,12 +1081,15 @@ class WebMvcAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	static class CustomRequestMappingHandlerAdapter {
 
+		private int handlerAdapters = 0;
+
 		@Bean
 		WebMvcRegistrations webMvcRegistrationsHandlerAdapter() {
 			return new WebMvcRegistrations() {
 
 				@Override
 				public RequestMappingHandlerAdapter getRequestMappingHandlerAdapter() {
+					CustomRequestMappingHandlerAdapter.this.handlerAdapters++;
 					return new MyRequestMappingHandlerAdapter();
 				}
 
@@ -1080,6 +1099,30 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	static class MyRequestMappingHandlerAdapter extends RequestMappingHandlerAdapter {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomExceptionHandlerExceptionResolver {
+
+		private int exceptionResolvers = 0;
+
+		@Bean
+		WebMvcRegistrations webMvcRegistrationsHandlerAdapter() {
+			return new WebMvcRegistrations() {
+
+				@Override
+				public ExceptionHandlerExceptionResolver getExceptionHandlerExceptionResolver() {
+					CustomExceptionHandlerExceptionResolver.this.exceptionResolvers++;
+					return new MyExceptionHandlerExceptionResolver();
+				}
+
+			};
+		}
+
+	}
+
+	static class MyExceptionHandlerExceptionResolver extends ExceptionHandlerExceptionResolver {
 
 	}
 
