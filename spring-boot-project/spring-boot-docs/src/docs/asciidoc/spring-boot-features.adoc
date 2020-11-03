@@ -6789,7 +6789,7 @@ If that property is not set with a Servlet web appplication, the auto-configurat
 
 
 You can take control over Spring Session's configuration using `@Enable*HttpSession` (Servlet) or `@Enable@WebSession` (Reactive).
-This will cause the auto-configuratio to back off.
+This will cause the auto-configuration to back off.
 Spring Session can then be configured using the annotation's attributes rather than the previously described configuration properties.
 
 
