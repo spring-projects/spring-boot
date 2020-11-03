@@ -75,4 +75,9 @@ public class MustacheViewResolver extends AbstractTemplateViewResolver {
 		return view;
 	}
 
+	@Override
+	protected AbstractUrlBasedView instantiateView() {
+		return (getViewClass() == MustacheView.class) ? new MustacheView() : super.instantiateView();
+	}
+
 }
