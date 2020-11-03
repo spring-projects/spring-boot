@@ -266,18 +266,22 @@ public class WebFluxAutoConfiguration {
 
 		@Override
 		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
-			if (this.webFluxRegistrations != null
-					&& this.webFluxRegistrations.getRequestMappingHandlerAdapter() != null) {
-				return this.webFluxRegistrations.getRequestMappingHandlerAdapter();
+			if (this.webFluxRegistrations != null) {
+				RequestMappingHandlerAdapter adapter = this.webFluxRegistrations.getRequestMappingHandlerAdapter();
+				if (adapter != null) {
+					return adapter;
+				}
 			}
 			return super.createRequestMappingHandlerAdapter();
 		}
 
 		@Override
 		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
-			if (this.webFluxRegistrations != null
-					&& this.webFluxRegistrations.getRequestMappingHandlerMapping() != null) {
-				return this.webFluxRegistrations.getRequestMappingHandlerMapping();
+			if (this.webFluxRegistrations != null) {
+				RequestMappingHandlerMapping mapping = this.webFluxRegistrations.getRequestMappingHandlerMapping();
+				if (mapping != null) {
+					return mapping;
+				}
 			}
 			return super.createRequestMappingHandlerMapping();
 		}
