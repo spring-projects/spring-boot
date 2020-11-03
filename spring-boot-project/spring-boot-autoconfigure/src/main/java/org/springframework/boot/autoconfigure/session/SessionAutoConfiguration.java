@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -226,10 +225,10 @@ public class SessionAutoConfiguration {
 			this.classLoader = applicationContext.getClassLoader();
 			this.sessionProperties = sessionProperties;
 			this.candidates = candidates;
+			checkAvailableImplementations();
 		}
 
-		@PostConstruct
-		void checkAvailableImplementations() {
+		private void checkAvailableImplementations() {
 			List<Class<?>> availableCandidates = new ArrayList<>();
 			for (String candidate : this.candidates) {
 				addCandidateIfAvailable(availableCandidates, candidate);
@@ -291,7 +290,7 @@ public class SessionAutoConfiguration {
 	/**
 	 * Base class for validating that a (reactive) session repository bean exists.
 	 */
-	abstract static class AbstractSessionRepositoryValidator {
+	abstract static class AbstractSessionRepositoryValidator implements InitializingBean {
 
 		private final SessionProperties sessionProperties;
 
@@ -303,8 +302,8 @@ public class SessionAutoConfiguration {
 			this.sessionRepositoryProvider = sessionRepositoryProvider;
 		}
 
-		@PostConstruct
-		void checkSessionRepository() {
+		@Override
+		public void afterPropertiesSet() {
 			StoreType storeType = this.sessionProperties.getStoreType();
 			if (storeType != StoreType.NONE && this.sessionRepositoryProvider.getIfAvailable() == null
 					&& storeType != null) {

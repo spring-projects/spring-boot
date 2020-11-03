@@ -15,7 +15,14 @@
 			<property name="illegalPkgs"
 				value="^sun.*, ^org\.apache\.commons\.(?!compress|dbcp2|logging|pool2).*, ^com\.google\.common.*, ^io\.micrometer\.shaded.*, ^org\.flywaydb\.core\.internal.*, ^org\.testcontainers\.shaded.*" />
 			<property name="illegalClasses"
-				value="^com\.hazelcast\.util\.Base64, ^org\.junit\.rules\.ExpectedException, ^org\.mockito\.InjectMocks, ^org\.slf4j\.LoggerFactory, ^org.springframework.context.annotation.ScannedGenericBeanDefinition, ^reactor\.core\.support\.Assert" />
+				value="^com\.hazelcast\.util\.Base64, ^org\.junit\.rules\.ExpectedException, ^org\.mockito\.InjectMocks, ^org\.slf4j\.LoggerFactory, ^org.springframework.context.annotation.ScannedGenericBeanDefinition, ^reactor\.core\.support\.Assert"/>
+		</module>
+		<module
+			name="com.puppycrawl.tools.checkstyle.checks.imports.IllegalImportCheck">
+			<property name="id" value="mainCodeIllegalImportCheck"/>
+			<property name="regexp" value="true" />
+			<property name="illegalClasses"
+				value="^javax.annotation.PostConstruct"/>
 		</module>
 		<module
 			name="com.puppycrawl.tools.checkstyle.checks.imports.ImportControlCheck">

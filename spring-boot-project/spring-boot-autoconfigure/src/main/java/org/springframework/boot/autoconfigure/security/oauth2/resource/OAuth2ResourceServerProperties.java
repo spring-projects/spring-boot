@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.source.InvalidConfigurationPropertyValueException;
 import org.springframework.core.io.Resource;
@@ -35,7 +34,7 @@ import org.springframework.util.StreamUtils;
  * @since 2.1.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.resourceserver")
-public class OAuth2ResourceServerProperties {
+public class OAuth2ResourceServerProperties implements InitializingBean {
 
 	private final Jwt jwt = new Jwt();
 
@@ -49,7 +48,11 @@ public class OAuth2ResourceServerProperties {
 		return this.opaqueToken;
 	}
 
-	@PostConstruct
+	@Override
+	public void afterPropertiesSet() throws Exception {
+		validate();
+	}
+
 	public void validate() {
 		if (this.getOpaquetoken().getIntrospectionUri() != null) {
 			if (this.getJwt().getJwkSetUri() != null) {
