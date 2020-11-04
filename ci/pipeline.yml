@@ -491,6 +491,7 @@ jobs:
     image: ci-image
     file: git-repo/ci/tasks/stage.yml
     params:
+      <<: *docker-hub-task-params
       RELEASE_TYPE: M
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
       BRANCH: ((branch))
@@ -512,6 +513,7 @@ jobs:
     image: ci-image
     file: git-repo/ci/tasks/stage.yml
     params:
+      <<: *docker-hub-task-params
       RELEASE_TYPE: RC
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
       BRANCH: ((branch))
@@ -533,6 +535,7 @@ jobs:
     image: ci-image
     file: git-repo/ci/tasks/stage.yml
     params:
+      <<: *docker-hub-task-params
       RELEASE_TYPE: RELEASE
       GRADLE_ENTERPRISE_ACCESS_KEY: ((gradle_enterprise_secret_access_key))
       BRANCH: ((branch))
