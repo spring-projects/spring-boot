@@ -95,7 +95,8 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private String jndiName;
 
 	/**
-	 * Initialize the datasource with available DDL and DML scripts.
+	 * Mode to apply when determining if DataSource initialization should be performed
+	 * using the available DDL and DML scripts.
 	 */
 	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
 
