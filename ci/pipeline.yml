@@ -14,12 +14,16 @@ anchors:
     GRADLE_ENTERPRISE_CACHE_PASSWORD: ((gradle_enterprise_cache_user.password))
     BRANCH: ((branch))
     CI: true
+  docker-hub-task-params: &docker-hub-task-params
+    DOCKER_HUB_USERNAME: ((docker-hub-username))
+    DOCKER_HUB_PASSWORD: ((docker-hub-password))
   build-project-task-params: &build-project-task-params
     privileged: true
     timeout: ((task-timeout))
     file: git-repo/ci/tasks/build-project.yml
     params:
       <<: *gradle-enterprise-task-params
+      <<: *docker-hub-task-params
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
     GITHUB_ORGANIZATION: spring-projects
@@ -283,18 +287,21 @@ jobs:
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
+          <<: *docker-hub-task-params
       - task: build-integration-tests
         image: ci-image
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
+          <<: *docker-hub-task-params
       - task: build-deployment-tests
         image: ci-image
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
+          <<: *docker-hub-task-params
     on_failure:
       do:
       - put: repo-status-build
@@ -376,18 +383,21 @@ jobs:
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
+          <<: *docker-hub-task-params
       - task: build-integration-tests
         image: ci-image-jdk11
         file: git-repo/ci/tasks/build-integration-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
+          <<: *docker-hub-task-params
       - task: build-deployment-tests
         image: ci-image-jdk11
         file: git-repo/ci/tasks/build-deployment-tests.yml
         timeout: ((task-timeout))
         params:
           <<: *gradle-enterprise-task-params
+          <<: *docker-hub-task-params
     on_failure:
       do:
       - put: repo-status-jdk11-build
@@ -420,18 +430,21 @@ jobs:
               file: git-repo/ci/tasks/build-smoke-tests.yml
               params:
                 <<: *gradle-enterprise-task-params
+                <<: *docker-hub-task-params
             - task: build-integration-tests
               timeout: ((task-timeout))
               image: ci-image-jdk15
               file: git-repo/ci/tasks/build-integration-tests.yml
               params:
                 <<: *gradle-enterprise-task-params
+                <<: *docker-hub-task-params
             - task: build-deployment-tests
               timeout: ((task-timeout))
               image: ci-image-jdk15
               file: git-repo/ci/tasks/build-deployment-tests.yml
               params:
                 <<: *gradle-enterprise-task-params
+                <<: *docker-hub-task-params
       on_failure:
         do:
           - put: repo-status-jdk15-build
