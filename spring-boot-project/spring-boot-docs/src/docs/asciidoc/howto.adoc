@@ -883,6 +883,9 @@ With this option, the Web servers themselves natively support this feature; you 
 If this is not enough, Spring Framework provides a {spring-framework-docs}/web.html#filters-forwarded-headers[ForwardedHeaderFilter].
 You can register it as a Servlet Filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
 
+TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.redirect-context-root[] should be set to `false`.
+This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
+
 NOTE: If your application runs in Cloud Foundry or Heroku, the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
 In all other instances, it defaults to `NONE`.
 
