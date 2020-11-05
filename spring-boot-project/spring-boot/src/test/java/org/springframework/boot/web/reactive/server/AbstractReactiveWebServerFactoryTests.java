@@ -131,6 +131,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore(keyStore);
 		ssl.setKeyPassword(keyPassword);
+		ssl.setKeyStorePassword("secret");
 		factory.setSsl(ssl);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
@@ -150,6 +151,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		Ssl ssl = new Ssl();
 		ssl.setKeyStore(keyStore);
+		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword(keyPassword);
 		ssl.setKeyAlias("test-alias");
 		factory.setSsl(ssl);
@@ -198,6 +200,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setClientAuth(Ssl.ClientAuth.WANT);
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
+		ssl.setKeyStorePassword("secret");
 		ssl.setTrustStore("classpath:test.jks");
 		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
 	}
@@ -209,6 +212,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		ssl.setKeyStore("classpath:test.jks");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
+		ssl.setKeyStorePassword("secret");
 		testClientAuthSuccess(ssl, buildTrustAllSslConnector());
 	}
 
@@ -243,6 +247,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
 		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
 		testClientAuthSuccess(ssl, buildTrustAllSslWithClientKeyConnector());
@@ -253,6 +258,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		Ssl ssl = new Ssl();
 		ssl.setClientAuth(Ssl.ClientAuth.NEED);
 		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyStorePassword("secret");
 		ssl.setKeyPassword("password");
 		ssl.setTrustStore("classpath:test.jks");
 		testClientAuthFailure(ssl, buildTrustAllSslConnector());
