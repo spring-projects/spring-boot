@@ -19,44 +19,32 @@ package org.springframework.boot.configurationsample.specific;
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 
 /**
- * Demonstrate the use of boxing/unboxing. Even if the type does not strictly match, it
- * should still be detected.
+ * Demonstrate that deprecating accessor with not the same type is not taken into account
+ * to detect the deprecated flag.
  *
  * @author Stephane Nicoll
  */
-@ConfigurationProperties("boxing")
-public class BoxingPojo {
+@ConfigurationProperties("not.deprecated")
+public class DeprecatedLessPreciseTypePojo {
 
 	private boolean flag;
 
-	private Boolean anotherFlag;
-
-	private Integer counter;
+	@Deprecated
+	public Boolean getFlag() {
+		return this.flag;
+	}
 
 	public boolean isFlag() {
 		return this.flag;
 	}
 
-	// Setter use Boolean
-	public void setFlag(Boolean flag) {
+	public void setFlag(boolean flag) {
 		this.flag = flag;
 	}
 
-	public boolean isAnotherFlag() {
-		return Boolean.TRUE.equals(this.anotherFlag);
-	}
-
-	public void setAnotherFlag(boolean anotherFlag) {
-		this.anotherFlag = anotherFlag;
-	}
-
-	public Integer getCounter() {
-		return this.counter;
-	}
-
-	// Setter use int
-	public void setCounter(int counter) {
-		this.counter = counter;
+	@Deprecated
+	public void setFlag(Boolean flag) {
+		this.flag = flag;
 	}
 
 }
