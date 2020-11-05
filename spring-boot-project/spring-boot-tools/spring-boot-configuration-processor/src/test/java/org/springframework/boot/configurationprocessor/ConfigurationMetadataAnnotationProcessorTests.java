@@ -38,6 +38,7 @@ import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
 import org.springframework.boot.configurationsample.specific.AnnotatedGetter;
 import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
+import org.springframework.boot.configurationsample.specific.DeprecatedLessPreciseTypePojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
 import org.springframework.boot.configurationsample.specific.EmptyDefaultValueProperties;
@@ -192,12 +193,22 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void boxingOnSetter() {
+	void deprecatedWithLessPreciseType() {
+		Class<?> type = DeprecatedLessPreciseTypePojo.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class).withDefaultValue(false)
+				.withNoDeprecation().fromSource(type));
+	}
+
+	@Test
+	void typBoxing() {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("boxing").fromSource(type));
 		assertThat(metadata)
 				.has(Metadata.withProperty("boxing.flag", Boolean.class).withDefaultValue(false).fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("boxing.another-flag", Boolean.class).fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("boxing.counter", Integer.class).fromSource(type));
 	}
 

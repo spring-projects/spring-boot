@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -91,10 +91,12 @@ class PropertyDescriptorResolver {
 			TypeElementMembers members) {
 		// First check if we have regular java bean properties there
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
-		members.getPublicGetters().forEach((name, getter) -> {
+		members.getPublicGetters().forEach((name, getters) -> {
+			VariableElement field = members.getFields().get(name);
+			ExecutableElement getter = findMatchingGetter(members, getters, field);
 			TypeMirror propertyType = getter.getReturnType();
-			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name, propertyType,
-					members.getFields().get(name), members.getPublicSetter(name, propertyType)));
+			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name, propertyType, field,
+					members.getPublicSetter(name, propertyType)));
 		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
@@ -105,6 +107,14 @@ class PropertyDescriptorResolver {
 					new LombokPropertyDescriptor(type, factoryMethod, field, name, propertyType, getter, setter));
 		});
 		return candidates.values().stream();
+	}
+
+	private ExecutableElement findMatchingGetter(TypeElementMembers members, List<ExecutableElement> candidates,
+			VariableElement field) {
+		if (candidates.size() > 1 && field != null) {
+			return members.getMatchingGetter(candidates, field.asType());
+		}
+		return candidates.get(0);
 	}
 
 	private void register(Map<String, PropertyDescriptor<?>> candidates, PropertyDescriptor<?> descriptor) {
