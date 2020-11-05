@@ -148,7 +148,9 @@ class SslConnectorCustomizer implements TomcatConnectorCustomizer {
 				throw new WebServerException("Could not load trust store: " + ex.getMessage(), ex);
 			}
 		}
-		protocol.setTruststorePass(ssl.getTrustStorePassword());
+		if (ssl.getTrustStorePassword() != null) {
+			protocol.setTruststorePass(ssl.getTrustStorePassword());
+		}
 		if (ssl.getTrustStoreType() != null) {
 			protocol.setTruststoreType(ssl.getTrustStoreType());
 		}
