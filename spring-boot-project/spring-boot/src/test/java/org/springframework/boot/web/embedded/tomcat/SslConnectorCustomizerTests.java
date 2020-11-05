@@ -206,6 +206,17 @@ class SslConnectorCustomizerTests {
 		assertThat(protocol.getKeyPass()).isEqualTo("password");
 	}
 
+	@Test
+	void trustStorePasswordIsNotSetWhenNull() {
+		Http11NioProtocol protocol = (Http11NioProtocol) this.tomcat.getConnector().getProtocolHandler();
+		protocol.setTruststorePass("password");
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setTrustStore("src/test/resources/test.jks");
+		new SslConnectorCustomizer(ssl, null).customize(this.tomcat.getConnector());
+		assertThat(protocol.getTruststorePass()).isEqualTo("password");
+	}
+
 	private KeyStore loadStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
 		KeyStore keyStore = KeyStore.getInstance("JKS");
 		Resource resource = new ClassPathResource("test.jks");
