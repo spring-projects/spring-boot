@@ -18,6 +18,7 @@ package org.springframework.boot.build;
 import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -113,19 +114,25 @@ class JavaConventions {
 				.collect(Collectors.toSet());
 		Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
 				.collect(Collectors.toSet());
-		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
-			jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
-			jar.manifest((manifest) -> {
-				Map<String, Object> attributes = new TreeMap<>();
-				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-				attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
-				attributes.put("Built-By", "Spring");
-				attributes.put("Implementation-Title",
-						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
-				attributes.put("Implementation-Version", project.getVersion());
-				manifest.attributes(attributes);
-			});
-		}));
+		Set<String> jarTaskNames = sourceSets.stream().map(SourceSet::getJarTaskName).collect(Collectors.toSet());
+		Set<String> jarTasksOfInterest = new HashSet<String>();
+		jarTasksOfInterest.addAll(sourceJarTaskNames);
+		jarTasksOfInterest.addAll(javadocJarTaskNames);
+		jarTasksOfInterest.addAll(jarTaskNames);
+		project.getTasks().matching((task) -> jarTasksOfInterest.contains(task.getName())).withType(Jar.class,
+				(jar) -> project.afterEvaluate((evaluated) -> {
+					jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
+					jar.manifest((manifest) -> {
+						Map<String, Object> attributes = new TreeMap<>();
+						attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
+						attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
+						attributes.put("Built-By", "Spring");
+						attributes.put("Implementation-Title",
+								determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
+						attributes.put("Implementation-Version", project.getVersion());
+						manifest.attributes(attributes);
+					});
+				}));
 	}
 
 	private String determineImplementationTitle(Project project, Set<String> sourceJarTaskNames,

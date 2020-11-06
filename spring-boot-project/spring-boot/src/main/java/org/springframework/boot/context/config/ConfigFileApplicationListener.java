@@ -554,7 +554,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		private boolean hasHiddenPathElement(Resource resource) throws IOException {
 			String cleanPath = StringUtils.cleanPath(resource.getFile().getAbsolutePath());
 			for (Path value : Paths.get(cleanPath)) {
-				if (value.toString().startsWith(".")) {
+				if (value.toString().startsWith("..")) {
 					return true;
 				}
 			}

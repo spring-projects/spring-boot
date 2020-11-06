@@ -1499,9 +1499,6 @@ To convert a property name in the canonical-form to an environment variable name
 
 For example, the configuration property `spring.main.log-startup-info` would be an environment variable named `SPRING_MAIN_LOGSTARTUPINFO`.
 
-NOTE: Underscores cannot be used to replace the dashes in property names.
-If you attempt to use `SPRING_MAIN_LOG_STARTUP_INFO` with the example above, no value will be bound.
-
 Environment variables can also be used when binding to object lists.
 To bind to a `List`, the element number should be surrounded with underscores in the variable name.
 
@@ -1814,7 +1811,7 @@ The following table summarizes the features that are supported by `@Configuratio
 
 | <<boot-features-external-config-relaxed-binding,Relaxed binding>>
 | Yes
-| Limited (see note below)
+| Limited (see <<boot-features-external-config-vs-value-note,note below>>)
 
 | <<appendix-configuration-metadata.adoc#configuration-metadata,Meta-data support>>
 | Yes
@@ -1825,15 +1822,15 @@ The following table summarizes the features that are supported by `@Configuratio
 | Yes
 |===
 
-If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
-Doing so will provide you with structured, type-safe object that you can inject into your own beans.
-
-If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
+NOTE: [[boot-features-external-config-vs-value-note]] If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
 This will allow Spring Boot to use the same logic as it does when relaxed binding `@ConfigurationProperties`.
 For example, `@Value("{demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
 If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
 
-Finally, while you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-files,application property files>>.
+If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
+Doing so will provide you with structured, type-safe object that you can inject into your own beans.
+
+While you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-files,application property files>>.
 
 
 
@@ -6615,6 +6612,7 @@ It is also possible to provide a custom script by setting the configprop:spring.
 
 To have Quartz use a `DataSource` other than the application's main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@QuartzDataSource`.
 Doing so ensures that the Quartz-specific `DataSource` is used by both the `SchedulerFactoryBean` and for schema initialization.
+Similarly, to have Quartz use a `TransactionManager` other than the application's main `TransactionManager` declare a `TransactionManager` bean, annotating its `@Bean` method with `@QuartzTransactionManager`.
 
 By default, jobs created by configuration will not overwrite already registered jobs that have been read from a persistent job store.
 To enable overwriting existing job definitions set the configprop:spring.quartz.overwrite-existing-jobs[] property.
@@ -6750,10 +6748,14 @@ When building a Servlet web application, the following stores can be auto-config
 * Hazelcast
 * MongoDB
 
+The Servlet auto-configuration replaces the need to use `@Enable*HttpSession`.
+
 When building a reactive web application, the following stores can be auto-configured:
 
 * Redis
 * MongoDB
+
+The reactive auto-configuration replaces the need to use `@Enable*WebSession`.
 
 If a single Spring Session module is present on the classpath, Spring Boot uses that store implementation automatically.
 If you have more than one implementation, you must choose the {spring-boot-autoconfigure-module-code}/session/StoreType.java[`StoreType`] that you wish to use to store the sessions.
@@ -6782,6 +6784,10 @@ For instance, it is possible to customize the name of the table for the JDBC sto
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
 If that property is not set with a Servlet web appplication, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
 
+
+You can take control over Spring Session's configuration using `@Enable*HttpSession` (Servlet) or `@Enable@WebSession` (Reactive).
+This will cause the auto-configuration to back off.
+Spring Session can then be configured using the annotation's attributes rather than the previously described configuration properties.
 
 
 [[boot-features-jmx]]
@@ -8347,6 +8353,10 @@ For this reason, we recommend using only `@ConditionalOnBean` and `@ConditionalO
 
 NOTE: `@ConditionalOnBean` and `@ConditionalOnMissingBean` do not prevent `@Configuration` classes from being created.
 The only difference between using these conditions at the class level and marking each contained `@Bean` method with the annotation is that the former prevents registration of the `@Configuration` class as a bean if the condition does not match.
+
+TIP: When declaring a `@Bean` method, provide as much type information as possible in the method's return type.
+For example, if your bean's concrete class implements an interface the bean method's return type should be the concrete class and not the interface.
+Providing as much type information as possible in `@Bean` methods is particularly important when using bean conditions as their evaluation can only rely upon to type information that's available in the method signature.
 
 
 

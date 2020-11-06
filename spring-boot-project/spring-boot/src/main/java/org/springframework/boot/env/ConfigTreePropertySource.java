@@ -226,7 +226,7 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		private static boolean hasHiddenPathElement(Path path) {
 			Iterator<Path> iterator = path.iterator();
 			while (iterator.hasNext()) {
-				if (iterator.next().toString().startsWith(".")) {
+				if (iterator.next().toString().startsWith("..")) {
 					return true;
 				}
 			}

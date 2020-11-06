@@ -26,7 +26,6 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.context.config.AnsiOutputApplicationListener;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
-import org.springframework.boot.context.logging.ClasspathLoggingApplicationListener;
 import org.springframework.boot.context.logging.LoggingApplicationListener;
 import org.springframework.boot.devtools.remote.client.RemoteClientConfiguration;
 import org.springframework.boot.devtools.restart.RestartInitializer;
@@ -75,7 +74,6 @@ public final class RemoteSpringApplication {
 		listeners.add(new AnsiOutputApplicationListener());
 		listeners.add(new EnvironmentPostProcessorApplicationListener(
 				EnvironmentPostProcessorsFactory.of(ConfigDataEnvironmentPostProcessor.class)));
-		listeners.add(new ClasspathLoggingApplicationListener());
 		listeners.add(new LoggingApplicationListener());
 		listeners.add(new RemoteUrlPropertyExtractor());
 		return listeners;

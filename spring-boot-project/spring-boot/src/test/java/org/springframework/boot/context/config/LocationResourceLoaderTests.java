@@ -129,7 +129,7 @@ class LocationResourceLoaderTests {
 	@Test
 	void getResourcesWhenHasHiddenDirectoriesFiltersResults() throws IOException {
 		createTree();
-		File hiddenDirectory = new File(this.temp, ".a");
+		File hiddenDirectory = new File(this.temp, "..a");
 		hiddenDirectory.mkdirs();
 		FileCopyUtils.copy("h".getBytes(), new File(hiddenDirectory, "file"));
 		Resource[] resources = this.loader.getResources(this.temp.getAbsolutePath() + "/*/file", ResourceType.FILE);

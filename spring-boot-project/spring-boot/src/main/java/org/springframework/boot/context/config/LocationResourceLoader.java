@@ -144,7 +144,7 @@ class LocationResourceLoader {
 	}
 
 	private boolean isVisibleDirectory(File file) {
-		return file.isDirectory() && !file.getName().startsWith(".");
+		return file.isDirectory() && !file.getName().startsWith("..");
 	}
 
 	/**

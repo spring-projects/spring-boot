@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigure.freemarker;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.annotation.PostConstruct;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,9 +55,9 @@ public class FreeMarkerAutoConfiguration {
 	public FreeMarkerAutoConfiguration(ApplicationContext applicationContext, FreeMarkerProperties properties) {
 		this.applicationContext = applicationContext;
 		this.properties = properties;
+		checkTemplateLocationExists();
 	}
 
-	@PostConstruct
 	public void checkTemplateLocationExists() {
 		if (logger.isWarnEnabled() && this.properties.isCheckTemplateLocation()) {
 			List<TemplateLocation> locations = getLocations();

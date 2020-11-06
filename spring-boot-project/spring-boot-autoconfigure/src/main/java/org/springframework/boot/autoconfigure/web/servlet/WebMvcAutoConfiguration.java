@@ -405,8 +405,11 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		protected RequestMappingHandlerAdapter createRequestMappingHandlerAdapter() {
-			if (this.mvcRegistrations != null && this.mvcRegistrations.getRequestMappingHandlerAdapter() != null) {
-				return this.mvcRegistrations.getRequestMappingHandlerAdapter();
+			if (this.mvcRegistrations != null) {
+				RequestMappingHandlerAdapter adapter = this.mvcRegistrations.getRequestMappingHandlerAdapter();
+				if (adapter != null) {
+					return adapter;
+				}
 			}
 			return super.createRequestMappingHandlerAdapter();
 		}
@@ -491,8 +494,11 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		protected RequestMappingHandlerMapping createRequestMappingHandlerMapping() {
-			if (this.mvcRegistrations != null && this.mvcRegistrations.getRequestMappingHandlerMapping() != null) {
-				return this.mvcRegistrations.getRequestMappingHandlerMapping();
+			if (this.mvcRegistrations != null) {
+				RequestMappingHandlerMapping mapping = this.mvcRegistrations.getRequestMappingHandlerMapping();
+				if (mapping != null) {
+					return mapping;
+				}
 			}
 			return super.createRequestMappingHandlerMapping();
 		}
@@ -510,8 +516,12 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		protected ExceptionHandlerExceptionResolver createExceptionHandlerExceptionResolver() {
-			if (this.mvcRegistrations != null && this.mvcRegistrations.getExceptionHandlerExceptionResolver() != null) {
-				return this.mvcRegistrations.getExceptionHandlerExceptionResolver();
+			if (this.mvcRegistrations != null) {
+				ExceptionHandlerExceptionResolver resolver = this.mvcRegistrations
+						.getExceptionHandlerExceptionResolver();
+				if (resolver != null) {
+					return resolver;
+				}
 			}
 			return super.createExceptionHandlerExceptionResolver();
 		}
