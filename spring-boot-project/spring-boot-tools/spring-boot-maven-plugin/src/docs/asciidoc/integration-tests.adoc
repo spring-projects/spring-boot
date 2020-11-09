@@ -141,18 +141,12 @@ This example shows how you can customize the port in case `9001` is already used
 							<goals>
 								<goal>start</goal>
 							</goals>
-							<configuration>
-								<skip>${skip.it}</skip>
-							</configuration>
 						</execution>
 						<execution>
 							<id>post-integration-test</id>
 							<goals>
 								<goal>stop</goal>
 							</goals>
-							<configuration>
-								<skip>${skip.it}</skip>
-							</configuration>
 						</execution>
 					</executions>
 				</plugin>
