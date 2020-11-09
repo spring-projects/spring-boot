@@ -289,6 +289,13 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertExtractedLayers(layerNames, indexedLayers);
 	}
 
+	@TestTemplate
+	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
+		BuildResult build = this.gradleBuild.build("resolveResolvableCopyOfUnresolvableConfiguration");
+		assertThat(build.task(":resolveResolvableCopyOfUnresolvableConfiguration").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+	}
+
 	private void assertExtractedLayers(List<String> layerNames, Map<String, List<String>> indexedLayers)
 			throws IOException {
 		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);

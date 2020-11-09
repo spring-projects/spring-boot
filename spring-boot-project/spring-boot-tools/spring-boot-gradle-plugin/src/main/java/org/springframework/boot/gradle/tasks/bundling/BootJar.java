@@ -80,8 +80,11 @@ public class BootJar extends Jar implements BootArchive {
 		getMainSpec().with(this.bootInfSpec);
 		getProject().getConfigurations().all((configuration) -> {
 			ResolvableDependencies incoming = configuration.getIncoming();
-			incoming.afterResolve(
-					(resolvableDependencies) -> this.resolvedDependencies.processConfiguration(configuration));
+			incoming.afterResolve((resolvableDependencies) -> {
+				if (resolvableDependencies == incoming) {
+					this.resolvedDependencies.processConfiguration(configuration);
+				}
+			});
 		});
 	}
 
