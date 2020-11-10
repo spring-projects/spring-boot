@@ -28,7 +28,7 @@ import org.testcontainers.containers.GenericContainer;
 public class RedisContainer extends GenericContainer<RedisContainer> {
 
 	public RedisContainer() {
-		super(DockerImageNames.redis().toString());
+		super(DockerImageNames.redis());
 		addExposedPorts(6379);
 	}
 

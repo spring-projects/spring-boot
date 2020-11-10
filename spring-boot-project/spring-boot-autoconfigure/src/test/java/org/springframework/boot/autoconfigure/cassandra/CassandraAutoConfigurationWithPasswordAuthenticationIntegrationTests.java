@@ -85,7 +85,7 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 			extends CassandraContainer<PasswordAuthenticatorCassandraContainer> {
 
 		PasswordAuthenticatorCassandraContainer() {
-			super(DockerImageNames.cassandra().toString());
+			super(DockerImageNames.cassandra());
 		}
 
 		@Override

@@ -80,7 +80,7 @@ public class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrati
 	private static class RegistryContainer extends GenericContainer<RegistryContainer> {
 
 		RegistryContainer() {
-			super(DockerImageNames.registry().toString());
+			super(DockerImageNames.registry());
 			addExposedPorts(5000);
 			addEnv("SERVER_NAME", "localhost");
 		}

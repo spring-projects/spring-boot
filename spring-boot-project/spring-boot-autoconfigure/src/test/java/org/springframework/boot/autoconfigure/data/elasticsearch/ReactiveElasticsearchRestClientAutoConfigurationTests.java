@@ -48,9 +48,8 @@ import static org.mockito.Mockito.mock;
 public class ReactiveElasticsearchRestClientAutoConfigurationTests {
 
 	@Container
-	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(
-			DockerImageNames.elasticsearch().toString()).withStartupAttempts(5)
-					.withStartupTimeout(Duration.ofMinutes(10));
+	static ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveElasticsearchRestClientAutoConfiguration.class));

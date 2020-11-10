@@ -47,7 +47,7 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
-	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase().toString())
+	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
 			.withCredentials("spring", "password").withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
 			.withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(false));
 

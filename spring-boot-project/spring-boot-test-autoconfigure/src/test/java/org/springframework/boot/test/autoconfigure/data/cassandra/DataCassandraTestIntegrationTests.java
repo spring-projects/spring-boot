@@ -53,7 +53,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataCassandraTestIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra().toString())
+	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra())
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource

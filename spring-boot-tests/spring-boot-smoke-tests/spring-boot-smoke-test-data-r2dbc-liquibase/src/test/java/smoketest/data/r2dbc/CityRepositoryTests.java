@@ -38,7 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CityRepositoryTests {
 
 	@Container
-	static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>(DockerImageNames.postgresql().toString())
+	static PostgreSQLContainer<?> postgresql = new PostgreSQLContainer<>(DockerImageNames.postgresql())
 			.withDatabaseName("test_liquibase");
 
 	@DynamicPropertySource

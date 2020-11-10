@@ -55,8 +55,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataNeo4jTestReactiveIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j().toString())
-			.withoutAuthentication().withStartupTimeout(Duration.ofMinutes(10));
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j()).withoutAuthentication()
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
