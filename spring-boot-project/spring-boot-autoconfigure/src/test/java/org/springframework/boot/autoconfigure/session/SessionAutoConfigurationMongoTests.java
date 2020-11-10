@@ -30,6 +30,7 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
@@ -46,8 +47,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
 	@Container
-	static final MongoDBContainer mongoDB = new MongoDBContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(5));
+	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo().toString())
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(5));
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,

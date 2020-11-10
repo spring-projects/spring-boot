@@ -26,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -45,8 +46,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataNeo4jTestIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>().withoutAuthentication()
-			.withStartupTimeout(Duration.ofMinutes(10));
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j().toString())
+			.withoutAuthentication().withStartupTimeout(Duration.ofMinutes(10));
 
 	@Autowired
 	private Session session;

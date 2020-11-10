@@ -24,6 +24,7 @@ import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.data.mongodb.core.ReactiveMongoTemplate;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
@@ -40,8 +41,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataMongoTestReactiveIntegrationTests {
 
 	@Container
-	static final MongoDBContainer mongoDB = new MongoDBContainer("mongo:4.0.10").withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(5));
+	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo().toString())
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	private ReactiveMongoTemplate mongoTemplate;
