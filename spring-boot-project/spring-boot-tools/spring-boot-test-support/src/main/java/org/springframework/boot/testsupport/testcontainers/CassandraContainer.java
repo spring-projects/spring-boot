@@ -13,31 +13,22 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.testsupport.testcontainers;
 
-import org.elasticsearch.Version;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.utility.DockerImageName;
 
 /**
- * Extension of {@link ElasticsearchContainer} to override default version.
+ * Extension of {@link org.testcontainers.containers.CassandraContainer} that provides a
+ * default version.
  *
- * @author Scott Frederick
+ * @author Stephane Nicoll
  * @since 2.3.6
  */
-public class VersionOverridingElasticsearchContainer extends ElasticsearchContainer {
+public class CassandraContainer extends org.testcontainers.containers.CassandraContainer<CassandraContainer> {
 
-	/**
-	 * Elasticsearch Docker base URL.
-	 */
-	private static final String ELASTICSEARCH_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch";
-
-	/**
-	 * Elasticsearch version.
-	 */
-	protected static final String ELASTICSEARCH_VERSION = Version.CURRENT.toString();
-
-	public VersionOverridingElasticsearchContainer() {
-		super(ELASTICSEARCH_IMAGE + ":" + ELASTICSEARCH_VERSION);
+	public CassandraContainer() {
+		super(DockerImageName.parse("cassandra").withTag("3.11.2"));
 	}
 
 }
