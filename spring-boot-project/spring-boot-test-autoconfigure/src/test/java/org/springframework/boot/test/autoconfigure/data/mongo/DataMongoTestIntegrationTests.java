@@ -44,8 +44,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataMongoTestIntegrationTests {
 
 	@Container
-	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo().toString())
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(5));
+	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired
 	private MongoTemplate mongoTemplate;

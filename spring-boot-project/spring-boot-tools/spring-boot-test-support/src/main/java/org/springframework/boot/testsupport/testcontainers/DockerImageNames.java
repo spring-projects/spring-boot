@@ -46,7 +46,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running cassandra
 	 */
 	public static DockerImageName cassandra() {
-		return new DockerImageName("cassandra", CASSANDRA_VERSION);
+		return DockerImageName.parse("cassandra").withTag(CASSANDRA_VERSION);
 	}
 
 	/**
@@ -54,7 +54,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running cassandra
 	 */
 	public static DockerImageName couchbase() {
-		return new DockerImageName("couchbase/server", COUCHBASE_VERSION);
+		return DockerImageName.parse("couchbase/server").withTag(COUCHBASE_VERSION);
 	}
 
 	/**
@@ -64,7 +64,7 @@ public final class DockerImageNames {
 	 */
 	public static DockerImageName elasticsearch() {
 		String version = org.elasticsearch.Version.CURRENT.toString();
-		return new DockerImageName("docker.elastic.co/elasticsearch/elasticsearch", version);
+		return DockerImageName.parse("docker.elastic.co/elasticsearch/elasticsearch").withTag(version);
 	}
 
 	/**
@@ -72,7 +72,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running mongo
 	 */
 	public static DockerImageName mongo() {
-		return new DockerImageName("mongo", MONGO_VERSION);
+		return DockerImageName.parse("mongo").withTag(MONGO_VERSION);
 	}
 
 	/**
@@ -80,7 +80,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running neo4j
 	 */
 	public static DockerImageName neo4j() {
-		return new DockerImageName("neo4j", NEO4J_VERSION);
+		return DockerImageName.parse("neo4j").withTag(NEO4J_VERSION);
 	}
 
 	/**
@@ -88,7 +88,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running postgresql
 	 */
 	public static DockerImageName postgresql() {
-		return new DockerImageName("postgres", POSTGRESQL_VERSION);
+		return DockerImageName.parse("postgres").withTag(POSTGRESQL_VERSION);
 	}
 
 	/**
@@ -96,7 +96,7 @@ public final class DockerImageNames {
 	 * @return a docker image name for running redis
 	 */
 	public static DockerImageName redis() {
-		return new DockerImageName("redis", REDIS_VERSION);
+		return DockerImageName.parse("redis").withTag(REDIS_VERSION);
 	}
 
 }

@@ -42,8 +42,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataNeo4jTestPropertiesIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j().toString())
-			.withoutAuthentication().withStartupTimeout(Duration.ofMinutes(10));
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j()).withoutAuthentication()
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@Autowired
 	private Environment environment;

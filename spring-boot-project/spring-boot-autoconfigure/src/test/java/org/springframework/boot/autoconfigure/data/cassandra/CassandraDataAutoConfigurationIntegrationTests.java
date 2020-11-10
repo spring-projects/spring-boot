@@ -49,7 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CassandraDataAutoConfigurationIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra().toString())
+	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra())
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
