@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.autoconfigure.data.elasticsearch;
+package org.springframework.boot.testsupport.testcontainers;
 
 import org.elasticsearch.Version;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
