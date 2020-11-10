@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.springframework.boot.testsupport.testcontainers;
+package org.springframework.boot.autoconfigure.data.elasticsearch;
 
 import org.elasticsearch.Version;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
@@ -22,17 +22,16 @@ import org.testcontainers.elasticsearch.ElasticsearchContainer;
  * Extension of {@link ElasticsearchContainer} to override default version.
  *
  * @author Scott Frederick
- * @since 2.3.6
  */
 public class VersionOverridingElasticsearchContainer extends ElasticsearchContainer {
 
 	/**
-	 * Elasticsearch Docker base URL.
+	 * Elasticsearch Docker base URL
 	 */
 	private static final String ELASTICSEARCH_IMAGE = "docker.elastic.co/elasticsearch/elasticsearch";
 
 	/**
-	 * Elasticsearch version.
+	 * Elasticsearch version
 	 */
 	protected static final String ELASTICSEARCH_VERSION = Version.CURRENT.toString();
 
