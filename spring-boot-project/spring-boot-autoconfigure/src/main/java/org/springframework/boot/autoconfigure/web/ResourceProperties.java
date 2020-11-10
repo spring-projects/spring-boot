@@ -195,6 +195,12 @@ public class ResourceProperties extends Resources {
 			return this.cachecontrol;
 		}
 
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.use-last-modified")
+		public boolean isUseLastModified() {
+			return super.isUseLastModified();
+		}
+
 		/**
 		 * Cache Control HTTP header configuration.
 		 */
