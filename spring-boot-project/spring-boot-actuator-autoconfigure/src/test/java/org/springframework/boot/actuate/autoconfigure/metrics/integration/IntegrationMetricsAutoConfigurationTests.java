@@ -35,7 +35,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link RabbitMetricsAutoConfiguration}.
  *
  * @author Artem Bilan
- *
  * @since 2.3.6
  */
 class IntegrationMetricsAutoConfigurationTests {
