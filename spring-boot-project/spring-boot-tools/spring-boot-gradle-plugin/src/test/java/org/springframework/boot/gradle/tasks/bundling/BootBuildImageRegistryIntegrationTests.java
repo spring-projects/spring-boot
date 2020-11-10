@@ -37,6 +37,7 @@ import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -104,7 +105,7 @@ public class BootBuildImageRegistryIntegrationTests {
 	private static class RegistryContainer extends GenericContainer<RegistryContainer> {
 
 		RegistryContainer() {
-			super("registry:2.7.1");
+			super(DockerImageNames.registry().toString());
 			addExposedPorts(5000);
 			addEnv("SERVER_NAME", "localhost");
 		}

@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -79,7 +80,7 @@ public class BuildImageRegistryIntegrationTests extends AbstractArchiveIntegrati
 	private static class RegistryContainer extends GenericContainer<RegistryContainer> {
 
 		RegistryContainer() {
-			super("registry:2.7.1");
+			super(DockerImageNames.registry().toString());
 			addExposedPorts(5000);
 			addEnv("SERVER_NAME", "localhost");
 		}

@@ -41,6 +41,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -58,8 +59,9 @@ import static org.mockito.Mockito.mock;
 class ElasticsearchRestClientAutoConfigurationTests {
 
 	@Container
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(
+			DockerImageNames.elasticsearch().toString()).withStartupAttempts(5)
+					.withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class));
