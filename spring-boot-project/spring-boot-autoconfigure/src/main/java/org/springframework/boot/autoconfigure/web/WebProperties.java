@@ -363,7 +363,7 @@ public class WebProperties {
 
 			/**
 			 * Whether we should use the "lastModified" metadata of the files in HTTP
-			 * caching headers. Enabled by default.
+			 * caching headers.
 			 */
 			private boolean useLastModified = true;
 
