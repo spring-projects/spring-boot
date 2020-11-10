@@ -199,6 +199,11 @@ public enum DatabaseDriver {
 	},
 
 	/**
+	 * Apache Phoenix.
+	 */
+	PHOENIX("Apache Phoenix", "org.apache.phoenix.jdbc.PhoenixDriver", null, "SELECT 1 FROM SYSTEM.CATALOG LIMIT 1"),
+
+	/**
 	 * Testcontainers.
 	 */
 	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {

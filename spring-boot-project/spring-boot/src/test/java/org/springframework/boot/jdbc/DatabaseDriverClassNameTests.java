@@ -46,7 +46,7 @@ class DatabaseDriverClassNameTests {
 
 	private static final Set<DatabaseDriver> EXCLUDED_DRIVERS = Collections
 			.unmodifiableSet(EnumSet.of(DatabaseDriver.UNKNOWN, DatabaseDriver.DB2_AS400, DatabaseDriver.INFORMIX,
-					DatabaseDriver.HANA, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT));
+					DatabaseDriver.HANA, DatabaseDriver.TERADATA, DatabaseDriver.REDSHIFT, DatabaseDriver.PHOENIX));
 
 	@ParameterizedTest(name = "{0} {2}")
 	@MethodSource
