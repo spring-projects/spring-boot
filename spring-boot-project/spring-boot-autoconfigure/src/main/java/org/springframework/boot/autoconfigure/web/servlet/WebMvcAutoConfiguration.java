@@ -329,13 +329,15 @@ public class WebMvcAutoConfiguration {
 			if (!registry.hasMappingForPattern("/webjars/**")) {
 				customizeResourceHandlerRegistration(registry.addResourceHandler("/webjars/**")
 						.addResourceLocations("classpath:/META-INF/resources/webjars/")
-						.setCachePeriod(getSeconds(cachePeriod)).setCacheControl(cacheControl));
+						.setCachePeriod(getSeconds(cachePeriod)).setCacheControl(cacheControl)
+						.setUseLastModified(this.resourceProperties.getCache().isUseLastModified()));
 			}
 			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
 			if (!registry.hasMappingForPattern(staticPathPattern)) {
 				customizeResourceHandlerRegistration(registry.addResourceHandler(staticPathPattern)
 						.addResourceLocations(getResourceLocations(this.resourceProperties.getStaticLocations()))
-						.setCachePeriod(getSeconds(cachePeriod)).setCacheControl(cacheControl));
+						.setCachePeriod(getSeconds(cachePeriod)).setCacheControl(cacheControl)
+						.setUseLastModified(this.resourceProperties.getCache().isUseLastModified()));
 			}
 		}
 

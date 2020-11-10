@@ -361,6 +361,12 @@ public class WebProperties {
 			 */
 			private final Cachecontrol cachecontrol = new Cachecontrol();
 
+			/**
+			 * Whether we should use the "lastModified" metadata of the files in HTTP
+			 * caching headers. Enabled by default.
+			 */
+			private boolean useLastModified = true;
+
 			public Duration getPeriod() {
 				return this.period;
 			}
@@ -372,6 +378,14 @@ public class WebProperties {
 
 			public Cachecontrol getCachecontrol() {
 				return this.cachecontrol;
+			}
+
+			public boolean isUseLastModified() {
+				return this.useLastModified;
+			}
+
+			public void setUseLastModified(boolean useLastModified) {
+				this.useLastModified = useLastModified;
 			}
 
 			private boolean hasBeenCustomized() {

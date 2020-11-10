@@ -205,6 +205,7 @@ public class WebFluxAutoConfiguration {
 				cacheControl.setMaxAge(cachePeriod);
 			}
 			registration.setCacheControl(cacheControl.toHttpCacheControl());
+			registration.setUseLastModified(this.resourceProperties.getCache().isUseLastModified());
 		}
 
 		@Override

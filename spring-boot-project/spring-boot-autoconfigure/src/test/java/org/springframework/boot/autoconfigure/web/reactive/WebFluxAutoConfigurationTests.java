@@ -450,6 +450,19 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void useLastModified() {
+		this.contextRunner.withPropertyValues("spring.web.resources.cache.use-last-modified=false").run((context) -> {
+			Map<PathPattern, Object> handlerMap = getHandlerMap(context);
+			assertThat(handlerMap).hasSize(2);
+			for (Object handler : handlerMap.values()) {
+				if (handler instanceof ResourceWebHandler) {
+					assertThat(((ResourceWebHandler) handler).isUseLastModified()).isFalse();
+				}
+			}
+		});
+	}
+
+	@Test
 	void customPrinterAndParserShouldBeRegisteredAsConverters() {
 		this.contextRunner.withUserConfiguration(ParserConfiguration.class, PrinterConfiguration.class)
 				.run((context) -> {

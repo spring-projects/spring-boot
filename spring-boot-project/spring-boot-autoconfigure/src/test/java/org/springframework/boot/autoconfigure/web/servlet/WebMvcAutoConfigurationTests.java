@@ -28,7 +28,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
@@ -754,26 +753,25 @@ class WebMvcAutoConfigurationTests {
 	@ParameterizedTest
 	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
 	void cachePeriod(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "cache.period:5").run(this::assertCachePeriod);
-	}
-
-	private void assertCachePeriod(AssertableWebApplicationContext context) {
-		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
-		assertThat(handlerMap).hasSize(2);
-		for (Entry<String, Object> entry : handlerMap.entrySet()) {
-			Object handler = entry.getValue();
-			if (handler instanceof ResourceHttpRequestHandler) {
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(5);
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl()).isNull();
-			}
-		}
+		this.contextRunner.withPropertyValues(prefix + "cache.period:5").run((context) -> {
+			assertResourceHttpRequestHandler((context), (handler) -> {
+				assertThat(handler.getCacheSeconds()).isEqualTo(5);
+				assertThat(handler.getCacheControl()).isNull();
+			});
+		});
 	}
 
 	@ParameterizedTest
 	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
 	void cacheControl(String prefix) {
-		this.contextRunner.withPropertyValues(prefix + "cache.cachecontrol.max-age:5",
-				prefix + "cache.cachecontrol.proxy-revalidate:true").run(this::assertCacheControl);
+		this.contextRunner
+				.withPropertyValues(prefix + "cache.cachecontrol.max-age:5",
+						prefix + "cache.cachecontrol.proxy-revalidate:true")
+				.run((context) -> assertResourceHttpRequestHandler(context, (handler) -> {
+					assertThat(handler.getCacheSeconds()).isEqualTo(-1);
+					assertThat(handler.getCacheControl()).usingRecursiveComparison()
+							.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
+				}));
 	}
 
 	@Test
@@ -939,14 +937,20 @@ class WebMvcAutoConfigurationTests {
 				});
 	}
 
-	private void assertCacheControl(AssertableWebApplicationContext context) {
+	@Test
+	void lastModifiedNotUsedIfDisabled() {
+		this.contextRunner.withPropertyValues("spring.web.resources.cache.use-last-modified=false")
+				.run((context) -> assertResourceHttpRequestHandler(context,
+						(handler) -> assertThat(handler.isUseLastModified()).isFalse()));
+	}
+
+	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
+			Consumer<ResourceHttpRequestHandler> handlerConsumer) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
 		for (Object handler : handlerMap.keySet()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheSeconds()).isEqualTo(-1);
-				assertThat(((ResourceHttpRequestHandler) handler).getCacheControl()).usingRecursiveComparison()
-						.isEqualTo(CacheControl.maxAge(5, TimeUnit.SECONDS).proxyRevalidate());
+				handlerConsumer.accept((ResourceHttpRequestHandler) handler);
 			}
 		}
 	}
