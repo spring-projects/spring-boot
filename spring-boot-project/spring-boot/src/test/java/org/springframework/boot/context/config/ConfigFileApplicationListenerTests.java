@@ -1087,6 +1087,16 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	void nonWildcardHiddenDirectoryLocationShouldNotBeIgnored() {
+		String location = "file:src/test/resources/config/..hidden/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("fourth.property")).isNotNull();
+	}
+
+	@Test
 	void locationsWithWildcardDirectoriesShouldLoadAllFilesThatMatch() {
 		String location = "file:src/test/resources/config/*/";
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
