@@ -522,7 +522,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 						}
 						continue;
 					}
-					if (resource.isFile() && hasHiddenPathElement(resource)) {
+					if (resource.isFile() && isPatternLocation(location) && hasHiddenPathElement(resource)) {
 						if (this.logger.isTraceEnabled()) {
 							StringBuilder description = getDescription("Skipped location with hidden path element ",
 									location, resource, profile);
@@ -588,7 +588,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 
 		private Resource[] getResources(String location) {
 			try {
-				if (location.contains("*")) {
+				if (isPatternLocation(location)) {
 					return getResourcesFromPatternLocation(location);
 				}
 				return new Resource[] { this.resourceLoader.getResource(location) };
@@ -596,6 +596,10 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			catch (Exception ex) {
 				return EMPTY_RESOURCES;
 			}
+		}
+
+		private boolean isPatternLocation(String location) {
+			return location.contains("*");
 		}
 
 		private Resource[] getResourcesFromPatternLocation(String location) throws IOException {
