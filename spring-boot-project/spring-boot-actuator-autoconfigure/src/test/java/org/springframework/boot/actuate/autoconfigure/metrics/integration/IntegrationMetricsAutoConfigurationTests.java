@@ -16,7 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.integration;
 
-
+import io.micrometer.core.instrument.Gauge;
+import io.micrometer.core.instrument.MeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.integration.IntegrationGraphEndpointAutoConfiguration;
@@ -26,35 +27,25 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.MeterRegistry;
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link RabbitMetricsAutoConfiguration}.
  *
  * @author Artem Bilan
- * @since 2.3.6
  */
 class IntegrationMetricsAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner =
-			new ApplicationContextRunner()
-					.withConfiguration(AutoConfigurations.of(
-							IntegrationAutoConfiguration.class,
-							IntegrationGraphEndpointAutoConfiguration.class))
-					.with(MetricsRun.simple())
-					.withPropertyValues("management.metrics.tags.someTag=someValue");
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(IntegrationAutoConfiguration.class,
+					IntegrationGraphEndpointAutoConfiguration.class, IntegrationMetricsAutoConfiguration.class))
+			.with(MetricsRun.simple()).withPropertyValues("management.metrics.tags.someTag=someValue");
 
 	@Test
 	void integrationMetersAreInstrumented() {
 		this.contextRunner.run((context) -> {
 			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			Gauge gauge =
-					registry.get("spring.integration.channels")
-							.tag("someTag", "someValue")
-							.gauge();
+			Gauge gauge = registry.get("spring.integration.channels").tag("someTag", "someValue").gauge();
 			assertThat(gauge).isNotNull().extracting(Gauge::value).isEqualTo(2.0);
 		});
 	}

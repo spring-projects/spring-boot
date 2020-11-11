@@ -33,11 +33,10 @@ import org.springframework.context.annotation.Configuration;
  * for it.
  *
  * @author Andy Wilkinson
- * @since 2.3.6
  */
 @AutoConfigureAfter({ MetricsAutoConfiguration.class, CompositeMeterRegistryAutoConfiguration.class })
 @AutoConfigureBefore(IntegrationAutoConfiguration.class)
 @Configuration(proxyBeanMethods = false)
-public class IntegrationMetricsAutoConfiguration {
+class IntegrationMetricsAutoConfiguration {
 
 }
