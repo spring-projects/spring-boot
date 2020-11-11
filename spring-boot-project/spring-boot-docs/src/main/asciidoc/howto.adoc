@@ -2093,7 +2093,7 @@ If you need more control over the configuration, consider registering a `FlywayC
 Spring Boot calls `Flyway.migrate()` to perform the database migration.
 If you would like more control, provide a `@Bean` that implements {spring-boot-autoconfigure-module-code}/flyway/FlywayMigrationStrategy.java[`FlywayMigrationStrategy`].
 
-Flyway supports SQL and Java https://flywaydb.org/documentation/callbacks.html[callbacks].
+Flyway supports SQL and Java https://flywaydb.org/documentation/concepts/callbacks[callbacks].
 To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` folder.
 To use Java-based callbacks, create one or more beans that implement `Callback`.
 Any such beans are automatically registered with `Flyway`.
