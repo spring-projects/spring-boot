@@ -42,7 +42,7 @@ public class CassandraDriverReactiveHealthIndicator extends AbstractReactiveHeal
 	private final CqlSession session;
 
 	/**
-	 * Create a new {@link CassandraHealthIndicator} instance.
+	 * Create a new {@link CassandraDriverReactiveHealthIndicator} instance.
 	 * @param session the {@link CqlSession}.
 	 */
 	public CassandraDriverReactiveHealthIndicator(CqlSession session) {
