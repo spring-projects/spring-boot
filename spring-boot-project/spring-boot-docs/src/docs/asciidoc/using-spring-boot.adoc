@@ -542,7 +542,10 @@ To include devtools support, add the module dependency to your build, as shown i
 
 NOTE: Developer tools are automatically disabled when running a fully packaged application.
 If your application is launched from `java -jar` or if it is started from a special classloader, then it is considered a "`production application`".
-If that does not apply to you (i.e. if you run your application from a container), consider excluding devtools or set the `-Dspring.devtools.restart.enabled=false` system property.
+You can control this behavior by using the `spring.devtools.restart.enabled` system property.
+To enable devtools, irrespective of the classloader used to launch your application, set the `-Dspring.devtools.restart.enabled=true` system property.
+This must not be done in a production environment where running devtools is a security risk.
+To disable devtools, exclude the dependency or set the `-Dspring.devtools.restart.enabled=false` system property.
 
 TIP: Flagging the dependency as optional in Maven or using the `developmentOnly` configuration in Gradle (as shown above) prevents devtools from being transitively applied to other modules that use your project.
 

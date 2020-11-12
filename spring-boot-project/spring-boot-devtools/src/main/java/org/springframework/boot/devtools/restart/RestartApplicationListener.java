@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,7 +64,24 @@ public class RestartApplicationListener implements ApplicationListener<Applicati
 		// It's too early to use the Spring environment but we should still allow
 		// users to disable restart using a System property.
 		String enabled = System.getProperty(ENABLED_PROPERTY);
-		if (enabled == null || Boolean.parseBoolean(enabled)) {
+		RestartInitializer restartInitializer = null;
+		if (enabled == null) {
+			restartInitializer = new DefaultRestartInitializer();
+		}
+		else if (Boolean.parseBoolean(enabled)) {
+			restartInitializer = new DefaultRestartInitializer() {
+
+				@Override
+				protected boolean isDevelopmentClassLoader(ClassLoader classLoader) {
+					return true;
+				}
+
+			};
+			logger.info(LogMessage.format(
+					"Restart enabled irrespective of application packaging due to System property '%s' being set to true",
+					ENABLED_PROPERTY));
+		}
+		if (restartInitializer != null) {
 			String[] args = event.getArgs();
 			DefaultRestartInitializer initializer = new DefaultRestartInitializer();
 			boolean restartOnInitialize = !AgentReloader.isActive();
