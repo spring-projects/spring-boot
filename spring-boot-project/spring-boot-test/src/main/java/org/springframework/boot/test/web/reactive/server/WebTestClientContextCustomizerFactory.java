@@ -39,7 +39,7 @@ class WebTestClientContextCustomizerFactory implements ContextCustomizerFactory 
 			List<ContextConfigurationAttributes> configAttributes) {
 		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
 				SpringBootTest.class);
-		return (springBootTest != null) ? new WebTestClientContextCustomizer() : null;
+		return (springBootTest != null && isWebClientPresent()) ? new WebTestClientContextCustomizer() : null;
 	}
 
 	private boolean isWebClientPresent() {
