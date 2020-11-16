@@ -2198,7 +2198,7 @@ The following properties allow per-meter customization:
 | Publish a cumulative histogram with buckets defined by your service-level objectives.
 |===
 
-For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
+For more details on concepts behind `percentiles-histogram`, `percentiles` and `slo` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
 
 
 
