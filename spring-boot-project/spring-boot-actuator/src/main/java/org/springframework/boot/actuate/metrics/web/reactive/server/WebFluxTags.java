@@ -131,18 +131,18 @@ public final class WebFluxTags {
 		return URI_UNKNOWN;
 	}
 
-	private static String removeTrailingSlash(String text) {
-		if (!StringUtils.hasLength(text)) {
-			return text;
-		}
-		return text.endsWith("/") ? text.substring(0, text.length() - 1) : text;
-	}
-
 	private static String getPathInfo(ServerWebExchange exchange) {
 		String path = exchange.getRequest().getPath().value();
 		String uri = StringUtils.hasText(path) ? path : "/";
 		String singleSlashes = FORWARD_SLASHES_PATTERN.matcher(uri).replaceAll("/");
 		return removeTrailingSlash(singleSlashes);
+	}
+
+	private static String removeTrailingSlash(String text) {
+		if (!StringUtils.hasLength(text)) {
+			return text;
+		}
+		return text.endsWith("/") ? text.substring(0, text.length() - 1) : text;
 	}
 
 	/**
