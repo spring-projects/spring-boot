@@ -283,6 +283,7 @@ bom {
 				"elasticsearch-rest-client" {
 					exclude group: "commons-logging", module: "commons-logging"
 				},
+				"elasticsearch-rest-client-sniffer",
 				"elasticsearch-rest-high-level-client"
 			]
 		}
