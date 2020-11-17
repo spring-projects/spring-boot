@@ -10,19 +10,4 @@
 			<ipAddresses>#{{'0.0.0.0'}}</ipAddresses>
     	</obfuscation>
 	</buildScan>
-	<buildCache>
-		<local>
-			<enabled>true</enabled>
-		</local>
-		<remote>
-			<enabled>true</enabled>
-			<storeEnabled><![CDATA[#{env['GRADLE_ENTERPRISE_CACHE_USERNAME'] != null && env['GRADLE_ENTERPRISE_CACHE_USERNAME'] != null}]]></storeEnabled>
-			<server>
-				<credentials>
-					<username>${env.GRADLE_ENTERPRISE_CACHE_USERNAME}</username>
-					<password>${env.GRADLE_ENTERPRISE_CACHE_PASSWORD}</password>
-				</credentials>
-			</server>
-		</remote>
-	</buildCache>
 </gradleEnterprise>
