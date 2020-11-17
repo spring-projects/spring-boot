@@ -79,7 +79,7 @@ class ConfigTreePropertySourceTests {
 	@Test
 	void getPropertyNamesFromFlatReturnsPropertyNames() throws Exception {
 		ConfigTreePropertySource propertySource = getFlatPropertySource();
-		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c");
+		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c", "one");
 	}
 
 	@Test
@@ -154,6 +154,7 @@ class ConfigTreePropertySourceTests {
 		assertThat(environment.getProperty("b")).isEqualTo("B");
 		assertThat(environment.getProperty("c", InputStreamSource.class).getInputStream()).hasContent("C");
 		assertThat(environment.getProperty("c", byte[].class)).contains('C');
+		assertThat(environment.getProperty("one", Integer.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -227,6 +228,7 @@ class ConfigTreePropertySourceTests {
 		addProperty("a", "A");
 		addProperty("b", "B");
 		addProperty("c", "C");
+		addProperty("one", "1");
 		return new ConfigTreePropertySource("test", this.directory);
 	}
 
