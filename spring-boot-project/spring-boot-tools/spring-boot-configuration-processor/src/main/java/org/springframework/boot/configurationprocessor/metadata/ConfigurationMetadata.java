@@ -189,7 +189,8 @@ public class ConfigurationMetadata {
 	static String toDashedCase(String name) {
 		StringBuilder dashed = new StringBuilder();
 		Character previous = null;
-		for (char current : name.toCharArray()) {
+		for (int i = 0; i < name.length(); i++) {
+			char current = name.charAt(i);
 			if (SEPARATORS.contains(current)) {
 				dashed.append("-");
 			}

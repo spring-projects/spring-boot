@@ -308,7 +308,8 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 				return string;
 			}
 			int numberOfLines = 0;
-			for (char ch : string.toCharArray()) {
+			for (int i = 0; i < string.length(); i++) {
+				char ch = string.charAt(i);
 				if (ch == '\n') {
 					numberOfLines++;
 				}
