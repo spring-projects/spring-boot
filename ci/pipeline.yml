@@ -72,22 +72,22 @@ anchors:
     username: concourse-ci
 resource_types:
 - name: artifactory-resource
-  type: docker-image
+  type: registry-image
   source:
     repository: springio/artifactory-resource
     tag: 0.0.12
 - name: pull-request
-  type: docker-image
+  type: registry-image
   source:
     repository: teliaoss/github-pr-resource
     tag: v0.21.0
 - name: github-status-resource
-  type: docker-image
+  type: registry-image
   source:
     repository: dpb587/github-status-resource
     tag: master
 - name: slack-notification
-  type: docker-image
+  type: registry-image
   source:
     repository: cfcommunity/slack-notification-resource
     tag: latest
@@ -138,19 +138,19 @@ resources:
     branch: ((branch))
     paths: ["ci/images/*"]
 - name: ci-image
-  type: docker-image
+  type: registry-image
   icon: docker
   source:
     <<: *docker-resource-source
     repository: ((docker-hub-organization))/((ci-image-name))
 - name: ci-image-jdk11
-  type: docker-image
+  type: registry-image
   icon: docker
   source:
     <<: *docker-resource-source
     repository: ((docker-hub-organization))/((ci-image-name))-jdk11
 - name: ci-image-jdk15
-  type: docker-image
+  type: registry-image
   icon: docker
   source:
     <<: *docker-resource-source
