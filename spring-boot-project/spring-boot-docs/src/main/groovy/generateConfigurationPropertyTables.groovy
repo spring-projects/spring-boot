@@ -33,7 +33,7 @@ def generateConfigMetadataDocumentation() {
 				.addSection("web")
 					.withKeyPrefixes("spring.hateoas",
 						"spring.http", "spring.servlet", "spring.jersey",
-						"spring.mvc", "spring.resources", "spring.webflux")
+						"spring.mvc", "spring.resources", "spring.session", "spring.webflux")
 				.addSection("json")
 					.withKeyPrefixes("spring.jackson", "spring.gson")
 				.addSection("rsocket")
@@ -42,12 +42,12 @@ def generateConfigMetadataDocumentation() {
 					.withKeyPrefixes("spring.freemarker", "spring.groovy", "spring.mustache", "spring.thymeleaf")
 				.addOverride("spring.groovy.template.configuration", "See GroovyMarkupConfigurer")
 				.addSection("security")
-					.withKeyPrefixes("spring.security", "spring.ldap", "spring.session")
+					.withKeyPrefixes("spring.security")
 				.addSection("data-migration")
 					.withKeyPrefixes("spring.flyway", "spring.liquibase")
 				.addSection("data")
-					.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2",
-						"spring.influx", "spring.mongodb", "spring.redis",
+				.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2",
+						"spring.influx", "spring.ldap", "spring.mongodb", "spring.redis",
 						"spring.dao", "spring.data", "spring.datasource", "spring.jooq",
 						"spring.jdbc", "spring.jpa")
 				.addOverride("spring.datasource.dbcp2", "Commons DBCP2 specific settings bound to an instance of DBCP2's BasicDataSource")
