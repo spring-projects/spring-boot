@@ -168,8 +168,10 @@ class OriginTrackedPropertiesLoader {
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
-		reader.read();
-		reader.skipWhitespace();
+		if (!reader.isEndOfLine()) {
+			reader.read();
+			reader.skipWhitespace();
+		}
 		return result && reader.isEndOfLine();
 	}
 

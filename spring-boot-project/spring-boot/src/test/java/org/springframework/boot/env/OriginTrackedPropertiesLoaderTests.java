@@ -293,6 +293,12 @@ class OriginTrackedPropertiesLoaderTests {
 		assertThat(this.documents.size()).isEqualTo(1);
 	}
 
+	@Test
+	void getPropertyAfterPoundCharacter() {
+		OriginTrackedValue value = getFromFirst("test-line-after-empty-pound");
+		assertThat(getValue(value)).isEqualTo("abc");
+	}
+
 	private OriginTrackedValue getFromFirst(String key) {
 		return this.documents.get(0).asMap().get(key);
 	}
