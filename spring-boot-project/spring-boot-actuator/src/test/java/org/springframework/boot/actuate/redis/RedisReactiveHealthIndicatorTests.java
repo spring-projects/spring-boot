@@ -33,6 +33,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.data.redis.connection.ReactiveServerCommands;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -55,7 +56,7 @@ class RedisReactiveHealthIndicatorTests {
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
 		given(redisConnection.closeLater()).willReturn(Mono.empty());
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
-		given(commands.info()).willReturn(Mono.just(info));
+		given(commands.info("server")).willReturn(Mono.just(info));
 		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);
 		Mono<Health> health = healthIndicator.health();
 		StepVerifier.create(health).consumeNextWith((h) -> {
@@ -87,7 +88,7 @@ class RedisReactiveHealthIndicatorTests {
 	@Test
 	void redisCommandIsDown() {
 		ReactiveServerCommands commands = mock(ReactiveServerCommands.class);
-		given(commands.info()).willReturn(Mono.error(new RedisConnectionFailureException("Connection failed")));
+		given(commands.info(anyString())).willReturn(Mono.error(new RedisConnectionFailureException("Connection failed")));
 		ReactiveRedisConnection redisConnection = mock(ReactiveRedisConnection.class);
 		given(redisConnection.closeLater()).willReturn(Mono.empty());
 		RedisReactiveHealthIndicator healthIndicator = createHealthIndicator(redisConnection, commands);

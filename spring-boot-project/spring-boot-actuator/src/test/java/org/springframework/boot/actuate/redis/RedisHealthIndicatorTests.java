@@ -32,6 +32,7 @@ import org.springframework.data.redis.connection.RedisConnection;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
@@ -51,7 +52,7 @@ class RedisHealthIndicatorTests {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		given(redisConnection.info()).willReturn(info);
+		given(redisConnection.info("server")).willReturn(info);
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -61,7 +62,7 @@ class RedisHealthIndicatorTests {
 	@Test
 	void redisIsDown() {
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		given(redisConnection.info()).willThrow(new RedisConnectionFailureException("Connection failed"));
+		given(redisConnection.info(anyString())).willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
