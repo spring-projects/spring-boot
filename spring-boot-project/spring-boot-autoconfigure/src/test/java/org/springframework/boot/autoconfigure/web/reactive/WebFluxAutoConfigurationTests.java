@@ -79,6 +79,7 @@ import org.springframework.web.reactive.result.method.annotation.RequestMappingH
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolutionResultHandler;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
@@ -531,10 +532,25 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
-	void customLocaleContextResolver() {
-		this.contextRunner.withUserConfiguration(LocaleContextResolverConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(LocaleContextResolver.class)
-						.hasBean("customLocaleContextResolver"));
+	void customLocaleContextResolverWithMatchingNameReplacedAutoConfiguredLocaleContextResolver() {
+		this.contextRunner
+				.withBean("localeContextResolver", CustomLocaleContextResolver.class, CustomLocaleContextResolver::new)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(LocaleContextResolver.class);
+					assertThat(context.getBean("localeContextResolver"))
+							.isInstanceOf(CustomLocaleContextResolver.class);
+				});
+	}
+
+	@Test
+	void customLocaleContextResolverWithDifferentNameDoesNotReplaceAutoConfiguredLocaleContextResolver() {
+		this.contextRunner.withBean("customLocaleContextResolver", CustomLocaleContextResolver.class,
+				CustomLocaleContextResolver::new).run((context) -> {
+					assertThat(context.getBean("customLocaleContextResolver"))
+							.isInstanceOf(CustomLocaleContextResolver.class);
+					assertThat(context.getBean("localeContextResolver"))
+							.isInstanceOf(AcceptHeaderLocaleContextResolver.class);
+				});
 	}
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
@@ -767,12 +783,15 @@ class WebFluxAutoConfigurationTests {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	static class LocaleContextResolverConfiguration {
+	static class CustomLocaleContextResolver implements LocaleContextResolver {
 
-		@Bean
-		LocaleContextResolver customLocaleContextResolver() {
-			return new AcceptHeaderLocaleContextResolver();
+		@Override
+		public LocaleContext resolveLocaleContext(ServerWebExchange exchange) {
+			return () -> Locale.ENGLISH;
+		}
+
+		@Override
+		public void setLocaleContext(ServerWebExchange exchange, LocaleContext localeContext) {
 		}
 
 	}

@@ -441,7 +441,7 @@ public class WebMvcAutoConfiguration {
 
 		@Override
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(name = DispatcherServlet.LOCALE_RESOLVER_BEAN_NAME)
 		@SuppressWarnings("deprecation")
 		public LocaleResolver localeResolver() {
 			if (this.webProperties.getLocaleResolver() == WebProperties.LocaleResolver.FIXED) {

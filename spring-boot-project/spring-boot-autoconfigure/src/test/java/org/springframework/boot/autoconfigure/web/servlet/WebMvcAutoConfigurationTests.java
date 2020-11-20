@@ -345,6 +345,24 @@ class WebMvcAutoConfigurationTests {
 	}
 
 	@Test
+	void customLocaleResolverWithMatchingNameReplacesAutoConfiguredLocaleResolver() {
+		this.contextRunner.withBean("localeResolver", CustomLocaleResolver.class, CustomLocaleResolver::new)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(LocaleResolver.class);
+					assertThat(context.getBean("localeResolver")).isInstanceOf(CustomLocaleResolver.class);
+				});
+	}
+
+	@Test
+	void customLocaleResolverWithDifferentNameDoesNotReplaceAutoConfiguredLocaleResolver() {
+		this.contextRunner.withBean("customLocaleResolver", CustomLocaleResolver.class, CustomLocaleResolver::new)
+				.run((context) -> {
+					assertThat(context.getBean("customLocaleResolver")).isInstanceOf(CustomLocaleResolver.class);
+					assertThat(context.getBean("localeResolver")).isInstanceOf(AcceptHeaderLocaleResolver.class);
+				});
+	}
+
+	@Test
 	void defaultDateFormat() {
 		this.contextRunner.run((context) -> {
 			FormattingConversionService conversionService = context.getBean(FormattingConversionService.class);
@@ -1372,6 +1390,19 @@ class WebMvcAutoConfigurationTests {
 		@Bean
 		ServletRegistrationBean<?> additionalDispatcherServlet() {
 			return new ServletRegistrationBean<>(new DispatcherServlet());
+		}
+
+	}
+
+	static class CustomLocaleResolver implements LocaleResolver {
+
+		@Override
+		public Locale resolveLocale(HttpServletRequest request) {
+			return Locale.ENGLISH;
+		}
+
+		@Override
+		public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
 		}
 
 	}

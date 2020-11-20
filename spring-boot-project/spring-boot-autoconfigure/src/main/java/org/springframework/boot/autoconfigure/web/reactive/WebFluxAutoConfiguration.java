@@ -70,6 +70,7 @@ import org.springframework.web.reactive.result.method.annotation.ArgumentResolve
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
@@ -289,7 +290,7 @@ public class WebFluxAutoConfiguration {
 
 		@Bean
 		@Override
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.LOCALE_CONTEXT_RESOLVER_BEAN_NAME)
 		public LocaleContextResolver localeContextResolver() {
 			if (this.webProperties.getLocaleResolver() == WebProperties.LocaleResolver.FIXED) {
 				return new FixedLocaleContextResolver(this.webProperties.getLocale());
