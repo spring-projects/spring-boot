@@ -30,7 +30,7 @@ dependencies {
 }
 
 intTest {
-	inputs.files(war)
+	inputs.files(war).withNormalizer(ClasspathNormalizer)
 }
 
 war {
