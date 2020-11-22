@@ -27,6 +27,7 @@ import java.util.Set;
  *
  * @author Scott Frederick
  * @author Phillip Webb
+ * @author Wanderlei Souza
  * @since 2.3.0
  */
 public final class ErrorAttributeOptions {
@@ -76,7 +77,8 @@ public final class ErrorAttributeOptions {
 	 * @return an {@code ErrorAttributeOptions}
 	 */
 	public ErrorAttributeOptions excluding(Include... excludes) {
-		EnumSet<Include> updated = EnumSet.copyOf(this.includes);
+		EnumSet<Include> updated = (this.includes.isEmpty()) ? EnumSet.noneOf(Include.class)
+				: EnumSet.copyOf(this.includes);
 		updated.removeAll(Arrays.asList(excludes));
 		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
 	}
