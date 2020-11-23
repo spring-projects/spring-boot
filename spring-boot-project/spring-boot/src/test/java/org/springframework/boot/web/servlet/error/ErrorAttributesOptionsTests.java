@@ -16,36 +16,46 @@
 
 package org.springframework.boot.web.servlet.error;
 
-import static org.assertj.core.api.Assertions.assertThat;
-
 import java.util.EnumSet;
-import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
- * Tests for {@link ErrorAttributesOptions}.
+ * Tests for {@link ErrorAttributeOptions}.
  *
  * @author Wanderlei Souza
+ * @author Stephane Nicoll
  */
 class ErrorAttributesOptionsTests {
 
 	@Test
-	void excludingFromEmptySetWithoutErrors() {
-		Set<Include> includes = EnumSet.noneOf(Include.class);
-		ErrorAttributeOptions errorAttributeOptions = ErrorAttributeOptions.of(includes);
-		errorAttributeOptions = errorAttributeOptions.excluding(Include.EXCEPTION);
-		assertThat(errorAttributeOptions.getIncludes().isEmpty());
+	void includingFromEmptyAttributesReturnAddedEntry() {
+		ErrorAttributeOptions options = ErrorAttributeOptions.of(EnumSet.noneOf(Include.class));
+		assertThat(options.including(Include.EXCEPTION).getIncludes()).containsOnly(Include.EXCEPTION);
 	}
-	
+
 	@Test
-	void includingInEmptySetWithoutErrors() {
-		Set<Include> includes = EnumSet.noneOf(Include.class);
-		ErrorAttributeOptions errorAttributeOptions = ErrorAttributeOptions.of(includes);
-		errorAttributeOptions = errorAttributeOptions.including(Include.EXCEPTION);
-		assertThat(errorAttributeOptions.getIncludes().isEmpty());
+	void includingFromMatchingAttributesDoesNotModifyOptions() {
+		ErrorAttributeOptions options = ErrorAttributeOptions.of(EnumSet.of(Include.EXCEPTION, Include.STACK_TRACE));
+		assertThat(options.including(Include.EXCEPTION).getIncludes()).containsOnly(Include.EXCEPTION,
+				Include.STACK_TRACE);
+	}
+
+	@Test
+	void excludingFromEmptyAttributesReturnEmptyList() {
+		ErrorAttributeOptions options = ErrorAttributeOptions.of(EnumSet.noneOf(Include.class));
+		assertThat(options.excluding(Include.EXCEPTION).getIncludes()).isEmpty();
+	}
+
+	@Test
+	void excludingFromMatchingAttributesRemoveMatch() {
+		ErrorAttributeOptions options = ErrorAttributeOptions.of(EnumSet.of(Include.EXCEPTION, Include.STACK_TRACE));
+		assertThat(options.excluding(Include.EXCEPTION).getIncludes()).containsOnly(Include.STACK_TRACE);
 	}
 
 }
