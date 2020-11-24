@@ -38,6 +38,6 @@ import org.springframework.security.config.annotation.web.configuration.EnableWe
 @ConditionalOnClass(EnableWebSecurity.class)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.SERVLET)
 @EnableWebSecurity
-class WebSecurityEnablerConfiguration {
+public class WebSecurityEnablerConfiguration {
 
 }
