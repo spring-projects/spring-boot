@@ -1,6 +1,0 @@
-name: Phil
-
----
-
-spring.config.activate.on-profile: goodbye | dev
-name: Everyone

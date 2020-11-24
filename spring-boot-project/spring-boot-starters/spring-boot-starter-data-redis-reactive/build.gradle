@@ -1,9 +1,0 @@
-plugins {
-	id "org.springframework.boot.starter"
-}
-
-description = "Starter for using Redis key-value data store with Spring Data Redis reactive and the Lettuce client"
-
-dependencies {
-	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-data-redis"))
-}
