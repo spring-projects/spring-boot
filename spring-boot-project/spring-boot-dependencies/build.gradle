@@ -300,7 +300,7 @@ bom {
 			]
 		}
 	}
-	library("Embedded Mongo", "2.2.0") {
+	library("Embedded Mongo", "3.0.0") {
 		group("de.flapdoodle.embed") {
 			modules = [
 				"de.flapdoodle.embed.mongo"
