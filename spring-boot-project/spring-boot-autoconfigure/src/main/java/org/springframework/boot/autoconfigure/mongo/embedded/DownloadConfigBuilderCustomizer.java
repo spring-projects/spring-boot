@@ -16,13 +16,13 @@
 
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
-import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
-import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.config.store.DownloadConfig;
+import de.flapdoodle.embed.process.config.store.ImmutableDownloadConfig;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link IDownloadConfig} via a {@link DownloadConfigBuilder} whilst retaining default
- * auto-configuration.
+ * {@link DownloadConfig} via a {@link ImmutableDownloadConfig.Builder} whilst retaining
+ * default auto-configuration.
  *
  * @author Michael Gmeiner
  * @since 2.2.0
@@ -31,9 +31,10 @@ import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 public interface DownloadConfigBuilderCustomizer {
 
 	/**
-	 * Customize the {@link DownloadConfigBuilder}.
-	 * @param downloadConfigBuilder the {@link DownloadConfigBuilder} to customize
+	 * Customize the {@link ImmutableDownloadConfig.Builder}.
+	 * @param downloadConfigBuilder the {@link ImmutableDownloadConfig.Builder} to
+	 * customize
 	 */
-	void customize(DownloadConfigBuilder downloadConfigBuilder);
+	void customize(ImmutableDownloadConfig.Builder downloadConfigBuilder);
 
 }
