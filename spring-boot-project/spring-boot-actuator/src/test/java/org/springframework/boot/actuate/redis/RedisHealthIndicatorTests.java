@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class RedisHealthIndicatorTests {
 		Properties info = new Properties();
 		info.put("redis_version", "2.8.9");
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		given(redisConnection.info()).willReturn(info);
+		given(redisConnection.info("server")).willReturn(info);
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
@@ -61,7 +61,7 @@ class RedisHealthIndicatorTests {
 	@Test
 	void redisIsDown() {
 		RedisConnection redisConnection = mock(RedisConnection.class);
-		given(redisConnection.info()).willThrow(new RedisConnectionFailureException("Connection failed"));
+		given(redisConnection.info("server")).willThrow(new RedisConnectionFailureException("Connection failed"));
 		RedisHealthIndicator healthIndicator = createHealthIndicator(redisConnection);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);

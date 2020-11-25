@@ -55,7 +55,7 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 
 	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
 		boolean isClusterConnection = connection instanceof ReactiveRedisClusterConnection;
-		return connection.serverCommands().info().map((info) -> up(builder, info, isClusterConnection))
+		return connection.serverCommands().info("server").map((info) -> up(builder, info, isClusterConnection))
 				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
 				.flatMap((health) -> connection.closeLater().thenReturn(health));
 	}
