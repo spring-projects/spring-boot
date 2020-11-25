@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link WebServer} that can be used to control a Tomcat web server. Usually this class
- * should be created using the {@link TomcatReactiveWebServerFactory} of
+ * should be created using the {@link TomcatReactiveWebServerFactory} or
  * {@link TomcatServletWebServerFactory}, but not directly.
  *
  * @author Brian Clozel
