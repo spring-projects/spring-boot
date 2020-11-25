@@ -65,7 +65,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 					.withDetail("slots_fail", clusterInfo.getSlotsFail());
 		}
 		else {
-			String version = connection.info().getProperty(REDIS_VERSION_PROPERTY);
+			String version = connection.info("server").getProperty(REDIS_VERSION_PROPERTY);
 			builder.up().withDetail("version", version);
 		}
 	}
