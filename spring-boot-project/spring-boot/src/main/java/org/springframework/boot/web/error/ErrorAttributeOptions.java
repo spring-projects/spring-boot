@@ -49,8 +49,7 @@ public final class ErrorAttributeOptions {
 
 	/**
 	 * Get all options for including attributes in the error response.
-	 * @return {@code true} if the {@code Include} attribute is included in the error
-	 * response, {@code false} otherwise
+	 * @return the options
 	 */
 	public Set<Include> getIncludes() {
 		return this.includes;
