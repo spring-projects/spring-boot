@@ -46,7 +46,7 @@ import org.springframework.context.annotation.Configuration;
 public class MongoMetricsAutoConfiguration {
 
 	@ConditionalOnClass(MongoMetricsCommandListener.class)
-	@ConditionalOnProperty(name = "management.metrics.mongo.command-listener.enabled", havingValue = "true",
+	@ConditionalOnProperty(name = "management.metrics.mongo.commandlistener.enabled", havingValue = "true",
 			matchIfMissing = true)
 	static class MongoMetricsCommandListenerConfiguration {
 
