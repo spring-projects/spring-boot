@@ -8,7 +8,9 @@ dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api(project(":spring-boot-project:spring-boot-test"))
 	api(project(":spring-boot-project:spring-boot-test-autoconfigure"))
-	api("com.jayway.jsonpath:json-path")
+	api("com.jayway.jsonpath:json-path") {
+		exclude group: "org.ow2.asm", module: "asm"
+	}
 	api("jakarta.xml.bind:jakarta.xml.bind-api")
 	api("org.assertj:assertj-core")
 	api("org.hamcrest:hamcrest")

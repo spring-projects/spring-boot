@@ -905,7 +905,9 @@ bom {
 	library("Json Path", "2.4.0") {
 		group("com.jayway.jsonpath") {
 			modules = [
-				"json-path",
+				"json-path"  {
+					exclude group: "org.ow2.asm", module: "asm"
+				},
 				"json-path-assert"
 			]
 		}
