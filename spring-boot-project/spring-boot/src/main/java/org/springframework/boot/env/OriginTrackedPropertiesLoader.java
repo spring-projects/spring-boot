@@ -160,7 +160,7 @@ class OriginTrackedPropertiesLoader {
 		return OriginTrackedValue.of(buffer.toString(), origin);
 	}
 
-	boolean isNewDocument(CharacterReader reader) throws IOException {
+	private boolean isNewDocument(CharacterReader reader) throws IOException {
 		if (reader.isLastLineComment()) {
 			return false;
 		}
