@@ -21,20 +21,14 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.MongoCredential;
-import com.mongodb.ServerAddress;
-import org.bson.UuidRepresentation;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
-import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
@@ -51,10 +45,6 @@ import static org.mockito.Mockito.verify;
  * @author Scott Frederick
  */
 abstract class MongoClientFactorySupportTests<T> {
-
-	private final MongoProperties properties = new MongoProperties();
-
-	private final MockEnvironment environment = new MockEnvironment();
 
 	@Test
 	void canBindCharArrayPassword() {
@@ -104,171 +94,10 @@ abstract class MongoClientFactorySupportTests<T> {
 	}
 
 	@Test
-	void portCanBeCustomized() {
-		this.properties.setPort(12345);
-		T client = createMongoClient();
-		List<ServerAddress> allAddresses = getAllAddresses(client);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "localhost", 12345);
-	}
-
-	@Test
-	void hostCanBeCustomized() {
-		this.properties.setHost("mongo.example.com");
-		T client = createMongoClient();
-		List<ServerAddress> allAddresses = getAllAddresses(client);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "mongo.example.com", 27017);
-	}
-
-	@Test
-	void credentialsCanBeCustomized() {
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		T client = createMongoClient();
-		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "test");
-	}
-
-	@Test
-	void replicaSetCanBeCustomized() {
-		this.properties.setReplicaSetName("test");
-		T client = createMongoClient();
-		assertThat(getClientSettings(client).getClusterSettings().getRequiredReplicaSetName()).isEqualTo("test");
-	}
-
-	@Test
-	void databaseCanBeCustomized() {
-		this.properties.setDatabase("foo");
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		T client = createMongoClient();
-		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "foo");
-	}
-
-	@Test
-	void uuidRepresentationDefaultToJavaLegacy() {
-		T client = createMongoClient();
-		assertThat(getClientSettings(client).getUuidRepresentation()).isEqualTo(UuidRepresentation.JAVA_LEGACY);
-	}
-
-	@Test
-	void uuidRepresentationCanBeCustomized() {
-		this.properties.setUuidRepresentation(UuidRepresentation.STANDARD);
-		T client = createMongoClient();
-		assertThat(getClientSettings(client).getUuidRepresentation()).isEqualTo(UuidRepresentation.STANDARD);
-	}
-
-	@Test
-	void authenticationDatabaseCanBeCustomized() {
-		this.properties.setAuthenticationDatabase("foo");
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		T client = createMongoClient();
-		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "foo");
-	}
-
-	@Test
-	void uriCanBeCustomized() {
-		this.properties.setUri("mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test");
-		T client = createMongoClient();
-		List<ServerAddress> allAddresses = getAllAddresses(client);
-		assertThat(allAddresses).hasSize(2);
-		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
-		assertServerAddress(allAddresses.get(1), "mongo2.example.com", 23456);
-		assertMongoCredential(getClientSettings(client).getCredential(), "user", "secret", "test");
-	}
-
-	@Test
-	void uriIsIgnoredInEmbeddedMode() {
-		this.properties.setUri("mongodb://mongo.example.com:1234/mydb");
-		this.environment.setProperty("local.mongo.port", "4000");
-		T client = createMongoClient();
-		List<ServerAddress> allAddresses = getAllAddresses(client);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "localhost", 4000);
-	}
-
-	@Test
-	void retryWritesIsPropagatedFromUri() {
-		this.properties.setUri("mongodb://localhost/test?retryWrites=true");
-		T client = createMongoClient();
-		assertThat(getClientSettings(client).getRetryWrites()).isTrue();
-	}
-
-	@Test
-	void uriCannotBeSetWithCredentials() {
-		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		this.properties.setUsername("user");
-		this.properties.setPassword("secret".toCharArray());
-		assertThatIllegalStateException().isThrownBy(this::createMongoClient).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
-	}
-
-	@Test
-	void uriCannotBeSetWithReplicaSetName() {
-		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		this.properties.setReplicaSetName("test");
-		assertThatIllegalStateException().isThrownBy(this::createMongoClient).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
-	}
-
-	@Test
-	void uriCannotBeSetWithHostPort() {
-		this.properties.setUri("mongodb://127.0.0.1:1234/mydb");
-		this.properties.setHost("localhost");
-		this.properties.setPort(4567);
-		assertThatIllegalStateException().isThrownBy(this::createMongoClient).withMessageContaining(
-				"Invalid mongo configuration, either uri or host/port/credentials/replicaSet must be specified");
-	}
-
-	@Test
 	void customizerIsInvoked() {
 		MongoClientSettingsBuilderCustomizer customizer = mock(MongoClientSettingsBuilderCustomizer.class);
 		createMongoClient(customizer);
 		verify(customizer).customize(any(MongoClientSettings.Builder.class));
-	}
-
-	@Test
-	void customizerIsInvokedWhenHostIsSet() {
-		this.properties.setHost("localhost");
-		MongoClientSettingsBuilderCustomizer customizer = mock(MongoClientSettingsBuilderCustomizer.class);
-		createMongoClient(customizer);
-		verify(customizer).customize(any(MongoClientSettings.Builder.class));
-	}
-
-	@Test
-	void customizerIsInvokedForEmbeddedMongo() {
-		this.environment.setProperty("local.mongo.port", "27017");
-		MongoClientSettingsBuilderCustomizer customizer = mock(MongoClientSettingsBuilderCustomizer.class);
-		createMongoClient(customizer);
-		verify(customizer).customize(any(MongoClientSettings.Builder.class));
-	}
-
-	@Test
-	void onlyHostAndPortSetShouldUseThat() {
-		this.properties.setHost("localhost");
-		this.properties.setPort(27017);
-		T client = createMongoClient();
-		List<ServerAddress> allAddresses = getAllAddresses(client);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "localhost", 27017);
-	}
-
-	@Test
-	void onlyUriSetShouldUseThat() {
-		this.properties.setUri("mongodb://mongo1.example.com:12345");
-		T client = createMongoClient();
-		List<ServerAddress> allAddresses = getAllAddresses(client);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "mongo1.example.com", 12345);
-	}
-
-	@Test
-	void noCustomAddressAndNoUriUsesDefaultUri() {
-		T client = createMongoClient();
-		List<ServerAddress> allAddresses = getAllAddresses(client);
-		assertThat(allAddresses).hasSize(1);
-		assertServerAddress(allAddresses.get(0), "localhost", 27017);
 	}
 
 	@Test
@@ -281,39 +110,23 @@ abstract class MongoClientFactorySupportTests<T> {
 		assertThat(properties.isAutoIndexCreation()).isTrue();
 	}
 
-	private List<ServerAddress> getAllAddresses(T client) {
-		return getClientSettings(client).getClusterSettings().getHosts();
-	}
-
 	protected T createMongoClient() {
-		return createMongoClient(this.properties, this.environment, null, null);
+		return createMongoClient(null, MongoClientSettings.builder().build());
 	}
 
 	protected T createMongoClient(MongoClientSettings settings) {
-		return createMongoClient(this.properties, this.environment, null, settings);
+		return createMongoClient(null, settings);
 	}
 
 	protected void createMongoClient(MongoClientSettingsBuilderCustomizer... customizers) {
-		createMongoClient(this.properties, this.environment, (customizers != null) ? Arrays.asList(customizers) : null,
-				null);
+		createMongoClient((customizers != null) ? Arrays.asList(customizers) : null,
+				MongoClientSettings.builder().build());
 	}
 
-	protected abstract T createMongoClient(MongoProperties properties, Environment environment,
-			List<MongoClientSettingsBuilderCustomizer> customizers, MongoClientSettings settings);
+	protected abstract T createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,
+			MongoClientSettings settings);
 
 	protected abstract MongoClientSettings getClientSettings(T client);
-
-	protected void assertServerAddress(ServerAddress serverAddress, String expectedHost, int expectedPort) {
-		assertThat(serverAddress.getHost()).isEqualTo(expectedHost);
-		assertThat(serverAddress.getPort()).isEqualTo(expectedPort);
-	}
-
-	protected void assertMongoCredential(MongoCredential credentials, String expectedUsername, String expectedPassword,
-			String expectedSource) {
-		assertThat(credentials.getUserName()).isEqualTo(expectedUsername);
-		assertThat(credentials.getPassword()).isEqualTo(expectedPassword.toCharArray());
-		assertThat(credentials.getSource()).isEqualTo(expectedSource);
-	}
 
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(MongoProperties.class)

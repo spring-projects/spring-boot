@@ -1,0 +1,19 @@
+{
+	"Hostname": "",
+	"Domainname": "",
+	"User": "",
+	"AttachStdin": false,
+	"AttachStdout": false,
+	"AttachStderr": false,
+	"Tty": false,
+	"OpenStdin": false,
+	"StdinOnce": false,
+	"Env": null,
+	"Cmd": null,
+	"Image": "",
+	"Volumes": null,
+	"WorkingDir": "",
+	"Entrypoint": null,
+	"OnBuild": null,
+	"Labels": null
+}

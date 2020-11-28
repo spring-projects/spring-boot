@@ -46,12 +46,12 @@ class TarArchiveTests {
 	void ofWritesTarContent() throws Exception {
 		Owner owner = Owner.of(123, 456);
 		TarArchive tarArchive = TarArchive.of((content) -> {
-			content.folder("/workspace", owner);
-			content.folder("/layers", owner);
-			content.folder("/cnb", Owner.ROOT);
-			content.folder("/cnb/buildpacks", Owner.ROOT);
-			content.folder("/platform", Owner.ROOT);
-			content.folder("/platform/env", Owner.ROOT);
+			content.directory("/workspace", owner);
+			content.directory("/layers", owner);
+			content.directory("/cnb", Owner.ROOT);
+			content.directory("/cnb/buildpacks", Owner.ROOT);
+			content.directory("/platform", Owner.ROOT);
+			content.directory("/platform/env", Owner.ROOT);
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		tarArchive.writeTo(outputStream);

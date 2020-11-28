@@ -26,15 +26,15 @@ import java.io.File;
  */
 public class Layers {
 
-	private boolean enabled;
+	private boolean enabled = true;
 
 	private boolean includeLayerTools = true;
 
 	private File configuration;
 
 	/**
-	 * Whether a layers.idx file should be added to the jar.
-	 * @return true if a layers.idx file should be added.
+	 * Whether a {@code layers.idx} file should be added to the jar.
+	 * @return true if a {@code layers.idx} file should be added.
 	 */
 	public boolean isEnabled() {
 		return this.enabled;

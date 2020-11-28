@@ -16,10 +16,12 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.sql.DatabaseMetaData;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
@@ -144,10 +146,6 @@ public class FlywayAutoConfiguration {
 				String user = getProperty(properties::getUser, dataSourceProperties::determineUsername);
 				String password = getProperty(properties::getPassword, dataSourceProperties::determinePassword);
 				configuration.dataSource(url, user, password);
-				if (!CollectionUtils.isEmpty(properties.getInitSqls())) {
-					String initSql = StringUtils.collectionToDelimitedString(properties.getInitSqls(), "\n");
-					configuration.initSql(initSql);
-				}
 			}
 			else if (flywayDataSource != null) {
 				configuration.dataSource(flywayDataSource);
@@ -175,9 +173,13 @@ public class FlywayAutoConfiguration {
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getLockRetryCount())
+					.to((lockRetryCount) -> configuration.lockRetryCount(lockRetryCount));
 			// No method reference for compatibility with Flyway 5.x
 			map.from(properties.getDefaultSchema()).to((schema) -> configuration.defaultSchema(schema));
 			map.from(properties.getSchemas()).as(StringUtils::toStringArray).to(configuration::schemas);
+			configureCreateSchemas(configuration, properties.isCreateSchemas());
 			map.from(properties.getTable()).to(configuration::table);
 			// No method reference for compatibility with Flyway 5.x
 			map.from(properties.getTablespace()).whenNonNull().to((tablespace) -> configuration.tablespace(tablespace));
@@ -208,6 +210,9 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
 			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
+			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
+					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
+					.to(configuration::initSql);
 			// Pro properties
 			map.from(properties.getBatch()).whenNonNull().to(configuration::batch);
 			map.from(properties.getDryRunOutput()).whenNonNull().to(configuration::dryRunOutput);
@@ -219,6 +224,32 @@ public class FlywayAutoConfiguration {
 					.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
 			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
 			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getCherryPick()).whenNonNull().to((cherryPick) -> configuration.cherryPick(cherryPick));
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty)
+					.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getOracleKerberosCacheFile()).whenNonNull()
+					.to((cacheFile) -> configuration.orackeKerberosCacheFile(cacheFile));
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getOracleKerberosConfigFile()).whenNonNull()
+					.to((configFile) -> configuration.orackeKerberosConfigFile(configFile));
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getOutputQueryResults()).whenNonNull()
+					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
+			// No method reference for compatibility with Flyway 6.x
+			map.from(properties.getSkipExecutingMigrations()).whenNonNull()
+					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
+		}
+
+		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
+			try {
+				configuration.createSchemas(createSchemas);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 6.5
+			}
 		}
 
 		private void configureValidateMigrationNaming(FluentConfiguration configuration,
@@ -398,7 +429,7 @@ public class FlywayAutoConfiguration {
 
 		private DatabaseDriver getDatabaseDriver() {
 			try {
-				String url = JdbcUtils.extractDatabaseMetaData(this.dataSource, "getURL");
+				String url = JdbcUtils.extractDatabaseMetaData(this.dataSource, DatabaseMetaData::getURL);
 				return DatabaseDriver.fromJdbcUrl(url);
 			}
 			catch (MetaDataAccessException ex) {

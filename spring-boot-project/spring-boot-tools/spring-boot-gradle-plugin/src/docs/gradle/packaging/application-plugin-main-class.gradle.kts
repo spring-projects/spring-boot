@@ -1,11 +1,11 @@
 plugins {
 	java
 	application
-	id("org.springframework.boot") version "{version}"
+	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
 // tag::main-class[]
 application {
-	mainClassName = "com.example.ExampleApplication"
+	mainClass.set("com.example.ExampleApplication")
 }
 // end::main-class[]

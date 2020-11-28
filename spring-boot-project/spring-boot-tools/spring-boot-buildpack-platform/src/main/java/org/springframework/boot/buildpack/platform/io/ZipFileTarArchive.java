@@ -35,6 +35,7 @@ import org.springframework.util.StreamUtils;
  * Adapter class to convert a ZIP file to a {@link TarArchive}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class ZipFileTarArchive implements TarArchive {
@@ -54,6 +55,7 @@ public class ZipFileTarArchive implements TarArchive {
 	public ZipFileTarArchive(File zip, Owner owner) {
 		Assert.notNull(zip, "Zip must not be null");
 		Assert.notNull(owner, "Owner must not be null");
+		assertArchiveHasEntries(zip);
 		this.zip = zip;
 		this.owner = owner;
 	}
@@ -70,6 +72,16 @@ public class ZipFileTarArchive implements TarArchive {
 			}
 		}
 		tar.finish();
+	}
+
+	private void assertArchiveHasEntries(File jarFile) {
+		try (ZipFile zipFile = new ZipFile(jarFile)) {
+			Assert.state(zipFile.getEntries().hasMoreElements(), () -> "File '" + jarFile
+					+ "' is not compatible with buildpacks; ensure jar file is valid and launch script is not enabled");
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("File is not readable", ex);
+		}
 	}
 
 	private void copy(ZipArchiveEntry zipEntry, InputStream zip, TarArchiveOutputStream tar) throws IOException {

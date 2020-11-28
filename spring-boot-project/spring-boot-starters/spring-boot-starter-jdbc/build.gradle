@@ -5,7 +5,6 @@ plugins {
 description = "Starter for using JDBC with the HikariCP connection pool"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("com.zaxxer:HikariCP")
 	api("org.springframework:spring-jdbc")

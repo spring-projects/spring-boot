@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,7 +87,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		File portFile = getPortFile(event.getApplicationContext());
 		try {
 			String port = String.valueOf(event.getWebServer().getPort());
-			createParentFolder(portFile);
+			createParentDirectory(portFile);
 			FileCopyUtils.copy(port.getBytes(), portFile);
 			portFile.deleteOnExit();
 		}
@@ -105,7 +105,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 	 */
 	protected File getPortFile(ApplicationContext applicationContext) {
 		String namespace = getServerNamespace(applicationContext);
-		if (StringUtils.isEmpty(namespace)) {
+		if (!StringUtils.hasLength(namespace)) {
 			return this.file;
 		}
 		String name = this.file.getName();
@@ -139,7 +139,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		return true;
 	}
 
-	private void createParentFolder(File file) {
+	private void createParentDirectory(File file) {
 		File parent = file.getParentFile();
 		if (parent != null) {
 			parent.mkdirs();

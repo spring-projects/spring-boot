@@ -1,24 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
 		<version>2.2.4.RELEASE</version>
-		<relativePath/> <!-- lookup parent from repository -->
+		<relativePath /> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>io.spring.concourse.releasescripts</groupId>
 	<artifactId>release-scripts</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>releasescripts</name>
 	<description>Utility that can be used when releasing Java projects</description>
-
 	<properties>
 		<java.version>1.8</java.version>
 		<spring-javaformat.version>0.0.20</spring-javaformat.version>
 	</properties>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,7 +59,6 @@
 			</exclusions>
 		</dependency>
 	</dependencies>
-
 	<build>
 		<finalName>spring-boot-release-scripts</finalName>
 		<plugins>
@@ -86,5 +84,4 @@
 			</plugin>
 		</plugins>
 	</build>
-
 </project>

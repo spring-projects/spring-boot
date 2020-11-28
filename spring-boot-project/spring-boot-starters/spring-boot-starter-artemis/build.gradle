@@ -5,7 +5,6 @@ plugins {
 description = "Starter for JMS messaging using Apache Artemis"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("jakarta.jms:jakarta.jms-api")
 	api("jakarta.json:jakarta.json-api")

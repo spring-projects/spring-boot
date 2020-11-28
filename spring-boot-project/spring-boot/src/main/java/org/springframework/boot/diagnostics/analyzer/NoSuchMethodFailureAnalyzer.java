@@ -19,6 +19,7 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -58,11 +59,15 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		if (candidates == null) {
 			return null;
 		}
-		URL actual = getActual(className);
-		if (actual == null) {
+		Class<?> type = load(className);
+		if (type == null) {
 			return null;
 		}
-		return new NoSuchMethodDescriptor(message, className, candidates, actual);
+		List<ClassDescriptor> typeHierarchy = getTypeHierarchy(type);
+		if (typeHierarchy == null) {
+			return null;
+		}
+		return new NoSuchMethodDescriptor(message, className, candidates, typeHierarchy);
 	}
 
 	private String cleanMessage(String message) {
@@ -104,10 +109,24 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 	}
 
-	private URL getActual(String className) {
+	private Class<?> load(String className) {
 		try {
-			return Class.forName(className, false, getClass().getClassLoader()).getProtectionDomain().getCodeSource()
-					.getLocation();
+			return Class.forName(className, false, getClass().getClassLoader());
+		}
+		catch (Throwable ex) {
+			return null;
+		}
+	}
+
+	private List<ClassDescriptor> getTypeHierarchy(Class<?> type) {
+		try {
+			List<ClassDescriptor> typeHierarchy = new ArrayList<>();
+			while (type != null && !type.equals(Object.class)) {
+				typeHierarchy.add(new ClassDescriptor(type.getCanonicalName(),
+						type.getProtectionDomain().getCodeSource().getLocation()));
+				type = type.getSuperclass();
+			}
+			return typeHierarchy;
 		}
 		catch (Throwable ex) {
 			return null;
@@ -136,10 +155,15 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 			writer.println(candidate);
 		}
 		writer.println();
-		writer.println("It was loaded from the following location:");
+		writer.println("The class hierarchy was loaded from the following locations:");
 		writer.println();
-		writer.print("    ");
-		writer.println(descriptor.getActualLocation());
+		for (ClassDescriptor type : descriptor.getTypeHierarchy()) {
+			writer.print("    ");
+			writer.print(type.getName());
+			writer.print(": ");
+			writer.println(type.getLocation());
+		}
+
 		return description.toString();
 	}
 
@@ -151,14 +175,14 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 
 		private final List<URL> candidateLocations;
 
-		private final URL actualLocation;
+		private final List<ClassDescriptor> typeHierarchy;
 
 		public NoSuchMethodDescriptor(String errorMessage, String className, List<URL> candidateLocations,
-				URL actualLocation) {
+				List<ClassDescriptor> typeHierarchy) {
 			this.errorMessage = errorMessage;
 			this.className = className;
 			this.candidateLocations = candidateLocations;
-			this.actualLocation = actualLocation;
+			this.typeHierarchy = typeHierarchy;
 		}
 
 		public String getErrorMessage() {
@@ -173,8 +197,29 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 			return this.candidateLocations;
 		}
 
-		public URL getActualLocation() {
-			return this.actualLocation;
+		public List<ClassDescriptor> getTypeHierarchy() {
+			return this.typeHierarchy;
+		}
+
+	}
+
+	protected static class ClassDescriptor {
+
+		private final String name;
+
+		private final URL location;
+
+		public ClassDescriptor(String name, URL location) {
+			this.name = name;
+			this.location = location;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public URL getLocation() {
+			return this.location;
 		}
 
 	}

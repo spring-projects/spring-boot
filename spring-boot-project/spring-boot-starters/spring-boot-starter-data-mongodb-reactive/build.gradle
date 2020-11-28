@@ -5,7 +5,6 @@ plugins {
 description = "Starter for using MongoDB document-oriented database and Spring Data MongoDB Reactive"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("io.projectreactor:reactor-core")
 	api("org.mongodb:mongodb-driver-reactivestreams")

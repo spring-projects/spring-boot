@@ -49,12 +49,27 @@ public class MongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(MongoClient.class)
-	public MongoClient mongo(MongoProperties properties, Environment environment,
-			ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
-			ObjectProvider<MongoClientSettings> settings) {
-		return new MongoClientFactory(properties, environment,
-				builderCustomizers.orderedStream().collect(Collectors.toList()))
-						.createMongoClient(settings.getIfAvailable());
+	public MongoClient mongo(ObjectProvider<MongoClientSettingsBuilderCustomizer> builderCustomizers,
+			MongoClientSettings settings) {
+		return new MongoClientFactory(builderCustomizers.orderedStream().collect(Collectors.toList()))
+				.createMongoClient(settings);
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingBean(MongoClientSettings.class)
+	static class MongoClientSettingsConfiguration {
+
+		@Bean
+		MongoClientSettings mongoClientSettings() {
+			return MongoClientSettings.builder().build();
+		}
+
+		@Bean
+		MongoPropertiesClientSettingsBuilderCustomizer mongoPropertiesCustomizer(MongoProperties properties,
+				Environment environment) {
+			return new MongoPropertiesClientSettingsBuilderCustomizer(properties, environment);
+		}
+
 	}
 
 }

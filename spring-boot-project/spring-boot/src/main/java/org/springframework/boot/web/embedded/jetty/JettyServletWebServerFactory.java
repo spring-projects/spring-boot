@@ -27,6 +27,7 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.EventListener;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -41,12 +42,16 @@ import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ErrorHandler;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.server.session.DefaultSessionCache;
 import org.eclipse.jetty.server.session.FileSessionDataStore;
 import org.eclipse.jetty.server.session.SessionHandler;
 import org.eclipse.jetty.servlet.ErrorPageErrorHandler;
+import org.eclipse.jetty.servlet.ListenerHolder;
+import org.eclipse.jetty.servlet.ServletHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.servlet.ServletMapping;
+import org.eclipse.jetty.servlet.Source;
 import org.eclipse.jetty.util.resource.JarResource;
 import org.eclipse.jetty.util.resource.Resource;
 import org.eclipse.jetty.util.resource.ResourceCollection;
@@ -57,6 +62,7 @@ import org.eclipse.jetty.webapp.WebAppContext;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
@@ -151,6 +157,11 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		}
 		if (this.useForwardHeaders) {
 			new ForwardHeadersCustomizer().customize(server);
+		}
+		if (getShutdown() == Shutdown.GRACEFUL) {
+			StatisticsHandler statisticsHandler = new StatisticsHandler();
+			statisticsHandler.setHandler(server.getHandler());
+			server.setHandler(statisticsHandler);
 		}
 		return getJettyWebServer(server);
 	}
@@ -260,7 +271,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 			Resource rootResource = (docBase.isDirectory() ? Resource.newResource(docBase.getCanonicalFile())
 					: JarResource.newJarResource(Resource.newResource(docBase)));
 			resources.add((root != null) ? new LoaderHidingResource(rootResource) : rootResource);
-			for (URL resourceJarUrl : this.getUrlsOfJarsWithMetaInfResources()) {
+			for (URL resourceJarUrl : getUrlsOfJarsWithMetaInfResources()) {
 				Resource resource = createResource(resourceJarUrl);
 				if (resource.exists() && resource.isDirectory()) {
 					resources.add(resource);
@@ -329,6 +340,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		configurations.add(getServletContextInitializerConfiguration(webAppContext, initializers));
 		configurations.add(getErrorPageConfiguration());
 		configurations.add(getMimeTypeConfiguration());
+		configurations.add(new WebListenersConfiguration(getWebListenerClassNames()));
 		configurations.addAll(getConfigurations());
 		return configurations.toArray(new Configuration[0]);
 	}
@@ -398,7 +410,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	 * @return a new {@link JettyWebServer} instance
 	 */
 	protected JettyWebServer getJettyWebServer(Server server) {
-		return new JettyWebServer(server, getPort() >= 0, getShutdown().getGracePeriod());
+		return new JettyWebServer(server, getPort() >= 0);
 	}
 
 	@Override
@@ -593,6 +605,42 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		@Override
 		public String[] list() {
 			return this.delegate.list();
+		}
+
+	}
+
+	/**
+	 * {@link AbstractConfiguration} to apply {@code @WebListener} classes.
+	 */
+	private static class WebListenersConfiguration extends AbstractConfiguration {
+
+		private final Set<String> classNames;
+
+		WebListenersConfiguration(Set<String> webListenerClassNames) {
+			this.classNames = webListenerClassNames;
+		}
+
+		@Override
+		public void configure(WebAppContext context) throws Exception {
+			ServletHandler servletHandler = context.getServletHandler();
+			for (String className : this.classNames) {
+				configure(context, servletHandler, className);
+			}
+		}
+
+		private void configure(WebAppContext context, ServletHandler servletHandler, String className)
+				throws ClassNotFoundException {
+			ListenerHolder holder = servletHandler.newListenerHolder(new Source(Source.Origin.ANNOTATION, className));
+			holder.setHeldClass(loadClass(context, className));
+			servletHandler.addListener(holder);
+		}
+
+		@SuppressWarnings("unchecked")
+		private Class<? extends EventListener> loadClass(WebAppContext context, String className)
+				throws ClassNotFoundException {
+			ClassLoader classLoader = context.getClassLoader();
+			classLoader = (classLoader != null) ? classLoader : getClass().getClassLoader();
+			return (Class<? extends EventListener>) classLoader.loadClass(className);
 		}
 
 	}

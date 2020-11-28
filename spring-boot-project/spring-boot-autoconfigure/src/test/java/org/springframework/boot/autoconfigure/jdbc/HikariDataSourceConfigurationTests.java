@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class HikariDataSourceConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode=never",
 					"spring.datasource.type=" + HikariDataSource.class.getName());
@@ -55,7 +55,6 @@ class HikariDataSourceConfigurationTests {
 					assertThat(ds.getJdbcUrl()).isEqualTo("jdbc:foo//bar/spam");
 					assertThat(ds.getMaxLifetime()).isEqualTo(1234);
 				});
-		// TODO: test JDBC4 isValid()
 	}
 
 	@Test

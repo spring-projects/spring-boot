@@ -44,6 +44,7 @@ import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfigurati
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -53,6 +54,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Liquibase.
@@ -66,6 +68,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  * @author Dan Zheng
  * @author András Deák
  * @author Ferenc Gratzer
+ * @author Evgeniy Cheban
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -146,8 +149,19 @@ public class LiquibaseAutoConfiguration {
 			String url = getProperty(this.properties::getUrl, dataSourceProperties::determineUrl);
 			String user = getProperty(this.properties::getUser, dataSourceProperties::determineUsername);
 			String password = getProperty(this.properties::getPassword, dataSourceProperties::determinePassword);
+			String driverClassName = determineDriverClassName(dataSourceProperties, url);
 			return DataSourceBuilder.create().type(determineDataSourceType()).url(url).username(user).password(password)
-					.build();
+					.driverClassName(driverClassName).build();
+		}
+
+		private String determineDriverClassName(DataSourceProperties dataSourceProperties, String url) {
+			if (StringUtils.hasText(this.properties.getDriverClassName())) {
+				return this.properties.getDriverClassName();
+			}
+			if (StringUtils.hasText(dataSourceProperties.getDriverClassName())) {
+				return dataSourceProperties.getDriverClassName();
+			}
+			return StringUtils.hasText(url) ? DatabaseDriver.fromJdbcUrl(url).getDriverClassName() : null;
 		}
 
 		private Class<? extends DataSource> determineDataSourceType() {

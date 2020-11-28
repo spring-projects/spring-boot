@@ -76,7 +76,7 @@ class BootArchiveSupport {
 
 	private LaunchScriptConfiguration launchScript;
 
-	private boolean excludeDevtools = true;
+	private boolean excludeDevtools = false;
 
 	BootArchiveSupport(String loaderMainClass, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver) {

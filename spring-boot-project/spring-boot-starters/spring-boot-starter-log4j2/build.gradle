@@ -5,7 +5,6 @@ plugins {
 description = "Starter for using Log4j2 for logging. An alternative to spring-boot-starter-logging"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api("org.apache.logging.log4j:log4j-slf4j-impl")
 	api("org.apache.logging.log4j:log4j-core")
 	api("org.apache.logging.log4j:log4j-jul")

@@ -18,26 +18,6 @@
 						<enabled>true</enabled>
 					</snapshots>
 				</repository>
-				<repository>
-					<id>spring-snapshot</id>
-					<url>https://repo.spring.io/snapshot</url>
-					<releases>
-						<enabled>false</enabled>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</repository>
-				<repository>
-					<id>spring-milestone</id>
-					<url>https://repo.spring.io/milestone</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
-					</snapshots>
-				</repository>
 			</repositories>
 			<pluginRepositories>
 				<pluginRepository>
@@ -48,26 +28,6 @@
 					</releases>
 					<snapshots>
 						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>spring-snapshot</id>
-					<url>https://repo.spring.io/snapshot</url>
-					<releases>
-						<enabled>false</enabled>
-					</releases>
-					<snapshots>
-						<enabled>true</enabled>
-					</snapshots>
-				</pluginRepository>
-				<pluginRepository>
-					<id>spring-milestone</id>
-					<url>https://repo.spring.io/milestone</url>
-					<releases>
-						<enabled>true</enabled>
-					</releases>
-					<snapshots>
-						<enabled>false</enabled>
 					</snapshots>
 				</pluginRepository>
 			</pluginRepositories>

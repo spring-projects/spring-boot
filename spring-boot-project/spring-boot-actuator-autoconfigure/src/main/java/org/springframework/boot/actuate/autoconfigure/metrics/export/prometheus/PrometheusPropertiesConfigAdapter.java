@@ -37,6 +37,11 @@ class PrometheusPropertiesConfigAdapter extends PropertiesConfigAdapter<Promethe
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.prometheus";
+	}
+
+	@Override
 	public String get(String key) {
 		return null;
 	}

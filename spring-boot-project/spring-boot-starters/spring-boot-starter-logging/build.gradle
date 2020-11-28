@@ -5,7 +5,6 @@ plugins {
 description = "Starter for logging using Logback. Default logging starter"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api("ch.qos.logback:logback-classic")
 	api("org.apache.logging.log4j:log4j-to-slf4j")
 	api("org.slf4j:jul-to-slf4j")

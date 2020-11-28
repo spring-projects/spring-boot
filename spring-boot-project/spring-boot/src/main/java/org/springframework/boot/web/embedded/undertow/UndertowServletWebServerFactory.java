@@ -32,22 +32,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
-import javax.servlet.ServletContextEvent;
-import javax.servlet.ServletContextListener;
 import javax.servlet.ServletException;
 
-import io.undertow.Undertow;
 import io.undertow.Undertow.Builder;
-import io.undertow.UndertowOptions;
-import io.undertow.server.HttpHandler;
-import io.undertow.server.handlers.accesslog.AccessLogHandler;
-import io.undertow.server.handlers.accesslog.AccessLogReceiver;
-import io.undertow.server.handlers.accesslog.DefaultAccessLogReceiver;
 import io.undertow.server.handlers.resource.FileResourceManager;
 import io.undertow.server.handlers.resource.Resource;
 import io.undertow.server.handlers.resource.ResourceChangeListener;
@@ -64,10 +55,6 @@ import io.undertow.servlet.api.ServletStackTraces;
 import io.undertow.servlet.core.DeploymentImpl;
 import io.undertow.servlet.handlers.DefaultServlet;
 import io.undertow.servlet.util.ImmediateInstanceFactory;
-import org.xnio.OptionMap;
-import org.xnio.Options;
-import org.xnio.Xnio;
-import org.xnio.XnioWorker;
 
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.MimeMappings.Mapping;
@@ -100,35 +87,15 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 
 	private static final Set<Class<?>> NO_CLASSES = Collections.emptySet();
 
-	private Set<UndertowBuilderCustomizer> builderCustomizers = new LinkedHashSet<>();
+	private UndertowWebServerFactoryDelegate delegate = new UndertowWebServerFactoryDelegate();
 
 	private Set<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers = new LinkedHashSet<>();
 
 	private ResourceLoader resourceLoader;
 
-	private Integer bufferSize;
+	private boolean eagerFilterInit = true;
 
-	private Integer ioThreads;
-
-	private Integer workerThreads;
-
-	private Boolean directBuffers;
-
-	private File accessLogDirectory;
-
-	private String accessLogPattern;
-
-	private String accessLogPrefix;
-
-	private String accessLogSuffix;
-
-	private boolean accessLogEnabled = false;
-
-	private boolean accessLogRotate = true;
-
-	private boolean useForwardHeaders;
-
-	private boolean eagerInitFilters = true;
+	private boolean preservePathOnForward = false;
 
 	/**
 	 * Create a new {@link UndertowServletWebServerFactory} instance.
@@ -158,14 +125,14 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		getJsp().setRegistered(false);
 	}
 
-	/**
-	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
-	 * {@link Builder}. Calling this method will replace any existing customizers.
-	 * @param customizers the customizers to set
-	 */
+	@Override
 	public void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers = new LinkedHashSet<>(customizers);
+		this.delegate.setBuilderCustomizers(customizers);
+	}
+
+	@Override
+	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
+		this.delegate.addBuilderCustomizers(customizers);
 	}
 
 	/**
@@ -174,13 +141,74 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return the customizers that will be applied
 	 */
 	public Collection<UndertowBuilderCustomizer> getBuilderCustomizers() {
-		return this.builderCustomizers;
+		return this.delegate.getBuilderCustomizers();
 	}
 
 	@Override
-	public void addBuilderCustomizers(UndertowBuilderCustomizer... customizers) {
-		Assert.notNull(customizers, "Customizers must not be null");
-		this.builderCustomizers.addAll(Arrays.asList(customizers));
+	public void setBufferSize(Integer bufferSize) {
+		this.delegate.setBufferSize(bufferSize);
+	}
+
+	@Override
+	public void setIoThreads(Integer ioThreads) {
+		this.delegate.setIoThreads(ioThreads);
+	}
+
+	@Override
+	public void setWorkerThreads(Integer workerThreads) {
+		this.delegate.setWorkerThreads(workerThreads);
+	}
+
+	@Override
+	public void setUseDirectBuffers(Boolean directBuffers) {
+		this.delegate.setUseDirectBuffers(directBuffers);
+	}
+
+	@Override
+	public void setAccessLogDirectory(File accessLogDirectory) {
+		this.delegate.setAccessLogDirectory(accessLogDirectory);
+	}
+
+	@Override
+	public void setAccessLogPattern(String accessLogPattern) {
+		this.delegate.setAccessLogPattern(accessLogPattern);
+	}
+
+	@Override
+	public void setAccessLogPrefix(String accessLogPrefix) {
+		this.delegate.setAccessLogPrefix(accessLogPrefix);
+	}
+
+	public String getAccessLogPrefix() {
+		return this.delegate.getAccessLogPrefix();
+	}
+
+	@Override
+	public void setAccessLogSuffix(String accessLogSuffix) {
+		this.delegate.setAccessLogSuffix(accessLogSuffix);
+	}
+
+	@Override
+	public void setAccessLogEnabled(boolean accessLogEnabled) {
+		this.delegate.setAccessLogEnabled(accessLogEnabled);
+	}
+
+	public boolean isAccessLogEnabled() {
+		return this.delegate.isAccessLogEnabled();
+	}
+
+	@Override
+	public void setAccessLogRotate(boolean accessLogRotate) {
+		this.delegate.setAccessLogRotate(accessLogRotate);
+	}
+
+	@Override
+	public void setUseForwardHeaders(boolean useForwardHeaders) {
+		this.delegate.setUseForwardHeaders(useForwardHeaders);
+	}
+
+	protected final boolean isUseForwardHeaders() {
+		return this.delegate.isUseForwardHeaders();
 	}
 
 	/**
@@ -195,15 +223,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	/**
-	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
-	 * will be applied to the Undertow {@link DeploymentInfo}.
-	 * @return the customizers that will be applied
-	 */
-	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
-		return this.deploymentInfoCustomizers;
-	}
-
-	/**
 	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
 	 * Undertow {@link DeploymentInfo}.
 	 * @param customizers the customizers to add
@@ -213,55 +232,90 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		this.deploymentInfoCustomizers.addAll(Arrays.asList(customizers));
 	}
 
+	/**
+	 * Returns a mutable collection of the {@link UndertowDeploymentInfoCustomizer}s that
+	 * will be applied to the Undertow {@link DeploymentInfo}.
+	 * @return the customizers that will be applied
+	 */
+	public Collection<UndertowDeploymentInfoCustomizer> getDeploymentInfoCustomizers() {
+		return this.deploymentInfoCustomizers;
+	}
+
+	@Override
+	public void setResourceLoader(ResourceLoader resourceLoader) {
+		this.resourceLoader = resourceLoader;
+	}
+
+	/**
+	 * Return if filters should be initialized eagerly.
+	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
+	 * @since 2.0.0
+	 * @deprecated since 2.4.0 in favor of {@link #isEagerFilterInit()}
+	 */
+	@Deprecated
+	public boolean isEagerInitFilters() {
+		return this.eagerFilterInit;
+	}
+
+	/**
+	 * Set whether filters should be initialized eagerly.
+	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
+	 * {@code false}.
+	 * @since 2.0.0
+	 * @deprecated since 2.4.0 in favor of {@link #isEagerFilterInit()}
+	 */
+	@Deprecated
+	public void setEagerInitFilters(boolean eagerInitFilters) {
+		this.eagerFilterInit = eagerInitFilters;
+	}
+
+	/**
+	 * Return if filters should be eagerly initialized.
+	 * @return {@code true} if filters are eagerly initialized, otherwise {@code false}.
+	 * @since 2.4.0
+	 */
+	public boolean isEagerFilterInit() {
+		return this.eagerFilterInit;
+	}
+
+	/**
+	 * Set whether filters should be eagerly initialized.
+	 * @param eagerFilterInit {@code true} if filters are eagerly initialized, otherwise
+	 * {@code false}.
+	 * @since 2.4.0
+	 */
+	public void setEagerFilterInit(boolean eagerFilterInit) {
+		this.eagerFilterInit = eagerFilterInit;
+	}
+
+	/**
+	 * Return whether the request path should be preserved on forward.
+	 * @return {@code true} if the path should be preserved when a request is forwarded,
+	 * otherwise {@code false}.
+	 * @since 2.4.0
+	 */
+	public boolean isPreservePathOnForward() {
+		return this.preservePathOnForward;
+	}
+
+	/**
+	 * Set whether the request path should be preserved on forward.
+	 * @param preservePathOnForward {@code true} if the path should be preserved when a
+	 * request is forwarded, otherwise {@code false}.
+	 * @since 2.4.0
+	 */
+	public void setPreservePathOnForward(boolean preservePathOnForward) {
+		this.preservePathOnForward = preservePathOnForward;
+	}
+
 	@Override
 	public WebServer getWebServer(ServletContextInitializer... initializers) {
-		DeploymentManager manager = createDeploymentManager(initializers);
-		int port = getPort();
-		Builder builder = createBuilder(port);
-		return getUndertowWebServer(builder, manager, port);
+		Builder builder = this.delegate.createBuilder(this);
+		DeploymentManager manager = createManager(initializers);
+		return getUndertowWebServer(builder, manager, getPort());
 	}
 
-	private Builder createBuilder(int port) {
-		Builder builder = Undertow.builder();
-		if (this.bufferSize != null) {
-			builder.setBufferSize(this.bufferSize);
-		}
-		if (this.ioThreads != null) {
-			builder.setIoThreads(this.ioThreads);
-		}
-		if (this.workerThreads != null) {
-			builder.setWorkerThreads(this.workerThreads);
-		}
-		if (this.directBuffers != null) {
-			builder.setDirectBuffers(this.directBuffers);
-		}
-		if (getSsl() != null && getSsl().isEnabled()) {
-			customizeSsl(builder);
-		}
-		else {
-			builder.addHttpListener(port, getListenAddress());
-		}
-		for (UndertowBuilderCustomizer customizer : this.builderCustomizers) {
-			customizer.customize(builder);
-		}
-		return builder;
-	}
-
-	private void customizeSsl(Builder builder) {
-		new SslBuilderCustomizer(getPort(), getAddress(), getSsl(), getSslStoreProvider()).customize(builder);
-		if (getHttp2() != null) {
-			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, getHttp2().isEnabled());
-		}
-	}
-
-	private String getListenAddress() {
-		if (getAddress() == null) {
-			return "0.0.0.0";
-		}
-		return getAddress().getHostAddress();
-	}
-
-	private DeploymentManager createDeploymentManager(ServletContextInitializer... initializers) {
+	private DeploymentManager createManager(ServletContextInitializer... initializers) {
 		DeploymentInfo deployment = Servlets.deployment();
 		registerServletContainerInitializerToDriveServletContextInitializers(deployment, initializers);
 		deployment.setClassLoader(getServletClassLoader());
@@ -275,13 +329,12 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		deployment.setServletStackTraces(ServletStackTraces.NONE);
 		deployment.setResourceManager(getDocumentRootResourceManager());
 		deployment.setTempDir(createTempDir("undertow"));
-		deployment.setEagerFilterInit(this.eagerInitFilters);
+		deployment.setEagerFilterInit(this.eagerFilterInit);
+		deployment.setPreservePathOnForward(this.preservePathOnForward);
 		configureMimeMappings(deployment);
+		configureWebListeners(deployment);
 		for (UndertowDeploymentInfoCustomizer customizer : this.deploymentInfoCustomizers) {
 			customizer.customize(deployment);
-		}
-		if (isAccessLogEnabled()) {
-			configureAccessLog(deployment);
 		}
 		if (getSession().isPersistent()) {
 			File dir = getValidSessionStoreDir();
@@ -300,44 +353,24 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		return manager;
 	}
 
+	private void configureWebListeners(DeploymentInfo deployment) {
+		for (String className : getWebListenerClassNames()) {
+			try {
+				deployment.addListener(new ListenerInfo(loadWebListenerClass(className)));
+			}
+			catch (ClassNotFoundException ex) {
+				throw new IllegalStateException("Failed to load web listener class '" + className + "'", ex);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private Class<? extends EventListener> loadWebListenerClass(String className) throws ClassNotFoundException {
+		return (Class<? extends EventListener>) getServletClassLoader().loadClass(className);
+	}
+
 	private boolean isZeroOrLess(Duration timeoutDuration) {
 		return timeoutDuration == null || timeoutDuration.isZero() || timeoutDuration.isNegative();
-	}
-
-	private void configureAccessLog(DeploymentInfo deploymentInfo) {
-		try {
-			createAccessLogDirectoryIfNecessary();
-			XnioWorker worker = createWorker();
-			String prefix = (this.accessLogPrefix != null) ? this.accessLogPrefix : "access_log.";
-			DefaultAccessLogReceiver accessLogReceiver = new DefaultAccessLogReceiver(worker, this.accessLogDirectory,
-					prefix, this.accessLogSuffix, this.accessLogRotate);
-			EventListener listener = new AccessLogShutdownListener(worker, accessLogReceiver);
-			deploymentInfo.addListener(
-					new ListenerInfo(AccessLogShutdownListener.class, new ImmediateInstanceFactory<>(listener)));
-			deploymentInfo
-					.addInitialHandlerChainWrapper((handler) -> createAccessLogHandler(handler, accessLogReceiver));
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("Failed to create AccessLogHandler", ex);
-		}
-	}
-
-	private AccessLogHandler createAccessLogHandler(HttpHandler handler, AccessLogReceiver accessLogReceiver) {
-		createAccessLogDirectoryIfNecessary();
-		String formatString = (this.accessLogPattern != null) ? this.accessLogPattern : "common";
-		return new AccessLogHandler(handler, accessLogReceiver, formatString, Undertow.class.getClassLoader());
-	}
-
-	private void createAccessLogDirectoryIfNecessary() {
-		Assert.state(this.accessLogDirectory != null, "Access log directory is not set");
-		if (!this.accessLogDirectory.isDirectory() && !this.accessLogDirectory.mkdirs()) {
-			throw new IllegalStateException("Failed to create access log directory '" + this.accessLogDirectory + "'");
-		}
-	}
-
-	private XnioWorker createWorker() throws IOException {
-		Xnio xnio = Xnio.getInstance(Undertow.class.getClassLoader());
-		return xnio.createWorker(OptionMap.builder().set(Options.THREAD_DAEMON, true).getMap());
 	}
 
 	private void addLocaleMappings(DeploymentInfo deployment) {
@@ -448,99 +481,30 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @return a new {@link UndertowServletWebServer} instance
 	 */
 	protected UndertowServletWebServer getUndertowWebServer(Builder builder, DeploymentManager manager, int port) {
-		return new UndertowServletWebServer(builder, manager, getContextPath(), isUseForwardHeaders(), port >= 0,
-				getCompression(), getServerHeader(), getShutdown().getGracePeriod());
-	}
-
-	@Override
-	public void setResourceLoader(ResourceLoader resourceLoader) {
-		this.resourceLoader = resourceLoader;
-	}
-
-	@Override
-	public void setBufferSize(Integer bufferSize) {
-		this.bufferSize = bufferSize;
-	}
-
-	@Override
-	public void setIoThreads(Integer ioThreads) {
-		this.ioThreads = ioThreads;
-	}
-
-	@Override
-	public void setWorkerThreads(Integer workerThreads) {
-		this.workerThreads = workerThreads;
-	}
-
-	@Override
-	public void setUseDirectBuffers(Boolean directBuffers) {
-		this.directBuffers = directBuffers;
-	}
-
-	@Override
-	public void setAccessLogDirectory(File accessLogDirectory) {
-		this.accessLogDirectory = accessLogDirectory;
-	}
-
-	@Override
-	public void setAccessLogPattern(String accessLogPattern) {
-		this.accessLogPattern = accessLogPattern;
-	}
-
-	public String getAccessLogPrefix() {
-		return this.accessLogPrefix;
-	}
-
-	@Override
-	public void setAccessLogPrefix(String accessLogPrefix) {
-		this.accessLogPrefix = accessLogPrefix;
-	}
-
-	@Override
-	public void setAccessLogSuffix(String accessLogSuffix) {
-		this.accessLogSuffix = accessLogSuffix;
-	}
-
-	@Override
-	public void setAccessLogEnabled(boolean accessLogEnabled) {
-		this.accessLogEnabled = accessLogEnabled;
-	}
-
-	public boolean isAccessLogEnabled() {
-		return this.accessLogEnabled;
-	}
-
-	@Override
-	public void setAccessLogRotate(boolean accessLogRotate) {
-		this.accessLogRotate = accessLogRotate;
-	}
-
-	protected final boolean isUseForwardHeaders() {
-		return this.useForwardHeaders;
-	}
-
-	@Override
-	public void setUseForwardHeaders(boolean useForwardHeaders) {
-		this.useForwardHeaders = useForwardHeaders;
+		List<HttpHandlerFactory> httpHandlerFactories = this.delegate.createHttpHandlerFactories(this,
+				new DeploymentManagerHttpHandlerFactory(manager));
+		return new UndertowServletWebServer(builder, httpHandlerFactories, getContextPath(), port >= 0);
 	}
 
 	/**
-	 * Return if filters should be initialized eagerly.
-	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
-	 * @since 2.0.0
+	 * {@link ServletContainerInitializer} to initialize {@link ServletContextInitializer
+	 * ServletContextInitializers}.
 	 */
-	public boolean isEagerInitFilters() {
-		return this.eagerInitFilters;
-	}
+	private static class Initializer implements ServletContainerInitializer {
 
-	/**
-	 * Set whether filters should be initialized eagerly.
-	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
-	 * {@code false}.
-	 * @since 2.0.0
-	 */
-	public void setEagerInitFilters(boolean eagerInitFilters) {
-		this.eagerInitFilters = eagerInitFilters;
+		private final ServletContextInitializer[] initializers;
+
+		Initializer(ServletContextInitializer[] initializers) {
+			this.initializers = initializers;
+		}
+
+		@Override
+		public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
+			for (ServletContextInitializer initializer : this.initializers) {
+				initializer.onStartup(servletContext);
+			}
+		}
+
 	}
 
 	/**
@@ -602,26 +566,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	}
 
 	/**
-	 * {@link ServletContainerInitializer} to initialize {@link ServletContextInitializer
-	 * ServletContextInitializers}.
+	 * {@link ResourceManager} to hide Spring Boot loader classes.
 	 */
-	private static class Initializer implements ServletContainerInitializer {
-
-		private final ServletContextInitializer[] initializers;
-
-		Initializer(ServletContextInitializer[] initializers) {
-			this.initializers = initializers;
-		}
-
-		@Override
-		public void onStartup(Set<Class<?>> classes, ServletContext servletContext) throws ServletException {
-			for (ServletContextInitializer initializer : this.initializers) {
-				initializer.onStartup(servletContext);
-			}
-		}
-
-	}
-
 	private static final class LoaderHidingResourceManager implements ResourceManager {
 
 		private final ResourceManager delegate;
@@ -656,38 +602,6 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 		@Override
 		public void close() throws IOException {
 			this.delegate.close();
-		}
-
-	}
-
-	private static class AccessLogShutdownListener implements ServletContextListener {
-
-		private final XnioWorker worker;
-
-		private final DefaultAccessLogReceiver accessLogReceiver;
-
-		AccessLogShutdownListener(XnioWorker worker, DefaultAccessLogReceiver accessLogReceiver) {
-			this.worker = worker;
-			this.accessLogReceiver = accessLogReceiver;
-		}
-
-		@Override
-		public void contextInitialized(ServletContextEvent sce) {
-		}
-
-		@Override
-		public void contextDestroyed(ServletContextEvent sce) {
-			try {
-				this.accessLogReceiver.close();
-				this.worker.shutdown();
-				this.worker.awaitTermination(30, TimeUnit.SECONDS);
-			}
-			catch (IOException ex) {
-				throw new IllegalStateException(ex);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
 		}
 
 	}

@@ -35,7 +35,7 @@ class DockerApiIntegrationTests {
 
 	@Test
 	void pullImage() throws IOException {
-		this.docker.image().pull(ImageReference.of("cloudfoundry/cnb:bionic"),
+		this.docker.image().pull(ImageReference.of("gcr.io/paketo-buildpacks/builder:base"),
 				new TotalProgressPullListener(new TotalProgressBar("Pulling: ")));
 	}
 

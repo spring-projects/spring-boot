@@ -19,7 +19,6 @@ package org.springframework.boot.context.config;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -34,24 +33,19 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.Logger;
 import org.assertj.core.api.Condition;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
-import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
-import org.springframework.boot.context.event.ApplicationPreparedEvent;
-import org.springframework.boot.env.EnvironmentPostProcessor;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.context.annotation.PropertySource;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.Profiles;
@@ -75,8 +69,10 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Madhura Bhave
+ * @author Scott Frederick
  */
-@ExtendWith(OutputCaptureExtension.class)
+@Deprecated
+@ExtendWith({ OutputCaptureExtension.class, UseLegacyProcessing.class })
 class ConfigFileApplicationListenerTests {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
@@ -85,9 +81,25 @@ class ConfigFileApplicationListenerTests {
 
 	private final SpringApplication application = new SpringApplication();
 
-	private final ConfigFileApplicationListener initializer = new ConfigFileApplicationListener();
+	private final ConfigFileApplicationListener initializer;
+
+	private final Logger logger;
 
 	private ConfigurableApplicationContext context;
+
+	private Level existingLogLevel;
+
+	ConfigFileApplicationListenerTests() {
+		Log log = LogFactory.getLog(ConfigFileApplicationListener.class);
+		this.logger = (Logger) ReflectionTestUtils.getField(log, "logger");
+		this.initializer = new ConfigFileApplicationListener(log);
+	}
+
+	@BeforeEach
+	void setup() {
+		this.existingLogLevel = this.logger.getLevel();
+		this.logger.setLevel(Level.DEBUG);
+	}
 
 	@AfterEach
 	void cleanUp() {
@@ -96,6 +108,7 @@ class ConfigFileApplicationListenerTests {
 		}
 		System.clearProperty("the.property");
 		System.clearProperty("spring.config.location");
+		this.logger.setLevel(this.existingLogLevel);
 	}
 
 	@Test
@@ -218,6 +231,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void moreSpecificLocationTakesPrecedenceOverRoot() {
+		// checking order of default locations
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.config.name=specific");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("my.property");
@@ -236,6 +250,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void randomValue() {
+		// dont need
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		String property = this.environment.getProperty("random.value");
 		assertThat(property).isNotNull();
@@ -270,6 +285,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void loadDefaultYamlDocument() {
+		// makes sense
 		this.environment.setDefaultProfiles("thedefault");
 		this.initializer.setSearchNames("testprofilesdocument");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
@@ -335,6 +351,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void includedProfilesFromDefaultPropertiesShouldNotTakePrecedence() {
+		// required?
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.profiles.active=morespecific");
 		this.environment.getPropertySources().addLast(
@@ -463,6 +480,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void profilesAddedToEnvironmentAndViaPropertyDuplicateEnvironmentWins(CapturedOutput output) {
+		// ?
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment, "spring.profiles.active=other,dev");
 		this.environment.addActiveProfile("other");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
@@ -481,17 +499,7 @@ class ConfigFileApplicationListenerTests {
 		validateProfilePreference(output, null, "dev", "other");
 	}
 
-	@Test
-	void postProcessorsAreOrderedCorrectly() {
-		TestConfigFileApplicationListener testListener = new TestConfigFileApplicationListener();
-		testListener.onApplicationEvent(
-				new ApplicationEnvironmentPreparedEvent(this.application, new String[0], this.environment));
-	}
-
 	private void validateProfilePreference(CapturedOutput output, String... profiles) {
-		ApplicationPreparedEvent event = new ApplicationPreparedEvent(new SpringApplication(), new String[0],
-				new AnnotationConfigApplicationContext());
-		withDebugLogging(() -> this.initializer.onApplicationEvent(event));
 		String log = output.toString();
 		// First make sure that each profile got processed only once
 		for (String profile : profiles) {
@@ -504,19 +512,6 @@ class ConfigFileApplicationListenerTests {
 			int index = log.indexOf(line);
 			assertThat(index).as("Loading profile '" + profile + "' not found in '" + log + "'").isNotEqualTo(-1);
 			log = log.substring(index + line.length());
-		}
-	}
-
-	private void withDebugLogging(Runnable runnable) {
-		Log log = LogFactory.getLog(ConfigFileApplicationListener.class);
-		Logger logger = (Logger) ReflectionTestUtils.getField(log, "logger");
-		Level previousLevel = logger.getLevel();
-		logger.setLevel(Level.DEBUG);
-		try {
-			runnable.run();
-		}
-		finally {
-			logger.setLevel(previousLevel);
 		}
 	}
 
@@ -701,6 +696,7 @@ class ConfigFileApplicationListenerTests {
 
 	@Test
 	void absoluteResourceDefaultsToFile() {
+		// ?
 		String location = new File("src/test/resources/specificlocation.properties").getAbsolutePath().replace("\\",
 				"/");
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
@@ -708,6 +704,15 @@ class ConfigFileApplicationListenerTests {
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment).has(
 				matchingPropertySource("applicationConfig: [file:" + location.replace(File.separatorChar, '/') + "]"));
+	}
+
+	@Test
+	void classpathWildcardResourceThrowsException() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=classpath*:override.properties");
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
+				.withMessage("Classpath wildcard patterns cannot be used as a search location");
 	}
 
 	@Test
@@ -926,6 +931,16 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
+	void additionalLocationWhenLocationConfiguredShouldTakesPrecedenceOverConfiguredLocation() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=classpath:some.properties",
+				"spring.config.additional-location=classpath:override.properties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("foo")).isEqualTo("bar");
+		assertThat(this.environment.getProperty("value")).isNull();
+	}
+
+	@Test
 	void locationReplaceDefaultLocation() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=classpath:override.properties");
@@ -1006,7 +1021,7 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	void whenConfigLocationSpecifiesFolderConfigFileProcessingContinues() {
+	void whenConfigLocationSpecifiesDirectoryConfigFileProcessingContinues() {
 		String location = "classpath:application.unknown/";
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=" + location);
@@ -1014,7 +1029,75 @@ class ConfigFileApplicationListenerTests {
 	}
 
 	@Test
-	void locationsWithWildcardFoldersShouldLoadAllFilesThatMatch() {
+	void directoryLocationsWithWildcardShouldHaveWildcardAsLastCharacterBeforeSlash() {
+		String location = "file:src/test/resources/*/config/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
+				.withMessageStartingWith("Search location '").withMessageEndingWith("' must end with '*/'");
+	}
+
+	@Test
+	void configNameCannotContainWildcard() {
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=file:src/test/resources/", "spring.config.name=*/application");
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
+				.withMessage("Config name '*/application' cannot contain wildcards");
+	}
+
+	@Test
+	void configNameCanContainSlash() {
+		// Spring Cloud config server depends on this
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=file:src/test/resources/", "spring.config.name=config/application");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+	}
+
+	@Test
+	void directoryLocationsWithMultipleWildcardsShouldThrowException() {
+		String location = "file:src/test/resources/config/**/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.initializer.postProcessEnvironment(this.environment, this.application))
+				.withMessageStartingWith("Search location '")
+				.withMessageEndingWith("' cannot contain multiple wildcards");
+	}
+
+	@Test
+	void locationsWithWildcardDirectoriesShouldRestrictToOneLevelDeep() {
+		String location = "file:src/test/resources/config/*/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("third.property")).isNull();
+	}
+
+	@Test
+	void locationsWithWildcardDirectoriesShouldIgnoreHiddenDirectories() {
+		String location = "file:src/test/resources/config/*/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("fourth.property")).isNull();
+	}
+
+	@Test
+	void nonWildcardHiddenDirectoryLocationShouldNotBeIgnored() {
+		String location = "file:src/test/resources/config/..hidden/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("fourth.property")).isNotNull();
+	}
+
+	@Test
+	void locationsWithWildcardDirectoriesShouldLoadAllFilesThatMatch() {
 		String location = "file:src/test/resources/config/*/";
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
 				"spring.config.location=" + location);
@@ -1024,6 +1107,24 @@ class ConfigFileApplicationListenerTests {
 		String second = this.environment.getProperty("second.property");
 		assertThat(first).isEqualTo("apple");
 		assertThat(second).isEqualTo("ball");
+	}
+
+	@Test
+	void locationsWithWildcardDirectoriesShouldSortAlphabeticallyBasedOnAbsolutePath() {
+		String location = "file:src/test/resources/config/*/";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		List<String> sources = this.environment.getPropertySources().stream()
+				.filter((source) -> source.getName().contains("applicationConfig")).map((source) -> {
+					String name = source.getName();
+					name = name.substring(name.indexOf("src/test/resources"));
+					name = name.substring(0, name.length() - 1);
+					return name;
+				}).collect(Collectors.toList());
+		assertThat(sources).containsExactly("src/test/resources/config/1-first/testproperties.properties",
+				"src/test/resources/config/2-second/testproperties.properties");
 	}
 
 	@Test
@@ -1037,6 +1138,16 @@ class ConfigFileApplicationListenerTests {
 		String second = this.environment.getProperty("second.property");
 		assertThat(first).isEqualTo("apple");
 		assertThat(second).isEqualTo("ball");
+	}
+
+	@Test
+	void locationsWithWildcardFilesShouldIgnoreHiddenDirectories() {
+		String location = "file:src/test/resources/config/*/testproperties.properties";
+		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.environment,
+				"spring.config.location=" + location);
+		this.initializer.setSearchNames("testproperties");
+		this.initializer.postProcessEnvironment(this.environment, this.application);
+		assertThat(this.environment.getProperty("fourth.property")).isNull();
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
@@ -1107,25 +1218,6 @@ class ConfigFileApplicationListenerTests {
 	@PropertySource(value = { "classpath:/specificlocation.properties", "classpath:/moreproperties.properties" },
 			name = "foo")
 	static class WithPropertySourceMultipleLocationsAndName {
-
-	}
-
-	static class TestConfigFileApplicationListener extends ConfigFileApplicationListener {
-
-		@Override
-		List<EnvironmentPostProcessor> loadPostProcessors() {
-			return new ArrayList<>(Collections.singletonList(new LowestPrecedenceEnvironmentPostProcessor()));
-		}
-
-	}
-
-	@Order(Ordered.LOWEST_PRECEDENCE)
-	static class LowestPrecedenceEnvironmentPostProcessor implements EnvironmentPostProcessor {
-
-		@Override
-		public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-			assertThat(environment.getPropertySources()).hasSize(5);
-		}
 
 	}
 

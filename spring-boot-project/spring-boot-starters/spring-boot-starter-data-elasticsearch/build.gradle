@@ -5,7 +5,6 @@ plugins {
 description = "Starter for using Elasticsearch search and analytics engine and Spring Data Elasticsearch"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("org.springframework.data:spring-data-elasticsearch") {
 		exclude group: "org.elasticsearch.client", module: "transport"

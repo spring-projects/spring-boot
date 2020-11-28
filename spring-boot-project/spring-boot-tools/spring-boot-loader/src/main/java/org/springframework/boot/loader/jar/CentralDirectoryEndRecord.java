@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -165,10 +165,10 @@ class CentralDirectoryEndRecord {
 
 		private final long centralDirectoryLength;
 
-		private int numberOfRecords;
+		private final int numberOfRecords;
 
-		private Zip64End(RandomAccessData data, int centratDirectoryEndOffset) throws IOException {
-			this(data, new Zip64Locator(data, centratDirectoryEndOffset));
+		private Zip64End(RandomAccessData data, int centralDirectoryEndOffset) throws IOException {
+			this(data, new Zip64Locator(data, centralDirectoryEndOffset));
 		}
 
 		private Zip64End(RandomAccessData data, Zip64Locator locator) throws IOException {

@@ -29,6 +29,7 @@ import org.springframework.boot.loader.jarmode.JarMode;
  * {@link JarMode} providing {@code "layertools"} support.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class LayerToolsJarMode implements JarMode {
@@ -63,22 +64,48 @@ public class LayerToolsJarMode implements JarMode {
 		}
 
 		private void run(String[] args) {
-			run(new ArrayDeque<>(Arrays.asList(args)));
+			run(dequeOf(args));
 		}
 
 		private void run(Deque<String> args) {
 			if (!args.isEmpty()) {
-				Command command = Command.find(this.commands, args.removeFirst());
+				String commandName = args.removeFirst();
+				Command command = Command.find(this.commands, commandName);
 				if (command != null) {
-					command.run(args);
+					runCommand(command, args);
 					return;
 				}
+				printError("Unknown command \"" + commandName + "\"");
 			}
 			this.help.run(args);
 		}
 
+		private void runCommand(Command command, Deque<String> args) {
+			try {
+				command.run(args);
+			}
+			catch (UnknownOptionException ex) {
+				printError("Unknown option \"" + ex.getMessage() + "\" for the " + command.getName() + " command");
+				this.help.run(dequeOf(command.getName()));
+			}
+			catch (MissingValueException ex) {
+				printError("Option \"" + ex.getMessage() + "\" for the " + command.getName()
+						+ " command requires a value");
+				this.help.run(dequeOf(command.getName()));
+			}
+		}
+
+		private void printError(String errorMessage) {
+			System.out.println("Error: " + errorMessage);
+			System.out.println();
+		}
+
+		private Deque<String> dequeOf(String... args) {
+			return new ArrayDeque<>(Arrays.asList(args));
+		}
+
 		static List<Command> getCommands(Context context) {
-			List<Command> commands = new ArrayList<Command>();
+			List<Command> commands = new ArrayList<>();
 			commands.add(new ListCommand(context));
 			commands.add(new ExtractCommand(context));
 			return Collections.unmodifiableList(commands);

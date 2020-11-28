@@ -34,6 +34,11 @@ class HumioPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<H
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.humio";
+	}
+
+	@Override
 	public String get(String k) {
 		return null;
 	}

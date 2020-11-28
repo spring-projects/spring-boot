@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,6 @@ public abstract class HealthProperties {
 	private Show showComponents;
 
 	/**
-	 * When to show full health details.
-	 */
-	private Show showDetails = Show.NEVER;
-
-	/**
 	 * Roles used to determine whether or not a user is authorized to be shown details.
 	 * When empty, all authenticated users are authorized.
 	 */
@@ -66,13 +61,7 @@ public abstract class HealthProperties {
 		this.showComponents = showComponents;
 	}
 
-	public Show getShowDetails() {
-		return this.showDetails;
-	}
-
-	public void setShowDetails(Show showDetails) {
-		this.showDetails = showDetails;
-	}
+	public abstract Show getShowDetails();
 
 	public Set<String> getRoles() {
 		return this.roles;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,9 +19,9 @@ package org.springframework.boot.autoconfigure.jms.artemis;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.activemq.artemis.api.core.QueueConfiguration;
 import org.apache.activemq.artemis.api.core.RoutingType;
 import org.apache.activemq.artemis.core.config.CoreAddressConfiguration;
-import org.apache.activemq.artemis.core.config.CoreQueueConfiguration;
 import org.apache.activemq.artemis.core.server.embedded.EmbeddedActiveMQ;
 import org.apache.activemq.artemis.jms.server.config.JMSConfiguration;
 import org.apache.activemq.artemis.jms.server.config.JMSQueueConfiguration;
@@ -71,7 +71,7 @@ class ArtemisEmbeddedServerConfiguration {
 			String queueName = queueConfiguration.getName();
 			configuration.addAddressConfiguration(
 					new CoreAddressConfiguration().setName(queueName).addRoutingType(RoutingType.ANYCAST)
-							.addQueueConfiguration(new CoreQueueConfiguration().setAddress(queueName).setName(queueName)
+							.addQueueConfiguration(new QueueConfiguration(queueName).setAddress(queueName)
 									.setFilterString(queueConfiguration.getSelector())
 									.setDurable(queueConfiguration.isDurable()).setRoutingType(RoutingType.ANYCAST)));
 		}

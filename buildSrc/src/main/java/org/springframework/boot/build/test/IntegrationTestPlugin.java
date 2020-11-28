@@ -46,7 +46,7 @@ public class IntegrationTestPlugin implements Plugin<Project> {
 
 	@Override
 	public void apply(Project project) {
-		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> this.configureIntegrationTesting(project));
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> configureIntegrationTesting(project));
 	}
 
 	private void configureIntegrationTesting(Project project) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,6 +121,13 @@ class MvcWebEndpointIntegrationTests
 		context.register(TestEndpointConfiguration.class);
 		context.refresh();
 		WebMvcEndpointHandlerMapping bean = context.getBean(WebMvcEndpointHandlerMapping.class);
+		try {
+			// Trigger initLookupPath
+			bean.getHandler(request);
+		}
+		catch (Exception ex) {
+			throw new RuntimeException(ex);
+		}
 		return bean.match(request, "/spring");
 	}
 

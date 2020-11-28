@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,9 @@ package smoketest.test.web;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import smoketest.test.domain.User;
 import smoketest.test.domain.UserRepository;
 import smoketest.test.domain.VehicleIdentificationNumber;
@@ -37,6 +38,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class UserVehicleServiceTests {
 
 	private static final VehicleIdentificationNumber VIN = new VehicleIdentificationNumber("00000000000000000");
@@ -51,7 +53,6 @@ class UserVehicleServiceTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.service = new UserVehicleService(this.userRepository, this.vehicleDetailsService);
 	}
 

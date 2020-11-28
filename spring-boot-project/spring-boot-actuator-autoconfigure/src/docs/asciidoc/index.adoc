@@ -3,7 +3,6 @@ Andy Wilkinson
 :doctype: book
 :toc: left
 :toclevels: 4
-:source-highlighter: prettify
 :numbered:
 :icons: font
 :hide-uri-scheme:
@@ -71,4 +70,5 @@ include::endpoints/prometheus.adoc[leveloffset=+1]
 include::endpoints/scheduledtasks.adoc[leveloffset=+1]
 include::endpoints/sessions.adoc[leveloffset=+1]
 include::endpoints/shutdown.adoc[leveloffset=+1]
+include::endpoints/startup.adoc[leveloffset=+1]
 include::endpoints/threaddump.adoc[leveloffset=+1]

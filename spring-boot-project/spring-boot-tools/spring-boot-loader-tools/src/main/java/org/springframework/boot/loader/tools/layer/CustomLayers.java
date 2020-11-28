@@ -64,7 +64,7 @@ public class CustomLayers implements Layers {
 		Layer layer = selector.getLayer();
 		Assert.state(layer != null, "Missing content selector layer");
 		Assert.state(layers.contains(layer),
-				"Content selector layer '" + selector.getLayer() + "' not found in " + layers);
+				() -> "Content selector layer '" + selector.getLayer() + "' not found in " + layers);
 	}
 
 	@Override

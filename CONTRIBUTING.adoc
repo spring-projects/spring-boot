@@ -1,7 +1,7 @@
 = Contributing to Spring Boot
 
 Spring Boot is released under the Apache 2.0 license. If you would like to contribute
-something, or simply want to hack on the code this document should help you get started.
+something, or want to hack on the code this document should help you get started.
 
 
 
@@ -52,11 +52,12 @@ added after the original pull request but before a merge.
   automatically. You can also install the
   https://github.com/spring-io/spring-javaformat/#intellij-idea[Spring JavaFormat IntelliJ
   Plugin] or format the code from the Gradle build by running
-  `./gradlew format`.
+  `./gradlew format`. Note that if you have format violations in `buildSrc`, you can fix
+  them by running `./gradlew -p buildSrc format` from the project root directory.
 * The build includes checkstyle rules for many of our code conventions. Run
-  `./gradlew checkstyleMain checkstyleTest` if you want to check you changes are
+  `./gradlew checkstyleMain checkstyleTest` if you want to check your changes are
   compliant.
-* Make sure all new `.java` files to have a simple Javadoc class comment with at least an
+* Make sure all new `.java` files have a Javadoc class comment with at least an
   `@author` tag identifying you, and preferably at least a paragraph on what the class is
   for.
 * Add the ASF license header comment to all new `.java` files (copy from existing files
@@ -75,7 +76,7 @@ added after the original pull request but before a merge.
 
 == Working with the Code
 If you don't have an IDE preference we would recommend that you use
-https://spring.io/tools/sts[Spring Tools Suite] or
+https://spring.io/tools[Spring Tool Suite] or
 https://eclipse.org[Eclipse] when working with the code. We use the
 https://projects.eclipse.org/projects/tools.buildship[Buildship] Eclipse plugin for Gradle
 support. Other IDEs and tools should also work without issue.
@@ -161,7 +162,7 @@ With the requisite Eclipse plugins installed you can select
 If you have performed a checkout of this repository already, use "`File`" -> "`Open`" and
 then select the root `build.gradle` file to import the code.
 
-Alternatively, you can let IntellIJ IDEA checkout the code for you. Use "`File`" ->
+Alternatively, you can let IntelliJ IDEA checkout the code for you. Use "`File`" ->
 "`New`" -> "`Project from Version Control`" and
 `https://github.com/spring-projects/spring-boot` for the URL. Once the checkout has
 completed, a pop-up will suggest to open the project.

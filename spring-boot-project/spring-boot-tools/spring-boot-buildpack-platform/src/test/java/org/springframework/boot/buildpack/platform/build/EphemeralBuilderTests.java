@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -68,7 +68,9 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void setup() throws Exception {
 		this.image = Image.of(getContent("image.json"));
 		this.metadata = BuilderMetadata.fromImage(this.image);
-		this.env = Collections.singletonMap("spring", "boot");
+		this.env = new HashMap<>();
+		this.env.put("spring", "boot");
+		this.env.put("empty", null);
 	}
 
 	@Test
@@ -111,8 +113,9 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	@Test
 	void getArchiveContainsEnvLayer() throws Exception {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
-		File folder = unpack(getLayer(builder.getArchive(), 0), "env");
-		assertThat(new File(folder, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
+		File directory = unpack(getLayer(builder.getArchive(), 0), "env");
+		assertThat(new File(directory, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
+		assertThat(new File(directory, "platform/env/empty")).usingCharset(StandardCharsets.UTF_8).hasContent("");
 	}
 
 	private TarArchiveInputStream getLayer(ImageArchive archive, int index) throws Exception {
@@ -126,11 +129,11 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	}
 
 	private File unpack(TarArchiveInputStream archive, String name) throws Exception {
-		File folder = new File(this.temp, name);
-		folder.mkdirs();
+		File directory = new File(this.temp, name);
+		directory.mkdirs();
 		ArchiveEntry entry = archive.getNextEntry();
 		while (entry != null) {
-			File file = new File(folder, entry.getName());
+			File file = new File(directory, entry.getName());
 			if (entry.isDirectory()) {
 				file.mkdirs();
 			}
@@ -142,7 +145,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 			}
 			entry = archive.getNextEntry();
 		}
-		return folder;
+		return directory;
 	}
 
 }

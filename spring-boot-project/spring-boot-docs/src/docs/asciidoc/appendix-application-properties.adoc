@@ -13,66 +13,67 @@ NOTE: Property contributions can come from additional jar files on your classpat
 Also, you can define your own properties.
 
 
-== Core properties
+
+== Core Properties
 
 include::config-docs/core.adoc[]
 
-== Cache properties
+== Cache Properties
 
 include::config-docs/cache.adoc[]
 
-== Mail properties
+== Mail Properties
 
 include::config-docs/mail.adoc[]
 
-== JSON properties
+== JSON Properties
 
 include::config-docs/json.adoc[]
 
-== Data properties
+== Data Properties
 
 include::config-docs/data.adoc[]
 
-== Transaction properties
+== Transaction Properties
 
 include::config-docs/transaction.adoc[]
 
-== Data migration properties
+== Data Migration Properties
 
 include::config-docs/data-migration.adoc[]
 
-== Integration properties
+== Integration Properties
 
 include::config-docs/integration.adoc[]
 
-== Web properties
+== Web Properties
 
 include::config-docs/web.adoc[]
 
-== Templating properties
+== Templating Properties
 
 include::config-docs/templating.adoc[]
 
-== Server properties
+== Server Properties
 
 include::config-docs/server.adoc[]
 
-== Security properties
+== Security Properties
 
 include::config-docs/security.adoc[]
 
-== RSocket properties
+== RSocket Properties
 
 include::config-docs/rsocket.adoc[]
 
-== Actuator properties
+== Actuator Properties
 
 include::config-docs/actuator.adoc[]
 
-== Devtools properties
+== Devtools Properties
 
 include::config-docs/devtools.adoc[]
 
-== Testing properties
+== Testing Properties
 
 include::config-docs/testing.adoc[]

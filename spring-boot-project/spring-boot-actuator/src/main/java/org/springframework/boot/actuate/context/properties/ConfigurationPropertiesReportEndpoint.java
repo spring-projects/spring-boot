@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -60,6 +60,7 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
+import org.springframework.boot.origin.Origin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.core.KotlinDetector;
@@ -75,8 +76,9 @@ import org.springframework.util.StringUtils;
  * <p>
  * To protect sensitive information from being exposed, certain property values are masked
  * if their names end with a set of configurable values (default "password" and "secret").
- * Configure property names by using {@code endpoints.configprops.keys_to_sanitize} in
- * your Spring Boot application configuration.
+ * Configure property names by using
+ * {@code management.endpoint.configprops.keys-to-sanitize} in your Spring Boot
+ * application configuration.
  *
  * @author Christian Dupuis
  * @author Dave Syer
@@ -291,10 +293,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	private Map<String, Object> getInput(String property, ConfigurationProperty candidate) {
 		Map<String, Object> input = new LinkedHashMap<>();
-		String origin = (candidate.getOrigin() != null) ? candidate.getOrigin().toString() : "none";
 		Object value = candidate.getValue();
-		input.put("origin", origin);
+		Origin origin = Origin.from(candidate);
+		List<Origin> originParents = Origin.parentsFrom(candidate);
 		input.put("value", this.sanitizer.sanitize(property, value));
+		input.put("origin", (origin != null) ? origin.toString() : "none");
+		if (!originParents.isEmpty()) {
+			input.put("originParents", originParents.stream().map(Object::toString).toArray(String[]::new));
+		}
 		return input;
 	}
 
@@ -398,9 +404,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 				return Arrays.stream(bindConstructor.getParameters())
 						.anyMatch((parameter) -> parameter.getName().equals(writer.getName()));
 			}
-			else {
-				return isReadable(beanDesc, writer);
-			}
+			return isReadable(beanDesc, writer);
 		}
 
 		private boolean isReadable(BeanDescription beanDesc, BeanPropertyWriter writer) {

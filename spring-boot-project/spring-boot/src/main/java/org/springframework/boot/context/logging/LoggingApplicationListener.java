@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.logging;
 
+import java.io.FileNotFoundException;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +54,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.ResourceUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -170,7 +170,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 
 	private static final Class<?>[] SOURCE_TYPES = { SpringApplication.class, ApplicationContext.class };
 
-	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean(false);
+	private static final AtomicBoolean shutdownHookRegistered = new AtomicBoolean();
 
 	private final Log logger = LogFactory.getLog(getClass());
 
@@ -271,7 +271,7 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	 * @param classLoader the classloader
 	 */
 	protected void initialize(ConfigurableEnvironment environment, ClassLoader classLoader) {
-		new LoggingSystemProperties(environment).apply();
+		getLoggingSystemProperties(environment).apply();
 		this.logFile = LogFile.get(environment);
 		if (this.logFile != null) {
 			this.logFile.applyToSystemProperties();
@@ -281,6 +281,11 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 		initializeSystem(environment, this.loggingSystem, this.logFile);
 		initializeFinalLoggingLevels(environment, this.loggingSystem);
 		registerShutdownHookIfNecessary(environment, this.loggingSystem);
+	}
+
+	private LoggingSystemProperties getLoggingSystemProperties(ConfigurableEnvironment environment) {
+		return (this.loggingSystem != null) ? this.loggingSystem.getSystemProperties(environment)
+				: new LoggingSystemProperties(environment);
 	}
 
 	private void initializeEarlyLoggingLevel(ConfigurableEnvironment environment) {
@@ -300,22 +305,26 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	}
 
 	private void initializeSystem(ConfigurableEnvironment environment, LoggingSystem system, LogFile logFile) {
-		LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
-		String logConfig = environment.getProperty(CONFIG_PROPERTY);
-		if (ignoreLogConfig(logConfig)) {
-			system.initialize(initializationContext, null, logFile);
-		}
-		else {
-			try {
-				ResourceUtils.getURL(logConfig).openStream().close();
+		String logConfig = StringUtils.trimWhitespace(environment.getProperty(CONFIG_PROPERTY));
+		try {
+			LoggingInitializationContext initializationContext = new LoggingInitializationContext(environment);
+			if (ignoreLogConfig(logConfig)) {
+				system.initialize(initializationContext, null, logFile);
+			}
+			else {
 				system.initialize(initializationContext, logConfig, logFile);
 			}
-			catch (Exception ex) {
-				// NOTE: We can't use the logger here to report the problem
-				System.err.println("Logging system failed to initialize using configuration from '" + logConfig + "'");
-				ex.printStackTrace(System.err);
-				throw new IllegalStateException(ex);
+		}
+		catch (Exception ex) {
+			Throwable exceptionToReport = ex;
+			while (exceptionToReport != null && !(exceptionToReport instanceof FileNotFoundException)) {
+				exceptionToReport = exceptionToReport.getCause();
 			}
+			exceptionToReport = (exceptionToReport != null) ? exceptionToReport : ex;
+			// NOTE: We can't use the logger here to report the problem
+			System.err.println("Logging system failed to initialize using configuration from '" + logConfig + "'");
+			exceptionToReport.printStackTrace(System.err);
+			throw new IllegalStateException(ex);
 		}
 	}
 

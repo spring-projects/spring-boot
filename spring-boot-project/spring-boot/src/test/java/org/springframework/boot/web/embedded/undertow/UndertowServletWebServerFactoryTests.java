@@ -39,11 +39,13 @@ import io.undertow.servlet.api.ServletContainer;
 import org.apache.http.HttpResponse;
 import org.apache.jasper.servlet.JspServlet;
 import org.awaitility.Awaitility;
+import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
@@ -71,6 +73,13 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	@Override
 	protected UndertowServletWebServerFactory getFactory() {
 		return new UndertowServletWebServerFactory(0);
+	}
+
+	@AfterEach
+	void awaitClosureOfSslRelatedInputStreams() {
+		// https://issues.redhat.com/browse/UNDERTOW-1705
+		File resource = new File(this.tempDir, "test.txt");
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> (!resource.isFile()) || resource.delete());
 	}
 
 	@Test
@@ -180,9 +189,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 	@Test
 	void whenServerIsShuttingDownGracefullyThenRequestsAreRejectedWithServiceUnavailable() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
@@ -193,16 +200,16 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		Future<Object> rejectedRequest = initiateGetRequest(port, "/");
-		assertThat(shutdownResult.get()).isEqualTo(false);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		assertThat(result.get()).isNull();
 		blockingServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
-		this.webServer.stop();
-		Object requestResult = rejectedRequest.get();
-		assertThat(requestResult).isInstanceOf(HttpResponse.class);
-		assertThat(((HttpResponse) requestResult).getStatusLine().getStatusCode())
+		Object rejectedResult = initiateGetRequest(port, "/").get();
+		assertThat(rejectedResult).isInstanceOf(HttpResponse.class);
+		assertThat(((HttpResponse) rejectedResult).getStatusLine().getStatusCode())
 				.isEqualTo(HttpStatus.SERVICE_UNAVAILABLE.value());
+		this.webServer.stop();
 	}
 
 	private void testAccessLog(String prefix, String suffix, String expectedFile)
@@ -307,12 +314,7 @@ class UndertowServletWebServerFactoryTests extends AbstractServletWebServerFacto
 
 	@Override
 	protected void handleExceptionCausedByBlockedPortOnSecondaryConnector(RuntimeException ex, int blockedPort) {
-		this.handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
-	}
-
-	@Override
-	protected boolean inGracefulShutdown() {
-		return ((UndertowServletWebServer) this.webServer).inGracefulShutdown();
+		handleExceptionCausedByBlockedPortOnPrimaryConnector(ex, blockedPort);
 	}
 
 }

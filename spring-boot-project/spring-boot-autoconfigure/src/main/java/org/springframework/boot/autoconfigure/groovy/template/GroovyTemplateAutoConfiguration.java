@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.groovy.template;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import groovy.text.markup.MarkupTemplateEngine;
@@ -77,9 +76,9 @@ public class GroovyTemplateAutoConfiguration {
 		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
+			checkTemplateLocationExists();
 		}
 
-		@PostConstruct
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
@@ -96,7 +95,7 @@ public class GroovyTemplateAutoConfiguration {
 		 * MarkupTemplateEngine could be loaded from groovy-templates or groovy-all.
 		 * Unfortunately it's quite common for people to use groovy-all and not actually
 		 * need templating support. This method attempts to check the source jar so that
-		 * we can skip the {@code /template} folder check for such cases.
+		 * we can skip the {@code /template} directory check for such cases.
 		 * @return true if the groovy-all jar is used
 		 */
 		private boolean isUsingGroovyAllJar() {

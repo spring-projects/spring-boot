@@ -204,7 +204,7 @@ class HibernateJpaConfiguration extends JpaBaseConfiguration {
 	private Object getNoJtaPlatformManager() {
 		for (String candidate : NO_JTA_PLATFORM_CLASSES) {
 			try {
-				return Class.forName(candidate).newInstance();
+				return Class.forName(candidate).getDeclaredConstructor().newInstance();
 			}
 			catch (Exception ex) {
 				// Continue searching

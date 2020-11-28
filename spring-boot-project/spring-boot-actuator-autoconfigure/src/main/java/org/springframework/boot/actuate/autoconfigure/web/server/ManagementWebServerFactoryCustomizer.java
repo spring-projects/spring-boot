@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -49,6 +49,7 @@ public abstract class ManagementWebServerFactoryCustomizer<T extends Configurabl
 	private final Class<? extends WebServerFactoryCustomizer<?>>[] customizerClasses;
 
 	@SafeVarargs
+	@SuppressWarnings("varargs")
 	protected ManagementWebServerFactoryCustomizer(ListableBeanFactory beanFactory,
 			Class<? extends WebServerFactoryCustomizer<?>>... customizerClasses) {
 		this.beanFactory = beanFactory;

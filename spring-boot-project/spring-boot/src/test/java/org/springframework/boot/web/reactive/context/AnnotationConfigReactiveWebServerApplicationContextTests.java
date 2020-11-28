@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,7 @@ package org.springframework.boot.web.reactive.context;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.web.reactive.context.ReactiveWebServerApplicationContext.ServerManager;
+import org.springframework.boot.web.reactive.context.WebServerManager.DelayedInitializationHttpHandler;
 import org.springframework.boot.web.reactive.context.config.ExampleReactiveWebServerApplicationConfiguration;
 import org.springframework.boot.web.reactive.server.MockReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
@@ -93,8 +93,8 @@ class AnnotationConfigReactiveWebServerApplicationContextTests {
 		MockReactiveWebServerFactory factory = this.context.getBean(MockReactiveWebServerFactory.class);
 		HttpHandler expectedHandler = this.context.getBean(HttpHandler.class);
 		HttpHandler actualHandler = factory.getWebServer().getHttpHandler();
-		if (actualHandler instanceof ServerManager) {
-			actualHandler = ((ServerManager) actualHandler).getHandler();
+		if (actualHandler instanceof DelayedInitializationHttpHandler) {
+			actualHandler = ((DelayedInitializationHttpHandler) actualHandler).getHandler();
 		}
 		assertThat(actualHandler).isEqualTo(expectedHandler);
 	}

@@ -34,6 +34,11 @@ public class StackdriverPropertiesConfigAdapter extends StepRegistryPropertiesCo
 	}
 
 	@Override
+	public String prefix() {
+		return "management.metrics.export.stackdriver";
+	}
+
+	@Override
 	public String projectId() {
 		return get(StackdriverProperties::getProjectId, StackdriverConfig.super::projectId);
 	}

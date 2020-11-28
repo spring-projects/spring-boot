@@ -24,11 +24,13 @@ import java.io.Reader;
 import java.util.Properties;
 import java.util.concurrent.Callable;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.OutputFile;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
+
+import org.springframework.core.CollectionFactory;
 
 /**
  * A {@link Task} for generating metadata describing a project's auto-configuration
@@ -36,7 +38,7 @@ import org.gradle.api.tasks.TaskAction;
  *
  * @author Andy Wilkinson
  */
-public class AutoConfigurationMetadata extends AbstractTask {
+public class AutoConfigurationMetadata extends DefaultTask {
 
 	private SourceSet sourceSet;
 
@@ -73,7 +75,7 @@ public class AutoConfigurationMetadata extends AbstractTask {
 	}
 
 	private Properties readAutoConfiguration() throws IOException {
-		Properties autoConfiguration = new Properties();
+		Properties autoConfiguration = CollectionFactory.createSortedProperties(true);
 		Properties springFactories = readSpringFactories(
 				new File(this.sourceSet.getOutput().getResourcesDir(), "META-INF/spring.factories"));
 		autoConfiguration.setProperty("autoConfigurationClassNames",

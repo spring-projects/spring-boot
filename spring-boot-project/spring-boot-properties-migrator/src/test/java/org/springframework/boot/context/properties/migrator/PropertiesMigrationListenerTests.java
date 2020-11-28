@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,10 +47,10 @@ class PropertiesMigrationListenerTests {
 
 	@Test
 	void sampleReport(CapturedOutput output) {
-		this.context = createSampleApplication().run("--banner.charset=UTF8");
-		assertThat(output).contains("commandLineArgs").contains("spring.banner.charset")
+		this.context = createSampleApplication().run("--logging.file=test.log");
+		assertThat(output).contains("commandLineArgs").contains("logging.file.name")
 				.contains("Each configuration key has been temporarily mapped")
-				.doesNotContain("Please refer to the migration guide");
+				.doesNotContain("Please refer to the release notes");
 	}
 
 	private SpringApplication createSampleApplication() {

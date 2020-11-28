@@ -6,7 +6,9 @@ plugins {
 description = "Spring Boot Ant smoke test"
 
 configurations {
-	antDependencies
+	antDependencies {
+		extendsFrom dependencyManagement
+	}
 	testRepository
 }
 
@@ -31,7 +33,6 @@ dependencies {
 	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository"))
 
-	testImplementation(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	testImplementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")

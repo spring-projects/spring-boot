@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.json.MappedObject;
  * Image configuration information.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  * @since 2.3.0
  */
 public class ImageConfig extends MappedObject {
@@ -39,16 +40,27 @@ public class ImageConfig extends MappedObject {
 
 	private final Map<String, String> configEnv;
 
-	@SuppressWarnings("unchecked")
 	ImageConfig(JsonNode node) {
 		super(node, MethodHandles.lookup());
-		this.labels = valueAt("/Labels", Map.class);
+		this.labels = extractLabels();
 		this.configEnv = parseConfigEnv();
 	}
 
+	@SuppressWarnings("unchecked")
+	private Map<String, String> extractLabels() {
+		Map<String, String> labels = valueAt("/Labels", Map.class);
+		if (labels == null) {
+			return Collections.emptyMap();
+		}
+		return labels;
+	}
+
 	private Map<String, String> parseConfigEnv() {
-		Map<String, String> env = new LinkedHashMap<>();
 		String[] entries = valueAt("/Env", String[].class);
+		if (entries == null) {
+			return Collections.emptyMap();
+		}
+		Map<String, String> env = new LinkedHashMap<>();
 		for (String entry : entries) {
 			int i = entry.indexOf('=');
 			String name = (i != -1) ? entry.substring(0, i) : entry;
@@ -63,16 +75,18 @@ public class ImageConfig extends MappedObject {
 	}
 
 	/**
-	 * Return the image labels.
-	 * @return the image labels
+	 * Return the image labels. If the image has no labels, an empty {@code Map} is
+	 * returned.
+	 * @return the image labels, never {@code null}
 	 */
 	public Map<String, String> getLabels() {
 		return this.labels;
 	}
 
 	/**
-	 * Return the image environment variables.
-	 * @return the env
+	 * Return the image environment variables. If the image has no environment variables,
+	 * an empty {@code Map} is returned.
+	 * @return the env, never {@code null}
 	 */
 	public Map<String, String> getEnv() {
 		return this.configEnv;

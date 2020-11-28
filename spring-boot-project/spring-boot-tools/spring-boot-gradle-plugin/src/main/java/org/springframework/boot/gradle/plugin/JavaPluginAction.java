@@ -21,18 +21,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.attributes.AttributeContainer;
+import org.gradle.api.attributes.Bundling;
+import org.gradle.api.attributes.LibraryElements;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
@@ -67,6 +73,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 	public void execute(Project project) {
 		disableJarTask(project);
 		configureBuildTask(project);
+		configureDevelopmentOnlyConfiguration(project);
 		TaskProvider<BootJar> bootJar = configureBootJarTask(project);
 		configureBootBuildImageTask(project, bootJar);
 		configureArtifactPublication(bootJar);
@@ -86,14 +93,25 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private TaskProvider<BootJar> configureBootJarTask(Project project) {
+		SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+		Configuration developmentOnly = project.getConfigurations()
+				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		Configuration productionRuntimeClasspath = project.getConfigurations()
+				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+		FileCollection classpath = mainSourceSet.getRuntimeClasspath()
+				.minus((developmentOnly.minus(productionRuntimeClasspath))).filter(new JarTypeFileSpec());
+		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
+				.registerForTask(SpringBootPlugin.BOOT_JAR_TASK_NAME, project, classpath);
 		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
 			bootJar.setDescription(
 					"Assembles an executable jar archive containing the main classes and their dependencies.");
 			bootJar.setGroup(BasePlugin.BUILD_GROUP);
-			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
-					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-			bootJar.classpath((Callable<FileCollection>) mainSourceSet::getRuntimeClasspath);
-			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
+			bootJar.classpath(classpath);
+			Provider<String> manifestStartClass = project
+					.provider(() -> (String) bootJar.getManifest().getAttributes().get("Start-Class"));
+			bootJar.getMainClass().convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
+					? manifestStartClass : resolveMainClassName.get().readMainClassName()));
 		});
 	}
 
@@ -112,18 +130,28 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project) {
+		FileCollection classpath = javaPluginConvention(project).getSourceSets()
+				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath().filter(new JarTypeFileSpec());
+		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName.registerForTask("bootRun", project,
+				classpath);
 		project.getTasks().register("bootRun", BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
-			run.classpath(javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
-					.getRuntimeClasspath());
+			run.classpath(classpath);
 			run.getConventionMapping().map("jvmArgs", () -> {
 				if (project.hasProperty("applicationDefaultJvmArgs")) {
 					return project.property("applicationDefaultJvmArgs");
 				}
 				return Collections.emptyList();
 			});
-			run.conventionMapping("main", new MainClassConvention(project, run::getClasspath));
+			try {
+				run.getMainClass().convention(resolveProvider.flatMap(ResolveMainClassName::readMainClassName));
+			}
+			catch (NoSuchMethodError ex) {
+				run.getInputs().file(resolveProvider.map((task) -> task.getOutputFile()));
+				run.conventionMapping("main",
+						() -> resolveProvider.flatMap(ResolveMainClassName::readMainClassName).get());
+			}
 		});
 	}
 
@@ -155,6 +183,26 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
 		compile.doFirst(new AdditionalMetadataLocationsConfigurer());
+	}
+
+	private void configureDevelopmentOnlyConfiguration(Project project) {
+		Configuration developmentOnly = project.getConfigurations()
+				.create(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		developmentOnly
+				.setDescription("Configuration for development-only dependencies such as Spring Boot's DevTools.");
+		Configuration runtimeClasspath = project.getConfigurations()
+				.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+		Configuration productionRuntimeClasspath = project.getConfigurations()
+				.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+		AttributeContainer attributes = productionRuntimeClasspath.getAttributes();
+		ObjectFactory objectFactory = project.getObjects();
+		attributes.attribute(Usage.USAGE_ATTRIBUTE, objectFactory.named(Usage.class, Usage.JAVA_RUNTIME));
+		attributes.attribute(Bundling.BUNDLING_ATTRIBUTE, objectFactory.named(Bundling.class, Bundling.EXTERNAL));
+		attributes.attribute(LibraryElements.LIBRARY_ELEMENTS_ATTRIBUTE,
+				objectFactory.named(LibraryElements.class, LibraryElements.JAR));
+		productionRuntimeClasspath.setVisible(false);
+		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
+		runtimeClasspath.extendsFrom(developmentOnly);
 	}
 
 	/**

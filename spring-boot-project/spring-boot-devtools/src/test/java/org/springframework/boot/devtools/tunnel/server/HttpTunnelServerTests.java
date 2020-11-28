@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,8 +29,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.devtools.tunnel.payload.HttpTunnelPayload;
 import org.springframework.boot.devtools.tunnel.server.HttpTunnelServer.HttpConnection;
@@ -57,6 +58,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class HttpTunnelServerTests {
 
 	private static final int DEFAULT_LONG_POLL_TIMEOUT = 10000;
@@ -82,13 +84,7 @@ class HttpTunnelServerTests {
 
 	@BeforeEach
 	void setup() throws Exception {
-		MockitoAnnotations.initMocks(this);
 		this.server = new HttpTunnelServer(this.serverConnection);
-		given(this.serverConnection.open(anyInt())).willAnswer((invocation) -> {
-			MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
-			channel.setTimeout(invocation.getArgument(0));
-			return channel;
-		});
 		this.servletRequest = new MockHttpServletRequest();
 		this.servletRequest.setAsyncSupported(true);
 		this.servletResponse = new MockHttpServletResponse();
@@ -106,12 +102,14 @@ class HttpTunnelServerTests {
 	@Test
 	void serverConnectedOnFirstRequest() throws Exception {
 		verify(this.serverConnection, never()).open(anyInt());
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.handle(this.request, this.response);
 		verify(this.serverConnection, times(1)).open(DEFAULT_LONG_POLL_TIMEOUT);
 	}
 
 	@Test
 	void longPollTimeout() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.setLongPollTimeout(800);
 		this.server.handle(this.request, this.response);
 		verify(this.serverConnection, times(1)).open(800);
@@ -125,6 +123,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void initialRequestIsSentToServer() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.servletRequest.addHeader(SEQ_HEADER, "1");
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
@@ -135,6 +134,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void initialRequestIsUsedForFirstServerResponse() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.servletRequest.addHeader(SEQ_HEADER, "1");
 		this.servletRequest.setContent("hello".getBytes());
 		this.server.handle(this.request, this.response);
@@ -148,6 +148,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void initialRequestHasNoPayload() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.handle(this.request, this.response);
 		this.serverChannel.disconnect();
 		this.server.getServerThread().join();
@@ -156,6 +157,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void typicalRequestResponseTraffic() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
 		MockHttpConnection h2 = new MockHttpConnection("hello server", 1);
@@ -177,6 +179,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void clientIsAwareOfServerClose() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		MockHttpConnection h1 = new MockHttpConnection("1", 1);
 		this.server.handle(h1);
 		this.serverChannel.disconnect();
@@ -186,6 +189,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void clientCanCloseServer() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
 		MockHttpConnection h2 = new MockHttpConnection("DISCONNECT", 1);
@@ -198,6 +202,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void neverMoreThanTwoHttpConnections() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		MockHttpConnection h1 = new MockHttpConnection();
 		this.server.handle(h1);
 		MockHttpConnection h2 = new MockHttpConnection("1", 2);
@@ -212,6 +217,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void requestReceivedOutOfOrder() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		MockHttpConnection h1 = new MockHttpConnection();
 		MockHttpConnection h2 = new MockHttpConnection("1+2", 1);
 		MockHttpConnection h3 = new MockHttpConnection("+3", 2);
@@ -225,6 +231,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void httpConnectionsAreClosedAfterLongPollTimeout() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.setDisconnectTimeout(1000);
 		this.server.setLongPollTimeout(100);
 		MockHttpConnection h1 = new MockHttpConnection();
@@ -240,6 +247,7 @@ class HttpTunnelServerTests {
 
 	@Test
 	void disconnectTimeout() throws Exception {
+		givenServerConnectionOpenWillAnswerWithServerChannel();
 		this.server.setDisconnectTimeout(100);
 		this.server.setLongPollTimeout(100);
 		MockHttpConnection h1 = new MockHttpConnection();
@@ -315,6 +323,14 @@ class HttpTunnelServerTests {
 		assertThat(connection.isOlderThan(100)).isFalse();
 		Thread.sleep(200);
 		assertThat(connection.isOlderThan(100)).isTrue();
+	}
+
+	private void givenServerConnectionOpenWillAnswerWithServerChannel() throws IOException {
+		given(this.serverConnection.open(anyInt())).willAnswer((invocation) -> {
+			MockServerChannel channel = HttpTunnelServerTests.this.serverChannel;
+			channel.setTimeout(invocation.getArgument(0));
+			return channel;
+		});
 	}
 
 	/**

@@ -90,23 +90,24 @@ class ProjectGenerator {
 	}
 
 	private void extractProject(ProjectGenerationResponse entity, String output, boolean overwrite) throws IOException {
-		File outputFolder = (output != null) ? new File(output) : new File(System.getProperty("user.dir"));
-		if (!outputFolder.exists()) {
-			outputFolder.mkdirs();
+		File outputDirectory = (output != null) ? new File(output) : new File(System.getProperty("user.dir"));
+		if (!outputDirectory.exists()) {
+			outputDirectory.mkdirs();
 		}
 		try (ZipInputStream zipStream = new ZipInputStream(new ByteArrayInputStream(entity.getContent()))) {
-			extractFromStream(zipStream, overwrite, outputFolder);
-			fixExecutableFlag(outputFolder, "mvnw");
-			fixExecutableFlag(outputFolder, "gradlew");
-			Log.info("Project extracted to '" + outputFolder.getAbsolutePath() + "'");
+			extractFromStream(zipStream, overwrite, outputDirectory);
+			fixExecutableFlag(outputDirectory, "mvnw");
+			fixExecutableFlag(outputDirectory, "gradlew");
+			Log.info("Project extracted to '" + outputDirectory.getAbsolutePath() + "'");
 		}
 	}
 
-	private void extractFromStream(ZipInputStream zipStream, boolean overwrite, File outputFolder) throws IOException {
+	private void extractFromStream(ZipInputStream zipStream, boolean overwrite, File outputDirectory)
+			throws IOException {
 		ZipEntry entry = zipStream.getNextEntry();
-		String canonicalOutputPath = outputFolder.getCanonicalPath() + File.separator;
+		String canonicalOutputPath = outputDirectory.getCanonicalPath() + File.separator;
 		while (entry != null) {
-			File file = new File(outputFolder, entry.getName());
+			File file = new File(outputDirectory, entry.getName());
 			String canonicalEntryPath = file.getCanonicalPath();
 			if (!canonicalEntryPath.startsWith(canonicalOutputPath)) {
 				throw new ReportableException("Entry '" + entry.getName() + "' would be written to '"

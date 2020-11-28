@@ -59,7 +59,7 @@ public class JdbcRepositoriesAutoConfiguration {
 
 	}
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(AbstractJdbcConfiguration.class)
 	static class SpringBootJdbcConfiguration extends AbstractJdbcConfiguration {
 

@@ -18,7 +18,6 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
-import java.util.Map;
 import java.util.function.Consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -30,11 +29,14 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.json.MappedObject;
 import org.springframework.boot.buildpack.platform.json.SharedObjectMapper;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Builder metadata information.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class BuilderMetadata extends MappedObject {
 
@@ -121,9 +123,9 @@ class BuilderMetadata extends MappedObject {
 	 */
 	static BuilderMetadata fromImageConfig(ImageConfig imageConfig) throws IOException {
 		Assert.notNull(imageConfig, "ImageConfig must not be null");
-		Map<String, String> labels = imageConfig.getLabels();
-		String json = (labels != null) ? labels.get(LABEL_NAME) : null;
-		Assert.notNull(json, () -> "No '" + LABEL_NAME + "' label found in image config");
+		String json = imageConfig.getLabels().get(LABEL_NAME);
+		Assert.notNull(json, () -> "No '" + LABEL_NAME + "' label found in image config labels '"
+				+ StringUtils.collectionToCommaDelimitedString(imageConfig.getLabels().keySet()) + "'");
 		return fromJson(json);
 	}
 
@@ -183,27 +185,56 @@ class BuilderMetadata extends MappedObject {
 		String getVersion();
 
 		/**
-		 * Return the API versions.
+		 * Return the default API versions.
 		 * @return the API versions
 		 */
 		Api getApi();
 
 		/**
-		 * API versions.
+		 * Return the supported API versions.
+		 * @return the API versions
+		 */
+		Apis getApis();
+
+		/**
+		 * Default API versions.
 		 */
 		interface Api {
 
 			/**
-			 * Return the buildpack API version.
+			 * Return the default buildpack API version.
 			 * @return the buildpack version
 			 */
 			String getBuildpack();
 
 			/**
-			 * Return the platform API version.
+			 * Return the default platform API version.
 			 * @return the platform version
 			 */
 			String getPlatform();
+
+		}
+
+		/**
+		 * Supported API versions.
+		 */
+		interface Apis {
+
+			/**
+			 * Return the supported buildpack API versions.
+			 * @return the buildpack versions
+			 */
+			default String[] getBuildpack() {
+				return valueAt(this, "/buildpack/supported", String[].class);
+			}
+
+			/**
+			 * Return the supported platform API versions.
+			 * @return the platform versions
+			 */
+			default String[] getPlatform() {
+				return valueAt(this, "/platform/supported", String[].class);
+			}
 
 		}
 

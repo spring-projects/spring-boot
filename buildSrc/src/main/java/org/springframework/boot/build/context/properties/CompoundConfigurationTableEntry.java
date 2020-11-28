@@ -27,9 +27,9 @@ import java.util.stream.Stream;
  */
 class CompoundConfigurationTableEntry extends ConfigurationTableEntry {
 
-	private Set<String> configurationKeys;
+	private final Set<String> configurationKeys;
 
-	private String description;
+	private final String description;
 
 	CompoundConfigurationTableEntry(String key, String description) {
 		this.key = key;
@@ -43,8 +43,9 @@ class CompoundConfigurationTableEntry extends ConfigurationTableEntry {
 
 	@Override
 	void write(AsciidocBuilder builder) {
-		builder.append("|");
+		builder.append("|[[" + this.key + "]]<<" + this.key + ",");
 		this.configurationKeys.forEach(builder::appendKey);
+		builder.appendln(">>");
 		builder.newLine().appendln("|").appendln("|+++", this.description, "+++");
 	}
 

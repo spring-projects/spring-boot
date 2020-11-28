@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,9 +46,6 @@ class SonatypeServiceTests {
 	private SonatypeService service;
 
 	@Autowired
-	private SonatypeProperties properties;
-
-	@Autowired
 	private MockRestServiceServer server;
 
 	@AfterEach
@@ -60,7 +57,8 @@ class SonatypeServiceTests {
 	void artifactsPublishedWhenPublishedShouldReturnTrue() {
 		this.server.expect(requestTo(String.format(
 				"https://oss.sonatype.org/service/local/repositories/releases/content/org/springframework/boot/spring-boot/%s/spring-boot-%s.jar.sha1",
-				"1.1.0.RELEASE", "1.1.0.RELEASE"))).andExpect(method(HttpMethod.GET)).andRespond(withSuccess());
+				"1.1.0.RELEASE", "1.1.0.RELEASE"))).andExpect(method(HttpMethod.GET))
+				.andRespond(withSuccess().body("ce8d8b6838ecceb68962b975b18682f4237ccf71".getBytes()));
 		boolean published = this.service.artifactsPublished(getReleaseInfo());
 		assertThat(published).isTrue();
 		this.server.verify();

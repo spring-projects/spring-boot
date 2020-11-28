@@ -27,6 +27,7 @@ import java.util.Map;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipInputStream;
 
+import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -66,6 +67,8 @@ class ExtractCommand extends Command {
 			}
 			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getJarFile()))) {
 				ZipEntry entry = zip.getNextEntry();
+				Assert.state(entry != null, "File '" + this.context.getJarFile().toString()
+						+ "' is not compatible with layertools; ensure jar file is valid and launch script is not enabled");
 				while (entry != null) {
 					if (!entry.isDirectory()) {
 						String layer = this.layers.getLayer(entry);
@@ -100,7 +103,7 @@ class ExtractCommand extends Command {
 
 	private void mkDirs(File file) throws IOException {
 		if (!file.exists() && !file.mkdirs()) {
-			throw new IOException("Unable to create folder " + file);
+			throw new IOException("Unable to create directory " + file);
 		}
 	}
 

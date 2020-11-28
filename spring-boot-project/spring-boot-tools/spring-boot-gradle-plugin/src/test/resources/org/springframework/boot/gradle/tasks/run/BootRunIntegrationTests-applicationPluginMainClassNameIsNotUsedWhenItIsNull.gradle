@@ -3,9 +3,8 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-task echoMainClassName {
-	dependsOn compileJava
-	doLast {
-		println 'Main class name = ' + bootRun.main
+bootRun {
+	doFirst {
+		println "Main class name = ${bootRun.main}"
 	}
 }

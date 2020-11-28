@@ -16,27 +16,29 @@
 package org.springframework.boot.build;
 
 import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URISyntaxException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.TreeMap;
 import java.util.function.Consumer;
+import java.util.stream.Collectors;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
-import org.gradle.api.GradleException;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
-import org.gradle.api.file.CopySpec;
 import org.gradle.api.plugins.JavaBasePlugin;
+import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
-import org.gradle.api.resources.TextResourceFactory;
+import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
@@ -44,8 +46,8 @@ import org.gradle.api.tasks.testing.Test;
 import org.gradle.testretry.TestRetryPlugin;
 import org.gradle.testretry.TestRetryTaskExtension;
 
+import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
-import org.springframework.util.FileCopyUtils;
 
 /**
  * Conventions that are applied in the presence of the {@link JavaBasePlugin}. When the
@@ -59,7 +61,13 @@ import org.springframework.util.FileCopyUtils;
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
- * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
+ * <li>{@link JavaCompile} tasks are configured to use {@code -parameters} and, when
+ * compiling with Java 8, to:
+ * <ul>
+ * <li>Treat warnings as errors
+ * <li>Enable {@code unchecked}, {@code deprecation}, {@code rawtypes}, and {@code varags}
+ * warnings
+ * </ul>
  * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
  * files and the following manifest entries:
  * <ul>
@@ -69,6 +77,7 @@ import org.springframework.util.FileCopyUtils;
  * <li>{@code Implementation-Title}
  * <li>{@code Implementation-Version}
  * </ul>
+ * <li>{@code spring-boot-parent} is used for dependency management</li>
  * </ul>
  *
  * <p/>
@@ -76,6 +85,7 @@ import org.springframework.util.FileCopyUtils;
  * @author Andy Wilkinson
  * @author Christoph Dreis
  * @author Mike Smithson
+ * @author Scott Frederick
  */
 class JavaConventions {
 
@@ -88,36 +98,64 @@ class JavaConventions {
 			configureJavadocConventions(project);
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
+			configureDependencyManagement(project);
 		});
 	}
 
 	private void configureJarManifestConventions(Project project) {
+		ExtractResources extractLegalResources = project.getTasks().create("extractLegalResources",
+				ExtractResources.class);
+		extractLegalResources.getDestinationDirectory().set(project.getLayout().getBuildDirectory().dir("legal"));
+		extractLegalResources.setResourcesNames(Arrays.asList("LICENSE.txt", "NOTICE.txt"));
+		extractLegalResources.property("version", project.getVersion().toString());
+		SourceSetContainer sourceSets = project.getExtensions().getByType(SourceSetContainer.class);
+		Set<String> sourceJarTaskNames = sourceSets.stream().map(SourceSet::getSourcesJarTaskName)
+				.collect(Collectors.toSet());
+		Set<String> javadocJarTaskNames = sourceSets.stream().map(SourceSet::getJavadocJarTaskName)
+				.collect(Collectors.toSet());
 		project.getTasks().withType(Jar.class, (jar) -> project.afterEvaluate((evaluated) -> {
-			jar.metaInf((metaInf) -> copyLegalFiles(project, metaInf));
+			jar.metaInf((metaInf) -> metaInf.from(extractLegalResources));
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
 				attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
 				attributes.put("Built-By", "Spring");
-				attributes.put("Implementation-Title", project.getDescription());
+				attributes.put("Implementation-Title",
+						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
 				attributes.put("Implementation-Version", project.getVersion());
 				manifest.attributes(attributes);
 			});
 		}));
 	}
 
+	private String determineImplementationTitle(Project project, Set<String> sourceJarTaskNames,
+			Set<String> javadocJarTaskNames, Jar jar) {
+		if (sourceJarTaskNames.contains(jar.getName())) {
+			return "Source for " + project.getName();
+		}
+		if (javadocJarTaskNames.contains(jar.getName())) {
+			return "Javadoc for " + project.getName();
+		}
+		return project.getDescription();
+	}
+
 	private void configureTestConventions(Project project) {
-		project.getPlugins().apply(TestRetryPlugin.class);
 		project.getTasks().withType(Test.class, (test) -> {
 			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
-			project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
-				TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
-				testRetry.getFailOnPassedAfterRetry().set(true);
-				testRetry.getMaxRetries().set(3);
-			});
 		});
+		project.getPlugins().apply(TestRetryPlugin.class);
+		project.getTasks().withType(Test.class,
+				(test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
+					TestRetryTaskExtension testRetry = test.getExtensions().getByType(TestRetryTaskExtension.class);
+					testRetry.getFailOnPassedAfterRetry().set(true);
+					testRetry.getMaxRetries().set(isCi() ? 3 : 0);
+				}));
+	}
+
+	private boolean isCi() {
+		return Boolean.parseBoolean(System.getenv("CI"));
 	}
 
 	private void configureJavadocConventions(Project project) {
@@ -138,6 +176,10 @@ class JavaConventions {
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
+			}
+			if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
+						"-Xlint:varargs"));
 			}
 		});
 	}
@@ -160,45 +202,24 @@ class JavaConventions {
 		DependencySet checkstyleDependencies = project.getConfigurations().getByName("checkstyle").getDependencies();
 		checkstyleDependencies
 				.add(project.getDependencies().create("io.spring.javaformat:spring-javaformat-checkstyle:" + version));
-		checkstyleDependencies
-				.add(project.getDependencies().create("io.spring.nohttp:nohttp-checkstyle:0.0.3.RELEASE"));
 	}
 
-	void copyLegalFiles(Project project, CopySpec metaInf) {
-		copyNoticeFile(project, metaInf);
-		copyLicenseFile(project, metaInf);
-	}
-
-	void copyNoticeFile(Project project, CopySpec metaInf) {
-		try {
-			InputStream notice = getClass().getClassLoader().getResourceAsStream("NOTICE.txt");
-			String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(notice, StandardCharsets.UTF_8))
-					.replace("${version}", project.getVersion().toString());
-			TextResourceFactory resourceFactory = project.getResources().getText();
-			File file = createLegalFile(resourceFactory.fromString(noticeContent).asFile(), "NOTICE.txt");
-			metaInf.from(file);
-		}
-		catch (IOException ex) {
-			throw new GradleException("Failed to copy NOTICE.txt", ex);
-		}
-	}
-
-	void copyLicenseFile(Project project, CopySpec metaInf) {
-		URL license = getClass().getClassLoader().getResource("LICENSE.txt");
-		try {
-			TextResourceFactory resourceFactory = project.getResources().getText();
-			File file = createLegalFile(resourceFactory.fromUri(license.toURI()).asFile(), "LICENSE.txt");
-			metaInf.from(file);
-		}
-		catch (URISyntaxException ex) {
-			throw new GradleException("Failed to copy LICENSE.txt", ex);
-		}
-	}
-
-	File createLegalFile(File source, String filename) {
-		File legalFile = new File(source.getParentFile(), filename);
-		source.renameTo(legalFile);
-		return legalFile;
+	private void configureDependencyManagement(Project project) {
+		ConfigurationContainer configurations = project.getConfigurations();
+		Configuration dependencyManagement = configurations.create("dependencyManagement", (configuration) -> {
+			configuration.setVisible(false);
+			configuration.setCanBeConsumed(false);
+			configuration.setCanBeResolved(false);
+		});
+		configurations
+				.matching((configuration) -> configuration.getName().endsWith("Classpath")
+						|| JavaPlugin.ANNOTATION_PROCESSOR_CONFIGURATION_NAME.equals(configuration.getName()))
+				.all((configuration) -> configuration.extendsFrom(dependencyManagement));
+		Dependency springBootParent = project.getDependencies().enforcedPlatform(project.getDependencies()
+				.project(Collections.singletonMap("path", ":spring-boot-project:spring-boot-parent")));
+		dependencyManagement.getDependencies().add(springBootParent);
+		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
+				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
 	}
 
 }

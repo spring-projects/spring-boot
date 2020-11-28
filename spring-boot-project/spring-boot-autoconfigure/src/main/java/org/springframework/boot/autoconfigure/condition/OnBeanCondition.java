@@ -24,12 +24,14 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
@@ -166,7 +168,13 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		for (String type : spec.getTypes()) {
 			Collection<String> typeMatches = getBeanNamesForType(classLoader, considerHierarchy, beanFactory, type,
 					parameterizedContainers);
-			typeMatches.removeAll(beansIgnoredByType);
+			Iterator<String> iterator = typeMatches.iterator();
+			while (iterator.hasNext()) {
+				String match = iterator.next();
+				if (beansIgnoredByType.contains(match) || ScopedProxyUtils.isScopedTarget(match)) {
+					iterator.remove();
+				}
+			}
 			if (typeMatches.isEmpty()) {
 				result.recordUnmatchedType(type);
 			}

@@ -24,7 +24,7 @@
 						<configuration>
 							<image>
 								<env>
-									<BP_JAVA_VERSION>13.9.9</BP_JAVA_VERSION>
+									<BP_JVM_VERSION>13.9.9</BP_JVM_VERSION>
 								</env>
 							</image>
 						</configuration>

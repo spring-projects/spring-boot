@@ -2,13 +2,11 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Buildpack Platform"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-parent")))
 	api("com.fasterxml.jackson.core:jackson-databind")
 	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	api("net.java.dev.jna:jna-platform")

@@ -35,7 +35,8 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.devtools.classpath.ClassPathChangedEvent;
 import org.springframework.boot.devtools.classpath.ClassPathFileSystemWatcher;
@@ -113,7 +114,17 @@ class LocalDevToolsAutoConfigurationTests {
 	@Test
 	void resourceCachePeriodIsZero() throws Exception {
 		this.context = getContext(() -> initializeAndRun(WebResourcesConfig.class));
-		ResourceProperties properties = this.context.getBean(ResourceProperties.class);
+		Resources properties = this.context.getBean(WebProperties.class).getResources();
+		assertThat(properties.getCache().getPeriod()).isZero();
+	}
+
+	@SuppressWarnings("deprecation")
+	@Test
+	void deprecatedResourceCachePeriodIsZeroWhenDeprecatedResourcePropertiesAreInUse() throws Exception {
+		this.context = getContext(() -> initializeAndRun(WebResourcesConfig.class,
+				Collections.singletonMap("spring.resources.add-mappings", false)));
+		Resources properties = this.context
+				.getBean(org.springframework.boot.autoconfigure.web.ResourceProperties.class);
 		assertThat(properties.getCache().getPeriod()).isZero();
 	}
 
@@ -213,8 +224,8 @@ class LocalDevToolsAutoConfigurationTests {
 		ClassPathFileSystemWatcher classPathWatcher = this.context.getBean(ClassPathFileSystemWatcher.class);
 		Object watcher = ReflectionTestUtils.getField(classPathWatcher, "fileSystemWatcher");
 		@SuppressWarnings("unchecked")
-		Map<File, Object> folders = (Map<File, Object>) ReflectionTestUtils.getField(watcher, "folders");
-		assertThat(folders).hasSize(2).containsKey(new File("src/main/java").getAbsoluteFile())
+		Map<File, Object> directories = (Map<File, Object>) ReflectionTestUtils.getField(watcher, "directories");
+		assertThat(directories).hasSize(2).containsKey(new File("src/main/java").getAbsoluteFile())
 				.containsKey(new File("src/test/java").getAbsoluteFile());
 	}
 
@@ -282,9 +293,10 @@ class LocalDevToolsAutoConfigurationTests {
 
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@Import({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class,
-			ResourceProperties.class })
+	@Import({ ServletWebServerFactoryAutoConfiguration.class, LocalDevToolsAutoConfiguration.class, WebProperties.class,
+			org.springframework.boot.autoconfigure.web.ResourceProperties.class })
 	static class WebResourcesConfig {
 
 	}

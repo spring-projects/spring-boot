@@ -28,6 +28,7 @@ import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
+import org.gradle.testkit.runner.BuildResult;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -180,16 +181,14 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootJarLayered() throws IOException {
-		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-layered").build("bootJar");
+	void bootJarLayeredDisabled() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-layered-disabled").build("bootJar");
 		File file = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
 		assertThat(file).isFile();
 		try (JarFile jar = new JarFile(file)) {
 			JarEntry entry = jar.getJarEntry("BOOT-INF/layers.idx");
-			assertThat(entry).isNotNull();
-			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
-					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isNotEmpty();
+			assertThat(entry).isNull();
 		}
 	}
 
@@ -219,6 +218,28 @@ class PackagingDocumentationTests {
 			assertThat(Collections.list(jar.entries()).stream().map(JarEntry::getName)
 					.filter((name) -> name.startsWith("BOOT-INF/lib/spring-boot"))).isEmpty();
 		}
+	}
+
+	@TestTemplate
+	void bootBuildImageWithCustomBuildpackJvmVersion() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env")
+				.build("bootBuildImageEnvironment");
+		assertThat(result.getOutput()).contains("BP_JVM_VERSION=8.*");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithCustomProxySettings() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-proxy")
+				.build("bootBuildImageEnvironment");
+		assertThat(result.getOutput()).contains("HTTP_PROXY=http://proxy.example.com")
+				.contains("HTTPS_PROXY=https://proxy.example.com");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithCustomImageName() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-name")
+				.build("bootBuildImageName");
+		assertThat(result.getOutput()).contains("example.com/library/" + this.gradleBuild.getProjectDir().getName());
 	}
 
 	protected void jarFile(File file) throws IOException {

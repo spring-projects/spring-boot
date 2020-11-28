@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.export.statsd;
 import java.time.Duration;
 
 import io.micrometer.statsd.StatsdFlavor;
+import io.micrometer.statsd.StatsdProtocol;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -52,6 +53,11 @@ public class StatsdProperties {
 	 * Port of the StatsD server to receive exported metrics.
 	 */
 	private Integer port = 8125;
+
+	/**
+	 * Protocol of the StatsD server to receive exported metrics.
+	 */
+	private StatsdProtocol protocol = StatsdProtocol.UDP;
 
 	/**
 	 * Total length of a single payload should be kept within your network's MTU.
@@ -100,6 +106,14 @@ public class StatsdProperties {
 
 	public void setPort(Integer port) {
 		this.port = port;
+	}
+
+	public StatsdProtocol getProtocol() {
+		return this.protocol;
+	}
+
+	public void setProtocol(StatsdProtocol protocol) {
+		this.protocol = protocol;
 	}
 
 	public Integer getMaxPacketLength() {

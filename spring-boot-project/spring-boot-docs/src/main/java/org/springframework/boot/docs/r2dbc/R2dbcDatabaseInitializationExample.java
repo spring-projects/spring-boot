@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
+import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 
 /**
  * Example configuration for initializing a database using R2DBC.
@@ -41,7 +41,7 @@ public class R2dbcDatabaseInitializationExample {
 			ResourceLoader resourceLoader = new DefaultResourceLoader();
 			Resource[] scripts = new Resource[] { resourceLoader.getResource("classpath:schema.sql"),
 					resourceLoader.getResource("classpath:data.sql") };
-			new ResourceDatabasePopulator(scripts).execute(connectionFactory).block();
+			new ResourceDatabasePopulator(scripts).populate(connectionFactory).block();
 		}
 
 	}

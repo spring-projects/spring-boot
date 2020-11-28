@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,16 +22,17 @@ import java.util.Set;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.cli.command.core.HelpCommand;
 import org.springframework.boot.cli.command.core.HintCommand;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Dave Syer
  */
+@ExtendWith(MockitoExtension.class)
 class CommandRunnerTests {
 
 	private CommandRunner commandRunner;
@@ -63,7 +65,6 @@ class CommandRunnerTests {
 	@BeforeEach
 	void setup() {
 		this.loader = Thread.currentThread().getContextClassLoader();
-		MockitoAnnotations.initMocks(this);
 		this.commandRunner = new CommandRunner("spring") {
 
 			@Override
@@ -84,9 +85,9 @@ class CommandRunnerTests {
 				super.printStackTrace(ex);
 			}
 		};
-		given(this.anotherCommand.getName()).willReturn("another");
-		given(this.regularCommand.getName()).willReturn("command");
-		given(this.regularCommand.getDescription()).willReturn("A regular command");
+		lenient().doReturn("another").when(this.anotherCommand).getName();
+		lenient().doReturn("command").when(this.regularCommand).getName();
+		lenient().doReturn("A regular command").when(this.regularCommand).getDescription();
 		this.commandRunner.addCommand(this.regularCommand);
 		this.commandRunner.addCommand(new HelpCommand(this.commandRunner));
 		this.commandRunner.addCommand(new HintCommand(this.commandRunner));
@@ -141,7 +142,7 @@ class CommandRunnerTests {
 
 	@Test
 	void handlesRegularExceptionWithoutMessage() throws Exception {
-		willThrow(new NullPointerException()).given(this.regularCommand).run();
+		willThrow(new RuntimeException()).given(this.regularCommand).run();
 		int status = this.commandRunner.runAndHandleErrors("command");
 		assertThat(status).isEqualTo(1);
 		assertThat(this.calls).containsOnly(Call.ERROR_MESSAGE, Call.PRINT_STACK_TRACE);

@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.beans.BeanUtils;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
@@ -78,8 +79,6 @@ import org.springframework.web.context.support.GenericWebApplicationContext;
  */
 public class SpringBootContextLoader extends AbstractContextLoader {
 
-	private static final String[] NO_ARGS = new String[0];
-
 	@Override
 	public ApplicationContext loadContext(MergedContextConfiguration config) throws Exception {
 		Class<?>[] configClasses = config.getClasses();
@@ -97,7 +96,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			setActiveProfiles(environment, config.getActiveProfiles());
 		}
 		ResourceLoader resourceLoader = (application.getResourceLoader() != null) ? application.getResourceLoader()
-				: new DefaultResourceLoader(getClass().getClassLoader());
+				: new DefaultResourceLoader(null);
 		TestPropertySourceUtils.addPropertiesFilesToEnvironment(environment, resourceLoader,
 				config.getPropertySourceLocations());
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(environment, getInlinedProperties(config));
@@ -112,7 +111,8 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 		else if (config instanceof ReactiveWebMergedContextConfiguration) {
 			application.setWebApplicationType(WebApplicationType.REACTIVE);
 			if (!isEmbeddedWebEnvironment(config)) {
-				new ReactiveWebConfigurer().configure(application);
+				application.setApplicationContextFactory(
+						ApplicationContextFactory.of(GenericReactiveWebApplicationContext::new));
 			}
 		}
 		else {
@@ -145,14 +145,17 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * empty array.
 	 * @param config the source context configuration
 	 * @return the application arguments to use
+	 * @deprecated since 2.2.7
 	 * @see SpringApplication#run(String...)
 	 */
+	@Deprecated
 	protected String[] getArgs(MergedContextConfiguration config) {
-		return MergedAnnotations.from(config.getTestClass(), SearchStrategy.TYPE_HIERARCHY).get(SpringBootTest.class)
-				.getValue("args", String[].class).orElse(NO_ARGS);
+		return SpringBootTestArgs.get(config.getContextCustomizers());
 	}
 
 	private void setActiveProfiles(ConfigurableEnvironment environment, String[] profiles) {
+		environment.setActiveProfiles(profiles);
+		// Also add as properties to override any application.properties
 		String[] pairs = new String[profiles.length];
 		for (int i = 0; i < profiles.length; i++) {
 			pairs[i] = "spring.profiles.active[" + i + "]=" + profiles[i];
@@ -249,13 +252,11 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 */
 	private static class WebConfigurer {
 
-		private static final Class<GenericWebApplicationContext> WEB_CONTEXT_CLASS = GenericWebApplicationContext.class;
-
 		void configure(MergedContextConfiguration configuration, SpringApplication application,
 				List<ApplicationContextInitializer<?>> initializers) {
 			WebMergedContextConfiguration webConfiguration = (WebMergedContextConfiguration) configuration;
 			addMockServletContext(initializers, webConfiguration);
-			application.setApplicationContextClass(WEB_CONTEXT_CLASS);
+			application.setApplicationContextFactory((webApplicationType) -> new GenericWebApplicationContext());
 		}
 
 		private void addMockServletContext(List<ApplicationContextInitializer<?>> initializers,
@@ -263,19 +264,6 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 			SpringBootMockServletContext servletContext = new SpringBootMockServletContext(
 					webConfiguration.getResourceBasePath());
 			initializers.add(0, new ServletContextApplicationContextInitializer(servletContext, true));
-		}
-
-	}
-
-	/**
-	 * Inner class to configure {@link ReactiveWebMergedContextConfiguration}.
-	 */
-	private static class ReactiveWebConfigurer {
-
-		private static final Class<GenericReactiveWebApplicationContext> WEB_CONTEXT_CLASS = GenericReactiveWebApplicationContext.class;
-
-		void configure(SpringApplication application) {
-			application.setApplicationContextClass(WEB_CONTEXT_CLASS);
 		}
 
 	}

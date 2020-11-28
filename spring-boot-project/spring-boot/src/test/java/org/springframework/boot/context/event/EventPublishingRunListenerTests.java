@@ -25,6 +25,7 @@ import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.context.ApplicationEvent;
@@ -42,6 +43,8 @@ import static org.mockito.Mockito.mock;
  */
 class EventPublishingRunListenerTests {
 
+	private DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+
 	private SpringApplication application;
 
 	private EventPublishingRunListener runListener;
@@ -57,12 +60,12 @@ class EventPublishingRunListenerTests {
 	}
 
 	@Test
-	void shouldPublishLifecyleEvents() {
+	void shouldPublishLifecycleEvents() {
 		StaticApplicationContext context = new StaticApplicationContext();
 		assertThat(this.eventListener.receivedEvents()).isEmpty();
-		this.runListener.starting();
+		this.runListener.starting(this.bootstrapContext);
 		checkApplicationEvents(ApplicationStartingEvent.class);
-		this.runListener.environmentPrepared(null);
+		this.runListener.environmentPrepared(this.bootstrapContext, null);
 		checkApplicationEvents(ApplicationEnvironmentPreparedEvent.class);
 		this.runListener.contextPrepared(context);
 		checkApplicationEvents(ApplicationContextInitializedEvent.class);

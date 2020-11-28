@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -60,20 +61,20 @@ class DefinitionsParser {
 	}
 
 	void parse(Class<?> source) {
-		parseElement(source);
-		ReflectionUtils.doWithFields(source, this::parseElement);
+		parseElement(source, null);
+		ReflectionUtils.doWithFields(source, (element) -> parseElement(element, source));
 	}
 
-	private void parseElement(AnnotatedElement element) {
+	private void parseElement(AnnotatedElement element, Class<?> source) {
 		MergedAnnotations annotations = MergedAnnotations.from(element, SearchStrategy.SUPERCLASS);
 		annotations.stream(MockBean.class).map(MergedAnnotation::synthesize)
-				.forEach((annotation) -> parseMockBeanAnnotation(annotation, element));
+				.forEach((annotation) -> parseMockBeanAnnotation(annotation, element, source));
 		annotations.stream(SpyBean.class).map(MergedAnnotation::synthesize)
-				.forEach((annotation) -> parseSpyBeanAnnotation(annotation, element));
+				.forEach((annotation) -> parseSpyBeanAnnotation(annotation, element, source));
 	}
 
-	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element) {
-		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value());
+	private void parseMockBeanAnnotation(MockBean annotation, AnnotatedElement element, Class<?> source) {
+		Set<ResolvableType> typesToMock = getOrDeduceTypes(element, annotation.value(), source);
 		Assert.state(!typesToMock.isEmpty(), () -> "Unable to deduce type to mock from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
 			Assert.state(typesToMock.size() == 1, "The name attribute can only be used when mocking a single class");
@@ -86,8 +87,8 @@ class DefinitionsParser {
 		}
 	}
 
-	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element) {
-		Set<ResolvableType> typesToSpy = getOrDeduceTypes(element, annotation.value());
+	private void parseSpyBeanAnnotation(SpyBean annotation, AnnotatedElement element, Class<?> source) {
+		Set<ResolvableType> typesToSpy = getOrDeduceTypes(element, annotation.value(), source);
 		Assert.state(!typesToSpy.isEmpty(), () -> "Unable to deduce type to spy from " + element);
 		if (StringUtils.hasLength(annotation.name())) {
 			Assert.state(typesToSpy.size() == 1, "The name attribute can only be used when spying a single class");
@@ -108,13 +109,15 @@ class DefinitionsParser {
 		}
 	}
 
-	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element, Class<?>[] value) {
+	private Set<ResolvableType> getOrDeduceTypes(AnnotatedElement element, Class<?>[] value, Class<?> source) {
 		Set<ResolvableType> types = new LinkedHashSet<>();
 		for (Class<?> clazz : value) {
 			types.add(ResolvableType.forClass(clazz));
 		}
 		if (types.isEmpty() && element instanceof Field) {
-			types.add(ResolvableType.forField((Field) element));
+			Field field = (Field) element;
+			types.add((field.getGenericType() instanceof TypeVariable) ? ResolvableType.forField(field, source)
+					: ResolvableType.forField(field));
 		}
 		return types;
 	}

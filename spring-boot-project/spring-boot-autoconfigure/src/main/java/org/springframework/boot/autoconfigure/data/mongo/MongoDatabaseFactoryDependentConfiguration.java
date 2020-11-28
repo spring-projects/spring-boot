@@ -23,6 +23,7 @@ import com.mongodb.client.MongoDatabase;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.dao.DataAccessException;
@@ -76,12 +77,12 @@ class MongoDatabaseFactoryDependentConfiguration {
 	@ConditionalOnMissingBean(GridFsOperations.class)
 	GridFsTemplate gridFsTemplate(MongoDatabaseFactory factory, MongoTemplate mongoTemplate) {
 		return new GridFsTemplate(new GridFsMongoDatabaseFactory(factory, this.properties),
-				mongoTemplate.getConverter());
+				mongoTemplate.getConverter(), this.properties.getGridfs().getBucket());
 	}
 
 	/**
-	 * {@link MongoDatabaseFactory} decorator to respect
-	 * {@link MongoProperties#getGridFsDatabase()} if set.
+	 * {@link MongoDatabaseFactory} decorator to respect {@link Gridfs#getDatabase()} if
+	 * set.
 	 */
 	static class GridFsMongoDatabaseFactory implements MongoDatabaseFactory {
 
@@ -98,7 +99,7 @@ class MongoDatabaseFactoryDependentConfiguration {
 
 		@Override
 		public MongoDatabase getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = this.properties.getGridFsDatabase();
+			String gridFsDatabase = this.properties.getGridfs().getDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.mongoDatabaseFactory.getMongoDatabase(gridFsDatabase);
 			}

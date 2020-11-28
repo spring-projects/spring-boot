@@ -5,13 +5,9 @@ plugins {
 description = "Starter for using the Apache Solr search platform with Spring Data Solr"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
-	api("org.apache.solr:solr-solrj") {
-		exclude group: "org.slf4j", module: "jcl-over-slf4j"
-	}
-	api("org.springframework.data:spring-data-solr")
-	api("org.apache.httpcomponents:httpmime") {
+	api("org.springframework.data:spring-data-solr") {
 		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "org.slf4j", module: "jcl-over-slf4j"
 	}
 }

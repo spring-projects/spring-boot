@@ -31,6 +31,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
@@ -106,6 +107,13 @@ class WebSocketMessagingAutoConfigurationTests {
 
 	@Test
 	void basicMessagingWithStringResponse() throws Throwable {
+		Object result = performStompSubscription("/app/string");
+		assertThat(new String((byte[]) result)).isEqualTo("string data");
+	}
+
+	@Test
+	void whenLazyInitializationIsEnabledThenBasicMessagingWorks() throws Throwable {
+		this.context.register(LazyInitializationBeanFactoryPostProcessor.class);
 		Object result = performStompSubscription("/app/string");
 		assertThat(new String((byte[]) result)).isEqualTo("string data");
 	}
@@ -192,7 +200,7 @@ class WebSocketMessagingAutoConfigurationTests {
 		stompClient.connect("ws://localhost:{port}/messaging", handler,
 				this.context.getEnvironment().getProperty("local.server.port"));
 
-		if (!latch.await(30000, TimeUnit.SECONDS)) {
+		if (!latch.await(30, TimeUnit.SECONDS)) {
 			if (failure.get() != null) {
 				throw failure.get();
 			}

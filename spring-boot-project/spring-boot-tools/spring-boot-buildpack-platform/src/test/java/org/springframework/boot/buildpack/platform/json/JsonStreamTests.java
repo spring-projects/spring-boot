@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link JsonStream}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class JsonStreamTests extends AbstractJsonTests {
 
@@ -43,7 +44,8 @@ class JsonStreamTests extends AbstractJsonTests {
 		List<ObjectNode> result = new ArrayList<>();
 		this.jsonStream.get(getContent("stream.json"), result::add);
 		assertThat(result).hasSize(595);
-		assertThat(result.get(594).toString()).contains("Status: Downloaded newer image for cloudfoundry/cnb:bionic");
+		assertThat(result.get(594).toString())
+				.contains("Status: Downloaded newer image for paketo-buildpacks/cnb:base");
 	}
 
 	@Test
@@ -52,7 +54,8 @@ class JsonStreamTests extends AbstractJsonTests {
 		this.jsonStream.get(getContent("stream.json"), TestEvent.class, result::add);
 		assertThat(result).hasSize(595);
 		assertThat(result.get(1).getId()).isEqualTo("5667fdb72017");
-		assertThat(result.get(594).getStatus()).isEqualTo("Status: Downloaded newer image for cloudfoundry/cnb:bionic");
+		assertThat(result.get(594).getStatus())
+				.isEqualTo("Status: Downloaded newer image for paketo-buildpacks/cnb:base");
 	}
 
 	/**

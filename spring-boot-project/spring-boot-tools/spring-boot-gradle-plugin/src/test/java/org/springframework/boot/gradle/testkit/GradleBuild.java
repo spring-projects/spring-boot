@@ -24,7 +24,10 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 import java.util.jar.JarFile;
 
 import com.fasterxml.jackson.annotation.JsonView;
@@ -72,8 +75,14 @@ public class GradleBuild {
 
 	private GradleVersion expectDeprecationWarnings;
 
+	private boolean configurationCache = false;
+
+	private Map<String, String> scriptProperties = new HashMap<>();
+
 	public GradleBuild() {
 		this(Dsl.GROOVY);
+		this.scriptProperties.put("bootVersion", getBootVersion());
+		this.scriptProperties.put("dependencyManagementPluginVersion", getDependencyManagementPluginVersion());
 	}
 
 	public GradleBuild(Dsl dsl) {
@@ -89,7 +98,7 @@ public class GradleBuild {
 	}
 
 	void after() {
-		GradleBuild.this.script = null;
+		this.script = null;
 		FileSystemUtils.deleteRecursively(this.projectDir);
 	}
 
@@ -124,11 +133,21 @@ public class GradleBuild {
 		return this;
 	}
 
+	public GradleBuild configurationCache() {
+		this.configurationCache = true;
+		return this;
+	}
+
+	public GradleBuild scriptProperty(String key, String value) {
+		this.scriptProperties.put(key, value);
+		return this;
+	}
+
 	public BuildResult build(String... arguments) {
 		try {
 			BuildResult result = prepareRunner(arguments).build();
-			if (this.gradleVersion != null && this.expectDeprecationWarnings != null
-					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0) {
+			if (this.expectDeprecationWarnings == null || (this.gradleVersion != null
+					&& this.expectDeprecationWarnings.compareTo(GradleVersion.version(this.gradleVersion)) > 0)) {
 				assertThat(result.getOutput()).doesNotContain("Deprecated").doesNotContain("deprecated");
 			}
 			return result;
@@ -148,15 +167,16 @@ public class GradleBuild {
 	}
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
-		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script))
-				.replace("{version}", getBootVersion())
-				.replace("{dependency-management-plugin-version}", getDependencyManagementPluginVersion());
+		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script));
+		for (Entry<String, String> property : this.scriptProperties.entrySet()) {
+			scriptContent = scriptContent.replace("{" + property.getKey() + "}", property.getValue());
+		}
 		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
 		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
 				new File(this.projectDir, "repository"));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.withPluginClasspath(pluginClasspath());
-		if (this.dsl != Dsl.KOTLIN) {
+		if (this.dsl != Dsl.KOTLIN && !this.configurationCache) {
 			// see https://github.com/gradle/gradle/issues/6862
 			gradleRunner.withDebug(true);
 		}
@@ -167,6 +187,11 @@ public class GradleBuild {
 		allArguments.add("-PbootVersion=" + getBootVersion());
 		allArguments.add("--stacktrace");
 		allArguments.addAll(Arrays.asList(arguments));
+		allArguments.add("--warning-mode");
+		allArguments.add("all");
+		if (this.configurationCache) {
+			allArguments.add("--configuration-cache");
+		}
 		return gradleRunner.withArguments(allArguments);
 	}
 

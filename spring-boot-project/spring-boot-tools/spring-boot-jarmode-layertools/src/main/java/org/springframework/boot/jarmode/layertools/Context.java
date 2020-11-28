@@ -40,7 +40,7 @@ class Context {
 
 	private final File workingDir;
 
-	private String relativeDir;
+	private final String relativeDir;
 
 	/**
 	 * Create a new {@link Context} instance.
@@ -95,8 +95,8 @@ class Context {
 		return new File(name);
 	}
 
-	private String deduceRelativeDir(File sourceFolder, File workingDir) {
-		String sourcePath = sourceFolder.getAbsolutePath();
+	private String deduceRelativeDir(File sourceDirectory, File workingDir) {
+		String sourcePath = sourceDirectory.getAbsolutePath();
 		String workingPath = workingDir.getAbsolutePath();
 		if (sourcePath.equals(workingPath) || !sourcePath.startsWith(workingPath)) {
 			return null;

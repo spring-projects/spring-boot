@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -114,11 +114,8 @@ public class ErrorPage {
 		}
 		if (obj instanceof ErrorPage) {
 			ErrorPage other = (ErrorPage) obj;
-			boolean rtn = true;
-			rtn = rtn && ObjectUtils.nullSafeEquals(getExceptionName(), other.getExceptionName());
-			rtn = rtn && ObjectUtils.nullSafeEquals(this.path, other.path);
-			rtn = rtn && this.status == other.status;
-			return rtn;
+			return ObjectUtils.nullSafeEquals(getExceptionName(), other.getExceptionName())
+					&& ObjectUtils.nullSafeEquals(this.path, other.path) && this.status == other.status;
 		}
 		return false;
 	}
@@ -129,7 +126,7 @@ public class ErrorPage {
 		int result = 1;
 		result = prime * result + ObjectUtils.nullSafeHashCode(getExceptionName());
 		result = prime * result + ObjectUtils.nullSafeHashCode(this.path);
-		result = prime * result + this.getStatusCode();
+		result = prime * result + getStatusCode();
 		return result;
 	}
 

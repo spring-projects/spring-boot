@@ -26,8 +26,8 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
-import org.springframework.data.r2dbc.core.DatabaseClient;
+import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,7 +50,7 @@ class DataR2dbcTestIntegrationTests {
 
 	@Test
 	void testDatabaseClient() {
-		this.databaseClient.execute("SELECT * FROM example").fetch().all().as(StepVerifier::create).verifyComplete();
+		this.databaseClient.sql("SELECT * FROM example").fetch().all().as(StepVerifier::create).verifyComplete();
 	}
 
 	@Test
@@ -72,7 +72,7 @@ class DataR2dbcTestIntegrationTests {
 			ResourceLoader resourceLoader = new DefaultResourceLoader();
 			Resource[] scripts = new Resource[] { resourceLoader
 					.getResource("classpath:org/springframework/boot/test/autoconfigure/data/r2dbc/schema.sql") };
-			new ResourceDatabasePopulator(scripts).execute(connectionFactory).block();
+			new ResourceDatabasePopulator(scripts).populate(connectionFactory).block();
 		}
 
 	}

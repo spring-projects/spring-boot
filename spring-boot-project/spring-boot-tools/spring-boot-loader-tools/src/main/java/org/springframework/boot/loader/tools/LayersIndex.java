@@ -36,9 +36,10 @@ import org.springframework.util.MultiValueMap;
  * text files that should be read from top to bottom. Each file defines the layers and
  * their content. Layer names are written as quoted strings prefixed by a dash space
  * ({@code "- "}) and with a colon ({@code ":"}) suffix. Layer content is either a file or
- * folder name written as a quoted string prefixed by space space dash space
- * ({@code "  - "}). A folder name ends with {@code /}, a file name does not. When a
- * folder name is used it means that all files inside that folder are in the same layer.
+ * directory name written as a quoted string prefixed by space space dash space
+ * ({@code "  - "}). A directory name ends with {@code /}, a file name does not. When a
+ * directory name is used it means that all files inside that directory are in the same
+ * layer.
  * <p>
  * Index files are designed to be compatible with YAML and may be read into a list of
  * `Map&lt;String, List&lt;String&gt;&gt;` instances.
@@ -79,8 +80,8 @@ public class LayersIndex {
 		String[] segments = name.split("/");
 		Node node = this.root;
 		for (int i = 0; i < segments.length; i++) {
-			boolean isFolder = i < (segments.length - 1);
-			node = node.updateOrAddNode(segments[i], isFolder, layer);
+			boolean isDirectory = i < (segments.length - 1);
+			node = node.updateOrAddNode(segments[i], isDirectory, layer);
 		}
 	}
 
@@ -127,8 +128,8 @@ public class LayersIndex {
 			this.layers = new HashSet<>(Collections.singleton(layer));
 		}
 
-		Node updateOrAddNode(String segment, boolean isFolder, Layer layer) {
-			String name = segment + (isFolder ? "/" : "");
+		Node updateOrAddNode(String segment, boolean isDirectory, Layer layer) {
+			String name = segment + (isDirectory ? "/" : "");
 			for (Node child : this.children) {
 				if (name.equals(child.name)) {
 					child.layers.add(layer);

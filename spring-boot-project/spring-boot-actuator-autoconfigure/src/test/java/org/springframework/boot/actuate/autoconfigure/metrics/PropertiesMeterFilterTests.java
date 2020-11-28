@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -204,29 +204,35 @@ class PropertiesMeterFilterTests {
 	}
 
 	@Test
-	void configureWhenHasSlaShouldSetSlaToValue() {
+	@Deprecated
+	void configureWhenHasDeprecatedSlaShouldSetSlaToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.sla.spring.boot=1,2,3"));
-		assertThat(
-				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
-						.containsExactly(1000000, 2000000, 3000000);
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
+				.getServiceLevelObjectiveBoundaries()).containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test
-	void configureWhenHasHigherSlaShouldSetPercentilesToValue() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.sla.spring=1,2,3"));
-		assertThat(
-				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
-						.containsExactly(1000000, 2000000, 3000000);
-	}
-
-	@Test
-	void configureWhenHasHigherSlaAndLowerShouldSetSlaToHigher() {
+	void configureWhenHasSloShouldSetSloToValue() {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.spring=1,2,3", "distribution.sla.spring.boot=4,5,6"));
-		assertThat(
-				filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getSlaBoundaries())
-						.containsExactly(4000000, 5000000, 6000000);
+				createProperties("distribution.slo.spring.boot=1,2,3"));
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
+				.getServiceLevelObjectiveBoundaries()).containsExactly(1000000, 2000000, 3000000);
+	}
+
+	@Test
+	void configureWhenHasHigherSloShouldSetPercentilesToValue() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties("distribution.slo.spring=1,2,3"));
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
+				.getServiceLevelObjectiveBoundaries()).containsExactly(1000000, 2000000, 3000000);
+	}
+
+	@Test
+	void configureWhenHasHigherSloAndLowerShouldSetSloToHigher() {
+		PropertiesMeterFilter filter = new PropertiesMeterFilter(
+				createProperties("distribution.slo.spring=1,2,3", "distribution.slo.spring.boot=4,5,6"));
+		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
+				.getServiceLevelObjectiveBoundaries()).containsExactly(4000000, 5000000, 6000000);
 	}
 
 	@Test
@@ -234,7 +240,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.minimum-expected-value.spring.boot=10"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMinimumExpectedValue()).isEqualTo(Duration.ofMillis(10).toNanos());
+				.getMinimumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10).toNanos());
 	}
 
 	@Test
@@ -242,7 +248,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.minimum-expected-value.spring=10"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMinimumExpectedValue()).isEqualTo(Duration.ofMillis(10).toNanos());
+				.getMinimumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10).toNanos());
 	}
 
 	@Test
@@ -250,7 +256,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(createProperties(
 				"distribution.minimum-expected-value.spring=10", "distribution.minimum-expected-value.spring.boot=50"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMinimumExpectedValue()).isEqualTo(Duration.ofMillis(50).toNanos());
+				.getMinimumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(50).toNanos());
 	}
 
 	@Test
@@ -258,7 +264,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.maximum-expected-value.spring.boot=5000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMaximumExpectedValue()).isEqualTo(Duration.ofMillis(5000).toNanos());
+				.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(5000).toNanos());
 	}
 
 	@Test
@@ -266,7 +272,7 @@ class PropertiesMeterFilterTests {
 		PropertiesMeterFilter filter = new PropertiesMeterFilter(
 				createProperties("distribution.maximum-expected-value.spring=5000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMaximumExpectedValue()).isEqualTo(Duration.ofMillis(5000).toNanos());
+				.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(5000).toNanos());
 	}
 
 	@Test
@@ -275,7 +281,7 @@ class PropertiesMeterFilterTests {
 				createProperties("distribution.maximum-expected-value.spring=5000",
 						"distribution.maximum-expected-value.spring.boot=10000"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getMaximumExpectedValue()).isEqualTo(Duration.ofMillis(10000).toNanos());
+				.getMaximumExpectedValueAsDouble()).isEqualTo(Duration.ofMillis(10000).toNanos());
 	}
 
 	private Id createMeterId(String name) {

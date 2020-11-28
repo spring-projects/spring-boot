@@ -37,11 +37,6 @@ public abstract class PushRegistryPropertiesConfigAdapter<T extends PushRegistry
 	}
 
 	@Override
-	public String prefix() {
-		return null;
-	}
-
-	@Override
 	public String get(String k) {
 		return null;
 	}

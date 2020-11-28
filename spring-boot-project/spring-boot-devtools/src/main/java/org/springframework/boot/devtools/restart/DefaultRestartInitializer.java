@@ -43,14 +43,38 @@ public class DefaultRestartInitializer implements RestartInitializer {
 	}
 
 	/**
-	 * Returns if the thread is for a main invocation. By default checks the name of the
-	 * thread and the context classloader.
+	 * Returns if the thread is for a main invocation. By default {@link #isMain(Thread)
+	 * checks the name of the thread} and {@link #isDevelopmentClassLoader(ClassLoader)
+	 * the context classloader}.
 	 * @param thread the thread to check
 	 * @return {@code true} if the thread is a main invocation
+	 * @see #isMainThread
+	 * @see #isDevelopmentClassLoader(ClassLoader)
 	 */
 	protected boolean isMain(Thread thread) {
-		return thread.getName().equals("main")
-				&& thread.getContextClassLoader().getClass().getName().contains("AppClassLoader");
+		return isMainThread(thread) && isDevelopmentClassLoader(thread.getContextClassLoader());
+	}
+
+	/**
+	 * Returns whether the given {@code thread} is considered to be the main thread.
+	 * @param thread the thread to check
+	 * @return {@code true} if it's the main thread, otherwise {@code false}
+	 * @since 2.4.0
+	 */
+	protected boolean isMainThread(Thread thread) {
+		return thread.getName().equals("main");
+	}
+
+	/**
+	 * Returns whether the given {@code classLoader} is one that is typically used during
+	 * development.
+	 * @param classLoader the ClassLoader to check
+	 * @return {@code true} if it's a ClassLoader typically used during development,
+	 * otherwise {@code false}
+	 * @since 2.4.0
+	 */
+	protected boolean isDevelopmentClassLoader(ClassLoader classLoader) {
+		return classLoader.getClass().getName().contains("AppClassLoader");
 	}
 
 	/**

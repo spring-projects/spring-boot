@@ -9,7 +9,7 @@
 			<repositories>
 				<repository>
 					<id>spring-snapshot</id>
-					<url>https://repo.spring.io/snapshot</url>
+					<url>https://repo.spring.io/libs-snapshot</url>
 					<snapshots>
 						<enabled>true</enabled>
 					</snapshots>

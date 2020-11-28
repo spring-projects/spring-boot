@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,21 +58,21 @@ public class CloudFoundryWebEndpointDiscoverer extends WebEndpointDiscoverer {
 	}
 
 	@Override
-	protected boolean isExtensionExposed(Object extensionBean) {
-		if (isHealthEndpointExtension(extensionBean) && !isCloudFoundryHealthEndpointExtension(extensionBean)) {
+	protected boolean isExtensionTypeExposed(Class<?> extensionBeanType) {
+		if (isHealthEndpointExtension(extensionBeanType) && !isCloudFoundryHealthEndpointExtension(extensionBeanType)) {
 			// Filter regular health endpoint extensions so a CF version can replace them
 			return false;
 		}
 		return true;
 	}
 
-	private boolean isHealthEndpointExtension(Object extensionBean) {
-		return MergedAnnotations.from(extensionBean.getClass()).get(EndpointWebExtension.class)
+	private boolean isHealthEndpointExtension(Class<?> extensionBeanType) {
+		return MergedAnnotations.from(extensionBeanType).get(EndpointWebExtension.class)
 				.getValue("endpoint", Class.class).map(HealthEndpoint.class::isAssignableFrom).orElse(false);
 	}
 
-	private boolean isCloudFoundryHealthEndpointExtension(Object extensionBean) {
-		return MergedAnnotations.from(extensionBean.getClass()).isPresent(EndpointCloudFoundryExtension.class);
+	private boolean isCloudFoundryHealthEndpointExtension(Class<?> extensionBeanType) {
+		return MergedAnnotations.from(extensionBeanType).isPresent(EndpointCloudFoundryExtension.class);
 	}
 
 }

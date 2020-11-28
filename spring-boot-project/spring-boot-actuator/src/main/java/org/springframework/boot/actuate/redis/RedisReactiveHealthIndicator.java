@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,8 @@ import reactor.core.scheduler.Schedulers;
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.data.redis.connection.ClusterInfo;
+import org.springframework.data.redis.connection.ReactiveRedisClusterConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnection;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 
@@ -33,6 +35,7 @@ import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
  * @author Stephane Nicoll
  * @author Mark Paluch
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 2.0.0
  */
 public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
@@ -49,24 +52,30 @@ public class RedisReactiveHealthIndicator extends AbstractReactiveHealthIndicato
 		return getConnection().flatMap((connection) -> doHealthCheck(builder, connection));
 	}
 
-	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
-		return connection.serverCommands().info().map((info) -> up(builder, info))
-				.onErrorResume((ex) -> Mono.just(down(builder, ex)))
-				.flatMap((health) -> connection.closeLater().thenReturn(health));
-	}
-
 	private Mono<ReactiveRedisConnection> getConnection() {
 		return Mono.fromSupplier(this.connectionFactory::getReactiveConnection)
 				.subscribeOn(Schedulers.boundedElastic());
 	}
 
-	private Health up(Health.Builder builder, Properties info) {
-		return builder.up()
-				.withDetail(RedisHealthIndicator.VERSION, info.getProperty(RedisHealthIndicator.REDIS_VERSION)).build();
+	private Mono<Health> doHealthCheck(Health.Builder builder, ReactiveRedisConnection connection) {
+		return getHealth(builder, connection).onErrorResume((ex) -> Mono.just(builder.down(ex).build()))
+				.flatMap((health) -> connection.closeLater().thenReturn(health));
 	}
 
-	private Health down(Health.Builder builder, Throwable cause) {
-		return builder.down(cause).build();
+	private Mono<Health> getHealth(Health.Builder builder, ReactiveRedisConnection connection) {
+		if (connection instanceof ReactiveRedisClusterConnection) {
+			return ((ReactiveRedisClusterConnection) connection).clusterGetClusterInfo()
+					.map((info) -> up(builder, info));
+		}
+		return connection.serverCommands().info("server").map((info) -> up(builder, info));
+	}
+
+	private Health up(Health.Builder builder, Properties info) {
+		return RedisHealth.up(builder, info).build();
+	}
+
+	private Health up(Health.Builder builder, ClusterInfo clusterInfo) {
+		return RedisHealth.up(builder, clusterInfo).build();
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,8 @@ import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.ReleaseType;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse;
 import io.spring.concourse.releasescripts.bintray.BintrayService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.stereotype.Component;
@@ -37,6 +39,8 @@ import org.springframework.util.Assert;
  */
 @Component
 public class PublishGradlePlugin implements Command {
+
+	private static final Logger logger = LoggerFactory.getLogger(PublishGradlePlugin.class);
 
 	private static final String PUBLISH_GRADLE_PLUGIN_COMMAND = "publishGradlePlugin";
 
@@ -56,6 +60,7 @@ public class PublishGradlePlugin implements Command {
 
 	@Override
 	public void run(ApplicationArguments args) throws Exception {
+		logger.debug("Running 'publish gradle' command");
 		List<String> nonOptionArgs = args.getNonOptionArgs();
 		Assert.state(!nonOptionArgs.isEmpty(), "No command argument specified");
 		Assert.state(nonOptionArgs.size() == 3, "Release type or build info not specified");

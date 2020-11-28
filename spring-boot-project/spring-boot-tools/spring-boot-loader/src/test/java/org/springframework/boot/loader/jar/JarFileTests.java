@@ -30,17 +30,21 @@ import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.attribute.FileTime;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarInputStream;
 import java.util.jar.JarOutputStream;
 import java.util.jar.Manifest;
+import java.util.stream.Stream;
 import java.util.zip.CRC32;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
+import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -51,11 +55,13 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIOException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -172,6 +178,12 @@ class JarFileTests {
 	}
 
 	@Test
+	void getJarEntryWhenClosed() throws Exception {
+		this.jarFile.close();
+		assertThatZipFileClosedIsThrownBy(() -> this.jarFile.getJarEntry("1.dat"));
+	}
+
+	@Test
 	void getInputStream() throws Exception {
 		InputStream inputStream = this.jarFile.getInputStream(this.jarFile.getEntry("1.dat"));
 		assertThat(inputStream.available()).isEqualTo(1);
@@ -181,8 +193,21 @@ class JarFileTests {
 	}
 
 	@Test
+	void getInputStreamWhenClosed() throws Exception {
+		ZipEntry entry = this.jarFile.getEntry("1.dat");
+		this.jarFile.close();
+		assertThatZipFileClosedIsThrownBy(() -> this.jarFile.getInputStream(entry));
+	}
+
+	@Test
 	void getComment() {
 		assertThat(this.jarFile.getComment()).isEqualTo("outer");
+	}
+
+	@Test
+	void getCommentWhenClosed() throws Exception {
+		this.jarFile.close();
+		assertThatZipFileClosedIsThrownBy(() -> this.jarFile.getComment());
 	}
 
 	@Test
@@ -191,10 +216,16 @@ class JarFileTests {
 	}
 
 	@Test
-	void getSize() throws Exception {
+	void size() throws Exception {
 		try (ZipFile zip = new ZipFile(this.rootJarFile)) {
 			assertThat(this.jarFile.size()).isEqualTo(zip.size());
 		}
+	}
+
+	@Test
+	void sizeWhenClosed() throws Exception {
+		this.jarFile.close();
+		assertThatZipFileClosedIsThrownBy(() -> this.jarFile.size());
 	}
 
 	@Test
@@ -218,10 +249,10 @@ class JarFileTests {
 		URL url = this.jarFile.getUrl();
 		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/");
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap(jarURLConnection.getJarFile())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getJarEntry()).isNull();
 		assertThat(jarURLConnection.getContentLength()).isGreaterThan(1);
-		assertThat(jarURLConnection.getContent()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap((java.util.jar.JarFile) jarURLConnection.getContent())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getContentType()).isEqualTo("x-java/jar");
 		assertThat(jarURLConnection.getJarFileURL().toURI()).isEqualTo(this.rootJarFile.toURI());
 	}
@@ -231,7 +262,7 @@ class JarFileTests {
 		URL url = new URL(this.jarFile.getUrl(), "1.dat");
 		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/1.dat");
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap(jarURLConnection.getJarFile())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getJarEntry()).isSameAs(this.jarFile.getJarEntry("1.dat"));
 		assertThat(jarURLConnection.getContentLength()).isEqualTo(1);
 		assertThat(jarURLConnection.getContent()).isInstanceOf(InputStream.class);
@@ -285,7 +316,7 @@ class JarFileTests {
 			URL url = nestedJarFile.getUrl();
 			assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/");
 			JarURLConnection conn = (JarURLConnection) url.openConnection();
-			assertThat(conn.getJarFile()).isSameAs(nestedJarFile);
+			assertThat(JarFileWrapper.unwrap(conn.getJarFile())).isSameAs(nestedJarFile);
 			assertThat(conn.getJarFileURL().toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
 			assertThat(conn.getInputStream()).isNotNull();
 			JarInputStream jarInputStream = new JarInputStream(conn.getInputStream());
@@ -314,7 +345,8 @@ class JarFileTests {
 
 			URL url = nestedJarFile.getUrl();
 			assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/d!/");
-			assertThat(((JarURLConnection) url.openConnection()).getJarFile()).isSameAs(nestedJarFile);
+			JarURLConnection connection = (JarURLConnection) url.openConnection();
+			assertThat(JarFileWrapper.unwrap(connection.getJarFile())).isSameAs(nestedJarFile);
 		}
 	}
 
@@ -396,29 +428,36 @@ class JarFileTests {
 
 	@Test
 	void verifySignedJar() throws Exception {
-		String classpath = System.getProperty("java.class.path");
-		String[] entries = classpath.split(System.getProperty("path.separator"));
-		String signedJarFile = null;
+		File signedJarFile = getSignedJarFile();
+		assertThat(signedJarFile).exists();
+		try (java.util.jar.JarFile expected = new java.util.jar.JarFile(signedJarFile)) {
+			try (JarFile actual = new JarFile(signedJarFile)) {
+				StopWatch stopWatch = new StopWatch();
+				Enumeration<JarEntry> actualEntries = actual.entries();
+				while (actualEntries.hasMoreElements()) {
+					JarEntry actualEntry = actualEntries.nextElement();
+					java.util.jar.JarEntry expectedEntry = expected.getJarEntry(actualEntry.getName());
+					StreamUtils.drain(expected.getInputStream(expectedEntry));
+					if (!actualEntry.getName().equals("META-INF/MANIFEST.MF")) {
+						assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCertificates());
+						assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCodeSigners());
+					}
+				}
+				assertThat(stopWatch.getTotalTimeSeconds()).isLessThan(3.0);
+			}
+		}
+	}
+
+	private File getSignedJarFile() {
+		String[] entries = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 		for (String entry : entries) {
 			if (entry.contains("bcprov")) {
-				signedJarFile = entry;
+				return new File(entry);
 			}
 		}
-		assertThat(signedJarFile).isNotNull();
-		java.util.jar.JarFile jarFile = new JarFile(new File(signedJarFile));
-		jarFile.getManifest();
-		Enumeration<JarEntry> jarEntries = jarFile.entries();
-		while (jarEntries.hasMoreElements()) {
-			JarEntry jarEntry = jarEntries.nextElement();
-			InputStream inputStream = jarFile.getInputStream(jarEntry);
-			inputStream.skip(Long.MAX_VALUE);
-			inputStream.close();
-			if (!jarEntry.getName().startsWith("META-INF") && !jarEntry.isDirectory()
-					&& !jarEntry.getName().endsWith("TigerDigest.class")) {
-				assertThat(jarEntry.getCertificates()).isNotNull();
-			}
-		}
-		jarFile.close();
+		return null;
 	}
 
 	@Test
@@ -533,8 +572,7 @@ class JarFileTests {
 			for (int i = 0; i < entries.size(); i++) {
 				JarEntry entry = entries.get(i);
 				InputStream entryInput = zip64JarFile.getInputStream(entry);
-				String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
-				assertThat(contents).isEqualTo("Entry " + (i + 1));
+				assertThat(entryInput).hasContent("Entry " + (i + 1));
 			}
 		}
 	}
@@ -563,8 +601,7 @@ class JarFileTests {
 				for (int i = 0; i < entries.size(); i++) {
 					JarEntry entry = entries.get(i);
 					InputStream entryInput = nestedZip64JarFile.getInputStream(entry);
-					String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
-					assertThat(contents).isEqualTo("Entry " + (i + 1));
+					assertThat(entryInput).hasContent("Entry " + (i + 1));
 				}
 			}
 		}
@@ -601,6 +638,41 @@ class JarFileTests {
 			assertThat(entry.getLastModifiedTime().toInstant()).isEqualTo(Instant.EPOCH);
 			assertThat(entry.getName()).isEqualTo("1.dat");
 		}
+	}
+
+	@Test
+	void iterator() {
+		Iterator<JarEntry> iterator = this.jarFile.iterator();
+		List<String> names = new ArrayList<String>();
+		while (iterator.hasNext()) {
+			names.add(iterator.next().getName());
+		}
+		assertThat(names).hasSize(12).contains("1.dat");
+	}
+
+	@Test
+	void iteratorWhenClosed() throws IOException {
+		this.jarFile.close();
+		assertThatZipFileClosedIsThrownBy(() -> this.jarFile.iterator());
+	}
+
+	@Test
+	void iteratorWhenClosedLater() throws IOException {
+		Iterator<JarEntry> iterator = this.jarFile.iterator();
+		iterator.next();
+		this.jarFile.close();
+		assertThatZipFileClosedIsThrownBy(() -> iterator.hasNext());
+	}
+
+	@Test
+	void stream() {
+		Stream<String> stream = this.jarFile.stream().map(JarEntry::getName);
+		assertThat(stream).hasSize(12).contains("1.dat");
+
+	}
+
+	private void assertThatZipFileClosedIsThrownBy(ThrowingCallable throwingCallable) {
+		assertThatIllegalStateException().isThrownBy(throwingCallable).withMessage("zip file closed");
 	}
 
 	private int getJavaVersion() {

@@ -39,6 +39,10 @@ import com.typesafe.config.ConfigFactory;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Connection;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Request;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.Throttler;
+import org.springframework.boot.autoconfigure.cassandra.CassandraProperties.ThrottlerType;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
@@ -76,10 +80,17 @@ public class CassandraAutoConfiguration {
 	public CqlSessionBuilder cassandraSessionBuilder(CassandraProperties properties,
 			DriverConfigLoader driverConfigLoader, ObjectProvider<CqlSessionBuilderCustomizer> builderCustomizers) {
 		CqlSessionBuilder builder = CqlSession.builder().withConfigLoader(driverConfigLoader);
+		configureAuthentication(properties, builder);
 		configureSsl(properties, builder);
 		builder.withKeyspace(properties.getKeyspaceName());
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder;
+	}
+
+	private void configureAuthentication(CassandraProperties properties, CqlSessionBuilder builder) {
+		if (properties.getUsername() != null) {
+			builder.withAuthCredentials(properties.getUsername(), properties.getPassword());
+		}
 	}
 
 	private void configureSsl(CassandraProperties properties, CqlSessionBuilder builder) {
@@ -113,9 +124,9 @@ public class CassandraAutoConfiguration {
 						.add(DefaultDriverOption.AUTH_PROVIDER_PASSWORD, properties.getPassword()));
 		map.from(properties::getCompression).whenNonNull()
 				.to((compression) -> options.add(DefaultDriverOption.PROTOCOL_COMPRESSION, compression));
-		mapQueryOptions(properties, options);
-		mapSocketOptions(properties, options);
+		mapConnectionOptions(properties, options);
 		mapPoolingOptions(properties, options);
+		mapRequestOptions(properties, options);
 		map.from(mapContactPoints(properties))
 				.to((contactPoints) -> options.add(DefaultDriverOption.CONTACT_POINTS, contactPoints));
 		map.from(properties.getLocalDatacenter()).to(
@@ -125,33 +136,46 @@ public class CassandraAutoConfiguration {
 				.withFallback(ConfigFactory.defaultReference()).resolve();
 	}
 
-	private void mapQueryOptions(CassandraProperties properties, CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get();
-		map.from(properties::getConsistencyLevel).whenNonNull()
-				.to(((consistency) -> options.add(DefaultDriverOption.REQUEST_CONSISTENCY, consistency)));
-		map.from(properties::getSerialConsistencyLevel).whenNonNull().to(
-				(serialConsistency) -> options.add(DefaultDriverOption.REQUEST_SERIAL_CONSISTENCY, serialConsistency));
-		map.from(properties::getPageSize)
-				.to((pageSize) -> options.add(DefaultDriverOption.REQUEST_PAGE_SIZE, pageSize));
-	}
-
-	private void mapSocketOptions(CassandraProperties properties, CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get();
-		map.from(properties::getConnectTimeout).whenNonNull().asInt(Duration::toMillis)
-				.to((connectTimeout) -> options.add(DefaultDriverOption.CONNECTION_INIT_QUERY_TIMEOUT, connectTimeout));
-		map.from(properties::getReadTimeout).whenNonNull().asInt(Duration::toMillis)
-				.to((readTimeout) -> options.add(DefaultDriverOption.REQUEST_TIMEOUT, readTimeout));
+	private void mapConnectionOptions(CassandraProperties properties, CassandraDriverOptions options) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Connection connectionProperties = properties.getConnection();
+		map.from(connectionProperties::getConnectTimeout).asInt(Duration::toMillis)
+				.to((connectTimeout) -> options.add(DefaultDriverOption.CONNECTION_CONNECT_TIMEOUT, connectTimeout));
+		map.from(connectionProperties::getInitQueryTimeout).asInt(Duration::toMillis).to(
+				(initQueryTimeout) -> options.add(DefaultDriverOption.CONNECTION_INIT_QUERY_TIMEOUT, initQueryTimeout));
 	}
 
 	private void mapPoolingOptions(CassandraProperties properties, CassandraDriverOptions options) {
-		PropertyMapper map = PropertyMapper.get();
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		CassandraProperties.Pool poolProperties = properties.getPool();
-		map.from(poolProperties::getIdleTimeout).whenNonNull().asInt(Duration::getSeconds)
+		map.from(poolProperties::getIdleTimeout).asInt(Duration::toMillis)
 				.to((idleTimeout) -> options.add(DefaultDriverOption.HEARTBEAT_TIMEOUT, idleTimeout));
-		map.from(poolProperties::getHeartbeatInterval).whenNonNull().asInt(Duration::getSeconds)
+		map.from(poolProperties::getHeartbeatInterval).asInt(Duration::toMillis)
 				.to((heartBeatInterval) -> options.add(DefaultDriverOption.HEARTBEAT_INTERVAL, heartBeatInterval));
-		map.from(poolProperties::getMaxQueueSize)
+	}
+
+	private void mapRequestOptions(CassandraProperties properties, CassandraDriverOptions options) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Request requestProperties = properties.getRequest();
+		map.from(requestProperties::getTimeout).asInt(Duration::toMillis)
+				.to(((timeout) -> options.add(DefaultDriverOption.REQUEST_TIMEOUT, timeout)));
+		map.from(requestProperties::getConsistency)
+				.to(((consistency) -> options.add(DefaultDriverOption.REQUEST_CONSISTENCY, consistency)));
+		map.from(requestProperties::getSerialConsistency).to(
+				(serialConsistency) -> options.add(DefaultDriverOption.REQUEST_SERIAL_CONSISTENCY, serialConsistency));
+		map.from(requestProperties::getPageSize)
+				.to((pageSize) -> options.add(DefaultDriverOption.REQUEST_PAGE_SIZE, pageSize));
+		Throttler throttlerProperties = requestProperties.getThrottler();
+		map.from(throttlerProperties::getType).as(ThrottlerType::type)
+				.to((type) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_CLASS, type));
+		map.from(throttlerProperties::getMaxQueueSize)
 				.to((maxQueueSize) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE, maxQueueSize));
+		map.from(throttlerProperties::getMaxConcurrentRequests).to((maxConcurrentRequests) -> options
+				.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_CONCURRENT_REQUESTS, maxConcurrentRequests));
+		map.from(throttlerProperties::getMaxRequestsPerSecond).to((maxRequestsPerSecond) -> options
+				.add(DefaultDriverOption.REQUEST_THROTTLER_MAX_REQUESTS_PER_SECOND, maxRequestsPerSecond));
+		map.from(throttlerProperties::getDrainInterval).asInt(Duration::toMillis).to(
+				(drainInterval) -> options.add(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL, drainInterval));
 	}
 
 	private List<String> mapContactPoints(CassandraProperties properties) {

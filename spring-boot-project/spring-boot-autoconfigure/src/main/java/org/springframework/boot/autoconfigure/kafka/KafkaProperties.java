@@ -685,6 +685,8 @@ public class KafkaProperties {
 
 		private final Security security = new Security();
 
+		private final Cleanup cleanup = new Cleanup();
+
 		/**
 		 * Kafka streams application.id property; default spring.application.name.
 		 */
@@ -733,6 +735,10 @@ public class KafkaProperties {
 
 		public Security getSecurity() {
 			return this.security;
+		}
+
+		public Cleanup getCleanup() {
+			return this.cleanup;
 		}
 
 		public String getApplicationId() {
@@ -886,6 +892,11 @@ public class KafkaProperties {
 		private Duration ackTime;
 
 		/**
+		 * Sleep interval between Consumer.poll(Duration) calls.
+		 */
+		private Duration idleBetweenPolls = Duration.ZERO;
+
+		/**
 		 * Time between publishing idle consumer events (no data received).
 		 */
 		private Duration idleEventInterval;
@@ -970,6 +981,14 @@ public class KafkaProperties {
 
 		public void setAckTime(Duration ackTime) {
 			this.ackTime = ackTime;
+		}
+
+		public Duration getIdleBetweenPolls() {
+			return this.idleBetweenPolls;
+		}
+
+		public void setIdleBetweenPolls(Duration idleBetweenPolls) {
+			this.idleBetweenPolls = idleBetweenPolls;
 		}
 
 		public Duration getIdleEventInterval() {
@@ -1217,6 +1236,36 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
 			return properties;
+		}
+
+	}
+
+	public static class Cleanup {
+
+		/**
+		 * Cleanup the application’s local state directory on startup.
+		 */
+		private boolean onStartup = false;
+
+		/**
+		 * Cleanup the application’s local state directory on shutdown.
+		 */
+		private boolean onShutdown = true;
+
+		public boolean isOnStartup() {
+			return this.onStartup;
+		}
+
+		public void setOnStartup(boolean onStartup) {
+			this.onStartup = onStartup;
+		}
+
+		public boolean isOnShutdown() {
+			return this.onShutdown;
+		}
+
+		public void setOnShutdown(boolean onShutdown) {
+			this.onShutdown = onShutdown;
 		}
 
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ public class BoxingPojo {
 
 	private boolean flag;
 
+	private Boolean anotherFlag;
+
 	private Integer counter;
 
 	public boolean isFlag() {
@@ -38,6 +40,14 @@ public class BoxingPojo {
 	// Setter use Boolean
 	public void setFlag(Boolean flag) {
 		this.flag = flag;
+	}
+
+	public boolean isAnotherFlag() {
+		return Boolean.TRUE.equals(this.anotherFlag);
+	}
+
+	public void setAnotherFlag(boolean anotherFlag) {
+		this.anotherFlag = anotherFlag;
 	}
 
 	public Integer getCounter() {

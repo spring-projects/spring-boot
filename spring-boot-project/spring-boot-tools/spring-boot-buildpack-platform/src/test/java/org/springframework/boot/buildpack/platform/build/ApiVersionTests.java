@@ -64,7 +64,7 @@ class ApiVersionTests {
 	void assertSupportsWhenDoesNotSupportThrowsException() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> ApiVersion.parse("1.2").assertSupports(ApiVersion.parse("1.3")))
-				.withMessage("Detected platform API version 'v1.3' does not match supported version 'v1.2'");
+				.withMessage("Detected platform API version '1.3' does not match supported version '1.2'");
 	}
 
 	@Test
@@ -99,7 +99,7 @@ class ApiVersionTests {
 
 	@Test
 	void toStringReturnsString() {
-		assertThat(ApiVersion.parse("1.2").toString()).isEqualTo("v1.2");
+		assertThat(ApiVersion.parse("1.2").toString()).isEqualTo("1.2");
 	}
 
 	@Test

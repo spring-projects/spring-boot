@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,16 @@
 package io.spring.concourse.releasescripts.artifactory;
 
 import java.net.URI;
+import java.time.Duration;
+import java.util.Set;
 
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse;
 import io.spring.concourse.releasescripts.artifactory.payload.DistributionRequest;
 import io.spring.concourse.releasescripts.artifactory.payload.PromotionRequest;
 import io.spring.concourse.releasescripts.bintray.BintrayService;
-import io.spring.concourse.releasescripts.system.ConsoleLogger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.MediaType;
@@ -42,6 +45,8 @@ import org.springframework.web.client.RestTemplate;
 @Component
 public class ArtifactoryService {
 
+	private static final Logger logger = LoggerFactory.getLogger(ArtifactoryService.class);
+
 	private static final String ARTIFACTORY_URL = "https://repo.spring.io";
 
 	private static final String PROMOTION_URL = ARTIFACTORY_URL + "/api/build/promote/";
@@ -55,8 +60,6 @@ public class ArtifactoryService {
 	private final RestTemplate restTemplate;
 
 	private final BintrayService bintrayService;
-
-	private static final ConsoleLogger console = new ConsoleLogger();
 
 	public ArtifactoryService(RestTemplateBuilder builder, ArtifactoryProperties artifactoryProperties,
 			BintrayService bintrayService) {
@@ -78,20 +81,21 @@ public class ArtifactoryService {
 		PromotionRequest request = getPromotionRequest(targetRepo);
 		String buildName = releaseInfo.getBuildName();
 		String buildNumber = releaseInfo.getBuildNumber();
-		console.log("Promoting " + buildName + "/" + buildNumber + " to " + request.getTargetRepo());
+		logger.info("Promoting " + buildName + "/" + buildNumber + " to " + request.getTargetRepo());
 		RequestEntity<PromotionRequest> requestEntity = RequestEntity
 				.post(URI.create(PROMOTION_URL + buildName + "/" + buildNumber)).contentType(MediaType.APPLICATION_JSON)
 				.body(request);
 		try {
 			this.restTemplate.exchange(requestEntity, String.class);
+			logger.debug("Promotion complete");
 		}
 		catch (HttpClientErrorException ex) {
 			boolean isAlreadyPromoted = isAlreadyPromoted(buildName, buildNumber, request.getTargetRepo());
 			if (isAlreadyPromoted) {
-				console.log("Already promoted.");
+				logger.info("Already promoted.");
 			}
 			else {
-				console.log("Promotion failed.");
+				logger.info("Promotion failed.");
 				throw ex;
 			}
 		}
@@ -99,12 +103,15 @@ public class ArtifactoryService {
 
 	private boolean isAlreadyPromoted(String buildName, String buildNumber, String targetRepo) {
 		try {
+			logger.debug("Checking if alreay promoted");
 			ResponseEntity<BuildInfoResponse> entity = this.restTemplate
 					.getForEntity(BUILD_INFO_URL + buildName + "/" + buildNumber, BuildInfoResponse.class);
 			BuildInfoResponse.Status status = entity.getBody().getBuildInfo().getStatuses()[0];
+			logger.debug("Returned repository " + status.getRepository() + " expecting " + targetRepo);
 			return status.getRepository().equals(targetRepo);
 		}
 		catch (HttpClientErrorException ex) {
+			logger.debug("Client error, assuming not promoted");
 			return false;
 		}
 	}
@@ -112,23 +119,32 @@ public class ArtifactoryService {
 	/**
 	 * Deploy builds from Artifactory to Bintray.
 	 * @param sourceRepo the source repo in Artifactory.
+	 * @param releaseInfo the resease info
+	 * @param artifactDigests the artifact digests
 	 */
-	public void distribute(String sourceRepo, ReleaseInfo releaseInfo) {
+	public void distribute(String sourceRepo, ReleaseInfo releaseInfo, Set<String> artifactDigests) {
+		logger.debug("Attempting distribute via Artifactory");
+		if (!this.bintrayService.isDistributionStarted(releaseInfo)) {
+			startDistribute(sourceRepo, releaseInfo);
+		}
+		if (!this.bintrayService.isDistributionComplete(releaseInfo, artifactDigests, Duration.ofMinutes(60))) {
+			throw new DistributionTimeoutException("Distribution timed out.");
+		}
+	}
+
+	private void startDistribute(String sourceRepo, ReleaseInfo releaseInfo) {
 		DistributionRequest request = new DistributionRequest(new String[] { sourceRepo });
 		RequestEntity<DistributionRequest> requestEntity = RequestEntity
 				.post(URI.create(DISTRIBUTION_URL + releaseInfo.getBuildName() + "/" + releaseInfo.getBuildNumber()))
 				.contentType(MediaType.APPLICATION_JSON).body(request);
 		try {
 			this.restTemplate.exchange(requestEntity, Object.class);
+			logger.debug("Distribute call completed");
 		}
 		catch (HttpClientErrorException ex) {
-			console.log("Failed to distribute.");
+			logger.info("Failed to distribute.");
 			throw ex;
 		}
-		if (!this.bintrayService.isDistributionComplete(releaseInfo)) {
-			throw new DistributionTimeoutException("Distribution timed out.");
-		}
-
 	}
 
 	private PromotionRequest getPromotionRequest(String targetRepo) {

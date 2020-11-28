@@ -16,11 +16,10 @@
 
 package org.springframework.boot.autoconfigure.web.reactive.function.client;
 
-import java.util.function.Function;
-
 import org.eclipse.jetty.client.HttpClient;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -56,8 +55,12 @@ class ClientHttpConnectorConfiguration {
 
 		@Bean
 		@Lazy
-		public ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory reactorResourceFactory) {
-			return new ReactorClientHttpConnector(reactorResourceFactory, Function.identity());
+		public ReactorClientHttpConnector reactorClientHttpConnector(ReactorResourceFactory reactorResourceFactory,
+				ObjectProvider<ReactorNettyHttpClientMapper> mapperProvider) {
+			ReactorNettyHttpClientMapper mapper = mapperProvider.orderedStream()
+					.reduce((before, after) -> (client) -> after.configure(before.configure(client)))
+					.orElse((client) -> client);
+			return new ReactorClientHttpConnector(reactorResourceFactory, mapper::configure);
 		}
 
 	}

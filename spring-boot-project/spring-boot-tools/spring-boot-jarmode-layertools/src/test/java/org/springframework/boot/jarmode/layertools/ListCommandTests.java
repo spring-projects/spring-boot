@@ -28,9 +28,10 @@ import java.util.zip.ZipOutputStream;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -41,6 +42,7 @@ import static org.mockito.BDDMockito.given;
  * @author Phillip Webb
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class ListCommandTests {
 
 	@TempDir
@@ -51,18 +53,17 @@ class ListCommandTests {
 
 	private File jarFile;
 
+	private ListCommand command;
+
+	private TestPrintStream out;
+
 	@BeforeEach
 	void setup() throws Exception {
-		MockitoAnnotations.initMocks(this);
 		this.jarFile = createJarFile("test.jar");
 		given(this.context.getJarFile()).willReturn(this.jarFile);
 		this.command = new ListCommand(this.context);
 		this.out = new TestPrintStream(this);
 	}
-
-	private ListCommand command;
-
-	private TestPrintStream out;
 
 	@Test
 	void listLayersShouldListLayers() {

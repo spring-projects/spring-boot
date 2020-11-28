@@ -11,7 +11,7 @@ We then walk you through building your first Spring Boot application, discussing
 
 [[getting-started-introducing-spring-boot]]
 == Introducing Spring Boot
-Spring Boot makes it easy to create stand-alone, production-grade Spring-based Applications that you can run.
+Spring Boot helps you to create stand-alone, production-grade Spring-based Applications that you can run.
 We take an opinionated view of the Spring platform and third-party libraries, so that you can get started with minimum fuss.
 Most Spring Boot applications need very little Spring configuration.
 
@@ -29,8 +29,8 @@ Our primary goals are:
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 14 (included).
-{spring-framework-docs}[Spring Framework {spring-framework-version}] or above is also required.
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 15 (included).
+{spring-framework-docs}/[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
 
@@ -136,7 +136,7 @@ More details on getting started with Spring Boot and Gradle can be found in the 
 [[getting-started-installing-the-cli]]
 === Installing the Spring Boot CLI
 The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly prototype with Spring.
-It lets you run http://groovy-lang.org/[Groovy] scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.
+It lets you run https://groovy-lang.org/[Groovy] scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.
 
 You do not need to use the CLI to work with Spring Boot, but it is definitely the quickest way to get a Spring application off the ground.
 
@@ -170,7 +170,7 @@ Get SDKMAN! from https://sdkman.io and install Spring Boot by using the followin
 	Spring Boot v{spring-boot-version}
 ----
 
-If you develop features for the CLI and want easy access to the version you built, use the following commands:
+If you develop features for the CLI and want access to the version you built, use the following commands:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
@@ -334,7 +334,7 @@ If you manually installed the CLI, follow the <<getting-started-manual-cli-insta
 
 [[getting-started-first-application]]
 == Developing Your First Spring Boot Application
-This section describes how to develop a simple "`Hello World!`" web application that highlights some of Spring Boot's key features.
+This section describes how to develop a small "`Hello World!`" web application that highlights some of Spring Boot's key features.
 We use Maven to build this project, since most IDEs support it.
 
 [TIP]
@@ -365,8 +365,8 @@ Before we begin, open a terminal and run the following commands to ensure that y
 	Java version: 1.8.0_102, vendor: Oracle Corporation
 ----
 
-NOTE: This sample needs to be created in its own folder.
-Subsequent instructions assume that you have created a suitable folder and that it is your current directory.
+NOTE: This sample needs to be created in its own directory.
+Subsequent instructions assume that you have created a suitable directory and that it is your current directory.
 
 
 
@@ -481,7 +481,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 [[getting-started-first-application-code]]
 === Writing the Code
 To finish our application, we need to create a single Java file.
-By default, Maven compiles sources from `src/main/java`, so you need to create that folder structure and then add a file named `src/main/java/Example.java` to contain the following code:
+By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/Example.java` to contain the following code:
 
 [source,java,indent=0]
 ----
@@ -522,7 +522,7 @@ It tells Spring that any HTTP request with the `/` path should be mapped to the 
 The `@RestController` annotation tells Spring to render the resulting string directly back to the caller.
 
 TIP: The `@RestController` and `@RequestMapping` annotations are Spring MVC annotations (they are not specific to Spring Boot).
-See the {spring-framework-docs}web.html#mvc[MVC section] in the Spring Reference Documentation for more details.
+See the {spring-framework-docs}/web.html#mvc[MVC section] in the Spring Reference Documentation for more details.
 
 
 
@@ -544,7 +544,7 @@ Spring Boot still does its best to auto-configure your application.
 [[getting-started-first-application-main-method]]
 ==== The "`main`" Method
 The final part of our application is the `main` method.
-This is just a standard method that follows the Java convention for an application entry point.
+This is a standard method that follows the Java convention for an application entry point.
 Our main method delegates to Spring Boot's `SpringApplication` class by calling `run`.
 `SpringApplication` bootstraps our application, starting Spring, which, in turn, starts the auto-configured Tomcat web server.
 We need to pass `Example.class` as an argument to the `run` method to tell `SpringApplication` which is the primary Spring component.

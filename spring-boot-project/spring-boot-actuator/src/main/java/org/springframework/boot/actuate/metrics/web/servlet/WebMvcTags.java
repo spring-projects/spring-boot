@@ -115,6 +115,9 @@ public final class WebMvcTags {
 				if (ignoreTrailingSlash && pattern.length() > 1) {
 					pattern = TRAILING_SLASH_PATTERN.matcher(pattern).replaceAll("");
 				}
+				if (pattern.isEmpty()) {
+					return URI_ROOT;
+				}
 				return Tag.of("uri", pattern);
 			}
 			if (response != null) {

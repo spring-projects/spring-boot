@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,10 @@ package org.springframework.boot.rsocket.server;
 
 import java.net.InetAddress;
 
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.util.unit.DataSize;
+
 /**
  * A configurable {@link RSocketServerFactory}.
  *
@@ -34,6 +38,14 @@ public interface ConfigurableRSocketServerFactory {
 	void setPort(int port);
 
 	/**
+	 * Specify the maximum transmission unit. Frames larger than the specified
+	 * {@code fragmentSize} are fragmented.
+	 * @param fragmentSize the fragment size
+	 * @since 2.4.0
+	 */
+	void setFragmentSize(DataSize fragmentSize);
+
+	/**
 	 * Set the specific network address that the server should bind to.
 	 * @param address the address to set (defaults to {@code null})
 	 */
@@ -44,5 +56,17 @@ public interface ConfigurableRSocketServerFactory {
 	 * @param transport the transport protocol to use
 	 */
 	void setTransport(RSocketServer.Transport transport);
+
+	/**
+	 * Sets the SSL configuration that will be applied to the server's default connector.
+	 * @param ssl the SSL configuration
+	 */
+	void setSsl(Ssl ssl);
+
+	/**
+	 * Sets a provider that will be used to obtain SSL stores.
+	 * @param sslStoreProvider the SSL store provider
+	 */
+	void setSslStoreProvider(SslStoreProvider sslStoreProvider);
 
 }

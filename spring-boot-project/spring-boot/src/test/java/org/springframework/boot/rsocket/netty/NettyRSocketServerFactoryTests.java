@@ -17,17 +17,19 @@
 package org.springframework.boot.rsocket.netty;
 
 import java.net.InetSocketAddress;
-import java.time.Duration;
+import java.nio.channels.ClosedChannelException;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import io.netty.buffer.PooledByteBufAllocator;
-import io.rsocket.AbstractRSocket;
+import io.netty.handler.ssl.SslContextBuilder;
+import io.netty.handler.ssl.SslProvider;
+import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.rsocket.ConnectionSetupPayload;
 import io.rsocket.Payload;
 import io.rsocket.RSocket;
-import io.rsocket.RSocketFactory;
 import io.rsocket.SocketAcceptor;
+import io.rsocket.transport.netty.client.TcpClientTransport;
 import io.rsocket.transport.netty.client.WebsocketClientTransport;
 import io.rsocket.util.DefaultPayload;
 import org.assertj.core.api.Assertions;
@@ -35,9 +37,14 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.client.HttpClient;
+import reactor.netty.tcp.TcpClient;
+import reactor.test.StepVerifier;
 
 import org.springframework.boot.rsocket.server.RSocketServer;
-import org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor;
+import org.springframework.boot.rsocket.server.RSocketServer.Transport;
+import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
+import org.springframework.boot.web.server.Ssl;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.core.io.buffer.NettyDataBufferFactory;
@@ -47,8 +54,9 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.util.SocketUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.given;
+import static org.mockito.BDDMockito.will;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 
@@ -57,6 +65,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Brian Clozel
  * @author Leo Li
+ * @author Chris Bono
  */
 class NettyRSocketServerFactoryTests {
 
@@ -64,10 +73,11 @@ class NettyRSocketServerFactoryTests {
 
 	private RSocketRequester requester;
 
-	private static final Duration TIMEOUT = Duration.ofSeconds(3);
-
 	@AfterEach
 	void tearDown() {
+		if (this.requester != null) {
+			this.requester.rsocketClient().dispose();
+		}
 		if (this.server != null) {
 			try {
 				this.server.stop();
@@ -76,13 +86,12 @@ class NettyRSocketServerFactoryTests {
 				// Ignore
 			}
 		}
-		if (this.requester != null) {
-			this.requester.rsocket().dispose();
-		}
 	}
 
 	private NettyRSocketServerFactory getFactory() {
-		return new NettyRSocketServerFactory();
+		NettyRSocketServerFactory factory = new NettyRSocketServerFactory();
+		factory.setPort(0);
+		return factory;
 	}
 
 	@Test
@@ -96,10 +105,8 @@ class NettyRSocketServerFactoryTests {
 			return port;
 		});
 		this.requester = createRSocketTcpClient();
-		String payload = "test payload";
-		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
 		assertThat(this.server.address().getPort()).isEqualTo(specificPort);
-		assertThat(response).isEqualTo(payload);
+		checkEchoRequest();
 	}
 
 	@Test
@@ -109,9 +116,7 @@ class NettyRSocketServerFactoryTests {
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		this.server.start();
 		this.requester = createRSocketWebSocketClient();
-		String payload = "test payload";
-		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
-		assertThat(response).isEqualTo(payload);
+		checkEchoRequest();
 	}
 
 	@Test
@@ -124,38 +129,124 @@ class NettyRSocketServerFactoryTests {
 		this.server = factory.create(new EchoRequestResponseAcceptor());
 		this.server.start();
 		this.requester = createRSocketWebSocketClient();
-		String payload = "test payload";
-		String response = this.requester.route("test").data(payload).retrieveMono(String.class).block(TIMEOUT);
-		assertThat(response).isEqualTo(payload);
+		checkEchoRequest();
 	}
 
 	@Test
-	void serverProcessors() {
+	void serverCustomizers() {
 		NettyRSocketServerFactory factory = getFactory();
-		ServerRSocketFactoryProcessor[] processors = new ServerRSocketFactoryProcessor[2];
-		for (int i = 0; i < processors.length; i++) {
-			processors[i] = mock(ServerRSocketFactoryProcessor.class);
-			given(processors[i].process(any(RSocketFactory.ServerRSocketFactory.class)))
-					.will((invocation) -> invocation.getArgument(0));
+		RSocketServerCustomizer[] customizers = new RSocketServerCustomizer[2];
+		for (int i = 0; i < customizers.length; i++) {
+			customizers[i] = mock(RSocketServerCustomizer.class);
+			will((invocation) -> invocation.getArgument(0)).given(customizers[i])
+					.customize(any(io.rsocket.core.RSocketServer.class));
 		}
-		factory.setSocketFactoryProcessors(Arrays.asList(processors));
+		factory.setRSocketServerCustomizers(Arrays.asList(customizers));
 		this.server = factory.create(new EchoRequestResponseAcceptor());
-		InOrder ordered = inOrder((Object[]) processors);
-		for (ServerRSocketFactoryProcessor processor : processors) {
-			ordered.verify(processor).process(any(RSocketFactory.ServerRSocketFactory.class));
+		InOrder ordered = inOrder((Object[]) customizers);
+		for (RSocketServerCustomizer customizer : customizers) {
+			ordered.verify(customizer).customize(any(io.rsocket.core.RSocketServer.class));
 		}
+	}
+
+	@Test
+	void tcpTransportBasicSslFromClassPath() {
+		testBasicSslWithKeyStore("classpath:test.jks", "password", Transport.TCP);
+	}
+
+	@Test
+	void tcpTransportBasicSslFromFileSystem() {
+		testBasicSslWithKeyStore("src/test/resources/test.jks", "password", Transport.TCP);
+	}
+
+	@Test
+	void websocketTransportBasicSslFromClassPath() {
+		testBasicSslWithKeyStore("classpath:test.jks", "password", Transport.WEBSOCKET);
+	}
+
+	@Test
+	void websocketTransportBasicSslFromFileSystem() {
+		testBasicSslWithKeyStore("src/test/resources/test.jks", "password", Transport.WEBSOCKET);
+	}
+
+	private void checkEchoRequest() {
+		String payload = "test payload";
+		Mono<String> response = this.requester.route("test").data(payload).retrieveMono(String.class);
+		StepVerifier.create(response).expectNext(payload).verifyComplete();
+	}
+
+	private void testBasicSslWithKeyStore(String keyStore, String keyPassword, Transport transport) {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(transport);
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore(keyStore);
+		ssl.setKeyPassword(keyPassword);
+		factory.setSsl(ssl);
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
+		this.requester = (transport == Transport.TCP) ? createSecureRSocketTcpClient()
+				: createSecureRSocketWebSocketClient();
+		checkEchoRequest();
+	}
+
+	@Test
+	void tcpTransportSslRejectsInsecureClient() {
+		NettyRSocketServerFactory factory = getFactory();
+		factory.setTransport(Transport.TCP);
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("classpath:test.jks");
+		ssl.setKeyPassword("password");
+		factory.setSsl(ssl);
+		this.server = factory.create(new EchoRequestResponseAcceptor());
+		this.server.start();
+		this.requester = createRSocketTcpClient();
+		String payload = "test payload";
+		Mono<String> responseMono = this.requester.route("test").data(payload).retrieveMono(String.class);
+		StepVerifier.create(responseMono)
+				.verifyErrorSatisfies((ex) -> assertThatExceptionOfType(ClosedChannelException.class));
 	}
 
 	private RSocketRequester createRSocketTcpClient() {
-		Assertions.assertThat(this.server).isNotNull();
-		InetSocketAddress address = this.server.address();
-		return createRSocketRequesterBuilder().connectTcp(address.getHostString(), address.getPort()).block();
+		return createRSocketRequesterBuilder().transport(TcpClientTransport.create(createTcpClient()));
 	}
 
 	private RSocketRequester createRSocketWebSocketClient() {
+		return createRSocketRequesterBuilder().transport(WebsocketClientTransport.create(createHttpClient(), "/"));
+	}
+
+	private RSocketRequester createSecureRSocketTcpClient() {
+		return createRSocketRequesterBuilder().transport(TcpClientTransport.create(createSecureTcpClient()));
+	}
+
+	private RSocketRequester createSecureRSocketWebSocketClient() {
+		return createRSocketRequesterBuilder()
+				.transport(WebsocketClientTransport.create(createSecureHttpClient(), "/"));
+	}
+
+	private HttpClient createSecureHttpClient() {
+		HttpClient httpClient = createHttpClient();
+		SslContextBuilder builder = SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
+				.trustManager(InsecureTrustManagerFactory.INSTANCE);
+		return httpClient.secure((spec) -> spec.sslContext(builder));
+	}
+
+	private HttpClient createHttpClient() {
 		Assertions.assertThat(this.server).isNotNull();
 		InetSocketAddress address = this.server.address();
-		return createRSocketRequesterBuilder().connect(WebsocketClientTransport.create(address)).block();
+		return HttpClient.create().host(address.getHostName()).port(address.getPort());
+	}
+
+	private TcpClient createSecureTcpClient() {
+		TcpClient tcpClient = createTcpClient();
+		SslContextBuilder builder = SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
+				.trustManager(InsecureTrustManagerFactory.INSTANCE);
+		return tcpClient.secure((spec) -> spec.sslContext(builder));
+	}
+
+	private TcpClient createTcpClient() {
+		Assertions.assertThat(this.server).isNotNull();
+		InetSocketAddress address = this.server.address();
+		return TcpClient.create().host(address.getHostName()).port(address.getPort());
 	}
 
 	private RSocketRequester.Builder createRSocketRequesterBuilder() {
@@ -182,11 +273,13 @@ class NettyRSocketServerFactoryTests {
 
 		@Override
 		public Mono<RSocket> accept(ConnectionSetupPayload setupPayload, RSocket rSocket) {
-			return Mono.just(new AbstractRSocket() {
+			return Mono.just(new RSocket() {
+
 				@Override
 				public Mono<Payload> requestResponse(Payload payload) {
 					return Mono.just(DefaultPayload.create(payload));
 				}
+
 			});
 		}
 

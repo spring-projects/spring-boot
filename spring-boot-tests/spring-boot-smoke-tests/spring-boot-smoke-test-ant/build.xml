@@ -11,7 +11,7 @@
 		actual jars). Run with '$ java -jar target/*.jar'.
 	</description>
 
-	<property name="lib.dir" location="${basedir}/target/lib" />
+	<property name="lib.dir" location="${basedir}/build/ant/lib" />
 	<property name="start-class" value="smoketest.ant.SampleAntApplication" />
 
 	<target name="resolve" description="--> retrieve dependencies with ivy">
@@ -29,7 +29,7 @@
 	</target>
 
 	<target name="compile" depends="init" description="compile">
-		<javac srcdir="src/main/java" destdir="build/ant/classes" classpathref="compile.classpath" fork="true" includeantruntime="false" />
+		<javac srcdir="src/main/java" destdir="build/ant/classes" classpathref="compile.classpath" fork="true" includeantruntime="false" source="8" target="8" compiler="javac1.8"/>
 	</target>
 
 	<target name="clean" description="cleans all created files/dirs">
@@ -37,7 +37,7 @@
 	</target>
 
 	<target name="build" depends="compile">
-		<spring-boot:exejar destfile="build/ant/libs/${ant.project.name}-${ant-spring-boot.version}.jar" classes="build/ant/classes">
+		<spring-boot:exejar destfile="build/ant/libs/${ant.project.name}.jar" classes="build/ant/classes">
 			<spring-boot:lib>
 				<fileset dir="${lib.dir}/runtime" />
 			</spring-boot:lib>

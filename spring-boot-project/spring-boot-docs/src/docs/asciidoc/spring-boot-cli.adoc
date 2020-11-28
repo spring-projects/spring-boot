@@ -18,7 +18,7 @@ See _<<getting-started.adoc#getting-started-installing-the-cli>>_ in the "`Getti
 [[cli-using-the-cli]]
 == Using the CLI
 Once you have installed the CLI, you can run it by typing `spring` and pressing Enter at the command line.
-If you run `spring` without any arguments, a simple help screen is displayed, as follows:
+If you run `spring` without any arguments, a help screen is displayed, as follows:
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----

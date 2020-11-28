@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,11 @@ import org.springframework.core.annotation.AliasFor;
  * <li>Set the
  * {@link org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean#setPackagesToScan(String...)
  * packages scanned} for JPA entities.</li>
- * <li>Set the packages used with Neo4J's {@link org.neo4j.ogm.session.SessionFactory
- * SessionFactory}.</li>
  * <li>Set the
  * {@link org.springframework.data.mapping.context.AbstractMappingContext#setInitialEntitySet(java.util.Set)
  * initial entity set} used with Spring Data
  * {@link org.springframework.data.mongodb.core.mapping.MongoMappingContext MongoDB},
+ * {@link org.springframework.data.neo4j.core.mapping.Neo4jMappingContext Neo4j},
  * {@link org.springframework.data.cassandra.core.mapping.CassandraMappingContext
  * Cassandra} and
  * {@link org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext

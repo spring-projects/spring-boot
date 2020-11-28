@@ -16,10 +16,10 @@
 
 package org.springframework.boot.actuate.availability;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.actuate.health.Status;
 import org.springframework.boot.availability.ApplicationAvailability;
@@ -35,15 +35,11 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class AvailabilityStateHealthIndicatorTests {
 
 	@Mock
 	private ApplicationAvailability applicationAvailability;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void createWhenApplicationAvailabilityIsNullThrowsException() {

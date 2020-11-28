@@ -19,6 +19,7 @@ package org.springframework.boot.web.server;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
+import java.nio.file.Files;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
@@ -55,7 +56,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 
 	private String serverHeader;
 
-	private Shutdown shutdown = new Shutdown();
+	private Shutdown shutdown = Shutdown.IMMEDIATE;
 
 	/**
 	 * Create a new {@link AbstractConfigurableWebServerFactory} instance.
@@ -185,9 +186,7 @@ public abstract class AbstractConfigurableWebServerFactory implements Configurab
 	 */
 	protected final File createTempDir(String prefix) {
 		try {
-			File tempDir = File.createTempFile(prefix + ".", "." + getPort());
-			tempDir.delete();
-			tempDir.mkdir();
+			File tempDir = Files.createTempDirectory(prefix + "." + getPort() + ".").toFile();
 			tempDir.deleteOnExit();
 			return tempDir;
 		}

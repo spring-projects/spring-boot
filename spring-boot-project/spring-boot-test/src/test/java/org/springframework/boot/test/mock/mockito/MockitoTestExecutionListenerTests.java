@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,12 @@ package org.springframework.boot.test.mock.mockito;
 import java.io.InputStream;
 import java.lang.reflect.Field;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.test.context.TestContext;
@@ -43,6 +43,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class MockitoTestExecutionListenerTests {
 
 	private MockitoTestExecutionListener listener = new MockitoTestExecutionListener();
@@ -56,12 +57,6 @@ class MockitoTestExecutionListenerTests {
 	@Captor
 	private ArgumentCaptor<Field> fieldCaptor;
 
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-		given(this.applicationContext.getBean(MockitoPostProcessor.class)).willReturn(this.postProcessor);
-	}
-
 	@Test
 	void prepareTestInstanceShouldInitMockitoAnnotations() throws Exception {
 		WithMockitoAnnotations instance = new WithMockitoAnnotations();
@@ -72,23 +67,27 @@ class MockitoTestExecutionListenerTests {
 
 	@Test
 	void prepareTestInstanceShouldInjectMockBean() throws Exception {
+		given(this.applicationContext.getBean(MockitoPostProcessor.class)).willReturn(this.postProcessor);
 		WithMockBean instance = new WithMockBean();
-		this.listener.prepareTestInstance(mockTestContext(instance));
+		TestContext testContext = mockTestContext(instance);
+		given(testContext.getApplicationContext()).willReturn(this.applicationContext);
+		this.listener.prepareTestInstance(testContext);
 		verify(this.postProcessor).inject(this.fieldCaptor.capture(), eq(instance), any(MockDefinition.class));
 		assertThat(this.fieldCaptor.getValue().getName()).isEqualTo("mockBean");
 	}
 
 	@Test
 	void beforeTestMethodShouldDoNothingWhenDirtiesContextAttributeIsNotSet() throws Exception {
-		WithMockBean instance = new WithMockBean();
-		this.listener.beforeTestMethod(mockTestContext(instance));
+		this.listener.beforeTestMethod(mock(TestContext.class));
 		verifyNoMoreInteractions(this.postProcessor);
 	}
 
 	@Test
 	void beforeTestMethodShouldInjectMockBeanWhenDirtiesContextAttributeIsSet() throws Exception {
+		given(this.applicationContext.getBean(MockitoPostProcessor.class)).willReturn(this.postProcessor);
 		WithMockBean instance = new WithMockBean();
 		TestContext mockTestContext = mockTestContext(instance);
+		given(mockTestContext.getApplicationContext()).willReturn(this.applicationContext);
 		given(mockTestContext.getAttribute(DependencyInjectionTestExecutionListener.REINJECT_DEPENDENCIES_ATTRIBUTE))
 				.willReturn(Boolean.TRUE);
 		this.listener.beforeTestMethod(mockTestContext);
@@ -101,7 +100,6 @@ class MockitoTestExecutionListenerTests {
 		TestContext testContext = mock(TestContext.class);
 		given(testContext.getTestInstance()).willReturn(instance);
 		given(testContext.getTestClass()).willReturn((Class) instance.getClass());
-		given(testContext.getApplicationContext()).willReturn(this.applicationContext);
 		return testContext;
 	}
 

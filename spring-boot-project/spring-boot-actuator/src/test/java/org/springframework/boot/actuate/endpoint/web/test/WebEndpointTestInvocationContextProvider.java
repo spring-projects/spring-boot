@@ -194,7 +194,7 @@ class WebEndpointTestInvocationContextProvider implements TestTemplateInvocation
 					"http://localhost:" + determinePort());
 			uriBuilderFactory.setEncodingMode(EncodingMode.NONE);
 			return WebTestClient.bindToServer().uriBuilderFactory(uriBuilderFactory).responseTimeout(TIMEOUT)
-					.filter((request, next) -> {
+					.codecs((codecs) -> codecs.defaultCodecs().maxInMemorySize(-1)).filter((request, next) -> {
 						if (HttpMethod.GET == request.method()) {
 							return next.exchange(request).retry(10);
 						}

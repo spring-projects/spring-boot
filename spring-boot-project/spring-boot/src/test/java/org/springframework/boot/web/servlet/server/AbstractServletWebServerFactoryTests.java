@@ -22,6 +22,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.ServerSocket;
@@ -52,7 +53,6 @@ import java.util.concurrent.CyclicBarrier;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Supplier;
@@ -96,6 +96,7 @@ import org.apache.http.ssl.TrustStrategy;
 import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -111,7 +112,9 @@ import org.springframework.boot.testsupport.web.servlet.ExampleFilter;
 import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.MimeMappings;
+import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.Ssl.ClientAuth;
@@ -375,6 +378,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	void mimeType() throws Exception {
 		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.xxcss")));
 		AbstractServletWebServerFactory factory = getFactory();
+		factory.setRegisterDefaultServlet(true);
 		factory.setDocumentRoot(this.tempDir);
 		MimeMappings mimeMappings = new MimeMappings();
 		mimeMappings.add("xxcss", "text/css");
@@ -541,6 +545,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
+		factory.setRegisterDefaultServlet(true);
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks", "classpath:test.jks", null, null));
 		this.webServer = factory.getWebServer();
@@ -920,6 +925,16 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
+	void malformedAddress() throws Exception {
+		AbstractServletWebServerFactory factory = getFactory();
+		factory.setAddress(InetAddress.getByName("255.255.255.255"));
+		assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> {
+			this.webServer = factory.getWebServer();
+			this.webServer.start();
+		}).isNotInstanceOf(PortInUseException.class);
+	}
+
+	@Test
 	void localeCharsetMappingsAreConfigured() {
 		AbstractServletWebServerFactory factory = getFactory();
 		Map<Locale, Charset> mappings = new HashMap<>();
@@ -1021,75 +1036,42 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void whenThereAreNoInFlightRequestsShutDownGracefullyReturnsTrueBeforePeriodElapses() throws Exception {
+	void whenThereAreNoInFlightRequestsShutDownGracefullyInvokesCallbackWithIdle() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		this.webServer = factory.getWebServer();
 		this.webServer.start();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
-	void whenARequestRemainsInFlightThenShutDownGracefullyReturnsFalseAfterPeriodElapses() throws Exception {
-		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
-		BlockingServlet blockingServlet = new BlockingServlet();
-		this.webServer = factory.getWebServer((context) -> {
-			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
-			registration.addMapping("/blocking");
-		});
-		this.webServer.start();
-		int port = this.webServer.getPort();
-		Future<Object> request = initiateGetRequest(port, "/blocking");
-		blockingServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isFalse();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isGreaterThanOrEqualTo(5000);
-		assertThat(request.isDone()).isFalse();
-		blockingServlet.admitOne();
-		assertThat(request.get()).isInstanceOf(HttpResponse.class);
-	}
-
-	@Test
-	void whenARequestCompletesAndTheConnectionIsClosedDuringGracePeriodThenShutDownGracefullyReturnsTrueBeforePeriodElapses()
+	void whenARequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilTheRequestCompletes()
 			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingServlet blockingServlet = new BlockingServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingServlet);
 			registration.addMapping("/blocking");
-			registration.setAsyncSupported(true);
 		});
 		this.webServer.start();
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blocking");
 		blockingServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
 		blockingServlet.admitOne();
-		assertThat(shutdownResult.get()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
-	void whenAnAsyncRequestRemainsInFlightThenShutDownGracefullyReturnsFalseAfterPeriodElapses() throws Exception {
+	void whenAnAsyncRequestRemainsInFlightThenShutDownGracefullyDoesNotInvokeCallbackUntilRequestCompletes()
+			throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(5));
-		factory.setShutdown(shutdown);
+		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingAsyncServlet blockingAsyncServlet = new BlockingAsyncServlet();
 		this.webServer = factory.getWebServer((context) -> {
 			Dynamic registration = context.addServlet("blockingServlet", blockingAsyncServlet);
@@ -1100,46 +1082,33 @@ public abstract class AbstractServletWebServerFactoryTests {
 		int port = this.webServer.getPort();
 		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
 		blockingAsyncServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		assertThat(this.webServer.shutDownGracefully()).isFalse();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isGreaterThanOrEqualTo(5000);
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		Thread.sleep(5000);
+		assertThat(result.get()).isNull();
 		assertThat(request.isDone()).isFalse();
 		blockingAsyncServlet.admitOne();
 		assertThat(request.get()).isInstanceOf(HttpResponse.class);
+		Awaitility.await().atMost(Duration.ofSeconds(5)).until(() -> GracefulShutdownResult.IDLE == result.get());
 	}
 
 	@Test
-	void whenAnAsyncRequestCompletesAndTheConnectionIsClosedDuringGracePeriodThenShutDownGracefullyReturnsTrueBeforePeriodElapses()
-			throws Exception {
+	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException, BrokenBarrierException {
 		AbstractServletWebServerFactory factory = getFactory();
-		Shutdown shutdown = new Shutdown();
-		shutdown.setGracePeriod(Duration.ofSeconds(30));
-		factory.setShutdown(shutdown);
-		BlockingAsyncServlet blockingAsyncServlet = new BlockingAsyncServlet();
-		this.webServer = factory.getWebServer((context) -> {
-			Dynamic registration = context.addServlet("blockingServlet", blockingAsyncServlet);
-			registration.addMapping("/blockingAsync");
-			registration.setAsyncSupported(true);
-		});
+		BlockingServlet blockingServlet = new BlockingServlet();
+		this.webServer = factory
+				.getWebServer((context) -> context.addServlet("blockingServlet", blockingServlet).addMapping("/"));
 		this.webServer.start();
 		int port = this.webServer.getPort();
-		Future<Object> request = initiateGetRequest(port, "/blockingAsync");
-		blockingAsyncServlet.awaitQueue();
-		long start = System.currentTimeMillis();
-		Future<Boolean> shutdownResult = initiateGracefulShutdown();
-		blockingAsyncServlet.admitOne();
-		assertThat(shutdownResult.get()).isTrue();
-		long end = System.currentTimeMillis();
-		assertThat(end - start).isLessThanOrEqualTo(30000);
-		assertThat(request.get(30, TimeUnit.SECONDS)).isInstanceOf(HttpResponse.class);
-	}
+		initiateGetRequest(port, "/");
+		blockingServlet.awaitQueue();
+		this.webServer.stop();
+		try {
+			blockingServlet.admitOne();
+		}
+		catch (RuntimeException ex) {
 
-	protected Future<Boolean> initiateGracefulShutdown() {
-		RunnableFuture<Boolean> future = new FutureTask<Boolean>(() -> this.webServer.shutDownGracefully());
-		new Thread(future).start();
-		awaitInGracefulShutdown();
-		return future;
+		}
 	}
 
 	protected Future<Object> initiateGetRequest(int port, String path) {
@@ -1159,17 +1128,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 		});
 		new Thread(getRequest, "GET " + path).start();
 		return getRequest;
-	}
-
-	protected void awaitInGracefulShutdown() {
-		while (!this.inGracefulShutdown()) {
-			try {
-				Thread.sleep(100);
-			}
-			catch (InterruptedException ex) {
-				Thread.currentThread().interrupt();
-			}
-		}
 	}
 
 	private void wrapsFailingServletException(WebServerException ex) {
@@ -1244,6 +1202,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	private void addTestTxtFile(AbstractServletWebServerFactory factory) throws IOException {
 		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.txt")));
 		factory.setDocumentRoot(this.tempDir);
+		factory.setRegisterDefaultServlet(true);
 	}
 
 	protected String getLocalUrl(String resourcePath) {
@@ -1321,8 +1280,6 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	protected abstract org.apache.jasper.servlet.JspServlet getJspServlet() throws Exception;
 
-	protected abstract boolean inGracefulShutdown();
-
 	protected ServletContextInitializer exampleServletRegistration() {
 		return new ServletRegistrationBean<>(new ExampleServlet(), "/hello");
 	}
@@ -1398,7 +1355,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	private class TestGzipInputStreamFactory implements InputStreamFactory {
 
-		private final AtomicBoolean requested = new AtomicBoolean(false);
+		private final AtomicBoolean requested = new AtomicBoolean();
 
 		@Override
 		public InputStream create(InputStream in) throws IOException {
@@ -1512,7 +1469,10 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 		public void admitOne() {
 			try {
-				this.barriers.take().await();
+				CyclicBarrier barrier = this.barriers.take();
+				if (!barrier.isBroken()) {
+					barrier.await();
+				}
 			}
 			catch (InterruptedException ex) {
 				Thread.currentThread().interrupt();

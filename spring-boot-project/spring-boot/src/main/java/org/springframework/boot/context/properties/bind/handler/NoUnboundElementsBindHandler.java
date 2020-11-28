@@ -73,6 +73,15 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
+		if (error instanceof UnboundConfigurationPropertiesException) {
+			throw error;
+		}
+		return super.onFailure(name, target, context, error);
+	}
+
+	@Override
 	public void onFinish(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result)
 			throws Exception {
 		if (context.getDepth() == 0) {

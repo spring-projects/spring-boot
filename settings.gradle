@@ -5,7 +5,7 @@ pluginManagement {
 		maven {
 			url 'https://repo.spring.io/plugins-release'
 		}
-		if (version.endsWith('BUILD-SNAPSHOT')) {
+		if (version.endsWith('-SNAPSHOT')) {
 			maven { url "https://repo.spring.io/snapshot" }
 		}
 	}
@@ -22,8 +22,8 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.2"
-	id "io.spring.gradle-enterprise-conventions" version "0.0.2"
+	id "com.gradle.enterprise" version "3.5"
+	id "io.spring.ge.conventions" version "0.0.7"
 }
 
 rootProject.name="spring-boot-build"
@@ -36,10 +36,10 @@ settings.gradle.projectsLoaded {
 			}
 
 			settings.gradle.rootProject.getBuildDir().mkdirs()
-			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "(build scan not generated)"
+			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "build scan not generated"
 
 			buildScanPublished { scan ->
-				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "${scan.buildScanUri}\n"
+				new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "<${scan.buildScanUri}|build scan>\n"
 			}
 		}
 	}

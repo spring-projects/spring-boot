@@ -85,7 +85,7 @@ class LayersIndexTests {
 	}
 
 	@Test
-	void writeToWhenAllFilesInFolderAreInSameLayerUsesFolder() {
+	void writeToWhenAllFilesInDirectoryAreInSameLayerUsesDirectory() {
 		LayersIndex index = new LayersIndex(LAYER_A, LAYER_B, LAYER_C);
 		index.add(LAYER_A, "a1/b1/c1");
 		index.add(LAYER_A, "a1/b1/c2");
@@ -96,7 +96,7 @@ class LayersIndexTests {
 	}
 
 	@Test
-	void writeToWhenAllFilesInFolderAreInNotInSameLayerUsesFiles() {
+	void writeToWhenAllFilesInDirectoryAreInNotInSameLayerUsesFiles() {
 		LayersIndex index = new LayersIndex(LAYER_A, LAYER_B, LAYER_C);
 		index.add(LAYER_A, "a1/b1/c1");
 		index.add(LAYER_B, "a1/b1/c2");
@@ -130,7 +130,7 @@ class LayersIndexTests {
 				String actualContent = getContent();
 				String name = "LayersIndexTests-" + LayersIndexTests.this.testMethodName + ".txt";
 				InputStream in = LayersIndexTests.class.getResourceAsStream(name);
-				Assert.state(in != null, "Can't read " + name);
+				Assert.state(in != null, () -> "Can't read " + name);
 				String expectedContent = new String(FileCopyUtils.copyToByteArray(in), StandardCharsets.UTF_8);
 				expectedContent = expectedContent.replace("\r", "");
 				assertThat(actualContent).isEqualTo(expectedContent);

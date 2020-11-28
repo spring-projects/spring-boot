@@ -48,14 +48,17 @@ public interface WebServer {
 	int getPort();
 
 	/**
-	 * Gracefully shuts down the web server by preventing the handling of new requests and
-	 * waiting for a configurable period for there to be no active requests.
-	 * @return {@code true} if graceful shutdown completed within the period, otherwise
-	 * {@code false}
+	 * Initiates a graceful shutdown of the web server. Handling of new requests is
+	 * prevented and the given {@code callback} is invoked at the end of the attempt. The
+	 * attempt can be explicitly ended by invoking {@link #stop}. The default
+	 * implementation invokes the callback immediately with
+	 * {@link GracefulShutdownResult#IMMEDIATE}, i.e. no attempt is made at a graceful
+	 * shutdown.
+	 * @param callback the callback to invoke when the graceful shutdown completes
 	 * @since 2.3.0
 	 */
-	default boolean shutDownGracefully() {
-		return false;
+	default void shutDownGracefully(GracefulShutdownCallback callback) {
+		callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
 	}
 
 }

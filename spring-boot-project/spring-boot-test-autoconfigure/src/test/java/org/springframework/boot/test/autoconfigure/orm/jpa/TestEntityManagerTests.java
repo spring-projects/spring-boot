@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,9 @@ import javax.persistence.PersistenceUnitUtil;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.orm.jpa.EntityManagerHolder;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class TestEntityManagerTests {
 
 	@Mock
@@ -54,9 +56,7 @@ class TestEntityManagerTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.testEntityManager = new TestEntityManager(this.entityManagerFactory);
-		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 	}
 
 	@Test
@@ -69,6 +69,7 @@ class TestEntityManagerTests {
 	void persistAndGetIdShouldPersistAndGetId() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Object result = this.testEntityManager.persistAndGetId(entity);
 		verify(this.entityManager).persist(entity);
@@ -79,6 +80,7 @@ class TestEntityManagerTests {
 	void persistAndGetIdForTypeShouldPersistAndGetId() {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Integer result = this.testEntityManager.persistAndGetId(entity, Integer.class);
 		verify(this.entityManager).persist(entity);
@@ -109,6 +111,7 @@ class TestEntityManagerTests {
 		bindEntityManager();
 		TestEntity entity = new TestEntity();
 		TestEntity found = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		given(this.entityManager.find(TestEntity.class, 123)).willReturn(found);
 		TestEntity result = this.testEntityManager.persistFlushFind(entity);
@@ -177,6 +180,7 @@ class TestEntityManagerTests {
 	@Test
 	void getIdForTypeShouldGetId() {
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Integer result = this.testEntityManager.getId(entity, Integer.class);
 		assertThat(result).isEqualTo(123);
@@ -185,6 +189,7 @@ class TestEntityManagerTests {
 	@Test
 	void getIdForTypeWhenTypeIsWrongShouldThrowException() {
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		assertThatIllegalArgumentException().isThrownBy(() -> this.testEntityManager.getId(entity, Long.class))
 				.withMessageContaining("ID mismatch: Object of class [java.lang.Integer] "
@@ -194,6 +199,7 @@ class TestEntityManagerTests {
 	@Test
 	void getIdShouldGetId() {
 		TestEntity entity = new TestEntity();
+		given(this.entityManagerFactory.getPersistenceUnitUtil()).willReturn(this.persistenceUnitUtil);
 		given(this.persistenceUnitUtil.getIdentifier(entity)).willReturn(123);
 		Object result = this.testEntityManager.getId(entity);
 		assertThat(result).isEqualTo(123);

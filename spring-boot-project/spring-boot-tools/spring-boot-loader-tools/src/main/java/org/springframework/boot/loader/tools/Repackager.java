@@ -84,7 +84,7 @@ public class Repackager extends Packager {
 	 * @since 1.3.0
 	 */
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript) throws IOException {
-		this.repackage(destination, libraries, launchScript, null);
+		repackage(destination, libraries, launchScript, null);
 	}
 
 	/**
@@ -101,7 +101,8 @@ public class Repackager extends Packager {
 	public void repackage(File destination, Libraries libraries, LaunchScript launchScript, FileTime lastModifiedTime)
 			throws IOException {
 		Assert.isTrue(destination != null && !destination.isDirectory(), "Invalid destination");
-		if (lastModifiedTime != null && getLayout() instanceof War) {
+		Layout layout = getLayout(); // get layout early
+		if (lastModifiedTime != null && layout instanceof War) {
 			throw new IllegalStateException("Reproducible repackaging is not supported with war packaging");
 		}
 		destination = destination.getAbsoluteFile();

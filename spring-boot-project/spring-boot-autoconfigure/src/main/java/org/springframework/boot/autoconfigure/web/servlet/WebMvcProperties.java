@@ -23,6 +23,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
+import org.springframework.boot.context.properties.IncompatibleConfigurationException;
 import org.springframework.http.MediaType;
 import org.springframework.util.Assert;
 import org.springframework.validation.DefaultMessageCodesResolver;
@@ -56,10 +57,7 @@ public class WebMvcProperties {
 	 */
 	private LocaleResolver localeResolver = LocaleResolver.ACCEPT_HEADER;
 
-	/**
-	 * Date format to use. For instance, `dd/MM/yyyy`.
-	 */
-	private String dateFormat;
+	private final Format format = new Format();
 
 	/**
 	 * Whether to dispatch TRACE requests to the FrameworkServlet doService method.
@@ -123,6 +121,8 @@ public class WebMvcProperties {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.web.locale")
 	public Locale getLocale() {
 		return this.locale;
 	}
@@ -131,6 +131,8 @@ public class WebMvcProperties {
 		this.locale = locale;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.web.locale-resolver")
 	public LocaleResolver getLocaleResolver() {
 		return this.localeResolver;
 	}
@@ -139,12 +141,19 @@ public class WebMvcProperties {
 		this.localeResolver = localeResolver;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.mvc.format.date")
 	public String getDateFormat() {
-		return this.dateFormat;
+		return this.format.getDate();
 	}
 
+	@Deprecated
 	public void setDateFormat(String dateFormat) {
-		this.dateFormat = dateFormat;
+		this.format.setDate(dateFormat);
+	}
+
+	public Format getFormat() {
+		return this.format;
 	}
 
 	public boolean isIgnoreDefaultModelOnRedirect() {
@@ -231,6 +240,24 @@ public class WebMvcProperties {
 		return this.pathmatch;
 	}
 
+	@SuppressWarnings("deprecation")
+	public void checkConfiguration() {
+		if (this.getPathmatch().getMatchingStrategy() == MatchingStrategy.PATH_PATTERN_PARSER) {
+			if (this.getPathmatch().isUseSuffixPattern()) {
+				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
+						"spring.mvc.pathmatch.use-suffix-pattern");
+			}
+			if (this.getPathmatch().isUseRegisteredSuffixPattern()) {
+				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
+						"spring.mvc.pathmatch.use-registered-suffix-pattern");
+			}
+			if (!this.getServlet().getServletMapping().equals("/")) {
+				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
+						"spring.mvc.servlet.path");
+			}
+		}
+	}
+
 	public static class Async {
 
 		/**
@@ -252,7 +279,8 @@ public class WebMvcProperties {
 	public static class Servlet {
 
 		/**
-		 * Path of the dispatcher servlet.
+		 * Path of the dispatcher servlet. Setting a custom value for this property is not
+		 * compatible with the PathPatternParser matching strategy.
 		 */
 		private String path = "/";
 
@@ -408,8 +436,14 @@ public class WebMvcProperties {
 	public static class Pathmatch {
 
 		/**
+		 * Choice of strategy for matching request paths against registered mappings.
+		 */
+		private MatchingStrategy matchingStrategy = MatchingStrategy.ANT_PATH_MATCHER;
+
+		/**
 		 * Whether to use suffix pattern match (".*") when matching patterns to requests.
-		 * If enabled a method mapped to "/users" also matches to "/users.*".
+		 * If enabled a method mapped to "/users" also matches to "/users.*". Enabling
+		 * this option is not compatible with the PathPatternParser matching strategy.
 		 */
 		private boolean useSuffixPattern = false;
 
@@ -417,9 +451,18 @@ public class WebMvcProperties {
 		 * Whether suffix pattern matching should work only against extensions registered
 		 * with "spring.mvc.contentnegotiation.media-types.*". This is generally
 		 * recommended to reduce ambiguity and to avoid issues such as when a "." appears
-		 * in the path for other reasons.
+		 * in the path for other reasons. Enabling this option is not compatible with the
+		 * PathPatternParser matching strategy.
 		 */
 		private boolean useRegisteredSuffixPattern = false;
+
+		public MatchingStrategy getMatchingStrategy() {
+			return this.matchingStrategy;
+		}
+
+		public void setMatchingStrategy(MatchingStrategy matchingStrategy) {
+			this.matchingStrategy = matchingStrategy;
+		}
 
 		@DeprecatedConfigurationProperty(
 				reason = "Use of path extensions for request mapping and for content negotiation is discouraged.")
@@ -447,6 +490,69 @@ public class WebMvcProperties {
 
 	}
 
+	public static class Format {
+
+		/**
+		 * Date format to use, for example `dd/MM/yyyy`.
+		 */
+		private String date;
+
+		/**
+		 * Time format to use, for example `HH:mm:ss`.
+		 */
+		private String time;
+
+		/**
+		 * Date-time format to use, for example `yyyy-MM-dd HH:mm:ss`.
+		 */
+		private String dateTime;
+
+		public String getDate() {
+			return this.date;
+		}
+
+		public void setDate(String date) {
+			this.date = date;
+		}
+
+		public String getTime() {
+			return this.time;
+		}
+
+		public void setTime(String time) {
+			this.time = time;
+		}
+
+		public String getDateTime() {
+			return this.dateTime;
+		}
+
+		public void setDateTime(String dateTime) {
+			this.dateTime = dateTime;
+		}
+
+	}
+
+	public enum MatchingStrategy {
+
+		/**
+		 * Use the {@code AntPathMatcher} implementation.
+		 */
+		ANT_PATH_MATCHER,
+
+		/**
+		 * Use the {@code PathPatternParser} implementation.
+		 */
+		PATH_PATTERN_PARSER
+
+	}
+
+	/**
+	 * Locale resolution options.
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link org.springframework.boot.autoconfigure.web.WebProperties.LocaleResolver}
+	 */
+	@Deprecated
 	public enum LocaleResolver {
 
 		/**

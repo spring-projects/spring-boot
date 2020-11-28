@@ -22,12 +22,18 @@
 				<allow pkg="org.springframework.boot.web.embedded" />
 				<allow pkg="org.springframework.boot.web.servlet" />
 				<allow pkg="org.springframework.web.servlet" />
+				<subpackage name="error">
+					<allow pkg="org.springframework.boot.web.error" />
+				</subpackage>
 			</subpackage>
 			<subpackage name="reactive">
 				<allow pkg="org.springframework.boot.web.codec" />
 				<allow pkg="org.springframework.boot.web.embedded" />
 				<allow pkg="org.springframework.boot.web.reactive" />
 				<allow pkg="org.springframework.web.reactive" />
+				<subpackage name="error">
+					<allow pkg="org.springframework.boot.web.error" />
+				</subpackage>
 			</subpackage>
 		</subpackage>
 	</subpackage>
@@ -99,6 +105,7 @@
 				<allow pkg="org.springframework.web.servlet" />
 			</subpackage>
 			<subpackage name="error">
+				<allow pkg="org.springframework.boot.web.error" />
 				<allow pkg="org.springframework.web.servlet" />
 			</subpackage>
 		</subpackage>
@@ -109,6 +116,9 @@
 				<allow pkg="org.springframework.boot.web.context" />
 				<allow pkg="org.springframework.boot.web.server" />
 				<allow pkg="org.springframework.boot.web.reactive.server" />
+			</subpackage>
+			<subpackage name="error">
+				<allow pkg="org.springframework.boot.web.error" />
 			</subpackage>
 			<subpackage name="server">
 				<allow pkg="org.springframework.boot.web.server" />

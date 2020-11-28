@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 import javax.persistence.EntityManager;
@@ -29,12 +30,16 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceSchemaCreatedEvent;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.Ordered;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.JpaDialect;
@@ -59,6 +64,12 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	private HibernateProperties hibernateProperties;
 
 	private DataSourceSchemaCreatedPublisher schemaCreatedPublisher;
+
+	private DataSourceInitializationCompletionListener initializationCompletionListener;
+
+	DataSourceInitializedPublisher(DataSourceInitializationCompletionListener completionListener) {
+		this.initializationCompletionListener = completionListener;
+	}
 
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
@@ -121,25 +132,67 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	}
 
 	/**
+	 * {@link ApplicationListener} that, upon receiving {@link ContextRefreshedEvent},
+	 * blocks until any asynchronous DataSource initialization has completed.
+	 */
+	static class DataSourceInitializationCompletionListener
+			implements ApplicationListener<ContextRefreshedEvent>, Ordered {
+
+		private volatile Future<?> dataSourceInitialization;
+
+		@Override
+		public void onApplicationEvent(ContextRefreshedEvent event) {
+			Future<?> dataSourceInitialization = this.dataSourceInitialization;
+			if (dataSourceInitialization != null) {
+				try {
+					dataSourceInitialization.get();
+				}
+				catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
+	}
+
+	/**
 	 * {@link ImportBeanDefinitionRegistrar} to register the
 	 * {@link DataSourceInitializedPublisher} without causing early bean instantiation
 	 * issues.
 	 */
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
-		private static final String BEAN_NAME = "dataSourceInitializedPublisher";
+		private static final String PUBLISHER_BEAN_NAME = "dataSourceInitializedPublisher";
+
+		private static final String COMPLETION_LISTENER_BEAN_BEAN = DataSourceInitializationCompletionListener.class
+				.getName();
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 				BeanDefinitionRegistry registry) {
-			if (!registry.containsBeanDefinition(BEAN_NAME)) {
-				GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-				beanDefinition.setBeanClass(DataSourceInitializedPublisher.class);
-				beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			if (!registry.containsBeanDefinition(PUBLISHER_BEAN_NAME)) {
+				DataSourceInitializationCompletionListener completionListener = new DataSourceInitializationCompletionListener();
+				DataSourceInitializedPublisher publisher = new DataSourceInitializedPublisher(completionListener);
+				AbstractBeanDefinition publisherDefinition = BeanDefinitionBuilder
+						.genericBeanDefinition(DataSourceInitializedPublisher.class, () -> publisher)
+						.getBeanDefinition();
+				publisherDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 				// We don't need this one to be post processed otherwise it can cause a
 				// cascade of bean instantiation that we would rather avoid.
-				beanDefinition.setSynthetic(true);
-				registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
+				publisherDefinition.setSynthetic(true);
+				registry.registerBeanDefinition(PUBLISHER_BEAN_NAME, publisherDefinition);
+				AbstractBeanDefinition listenerDefinition = BeanDefinitionBuilder.genericBeanDefinition(
+						DataSourceInitializationCompletionListener.class, () -> completionListener).getBeanDefinition();
+				listenerDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+				// We don't need this one to be post processed otherwise it can cause a
+				// cascade of bean instantiation that we would rather avoid.
+				listenerDefinition.setSynthetic(true);
+				registry.registerBeanDefinition(COMPLETION_LISTENER_BEAN_BEAN, listenerDefinition);
 			}
 		}
 
@@ -196,8 +249,9 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 			this.delegate.postProcessEntityManagerFactory(entityManagerFactory);
 			AsyncTaskExecutor bootstrapExecutor = this.factoryBean.getBootstrapExecutor();
 			if (bootstrapExecutor != null) {
-				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this
-						.publishEventIfRequired(this.factoryBean, entityManagerFactory));
+				DataSourceInitializedPublisher.this.initializationCompletionListener.dataSourceInitialization = bootstrapExecutor
+						.submit(() -> DataSourceInitializedPublisher.this.publishEventIfRequired(this.factoryBean,
+								entityManagerFactory));
 			}
 		}
 

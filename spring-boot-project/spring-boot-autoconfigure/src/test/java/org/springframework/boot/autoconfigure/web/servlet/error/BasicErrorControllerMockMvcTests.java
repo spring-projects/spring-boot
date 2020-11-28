@@ -69,7 +69,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Dave Syer
  * @author Scott Frederick
  */
-@SpringBootTest(properties = { "server.error.include-details=always" })
+@SpringBootTest(properties = { "server.error.include-message=always" })
 @DirtiesContext
 class BasicErrorControllerMockMvcTests {
 
@@ -212,9 +212,9 @@ class BasicErrorControllerMockMvcTests {
 
 	private class ErrorDispatcher implements RequestBuilder {
 
-		private MvcResult result;
+		private final MvcResult result;
 
-		private String path;
+		private final String path;
 
 		ErrorDispatcher(MvcResult result, String path) {
 			this.result = result;

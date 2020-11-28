@@ -24,6 +24,8 @@ import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
@@ -74,25 +76,29 @@ public abstract class AbstractErrorController implements ErrorController {
 	 * @param includeStackTrace if stack trace elements should be included
 	 * @return the error attributes
 	 * @deprecated since 2.3.0 in favor of
-	 * {@link #getErrorAttributes(HttpServletRequest, boolean, boolean)}
+	 * {@link #getErrorAttributes(HttpServletRequest, ErrorAttributeOptions)}
 	 */
 	@Deprecated
 	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace) {
-		return this.getErrorAttributes(request, includeStackTrace, false);
+		return getErrorAttributes(request,
+				(includeStackTrace) ? ErrorAttributeOptions.of(Include.STACK_TRACE) : ErrorAttributeOptions.defaults());
 	}
 
-	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, boolean includeStackTrace,
-			boolean includeDetails) {
+	protected Map<String, Object> getErrorAttributes(HttpServletRequest request, ErrorAttributeOptions options) {
 		WebRequest webRequest = new ServletWebRequest(request);
-		return this.errorAttributes.getErrorAttributes(webRequest, includeStackTrace, includeDetails);
+		return this.errorAttributes.getErrorAttributes(webRequest, options);
 	}
 
 	protected boolean getTraceParameter(HttpServletRequest request) {
 		return getBooleanParameter(request, "trace");
 	}
 
-	protected boolean getDetailsParameter(HttpServletRequest request) {
-		return getBooleanParameter(request, "details");
+	protected boolean getMessageParameter(HttpServletRequest request) {
+		return getBooleanParameter(request, "message");
+	}
+
+	protected boolean getErrorsParameter(HttpServletRequest request) {
+		return getBooleanParameter(request, "errors");
 	}
 
 	protected boolean getBooleanParameter(HttpServletRequest request, String parameterName) {

@@ -56,7 +56,7 @@ class AvailabilityProbesHealthEndpointGroup implements HealthEndpointGroup {
 
 	@Override
 	public StatusAggregator getStatusAggregator() {
-		return StatusAggregator.DEFAULT;
+		return StatusAggregator.getDefault();
 	}
 
 	@Override

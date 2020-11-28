@@ -19,11 +19,13 @@ package org.springframework.boot.build.context.properties;
 import java.io.File;
 import java.io.IOException;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitive;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.context.properties.DocumentOptions.Builder;
@@ -33,13 +35,14 @@ import org.springframework.boot.build.context.properties.DocumentOptions.Builder
  *
  * @author Andy Wilkinson
  */
-public class DocumentConfigurationProperties extends AbstractTask {
+public class DocumentConfigurationProperties extends DefaultTask {
 
 	private FileCollection configurationPropertyMetadata;
 
 	private File outputDir;
 
 	@InputFiles
+	@PathSensitive(PathSensitivity.RELATIVE)
 	public FileCollection getConfigurationPropertyMetadata() {
 		return this.configurationPropertyMetadata;
 	}
@@ -63,22 +66,24 @@ public class DocumentConfigurationProperties extends AbstractTask {
 		builder.addSection("core")
 				.withKeyPrefixes("debug", "trace", "logging", "spring.aop", "spring.application",
 						"spring.autoconfigure", "spring.banner", "spring.beaninfo", "spring.codec", "spring.config",
-						"spring.info", "spring.jmx", "spring.main", "spring.messages", "spring.pid", "spring.profiles",
-						"spring.quartz", "spring.reactor", "spring.task", "spring.mandatory-file-encoding", "info",
-						"spring.output.ansi.enabled")
+						"spring.info", "spring.jmx", "spring.lifecycle", "spring.main", "spring.messages", "spring.pid",
+						"spring.profiles", "spring.quartz", "spring.reactor", "spring.task",
+						"spring.mandatory-file-encoding", "info", "spring.output.ansi.enabled")
 				.addSection("mail").withKeyPrefixes("spring.mail", "spring.sendgrid").addSection("cache")
 				.withKeyPrefixes("spring.cache").addSection("server").withKeyPrefixes("server").addSection("web")
 				.withKeyPrefixes("spring.hateoas", "spring.http", "spring.servlet", "spring.jersey", "spring.mvc",
-						"spring.resources", "spring.webflux")
+						"spring.resources", "spring.session", "spring.web", "spring.webflux")
 				.addSection("json").withKeyPrefixes("spring.jackson", "spring.gson").addSection("rsocket")
 				.withKeyPrefixes("spring.rsocket").addSection("templating")
 				.withKeyPrefixes("spring.freemarker", "spring.groovy", "spring.mustache", "spring.thymeleaf")
 				.addOverride("spring.groovy.template.configuration", "See GroovyMarkupConfigurer")
-				.addSection("security").withKeyPrefixes("spring.security", "spring.ldap", "spring.session")
-				.addSection("data-migration").withKeyPrefixes("spring.flyway", "spring.liquibase").addSection("data")
+				.addSection("security").withKeyPrefixes("spring.security").addSection("data-migration")
+				.withKeyPrefixes("spring.flyway", "spring.liquibase").addSection("data")
 				.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2", "spring.influx",
-						"spring.mongodb", "spring.redis", "spring.dao", "spring.data", "spring.datasource",
-						"spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
+						"spring.ldap", "spring.mongodb", "spring.neo4j", "spring.redis", "spring.dao", "spring.data",
+						"spring.datasource", "spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
+				.addOverride("spring.datasource.oracleucp",
+						"Oracle UCP specific settings bound to an instance of Oracle UCP's PoolDataSource")
 				.addOverride("spring.datasource.dbcp2",
 						"Commons DBCP2 specific settings bound to an instance of DBCP2's BasicDataSource")
 				.addOverride("spring.datasource.tomcat",

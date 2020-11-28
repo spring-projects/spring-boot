@@ -34,7 +34,7 @@ class ErrorsTests extends AbstractJsonTests {
 
 	@Test
 	void readValueDeserializesJson() throws Exception {
-		Errors errors = this.getObjectMapper().readValue(getContent("errors.json"), Errors.class);
+		Errors errors = getObjectMapper().readValue(getContent("errors.json"), Errors.class);
 		Iterator<Error> iterator = errors.iterator();
 		Error error1 = iterator.next();
 		Error error2 = iterator.next();
@@ -47,7 +47,7 @@ class ErrorsTests extends AbstractJsonTests {
 
 	@Test
 	void toStringHasErrorDetails() throws Exception {
-		Errors errors = this.getObjectMapper().readValue(getContent("errors.json"), Errors.class);
+		Errors errors = getObjectMapper().readValue(getContent("errors.json"), Errors.class);
 		assertThat(errors.toString()).isEqualTo("[TEST1: Test One, TEST2: Test Two]");
 	}
 

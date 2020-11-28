@@ -17,8 +17,6 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.io.IOException;
-import java.net.BindException;
-import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
@@ -36,7 +34,8 @@ import org.eclipse.jetty.server.handler.HandlerWrapper;
 import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.util.component.AbstractLifeCycle;
 
-import org.springframework.boot.web.server.GracefulShutdown;
+import org.springframework.boot.web.server.GracefulShutdownCallback;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
@@ -86,32 +85,33 @@ public class JettyWebServer implements WebServer {
 	 * @param autoStart if auto-starting the server
 	 */
 	public JettyWebServer(Server server, boolean autoStart) {
-		this(server, autoStart, null);
-	}
-
-	/**
-	 * Create a new {@link JettyWebServer} instance.
-	 * @param server the underlying Jetty server
-	 * @param autoStart if auto-starting the server
-	 * @param shutdownGracePeriod grace period to use when shutting down
-	 * @since 2.3.0
-	 */
-	public JettyWebServer(Server server, boolean autoStart, Duration shutdownGracePeriod) {
 		this.autoStart = autoStart;
 		Assert.notNull(server, "Jetty Server must not be null");
 		this.server = server;
-		this.gracefulShutdown = createGracefulShutdown(server, shutdownGracePeriod);
+		this.gracefulShutdown = createGracefulShutdown(server);
 		initialize();
 	}
 
-	private GracefulShutdown createGracefulShutdown(Server server, Duration shutdownGracePeriod) {
-		if (shutdownGracePeriod == null) {
-			return GracefulShutdown.IMMEDIATE;
+	private GracefulShutdown createGracefulShutdown(Server server) {
+		StatisticsHandler statisticsHandler = findStatisticsHandler(server);
+		if (statisticsHandler == null) {
+			return null;
 		}
-		StatisticsHandler handler = new StatisticsHandler();
-		handler.setHandler(server.getHandler());
-		server.setHandler(handler);
-		return new JettyGracefulShutdown(server, handler::getRequestsActive, shutdownGracePeriod);
+		return new GracefulShutdown(server, statisticsHandler::getRequestsActive);
+	}
+
+	private StatisticsHandler findStatisticsHandler(Server server) {
+		return findStatisticsHandler(server.getHandler());
+	}
+
+	private StatisticsHandler findStatisticsHandler(Handler handler) {
+		if (handler instanceof StatisticsHandler) {
+			return (StatisticsHandler) handler;
+		}
+		if (handler instanceof HandlerWrapper) {
+			return findStatisticsHandler(((HandlerWrapper) handler).getHandler());
+		}
+		return null;
 	}
 
 	private void initialize() {
@@ -174,8 +174,9 @@ public class JettyWebServer implements WebServer {
 						connector.start();
 					}
 					catch (IOException ex) {
-						if (connector instanceof NetworkConnector && findBindException(ex) != null) {
-							throw new PortInUseException(((NetworkConnector) connector).getPort());
+						if (connector instanceof NetworkConnector) {
+							PortInUseException.throwIfPortBindingException(ex,
+									() -> ((NetworkConnector) connector).getPort());
 						}
 						throw ex;
 					}
@@ -193,16 +194,6 @@ public class JettyWebServer implements WebServer {
 				throw new WebServerException("Unable to start embedded Jetty server", ex);
 			}
 		}
-	}
-
-	private BindException findBindException(Throwable ex) {
-		if (ex == null) {
-			return null;
-		}
-		if (ex instanceof BindException) {
-			return (BindException) ex;
-		}
-		return findBindException(ex.getCause());
 	}
 
 	private String getActualPortsDescription() {
@@ -266,6 +257,9 @@ public class JettyWebServer implements WebServer {
 	public void stop() {
 		synchronized (this.monitor) {
 			this.started = false;
+			if (this.gracefulShutdown != null) {
+				this.gracefulShutdown.abort();
+			}
 			try {
 				this.server.stop();
 			}
@@ -289,12 +283,12 @@ public class JettyWebServer implements WebServer {
 	}
 
 	@Override
-	public boolean shutDownGracefully() {
-		return this.gracefulShutdown.shutDownGracefully();
-	}
-
-	boolean inGracefulShutdown() {
-		return this.gracefulShutdown.isShuttingDown();
+	public void shutDownGracefully(GracefulShutdownCallback callback) {
+		if (this.gracefulShutdown == null) {
+			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
+		}
+		this.gracefulShutdown.shutDownGracefully(callback);
 	}
 
 	/**

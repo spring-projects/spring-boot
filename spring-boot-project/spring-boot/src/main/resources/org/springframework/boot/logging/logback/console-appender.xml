@@ -9,6 +9,7 @@ initialization performed by Boot
 	<appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
 		<encoder>
 			<pattern>${CONSOLE_LOG_PATTERN}</pattern>
+			<charset>${CONSOLE_LOG_CHARSET}</charset>
 		</encoder>
 	</appender>
 </included>

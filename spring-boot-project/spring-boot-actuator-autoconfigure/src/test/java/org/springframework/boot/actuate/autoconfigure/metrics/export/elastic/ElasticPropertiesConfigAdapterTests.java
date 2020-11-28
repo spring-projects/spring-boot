@@ -49,7 +49,7 @@ class ElasticPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void whenPropertiesIndexDateSeparatorIsSetAdapterIndexDateFormatReturnsIt() {
+	void whenPropertiesIndexDateSeparatorIsSetAdapterIndexDateSeparatorReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setIndexDateSeparator("*");
 		assertThat(new ElasticPropertiesConfigAdapter(properties).indexDateSeparator()).isEqualTo("*");
@@ -84,7 +84,7 @@ class ElasticPropertiesConfigAdapterTests {
 	}
 
 	@Test
-	void whenPropertiesPipelineIsSetAdapterPasswordReturnsIt() {
+	void whenPropertiesPipelineIsSetAdapterPipelineReturnsIt() {
 		ElasticProperties properties = new ElasticProperties();
 		properties.setPipeline("testPipeline");
 		assertThat(new ElasticPropertiesConfigAdapter(properties).pipeline()).isEqualTo("testPipeline");

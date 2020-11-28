@@ -60,9 +60,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -134,6 +136,17 @@ class QuartzAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class, MultipleDataSourceConfiguration.class)
 				.withPropertyValues("spring.quartz.job-store-type=jdbc")
 				.run(assertDataSourceJobStore("quartzDataSource"));
+	}
+
+	@Test
+	void transactionManagerWithQuartzTransactionManagerUsedWhenMultiplePresent() {
+		this.contextRunner
+				.withUserConfiguration(QuartzJobsConfiguration.class, MultipleTransactionManagersConfiguration.class)
+				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
+					SchedulerFactoryBean schedulerFactoryBean = context.getBean(SchedulerFactoryBean.class);
+					assertThat(schedulerFactoryBean).extracting("transactionManager")
+							.isEqualTo(context.getBean("quartzTransactionManager"));
+				});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDataSourceJobStore(String datasourceName) {
@@ -426,6 +439,51 @@ class QuartzAutoConfigurationTests {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setGenerateUniqueName(true);
 			properties.afterPropertiesSet();
+			return properties.initializeDataSourceBuilder().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleTransactionManagersConfiguration extends BaseQuartzConfiguration {
+
+		private final DataSource primaryDataSource = createTestDataSource();
+
+		private final DataSource quartzDataSource = createTestDataSource();
+
+		@Bean
+		@Primary
+		DataSource applicationDataSource() {
+			return this.primaryDataSource;
+		}
+
+		@Bean
+		@QuartzDataSource
+		DataSource quartzDataSource() {
+			return this.quartzDataSource;
+		}
+
+		@Bean
+		@Primary
+		PlatformTransactionManager applicationTransactionManager() {
+			return new DataSourceTransactionManager(this.primaryDataSource);
+		}
+
+		@Bean
+		@QuartzTransactionManager
+		PlatformTransactionManager quartzTransactionManager() {
+			return new DataSourceTransactionManager(this.quartzDataSource);
+		}
+
+		private DataSource createTestDataSource() {
+			DataSourceProperties properties = new DataSourceProperties();
+			properties.setGenerateUniqueName(true);
+			try {
+				properties.afterPropertiesSet();
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 			return properties.initializeDataSourceBuilder().build();
 		}
 

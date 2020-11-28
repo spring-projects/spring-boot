@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,14 +47,10 @@ import org.springframework.boot.jms.XAConnectionFactoryWrapper;
 import org.springframework.boot.jta.atomikos.AtomikosDataSourceBean;
 import org.springframework.boot.jta.atomikos.AtomikosDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.jta.atomikos.AtomikosProperties;
-import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor;
-import org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean;
-import org.springframework.boot.jta.bitronix.PoolingDataSourceBean;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,6 +67,7 @@ import static org.mockito.Mockito.mock;
  * @author Kazuki Shimizu
  * @author Nishant Raut
  */
+// @SuppressWarnings("deprecation")
 class JtaAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -83,7 +80,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	void customPlatformTransactionManager() {
+	void customTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(CustomTransactionManagerConfig.class,
 				JtaAutoConfiguration.class);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
@@ -115,17 +112,19 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixSanityCheck() {
 		this.context = new AnnotationConfigApplicationContext(JtaProperties.class, BitronixJtaConfiguration.class);
 		this.context.getBean(bitronix.tm.Configuration.class);
 		this.context.getBean(TransactionManager.class);
 		this.context.getBean(XADataSourceWrapper.class);
 		this.context.getBean(XAConnectionFactoryWrapper.class);
-		this.context.getBean(BitronixDependentBeanFactoryPostProcessor.class);
+		this.context.getBean(org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostProcessor.class);
 		this.context.getBean(JtaTransactionManager.class);
 	}
 
 	@Test
+	@Deprecated
 	void defaultBitronixServerId() throws UnknownHostException {
 		this.context = new AnnotationConfigApplicationContext(BitronixJtaConfiguration.class);
 		String serverId = this.context.getBean(bitronix.tm.Configuration.class).getServerId();
@@ -133,6 +132,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void customBitronixServerId() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.transactionManagerId:custom").applyTo(this.context);
@@ -167,13 +167,15 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.bitronix.connectionfactory.minPoolSize:5",
 				"spring.jta.bitronix.connectionfactory.maxPoolSize:10").applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
-		PoolingConnectionFactoryBean connectionFactory = this.context.getBean(PoolingConnectionFactoryBean.class);
+		org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean connectionFactory = this.context
+				.getBean(org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean.class);
 		assertThat(connectionFactory.getMinPoolSize()).isEqualTo(5);
 		assertThat(connectionFactory.getMaxPoolSize()).isEqualTo(10);
 	}
@@ -192,6 +194,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
@@ -199,7 +202,8 @@ class JtaAutoConfigurationTests {
 				.applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
-		PoolingDataSourceBean dataSource = this.context.getBean(PoolingDataSourceBean.class);
+		org.springframework.boot.jta.bitronix.PoolingDataSourceBean dataSource = this.context
+				.getBean(org.springframework.boot.jta.bitronix.PoolingDataSourceBean.class);
 		assertThat(dataSource.getMinPoolSize()).isEqualTo(5);
 		assertThat(dataSource.getMaxPoolSize()).isEqualTo(10);
 	}
@@ -218,6 +222,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void bitronixCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
@@ -234,8 +239,8 @@ class JtaAutoConfigurationTests {
 	static class CustomTransactionManagerConfig {
 
 		@Bean
-		PlatformTransactionManager transactionManager() {
-			return mock(PlatformTransactionManager.class);
+		org.springframework.transaction.TransactionManager testTransactionManager() {
+			return mock(org.springframework.transaction.TransactionManager.class);
 		}
 
 	}

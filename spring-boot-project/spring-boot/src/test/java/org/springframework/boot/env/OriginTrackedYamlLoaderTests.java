@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,23 @@
 
 package org.springframework.boot.env;
 
+import java.nio.charset.StandardCharsets;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.constructor.ConstructorException;
 
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.boot.origin.TextResourceOrigin;
+import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link OriginTrackedYamlLoader}.
@@ -114,6 +119,58 @@ class OriginTrackedYamlLoaderTests {
 		assertThat(getLocation(empty)).isEqualTo("27:8");
 		assertThat(nullValue.getValue()).isEqualTo("");
 		assertThat(getLocation(nullValue)).isEqualTo("28:13");
+	}
+
+	@Test
+	void processEmptyListAndMap() {
+		OriginTrackedValue emptymap = getValue("emptymap");
+		OriginTrackedValue emptylist = getValue("emptylist");
+		assertThat(emptymap.getValue()).isEqualTo(Collections.emptyMap());
+		assertThat(emptylist.getValue()).isEqualTo(Collections.emptyList());
+	}
+
+	@Test
+	void unsupportedType() throws Exception {
+		String yaml = "value: !!java.net.URL [!!java.lang.String [!!java.lang.StringBuilder [\"http://localhost:9000/\"]]]";
+		Resource resource = new ByteArrayResource(yaml.getBytes(StandardCharsets.UTF_8));
+		this.loader = new OriginTrackedYamlLoader(resource);
+		assertThatExceptionOfType(ConstructorException.class).isThrownBy(this.loader::load);
+	}
+
+	@Test
+	void emptyDocuments() {
+		this.loader = new OriginTrackedYamlLoader(new ClassPathResource("test-empty-yaml.yml", getClass()));
+		List<Map<String, Object>> loaded = this.loader.load();
+		assertThat(loaded).isEmpty();
+	}
+
+	@Test
+	void loadWhenLargeNumberOfNodesLoadsYaml() {
+		StringBuilder yaml = new StringBuilder();
+		int size = 500;
+		yaml.append("defs:\n");
+		for (int i = 0; i < size; i++) {
+			yaml.append(" - def" + i + ": &def" + i + "\n");
+			yaml.append("    - value: " + i + "\n");
+		}
+		yaml.append("refs:\n");
+		for (int i = 0; i < size; i++) {
+			yaml.append("  ref" + i + ":\n");
+			yaml.append("   - value: *def" + i + "\n");
+		}
+		Resource resource = new ByteArrayResource(yaml.toString().getBytes(StandardCharsets.UTF_8));
+		this.loader = new OriginTrackedYamlLoader(resource);
+		Map<String, Object> loaded = this.loader.load().get(0);
+		assertThat(loaded).hasSize(size * 2);
+	}
+
+	@Test
+	void loadWhenRecursiveLoadsYaml() {
+		Resource resource = new ClassPathResource("recursive.yml", getClass());
+		this.loader = new OriginTrackedYamlLoader(resource);
+		Map<String, Object> loaded = this.loader.load().get(0);
+		assertThat(loaded.get("test.a.spring")).hasToString("a");
+		assertThat(loaded.get("test.b.boot")).hasToString("b");
 	}
 
 	private OriginTrackedValue getValue(String name) {

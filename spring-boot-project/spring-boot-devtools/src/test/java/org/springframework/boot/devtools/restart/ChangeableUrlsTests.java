@@ -46,7 +46,7 @@ class ChangeableUrlsTests {
 	File tempDir;
 
 	@Test
-	void folderUrl() throws Exception {
+	void directoryUrl() throws Exception {
 		URL url = makeUrl("myproject");
 		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(1);
 	}

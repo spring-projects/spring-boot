@@ -132,7 +132,7 @@
 		"version": "0.7.2",
 		"api": {
 			"buildpack": "0.2",
-			"platform": "0.3"
+			"platform": "0.4"
 		}
 	},
 	"createdBy": {

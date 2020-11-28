@@ -37,6 +37,7 @@ import org.gradle.api.tasks.OutputDirectory;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskAction;
 
+import org.springframework.boot.build.artifactory.ArtifactoryRepository;
 import org.springframework.util.StringUtils;
 
 /**
@@ -45,6 +46,7 @@ import org.springframework.util.StringUtils;
  *
  * <ul>
  * <li>All warnings are made fatal.
+ * <li>The version of AsciidoctorJ is upgraded to 2.4.1.
  * <li>A task is created to resolve and unzip our documentation resources (CSS and
  * Javascript).
  * <li>For each {@link AsciidoctorTask} (HTML only):
@@ -68,10 +70,13 @@ import org.springframework.util.StringUtils;
  */
 class AsciidoctorConventions {
 
+	private static final String ASCIIDOCTORJ_VERSION = "2.4.1";
+
 	void apply(Project project) {
 		project.getPlugins().withType(AsciidoctorJPlugin.class, (asciidoctorPlugin) -> {
 			configureDocResourcesRepository(project);
 			makeAllWarningsFatal(project);
+			upgradeAsciidoctorJVersion(project);
 			UnzipDocumentationResources unzipResources = createUnzipDocumentationResourcesTask(project);
 			project.getTasks().withType(AbstractAsciidoctorTask.class, (asciidoctorTask) -> {
 				configureCommonAttributes(project, asciidoctorTask);
@@ -109,10 +114,14 @@ class AsciidoctorConventions {
 		project.getExtensions().getByType(AsciidoctorJExtension.class).fatalWarnings(".*");
 	}
 
+	private void upgradeAsciidoctorJVersion(Project project) {
+		project.getExtensions().getByType(AsciidoctorJExtension.class).setVersion(ASCIIDOCTORJ_VERSION);
+	}
+
 	private UnzipDocumentationResources createUnzipDocumentationResourcesTask(Project project) {
 		Configuration documentationResources = project.getConfigurations().maybeCreate("documentationResources");
 		documentationResources.getDependencies()
-				.add(project.getDependencies().create("io.spring.docresources:spring-doc-resources:0.2.1.RELEASE"));
+				.add(project.getDependencies().create("io.spring.docresources:spring-doc-resources:0.2.4"));
 		UnzipDocumentationResources unzipResources = project.getTasks().create("unzipDocumentationResources",
 				UnzipDocumentationResources.class);
 		unzipResources.setResources(documentationResources);
@@ -137,6 +146,7 @@ class AsciidoctorConventions {
 
 	private void configureHtmlOnlyAttributes(AbstractAsciidoctorTask asciidoctorTask) {
 		Map<String, Object> attributes = new HashMap<>();
+		attributes.put("source-highlighter", "highlightjs");
 		attributes.put("highlightjsdir", "js/highlight");
 		attributes.put("highlightjs-theme", "github");
 		attributes.put("linkcss", true);
@@ -149,21 +159,9 @@ class AsciidoctorConventions {
 		Map<String, Object> attributes = new HashMap<>();
 		attributes.put("attribute-missing", "warn");
 		attributes.put("github-tag", determineGitHubTag(project));
-		attributes.put("spring-boot-artifactory-repo", determineArtifactoryRepo(project));
-		attributes.put("version", "{gradle-project-version}");
+		attributes.put("spring-boot-artifactory-repo", ArtifactoryRepository.forProject(project));
+		attributes.put("revnumber", null);
 		asciidoctorTask.attributes(attributes);
-	}
-
-	private String determineArtifactoryRepo(Project project) {
-		String version = project.getVersion().toString();
-		String type = version.substring(version.lastIndexOf('.'));
-		if (type.equals("RELEASE")) {
-			return "release";
-		}
-		if (type.startsWith("M") || type.startsWith("RC")) {
-			return "milestone";
-		}
-		return "snapshot";
 	}
 
 	private String determineGitHubTag(Project project) {

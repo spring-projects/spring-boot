@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import io.r2dbc.spi.ConnectionFactory;
-
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -33,16 +31,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.convert.CustomConversions;
 import org.springframework.data.r2dbc.convert.MappingR2dbcConverter;
+import org.springframework.data.r2dbc.convert.R2dbcConverter;
 import org.springframework.data.r2dbc.convert.R2dbcCustomConversions;
-import org.springframework.data.r2dbc.core.DatabaseClient;
-import org.springframework.data.r2dbc.core.DefaultReactiveDataAccessStrategy;
-import org.springframework.data.r2dbc.core.ReactiveDataAccessStrategy;
+import org.springframework.data.r2dbc.core.R2dbcEntityTemplate;
 import org.springframework.data.r2dbc.dialect.DialectResolver;
 import org.springframework.data.r2dbc.dialect.R2dbcDialect;
 import org.springframework.data.r2dbc.mapping.R2dbcMappingContext;
-import org.springframework.data.r2dbc.support.R2dbcExceptionSubclassTranslator;
-import org.springframework.data.r2dbc.support.R2dbcExceptionTranslator;
 import org.springframework.data.relational.core.mapping.NamingStrategy;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for {@link DatabaseClient}.
@@ -52,24 +48,24 @@ import org.springframework.data.relational.core.mapping.NamingStrategy;
  * @since 2.3.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(DatabaseClient.class)
-@ConditionalOnMissingBean(DatabaseClient.class)
-@ConditionalOnSingleCandidate(ConnectionFactory.class)
+@ConditionalOnClass({ DatabaseClient.class, R2dbcEntityTemplate.class })
+@ConditionalOnSingleCandidate(DatabaseClient.class)
 @AutoConfigureAfter(R2dbcAutoConfiguration.class)
 public class R2dbcDataAutoConfiguration {
 
-	private final ConnectionFactory connectionFactory;
+	private final DatabaseClient databaseClient;
 
-	public R2dbcDataAutoConfiguration(ConnectionFactory connectionFactory) {
-		this.connectionFactory = connectionFactory;
+	private final R2dbcDialect dialect;
+
+	public R2dbcDataAutoConfiguration(DatabaseClient databaseClient) {
+		this.databaseClient = databaseClient;
+		this.dialect = DialectResolver.getDialect(this.databaseClient.getConnectionFactory());
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
-	public DatabaseClient r2dbcDatabaseClient(ReactiveDataAccessStrategy dataAccessStrategy,
-			R2dbcExceptionTranslator exceptionTranslator) {
-		return DatabaseClient.builder().connectionFactory(this.connectionFactory).dataAccessStrategy(dataAccessStrategy)
-				.exceptionTranslator(exceptionTranslator).build();
+	public R2dbcEntityTemplate r2dbcEntityTemplate(R2dbcConverter r2dbcConverter) {
+		return new R2dbcEntityTemplate(this.databaseClient, this.dialect, r2dbcConverter);
 	}
 
 	@Bean
@@ -84,27 +80,19 @@ public class R2dbcDataAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public ReactiveDataAccessStrategy reactiveDataAccessStrategy(R2dbcMappingContext mappingContext,
+	public MappingR2dbcConverter r2dbcConverter(R2dbcMappingContext mappingContext,
 			R2dbcCustomConversions r2dbcCustomConversions) {
-		MappingR2dbcConverter converter = new MappingR2dbcConverter(mappingContext, r2dbcCustomConversions);
-		return new DefaultReactiveDataAccessStrategy(DialectResolver.getDialect(this.connectionFactory), converter);
+		return new MappingR2dbcConverter(mappingContext, r2dbcCustomConversions);
 	}
 
 	@Bean
 	@ConditionalOnMissingBean
 	public R2dbcCustomConversions r2dbcCustomConversions() {
-		R2dbcDialect dialect = DialectResolver.getDialect(this.connectionFactory);
-		List<Object> converters = new ArrayList<>(dialect.getConverters());
+		List<Object> converters = new ArrayList<>(this.dialect.getConverters());
 		converters.addAll(R2dbcCustomConversions.STORE_CONVERTERS);
 		return new R2dbcCustomConversions(
-				CustomConversions.StoreConversions.of(dialect.getSimpleTypeHolder(), converters),
+				CustomConversions.StoreConversions.of(this.dialect.getSimpleTypeHolder(), converters),
 				Collections.emptyList());
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	public R2dbcExceptionTranslator r2dbcExceptionTranslator() {
-		return new R2dbcExceptionSubclassTranslator();
 	}
 
 }

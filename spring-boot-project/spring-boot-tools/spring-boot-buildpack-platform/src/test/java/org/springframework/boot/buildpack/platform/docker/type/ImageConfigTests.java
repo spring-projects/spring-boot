@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.entry;
  * Tests for {@link ImageConfig}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class ImageConfigTests extends AbstractJsonTests {
 
@@ -43,10 +44,24 @@ class ImageConfigTests extends AbstractJsonTests {
 	}
 
 	@Test
+	void whenConfigHasNoEnvThenImageConfigEnvIsEmpty() throws Exception {
+		ImageConfig imageConfig = getMinimalImageConfig();
+		Map<String, String> env = imageConfig.getEnv();
+		assertThat(env).isEmpty();
+	}
+
+	@Test
+	void whenConfigHasNoLabelsThenImageConfigLabelsIsEmpty() throws Exception {
+		ImageConfig imageConfig = getMinimalImageConfig();
+		Map<String, String> env = imageConfig.getLabels();
+		assertThat(env).isEmpty();
+	}
+
+	@Test
 	void getLabelsReturnsLabels() throws Exception {
 		ImageConfig imageConfig = getImageConfig();
-		Map<String, String> lables = imageConfig.getLabels();
-		assertThat(lables).hasSize(4).contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
+		Map<String, String> labels = imageConfig.getLabels();
+		assertThat(labels).hasSize(4).contains(entry("io.buildpacks.stack.id", "org.cloudfoundry.stacks.cflinuxfs3"));
 	}
 
 	@Test
@@ -61,6 +76,10 @@ class ImageConfigTests extends AbstractJsonTests {
 
 	private ImageConfig getImageConfig() throws IOException {
 		return new ImageConfig(getObjectMapper().readTree(getContent("image-config.json")));
+	}
+
+	private ImageConfig getMinimalImageConfig() throws IOException {
+		return new ImageConfig(getObjectMapper().readTree(getContent("minimal-image-config.json")));
 	}
 
 }

@@ -12,8 +12,9 @@
 		<maven.compiler.target>@java.version@</maven.compiler.target>
 	</properties>
 	<modules>
-		<module>jar-snapshot</module>
+		<module>jar-classifier</module>
 		<module>jar-release</module>
+		<module>jar-snapshot</module>
 		<module>jar</module>
 	</modules>
 </project>

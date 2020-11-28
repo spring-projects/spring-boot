@@ -34,6 +34,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@Deprecated
 class ExposeExcludePropertyEndpointFilterTests {
 
 	private ExposeExcludePropertyEndpointFilter<?> filter;
@@ -138,6 +139,12 @@ class ExposeExcludePropertyEndpointFilterTests {
 	void matchWhenMixedCaseShouldMatch() {
 		setupFilter("foo-bar", "");
 		assertThat(match(EndpointId.of("fooBar"))).isTrue();
+	}
+
+	@Test // gh-20997
+	void matchWhenDashInName() throws Exception {
+		setupFilter("bus-refresh", "");
+		assertThat(match(EndpointId.of("bus-refresh"))).isTrue();
 	}
 
 	private void setupFilter(String include, String exclude) {

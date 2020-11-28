@@ -25,6 +25,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
  * Tests for {@link ImageName}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ImageNameTests {
 
@@ -70,10 +71,40 @@ class ImageNameTests {
 
 	@Test
 	void ofWhenSimpleNameAndPortCreatesImageName() {
+		ImageName imageName = ImageName.of("repo:8080/ubuntu");
+		assertThat(imageName.toString()).isEqualTo("repo:8080/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("repo:8080");
+		assertThat(imageName.getName()).isEqualTo("ubuntu");
+	}
+
+	@Test
+	void ofWhenSimplePathAndPortCreatesImageName() {
 		ImageName imageName = ImageName.of("repo:8080/canonical/ubuntu");
 		assertThat(imageName.toString()).isEqualTo("repo:8080/canonical/ubuntu");
 		assertThat(imageName.getDomain()).isEqualTo("repo:8080");
 		assertThat(imageName.getName()).isEqualTo("canonical/ubuntu");
+	}
+
+	@Test
+	void ofWhenNameWithLongPathCreatesImageName() {
+		ImageName imageName = ImageName.of("path1/path2/path3/ubuntu");
+		assertThat(imageName.toString()).isEqualTo("docker.io/path1/path2/path3/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("docker.io");
+		assertThat(imageName.getName()).isEqualTo("path1/path2/path3/ubuntu");
+	}
+
+	@Test
+	void ofWhenLocalhostDomainCreatesImageName() {
+		ImageName imageName = ImageName.of("localhost/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("localhost");
+		assertThat(imageName.getName()).isEqualTo("ubuntu");
+	}
+
+	@Test
+	void ofWhenLocalhostDomainAndPathCreatesImageName() {
+		ImageName imageName = ImageName.of("localhost/library/ubuntu");
+		assertThat(imageName.getDomain()).isEqualTo("localhost");
+		assertThat(imageName.getName()).isEqualTo("library/ubuntu");
 	}
 
 	@Test
@@ -96,14 +127,35 @@ class ImageNameTests {
 	}
 
 	@Test
+	void ofWhenContainsUppercaseThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("Test"))
+				.withMessageContaining("Unable to parse name").withMessageContaining("Test");
+	}
+
+	@Test
+	void ofWhenNameIncludesTagThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> ImageName.of("ubuntu:latest"))
+				.withMessageContaining("Unable to parse name").withMessageContaining(":latest");
+	}
+
+	@Test
+	void ofWhenNameIncludeDigestThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(
+				() -> ImageName.of("ubuntu@sha256:47bfdb88c3ae13e488167607973b7688f69d9e8c142c2045af343ec199649c09"))
+				.withMessageContaining("Unable to parse name").withMessageContaining("@sha256:47b");
+	}
+
+	@Test
 	void hashCodeAndEquals() {
 		ImageName n1 = ImageName.of("ubuntu");
 		ImageName n2 = ImageName.of("library/ubuntu");
-		ImageName n3 = ImageName.of("docker.io/library/ubuntu");
-		ImageName n4 = ImageName.of("index.docker.io/library/ubuntu");
-		ImageName n5 = ImageName.of("alpine");
-		assertThat(n1.hashCode()).isEqualTo(n2.hashCode()).isEqualTo(n3.hashCode()).isEqualTo(n4.hashCode());
-		assertThat(n1).isEqualTo(n1).isEqualTo(n2).isEqualTo(n3).isEqualTo(n4).isNotEqualTo(n5);
+		ImageName n3 = ImageName.of("docker.io/ubuntu");
+		ImageName n4 = ImageName.of("docker.io/library/ubuntu");
+		ImageName n5 = ImageName.of("index.docker.io/library/ubuntu");
+		ImageName n6 = ImageName.of("alpine");
+		assertThat(n1.hashCode()).isEqualTo(n2.hashCode()).isEqualTo(n3.hashCode()).isEqualTo(n4.hashCode())
+				.isEqualTo(n5.hashCode());
+		assertThat(n1).isEqualTo(n1).isEqualTo(n2).isEqualTo(n3).isEqualTo(n4).isNotEqualTo(n6);
 	}
 
 }

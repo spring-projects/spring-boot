@@ -23,6 +23,7 @@ import java.util.function.BiFunction;
 import java.util.function.Predicate;
 
 import io.netty.channel.group.DefaultChannelGroup;
+import io.netty.channel.unix.Errors.NativeIoException;
 import io.netty.util.concurrent.DefaultEventExecutor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -34,8 +35,10 @@ import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
 import reactor.netty.http.server.HttpServerRoutes;
 
-import org.springframework.boot.web.server.GracefulShutdown;
+import org.springframework.boot.web.server.GracefulShutdownCallback;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
@@ -53,7 +56,12 @@ import org.springframework.util.Assert;
  */
 public class NettyWebServer implements WebServer {
 
-	private static final Predicate<HttpServerRequest> ALWAYS = (r) -> true;
+	/**
+	 * Permission denied error code from {@code errno.h}.
+	 */
+	private static final int ERROR_NO_EACCES = -13;
+
+	private static final Predicate<HttpServerRequest> ALWAYS = (request) -> true;
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
 
@@ -63,40 +71,21 @@ public class NettyWebServer implements WebServer {
 
 	private final Duration lifecycleTimeout;
 
-	private final GracefulShutdown shutdown;
+	private final GracefulShutdown gracefulShutdown;
 
 	private List<NettyRouteProvider> routeProviders = Collections.emptyList();
 
 	private volatile DisposableServer disposableServer;
 
-	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout) {
-		this(httpServer, handlerAdapter, lifecycleTimeout, null);
-	}
-
-	/**
-	 * Creates a {@code NettyWebServer}.
-	 * @param httpServer the Reactor Netty HTTP server
-	 * @param handlerAdapter the Spring WebFlux handler adapter
-	 * @param lifecycleTimeout lifecycle timeout
-	 * @param shutdownGracePeriod grace period for handler for graceful shutdown
-	 * @since 2.3.0
-	 */
 	public NettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
-			Duration shutdownGracePeriod) {
+			Shutdown shutdown) {
 		Assert.notNull(httpServer, "HttpServer must not be null");
 		Assert.notNull(handlerAdapter, "HandlerAdapter must not be null");
 		this.lifecycleTimeout = lifecycleTimeout;
 		this.handler = handlerAdapter;
-		if (shutdownGracePeriod != null) {
-			this.httpServer = httpServer.channelGroup(new DefaultChannelGroup(new DefaultEventExecutor()));
-			NettyGracefulShutdown gracefulShutdown = new NettyGracefulShutdown(() -> this.disposableServer,
-					shutdownGracePeriod);
-			this.shutdown = gracefulShutdown;
-		}
-		else {
-			this.httpServer = httpServer;
-			this.shutdown = GracefulShutdown.IMMEDIATE;
-		}
+		this.httpServer = httpServer.channelGroup(new DefaultChannelGroup(new DefaultEventExecutor()));
+		this.gracefulShutdown = (shutdown == Shutdown.GRACEFUL) ? new GracefulShutdown(() -> this.disposableServer)
+				: null;
 	}
 
 	public void setRouteProviders(List<NettyRouteProvider> routeProviders) {
@@ -110,10 +99,11 @@ public class NettyWebServer implements WebServer {
 				this.disposableServer = startHttpServer();
 			}
 			catch (Exception ex) {
-				ChannelBindException bindException = findBindException(ex);
-				if (bindException != null) {
-					throw new PortInUseException(bindException.localPort());
-				}
+				PortInUseException.ifCausedBy(ex, ChannelBindException.class, (bindException) -> {
+					if (!isPermissionDenied(bindException.getCause())) {
+						throw new PortInUseException(bindException.localPort(), ex);
+					}
+				});
 				throw new WebServerException("Unable to start Netty", ex);
 			}
 			logger.info("Netty started on port(s): " + getPort());
@@ -121,13 +111,24 @@ public class NettyWebServer implements WebServer {
 		}
 	}
 
-	@Override
-	public boolean shutDownGracefully() {
-		return this.shutdown.shutDownGracefully();
+	private boolean isPermissionDenied(Throwable bindExceptionCause) {
+		try {
+			if (bindExceptionCause instanceof NativeIoException) {
+				return ((NativeIoException) bindExceptionCause).expectedErr() == ERROR_NO_EACCES;
+			}
+		}
+		catch (Throwable ex) {
+		}
+		return false;
 	}
 
-	boolean inGracefulShutdown() {
-		return this.shutdown.isShuttingDown();
+	@Override
+	public void shutDownGracefully(GracefulShutdownCallback callback) {
+		if (this.gracefulShutdown == null) {
+			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
+		}
+		this.gracefulShutdown.shutDownGracefully(callback);
 	}
 
 	private DisposableServer startHttpServer() {
@@ -151,17 +152,6 @@ public class NettyWebServer implements WebServer {
 		routes.route(ALWAYS, this.handler);
 	}
 
-	private ChannelBindException findBindException(Exception ex) {
-		Throwable candidate = ex;
-		while (candidate != null) {
-			if (candidate instanceof ChannelBindException) {
-				return (ChannelBindException) candidate;
-			}
-			candidate = candidate.getCause();
-		}
-		return null;
-	}
-
 	private void startDaemonAwaitThread(DisposableServer disposableServer) {
 		Thread awaitThread = new Thread("server") {
 
@@ -179,11 +169,19 @@ public class NettyWebServer implements WebServer {
 	@Override
 	public void stop() throws WebServerException {
 		if (this.disposableServer != null) {
-			if (this.lifecycleTimeout != null) {
-				this.disposableServer.disposeNow(this.lifecycleTimeout);
+			if (this.gracefulShutdown != null) {
+				this.gracefulShutdown.abort();
 			}
-			else {
-				this.disposableServer.disposeNow();
+			try {
+				if (this.lifecycleTimeout != null) {
+					this.disposableServer.disposeNow(this.lifecycleTimeout);
+				}
+				else {
+					this.disposableServer.disposeNow();
+				}
+			}
+			catch (IllegalStateException ex) {
+				// Continue
 			}
 			this.disposableServer = null;
 		}

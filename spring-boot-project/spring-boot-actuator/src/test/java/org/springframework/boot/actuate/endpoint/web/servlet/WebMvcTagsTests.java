@@ -59,6 +59,14 @@ class WebMvcTagsTests {
 	}
 
 	@Test
+	void uriTagValueIsRootWhenBestMatchingPatternIsEmpty() {
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "");
+		this.response.setStatus(301);
+		Tag tag = WebMvcTags.uri(this.request, this.response);
+		assertThat(tag.getValue()).isEqualTo("root");
+	}
+
+	@Test
 	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashRemoveTrailingSlash() {
 		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/spring/");
 		Tag tag = WebMvcTags.uri(this.request, this.response, true);

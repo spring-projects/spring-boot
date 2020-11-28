@@ -39,8 +39,9 @@ class PublishingDocumentationTests {
 
 	@TestTemplate
 	void mavenUpload() throws IOException {
-		assertThat(this.gradleBuild.script("src/docs/gradle/publishing/maven").build("deployerRepository").getOutput())
-				.contains("https://repo.example.com");
+		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("5.6")
+				.script("src/docs/gradle/publishing/maven").build("deployerRepository").getOutput())
+						.contains("https://repo.example.com");
 	}
 
 	@TestTemplate

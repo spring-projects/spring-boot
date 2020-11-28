@@ -86,7 +86,9 @@ public class TomcatMetricsBinder implements ApplicationListener<ApplicationStart
 
 	@Override
 	public void destroy() {
-		this.tomcatMetrics.close();
+		if (this.tomcatMetrics != null) {
+			this.tomcatMetrics.close();
+		}
 	}
 
 }

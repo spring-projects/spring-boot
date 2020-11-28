@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ abstract class DefaultContributorRegistryTests {
 	}
 
 	@Test
-	void registerContributorRegisteresContributors() {
+	void registerContributorRegistersContributors() {
 		this.registry.registerContributor("one", this.one);
 		this.registry.registerContributor("two", this.two);
 		assertThat(this.registry).hasSize(2);

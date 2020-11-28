@@ -23,19 +23,21 @@ import reactor.test.StepVerifier;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.data.r2dbc.city.City;
 import org.springframework.boot.autoconfigure.data.r2dbc.city.CityRepository;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
-import org.springframework.data.r2dbc.core.DatabaseClient;
 import org.springframework.data.r2dbc.repository.config.EnableR2dbcRepositories;
 import org.springframework.data.r2dbc.repository.config.R2dbcRepositoryConfigurationExtension;
 import org.springframework.data.repository.Repository;
+import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
+import org.springframework.r2dbc.core.DatabaseClient;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -58,6 +60,7 @@ class R2dbcRepositoriesAutoConfigurationTests {
 	@Test
 	void backsOffWithNoDatabaseClientOperations() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader("org.springframework.r2dbc"))
 				.withUserConfiguration(TestConfiguration.class).run((context) -> {
 					assertThat(context).doesNotHaveBean(DatabaseClient.class);
 					assertThat(context).doesNotHaveBean(R2dbcRepositoryConfigurationExtension.class);
@@ -105,7 +108,7 @@ class R2dbcRepositoriesAutoConfigurationTests {
 			ResourceLoader resourceLoader = new DefaultResourceLoader();
 			Resource[] scripts = new Resource[] { resourceLoader.getResource("classpath:data-city-schema.sql"),
 					resourceLoader.getResource("classpath:city.sql") };
-			new ResourceDatabasePopulator(scripts).execute(connectionFactory).block();
+			new ResourceDatabasePopulator(scripts).populate(connectionFactory).block();
 		}
 
 	}
@@ -117,6 +120,7 @@ class R2dbcRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(EmptyDataPackage.class)
 	static class EmptyConfiguration {
 
 	}

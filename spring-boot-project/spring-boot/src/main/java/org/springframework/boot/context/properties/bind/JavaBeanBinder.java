@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -140,8 +140,10 @@ class JavaBeanBinder implements DataObjectBinder {
 				}
 			}
 			for (Method method : declaredMethods) {
-				addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
 				addMethodIfPossible(method, "is", 0, BeanProperty::addGetter);
+			}
+			for (Method method : declaredMethods) {
+				addMethodIfPossible(method, "get", 0, BeanProperty::addGetter);
 			}
 			for (Method method : declaredMethods) {
 				addMethodIfPossible(method, "set", 1, BeanProperty::addSetter);
@@ -280,9 +282,13 @@ class JavaBeanBinder implements DataObjectBinder {
 		}
 
 		void addGetter(Method getter) {
-			if (this.getter == null) {
+			if (this.getter == null || isBetterGetter(getter)) {
 				this.getter = getter;
 			}
+		}
+
+		private boolean isBetterGetter(Method getter) {
+			return this.getter != null && this.getter.getName().startsWith("is");
 		}
 
 		void addSetter(Method setter) {

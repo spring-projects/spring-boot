@@ -18,6 +18,7 @@ package org.springframework.boot.build;
 
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.gradle.api.Project;
+import org.gradle.api.attributes.Usage;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
@@ -40,8 +41,12 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * it.
  * <li>The poms of all {@link MavenPublication Maven publications} are customized to meet
  * Maven Central's requirements.
- * <li>If the {@link JavaPlugin Java plugin} has also been applied, creation of Javadoc
- * and source jars is enabled.
+ * <li>If the {@link JavaPlugin Java plugin} has also been applied:
+ * <ul>
+ * <li>Creation of Javadoc and source jars is enabled.
+ * <li>Publication metadata (poms and Gradle module metadata) is configured to use
+ * resolved versions.
+ * </ul>
  * </ul>
  *
  * <p/>
@@ -62,7 +67,7 @@ class MavenPublishingConventions {
 				});
 			}
 			publishing.getPublications().withType(MavenPublication.class)
-					.all((mavenPublication) -> customizePom(mavenPublication.getPom(), project));
+					.all((mavenPublication) -> customizeMavenPublication(mavenPublication, project));
 			project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> {
 				JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
 				extension.withJavadocJar();
@@ -71,14 +76,32 @@ class MavenPublishingConventions {
 		});
 	}
 
+	private void customizeMavenPublication(MavenPublication publication, Project project) {
+		customizePom(publication.getPom(), project);
+		project.getPlugins().withType(JavaPlugin.class)
+				.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
+	}
+
 	private void customizePom(MavenPom pom, Project project) {
-		pom.getUrl().set("https://projects.spring.io/spring-boot/#");
+		pom.getUrl().set("https://spring.io/projects/spring-boot");
+		pom.getName().set(project.provider(project::getName));
 		pom.getDescription().set(project.provider(project::getDescription));
-		pom.organization(this::customizeOrganization);
+		if (!isUserInherited(project)) {
+			pom.organization(this::customizeOrganization);
+		}
 		pom.licenses(this::customizeLicences);
 		pom.developers(this::customizeDevelopers);
-		pom.scm(this::customizeScm);
-		pom.issueManagement(this::customizeIssueManagement);
+		pom.scm((scm) -> customizeScm(scm, project));
+		if (!isUserInherited(project)) {
+			pom.issueManagement(this::customizeIssueManagement);
+		}
+	}
+
+	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
+		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
+				.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
+		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_RUNTIME,
+				(mappingStrategy) -> mappingStrategy.fromResolutionResult()));
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {
@@ -89,7 +112,7 @@ class MavenPublishingConventions {
 	private void customizeLicences(MavenPomLicenseSpec licences) {
 		licences.license((licence) -> {
 			licence.getName().set("Apache License, Version 2.0");
-			licence.getUrl().set("http://www.apache.org/licenses/LICENSE-2.0");
+			licence.getUrl().set("https://www.apache.org/licenses/LICENSE-2.0");
 		});
 	}
 
@@ -102,15 +125,22 @@ class MavenPublishingConventions {
 		});
 	}
 
-	private void customizeScm(MavenPomScm scm) {
-		scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
-		scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
+	private void customizeScm(MavenPomScm scm, Project project) {
+		if (!isUserInherited(project)) {
+			scm.getConnection().set("scm:git:git://github.com/spring-projects/spring-boot.git");
+			scm.getDeveloperConnection().set("scm:git:ssh://git@github.com/spring-projects/spring-boot.git");
+		}
 		scm.getUrl().set("https://github.com/spring-projects/spring-boot");
 	}
 
 	private void customizeIssueManagement(MavenPomIssueManagement issueManagement) {
 		issueManagement.getSystem().set("GitHub");
 		issueManagement.getUrl().set("https://github.com/spring-projects/spring-boot/issues");
+	}
+
+	private boolean isUserInherited(Project project) {
+		return "spring-boot-starter-parent".equals(project.getName())
+				|| "spring-boot-dependencies".equals(project.getName());
 	}
 
 }

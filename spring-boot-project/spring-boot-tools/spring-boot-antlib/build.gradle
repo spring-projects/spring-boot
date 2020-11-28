@@ -2,7 +2,6 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
-	id "org.springframework.boot.internal-dependency-management"
 }
 
 description = "Spring Boot Antlib"
@@ -20,8 +19,6 @@ dependencies {
 	antUnit "org.apache.ant:ant-antunit:1.3"
 	antIvy "org.apache.ivy:ivy:2.5.0"
 
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
-
 	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 	compileOnly("org.apache.ant:ant:${antVersion}")
 
@@ -38,13 +35,14 @@ processResources {
 	eachFile {
 		filter { it.replace('${spring-boot.version}', project.version) }
 	}
+	inputs.property "version", project.version
 }
 
 task integrationTest {
 	dependsOn copyIntegrationTestSources, jar
 	def resultsDir = file("${buildDir}/test-results/integrationTest")
 	inputs.dir file("src/it")
-	inputs.files sourceSets.main.runtimeClasspath
+	inputs.files(sourceSets.main.runtimeClasspath).withNormalizer(ClasspathNormalizer)
 	outputs.dirs resultsDir
 	doLast {
 		ant.with {

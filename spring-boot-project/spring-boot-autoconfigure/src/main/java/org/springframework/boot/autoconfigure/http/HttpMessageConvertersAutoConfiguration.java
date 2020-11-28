@@ -30,12 +30,13 @@ import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration.NotReactiveWebApplicationCondition;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.web.servlet.server.Encoding;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.env.Environment;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.StringHttpMessageConverter;
 
@@ -71,14 +72,13 @@ public class HttpMessageConvertersAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(StringHttpMessageConverter.class)
-	@EnableConfigurationProperties(ServerProperties.class)
 	protected static class StringHttpMessageConverterConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		public StringHttpMessageConverter stringHttpMessageConverter(ServerProperties serverProperties) {
-			StringHttpMessageConverter converter = new StringHttpMessageConverter(
-					serverProperties.getServlet().getEncoding().getCharset());
+		public StringHttpMessageConverter stringHttpMessageConverter(Environment environment) {
+			Encoding encoding = Binder.get(environment).bindOrCreate("server.servlet.encoding", Encoding.class);
+			StringHttpMessageConverter converter = new StringHttpMessageConverter(encoding.getCharset());
 			converter.setWriteAcceptCharset(false);
 			return converter;
 		}

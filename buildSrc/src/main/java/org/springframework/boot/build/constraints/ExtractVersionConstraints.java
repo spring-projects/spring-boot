@@ -25,13 +25,13 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.TreeSet;
 
+import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.ComponentMetadataDetails;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.DependencyConstraint;
 import org.gradle.api.artifacts.DependencyConstraintMetadata;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
-import org.gradle.api.internal.AbstractTask;
 import org.gradle.api.tasks.Internal;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.platform.base.Platform;
@@ -45,7 +45,7 @@ import org.springframework.boot.build.bom.Library;
  *
  * @author Andy Wilkinson
  */
-public class ExtractVersionConstraints extends AbstractTask {
+public class ExtractVersionConstraints extends DefaultTask {
 
 	private final Configuration configuration;
 
@@ -103,7 +103,10 @@ public class ExtractVersionConstraints extends AbstractTask {
 		Object bom = getProject().project(projectPath).getExtensions().getByName("bom");
 		BomExtension bomExtension = (BomExtension) bom;
 		for (Library lib : bomExtension.getLibraries()) {
-			this.versionProperties.add(new VersionProperty(lib.getName(), lib.getVersionProperty()));
+			String versionProperty = lib.getVersionProperty();
+			if (versionProperty != null) {
+				this.versionProperties.add(new VersionProperty(lib.getName(), versionProperty));
+			}
 		}
 	}
 

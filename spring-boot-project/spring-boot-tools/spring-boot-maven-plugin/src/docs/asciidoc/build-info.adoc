@@ -12,7 +12,6 @@ It also allows you to add an arbitrary number of additional properties, as shown
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<goals>
@@ -35,7 +34,8 @@ It also allows you to add an arbitrary number of additional properties, as shown
 ----
 
 This configuration will generate a `build-info.properties` at the expected location with four additional keys.
-Note that `maven.compiler.source` and `maven.compiler.target` are expected to be regular properties available in the project.
+
+NOTE: `maven.compiler.source` and `maven.compiler.target` are expected to be regular properties available in the project.
 They will be interpolated as you would expect.
 
 include::goals/build-info.adoc[leveloffset=+1]

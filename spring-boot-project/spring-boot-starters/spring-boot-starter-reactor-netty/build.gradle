@@ -5,6 +5,5 @@ plugins {
 description = "Starter for using Reactor Netty as the embedded reactive HTTP server."
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
-	api("io.projectreactor.netty:reactor-netty")
+	api("io.projectreactor.netty:reactor-netty-http")
 }

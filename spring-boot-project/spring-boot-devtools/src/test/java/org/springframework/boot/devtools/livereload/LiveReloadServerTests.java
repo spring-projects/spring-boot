@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.net.URI;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -45,6 +46,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.awaitility.Awaitility.await;
 import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.not;
@@ -88,19 +90,18 @@ class LiveReloadServerTests {
 	void triggerReload() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.triggerReload();
-		Thread.sleep(200);
-		this.server.stop();
-		assertThat(handler.getMessages().get(0)).contains("http://livereload.com/protocols/official-7");
-		assertThat(handler.getMessages().get(1)).contains("command\":\"reload\"");
+		List<String> messages = await().atMost(Duration.ofSeconds(10)).until(handler::getMessages,
+				(msgs) -> msgs.size() == 2);
+		assertThat(messages.get(0)).contains("http://livereload.com/protocols/official-7");
+		assertThat(messages.get(1)).contains("command\":\"reload\"");
+
 	}
 
 	@Test
 	void pingPong() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		handler.sendMessage(new PingMessage());
-		Thread.sleep(200);
-		assertThat(handler.getPongCount()).isEqualTo(1);
-		this.server.stop();
+		await().atMost(Duration.ofSeconds(10)).until(handler::getPongCount, is(1));
 	}
 
 	@Test
@@ -119,8 +120,9 @@ class LiveReloadServerTests {
 	void serverClose() throws Exception {
 		LiveReloadWebSocketHandler handler = connect();
 		this.server.stop();
-		Thread.sleep(200);
-		assertThat(handler.getCloseStatus().getCode()).isEqualTo(1006);
+		CloseStatus closeStatus = await().atMost(Duration.ofSeconds(10)).until(handler::getCloseStatus,
+				Objects::nonNull);
+		assertThat(closeStatus.getCode()).isEqualTo(1006);
 	}
 
 	private LiveReloadWebSocketHandler connect() throws Exception {

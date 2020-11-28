@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,9 @@ import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletResponse;
 
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.core.Ordered;
 import org.springframework.stereotype.Component;
 
 /**
@@ -35,7 +37,7 @@ import org.springframework.stereotype.Component;
  * @author Phillip Webb
  */
 @Component
-public class ExampleFilter implements Filter {
+public class ExampleFilter implements Filter, Ordered {
 
 	@Override
 	public void init(FilterConfig filterConfig) throws ServletException {
@@ -50,6 +52,11 @@ public class ExampleFilter implements Filter {
 
 	@Override
 	public void destroy() {
+	}
+
+	@Override
+	public int getOrder() {
+		return SecurityProperties.DEFAULT_FILTER_ORDER - 1;
 	}
 
 }

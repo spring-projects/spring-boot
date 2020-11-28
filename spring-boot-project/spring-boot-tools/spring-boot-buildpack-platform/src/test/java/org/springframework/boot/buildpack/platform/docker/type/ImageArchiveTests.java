@@ -44,7 +44,7 @@ class ImageArchiveTests extends AbstractJsonTests {
 	void fromImageWritesToValidArchiveTar() throws Exception {
 		Image image = Image.of(getContent("image.json"));
 		ImageArchive archive = ImageArchive.from(image, (update) -> {
-			update.withNewLayer(Layer.of((layout) -> layout.folder("/spring", Owner.ROOT)));
+			update.withNewLayer(Layer.of((layout) -> layout.directory("/spring", Owner.ROOT)));
 			update.withTag(ImageReference.of("pack.local/builder/6b7874626575656b6162"));
 		});
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,7 +38,6 @@ import org.springframework.format.support.FormattingConversionService;
 final class ConversionServiceArguments {
 
 	private ConversionServiceArguments() {
-
 	}
 
 	static Stream<? extends Arguments> with(Formatter<?> formatter) {
@@ -56,6 +55,13 @@ final class ConversionServiceArguments {
 				Arguments.of(new NamedConversionService(withoutDefaults, "Without defaults conversion service")),
 				Arguments.of(new NamedConversionService(new ApplicationConversionService(),
 						"Application conversion service")));
+	}
+
+	static boolean isApplicationConversionService(ConversionService conversionService) {
+		if (conversionService instanceof NamedConversionService) {
+			return isApplicationConversionService(((NamedConversionService) conversionService).delegate);
+		}
+		return conversionService instanceof ApplicationConversionService;
 	}
 
 	static class NamedConversionService implements ConversionService {

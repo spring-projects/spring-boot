@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,7 +75,7 @@ class ApplicationContextRequestMatcherTests {
 	}
 
 	@Test // gh-18012
-	void machesWhenCalledWithDifferentApplicationContextDoesNotCache() {
+	void matchesWhenCalledWithDifferentApplicationContextDoesNotCache() {
 		StaticWebApplicationContext context1 = createWebApplicationContext();
 		StaticWebApplicationContext context2 = createWebApplicationContext();
 		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<>(
@@ -196,7 +196,7 @@ class ApplicationContextRequestMatcherTests {
 			super(Object.class);
 		}
 
-		private AtomicBoolean initialized = new AtomicBoolean();
+		private final AtomicBoolean initialized = new AtomicBoolean();
 
 		@Override
 		protected void initialized(Supplier<Object> context) {

@@ -29,6 +29,8 @@ import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
  * Callback interface used to provide {@link Builder} output logging.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
+ * @author Andrey Shlykov
  * @since 2.3.0
  * @see #toSystemOut()
  */
@@ -45,14 +47,19 @@ public interface BuildLog {
 	 * @param request the build request
 	 * @param imageReference the builder image reference
 	 * @return a consumer for progress update events
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #pullingImage(ImageReference, ImageType)}
 	 */
+	@Deprecated
 	Consumer<TotalProgressEvent> pullingBuilder(BuildRequest request, ImageReference imageReference);
 
 	/**
 	 * Log that the builder image has been pulled.
 	 * @param request the build request
 	 * @param image the builder image that was pulled
+	 * @deprecated since 2.4.0 in favor of {@link #pulledImage(Image, ImageType)}
 	 */
+	@Deprecated
 	void pulledBuilder(BuildRequest request, Image image);
 
 	/**
@@ -60,15 +67,48 @@ public interface BuildLog {
 	 * @param request the build request
 	 * @param imageReference the run image reference
 	 * @return a consumer for progress update events
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #pullingImage(ImageReference, ImageType)}
 	 */
+	@Deprecated
 	Consumer<TotalProgressEvent> pullingRunImage(BuildRequest request, ImageReference imageReference);
 
 	/**
 	 * Log that a run image has been pulled.
 	 * @param request the build request
 	 * @param image the run image that was pulled
+	 * @deprecated since 2.4.0 in favor of {@link #pulledImage(Image, ImageType)}
 	 */
+	@Deprecated
 	void pulledRunImage(BuildRequest request, Image image);
+
+	/**
+	 * Log that an image is being pulled.
+	 * @param imageReference the image reference
+	 * @param imageType the image type
+	 * @return a consumer for progress update events
+	 */
+	Consumer<TotalProgressEvent> pullingImage(ImageReference imageReference, ImageType imageType);
+
+	/**
+	 * Log that an image has been pulled.
+	 * @param image the image that was pulled
+	 * @param imageType the image type that was pulled
+	 */
+	void pulledImage(Image image, ImageType imageType);
+
+	/**
+	 * Log that an image is being pushed.
+	 * @param imageReference the image reference
+	 * @return a consumer for progress update events
+	 */
+	Consumer<TotalProgressEvent> pushingImage(ImageReference imageReference);
+
+	/**
+	 * Log that an image has been pushed.
+	 * @param imageReference the image reference
+	 */
+	void pushedImage(ImageReference imageReference);
 
 	/**
 	 * Log that the lifecycle is executing.
@@ -85,6 +125,13 @@ public interface BuildLog {
 	 * @return a consumer for log updates
 	 */
 	Consumer<LogUpdateEvent> runningPhase(BuildRequest request, String name);
+
+	/**
+	 * Log that a specific phase is being skipped.
+	 * @param name the name of the phase
+	 * @param reason the reason the phase is skipped
+	 */
+	void skippingPhase(String name, String reason);
 
 	/**
 	 * Log that the lifecycle has executed.

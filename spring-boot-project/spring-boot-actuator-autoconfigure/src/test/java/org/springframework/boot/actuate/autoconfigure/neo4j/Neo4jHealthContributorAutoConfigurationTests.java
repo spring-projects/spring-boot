@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,17 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.springframework.boot.actuate.autoconfigure.neo4j;
 
 import org.junit.jupiter.api.Test;
-import org.neo4j.ogm.session.Session;
-import org.neo4j.ogm.session.SessionFactory;
+import org.neo4j.driver.Driver;
+import reactor.core.publisher.Flux;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
+import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
+import org.springframework.boot.actuate.health.HealthIndicator;
 import org.springframework.boot.actuate.neo4j.Neo4jHealthIndicator;
+import org.springframework.boot.actuate.neo4j.Neo4jReactiveHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,39 +40,57 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Michael J. Simons
  */
 class Neo4jHealthContributorAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withUserConfiguration(Neo4jConfiguration.class).withConfiguration(AutoConfigurations
-					.of(Neo4jHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
+					Neo4jHealthContributorAutoConfiguration.class));
 
 	@Test
-	void runShouldCreateIndicator() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(Neo4jHealthIndicator.class));
+	void runShouldCreateHealthIndicator() {
+		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class).run((context) -> assertThat(context)
+				.hasSingleBean(Neo4jReactiveHealthIndicator.class).doesNotHaveBean(Neo4jHealthIndicator.class));
+	}
+
+	@Test
+	void runWithoutReactorShouldCreateHealthIndicator() {
+		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class)
+				.withClassLoader(new FilteredClassLoader(Flux.class)).run((context) -> assertThat(context)
+						.hasSingleBean(Neo4jHealthIndicator.class).doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
 	}
 
 	@Test
 	void runWhenDisabledShouldNotCreateIndicator() {
-		this.contextRunner.withPropertyValues("management.health.neo4j.enabled:false")
-				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class));
+		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class)
+				.withPropertyValues("management.health.neo4j.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
+						.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
 	}
 
 	@Test
 	void defaultIndicatorCanBeReplaced() {
-		this.contextRunner.withUserConfiguration(CustomIndicatorConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(Neo4jHealthIndicator.class);
-			Health health = context.getBean(Neo4jHealthIndicator.class).health();
-			assertThat(health.getDetails()).containsOnly(entry("test", true));
-		});
+		this.contextRunner.withUserConfiguration(Neo4jConfiguration.class, CustomIndicatorConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasBean("neo4jHealthIndicator");
+					Health health = context.getBean("neo4jHealthIndicator", HealthIndicator.class).health();
+					assertThat(health.getDetails()).containsOnly(entry("test", true));
+				});
+	}
+
+	@Test
+	void shouldRequireDriverBean() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(Neo4jHealthIndicator.class)
+				.doesNotHaveBean(Neo4jReactiveHealthIndicator.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class Neo4jConfiguration {
 
 		@Bean
-		SessionFactory sessionFactory() {
-			return mock(SessionFactory.class);
+		Driver driver() {
+			return mock(Driver.class);
 		}
 
 	}
@@ -78,14 +99,12 @@ class Neo4jHealthContributorAutoConfigurationTests {
 	static class CustomIndicatorConfiguration {
 
 		@Bean
-		Neo4jHealthIndicator neo4jHealthIndicator(SessionFactory sessionFactory) {
-			return new Neo4jHealthIndicator(sessionFactory) {
+		HealthIndicator neo4jHealthIndicator() {
+			return new AbstractHealthIndicator() {
 
-				@Override
-				protected void extractResult(Session session, Health.Builder builder) {
+				protected void doHealthCheck(Health.Builder builder) {
 					builder.up().withDetail("test", true);
 				}
-
 			};
 		}
 

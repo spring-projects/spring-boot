@@ -29,6 +29,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link BuildOwner}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class BuildOwnerTests {
 
@@ -54,7 +55,7 @@ class BuildOwnerTests {
 		Map<String, String> env = new LinkedHashMap<>();
 		env.put("CNB_GROUP_ID", "456");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Missing 'CNB_USER_ID' value from the builder environment");
+				.withMessage("Missing 'CNB_USER_ID' value from the builder environment '" + env + "'");
 	}
 
 	@Test
@@ -62,7 +63,7 @@ class BuildOwnerTests {
 		Map<String, String> env = new LinkedHashMap<>();
 		env.put("CNB_USER_ID", "123");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Missing 'CNB_GROUP_ID' value from the builder environment");
+				.withMessage("Missing 'CNB_GROUP_ID' value from the builder environment '" + env + "'");
 	}
 
 	@Test
@@ -71,7 +72,7 @@ class BuildOwnerTests {
 		env.put("CNB_USER_ID", "nope");
 		env.put("CNB_GROUP_ID", "456");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Malformed 'CNB_USER_ID' value 'nope' in the builder environment");
+				.withMessage("Malformed 'CNB_USER_ID' value 'nope' in the builder environment '" + env + "'");
 	}
 
 	@Test
@@ -80,7 +81,7 @@ class BuildOwnerTests {
 		env.put("CNB_USER_ID", "123");
 		env.put("CNB_GROUP_ID", "nope");
 		assertThatIllegalStateException().isThrownBy(() -> BuildOwner.fromEnv(env))
-				.withMessage("Malformed 'CNB_GROUP_ID' value 'nope' in the builder environment");
+				.withMessage("Malformed 'CNB_GROUP_ID' value 'nope' in the builder environment '" + env + "'");
 	}
 
 }

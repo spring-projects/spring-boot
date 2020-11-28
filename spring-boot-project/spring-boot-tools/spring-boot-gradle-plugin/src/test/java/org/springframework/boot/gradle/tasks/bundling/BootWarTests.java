@@ -37,7 +37,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathJarsArePackagedInWebInfLibProvided() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"), jarFile("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
@@ -48,7 +48,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"));
 		getTask().setProvidedClasspath(getTask().getProject().files(jarFile("two.jar")));
 		executeTask();
@@ -60,7 +60,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathCanBeSetUsingAnObject() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"));
 		getTask().setProvidedClasspath(jarFile("two.jar"));
 		executeTask();
@@ -72,7 +72,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(newFile("spring-boot-devtools-0.1.2.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
@@ -81,8 +81,9 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	}
 
 	@Test
+	@Deprecated
 	void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));
 		getTask().setExcludeDevtools(false);
 		executeTask();
@@ -93,13 +94,13 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void webappResourcesInDirectoriesThatOverlapWithLoaderCanBePackaged() throws IOException {
-		File webappFolder = new File(this.temp, "src/main/webapp");
-		webappFolder.mkdirs();
-		File orgFolder = new File(webappFolder, "org");
-		orgFolder.mkdir();
-		new File(orgFolder, "foo.txt").createNewFile();
-		getTask().from(webappFolder);
-		getTask().setMainClassName("com.example.Main");
+		File webappDirectory = new File(this.temp, "src/main/webapp");
+		webappDirectory.mkdirs();
+		File orgDirectory = new File(webappDirectory, "org");
+		orgDirectory.mkdir();
+		new File(orgDirectory, "foo.txt").createNewFile();
+		getTask().from(webappDirectory);
+		getTask().getMainClass().set("com.example.Main");
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("org/")).isNotNull();
@@ -109,7 +110,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void libProvidedEntriesAreWrittenAfterLibEntries() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().classpath(jarFile("library.jar"));
 		getTask().providedClasspath(jarFile("provided-library.jar"));
 		executeTask();

@@ -62,7 +62,7 @@ class AppOpticsPropertiesConfigAdapterTests
 	}
 
 	@Test
-	void whenPropertiesFloorTimesIsSetAdapterHostTagReturnsIt() {
+	void whenPropertiesFloorTimesIsSetAdapterFloorTimesReturnsIt() {
 		AppOpticsProperties properties = createProperties();
 		properties.setFloorTimes(true);
 		assertThat(createConfigAdapter(properties).floorTimes()).isTrue();

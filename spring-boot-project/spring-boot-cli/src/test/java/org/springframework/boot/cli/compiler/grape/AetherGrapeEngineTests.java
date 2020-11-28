@@ -50,7 +50,7 @@ class AetherGrapeEngineTests {
 	private final RepositoryConfiguration springMilestone = new RepositoryConfiguration("spring-milestone",
 			URI.create("https://repo.spring.io/milestone"), false);
 
-	private final RepositoryConfiguration springSnaphot = new RepositoryConfiguration("spring-snapshot",
+	private final RepositoryConfiguration springSnapshot = new RepositoryConfiguration("spring-snapshot",
 			URI.create("https://repo.spring.io/snapshot"), true);
 
 	private AetherGrapeEngine createGrapeEngine(RepositoryConfiguration... additionalRepositories) {
@@ -67,7 +67,7 @@ class AetherGrapeEngineTests {
 	@Test
 	void dependencyResolution() {
 		Map<String, Object> args = new HashMap<>();
-		createGrapeEngine(this.springMilestone, this.springSnaphot).grab(args,
+		createGrapeEngine(this.springMilestone, this.springSnapshot).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
 		assertThat(this.groovyClassLoader.getURLs()).hasSize(5);
 	}
@@ -107,7 +107,7 @@ class AetherGrapeEngineTests {
 		Map<String, Object> args = new HashMap<>();
 		args.put("excludes", Arrays.asList(createExclusion("org.springframework", "spring-core")));
 
-		createGrapeEngine(this.springMilestone, this.springSnaphot).grab(args,
+		createGrapeEngine(this.springMilestone, this.springSnapshot).grab(args,
 				createDependency("org.springframework", "spring-jdbc", "3.2.4.RELEASE"),
 				createDependency("org.springframework", "spring-beans", "3.2.4.RELEASE"));
 
@@ -129,7 +129,7 @@ class AetherGrapeEngineTests {
 		GroovyClassLoader customClassLoader = new GroovyClassLoader();
 		args.put("classLoader", customClassLoader);
 
-		createGrapeEngine(this.springMilestone, this.springSnaphot).grab(args,
+		createGrapeEngine(this.springMilestone, this.springSnapshot).grab(args,
 				createDependency("org.springframework", "spring-jdbc", null));
 
 		assertThat(this.groovyClassLoader.getURLs()).isEmpty();
@@ -139,7 +139,7 @@ class AetherGrapeEngineTests {
 	@Test
 	void resolutionWithCustomResolver() {
 		Map<String, Object> args = new HashMap<>();
-		AetherGrapeEngine grapeEngine = this.createGrapeEngine();
+		AetherGrapeEngine grapeEngine = createGrapeEngine();
 		grapeEngine.addResolver(createResolver("spring-releases", "https://repo.spring.io/release"));
 		Map<String, Object> dependency = createDependency("io.spring.docresources", "spring-doc-resources",
 				"0.1.1.RELEASE");

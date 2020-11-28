@@ -26,8 +26,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ProgressUpdateEvent}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-abstract class ProgressUpdateEventTests {
+abstract class ProgressUpdateEventTests<E extends ProgressUpdateEvent> {
 
 	@Test
 	void getStatusReturnsStatus() {
@@ -36,7 +37,7 @@ abstract class ProgressUpdateEventTests {
 	}
 
 	@Test
-	void getProgressDetailsReturnsProgresssDetails() {
+	void getProgressDetailsReturnsProgressDetails() {
 		ProgressUpdateEvent event = createEvent();
 		assertThat(event.getProgressDetail().getCurrent()).isEqualTo(1);
 		assertThat(event.getProgressDetail().getTotal()).isEqualTo(2);
@@ -66,10 +67,10 @@ abstract class ProgressUpdateEventTests {
 		assertThat(ProgressDetail.isEmpty(detail)).isFalse();
 	}
 
-	protected ProgressUpdateEvent createEvent() {
+	protected E createEvent() {
 		return createEvent("status", new ProgressDetail(1, 2), "progress");
 	}
 
-	protected abstract ProgressUpdateEvent createEvent(String status, ProgressDetail progressDetail, String progress);
+	protected abstract E createEvent(String status, ProgressDetail progressDetail, String progress);
 
 }

@@ -16,26 +16,19 @@
 
 package org.springframework.boot.buildpack.platform.docker;
 
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
-
-import org.springframework.boot.buildpack.platform.docker.ProgressUpdateEvent.ProgressDetail;
 
 /**
  * {@link UpdateListener} that calculates the total progress of the entire pull operation
  * and publishes {@link TotalProgressEvent}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
-public class TotalProgressPullListener implements UpdateListener<PullImageUpdateEvent> {
+public class TotalProgressPullListener extends TotalProgressListener<PullImageUpdateEvent> {
 
-	private final Map<String, Layer> layers = new ConcurrentHashMap<>();
-
-	private final Consumer<TotalProgressEvent> consumer;
-
-	private boolean progressStarted;
+	private static final String[] TRACKED_STATUS_KEYS = { "Downloading", "Extracting" };
 
 	/**
 	 * Create a new {@link TotalProgressPullListener} that prints a progress bar to
@@ -53,87 +46,7 @@ public class TotalProgressPullListener implements UpdateListener<PullImageUpdate
 	 * events}
 	 */
 	public TotalProgressPullListener(Consumer<TotalProgressEvent> consumer) {
-		this.consumer = consumer;
-	}
-
-	@Override
-	public void onStart() {
-	}
-
-	@Override
-	public void onUpdate(PullImageUpdateEvent event) {
-		if (event.getId() != null) {
-			this.layers.computeIfAbsent(event.getId(), Layer::new).update(event);
-		}
-		this.progressStarted = this.progressStarted || event.getProgress() != null;
-		if (this.progressStarted) {
-			publish(0);
-		}
-	}
-
-	@Override
-	public void onFinish() {
-		this.layers.values().forEach(Layer::finish);
-		publish(100);
-	}
-
-	private void publish(int fallback) {
-		int count = 0;
-		int total = 0;
-		for (Layer layer : this.layers.values()) {
-			count++;
-			total += layer.getProgress();
-		}
-		TotalProgressEvent event = new TotalProgressEvent(
-				(count != 0) ? withinPercentageBounds(total / count) : fallback);
-		this.consumer.accept(event);
-	}
-
-	private static int withinPercentageBounds(int value) {
-		if (value < 0) {
-			return 0;
-		}
-		return Math.min(value, 100);
-	}
-
-	/**
-	 * Progress for an individual layer.
-	 */
-	private static class Layer {
-
-		private int downloadProgress;
-
-		private int extractProgress;
-
-		Layer(String id) {
-		}
-
-		void update(PullImageUpdateEvent event) {
-			if (event.getProgressDetail() != null) {
-				ProgressDetail detail = event.getProgressDetail();
-				if ("Downloading".equals(event.getStatus())) {
-					this.downloadProgress = updateProgress(this.downloadProgress, detail);
-				}
-				if ("Extracting".equals(event.getStatus())) {
-					this.extractProgress = updateProgress(this.extractProgress, detail);
-				}
-			}
-		}
-
-		private int updateProgress(int current, ProgressDetail detail) {
-			int result = withinPercentageBounds((int) ((100.0 / detail.getTotal()) * detail.getCurrent()));
-			return Math.max(result, current);
-		}
-
-		void finish() {
-			this.downloadProgress = 100;
-			this.extractProgress = 100;
-		}
-
-		int getProgress() {
-			return withinPercentageBounds((this.downloadProgress + this.extractProgress) / 2);
-		}
-
+		super(consumer, TRACKED_STATUS_KEYS);
 	}
 
 }

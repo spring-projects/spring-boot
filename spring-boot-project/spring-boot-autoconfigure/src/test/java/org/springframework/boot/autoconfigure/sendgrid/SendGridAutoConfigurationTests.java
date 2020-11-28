@@ -79,7 +79,7 @@ class SendGridAutoConfigurationTests {
 	}
 
 	private void loadContext(String... environment) {
-		this.loadContext(null, environment);
+		loadContext(null, environment);
 	}
 
 	private void loadContext(Class<?> additionalConfiguration, String... environment) {

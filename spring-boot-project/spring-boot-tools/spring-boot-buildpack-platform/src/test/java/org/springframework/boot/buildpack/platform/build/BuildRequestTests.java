@@ -82,11 +82,10 @@ public class BuildRequestTests {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> BuildRequest.forJarFile(new File(this.tempDir, "missing.jar")))
 				.withMessage("JarFile must exist");
-
 	}
 
 	@Test
-	void forJarFileWhenJarFileIsFolderThrowsException() {
+	void forJarFileWhenJarFileIsDirectoryThrowsException() {
 		assertThatIllegalArgumentException().isThrownBy(() -> BuildRequest.forJarFile(this.tempDir))
 				.withMessage("JarFile must be a file");
 	}
@@ -96,6 +95,29 @@ public class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
 				.withBuilder(ImageReference.of("spring/builder"));
 		assertThat(request.getBuilder().toString()).isEqualTo("docker.io/spring/builder:latest");
+	}
+
+	@Test
+	void withBuilderWhenHasDigestUpdatesBuilder() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar")).withBuilder(ImageReference
+				.of("spring/builder@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d"));
+		assertThat(request.getBuilder().toString()).isEqualTo(
+				"docker.io/spring/builder@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
+	}
+
+	@Test
+	void withRunImageUpdatesRunImage() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"))
+				.withRunImage(ImageReference.of("example.com/custom/run-image:latest"));
+		assertThat(request.getRunImage().toString()).isEqualTo("example.com/custom/run-image:latest");
+	}
+
+	@Test
+	void withRunImageWhenHasDigestUpdatesRunImage() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar")).withRunImage(ImageReference
+				.of("example.com/custom/run-image@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d"));
+		assertThat(request.getRunImage().toString()).isEqualTo(
+				"example.com/custom/run-image@sha256:6e9f67fa63b0323e9a1e587fd71c561ba48a034504fb804fd26fd8800039835d");
 	}
 
 	@Test

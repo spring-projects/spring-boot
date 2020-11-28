@@ -79,6 +79,14 @@ class WebClientExchangeTagsTests {
 	}
 
 	@Test
+	void uriWhenTemplateIsMissingShouldReturnPathWithQueryParams() {
+		this.request = ClientRequest
+				.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot?section=docs")).build();
+		assertThat(WebClientExchangeTags.uri(this.request))
+				.isEqualTo(Tag.of("uri", "/projects/spring-boot?section=docs"));
+	}
+
+	@Test
 	void clientName() {
 		assertThat(WebClientExchangeTags.clientName(this.request)).isEqualTo(Tag.of("clientName", "example.org"));
 	}

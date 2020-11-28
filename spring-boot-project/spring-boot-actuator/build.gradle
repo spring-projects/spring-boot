@@ -9,12 +9,11 @@ plugins {
 description = "Spring Boot Actuator"
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	api(project(":spring-boot-project:spring-boot"))
 
-	implementation(project(":spring-boot-project:spring-boot"))
-
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
+	optional("com.datastax.oss:java-driver-core")
 	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.hazelcast:hazelcast")
 	optional("com.hazelcast:hazelcast-spring")
@@ -47,6 +46,7 @@ dependencies {
 	optional("org.liquibase:liquibase-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("org.neo4j.driver:neo4j-java-driver")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-messaging")
 	optional("org.springframework:spring-webflux")
@@ -55,9 +55,9 @@ dependencies {
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.data:spring-data-cassandra")
 	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
-	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.data:spring-data-rest-webmvc")
 	optional("org.springframework.data:spring-data-solr")
@@ -82,18 +82,13 @@ dependencies {
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-test")
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("org.testcontainers:junit-jupiter")
 
-	testRuntimeOnly("io.projectreactor.netty:reactor-netty")
+	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
 	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.hsqldb:hsqldb")
-}
-
-compileJava {
-	options.compilerArgs << "-parameters"
-}
-
-compileTestJava {
-	options.compilerArgs << "-parameters"
 }

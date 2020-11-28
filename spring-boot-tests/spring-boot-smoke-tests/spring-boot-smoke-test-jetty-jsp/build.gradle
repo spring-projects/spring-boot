@@ -5,6 +5,12 @@ plugins {
 
 description = "Spring Boot Jetty JSP smoke test"
 
+configurations {
+	providedRuntime {
+		extendsFrom dependencyManagement
+	}
+}
+
 dependencies {
 	compileOnly("jakarta.servlet:jakarta.servlet-api")
 	compileOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty"))
@@ -13,7 +19,6 @@ dependencies {
 		exclude module: "spring-boot-starter-tomcat"
 	}
 
-	providedRuntime(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	providedRuntime("org.eclipse.jetty:apache-jsp") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 	}

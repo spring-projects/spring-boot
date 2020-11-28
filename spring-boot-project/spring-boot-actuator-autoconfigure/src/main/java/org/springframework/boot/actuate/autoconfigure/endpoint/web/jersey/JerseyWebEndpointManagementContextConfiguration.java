@@ -21,8 +21,6 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.server.model.Resource;
 
@@ -112,10 +110,10 @@ class JerseyWebEndpointManagementContextConfiguration {
 			this.mediaTypes = endpointMediaTypes;
 			this.basePath = basePath;
 			this.shouldRegisterLinks = shouldRegisterLinks;
+			register();
 		}
 
-		@PostConstruct
-		void register() {
+		private void register() {
 			// We can't easily use @ConditionalOnBean because @AutoConfigureBefore is
 			// not an option for management contexts. Instead we manually check if
 			// the resource config bean exists

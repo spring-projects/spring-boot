@@ -4,21 +4,20 @@ plugins {
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 	id "org.springframework.boot.integration-test"
-	id "org.springframework.boot.internal-dependency-management"
     id "org.springframework.boot.optional-dependencies"
 }
 
 description = "Spring Boot Developer Tools"
 
 configurations {
-	intTestDependencies
+	intTestDependencies {
+		extendsFrom dependencyManagement
+	}
 }
 
 dependencies {
-	api(platform(project(":spring-boot-project:spring-boot-dependencies")))
-
-	implementation(project(":spring-boot-project:spring-boot"))
-	implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	api(project(":spring-boot-project:spring-boot"))
+	api(project(":spring-boot-project:spring-boot-autoconfigure"))
 
 	intTestDependencies(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 
@@ -33,7 +32,6 @@ dependencies {
 
 	intTestRuntimeOnly("org.springframework:spring-web")
 
-	optional(platform(project(":spring-boot-project:spring-boot-dependencies")))
 	optional("javax.servlet:javax.servlet-api")
 	optional("org.apache.derby:derby")
 	optional("org.hibernate:hibernate-core")
@@ -61,6 +59,7 @@ dependencies {
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.postgresql:postgresql")
 	testImplementation("org.springframework:spring-test")
 	testImplementation("org.springframework:spring-webmvc")
@@ -75,7 +74,7 @@ dependencies {
 	testRuntimeOnly("org.yaml:snakeyaml")
 }
 
-task copyIntTestDependencies(type: Copy) {
+task syncIntTestDependencies(type: Sync) {
 	destinationDir = file("${buildDir}/dependencies")
 	from {
 		configurations.intTestDependencies
@@ -84,5 +83,5 @@ task copyIntTestDependencies(type: Copy) {
 }
 
 intTest {
-	dependsOn copyIntTestDependencies
+	dependsOn syncIntTestDependencies
 }

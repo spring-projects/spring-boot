@@ -12,7 +12,6 @@ Packaging an executable archive is performed by the `repackage` goal, as shown i
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<executions>
 					<execution>
 						<goals>
@@ -48,7 +47,6 @@ The `Main-Class` in the manifest is controlled by the `layout` property of the S
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<configuration>
 					<mainClass>${start.class}</mainClass>
 					<layout>ZIP</layout>
@@ -77,10 +75,26 @@ The `layout` property defaults to a value determined by the archive type (`jar` 
 [[repackage-layers]]
 === Layered Jars
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders further so that they can be written into distinct layers.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular repackaged jars, but include an additional meta-data file that describes each layer.
-To use this feature, the layering feature must be enabled:
+
+By default, the following layers are defined:
+
+* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
+* `spring-boot-loader` for the jar loader classes.
+* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
+* `application` for local module dependencies, application classes, and resources.
+
+Module dependencies are identified by looking at all of the modules that are part of the current build.
+If a module dependency can only be resolved because it has been installed into Maven's local cache and it is not part of the current build, it will be identified as regular dependency.
+
+The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
+The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
+Content that is least likely to change should be added first, followed by layers that are more likely to change.
+
+The repackaged jar includes the `layers.idx` file by default.
+To disable this feature, you can do so in the following manner:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -90,10 +104,9 @@ To use this feature, the layering feature must be enabled:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
-							<enabled>true</enabled>
+							<enabled>false</enabled>
 						</layers>
 					</configuration>
 				</plugin>
@@ -101,17 +114,6 @@ To use this feature, the layering feature must be enabled:
 		</build>
 	</project>
 ----
-
-By default, the following layers are defined:
-
-* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
-* `spring-boot-loader` for the jar loader classes.
-* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
-* `application` for application classes and resources.
-
-The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
-The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
-Content that is least likely to change should be added first, followed by layers that are more likely to change.
 
 
 
@@ -128,7 +130,6 @@ This can be done using a separate configuration file that should be registered a
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
 							<enabled>true</enabled>
@@ -157,6 +158,9 @@ The following example shows how the default ordering described above can be defi
 			<into layer="application" />
 		</application>
 		<dependencies>
+			<into layer="application">
+				<includeModuleDependencies />
+			</into>
 			<into layer="snapshot-dependencies">
 				<include>*:*:*SNAPSHOT</include>
 			</into>
@@ -185,13 +189,15 @@ Any content not claimed by an earlier block remains available for subsequent blo
 The `<into>` block claims content using nested `<include>` and `<exclude>` elements.
 The `<application>` section uses Ant-style patch matching for include/exclude expressions.
 The `<dependencies>` section uses `group:artifact[:version]` patterns.
+It also provides `<includeModuleDependencies />` and `<excludeModuleDependencies />` elements that can be used to include or exclude local module dependencies.
 
 If no `<include>` is defined, then all content (not claimed by an earlier block) is considered.
 
 If no `<exclude>` is defined, then no exclusions are applied.
 
-Looking at the `<dependencies>` example above, we can see that the first `<into>` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
-The subsequent `<into>` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
+Looking at the `<dependencies>` example above, we can see that the first `<into>` will claim all module dependencies for the `application.layer`.
+The next `<into>` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
+The final `<into>` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
 
 The `<application>` block has similar rules.
 First claiming `org/springframework/boot/loader/**` content for the `spring-boot-loader` layer.
@@ -225,7 +231,6 @@ If that is the case or if you prefer to keep the original artifact and attach th
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -282,7 +287,6 @@ The following configuration installs/deploys a single `task` classified artifact
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-jar-plugin</artifactId>
-					<version>{maven-jar-plugin-version}</version>
 					<executions>
 						<execution>
 							<goals>
@@ -298,7 +302,6 @@ The following configuration installs/deploys a single `task` classified artifact
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -357,7 +360,7 @@ Again, if you are using `spring-boot-starter-parent`, this can be simplified as 
 
 [[repackage-example-custom-name]]
 ==== Custom Name
-If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, simply use the standard `finalName`, as shown in the following example:
+If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, use the standard `finalName`, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
 ----
@@ -368,7 +371,6 @@ If you need the repackaged jar to have a different local name than the one defin
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -400,7 +402,6 @@ If you need to only deploy the original jar and yet be able to run your app with
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -435,7 +436,6 @@ Spring Boot repackages the jar file for this project using a custom layout facto
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<id>repackage</id>
@@ -492,7 +492,6 @@ The following example excludes `com.foo:bar`, and only that artifact:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<excludes>
 							<exclude>
@@ -517,7 +516,6 @@ This example excludes any artifact belonging to the `com.foo` group:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<excludeGroupIds>com.foo</excludeGroupIds>
 					</configuration>
@@ -531,7 +529,7 @@ This example excludes any artifact belonging to the `com.foo` group:
 
 [[repackage-layered-jars-tools]]
 ==== Layered Jar Tools
-When you create a layered jar, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 
@@ -543,11 +541,9 @@ If you wish to exclude this dependency, you can do so in the following manner:
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<configuration>
 						<layers>
-							<enabled>true</enabled>
-							<includeLayerTools>false</enabled>
+							<includeLayerTools>false</includeLayerTools>
 						</layers>
 					</configuration>
 				</plugin>

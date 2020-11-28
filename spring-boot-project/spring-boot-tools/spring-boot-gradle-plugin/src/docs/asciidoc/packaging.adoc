@@ -91,7 +91,7 @@ A number of configuration options that are specific to executable jars and wars 
 ==== Configuring the Main Class
 By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in directories on the task's classpath.
 
-The main class can also be configured explicitly using the task's `mainClassName` property:
+The main class can also be configured explicitly using the task's `mainClass` property:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -105,7 +105,7 @@ include::../gradle/packaging/boot-jar-main-class.gradle[tags=main-class]
 include::../gradle/packaging/boot-jar-main-class.gradle.kts[tags=main-class]
 ----
 
-Alternatively, the main class name can be configured project-wide using the `mainClassName` property of the Spring Boot DSL:
+Alternatively, the main class name can be configured project-wide using the `mainClass` property of the Spring Boot DSL:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -119,7 +119,7 @@ include::../gradle/packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
 include::../gradle/packaging/spring-boot-dsl-main-class.gradle.kts[tags=main-class]
 ----
 
-If the {application-plugin}[`application` plugin] has been applied its `mainClassName` project property must be configured and can be used for the same purpose:
+If the {application-plugin}[`application` plugin] has been applied its `mainClass` property must be configured and can be used for the same purpose:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -147,12 +147,17 @@ include::../gradle/packaging/boot-jar-manifest-main-class.gradle[tags=main-class
 include::../gradle/packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-class]
 ----
 
+NOTE: If the main class is written in Kotlin, the name of the generated Java class should be used.
+By default, this is the name of the Kotlin class with the `Kt` suffix added.
+For example, `ExampleApplication` becomes `ExampleApplicationKt`.
+If another name is defined using `@JvmName` then that name should be used.
 
 
-[[packaging-executable-configuring-excluding-devtools]]
-==== Excluding Devtools
-By default, Spring Boot's Devtools module, `org.springframework.boot:spring-boot-devtools`, will be excluded from an executable jar or war.
-If you want to include Devtools in your archive set the `excludeDevtools` property to `false`:
+[[packaging-executable-configuring-including-development-only-dependencies]]
+==== Including Development-only Dependencies
+By default all dependencies declared in the `developmentOnly` configuration will be excluded from an executable jar or war.
+
+If you want to include dependencies declared in the `developmentOnly` configuration in your archive, configure the classpath of its task to include the configuration, as shown in the following example for the `bootWar` task:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
@@ -173,7 +178,7 @@ include::../gradle/packaging/boot-war-include-devtools.gradle.kts[tags=include-d
 Most libraries can be used directly when nested in an executable archive, however certain libraries can have problems.
 For example, JRuby includes its own nested jar support which assumes that `jruby-complete.jar` is always directly available on the file system.
 
-To deal with any problematic libraries, an executable archive can be configured to unpack specific nested jars to a temporary folder when the executable archive is run.
+To deal with any problematic libraries, an executable archive can be configured to unpack specific nested jars to a temporary directory when the executable archive is run.
 Libraries can be identified as requiring unpacking using Ant-style patterns that match against the absolute path of the source jar file:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
@@ -199,6 +204,10 @@ The closure is passed a `FileTreeElement` and should return a `boolean` indicati
 Spring Boot provides support for fully executable archives.
 An archive is made fully executable by prepending a shell script that knows how to launch the application.
 On Unix-like platforms, this launch script allows the archive to be run directly like any other executable or to be installed as a service.
+
+NOTE: Currently, some tools do not accept this format so you may not always be able to use this technique.
+For example, `jar -xf` may silently fail to extract a jar or war that has been made fully-executable.
+It is recommended that you only enable this option if you intend to execute it directly, rather than running it with `java -jar`, deploying it to a servlet container, or including it in an OCI image.
 
 To use this feature, the inclusion of the launch script must be enabled:
 
@@ -267,35 +276,36 @@ include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=proper
 [[packaging-layered-jars]]
 ==== Packaging Layered Jars
 By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these folders further so that they can be written into distinct layers.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular boot packaged jars, but include an additional meta-data file that describes each layer.
-To use this feature, the layering feature must be enabled:
-
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
-----
-include::../gradle/packaging/boot-jar-layered.gradle[tags=layered]
-----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
-----
-include::../gradle/packaging/boot-jar-layered.gradle.kts[tags=layered]
-----
 
 By default, the following layers are defined:
 
-* `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
+* `dependencies` for any non-project dependency whose version does not contain `SNAPSHOT`.
 * `spring-boot-loader` for the jar loader classes.
-* `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
-* `application` for application classes and resources.
+* `snapshot-dependencies` for any non-project dependency whose version contains `SNAPSHOT`.
+* `application` for project dependencies, application classes, and resources.
 
 The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
 The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
 Content that is least likely to change should be added first, followed by layers that are more likely to change.
 
-When you create a layered jar, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+To disable this feature, you can do so in the following manner:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered-disabled.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
+----
+
+When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 
@@ -345,13 +355,15 @@ Any content not claimed by an earlier `intoLayer` closure remains available for 
 The `intoLayer` closure claims content using nested `include` and `exclude` calls.
 The `application` closure uses Ant-style patch matching for include/exclude parameters.
 The `dependencies` section uses `group:artifact[:version]` patterns.
+It also provides `includeProjectDependencies()` and `excludeProjectDependencies()` methods that can be used to include or exclude project dependencies.
 
 If no `include` call is made, then all content (not claimed by an earlier closure) is considered.
 
 If no `exclude` call is made, then no exclusions are applied.
 
-Looking at the `dependencies` closure in the example above, we can see that the first `intoLayer` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
-The subsequent `intoLayer` will claim anything left (in this case, any dependency that is not a SNAPSHOT) for the `dependencies` layer.
+Looking at the `dependencies` closure in the example above, we can see that the first `intoLayer` will claim all project dependencies for the `application` layer.
+The next `intoLayer` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
+The third and final `intoLayer` will claim anything left (in this case, any dependency that is not a project dependency or a SNAPSHOT) for the `dependencies` layer.
 
 The `application` closure has similar rules.
 First claiming `org/springframework/boot/loader/**` content for the `spring-boot-loader` layer.

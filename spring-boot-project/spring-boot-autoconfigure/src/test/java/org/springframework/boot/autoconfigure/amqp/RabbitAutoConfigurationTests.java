@@ -28,6 +28,9 @@ import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.SslContextFactory;
 import com.rabbitmq.client.TrustEverythingTrustManager;
+import com.rabbitmq.client.impl.CredentialsProvider;
+import com.rabbitmq.client.impl.CredentialsRefreshService;
+import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
 
@@ -39,6 +42,7 @@ import org.springframework.amqp.rabbit.config.AbstractRabbitListenerContainerFac
 import org.springframework.amqp.rabbit.config.DirectRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
+import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory.AddressShuffleMode;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory.CacheMode;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -104,6 +108,8 @@ class RabbitAutoConfigurationTests {
 					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_MAX);
 			assertThat(connectionFactory.isPublisherConfirms()).isFalse();
 			assertThat(connectionFactory.isPublisherReturns()).isFalse();
+			assertThat(connectionFactory.getRabbitConnectionFactory().getChannelRpcTimeout())
+					.isEqualTo(com.rabbitmq.client.ConnectionFactory.DEFAULT_CHANNEL_RPC_TIMEOUT);
 			assertThat(context.containsBean("rabbitListenerContainerFactory"))
 					.as("Listener container factory should be created by default").isTrue();
 		});
@@ -134,15 +140,19 @@ class RabbitAutoConfigurationTests {
 	void testConnectionFactoryWithOverrides() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.host:remote-server", "spring.rabbitmq.port:9000",
-						"spring.rabbitmq.username:alice", "spring.rabbitmq.password:secret",
-						"spring.rabbitmq.virtual_host:/vhost", "spring.rabbitmq.connection-timeout:123")
+						"spring.rabbitmq.address-shuffle-mode=random", "spring.rabbitmq.username:alice",
+						"spring.rabbitmq.password:secret", "spring.rabbitmq.virtual_host:/vhost",
+						"spring.rabbitmq.connection-timeout:123", "spring.rabbitmq.channel-rpc-timeout:140")
 				.run((context) -> {
 					CachingConnectionFactory connectionFactory = context.getBean(CachingConnectionFactory.class);
 					assertThat(connectionFactory.getHost()).isEqualTo("remote-server");
 					assertThat(connectionFactory.getPort()).isEqualTo(9000);
+					assertThat(connectionFactory).hasFieldOrPropertyWithValue("addressShuffleMode",
+							AddressShuffleMode.RANDOM);
 					assertThat(connectionFactory.getVirtualHost()).isEqualTo("/vhost");
 					com.rabbitmq.client.ConnectionFactory rcf = connectionFactory.getRabbitConnectionFactory();
 					assertThat(rcf.getConnectionTimeout()).isEqualTo(123);
+					assertThat(rcf.getChannelRpcTimeout()).isEqualTo(140);
 					assertThat((List<Address>) ReflectionTestUtils.getField(connectionFactory, "addresses")).hasSize(1);
 				});
 	}
@@ -525,8 +535,7 @@ class RabbitAutoConfigurationTests {
 	@Test
 	void testSimpleRabbitListenerContainerFactoryConfigurerUsesConfig() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:direct",
-						"spring.rabbitmq.listener.simple.concurrency:5",
+				.withPropertyValues("spring.rabbitmq.listener.simple.concurrency:5",
 						"spring.rabbitmq.listener.simple.maxConcurrency:10",
 						"spring.rabbitmq.listener.simple.prefetch:40")
 				.run((context) -> {
@@ -541,11 +550,23 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
+	void testSimpleRabbitListenerContainerFactoryConfigurerEnableDeBatchingWithConsumerBatchEnabled() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.listener.simple.consumer-batch-enabled:true").run((context) -> {
+					SimpleRabbitListenerContainerFactoryConfigurer configurer = context
+							.getBean(SimpleRabbitListenerContainerFactoryConfigurer.class);
+					SimpleRabbitListenerContainerFactory factory = mock(SimpleRabbitListenerContainerFactory.class);
+					configurer.configure(factory, mock(ConnectionFactory.class));
+					verify(factory).setConsumerBatchEnabled(true);
+				});
+	}
+
+	@Test
 	void testDirectRabbitListenerContainerFactoryConfigurerUsesConfig() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
-				.withPropertyValues("spring.rabbitmq.listener.type:simple",
-						"spring.rabbitmq.listener.direct.consumers-per-queue:5",
-						"spring.rabbitmq.listener.direct.prefetch:40")
+				.withPropertyValues("spring.rabbitmq.listener.direct.consumers-per-queue:5",
+						"spring.rabbitmq.listener.direct.prefetch:40",
+						"spring.rabbitmq.listener.direct.de-batching-enabled:false")
 				.run((context) -> {
 					DirectRabbitListenerContainerFactoryConfigurer configurer = context
 							.getBean(DirectRabbitListenerContainerFactoryConfigurer.class);
@@ -553,6 +574,7 @@ class RabbitAutoConfigurationTests {
 					configurer.configure(factory, mock(ConnectionFactory.class));
 					verify(factory).setConsumersPerQueue(5);
 					verify(factory).setPrefetchCount(40);
+					verify(factory).setDeBatchingEnabled(false);
 				});
 	}
 
@@ -716,6 +738,49 @@ class RabbitAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void whenACredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(CredentialsProviderConfiguration.class)
+				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
+						.isEqualTo(CredentialsProviderConfiguration.credentialsProvider));
+	}
+
+	@Test
+	void whenAPrimaryCredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(PrimaryCredentialsProviderConfiguration.class)
+				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
+						.isEqualTo(PrimaryCredentialsProviderConfiguration.credentialsProvider));
+	}
+
+	@Test
+	void whenMultipleCredentialsProvidersAreAvailableThenConnectionFactoryUsesDefaultProvider() throws Exception {
+		this.contextRunner.withUserConfiguration(MultipleCredentialsProvidersConfiguration.class)
+				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
+						.isInstanceOf(DefaultCredentialsProvider.class));
+	}
+
+	@Test
+	void whenACredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(CredentialsRefreshServiceConfiguration.class).run(
+				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
+						.isEqualTo(CredentialsRefreshServiceConfiguration.credentialsRefreshService));
+	}
+
+	@Test
+	void whenAPrimaryCredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+		this.contextRunner.withUserConfiguration(PrimaryCredentialsRefreshServiceConfiguration.class).run(
+				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
+						.isEqualTo(PrimaryCredentialsRefreshServiceConfiguration.credentialsRefreshService));
+	}
+
+	@Test
+	void whenMultipleCredentialsRefreshServiceAreAvailableThenConnectionFactoryHasNoCredentialsRefreshService()
+			throws Exception {
+		this.contextRunner.withUserConfiguration(MultipleCredentialsRefreshServicesConfiguration.class).run(
+				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
+						.isNull());
+	}
+
 	private TrustManager getTrustManager(com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory) {
 		SslContextFactory sslContextFactory = (SslContextFactory) ReflectionTestUtils.getField(rabbitConnectionFactory,
 				"sslContextFactory");
@@ -870,6 +935,98 @@ class RabbitAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class NoEnableRabbitConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CredentialsProviderConfiguration {
+
+		private static final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+
+		@Bean
+		CredentialsProvider credentialsProvider() {
+			return credentialsProvider;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryCredentialsProviderConfiguration {
+
+		private static final CredentialsProvider credentialsProvider = mock(CredentialsProvider.class);
+
+		@Bean
+		@Primary
+		CredentialsProvider credentialsProvider() {
+			return credentialsProvider;
+		}
+
+		@Bean
+		CredentialsProvider credentialsProvider1() {
+			return mock(CredentialsProvider.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleCredentialsProvidersConfiguration {
+
+		@Bean
+		CredentialsProvider credentialsProvider1() {
+			return mock(CredentialsProvider.class);
+		}
+
+		@Bean
+		CredentialsProvider credentialsProvider2() {
+			return mock(CredentialsProvider.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CredentialsRefreshServiceConfiguration {
+
+		private static final CredentialsRefreshService credentialsRefreshService = mock(
+				CredentialsRefreshService.class);
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService() {
+			return credentialsRefreshService;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PrimaryCredentialsRefreshServiceConfiguration {
+
+		private static final CredentialsRefreshService credentialsRefreshService = mock(
+				CredentialsRefreshService.class);
+
+		@Bean
+		@Primary
+		CredentialsRefreshService credentialsRefreshService1() {
+			return credentialsRefreshService;
+		}
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService2() {
+			return mock(CredentialsRefreshService.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleCredentialsRefreshServicesConfiguration {
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService1() {
+			return mock(CredentialsRefreshService.class);
+		}
+
+		@Bean
+		CredentialsRefreshService credentialsRefreshService2() {
+			return mock(CredentialsRefreshService.class);
+		}
 
 	}
 

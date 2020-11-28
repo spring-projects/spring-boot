@@ -12,7 +12,7 @@ This dependency management lets you omit `<version>` tags for those dependencies
 * Sensible plugin configuration (https://github.com/ktoso/maven-git-commit-id-plugin[Git commit ID], and https://maven.apache.org/plugins/maven-shade-plugin/[shade]).
 * Sensible resource filtering for `application.properties` and `application.yml` including profile-specific files (for example, `application-dev.properties` and `application-dev.yml`)
 
-Note that, since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
+NOTE: Since the `application.properties` and `application.yml` files accept Spring style placeholders (`${...}`), the Maven filtering is changed to use `@..@` placeholders.
 (You can override that by setting a Maven property called `resource.delimiter`.)
 
 
@@ -90,7 +90,7 @@ For instance, to use a different version of the SLF4J library and the Spring Dat
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-releasetrain</artifactId>
-				<version>Moore-SR6</version>
+				<version>2020.0.0-SR1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -106,3 +106,44 @@ For instance, to use a different version of the SLF4J library and the Spring Dat
 ----
 
 
+
+[[using-overriding-command-line]]
+=== Overriding settings on the command-line
+The plugin offers a number of user properties, starting with `spring-boot`, to let you customize the configuration from the command-line.
+
+For instance, you could tune the profiles to enable when running the application as follows:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.profiles=dev,local
+----
+
+If you want to both have a default while allowing it to be overridden on the command-line, you should use a combination of a user-provided project property and MOJO configuration.
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<project>
+    <properties>
+        <app.profiles>local,dev</app.profiles>
+    </properties>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<profiles>${app.profiles}</profiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+The above makes sure that `local` and `dev` are enabled by default.
+Now a dedicated property has been exposed, this can be overridden on the command-line as well:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dapp.profiles=test
+----

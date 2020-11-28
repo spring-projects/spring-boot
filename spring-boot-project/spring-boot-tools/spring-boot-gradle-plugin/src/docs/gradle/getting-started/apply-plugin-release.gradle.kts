@@ -1,3 +1,3 @@
 plugins {
-	id("org.springframework.boot") version "{version}"
+	id("org.springframework.boot") version "{gradle-project-version}"
 }

@@ -16,17 +16,23 @@
 
 package org.springframework.boot.buildpack.platform.docker.type;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import org.springframework.util.Assert;
 
 /**
  * A Docker image name of the form {@literal "docker.io/library/ubuntu"}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  * @see ImageReference
  * @see #of(String)
  */
 public class ImageName {
+
+	private static final Pattern PATTERN = Regex.IMAGE_NAME.compile();
 
 	private static final String DEFAULT_DOMAIN = "docker.io";
 
@@ -40,12 +46,11 @@ public class ImageName {
 
 	private final String string;
 
-	ImageName(String domain, String name) {
-		Assert.hasText(domain, "Domain must not be empty");
-		Assert.hasText(name, "Name must not be empty");
-		this.domain = domain;
-		this.name = name;
-		this.string = domain + "/" + name;
+	ImageName(String domain, String path) {
+		Assert.hasText(path, "Path must not be empty");
+		this.domain = getDomainOrDefault(domain);
+		this.name = getNameWithDefaultPath(this.domain, path);
+		this.string = this.domain + "/" + this.name;
 	}
 
 	/**
@@ -100,6 +105,20 @@ public class ImageName {
 		return this.string;
 	}
 
+	private String getDomainOrDefault(String domain) {
+		if (domain == null || LEGACY_DOMAIN.equals(domain)) {
+			return DEFAULT_DOMAIN;
+		}
+		return domain;
+	}
+
+	private String getNameWithDefaultPath(String domain, String name) {
+		if (DEFAULT_DOMAIN.equals(domain) && !name.contains("/")) {
+			return OFFICIAL_REPOSITORY_NAME + "/" + name;
+		}
+		return name;
+	}
+
 	/**
 	 * Create a new {@link ImageName} from the given value. The following value forms can
 	 * be used:
@@ -112,26 +131,13 @@ public class ImageName {
 	 * @return an {@link ImageName} instance
 	 */
 	public static ImageName of(String value) {
-		String[] split = split(value);
-		return new ImageName(split[0], split[1]);
-	}
-
-	static String[] split(String value) {
 		Assert.hasText(value, "Value must not be empty");
-		String domain = DEFAULT_DOMAIN;
-		int firstSlash = value.indexOf('/');
-		if (firstSlash != -1) {
-			String firstSegment = value.substring(0, firstSlash);
-			if (firstSegment.contains(".") || firstSegment.contains(":") || "localhost".equals(firstSegment)) {
-				domain = LEGACY_DOMAIN.equals(firstSegment) ? DEFAULT_DOMAIN : firstSegment;
-				value = value.substring(firstSlash + 1);
-			}
-		}
-		if (DEFAULT_DOMAIN.equals(domain) && !value.contains("/")) {
-			value = OFFICIAL_REPOSITORY_NAME + "/" + value;
-		}
-		return new String[] { domain, value };
-
+		Matcher matcher = PATTERN.matcher(value);
+		Assert.isTrue(matcher.matches(),
+				() -> "Unable to parse name \"" + value + "\". "
+						+ "Image name must be in the form '[domainHost:port/][path/]name', "
+						+ "with 'path' and 'name' containing only [a-z0-9][.][_][-]");
+		return new ImageName(matcher.group("domain"), matcher.group("path"));
 	}
 
 }

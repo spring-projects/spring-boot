@@ -30,6 +30,7 @@ import org.springframework.util.StringUtils;
  * An individual build phase executed as part of a {@link Lifecycle} run.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class Phase {
 
@@ -44,6 +45,8 @@ class Phase {
 	private final List<String> args = new ArrayList<>();
 
 	private final Map<VolumeName, String> binds = new LinkedHashMap<>();
+
+	private final Map<String, String> env = new LinkedHashMap<>();
 
 	/**
 	 * Create a new {@link Phase} instance.
@@ -91,6 +94,15 @@ class Phase {
 	}
 
 	/**
+	 * Update this phase with an additional environment variable.
+	 * @param name the variable name
+	 * @param value the variable value
+	 */
+	void withEnv(String name, String value) {
+		this.env.put(name, value);
+	}
+
+	/**
 	 * Return the name of the phase.
 	 * @return the phase name
 	 */
@@ -112,9 +124,10 @@ class Phase {
 			update.withUser("root");
 			update.withBind(DOMAIN_SOCKET_PATH, DOMAIN_SOCKET_PATH);
 		}
-		update.withCommand("/lifecycle/" + this.name, StringUtils.toStringArray(this.args));
+		update.withCommand("/cnb/lifecycle/" + this.name, StringUtils.toStringArray(this.args));
 		update.withLabel("author", "spring-boot");
 		this.binds.forEach(update::withBind);
+		this.env.forEach(update::withEnv);
 	}
 
 }
