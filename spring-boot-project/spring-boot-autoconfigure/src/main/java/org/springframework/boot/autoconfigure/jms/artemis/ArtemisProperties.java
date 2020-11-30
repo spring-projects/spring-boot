@@ -32,6 +32,7 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Justin Bertram
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.artemis")
@@ -44,13 +45,24 @@ public class ArtemisProperties {
 
 	/**
 	 * Artemis broker host.
+	 *
+	 * This property is deprecated. Use <code>brokerUrl</code> instead.
 	 */
+	@Deprecated
 	private String host = "localhost";
 
 	/**
 	 * Artemis broker port.
+	 *
+	 * This property is deprecated. Use <code>brokerUrl</code> instead.
 	 */
+	@Deprecated
 	private int port = 61616;
+
+	/**
+	 * Artemis broker port.
+	 */
+	private String brokerUrl = "tcp://localhost:61616";
 
 	/**
 	 * Login user of the broker.
@@ -89,6 +101,14 @@ public class ArtemisProperties {
 
 	public void setPort(int port) {
 		this.port = port;
+	}
+
+	public String getBrokerUrl() {
+		return this.brokerUrl;
+	}
+
+	public void setBrokerUrl(String brokerUrl) {
+		this.brokerUrl = brokerUrl;
 	}
 
 	public String getUser() {
