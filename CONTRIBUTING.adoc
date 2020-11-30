@@ -96,7 +96,13 @@ The project can be built from the root directory using the standard Gradle comma
 	$ ./gradlew build
 ----
 
+=== Running Unit Tests
+Unit tests and checkstyle can be run from the relevant *module directory* using the standard Gradle command:
 
+[indent=0]
+----
+        $ ../../gradlew check test
+----
 
 === Importing into Eclipse
 You can import the Spring Boot code into any Eclipse 2019-12-based distribution. The
