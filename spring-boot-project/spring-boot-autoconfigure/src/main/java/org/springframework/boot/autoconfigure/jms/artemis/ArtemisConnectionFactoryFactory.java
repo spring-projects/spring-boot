@@ -40,6 +40,7 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Phillip Webb
  * @author Stephane Nicoll
+ * @author Justin Bertram
  */
 class ArtemisConnectionFactoryFactory {
 
@@ -127,13 +128,21 @@ class ArtemisConnectionFactoryFactory {
 
 	private <T extends ActiveMQConnectionFactory> T createNativeConnectionFactory(Class<T> factoryClass)
 			throws Exception {
+		T connectionFactory;
 		Map<String, Object> params = new HashMap<>();
-		params.put(TransportConstants.HOST_PROP_NAME, this.properties.getHost());
-		params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
-		TransportConfiguration transportConfiguration = new TransportConfiguration(
-				NettyConnectorFactory.class.getName(), params);
-		Constructor<T> constructor = factoryClass.getConstructor(boolean.class, TransportConfiguration[].class);
-		T connectionFactory = constructor.newInstance(false, new TransportConfiguration[] { transportConfiguration });
+		String url = this.properties.getBrokerUrl();
+		if (StringUtils.hasText(url)) {
+			Constructor<T> constructor = factoryClass.getConstructor(String.class);
+			connectionFactory = constructor.newInstance(url);
+		}
+		else {
+			params.put(TransportConstants.HOST_PROP_NAME, this.properties.getHost());
+			params.put(TransportConstants.PORT_PROP_NAME, this.properties.getPort());
+			TransportConfiguration transportConfiguration = new TransportConfiguration(
+					NettyConnectorFactory.class.getName(), params);
+			Constructor<T> constructor = factoryClass.getConstructor(boolean.class, TransportConfiguration[].class);
+			connectionFactory = constructor.newInstance(false, new TransportConfiguration[] { transportConfiguration });
+		}
 		String user = this.properties.getUser();
 		if (StringUtils.hasText(user)) {
 			connectionFactory.setUser(user);
