@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.env;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -199,13 +200,30 @@ class EnvironmentEndpointTests {
 	}
 
 	@Test
-	void propertyWithTypeOtherThanStringShouldNotFail() {
+	void propertyWithComplexTypeShouldNotFail() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources()
 				.addFirst(singleKeyPropertySource("test", "foo", Collections.singletonMap("bar", "baz")));
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
 		String value = (String) propertySources(descriptor).get("test").getProperties().get("foo").getValue();
 		assertThat(value).isEqualTo("Complex property type java.util.Collections$SingletonMap");
+	}
+
+	@Test
+	void propertyWithPrimitiveOrWrapperTypeIsHandledCorrectly() {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("char", 'a');
+		map.put("integer", 100);
+		map.put("boolean", true);
+		map.put("biginteger", BigInteger.valueOf(200));
+		environment.getPropertySources().addFirst(new MapPropertySource("test", map));
+		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
+		Map<String, PropertyValueDescriptor> properties = propertySources(descriptor).get("test").getProperties();
+		assertThat(properties.get("char").getValue()).isEqualTo('a');
+		assertThat(properties.get("integer").getValue()).isEqualTo(100);
+		assertThat(properties.get("boolean").getValue()).isEqualTo(true);
+		assertThat(properties.get("biginteger").getValue()).isEqualTo(BigInteger.valueOf(200));
 	}
 
 	@Test

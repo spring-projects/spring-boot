@@ -44,6 +44,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
@@ -184,7 +185,8 @@ public class EnvironmentEndpoint {
 	}
 
 	protected Object stringifyIfNecessary(Object value) {
-		if (value == null || value.getClass().isPrimitive()) {
+		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass())
+				|| Number.class.isAssignableFrom(value.getClass())) {
 			return value;
 		}
 		if (CharSequence.class.isAssignableFrom(value.getClass())) {
