@@ -4,7 +4,7 @@ anchors:
     username: ((github-username))
     password: ((github-password))
     branch: ((branch))
-  docker-resource-source: &docker-resource-source 
+  docker-resource-source: &docker-resource-source
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((milestone))
@@ -42,6 +42,9 @@ anchors:
     ARTIFACTORY_SERVER: ((artifactory-server))
     ARTIFACTORY_USERNAME: ((artifactory-username))
     ARTIFACTORY_PASSWORD: ((artifactory-password))
+  sdkman-task-params: &sdkman-task-params
+    SDKMAN_CONSUMER_KEY: ((sdkman-consumer-key))
+    SDKMAN_CONSUMER_TOKEN: ((sdkman-consumer-token))
   artifactory-repo-put-params: &artifactory-repo-put-params
     repo: libs-snapshot-local
     folder: distribution-repository
@@ -623,8 +626,10 @@ jobs:
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: RELEASE
+      BRANCH: ((BRANCH))
       <<: *artifactory-task-params
       <<: *bintray-task-params
+      <<: *sdkman-task-params
 - name: sync-to-maven-central
   serial: true
   plan:
