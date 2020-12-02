@@ -24,6 +24,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.apache.commons.logging.Log;
@@ -115,16 +116,25 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			ConfigDataLoaderContext loaderContext = new ContributorDataLoaderContext(this);
 			List<ConfigDataLocation> imports = contributor.getImports();
 			this.logger.trace(LogMessage.format("Processing imports %s", imports));
-			Map<ConfigDataResource, ConfigData> imported = importer.resolveAndLoad(activationContext,
+			Map<ConfigDataResolutionResult, ConfigData> imported = importer.resolveAndLoad(activationContext,
 					locationResolverContext, loaderContext, imports);
-			this.logger.trace(LogMessage.of(() -> imported.isEmpty() ? "Nothing imported" : "Imported "
-					+ imported.size() + " resource " + ((imported.size() != 1) ? "s" : "") + imported.keySet()));
+			this.logger.trace(LogMessage.of(() -> getImportedMessage(imported.keySet())));
 			ConfigDataEnvironmentContributor contributorAndChildren = contributor.withChildren(importPhase,
 					asContributors(imported));
 			result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapContext,
 					result.getRoot().withReplacement(contributor, contributorAndChildren));
 			processed++;
 		}
+	}
+
+	private CharSequence getImportedMessage(Set<ConfigDataResolutionResult> results) {
+		if (results.isEmpty()) {
+			return "Nothing imported";
+		}
+		StringBuilder message = new StringBuilder();
+		message.append("Imported " + results.size() + " resource" + ((results.size() != 1) ? "s " : " "));
+		message.append(results.stream().map(ConfigDataResolutionResult::getResource).collect(Collectors.toList()));
+		return message;
 	}
 
 	protected final ConfigurableBootstrapContext getBootstrapContext() {
@@ -147,11 +157,14 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return contributor.isActive(activationContext) && contributor.hasUnprocessedImports(importPhase);
 	}
 
-	private List<ConfigDataEnvironmentContributor> asContributors(Map<ConfigDataResource, ConfigData> imported) {
+	private List<ConfigDataEnvironmentContributor> asContributors(
+			Map<ConfigDataResolutionResult, ConfigData> imported) {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>(imported.size() * 5);
-		imported.forEach((location, data) -> {
+		imported.forEach((resolutionResult, data) -> {
 			for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
-				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, data, i));
+				ConfigDataLocation location = resolutionResult.getLocation();
+				ConfigDataResource resource = resolutionResult.getResource();
+				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, resource, data, i));
 			}
 		});
 		return Collections.unmodifiableList(contributors);

@@ -33,6 +33,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
@@ -55,6 +56,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -69,6 +71,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	private SpringApplication application;
+
+	@TempDir
+	public File temp;
 
 	@BeforeEach
 	void setup() {
@@ -516,9 +521,16 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenConfigLocationHasNonOptionalMissingDirectoryThrowsException() {
+	void runWhenConfigLocationHasNonOptionalMissingFileDirectoryThrowsResourceNotFoundException() {
+		File location = new File(this.temp, "application.unknown");
+		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class).isThrownBy(() -> this.application
+				.run("--spring.config.location=" + StringUtils.cleanPath(location.getAbsolutePath()) + "/"));
+	}
+
+	@Test
+	void runWhenConfigLocationHasNonOptionalMissingClasspathDirectoryThrowsLocationNotFoundException() {
 		String location = "classpath:application.unknown/";
-		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
 				.isThrownBy(() -> this.application.run("--spring.config.location=" + location));
 	}
 

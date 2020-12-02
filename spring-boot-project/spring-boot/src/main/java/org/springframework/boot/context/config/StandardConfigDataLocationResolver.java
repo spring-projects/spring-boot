@@ -31,6 +31,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
@@ -234,8 +235,10 @@ public class StandardConfigDataLocationResolver
 
 	private void assertDirectoryExists(StandardConfigDataReference reference) {
 		Resource resource = this.resourceLoader.getResource(reference.getDirectory());
-		StandardConfigDataResource configDataResource = new StandardConfigDataResource(reference, resource);
-		ConfigDataResourceNotFoundException.throwIfDoesNotExist(configDataResource, resource);
+		if (!(resource instanceof ClassPathResource)) {
+			StandardConfigDataResource configDataResource = new StandardConfigDataResource(reference, resource);
+			ConfigDataResourceNotFoundException.throwIfDoesNotExist(configDataResource, resource);
+		}
 	}
 
 	private List<StandardConfigDataResource> resolve(StandardConfigDataReference reference) {

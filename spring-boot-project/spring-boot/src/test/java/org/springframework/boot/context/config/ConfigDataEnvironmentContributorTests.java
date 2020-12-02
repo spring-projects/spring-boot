@@ -83,8 +83,8 @@ class ConfigDataEnvironmentContributorTests {
 	void getLocationReturnsLocation() {
 		ConfigData configData = new ConfigData(Collections.singleton(new MockPropertySource()));
 		ConfigDataResource resource = mock(ConfigDataResource.class);
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(resource,
-				configData, 0);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
+				resource, configData, 0);
 		assertThat(contributor.getResource()).isSameAs(resource);
 	}
 
@@ -100,7 +100,7 @@ class ConfigDataEnvironmentContributorTests {
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("spring", "boot");
 		ConfigData configData = new ConfigData(Collections.singleton(propertySource));
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(null,
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(null, null,
 				configData, 0);
 		assertThat(contributor.getConfigurationPropertySource()
 				.getConfigurationProperty(ConfigurationPropertyName.of("spring")).getValue()).isEqualTo("boot");
@@ -279,14 +279,14 @@ class ConfigDataEnvironmentContributorTests {
 
 	@Test
 	void ofUnboundImportCreatesImportedContributor() {
-		TestResource location = new TestResource("test");
+		TestResource resource = new TestResource("test");
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("spring.config.import", "test");
 		ConfigData configData = new ConfigData(Collections.singleton(propertySource));
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(location,
-				configData, 0);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
+				resource, configData, 0);
 		assertThat(contributor.getKind()).isEqualTo(Kind.UNBOUND_IMPORT);
-		assertThat(contributor.getResource()).isSameAs(location);
+		assertThat(contributor.getResource()).isSameAs(resource);
 		assertThat(contributor.getImports()).isEmpty();
 		assertThat(contributor.isActive(this.activationContext)).isTrue();
 		assertThat(contributor.getPropertySource()).isEqualTo(propertySource);
@@ -296,13 +296,13 @@ class ConfigDataEnvironmentContributorTests {
 
 	@Test
 	void bindCreatesImportedContributor() {
-		TestResource location = new TestResource("test");
+		TestResource resource = new TestResource("test");
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("spring.config.import", "test");
 		ConfigData configData = new ConfigData(Collections.singleton(propertySource));
-		ConfigDataEnvironmentContributor contributor = createBoundContributor(location, configData, 0);
+		ConfigDataEnvironmentContributor contributor = createBoundContributor(resource, configData, 0);
 		assertThat(contributor.getKind()).isEqualTo(Kind.BOUND_IMPORT);
-		assertThat(contributor.getResource()).isSameAs(location);
+		assertThat(contributor.getResource()).isSameAs(resource);
 		assertThat(contributor.getImports()).containsExactly(TEST_LOCATION);
 		assertThat(contributor.isActive(this.activationContext)).isTrue();
 		assertThat(contributor.getPropertySource()).isEqualTo(propertySource);
@@ -312,13 +312,13 @@ class ConfigDataEnvironmentContributorTests {
 
 	@Test
 	void bindWhenConfigDataHasIgnoreImportsOptionsCreatesImportedContributorWithoutImports() {
-		TestResource location = new TestResource("test");
+		TestResource resource = new TestResource("test");
 		MockPropertySource propertySource = new MockPropertySource();
 		propertySource.setProperty("spring.config.import", "test");
 		ConfigData configData = new ConfigData(Collections.singleton(propertySource), ConfigData.Option.IGNORE_IMPORTS);
-		ConfigDataEnvironmentContributor contributor = createBoundContributor(location, configData, 0);
+		ConfigDataEnvironmentContributor contributor = createBoundContributor(resource, configData, 0);
 		assertThat(contributor.getKind()).isEqualTo(Kind.BOUND_IMPORT);
-		assertThat(contributor.getResource()).isSameAs(location);
+		assertThat(contributor.getResource()).isSameAs(resource);
 		assertThat(contributor.getImports()).isEmpty();
 		assertThat(contributor.isActive(this.activationContext)).isTrue();
 		assertThat(contributor.getPropertySource()).isEqualTo(propertySource);
@@ -341,8 +341,8 @@ class ConfigDataEnvironmentContributorTests {
 
 	private ConfigDataEnvironmentContributor createBoundContributor(ConfigDataResource resource, ConfigData configData,
 			int propertySourceIndex) {
-		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(resource,
-				configData, propertySourceIndex);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
+				resource, configData, propertySourceIndex);
 		Binder binder = new Binder(contributor.getConfigurationPropertySource());
 		return contributor.withBoundProperties(binder);
 	}
