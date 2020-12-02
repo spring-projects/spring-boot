@@ -2801,7 +2801,7 @@ If you have this problem, you can reorder the classpath in the IDE to place the 
 
 [[boot-features-error-handling]]
 ==== Error Handling
-By default, Spring Boot provides an `/error` mapping that handles all errors in a sensible way, and it is registered as a "`global`" error page in the servlet container.
+By default, Spring Boot provides an `/error` {spring-boot-docs}/html/appendix-application-properties.html#server-properties[mapping that handles all errors] in a sensible way, and it is registered as a "`global`" error page in the servlet container.
 For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message.
 For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
 To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `ErrorAttributes` to use the existing mechanism but replace the contents.
