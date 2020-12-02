@@ -33,6 +33,9 @@ anchors:
     ARTIFACTORY_SERVER: ((artifactory-server))
     ARTIFACTORY_USERNAME: ((artifactory-username))
     ARTIFACTORY_PASSWORD: ((artifactory-password))
+  sdkman-task-params: &sdkman-task-params
+    SDKMAN_CONSUMER_KEY: ((sdkman-consumer-key))
+    SDKMAN_CONSUMER_TOKEN: ((sdkman-consumer-token))
   build-project-task-params: &build-project-task-params
     privileged: true
     timeout: ((task-timeout))
@@ -543,8 +546,10 @@ jobs:
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: RELEASE
+      BRANCH: ((BRANCH))
       <<: *artifactory-task-params
       <<: *bintray-task-params
+      <<: *sdkman-task-params
 - name: sync-to-maven-central
   serial: true
   plan:
