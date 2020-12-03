@@ -63,6 +63,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
+	private static final String CLASSPATH_ENV_VAR_KEY = "CLASSPATH";
+
 	/**
 	 * The Maven project.
 	 * @since 1.0.0
@@ -291,7 +293,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
-		// addClasspath(args);
 		addClasspath();
 		args.add(startClassName);
 		addArgs(args);
@@ -428,14 +429,14 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 				environmentVariables = new HashMap<>();
 			}
 			StringBuilder interim = new StringBuilder();
-			if (environmentVariables.containsKey("CLASSPATH")) {
-				interim.append(environmentVariables.get("CLASSPATH"));
+			if (environmentVariables.containsKey(CLASSPATH_ENV_VAR_KEY)) {
+				interim.append(environmentVariables.get(CLASSPATH_ENV_VAR_KEY));
 				if (!interim.toString().endsWith(File.pathSeparator)) {
 					interim.append(File.pathSeparator);
 				}
 			}
 			interim.append(classpath);
-			environmentVariables.put("CLASSPATH", interim.toString());
+			environmentVariables.put(CLASSPATH_ENV_VAR_KEY, interim.toString());
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
