@@ -27,6 +27,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link Profiles}.
@@ -357,6 +358,27 @@ class ProfilesTests {
 		Profiles profiles = new Profiles(environment, binder, null);
 		assertThat(profiles.isAccepted("d")).isTrue();
 		assertThat(profiles.isAccepted("x")).isTrue();
+	}
+
+	@Test
+	void simpleRecursiveReferenceInProfileGroupThrowsException() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "a,e,f");
+		Binder binder = Binder.get(environment);
+		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
+				.withMessageContaining("Profiles could not be resolved. Remove profiles [a] from group: a");
+	}
+
+	@Test
+	void complexRecursiveReferenceInProfileGroupThrowsException() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "e,f");
+		environment.setProperty("spring.profiles.group.e", "a,x,y");
+		Binder binder = Binder.get(environment);
+		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
+				.withMessageContaining("Profiles could not be resolved. Remove profiles [a] from group: e");
 	}
 
 }

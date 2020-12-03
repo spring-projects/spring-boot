@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -117,9 +118,21 @@ public class Profiles implements Iterable<String> {
 		while (!stack.isEmpty()) {
 			String current = stack.pop();
 			expandedProfiles.add(current);
-			asReversedList(this.groups.get(current)).forEach(stack::push);
+			List<String> groupProfiles = asReversedList(this.groups.get(current));
+			Set<String> profileConflicts = getProfileConflicts(groupProfiles, expandedProfiles);
+			if (!profileConflicts.isEmpty()) {
+				String message = String.format("Profiles could not be resolved. Remove profiles %s from group: %s",
+						profileConflicts, current);
+				throw new IllegalStateException(message);
+
+			}
+			groupProfiles.forEach(stack::push);
 		}
 		return asUniqueItemList(StringUtils.toStringArray(expandedProfiles));
+	}
+
+	private Set<String> getProfileConflicts(List<String> groupProfiles, Set<String> expandedProfiles) {
+		return groupProfiles.stream().filter(expandedProfiles::contains).collect(Collectors.toSet());
 	}
 
 	private List<String> asReversedList(List<String> list) {
@@ -128,7 +141,7 @@ public class Profiles implements Iterable<String> {
 		}
 		List<String> reversed = new ArrayList<>(list);
 		Collections.reverse(reversed);
-		return Collections.unmodifiableList(reversed);
+		return reversed;
 	}
 
 	private List<String> asUniqueItemList(String[] array) {
