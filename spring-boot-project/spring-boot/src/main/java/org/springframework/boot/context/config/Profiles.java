@@ -117,7 +117,9 @@ public class Profiles implements Iterable<String> {
 		while (!stack.isEmpty()) {
 			String current = stack.pop();
 			expandedProfiles.add(current);
-			asReversedList(this.groups.get(current)).forEach(stack::push);
+			List<String> groupProfiles = asReversedList(this.groups.get(current));
+			groupProfiles.remove(current);
+			groupProfiles.forEach(stack::push);
 		}
 		return asUniqueItemList(StringUtils.toStringArray(expandedProfiles));
 	}
@@ -128,7 +130,7 @@ public class Profiles implements Iterable<String> {
 		}
 		List<String> reversed = new ArrayList<>(list);
 		Collections.reverse(reversed);
-		return Collections.unmodifiableList(reversed);
+		return reversed;
 	}
 
 	private List<String> asUniqueItemList(String[] array) {
