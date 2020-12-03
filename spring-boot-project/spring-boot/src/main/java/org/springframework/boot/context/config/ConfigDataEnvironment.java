@@ -90,8 +90,8 @@ class ConfigDataEnvironment {
 		locations.add(ConfigDataLocation.of("optional:classpath:/"));
 		locations.add(ConfigDataLocation.of("optional:classpath:/config/"));
 		locations.add(ConfigDataLocation.of("optional:file:./"));
-		locations.add(ConfigDataLocation.of("optional:file:./config/*/"));
 		locations.add(ConfigDataLocation.of("optional:file:./config/"));
+		locations.add(ConfigDataLocation.of("optional:file:./config/*/"));
 		DEFAULT_SEARCH_LOCATIONS = locations.toArray(new ConfigDataLocation[0]);
 	};
 

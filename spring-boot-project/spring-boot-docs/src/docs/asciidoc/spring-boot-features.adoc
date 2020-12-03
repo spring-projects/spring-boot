@@ -638,8 +638,8 @@ For example, if `spring.config.additional-location` is configured with the value
 . `optional:classpath:/`
 . `optional:classpath:/config/`
 . `optional:file:./`
-. `optional:file:./config/*/`
 . `optional:file:./config/`
+. `optional:file:./config/*/`
 . `optional:classpath:custom-config/`
 . `optional:file:./custom-config/`
 
