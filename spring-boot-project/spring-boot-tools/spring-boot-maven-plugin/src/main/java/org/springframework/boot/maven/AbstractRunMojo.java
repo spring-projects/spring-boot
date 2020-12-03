@@ -24,6 +24,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -290,7 +291,8 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		List<String> args = new ArrayList<>();
 		addAgents(args);
 		addJvmArgs(args);
-		addClasspath(args);
+		// addClasspath(args);
+		addClasspath();
 		args.add(startClassName);
 		addArgs(args);
 		runWithForkedJvm((this.workingDirectory != null) ? this.workingDirectory : this.project.getBasedir(), args,
@@ -410,7 +412,7 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 		}
 	}
 
-	private void addClasspath(List<String> args) throws MojoExecutionException {
+	private void addClasspath() throws MojoExecutionException {
 		try {
 			StringBuilder classpath = new StringBuilder();
 			for (URL ele : getClassPathUrls()) {
@@ -422,8 +424,18 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			if (getLog().isDebugEnabled()) {
 				getLog().debug("Classpath for forked process: " + classpath);
 			}
-			args.add("-cp");
-			args.add(classpath.toString());
+			if (environmentVariables == null) {
+				environmentVariables = new HashMap<>();
+			}
+			StringBuilder interim = new StringBuilder();
+			if (environmentVariables.containsKey("CLASSPATH")) {
+				interim.append(environmentVariables.get("CLASSPATH"));
+				if (!interim.toString().endsWith(File.pathSeparator)) {
+					interim.append(File.pathSeparator);
+				}
+			}
+			interim.append(classpath);
+			environmentVariables.put("CLASSPATH", interim.toString());
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
