@@ -425,18 +425,18 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 			if (getLog().isDebugEnabled()) {
 				getLog().debug("Classpath for forked process: " + classpath);
 			}
-			if (environmentVariables == null) {
-				environmentVariables = new HashMap<>();
+			if (this.environmentVariables == null) {
+				this.environmentVariables = new HashMap<>();
 			}
 			StringBuilder interim = new StringBuilder();
-			if (environmentVariables.containsKey(CLASSPATH_ENV_VAR_KEY)) {
-				interim.append(environmentVariables.get(CLASSPATH_ENV_VAR_KEY));
+			if (this.environmentVariables.containsKey(CLASSPATH_ENV_VAR_KEY)) {
+				interim.append(this.environmentVariables.get(CLASSPATH_ENV_VAR_KEY));
 				if (!interim.toString().endsWith(File.pathSeparator)) {
 					interim.append(File.pathSeparator);
 				}
 			}
 			interim.append(classpath);
-			environmentVariables.put(CLASSPATH_ENV_VAR_KEY, interim.toString());
+			this.environmentVariables.put(CLASSPATH_ENV_VAR_KEY, interim.toString());
 		}
 		catch (Exception ex) {
 			throw new MojoExecutionException("Could not build classpath", ex);
