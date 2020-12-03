@@ -104,7 +104,6 @@ public class DevToolsPropertyDefaultsPostProcessor implements EnvironmentPostPro
 		String prefix = determineResourcePropertiesPrefix(environment);
 		resourceProperties.put(prefix + "cache.period", "0");
 		resourceProperties.put(prefix + "chain.cache", "false");
-		System.out.println(resourceProperties);
 		return resourceProperties;
 	}
 
