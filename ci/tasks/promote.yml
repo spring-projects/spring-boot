@@ -14,5 +14,8 @@ params:
   BINTRAY_REPO:
   BINTRAY_USERNAME:
   BINTRAY_API_KEY:
+  SDKMAN_CONSUMER_KEY:
+  SDKMAN_CONSUMER_TOKEN:
+  BRANCH:
 run:
   path: git-repo/ci/scripts/promote.sh
