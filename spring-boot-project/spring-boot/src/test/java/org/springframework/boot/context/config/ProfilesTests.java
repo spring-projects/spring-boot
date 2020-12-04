@@ -360,11 +360,11 @@ class ProfilesTests {
 	}
 
 	@Test
-	void recursiveReferenceInProfileGroupIsIgnored() {
+	void recursiveReferencesInProfileGroupAreIgnored() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.profiles.active", "a,b,c");
 		environment.setProperty("spring.profiles.group.a", "a,e,f");
-		environment.setProperty("spring.profiles.group.e", "x,y");
+		environment.setProperty("spring.profiles.group.e", "a,x,y");
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
 		assertThat(profiles).containsExactly("a", "e", "x", "y", "f", "b", "c");
