@@ -733,14 +733,20 @@ For instance, the two examples below produce the same result:
 
 [source,yaml,indent=0,configblocks]
 ----
-spring.config.import=my.properties
-my.property=value
+	spring:
+	  config:
+	    import: my.properties
+	my:
+	  property: value
 ----
 
 [source,yaml,indent=0,configblocks]
 ----
-my.property=value
-spring.config.import=my.properties
+	my:
+	  property: value
+	spring:
+	  config:
+	    import: my.properties
 ----
 
 In both of the above examples, the values from the `my.properties` file will take precedence over the file that triggered its import.
