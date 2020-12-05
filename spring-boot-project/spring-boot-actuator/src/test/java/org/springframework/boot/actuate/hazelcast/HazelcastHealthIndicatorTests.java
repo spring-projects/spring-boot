@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,14 @@
 
 package org.springframework.boot.actuate.hazelcast;
 
-import java.io.IOException;
-
+import com.hazelcast.core.Endpoint;
 import com.hazelcast.core.HazelcastException;
 import com.hazelcast.core.HazelcastInstance;
+import com.hazelcast.transaction.TransactionalTask;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastInstanceFactory;
-import org.springframework.core.io.ClassPathResource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -40,27 +38,28 @@ import static org.mockito.Mockito.mock;
  */
 class HazelcastHealthIndicatorTests {
 
+	private final HazelcastInstance hazelcast = mock(HazelcastInstance.class);
+
 	@Test
-	void hazelcastUp() throws IOException {
-		HazelcastInstance hazelcast = new HazelcastInstanceFactory(new ClassPathResource("hazelcast.xml"))
-				.getHazelcastInstance();
-		try {
-			Health health = new HazelcastHealthIndicator(hazelcast).health();
-			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name",
-					"actuator-hazelcast");
-			assertThat(health.getDetails().get("uuid")).asString().isNotEmpty();
-		}
-		finally {
-			hazelcast.shutdown();
-		}
+	void hazelcastUp() {
+		Endpoint endpoint = mock(Endpoint.class);
+		given(this.hazelcast.getName()).willReturn("hz0-instance");
+		given(this.hazelcast.getLocalEndpoint()).willReturn(endpoint);
+		given(endpoint.getUuid()).willReturn("7581bb2f-879f-413f-b574-0071d7519eb0");
+		given(this.hazelcast.executeTransaction(any())).willAnswer((invocation) -> {
+			TransactionalTask<?> task = invocation.getArgument(0);
+			return task.execute(null);
+		});
+		Health health = new HazelcastHealthIndicator(this.hazelcast).health();
+		assertThat(health.getStatus()).isEqualTo(Status.UP);
+		assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name", "hz0-instance")
+				.containsEntry("uuid", "7581bb2f-879f-413f-b574-0071d7519eb0");
 	}
 
 	@Test
 	void hazelcastDown() {
-		HazelcastInstance hazelcast = mock(HazelcastInstance.class);
-		given(hazelcast.executeTransaction(any())).willThrow(new HazelcastException());
-		Health health = new HazelcastHealthIndicator(hazelcast).health();
+		given(this.hazelcast.executeTransaction(any())).willReturn(new HazelcastException());
+		Health health = new HazelcastHealthIndicator(this.hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
 
