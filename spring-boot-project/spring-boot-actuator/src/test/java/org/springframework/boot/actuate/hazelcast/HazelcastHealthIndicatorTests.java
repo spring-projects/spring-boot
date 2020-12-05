@@ -58,7 +58,7 @@ class HazelcastHealthIndicatorTests {
 
 	@Test
 	void hazelcastDown() {
-		given(this.hazelcast.executeTransaction(any())).willReturn(new HazelcastException());
+		given(this.hazelcast.executeTransaction(any())).willThrow(new HazelcastException());
 		Health health = new HazelcastHealthIndicator(this.hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
