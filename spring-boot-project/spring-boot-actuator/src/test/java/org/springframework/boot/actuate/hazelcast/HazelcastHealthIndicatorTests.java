@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.health.Status;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.BDDMockito.when;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -43,10 +43,10 @@ class HazelcastHealthIndicatorTests {
 	@Test
 	void hazelcastUp() {
 		Endpoint endpoint = mock(Endpoint.class);
-		when(this.hazelcast.getName()).thenReturn("hz0-instance");
-		when(this.hazelcast.getLocalEndpoint()).thenReturn(endpoint);
-		when(endpoint.getUuid()).thenReturn("7581bb2f-879f-413f-b574-0071d7519eb0");
-		when(this.hazelcast.executeTransaction(any())).thenAnswer((invocation) -> {
+		given(this.hazelcast.getName()).willReturn("hz0-instance");
+		given(this.hazelcast.getLocalEndpoint()).willReturn(endpoint);
+		given(endpoint.getUuid()).willReturn("7581bb2f-879f-413f-b574-0071d7519eb0");
+		given(this.hazelcast.executeTransaction(any())).willAnswer((invocation) -> {
 			TransactionalTask<?> task = invocation.getArgument(0);
 			return task.execute(null);
 		});
@@ -58,7 +58,7 @@ class HazelcastHealthIndicatorTests {
 
 	@Test
 	void hazelcastDown() {
-		when(this.hazelcast.executeTransaction(any())).thenThrow(new HazelcastException());
+		given(this.hazelcast.executeTransaction(any())).willReturn(new HazelcastException());
 		Health health = new HazelcastHealthIndicator(this.hazelcast).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 	}
