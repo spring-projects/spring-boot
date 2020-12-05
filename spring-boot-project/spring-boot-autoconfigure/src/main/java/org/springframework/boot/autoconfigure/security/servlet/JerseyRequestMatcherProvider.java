@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.servlet;
 
 import org.springframework.boot.autoconfigure.web.servlet.JerseyApplicationPath;
