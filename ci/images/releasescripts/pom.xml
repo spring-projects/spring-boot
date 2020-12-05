@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-javaformat.version>0.0.22</spring-javaformat.version>
+		<spring-javaformat.version>0.0.26</spring-javaformat.version>
 	</properties>
 
 	<dependencies>
