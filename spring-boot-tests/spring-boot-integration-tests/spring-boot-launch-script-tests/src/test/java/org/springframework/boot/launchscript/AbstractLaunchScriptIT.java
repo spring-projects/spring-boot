@@ -20,6 +20,7 @@ import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.assertj.core.api.Condition;
 import org.testcontainers.containers.GenericContainer;
@@ -49,11 +50,13 @@ abstract class AbstractLaunchScriptIT {
 		this.scriptsDir = scriptsDir;
 	}
 
-	static List<Object[]> parameters() {
+	static List<Object[]> parameters(Predicate<File> osFilter) {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/test/resources/conf").listFiles()) {
-			for (File version : os.listFiles()) {
-				parameters.add(new Object[] { os.getName(), version.getName() });
+			if (osFilter.test(os)) {
+				for (File version : os.listFiles()) {
+					parameters.add(new Object[] { os.getName(), version.getName() });
+				}
 			}
 		}
 		return parameters;

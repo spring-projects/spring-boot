@@ -16,6 +16,7 @@
 
 package org.springframework.boot.launchscript;
 
+import java.util.List;
 import java.util.regex.Pattern;
 
 import org.junit.jupiter.api.Assumptions;
@@ -37,6 +38,10 @@ class SysVinitLaunchScriptIT extends AbstractLaunchScriptIT {
 
 	SysVinitLaunchScriptIT() {
 		super("init.d/");
+	}
+
+	static List<Object[]> parameters() {
+		return parameters((file) -> !file.getName().contains("CentOS"));
 	}
 
 	@ParameterizedTest(name = "{0} {1}")
