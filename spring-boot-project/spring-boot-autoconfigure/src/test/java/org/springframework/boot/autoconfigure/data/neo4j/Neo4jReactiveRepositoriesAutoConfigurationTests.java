@@ -26,9 +26,14 @@ import org.springframework.boot.autoconfigure.data.neo4j.city.CityRepository;
 import org.springframework.boot.autoconfigure.data.neo4j.city.ReactiveCityRepository;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
 import org.springframework.boot.autoconfigure.data.neo4j.country.ReactiveCountryRepository;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.AnnotatedWithNode;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.AnnotatedWithPersistent;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.AnnotatedWithRelationshipProperties;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.NotAnnotatedEntity;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
+import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.repository.ReactiveNeo4jRepository;
 import org.springframework.data.neo4j.repository.config.EnableReactiveNeo4jRepositories;
 
@@ -84,6 +89,17 @@ public class Neo4jReactiveRepositoriesAutoConfigurationTests {
 						.hasSingleBean(ReactiveCountryRepository.class));
 	}
 
+	@Test
+	void shouldFilterInitialEntityScanWithKnownAnnotations() {
+		this.contextRunner.withUserConfiguration(PackageConfig.class).run((context) -> {
+			Neo4jMappingContext mappingContext = context.getBean(Neo4jMappingContext.class);
+			assertThat(mappingContext.hasPersistentEntityFor(AnnotatedWithNode.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(AnnotatedWithPersistent.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(AnnotatedWithRelationshipProperties.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(NotAnnotatedEntity.class)).isFalse();
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(City.class)
 	static class TestConfiguration {
@@ -106,6 +122,12 @@ public class Neo4jReactiveRepositoriesAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableReactiveNeo4jRepositories(basePackageClasses = ReactiveCountryRepository.class)
 	static class WithCustomReactiveRepositoryScan {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(AnnotatedWithPersistent.class)
+	static class PackageConfig {
 
 	}
 
