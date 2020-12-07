@@ -66,6 +66,8 @@ added after the original pull request but before a merge.
   than cosmetic changes).
 * Add some Javadocs.
 * A few unit tests would help a lot as well -- someone has to do it.
+* Verification tasks, including tests and stylecheck, can be executed
+  by running `./gradlew check` from the project root.
 * If no-one else is using your branch, please rebase it against the current master (or
   other target branch in the main project).
 * When writing a commit message please follow https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
@@ -94,14 +96,6 @@ The project can be built from the root directory using the standard Gradle comma
 [indent=0]
 ----
 	$ ./gradlew build
-----
-
-=== Running Unit Tests
-Unit tests and checkstyle can be run from the relevant *module directory* using the standard Gradle command:
-
-[indent=0]
-----
-        $ ../../gradlew check test
 ----
 
 === Importing into Eclipse
