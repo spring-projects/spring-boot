@@ -48,6 +48,7 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ValueObjectBinder implements DataObjectBinder {
 
@@ -202,13 +203,18 @@ class ValueObjectBinder implements DataObjectBinder {
 			List<KParameter> parameters = kotlinConstructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.size());
 			for (KParameter parameter : parameters) {
-				String name = parameter.getName();
+				String name = getParameterName(parameter);
 				ResolvableType parameterType = ResolvableType
 						.forType(ReflectJvmMapping.getJavaType(parameter.getType()), type);
 				Annotation[] annotations = parameter.getAnnotations().toArray(new Annotation[0]);
 				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
 			return Collections.unmodifiableList(result);
+		}
+
+		private String getParameterName(KParameter parameter) {
+			return parameter.getAnnotations().stream().filter(Name.class::isInstance).findFirst().map(Name.class::cast)
+					.map(Name::value).orElse(parameter.getName());
 		}
 
 		@Override
