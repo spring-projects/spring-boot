@@ -14,66 +14,96 @@ Also, you can define your own properties.
 
 
 
-== Core properties
-
+[[common-application-properties-core]]
+== Core properties [[core-properties]]
 include::{generated-resources-root}/config-docs/core.adoc[]
 
-== Cache properties
 
+
+[[common-application-properties-cache]]
+== Cache properties [[cache-properties]]
 include::{generated-resources-root}/config-docs/cache.adoc[]
 
-== Mail properties
 
+
+[[common-application-properties-mail]]
+== Mail properties [[mail-properties]]
 include::{generated-resources-root}/config-docs/mail.adoc[]
 
-== JSON properties
 
+
+[[common-application-properties-json]]
+== JSON properties [[json-properties]]
 include::{generated-resources-root}/config-docs/json.adoc[]
 
-== Data properties
 
+
+[[common-application-properties-data]]
+== Data properties [[data-properties]]
 include::{generated-resources-root}/config-docs/data.adoc[]
 
-== Transaction properties
 
+
+[[common-application-properties-transaction]]
+== Transaction properties [[transaction-properties]]
 include::{generated-resources-root}/config-docs/transaction.adoc[]
 
-== Data migration properties
 
+
+[[common-application-properties-data-migration]]
+== Data migration properties [[data-migration-properties]]
 include::{generated-resources-root}/config-docs/data-migration.adoc[]
 
-== Integration properties
 
+
+[[common-application-properties-integration]]
+== Integration properties [[integration-properties]]
 include::{generated-resources-root}/config-docs/integration.adoc[]
 
-== Web properties
 
+
+[[common-application-properties-web]]
+== Web properties [[web-properties]]
 include::{generated-resources-root}/config-docs/web.adoc[]
 
-== Templating properties
 
+
+[[common-application-properties-templating]]
+== Templating properties [[templating-properties]]
 include::{generated-resources-root}/config-docs/templating.adoc[]
 
-== Server properties
 
+
+[[common-application-properties-server]]
+== Server properties [[server-properties]]
 include::{generated-resources-root}/config-docs/server.adoc[]
 
-== Security properties
 
+
+[[common-application-properties-security]]
+== Security properties [[security-properties]]
 include::{generated-resources-root}/config-docs/security.adoc[]
 
-== RSocket properties
 
+
+[[common-application-properties-rsocket]]
+== RSocket properties [[rsocket-properties]]
 include::{generated-resources-root}/config-docs/rsocket.adoc[]
 
-== Actuator properties
 
+
+[[common-application-properties-actuator]]
+== Actuator properties [[actuator-properties]]
 include::{generated-resources-root}/config-docs/actuator.adoc[]
 
-== Devtools properties
 
+
+[[common-application-properties-devtools]]
+== Devtools properties [[devtools-properties]]
 include::{generated-resources-root}/config-docs/devtools.adoc[]
 
-== Testing properties
 
+
+[[common-application-properties-testing]]
+== Testing properties [[testing-properties]]
 include::{generated-resources-root}/config-docs/testing.adoc[]
