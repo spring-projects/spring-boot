@@ -152,7 +152,7 @@ class JarFileWrapperTests {
 	}
 
 	@Test
-	void streamDelegatestoParent() {
+	void streamDelegatesToParent() {
 		this.wrapper.stream();
 		this.parent.verify(Call.STREAM);
 	}
