@@ -144,35 +144,25 @@ easiest way to setup a new environment is to use the Eclipse Installer with the 
 
 
 ==== Using the Eclipse Installer
-Spring Boot includes a `.setup` files which can be used with the Eclipse Installer to
-provision a new environment. To use the installer:
+Spring Boot includes a `.setup` files which can be used with the Eclipse Installer to provision a new environment.
+To use the installer:
 
-* Download and run the latest
-  https://www.eclipse.org/downloads/packages/installer[Eclipse Installer].
+* Download and run the latest https://download.eclipse.org/justj/?file=oomph/products/latest[Eclipse Installer] (must be 1.19.0 or above).
 * Switch to "Advanced Mode" using the drop down menu on the right.
-* Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to
-  install, `2019-12` as the product version, and click "`next`".
-* For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`"
-  and browse for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned
-  copy of the source code. Click "`OK`" to add the setup file to the list.
-* Double-click on "`Spring Boot`" from the project list to add it to the list that will
-  be provisioned then click "`Next`".
-* Click show all variables and make sure that "`Checkout Location`" points to the locally
-  cloned source code that you selected earlier. You might also want to pick a different
-  install location here.
+* Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to install, `2020-09` as the product version, and click "`next`".
+* For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`" and browse for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned copy of the source code.
+  Click "`OK`" to add the setup file to the list.
+* Double-click on "`Spring Boot`" from the project list to add it to the list that will be provisioned then click "`Next`".
+* Click show all variables and make sure that "`Checkout Location`" points to the locally cloned source code that you selected earlier.
+  You might also want to pick a different install location here.
 * Click "`Finish`" to install the software.
 
-Once complete you should find that a local workspace has been provisioned complete with
-all required Eclipse plugins. Projects will be grouped into working-sets to make the code
-easier to navigate.
+Once complete you should find that a local workspace has been provisioned complete with all required Eclipse plugins.
+Projects will be grouped into working-sets to make the code easier to navigate.
 
-If you want to work on the `spring-boot-gradle-plugin` you should remove the imported Maven
-project and reimport it as a Gradle project.
+If you want to work on the `spring-boot-gradle-plugin` you should remove the imported Maven project and reimport it as a Gradle project.
 
-TIP: If you see import errors with `com.sun` packages make sure you have setup a valid
-`JavaSE-1.8` environment. From preferences select "`Java`", "`Installed JREs`",
-"`Execution Environments`" and make sure "`JavaSE-1.8`" points to a Java 1.8
-install (we use AdoptOpenJDK on our CI).
+TIP: If you see import errors with `com.sun` packages make sure you have setup a valid `JavaSE-1.8` environment. From preferences select "`Java`", "`Installed JREs`", "`Execution Environments`" and make sure "`JavaSE-1.8`" points to a Java 1.8 install (we use AdoptOpenJDK on our CI).
 
 
 

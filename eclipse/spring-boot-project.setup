@@ -72,7 +72,7 @@
         name="org.eclipse.m2e.feature.feature.group"/>
     <requirement
         name="org.eclipse.oomph.setup.maven.feature.group"/>
-     <requirement
+    <requirement
         name="org.eclipse.oomph.setup.workingsets.feature.group"/>
     <requirement
         name="org.eclipse.wst.server_adapters.feature.feature.group"/>
