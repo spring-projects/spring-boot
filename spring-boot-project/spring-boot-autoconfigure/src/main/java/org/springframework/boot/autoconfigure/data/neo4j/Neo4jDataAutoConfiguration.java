@@ -35,8 +35,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.config.Neo4jDefaultCallbacksRegistrar;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.core.Neo4jOperations;
@@ -66,7 +64,6 @@ import org.springframework.transaction.TransactionManager;
 @ConditionalOnBean(Driver.class)
 @AutoConfigureBefore(TransactionAutoConfiguration.class)
 @AutoConfigureAfter(Neo4jAutoConfiguration.class)
-@Import(Neo4jDefaultCallbacksRegistrar.class)
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
