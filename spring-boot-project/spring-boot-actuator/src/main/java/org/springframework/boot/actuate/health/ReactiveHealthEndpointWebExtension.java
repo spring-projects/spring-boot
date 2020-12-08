@@ -20,11 +20,11 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -46,7 +46,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 public class ReactiveHealthEndpointWebExtension
 		extends HealthEndpointSupport<ReactiveHealthContributor, Mono<? extends HealthComponent>> {
 
-	private static final Logger logger = LoggerFactory.getLogger(ReactiveHealthEndpointWebExtension.class);
+	private static final Log logger = LogFactory.getLog(ReactiveHealthEndpointWebExtension.class);
 
 	private static final String[] NO_PATH = {};
 
@@ -82,8 +82,8 @@ public class ReactiveHealthEndpointWebExtension
 		HealthEndpointGroup group = result.getGroup();
 		return result.getHealth().map((health) -> {
 			if (!Status.UP.equals(health.getStatus())) {
-				logger.debug("health status={} with description={}", health.getStatus().getCode(),
-						health.getStatus().getDescription());
+				logger.debug("health status=" + health.getStatus().getCode() + " with description="
+						+ health.getStatus().getDescription());
 			}
 			int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
 			return new WebEndpointResponse<>(health, statusCode);

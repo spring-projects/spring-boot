@@ -20,8 +20,9 @@ import java.util.Arrays;
 import java.util.Map;
 import java.util.Set;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
@@ -46,7 +47,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
 @EndpointWebExtension(endpoint = HealthEndpoint.class)
 public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
-	private static final Logger logger = LoggerFactory.getLogger(HealthEndpointWebExtension.class);
+	private static final Log logger = LogFactory.getLog(HealthEndpointWebExtension.class);
 
 	private static final String[] NO_PATH = {};
 
@@ -81,8 +82,8 @@ public class HealthEndpointWebExtension extends HealthEndpointSupport<HealthCont
 		HealthComponent health = result.getHealth();
 		HealthEndpointGroup group = result.getGroup();
 		if (!Status.UP.equals(health.getStatus())) {
-			logger.debug("health status={} with description={}", health.getStatus().getCode(),
-					health.getStatus().getDescription());
+			logger.debug("health status=" + health.getStatus().getCode() + " with description="
+					+ health.getStatus().getDescription());
 		}
 		int statusCode = group.getHttpCodeStatusMapper().getStatusCode(health.getStatus());
 		return new WebEndpointResponse<>(health, statusCode);
