@@ -1108,7 +1108,7 @@ class WebMvcAutoConfigurationTests {
 		private int exceptionResolvers = 0;
 
 		@Bean
-		WebMvcRegistrations webMvcRegistrationsHandlerAdapter() {
+		WebMvcRegistrations webMvcRegistrationsExceptionResolver() {
 			return new WebMvcRegistrations() {
 
 				@Override
