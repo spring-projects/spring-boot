@@ -126,13 +126,12 @@ class JpaRepositoriesAutoConfigurationTests {
 	}
 
 	@Test
-	void bootstrapModeIsDeferredByDefault() {
+	void bootstrapModeIsDefaultByDefault() {
 		this.contextRunner.withUserConfiguration(MultipleAsyncTaskExecutorConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(TaskExecutionAutoConfiguration.class,
 						TaskSchedulingAutoConfiguration.class))
 				.run((context) -> assertThat(
-						context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor())
-								.isEqualTo(context.getBean("applicationTaskExecutor")));
+						context.getBean(LocalContainerEntityManagerFactoryBean.class).getBootstrapExecutor()).isNull());
 	}
 
 	@Configuration(proxyBeanMethods = false)

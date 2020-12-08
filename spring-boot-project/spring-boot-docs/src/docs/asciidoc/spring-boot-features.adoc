@@ -3839,6 +3839,8 @@ To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.rep
 When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
 If more than one exists, the one named `applicationTaskExecutor` will be used.
 
+NOTE: When using deferred or lazy bootstraping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
+
 TIP: We have barely scratched the surface of Spring Data JPA.
 For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
 

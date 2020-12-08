@@ -109,9 +109,9 @@ class DataJpaTestIntegrationTests {
 	}
 
 	@Test
-	void bootstrapModeIsLazyByDefault() {
+	void bootstrapModeIsDefaultByDefault() {
 		assertThat(this.applicationContext.getEnvironment().getProperty("spring.data.jpa.repositories.bootstrap-mode"))
-				.isEqualTo(BootstrapMode.LAZY.name());
+				.isEqualTo(BootstrapMode.DEFAULT.name());
 	}
 
 }
