@@ -141,8 +141,14 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 		ValidationAutoConfiguration.class })
 public class WebMvcAutoConfiguration {
 
+	/**
+	 * The default Spring MVC view prefix.
+	 */
 	public static final String DEFAULT_PREFIX = "";
 
+	/**
+	 * The default Spring MVC view suffix.
+	 */
 	public static final String DEFAULT_SUFFIX = "";
 
 	private static final String[] SERVLET_LOCATIONS = { "/" };

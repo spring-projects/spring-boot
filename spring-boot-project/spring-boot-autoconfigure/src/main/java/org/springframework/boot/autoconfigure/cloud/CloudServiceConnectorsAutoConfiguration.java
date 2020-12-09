@@ -54,7 +54,10 @@ import org.springframework.core.Ordered;
 @Import(CloudScanConfiguration.class)
 public class CloudServiceConnectorsAutoConfiguration {
 
-	// Cloud configuration needs to happen early (before data, mongo etc.)
+	/**
+	 * The order for cloud configuration. Cloud configurations need to happen early (so
+	 * that they run before data, mongo, etc.).
+	 */
 	public static final int ORDER = Ordered.HIGHEST_PRECEDENCE + 20;
 
 	private static final Log logger = LogFactory.getLog(CloudServiceConnectorsAutoConfiguration.class);
