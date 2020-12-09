@@ -11,7 +11,5 @@ java -jar /spring-boot-release-scripts.jar distribute $RELEASE_TYPE $BUILD_INFO_
 
 java -jar /spring-boot-release-scripts.jar publishGradlePlugin $RELEASE_TYPE $BUILD_INFO_LOCATION || { exit 1; }
 
-java -jar /spring-boot-release-scripts.jar publishToSdkman $RELEASE_TYPE $version $BRANCH || {exit 1;}
-
 echo "Promotion complete"
 echo $version > version/version
