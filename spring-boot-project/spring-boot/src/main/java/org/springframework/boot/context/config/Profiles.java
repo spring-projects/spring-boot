@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -34,6 +35,7 @@ import org.springframework.core.ResolvableType;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.style.ToStringCreator;
+import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -111,24 +113,46 @@ public class Profiles implements Iterable<String> {
 	}
 
 	private List<String> expandProfiles(List<String> profiles) {
-		Deque<String> stack = new ArrayDeque<>();
-		asReversedList(profiles).forEach(stack::push);
-		Set<String> expandedProfiles = new LinkedHashSet<>();
+		if (CollectionUtils.isEmpty(profiles)) {
+			return Collections.emptyList();
+		}
+		Deque<String> stack = new ArrayDeque<>(profiles);
+		Set<String> expanded = new LinkedHashSet<>();
 		while (!stack.isEmpty()) {
 			String current = stack.pop();
-			expandedProfiles.add(current);
-			asReversedList(this.groups.get(current)).forEach(stack::push);
+			expanded.add(current);
+			List<String> group = asReversedList(this.groups.get(current));
+			Set<String> conflicts = getProfileConflicts(group, expanded, stack);
+			Assert.state(conflicts.isEmpty(),
+					() -> String.format("Profiles could not be resolved. Remove %s from group: '%s'",
+							getProfilesDescription(conflicts), current));
+			group.forEach(stack::push);
 		}
-		return asUniqueItemList(StringUtils.toStringArray(expandedProfiles));
+		return asUniqueItemList(StringUtils.toStringArray(expanded));
 	}
 
 	private List<String> asReversedList(List<String> list) {
-		if (list == null || list.isEmpty()) {
+		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
 		List<String> reversed = new ArrayList<>(list);
 		Collections.reverse(reversed);
-		return Collections.unmodifiableList(reversed);
+		return reversed;
+	}
+
+	private Set<String> getProfileConflicts(List<String> group, Set<String> expanded, Deque<String> stack) {
+		if (group.isEmpty()) {
+			return Collections.emptySet();
+		}
+		return group.stream().filter((profile) -> expanded.contains(profile) || stack.contains(profile))
+				.collect(Collectors.toSet());
+	}
+
+	private String getProfilesDescription(Set<String> conflicts) {
+		if (conflicts.size() == 1) {
+			return "profile '" + conflicts.iterator().next() + "'";
+		}
+		return "profiles " + conflicts.stream().map((profile) -> "'" + profile + "'").collect(Collectors.joining(","));
 	}
 
 	private List<String> asUniqueItemList(String[] array) {
