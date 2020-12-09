@@ -54,7 +54,7 @@ added after the original pull request but before a merge.
   Plugin] or format the code from the Gradle build by running
   `./gradlew format`. Note that if you have format violations in `buildSrc`, you can fix
   them by running `./gradlew -p buildSrc format` from the project root directory.
-* The build includes checkstyle rules for many of our code conventions. Run
+* The build includes Checkstyle rules for many of our code conventions. Run
   `./gradlew checkstyleMain checkstyleTest` if you want to check your changes are
   compliant.
 * Make sure all new `.java` files have a Javadoc class comment with at least an
@@ -66,6 +66,8 @@ added after the original pull request but before a merge.
   than cosmetic changes).
 * Add some Javadocs.
 * A few unit tests would help a lot as well -- someone has to do it.
+* Verification tasks, including tests and Checkstyle, can be executed
+  by running `./gradlew check` from the project root.
 * If no-one else is using your branch, please rebase it against the current master (or
   other target branch in the main project).
 * When writing a commit message please follow https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions],
