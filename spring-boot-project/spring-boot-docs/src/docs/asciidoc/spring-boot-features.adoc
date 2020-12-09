@@ -450,7 +450,7 @@ TIP: If you want to know on which HTTP port the application is running, get the 
 === Application Startup tracking
 During the application startup, the `SpringApplication` and the `ApplicationContext` perform many tasks related to the application lifecycle,
 the beans lifecycle or even processing application events.
-With {spring-framework-api}/core/metrics/ApplicationStartup.html[ApplicationStartup`], Spring Framework  {spring-framework-docs}/core.html#context-functionality-startup[allows you track the application startup sequence with `StartupStep`s].
+With {spring-framework-api}/core/metrics/ApplicationStartup.html[`ApplicationStartup`], Spring Framework  {spring-framework-docs}/core.html#context-functionality-startup[allows you to track the application startup sequence with ``StartupStep``s].
 This data can be collected for profiling purposes, or just to have a better understanding of an application startup process.
 
 You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.
