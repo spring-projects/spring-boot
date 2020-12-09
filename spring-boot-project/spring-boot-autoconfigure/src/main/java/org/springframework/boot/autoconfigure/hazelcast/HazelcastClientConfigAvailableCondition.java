@@ -32,6 +32,8 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 /**
  * {@link HazelcastConfigResourceCondition} that checks if the
  * {@code spring.hazelcast.config} configuration key is defined.
+ *
+ * @author Stephane Nicoll
  */
 class HazelcastClientConfigAvailableCondition extends HazelcastConfigResourceCondition {
 
