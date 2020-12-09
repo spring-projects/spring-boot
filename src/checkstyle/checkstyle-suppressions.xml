@@ -15,8 +15,8 @@
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" id="mainCodeIllegalImportCheck" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
-	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
+	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
+	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocVariable" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />

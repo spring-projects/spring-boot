@@ -58,24 +58,54 @@ public class CloudFoundryAuthorizationException extends RuntimeException {
 	 */
 	public enum Reason {
 
+		/**
+		 * Access Denied.
+		 */
 		ACCESS_DENIED(HttpStatus.FORBIDDEN),
 
+		/**
+		 * Invalid Audience.
+		 */
 		INVALID_AUDIENCE(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Invalid Issuer.
+		 */
 		INVALID_ISSUER(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Invalid Key ID.
+		 */
 		INVALID_KEY_ID(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Invalid Signature.
+		 */
 		INVALID_SIGNATURE(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Invalid Token.
+		 */
 		INVALID_TOKEN(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Missing Authorization.
+		 */
 		MISSING_AUTHORIZATION(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Token Expired.
+		 */
 		TOKEN_EXPIRED(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Unsupported Token Signing Algorithm.
+		 */
 		UNSUPPORTED_TOKEN_SIGNING_ALGORITHM(HttpStatus.UNAUTHORIZED),
 
+		/**
+		 * Service Unavailable.
+		 */
 		SERVICE_UNAVAILABLE(HttpStatus.SERVICE_UNAVAILABLE);
 
 		private final HttpStatus status;
