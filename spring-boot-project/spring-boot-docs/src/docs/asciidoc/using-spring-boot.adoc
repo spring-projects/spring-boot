@@ -593,8 +593,8 @@ The way in which you cause the classpath to be updated depends on the IDE that y
 * If using a build plugin, running `mvn compile` for Maven or `gradle build` for Gradle will trigger a restart. 
 ****
 
-NOTE: As long as forking is enabled, you can also start your application by using the supported build plugins (Maven and Gradle), since DevTools needs an isolated application classloader to operate properly.
-By default, the Gradle and Maven plugins fork the application process.
+NOTE: If you are restarting with Maven or Gradle using the build plugin you must leave the `forking` set to `enabled`.
+If you disable forking, the isolated application classloader used by devtools will not be created and restarts will not operate properly.
 
 TIP: Automatic restart works very well when used with LiveReload.
 <<using-boot-devtools-livereload,See the LiveReload section>> for details.
