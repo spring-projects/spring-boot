@@ -367,7 +367,17 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.group.a", "a,e,f");
 		Binder binder = Binder.get(environment);
 		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
-				.withMessageContaining("Profiles could not be resolved. Remove profiles [a] from group: a");
+				.withMessageContaining("Profiles could not be resolved. Remove profile 'a' from group: 'a'");
+	}
+
+	@Test
+	void multipleRecursiveReferenceInProfileGroupThrowsException() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.group.a", "a,b,f");
+		Binder binder = Binder.get(environment);
+		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
+				.withMessageContaining("Profiles could not be resolved. Remove profiles 'a','b' from group: 'a'");
 	}
 
 	@Test
@@ -378,7 +388,7 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.group.e", "a,x,y");
 		Binder binder = Binder.get(environment);
 		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
-				.withMessageContaining("Profiles could not be resolved. Remove profiles [a] from group: e");
+				.withMessageContaining("Profiles could not be resolved. Remove profile 'a' from group: 'e'");
 	}
 
 }
