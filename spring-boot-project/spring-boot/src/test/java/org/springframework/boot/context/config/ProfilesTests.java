@@ -27,7 +27,6 @@ import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link Profiles}.
@@ -366,29 +365,29 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.active", "a,b,c");
 		environment.setProperty("spring.profiles.group.a", "a,e,f");
 		Binder binder = Binder.get(environment);
-		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
-				.withMessageContaining("Profiles could not be resolved. Remove profile 'a' from group: 'a'");
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getAccepted()).containsExactly("a", "e", "f", "b", "c");
 	}
 
 	@Test
-	void multipleRecursiveReferenceInProfileGroupThrowsException() {
+	void multipleRecursiveReferenceInProfileGroupIgnoresDuplicates() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.profiles.active", "a,b,c");
 		environment.setProperty("spring.profiles.group.a", "a,b,f");
 		Binder binder = Binder.get(environment);
-		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
-				.withMessageContaining("Profiles could not be resolved. Remove profiles 'a','b' from group: 'a'");
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getAccepted()).containsExactly("a", "b", "f", "c");
 	}
 
 	@Test
-	void complexRecursiveReferenceInProfileGroupThrowsException() {
+	void complexRecursiveReferenceInProfileGroupIgnoresDuplicates() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.profiles.active", "a,b,c");
-		environment.setProperty("spring.profiles.group.a", "e,f");
-		environment.setProperty("spring.profiles.group.e", "a,x,y");
+		environment.setProperty("spring.profiles.group.a", "e,f,g");
+		environment.setProperty("spring.profiles.group.e", "a,x,y,g");
 		Binder binder = Binder.get(environment);
-		assertThatIllegalStateException().isThrownBy(() -> new Profiles(environment, binder, null))
-				.withMessageContaining("Profiles could not be resolved. Remove profile 'a' from group: 'e'");
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getAccepted()).containsExactly("a", "e", "x", "y", "g", "f", "b", "c");
 	}
 
 }
