@@ -708,9 +708,11 @@ Note that certain resources, such as static assets and view templates, <<using-b
 .Triggering a restart
 ****
 As DevTools monitors classpath resources, the only way to trigger a restart is to update the classpath.
-The way in which you cause the classpath to be updated depends on the IDE that you are using.
-In Eclipse, saving a modified file causes the classpath to be updated and triggers a restart.
-In IntelliJ IDEA, building the project (`Build +->+ Build Project`) has the same effect.
+The way in which you cause the classpath to be updated depends on the IDE that you are using:
+
+* In Eclipse, saving a modified file causes the classpath to be updated and triggers a restart.
+* In IntelliJ IDEA, building the project (`Build +->+ Build Project`) has the same effect.
+* If using a build plugin, running `mvn compile` for Maven or `gradle build` for Gradle will trigger a restart. 
 ****
 
 NOTE: As long as forking is enabled, you can also start your application by using the supported build plugins (Maven and Gradle), since DevTools needs an isolated application classloader to operate properly.
