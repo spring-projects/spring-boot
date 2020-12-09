@@ -32,6 +32,7 @@ import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.PropertyAccessor;
 import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.PropertyNamingStrategies;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
@@ -257,10 +258,10 @@ public class JacksonAutoConfiguration {
 			private void configurePropertyNamingStrategyField(Jackson2ObjectMapperBuilder builder, String fieldName) {
 				// Find the field (this way we automatically support new constants
 				// that may be added by Jackson in the future)
-				Field field = ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
+				Field field = ReflectionUtils.findField(PropertyNamingStrategies.class, fieldName,
 						PropertyNamingStrategy.class);
 				Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found on "
-						+ PropertyNamingStrategy.class.getName());
+						+ PropertyNamingStrategies.class.getName());
 				try {
 					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
 				}

@@ -50,7 +50,7 @@ public class JacksonProperties {
 	private String dateFormat;
 
 	/**
-	 * One of the constants on Jackson's PropertyNamingStrategy. Can also be a
+	 * One of the constants on Jackson's PropertyNamingStrategies. Can also be a
 	 * fully-qualified class name of a PropertyNamingStrategy subclass.
 	 */
 	private String propertyNamingStrategy;
