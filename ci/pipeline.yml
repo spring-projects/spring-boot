@@ -658,11 +658,28 @@ jobs:
       name: generated-changelog/tag
       tag: generated-changelog/tag
       body: generated-changelog/changelog.md
+- name: publish-to-sdkman
+  serial: true
+  plan:
+    - get: ci-image
+    - get: git-repo
+    - get: artifactory-repo
+      passed: [sync-to-maven-central]
+      params:
+        download_artifacts: false
+        save_build_info: true
+    - task: publish-to-sdkman
+      image: ci-image
+      file: git-repo/ci/tasks/publish-to-sdkman.yml
+      params:
+        <<: *sdkman-task-params
+        RELEASE_TYPE: RELEASE
+        BRANCH: ((branch))
 groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk15-build", "windows-build"]
 - name: "releases"
-  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central"]
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central", "publish-to-sdkman"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
