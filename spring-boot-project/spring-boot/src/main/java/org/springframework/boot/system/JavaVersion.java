@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Stream;
 
 import org.springframework.util.ClassUtils;
 
@@ -71,7 +72,12 @@ public enum JavaVersion {
 	/**
 	 * Java 15.
 	 */
-	FIFTEEN("15", CharSequence.class, "isEmpty");
+	FIFTEEN("15", CharSequence.class, "isEmpty"),
+
+	/**
+	 * Java 16.
+	 */
+	SIXTEEN("16", Stream.class, "toList");
 
 	private final String name;
 
