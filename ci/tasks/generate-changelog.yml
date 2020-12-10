@@ -1,7 +1,7 @@
 ---
 platform: linux
 image_resource:
-  type: docker-image
+  type: registry-image
   source:
     repository: springio/github-changelog-generator
     tag: '0.0.4'
