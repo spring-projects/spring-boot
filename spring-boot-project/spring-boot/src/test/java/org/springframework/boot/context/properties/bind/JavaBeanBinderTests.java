@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
@@ -540,6 +541,19 @@ class JavaBeanBinderTests {
 		assertThat(bean.getProperty()).isEqualTo("test");
 	}
 
+	@Test
+	void bindUsesConsistentPropertyOrder() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.gamma", "0");
+		source.put("foo.alpha", "0");
+		source.put("foo.beta", "0");
+		this.sources.add(source);
+		PropertyOrderBean bean = this.binder.bind("foo", Bindable.of(PropertyOrderBean.class)).get();
+		assertThat(bean.getAlpha()).isEqualTo(0);
+		assertThat(bean.getBeta()).isEqualTo(1);
+		assertThat(bean.getGamma()).isEqualTo(2);
+	}
+
 	static class ExampleValueBean {
 
 		private int intValue;
@@ -1032,6 +1046,42 @@ class JavaBeanBinderTests {
 
 		void setProperty(String property) {
 			this.property = property;
+		}
+
+	}
+
+	static class PropertyOrderBean {
+
+		static AtomicInteger atomic = new AtomicInteger();
+
+		private int alpha;
+
+		private int beta;
+
+		private int gamma;
+
+		int getAlpha() {
+			return this.alpha;
+		}
+
+		void setAlpha(int alpha) {
+			this.alpha = alpha + atomic.getAndIncrement();
+		}
+
+		int getBeta() {
+			return this.beta;
+		}
+
+		void setBeta(int beta) {
+			this.beta = beta + atomic.getAndIncrement();
+		}
+
+		int getGamma() {
+			return this.gamma;
+		}
+
+		void setGamma(int gamma) {
+			this.gamma = gamma + atomic.getAndIncrement();
 		}
 
 	}
