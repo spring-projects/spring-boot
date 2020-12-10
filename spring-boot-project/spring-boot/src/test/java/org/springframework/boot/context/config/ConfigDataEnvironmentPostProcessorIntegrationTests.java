@@ -383,8 +383,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		List<String> names = StreamSupport.stream(context.getEnvironment().getPropertySources().spliterator(), false)
 				.map(org.springframework.core.env.PropertySource::getName).collect(Collectors.toList());
 		assertThat(names).contains(
-				"Config resource 'classpath:configdata/profiles/testsetprofiles.yml' via location 'classpath:configdata/profiles/' (document #0)",
-				"Config resource 'classpath:configdata/profiles/testsetprofiles.yml' via location 'classpath:configdata/profiles/' (document #1)");
+				"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #0)",
+				"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #1)");
 	}
 
 	@Test
@@ -411,7 +411,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		String location = "file:src/test/resources/specificlocation.properties";
 		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
 		assertThat(context.getEnvironment()).has(matchingPropertySource(
-				"Config resource 'file:src/test/resources/specificlocation.properties' via location '" + location
+				"Config resource 'file [src/test/resources/specificlocation.properties]' via location '" + location
 						+ "'"));
 	}
 
@@ -420,7 +420,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		String location = "src/test/resources/specificlocation.properties";
 		ConfigurableApplicationContext context = this.application.run("--spring.config.location=" + location);
 		assertThat(context.getEnvironment()).has(matchingPropertySource(
-				"Config resource 'src/test/resources/specificlocation.properties' via location '" + location + "'"));
+				"Config resource 'file [src/test/resources/specificlocation.properties]' via location '" + location
+						+ "'"));
 	}
 
 	@Test
@@ -617,6 +618,16 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		Origin origin = properties.get(0).getOrigin();
 		assertThat(origin.toString()).contains("application-import-with-placeholder-imported");
 		assertThat(origin.getParent().toString()).contains("application-import-with-placeholder");
+	}
+
+	@Test
+	void runWhenHasWildcardLocationLoadsFromAllMatchingLocations() {
+		ConfigurableApplicationContext context = this.application.run(
+				"--spring.config.location=optional:file:src/test/resources/config/*/",
+				"--spring.config.name=testproperties");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.getProperty("first.property")).isEqualTo("apple");
+		assertThat(environment.getProperty("second.property")).isEqualTo("ball");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
