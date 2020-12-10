@@ -13,5 +13,6 @@ caches:
 params:
   CONTEXT: ci-images-git-repo/ci/images
   DOCKERFILE: ci-images-git-repo/ci/images/((ci-image-name))/Dockerfile
+  REGISTRY_MIRRORS: ((dockerhub-registry-mirror))
 run:
   path: build
