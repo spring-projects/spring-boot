@@ -626,10 +626,8 @@ jobs:
     file: git-repo/ci/tasks/promote.yml
     params:
       RELEASE_TYPE: RELEASE
-      BRANCH: ((BRANCH))
       <<: *artifactory-task-params
       <<: *bintray-task-params
-      <<: *sdkman-task-params
 - name: sync-to-maven-central
   serial: true
   plan:
