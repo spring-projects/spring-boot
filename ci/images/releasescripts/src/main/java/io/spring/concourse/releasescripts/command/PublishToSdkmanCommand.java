@@ -37,10 +37,17 @@ public class PublishToSdkmanCommand implements Command {
 
 	private static final Logger logger = LoggerFactory.getLogger(PublishToSdkmanCommand.class);
 
+	private static final String PUBLISH_TO_SDKMAN_COMMAND = "publishToSdkman";
+
 	private final SdkmanService service;
 
 	public PublishToSdkmanCommand(SdkmanService service) {
 		this.service = service;
+	}
+
+	@Override
+	public String getName() {
+		return PUBLISH_TO_SDKMAN_COMMAND;
 	}
 
 	@Override

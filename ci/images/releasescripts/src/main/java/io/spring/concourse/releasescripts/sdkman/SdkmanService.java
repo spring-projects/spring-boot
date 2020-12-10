@@ -25,7 +25,6 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.MediaType;
 import org.springframework.http.RequestEntity;
 import org.springframework.stereotype.Component;
-import org.springframework.util.StringUtils;
 import org.springframework.web.client.RestTemplate;
 
 /**
@@ -47,13 +46,15 @@ public class SdkmanService {
 
 	private final RestTemplate restTemplate;
 
+	private final SdkmanProperties properties;
+
+	private final String CONSUMER_KEY_HEADER = "Consumer-Key";
+
+	private final String CONSUMER_TOKEN_HEADER = "Consumer-Token";
+
 	public SdkmanService(RestTemplateBuilder builder, SdkmanProperties properties) {
-		String consumerKey = properties.getConsumerKey();
-		String consumerToken = properties.getConsumerToken();
-		if (StringUtils.hasLength(consumerKey)) {
-			builder = builder.basicAuthentication(consumerKey, consumerToken);
-		}
 		this.restTemplate = builder.build();
+		this.properties = properties;
 	}
 
 	public void publish(String version, boolean makeDefault) {
@@ -67,6 +68,8 @@ public class SdkmanService {
 	private void broadcast(String version) {
 		BroadcastRequest broadcastRequest = new BroadcastRequest(version);
 		RequestEntity<BroadcastRequest> broadcastEntity = RequestEntity.post(URI.create(SDKMAN_URL + "announce/struct"))
+				.header(CONSUMER_KEY_HEADER, this.properties.getConsumerKey())
+				.header(CONSUMER_TOKEN_HEADER, this.properties.getConsumerToken())
 				.contentType(MediaType.APPLICATION_JSON).body(broadcastRequest);
 		this.restTemplate.exchange(broadcastEntity, String.class);
 		logger.debug("Broadcast complete");
@@ -76,6 +79,8 @@ public class SdkmanService {
 		logger.debug("Making this version the default");
 		Request request = new Request(version);
 		RequestEntity<Request> requestEntity = RequestEntity.post(URI.create(SDKMAN_URL + "default"))
+				.header(CONSUMER_KEY_HEADER, this.properties.getConsumerKey())
+				.header(CONSUMER_TOKEN_HEADER, this.properties.getConsumerToken())
 				.contentType(MediaType.APPLICATION_JSON).body(request);
 		this.restTemplate.exchange(requestEntity, String.class);
 		logger.debug("Make default complete");
@@ -84,6 +89,8 @@ public class SdkmanService {
 	private void release(String version) {
 		ReleaseRequest releaseRequest = new ReleaseRequest(version, String.format(DOWNLOAD_URL, version, version));
 		RequestEntity<ReleaseRequest> releaseEntity = RequestEntity.post(URI.create(SDKMAN_URL + "release"))
+				.header(CONSUMER_KEY_HEADER, this.properties.getConsumerKey())
+				.header(CONSUMER_TOKEN_HEADER, this.properties.getConsumerToken())
 				.contentType(MediaType.APPLICATION_JSON).body(releaseRequest);
 		this.restTemplate.exchange(releaseEntity, String.class);
 		logger.debug("Release complete");
