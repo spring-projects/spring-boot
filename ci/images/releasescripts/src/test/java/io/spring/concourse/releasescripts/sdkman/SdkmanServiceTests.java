@@ -25,7 +25,6 @@ import org.springframework.boot.test.autoconfigure.web.client.RestClientTest;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.client.MockRestServiceServer;
-import org.springframework.util.Base64Utils;
 
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.content;
 import static org.springframework.test.web.client.match.MockRestRequestMatchers.header;
@@ -80,10 +79,8 @@ class SdkmanServiceTests {
 
 	private void setupExpectation(String url, String body) {
 		this.server.expect(requestTo(url)).andExpect(method(HttpMethod.POST)).andExpect(content().json(body))
-				.andExpect(header("Authorization",
-						"Basic " + Base64Utils.encodeToString(String
-								.format("%s:%s", this.properties.getConsumerKey(), this.properties.getConsumerToken())
-								.getBytes())))
+				.andExpect(header("Consumer-Key", "sdkman-consumer-key"))
+				.andExpect(header("Consumer-Token", "sdkman-consumer-token"))
 				.andExpect(header("Content-Type", MediaType.APPLICATION_JSON.toString())).andRespond(withSuccess());
 	}
 
