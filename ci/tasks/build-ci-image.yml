@@ -12,6 +12,6 @@ caches:
 - path: ci-image-cache
 params:
   CONTEXT: ci-images-git-repo/ci/images
-  DOCKERFILE: ((ci-image-name))/Dockerfile
+  DOCKERFILE: ci-images-git-repo/ci/images/((ci-image-name))/Dockerfile
 run:
   path: build
