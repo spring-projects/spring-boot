@@ -214,16 +214,22 @@ jobs:
     - task: build-ci-image
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image-name
       vars:
         ci-image-name: ci-image
     - task: build-ci-image-jdk11
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image-jdk11
       vars:
         ci-image-name: ci-image-jdk11
     - task: build-ci-image-jdk15
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image-jdk15
       vars:
         ci-image-name: ci-image-jdk15
   - in_parallel:
