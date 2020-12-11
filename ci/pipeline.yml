@@ -4,7 +4,7 @@ anchors:
     username: ((github-username))
     password: ((github-password))
     branch: ((branch))
-  docker-resource-source: &docker-resource-source
+  registry-image-resource-source: &registry-image-resource-source
     username: ((docker-hub-username))
     password: ((docker-hub-password))
     tag: ((milestone))
@@ -144,20 +144,20 @@ resources:
   type: registry-image
   icon: docker
   source:
-    <<: *docker-resource-source
-    repository: ((docker-hub-organization))/((ci-image-name))
+    <<: *registry-image-resource-source
+    repository: ((docker-hub-organization))/spring-boot-ci
 - name: ci-image-jdk11
   type: registry-image
   icon: docker
   source:
-    <<: *docker-resource-source
-    repository: ((docker-hub-organization))/((ci-image-name))-jdk11
+    <<: *registry-image-resource-source
+    repository: ((docker-hub-organization))/spring-boot-ci-jdk11
 - name: ci-image-jdk15
   type: registry-image
   icon: docker
   source:
-    <<: *docker-resource-source
-    repository: ((docker-hub-organization))/((ci-image-name))-jdk15
+    <<: *registry-image-resource-source
+    repository: ((docker-hub-organization))/spring-boot-ci-jdk15
 - name: artifactory-repo
   type: artifactory-resource
   icon: package-variant
@@ -211,19 +211,39 @@ jobs:
   plan:
   - get: ci-images-git-repo
     trigger: true
+  - get: git-repo
+  - in_parallel:
+    - task: build-ci-image
+      privileged: true
+      file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image
+      vars:
+        ci-image-name: ci-image
+    - task: build-ci-image-jdk11
+      privileged: true
+      file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image-jdk11
+      vars:
+        ci-image-name: ci-image-jdk11
+    - task: build-ci-image-jdk15
+      privileged: true
+      file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image-jdk15
+      vars:
+        ci-image-name: ci-image-jdk15
   - in_parallel:
     - put: ci-image
       params:
-        build: ci-images-git-repo/ci/images
-        dockerfile: ci-images-git-repo/ci/images/ci-image/Dockerfile
+        image: ci-image/image.tar
     - put: ci-image-jdk11
       params:
-        build: ci-images-git-repo/ci/images
-        dockerfile: ci-images-git-repo/ci/images/ci-image-jdk11/Dockerfile
+        image: ci-image-jdk11/image.tar
     - put: ci-image-jdk15
       params:
-        build: ci-images-git-repo/ci/images
-        dockerfile: ci-images-git-repo/ci/images/ci-image-jdk15/Dockerfile
+        image: ci-image-jdk15/image.tar
 - name: detect-jdk-updates
   plan:
   - get: git-repo
