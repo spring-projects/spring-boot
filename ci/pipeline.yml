@@ -18,7 +18,7 @@ anchors:
   github-task-params: &github-task-params
     GITHUB_REPO: spring-boot
     GITHUB_ORGANIZATION: spring-projects
-    GITHUB_PASSWORD: ((github-password))
+    GITHUB_PASSWORD: ((github-ci-release-token))
     GITHUB_USERNAME: ((github-username))
     MILESTONE: ((milestone))
   bintray-task-params: &bintray-task-params
