@@ -254,6 +254,10 @@ restart() {
   stop && start
 }
 
+force_restart() {
+  force_stop && start
+}
+
 force_reload() {
   working_dir=$(dirname "$jarfile")
   pushd "$working_dir" > /dev/null
@@ -293,6 +297,8 @@ force-stop)
   force_stop "$@"; exit $?;;
 restart)
   restart "$@"; exit $?;;
+force-restart)
+  force_restart "$@"; exit $?;;
 force-reload)
   force_reload "$@"; exit $?;;
 status)
@@ -300,7 +306,7 @@ status)
 run)
   run "$@"; exit $?;;
 *)
-  echo "Usage: $0 {start|stop|force-stop|restart|force-reload|status|run}"; exit 1;
+  echo "Usage: $0 {start|stop|force-stop|restart|force-restart|force-reload|status|run}"; exit 1;
 esac
 
 exit 0
