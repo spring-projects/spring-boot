@@ -215,7 +215,7 @@ jobs:
       privileged: true
       file: git-repo/ci/tasks/build-ci-image.yml
       output_mapping:
-        image: ci-image-name
+        image: ci-image
       vars:
         ci-image-name: ci-image
     - task: build-ci-image-jdk11
