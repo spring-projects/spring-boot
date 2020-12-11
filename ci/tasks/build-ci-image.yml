@@ -7,7 +7,8 @@ image_resource:
 inputs:
 - name: ci-images-git-repo
 outputs:
-- name: ((ci-image-name))
+- name: image
+output_mapping: {image: ((ci-image-name))}
 caches:
 - path: ci-image-cache
 params:
