@@ -97,7 +97,7 @@ public class Profiles implements Iterable<String> {
 		if (hasExplicit(supplier, propertyValue, unset)) {
 			return supplier.get();
 		}
-		return binder.bind(propertyName, String[].class).orElse(StringUtils.toStringArray(unset));
+		return binder.bind(propertyName, String[].class).orElseGet(() -> StringUtils.toStringArray(unset));
 	}
 
 	private boolean hasExplicit(Supplier<String[]> supplier, String propertyValue, Set<String> unset) {
