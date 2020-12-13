@@ -18,8 +18,11 @@ package org.springframework.boot.autoconfigure.jooq;
 
 import javax.sql.DataSource;
 
+import org.jooq.CharsetProvider;
 import org.jooq.ConnectionProvider;
+import org.jooq.ConverterProvider;
 import org.jooq.DSLContext;
+import org.jooq.DiagnosticsListenerProvider;
 import org.jooq.ExecuteListenerProvider;
 import org.jooq.ExecutorProvider;
 import org.jooq.RecordListenerProvider;
@@ -27,6 +30,7 @@ import org.jooq.RecordMapperProvider;
 import org.jooq.RecordUnmapperProvider;
 import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionProvider;
+import org.jooq.UnwrapperProvider;
 import org.jooq.VisitListenerProvider;
 import org.jooq.conf.Settings;
 import org.jooq.impl.DataSourceConnectionProvider;
@@ -101,7 +105,10 @@ public class JooqAutoConfiguration {
 				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
 				ObjectProvider<VisitListenerProvider> visitListenerProviders,
 				ObjectProvider<TransactionListenerProvider> transactionListenerProviders,
-				ObjectProvider<ExecutorProvider> executorProvider) {
+				ObjectProvider<ExecutorProvider> executorProvider,
+				ObjectProvider<DiagnosticsListenerProvider> diagnosticsListenerProviders,
+				ObjectProvider<UnwrapperProvider> unwrapperProvider, ObjectProvider<CharsetProvider> charsetProvider,
+				ObjectProvider<ConverterProvider> converterProvider) {
 			DefaultConfiguration configuration = new DefaultConfiguration();
 			configuration.set(properties.determineSqlDialect(dataSource));
 			configuration.set(connectionProvider);
@@ -115,6 +122,10 @@ public class JooqAutoConfiguration {
 			configuration.set(visitListenerProviders.orderedStream().toArray(VisitListenerProvider[]::new));
 			configuration.setTransactionListenerProvider(
 					transactionListenerProviders.orderedStream().toArray(TransactionListenerProvider[]::new));
+			configuration.set(diagnosticsListenerProviders.orderedStream().toArray(DiagnosticsListenerProvider[]::new));
+			unwrapperProvider.ifAvailable(configuration::set);
+			charsetProvider.ifAvailable(configuration::set);
+			converterProvider.ifAvailable(configuration::set);
 			return configuration;
 		}
 

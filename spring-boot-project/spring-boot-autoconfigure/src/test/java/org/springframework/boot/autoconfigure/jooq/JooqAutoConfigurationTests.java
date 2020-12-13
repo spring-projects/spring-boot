@@ -16,11 +16,17 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
+import java.nio.charset.Charset;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.jooq.CharsetProvider;
+import org.jooq.Converter;
+import org.jooq.ConverterProvider;
 import org.jooq.DSLContext;
+import org.jooq.DiagnosticsListener;
+import org.jooq.DiagnosticsListenerProvider;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
 import org.jooq.ExecutorProvider;
@@ -36,6 +42,8 @@ import org.jooq.SQLDialect;
 import org.jooq.TransactionListener;
 import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionalRunnable;
+import org.jooq.Unwrapper;
+import org.jooq.UnwrapperProvider;
 import org.jooq.VisitListener;
 import org.jooq.VisitListenerProvider;
 import org.jooq.impl.DefaultExecuteListenerProvider;
@@ -115,7 +123,9 @@ class JooqAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
 				TestRecordMapperProvider.class, TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
 				TestExecuteListenerProvider.class, TestVisitListenerProvider.class,
-				TestTransactionListenerProvider.class, TestExecutorProvider.class).run((context) -> {
+				TestTransactionListenerProvider.class, TestExecutorProvider.class,
+				TestDiagnosticsListenerProvider.class, TestUnwrapperProvider.class, TestCharsetProvider.class,
+				TestConverterProvider.class).run((context) -> {
 					DSLContext dsl = context.getBean(DSLContext.class);
 					assertThat(dsl.configuration().recordMapperProvider().getClass())
 							.isEqualTo(TestRecordMapperProvider.class);
@@ -129,6 +139,12 @@ class JooqAutoConfigurationTests {
 					assertThat(executeListenerProviders[1]).isInstanceOf(TestExecuteListenerProvider.class);
 					assertThat(dsl.configuration().visitListenerProviders()).hasSize(1);
 					assertThat(dsl.configuration().transactionListenerProviders()).hasSize(1);
+					assertThat(dsl.configuration().diagnosticsListenerProviders()).hasSize(1);
+					assertThat(dsl.configuration().unwrapperProvider().getClass())
+							.isEqualTo(TestUnwrapperProvider.class);
+					assertThat(dsl.configuration().charsetProvider().getClass()).isEqualTo(TestCharsetProvider.class);
+					assertThat(dsl.configuration().converterProvider().getClass())
+							.isEqualTo(TestConverterProvider.class);
 				});
 	}
 
@@ -260,6 +276,42 @@ class JooqAutoConfigurationTests {
 
 		@Override
 		public Executor provide() {
+			return null;
+		}
+
+	}
+
+	static class TestDiagnosticsListenerProvider implements DiagnosticsListenerProvider {
+
+		@Override
+		public DiagnosticsListener provide() {
+			return null;
+		}
+
+	}
+
+	static class TestUnwrapperProvider implements UnwrapperProvider {
+
+		@Override
+		public Unwrapper provide() {
+			return null;
+		}
+
+	}
+
+	static class TestCharsetProvider implements CharsetProvider {
+
+		@Override
+		public Charset provide() {
+			return null;
+		}
+
+	}
+
+	static class TestConverterProvider implements ConverterProvider {
+
+		@Override
+		public <T, U> Converter<T, U> provide(Class<T> tType, Class<U> uType) {
 			return null;
 		}
 
