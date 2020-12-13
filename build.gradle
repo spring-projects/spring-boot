@@ -16,6 +16,8 @@ allprojects {
 	group "org.springframework.boot"
 
 	repositories {
+		mavenLocal()
+		maven { url 'http://maven.aliyun.com/nexus/content/groups/public/' }
 		mavenCentral()
 		if (!version.endsWith('RELEASE')) {
 			maven { url "https://repo.spring.io/milestone" }
