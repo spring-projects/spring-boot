@@ -51,42 +51,36 @@ class PublishToSdkmanCommandTests {
 	@Test
 	void runWhenReleaseTypeNotSpecifiedShouldThrowException() throws Exception {
 		Assertions.assertThatIllegalStateException()
-				.isThrownBy(() -> this.command.run(new DefaultApplicationArguments("publishGradlePlugin")));
+				.isThrownBy(() -> this.command.run(new DefaultApplicationArguments("publishToSdkman")));
 	}
 
 	@Test
 	void runWhenVersionNotSpecifiedShouldThrowException() throws Exception {
 		Assertions.assertThatIllegalStateException()
-				.isThrownBy(() -> this.command.run(new DefaultApplicationArguments("publishGradlePlugin", "RELEASE")));
+				.isThrownBy(() -> this.command.run(new DefaultApplicationArguments("publishToSdkman", "RELEASE")));
 	}
 
 	@Test
 	void runWhenReleaseTypeMilestoneShouldDoNothing() throws Exception {
-		this.command.run(new DefaultApplicationArguments("publishGradlePlugin", "M", "1.2.3"));
+		this.command.run(new DefaultApplicationArguments("publishToSdkman", "M", "1.2.3"));
 		verifyNoInteractions(this.service);
 	}
 
 	@Test
 	void runWhenReleaseTypeRCShouldDoNothing() throws Exception {
-		this.command.run(new DefaultApplicationArguments("publishGradlePlugin", "RC", "1.2.3"));
+		this.command.run(new DefaultApplicationArguments("publishToSdkman", "RC", "1.2.3"));
 		verifyNoInteractions(this.service);
 	}
 
 	@Test
-	void runWhenBranchNotSpecifiedShouldCallServiceWithMakeDefaultFalse() throws Exception {
+	void runWhenLatestGANotSpecifiedShouldCallServiceWithMakeDefaultFalse() throws Exception {
 		DefaultApplicationArguments args = new DefaultApplicationArguments("promote", "RELEASE", "1.2.3");
 		testRun(args, false);
 	}
 
 	@Test
-	void runWhenBranchNotMasterShouldCallServiceWithMakeDefaultFalse() throws Exception {
-		DefaultApplicationArguments args = new DefaultApplicationArguments("promote", "RELEASE", "1.2.3", "other");
-		testRun(args, false);
-	}
-
-	@Test
 	void runWhenReleaseTypeReleaseShouldCallService() throws Exception {
-		DefaultApplicationArguments args = new DefaultApplicationArguments("promote", "RELEASE", "1.2.3", "master");
+		DefaultApplicationArguments args = new DefaultApplicationArguments("promote", "RELEASE", "1.2.3", "true");
 		testRun(args, true);
 	}
 

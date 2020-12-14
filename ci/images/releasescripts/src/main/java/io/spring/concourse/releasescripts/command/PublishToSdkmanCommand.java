@@ -64,8 +64,7 @@ public class PublishToSdkmanCommand implements Command {
 		String version = nonOptionArgs.get(2);
 		boolean makeDefault = false;
 		if (nonOptionArgs.size() == 4) {
-			String releaseBranch = nonOptionArgs.get(3);
-			makeDefault = ("master".equals(releaseBranch));
+			makeDefault = Boolean.parseBoolean(nonOptionArgs.get(3));
 		}
 		this.service.publish(version, makeDefault);
 	}
