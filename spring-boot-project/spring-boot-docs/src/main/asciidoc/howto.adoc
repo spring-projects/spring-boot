@@ -837,7 +837,7 @@ Finally, access logging for Jetty can also be configured as follows:
 ----
 
 By default, logs are redirected to `System.err`.
-For more details, see {jetty-docs}/configuring-jetty-request-logs.html[the Jetty documentation].
+For more details, see the Jetty documentation.
 
 
 

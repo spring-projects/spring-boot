@@ -98,7 +98,6 @@
 :gradle-docs: https://docs.gradle.org/current/userguide
 :hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
 :java-api: https://docs.oracle.com/javase/8/docs/api/
-:jetty-docs: https://www.eclipse.org/jetty/documentation/{jetty-version}
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/

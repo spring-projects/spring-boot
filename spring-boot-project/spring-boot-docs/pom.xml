@@ -1195,7 +1195,6 @@
 										<link>https://docs.spring.io/spring-framework/docs/${spring-framework.version}/javadoc-api/</link>
 										<link>https://docs.spring.io/spring-security/site/docs/${spring-security.version}/api/</link>
 										<link>https://tomcat.apache.org/tomcat-9.0-doc/api/</link>
-										<link>https://www.eclipse.org/jetty/javadoc/${jetty.version}/</link>
 										<link>https://www.thymeleaf.org/apidocs/thymeleaf/${thymeleaf.version}/</link>
 									</links>
 								</configuration>
