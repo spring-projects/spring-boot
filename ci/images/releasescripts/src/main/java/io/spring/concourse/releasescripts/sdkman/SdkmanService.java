@@ -78,7 +78,7 @@ public class SdkmanService {
 	private void makeDefault(String version) {
 		logger.debug("Making this version the default");
 		Request request = new Request(version);
-		RequestEntity<Request> requestEntity = RequestEntity.post(URI.create(SDKMAN_URL + "default"))
+		RequestEntity<Request> requestEntity = RequestEntity.put(URI.create(SDKMAN_URL + "default"))
 				.header(CONSUMER_KEY_HEADER, this.properties.getConsumerKey())
 				.header(CONSUMER_TOKEN_HEADER, this.properties.getConsumerToken())
 				.contentType(MediaType.APPLICATION_JSON).body(request);

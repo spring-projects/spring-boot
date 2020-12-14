@@ -6,6 +6,7 @@ inputs:
 params:
   RELEASE_TYPE:
   BRANCH:
+  LATEST_GA:
   SDKMAN_CONSUMER_KEY:
   SDKMAN_CONSUMER_TOKEN:
 run:
