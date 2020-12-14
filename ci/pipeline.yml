@@ -613,7 +613,7 @@ jobs:
         <<: *sdkman-task-params
         RELEASE_TYPE: RELEASE
         BRANCH: ((branch))
-        LATEST_GA: false
+        LATEST_GA: true
 groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk15-build", "windows-build"]
