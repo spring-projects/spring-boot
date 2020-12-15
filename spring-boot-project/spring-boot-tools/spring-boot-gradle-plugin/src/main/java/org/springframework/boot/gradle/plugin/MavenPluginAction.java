@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.plugin;
 
 import org.gradle.api.Action;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.tasks.Upload;
 
@@ -36,9 +35,8 @@ final class MavenPluginAction implements PluginApplicationAction {
 	}
 
 	@Override
-	@SuppressWarnings("deprecation")
-	public Class<? extends Plugin<? extends Project>> getPluginClass() {
-		return org.gradle.api.plugins.MavenPlugin.class;
+	public String getPluginId() {
+		return "maven";
 	}
 
 	@Override

@@ -17,7 +17,6 @@
 package org.springframework.boot.gradle.plugin;
 
 import org.gradle.api.Action;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -47,8 +46,8 @@ class WarPluginAction implements PluginApplicationAction {
 	}
 
 	@Override
-	public Class<? extends Plugin<? extends Project>> getPluginClass() {
-		return WarPlugin.class;
+	public String getPluginId() {
+		return "war";
 	}
 
 	@Override

@@ -19,7 +19,6 @@ package org.springframework.boot.gradle.plugin;
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
 import org.gradle.api.Action;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 
 /**
@@ -37,8 +36,8 @@ final class DependencyManagementPluginAction implements PluginApplicationAction 
 	}
 
 	@Override
-	public Class<? extends Plugin<Project>> getPluginClass() {
-		return DependencyManagementPlugin.class;
+	public String getPluginId() {
+		return "io.spring.dependency-management";
 	}
 
 }

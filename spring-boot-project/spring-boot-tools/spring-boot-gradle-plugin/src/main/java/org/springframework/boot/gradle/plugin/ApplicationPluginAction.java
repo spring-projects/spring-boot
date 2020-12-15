@@ -24,7 +24,6 @@ import java.lang.reflect.Method;
 import java.util.concurrent.Callable;
 
 import org.gradle.api.GradleException;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.distribution.Distribution;
 import org.gradle.api.distribution.DistributionContainer;
@@ -121,8 +120,8 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	}
 
 	@Override
-	public Class<? extends Plugin<Project>> getPluginClass() {
-		return ApplicationPlugin.class;
+	public String getPluginId() {
+		return "application";
 	}
 
 	private String loadResource(String name) {

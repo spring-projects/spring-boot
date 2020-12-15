@@ -16,7 +16,6 @@
 
 package org.springframework.boot.gradle.plugin;
 
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
@@ -47,15 +46,8 @@ class KotlinPluginAction implements PluginApplicationAction {
 	}
 
 	@Override
-	@SuppressWarnings("unchecked")
-	public Class<? extends Plugin<? extends Project>> getPluginClass() {
-		try {
-			return (Class<? extends Plugin<? extends Project>>) Class
-					.forName("org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper");
-		}
-		catch (Throwable ex) {
-			return null;
-		}
+	public String getPluginId() {
+		return "org.jetbrains.kotlin.jvm";
 	}
 
 }

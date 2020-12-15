@@ -23,7 +23,6 @@ import java.util.Optional;
 import java.util.Set;
 
 import org.gradle.api.Action;
-import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
@@ -65,8 +64,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	@Override
-	public Class<? extends Plugin<? extends Project>> getPluginClass() {
-		return JavaPlugin.class;
+	public String getPluginId() {
+		return "java";
 	}
 
 	@Override

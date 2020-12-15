@@ -29,10 +29,10 @@ import org.gradle.api.Project;
 interface PluginApplicationAction extends Action<Project> {
 
 	/**
-	 * The class of the {@code Plugin} that, when applied, will trigger the execution of
-	 * this action. May return {@code null} if the plugin class is not on the classpath.
-	 * @return the plugin class or {@code null}
+	 * The id of the {@code Plugin} that, when applied, will trigger the execution of this
+	 * action.
+	 * @return the plugin id
 	 */
-	Class<? extends Plugin<? extends Project>> getPluginClass();
+	String getPluginId();
 
 }
