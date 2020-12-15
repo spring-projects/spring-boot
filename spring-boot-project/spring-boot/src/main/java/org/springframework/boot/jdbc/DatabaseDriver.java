@@ -200,6 +200,7 @@ public enum DatabaseDriver {
 
 	/**
 	 * Apache Phoenix.
+	 * @since 2.5.0
 	 */
 	PHOENIX("Apache Phoenix", "org.apache.phoenix.jdbc.PhoenixDriver", null, "SELECT 1 FROM SYSTEM.CATALOG LIMIT 1"),
 
