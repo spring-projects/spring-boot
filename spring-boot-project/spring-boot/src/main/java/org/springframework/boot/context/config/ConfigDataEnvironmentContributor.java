@@ -301,6 +301,15 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	}
 
 	/**
+	 * Factory method to create an {@link Kind#EMPTY_LOCATION empty location} contributor.
+	 * @param location the location of this contributor
+	 * @return a new {@link ConfigDataEnvironmentContributor} instance
+	 */
+	static ConfigDataEnvironmentContributor ofEmptyLocation(ConfigDataLocation location) {
+		return new ConfigDataEnvironmentContributor(Kind.EMPTY_LOCATION, location, null, null, null, null, true, null);
+	}
+
+	/**
 	 * The various kinds of contributor.
 	 */
 	enum Kind {
@@ -330,7 +339,12 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		 * A contributor with {@link ConfigData} imported from another contributor that
 		 * has been.
 		 */
-		BOUND_IMPORT;
+		BOUND_IMPORT,
+
+		/**
+		 * A valid location that contained noething to load.
+		 */
+		EMPTY_LOCATION;
 
 	}
 

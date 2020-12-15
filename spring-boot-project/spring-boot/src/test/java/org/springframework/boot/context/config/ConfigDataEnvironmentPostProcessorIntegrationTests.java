@@ -61,6 +61,7 @@ import org.springframework.util.StringUtils;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 
 /**
  * Integration tests for {@link ConfigDataEnvironmentPostProcessor}.
@@ -533,6 +534,14 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		String location = "classpath:application.unknown/";
 		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
 				.isThrownBy(() -> this.application.run("--spring.config.location=" + location));
+	}
+
+	@Test
+	void runWhenConfigLocationHasNonOptionalEmptyFileDirectoryDoesNotThrowException() {
+		File location = new File(this.temp, "application.empty");
+		location.mkdirs();
+		assertThatNoException().isThrownBy(() -> this.application
+				.run("--spring.config.location=" + StringUtils.cleanPath(location.getAbsolutePath()) + "/"));
 	}
 
 	@Test

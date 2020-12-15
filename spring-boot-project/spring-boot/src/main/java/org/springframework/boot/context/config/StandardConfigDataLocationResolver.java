@@ -17,6 +17,7 @@
 package org.springframework.boot.context.config;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
@@ -220,25 +221,26 @@ public class StandardConfigDataLocationResolver
 			resolved.addAll(resolve(reference));
 		}
 		if (resolved.isEmpty()) {
-			assertNonOptionalDirectories(references);
+			resolved.addAll(resolveEmptyDirectories(references));
 		}
 		return resolved;
 	}
 
-	private void assertNonOptionalDirectories(Set<StandardConfigDataReference> references) {
+	private Collection<StandardConfigDataResource> resolveEmptyDirectories(
+			Set<StandardConfigDataReference> references) {
+		Set<StandardConfigDataResource> empty = new LinkedHashSet<>();
 		for (StandardConfigDataReference reference : references) {
-			if (reference.isNonOptionalDirectory()) {
-				assertDirectoryExists(reference);
+			if (reference.isMandatoryDirectory()) {
+				Resource resource = this.resourceLoader.getResource(reference.getDirectory());
+				if (resource instanceof ClassPathResource) {
+					continue;
+				}
+				StandardConfigDataResource configDataResource = new StandardConfigDataResource(reference, resource);
+				ConfigDataResourceNotFoundException.throwIfDoesNotExist(configDataResource, resource);
+				empty.add(new StandardConfigDataResource(reference, resource, true));
 			}
 		}
-	}
-
-	private void assertDirectoryExists(StandardConfigDataReference reference) {
-		Resource resource = this.resourceLoader.getResource(reference.getDirectory());
-		if (!(resource instanceof ClassPathResource)) {
-			StandardConfigDataResource configDataResource = new StandardConfigDataResource(reference, resource);
-			ConfigDataResourceNotFoundException.throwIfDoesNotExist(configDataResource, resource);
-		}
+		return empty;
 	}
 
 	private List<StandardConfigDataResource> resolve(StandardConfigDataReference reference) {

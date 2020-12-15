@@ -66,7 +66,7 @@ class StandardConfigDataReference {
 		return this.resourceLocation;
 	}
 
-	boolean isNonOptionalDirectory() {
+	boolean isMandatoryDirectory() {
 		return !this.configDataLocation.isOptional() && this.directory != null;
 	}
 
