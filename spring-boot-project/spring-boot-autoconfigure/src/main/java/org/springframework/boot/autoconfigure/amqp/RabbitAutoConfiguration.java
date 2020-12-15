@@ -140,9 +140,11 @@ public class RabbitAutoConfiguration {
 				map.from(ssl::getKeyStoreType).to(factory::setKeyStoreType);
 				map.from(ssl::getKeyStore).to(factory::setKeyStore);
 				map.from(ssl::getKeyStorePassword).to(factory::setKeyStorePassphrase);
+				map.from(ssl::getKeyStoreAlgorithm).whenNonNull().to(factory::setKeyStoreAlgorithm);
 				map.from(ssl::getTrustStoreType).to(factory::setTrustStoreType);
 				map.from(ssl::getTrustStore).to(factory::setTrustStore);
 				map.from(ssl::getTrustStorePassword).to(factory::setTrustStorePassphrase);
+				map.from(ssl::getTrustStoreAlgorithm).whenNonNull().to(factory::setTrustStoreAlgorithm);
 				map.from(ssl::isValidateServerCertificate)
 						.to((validate) -> factory.setSkipServerCertificateValidation(!validate));
 				map.from(ssl::getVerifyHostname).to(factory::setEnableHostnameVerification);
