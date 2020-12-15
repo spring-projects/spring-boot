@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa;
+package org.springframework.boot.autoconfigure.orm.jpa;
 
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
+import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 
 /**
  * {@link BeanFactoryPostProcessor} that can be used to dynamically declare that all
@@ -30,14 +32,10 @@ import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Andrii Hrytsiuk
- * @since 1.1.0
+ * @since 2.5.0
  * @see BeanDefinition#setDependsOn(String[])
- * @deprecated since 2.5.0 in favor of
- * {@link org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor}
  */
-@Deprecated
-public class EntityManagerFactoryDependsOnPostProcessor
-		extends org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor {
+public class EntityManagerFactoryDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	/**
 	 * Creates a new {@code EntityManagerFactoryDependsOnPostProcessor} that will set up
@@ -45,17 +43,16 @@ public class EntityManagerFactoryDependsOnPostProcessor
 	 * @param dependsOn names of the beans to depend upon
 	 */
 	public EntityManagerFactoryDependsOnPostProcessor(String... dependsOn) {
-		super(dependsOn);
+		super(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class, dependsOn);
 	}
 
 	/**
 	 * Creates a new {@code EntityManagerFactoryDependsOnPostProcessor} that will set up
 	 * dependencies upon beans with the given types.
 	 * @param dependsOn types of the beans to depend upon
-	 * @since 2.1.8
 	 */
 	public EntityManagerFactoryDependsOnPostProcessor(Class<?>... dependsOn) {
-		super(dependsOn);
+		super(EntityManagerFactory.class, AbstractEntityManagerFactoryBean.class, dependsOn);
 	}
 
 }
