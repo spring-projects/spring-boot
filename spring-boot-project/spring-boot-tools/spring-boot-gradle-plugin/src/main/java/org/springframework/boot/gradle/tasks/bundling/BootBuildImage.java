@@ -21,6 +21,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -79,6 +80,7 @@ public class BootBuildImage extends DefaultTask {
 	 * @return the jar property
 	 */
 	@Input
+	@Optional
 	public RegularFileProperty getJar() {
 		return this.jar;
 	}
@@ -226,6 +228,9 @@ public class BootBuildImage extends DefaultTask {
 
 	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
+		if (!this.jar.isPresent()) {
+			throw new GradleException("Executable jar file required for building image");
+		}
 		Builder builder = new Builder();
 		BuildRequest request = createRequest();
 		builder.build(request);
