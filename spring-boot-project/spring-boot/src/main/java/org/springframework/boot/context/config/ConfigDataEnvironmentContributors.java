@@ -161,10 +161,15 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			Map<ConfigDataResolutionResult, ConfigData> imported) {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>(imported.size() * 5);
 		imported.forEach((resolutionResult, data) -> {
-			for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
-				ConfigDataLocation location = resolutionResult.getLocation();
-				ConfigDataResource resource = resolutionResult.getResource();
-				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, resource, data, i));
+			ConfigDataLocation location = resolutionResult.getLocation();
+			ConfigDataResource resource = resolutionResult.getResource();
+			if (data.getPropertySources().isEmpty()) {
+				contributors.add(ConfigDataEnvironmentContributor.ofEmptyLocation(location));
+			}
+			else {
+				for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
+					contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, resource, data, i));
+				}
 			}
 		});
 		return Collections.unmodifiableList(contributors);

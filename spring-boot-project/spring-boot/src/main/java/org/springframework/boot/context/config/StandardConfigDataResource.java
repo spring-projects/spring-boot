@@ -36,16 +36,29 @@ public class StandardConfigDataResource extends ConfigDataResource {
 
 	private final Resource resource;
 
+	private boolean emptyDirectory;
+
 	/**
 	 * Create a new {@link StandardConfigDataResource} instance.
 	 * @param reference the resource reference
 	 * @param resource the underlying resource
 	 */
 	StandardConfigDataResource(StandardConfigDataReference reference, Resource resource) {
+		this(reference, resource, false);
+	}
+
+	/**
+	 * Create a new {@link StandardConfigDataResource} instance.
+	 * @param reference the resource reference
+	 * @param resource the underlying resource
+	 * @param emptyDirectory if the resource is an empty directory that we know exists
+	 */
+	StandardConfigDataResource(StandardConfigDataReference reference, Resource resource, boolean emptyDirectory) {
 		Assert.notNull(reference, "Reference must not be null");
 		Assert.notNull(resource, "Resource must not be null");
 		this.reference = reference;
 		this.resource = resource;
+		this.emptyDirectory = emptyDirectory;
 	}
 
 	StandardConfigDataReference getReference() {
@@ -54,6 +67,10 @@ public class StandardConfigDataResource extends ConfigDataResource {
 
 	Resource getResource() {
 		return this.resource;
+	}
+
+	boolean isEmptyDirectory() {
+		return this.emptyDirectory;
 	}
 
 	@Override
@@ -65,7 +82,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 			return false;
 		}
 		StandardConfigDataResource other = (StandardConfigDataResource) obj;
-		return this.resource.equals(other.resource);
+		return this.resource.equals(other.resource) && this.emptyDirectory == other.emptyDirectory;
 	}
 
 	@Override

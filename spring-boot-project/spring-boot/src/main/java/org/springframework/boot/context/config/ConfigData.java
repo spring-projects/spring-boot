@@ -46,6 +46,11 @@ public final class ConfigData {
 	private final Set<Option> options;
 
 	/**
+	 * A {@link ConfigData} instance that contains no data.
+	 */
+	public static final ConfigData EMPTY = new ConfigData(Collections.emptySet());
+
+	/**
 	 * Create a new {@link ConfigData} instance.
 	 * @param propertySources the config data property sources in ascending priority
 	 * order.
