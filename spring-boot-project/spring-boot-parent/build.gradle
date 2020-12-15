@@ -8,7 +8,7 @@ description = "Spring Boot Parent"
 
 bom {
 	upgrade {
-		policy = "same-minor-version"
+		policy = "same-major-version"
 		gitHub {
 			issueLabels = ["type: task"]
 		}
