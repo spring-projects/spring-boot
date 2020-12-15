@@ -739,7 +739,7 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void enableSslWithValidStoreAlgorithmShouldWork() throws Exception {
+	void enableSslWithValidStoreAlgorithmShouldWork() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
@@ -752,18 +752,29 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void enableSslWithInvalidStoreAlgorithmShouldFail() throws Exception {
+	void enableSslWithInvalidKeyStoreAlgorithmShouldFail() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.keyStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
 						"spring.rabbitmq.ssl.keyStoreType=jks", "spring.rabbitmq.ssl.keyStorePassword=secret",
-						"spring.rabbitmq.ssl.keyStoreAlgorithm=foo",
-						"spring.rabbitmq.ssl.trustStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
-						"spring.rabbitmq.ssl.trustStoreType=jks", "spring.rabbitmq.ssl.trustStorePassword=secret",
-						"spring.rabbitmq.ssl.trustStoreAlgorithm=foo")
+						"spring.rabbitmq.ssl.keyStoreAlgorithm=test-invalid-algo")
 				.run((context) -> {
 					assertThat(context).hasFailed();
-					assertThat(context).getFailure().hasMessageContaining("foo");
+					assertThat(context).getFailure().hasMessageContaining("test-invalid-algo");
+					assertThat(context).getFailure().hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
+				});
+	}
+
+	@Test
+	void enableSslWithInvalidTrustStoreAlgorithmShouldFail() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class)
+				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
+						"spring.rabbitmq.ssl.trustStore=/org/springframework/boot/autoconfigure/amqp/test.jks",
+						"spring.rabbitmq.ssl.trustStoreType=jks", "spring.rabbitmq.ssl.trustStorePassword=secret",
+						"spring.rabbitmq.ssl.trustStoreAlgorithm=test-invalid-algo")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context).getFailure().hasMessageContaining("test-invalid-algo");
 					assertThat(context).getFailure().hasRootCauseInstanceOf(NoSuchAlgorithmException.class);
 				});
 	}
