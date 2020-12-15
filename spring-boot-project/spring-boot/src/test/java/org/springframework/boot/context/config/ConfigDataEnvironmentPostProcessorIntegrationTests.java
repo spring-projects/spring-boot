@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -56,6 +57,7 @@ import org.springframework.core.io.ByteArrayResource;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -542,6 +544,15 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		location.mkdirs();
 		assertThatNoException().isThrownBy(() -> this.application
 				.run("--spring.config.location=" + StringUtils.cleanPath(location.getAbsolutePath()) + "/"));
+	}
+
+	@Test
+	void runWhenConfigLocationHasNonOptionalEmptyFileDoesNotThrowException() throws IOException {
+		File location = new File(this.temp, "application.properties");
+		FileCopyUtils.copy(new byte[0], location);
+		assertThatNoException()
+				.isThrownBy(() -> this.application.run("--spring.config.location=classpath:/application.properties,"
+						+ StringUtils.cleanPath(location.getAbsolutePath())));
 	}
 
 	@Test
