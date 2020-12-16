@@ -16,12 +16,17 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
+
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.beans.BeansEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.security.servlet.ManagementWebSecurityAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
 import org.springframework.boot.actuate.endpoint.web.annotation.ControllerEndpoint;
 import org.springframework.boot.actuate.endpoint.web.annotation.RestControllerEndpoint;
@@ -55,24 +60,46 @@ class JerseyEndpointIntegrationTests {
 		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class });
 	}
 
+	@Test
+	void actuatorEndpointsWhenSecurityAvailable() {
+		WebApplicationContextRunner contextRunner = getContextRunner(
+				new Class[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class },
+				getAutoconfigurations(ManagementWebSecurityAutoConfiguration.class));
+		contextRunner.run((context) -> {
+			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer().getPort();
+			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
+			client.get().uri("/actuator").exchange().expectStatus().isUnauthorized();
+		});
+
+	}
+
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {
+		getContextRunner(userConfigurations, getAutoconfigurations()).run((context) -> {
+			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
+					.getWebServer().getPort();
+			WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
+			client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
+					.isNotEmpty().jsonPath("_links.restcontroller").doesNotExist().jsonPath("_links.controller")
+					.doesNotExist();
+		});
+	}
+
+	private WebApplicationContextRunner getContextRunner(Class<?>[] userConfigurations, Class<?>[] autoConfigurations) {
 		FilteredClassLoader classLoader = new FilteredClassLoader(DispatcherServlet.class);
-		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
-				.withClassLoader(classLoader)
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, JerseyAutoConfiguration.class,
-						EndpointAutoConfiguration.class, ServletWebServerFactoryAutoConfiguration.class,
-						WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
-						BeansEndpointAutoConfiguration.class))
+		return new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withClassLoader(classLoader).withConfiguration(AutoConfigurations.of(autoConfigurations))
 				.withUserConfiguration(userConfigurations)
-				.withPropertyValues("management.endpoints.web.exposure.include:*", "server.port:0").run((context) -> {
-					int port = context
-							.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
-							.getWebServer().getPort();
-					WebTestClient client = WebTestClient.bindToServer().baseUrl("http://localhost:" + port).build();
-					client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
-							.isNotEmpty().jsonPath("_links.restcontroller").doesNotExist().jsonPath("_links.controller")
-							.doesNotExist();
-				});
+				.withPropertyValues("management.endpoints.web.exposure.include:*", "server.port:0");
+	}
+
+	private Class<?>[] getAutoconfigurations(Class<?>... additional) {
+		List<Class<?>> autoconfigurations = new ArrayList<>(Arrays.asList(JacksonAutoConfiguration.class,
+				JerseyAutoConfiguration.class, EndpointAutoConfiguration.class,
+				ServletWebServerFactoryAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+				ManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class));
+		autoconfigurations.addAll(Arrays.asList(additional));
+		return autoconfigurations.toArray(new Class<?>[0]);
 	}
 
 	@ControllerEndpoint(id = "controller")
