@@ -643,7 +643,7 @@ class JarFileTests {
 	@Test
 	void iterator() {
 		Iterator<JarEntry> iterator = this.jarFile.iterator();
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		while (iterator.hasNext()) {
 			names.add(iterator.next().getName());
 		}
