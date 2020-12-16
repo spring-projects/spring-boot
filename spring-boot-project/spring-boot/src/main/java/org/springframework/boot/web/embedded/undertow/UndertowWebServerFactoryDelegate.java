@@ -189,7 +189,7 @@ class UndertowWebServerFactoryDelegate {
 
 	static List<HttpHandlerFactory> createHttpHandlerFactories(Compression compression, boolean useForwardHeaders,
 			String serverHeader, Shutdown shutdown, HttpHandlerFactory... initialHttpHandlerFactories) {
-		List<HttpHandlerFactory> factories = new ArrayList<HttpHandlerFactory>();
+		List<HttpHandlerFactory> factories = new ArrayList<>();
 		factories.addAll(Arrays.asList(initialHttpHandlerFactories));
 		if (compression != null && compression.getEnabled()) {
 			factories.add(new CompressionHttpHandlerFactory(compression));
