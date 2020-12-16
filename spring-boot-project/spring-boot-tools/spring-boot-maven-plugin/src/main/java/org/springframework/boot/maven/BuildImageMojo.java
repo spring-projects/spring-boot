@@ -230,7 +230,11 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 			name.append("-").append(this.classifier);
 		}
 		name.append(".jar");
-		return new File(this.sourceDirectory, name.toString());
+		File jarFile = new File(this.sourceDirectory, name.toString());
+		if (!jarFile.exists()) {
+			throw new IllegalStateException("Executable jar file required for building image");
+		}
+		return jarFile;
 	}
 
 	private BuildRequest customize(BuildRequest request) {
