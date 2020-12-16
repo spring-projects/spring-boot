@@ -93,7 +93,7 @@ class ConfigDataEnvironment {
 		locations.add(ConfigDataLocation.of("optional:file:./config/"));
 		locations.add(ConfigDataLocation.of("optional:file:./config/*/"));
 		DEFAULT_SEARCH_LOCATIONS = locations.toArray(new ConfigDataLocation[0]);
-	};
+	}
 
 	private static final ConfigDataLocation[] EMPTY_LOCATIONS = new ConfigDataLocation[0];
 
@@ -119,6 +119,8 @@ class ConfigDataEnvironment {
 
 	private final Collection<String> additionalProfiles;
 
+	private final ConfigDataEnvironmentUpdateListener environmentUpdateListener;
+
 	private final ConfigDataLoaders loaders;
 
 	private final ConfigDataEnvironmentContributors contributors;
@@ -130,9 +132,13 @@ class ConfigDataEnvironment {
 	 * @param environment the Spring {@link Environment}.
 	 * @param resourceLoader {@link ResourceLoader} to load resource locations
 	 * @param additionalProfiles any additional profiles to activate
+	 * @param environmentUpdateListener optional
+	 * {@link ConfigDataEnvironmentUpdateListener} that can be used to track
+	 * {@link Environment} updates.
 	 */
 	ConfigDataEnvironment(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
-			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles) {
+			ConfigurableEnvironment environment, ResourceLoader resourceLoader, Collection<String> additionalProfiles,
+			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		Binder binder = Binder.get(environment);
 		UseLegacyConfigProcessingException.throwIfRequested(binder);
 		this.logFactory = logFactory;
@@ -143,6 +149,8 @@ class ConfigDataEnvironment {
 		this.environment = environment;
 		this.resolvers = createConfigDataLocationResolvers(logFactory, bootstrapContext, binder, resourceLoader);
 		this.additionalProfiles = additionalProfiles;
+		this.environmentUpdateListener = (environmentUpdateListener != null) ? environmentUpdateListener
+				: ConfigDataEnvironmentUpdateListener.NONE;
 		this.loaders = new ConfigDataLoaders(logFactory, bootstrapContext);
 		this.contributors = createContributors(binder);
 	}
@@ -301,16 +309,18 @@ class ConfigDataEnvironment {
 		MutablePropertySources propertySources = this.environment.getPropertySources();
 		this.logger.trace("Applying config data environment contributions");
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
-			if (contributor.getKind() == ConfigDataEnvironmentContributor.Kind.BOUND_IMPORT
-					&& contributor.getPropertySource() != null) {
+			PropertySource<?> propertySource = contributor.getPropertySource();
+			if (contributor.getKind() == ConfigDataEnvironmentContributor.Kind.BOUND_IMPORT && propertySource != null) {
 				if (!contributor.isActive(activationContext)) {
-					this.logger.trace(LogMessage.format("Skipping inactive property source '%s'",
-							contributor.getPropertySource().getName()));
+					this.logger.trace(
+							LogMessage.format("Skipping inactive property source '%s'", propertySource.getName()));
 				}
 				else {
-					this.logger.trace(LogMessage.format("Adding imported property source '%s'",
-							contributor.getPropertySource().getName()));
-					propertySources.addLast(contributor.getPropertySource());
+					this.logger
+							.trace(LogMessage.format("Adding imported property source '%s'", propertySource.getName()));
+					propertySources.addLast(propertySource);
+					this.environmentUpdateListener.onPropertySourceAdded(propertySource, contributor.getLocation(),
+							contributor.getResource());
 				}
 			}
 		}
@@ -320,6 +330,7 @@ class ConfigDataEnvironment {
 		this.environment.setDefaultProfiles(StringUtils.toStringArray(profiles.getDefault()));
 		this.logger.trace(LogMessage.format("Setting active profiles: %s", profiles.getActive()));
 		this.environment.setActiveProfiles(StringUtils.toStringArray(profiles.getActive()));
+		this.environmentUpdateListener.onSetProfiles(profiles);
 	}
 
 	private void checkForInvalidProperties(ConfigDataEnvironmentContributors contributors) {

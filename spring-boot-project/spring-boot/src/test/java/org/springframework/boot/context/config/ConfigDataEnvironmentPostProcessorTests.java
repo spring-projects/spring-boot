@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -119,9 +120,13 @@ class ConfigDataEnvironmentPostProcessorTests {
 	@Test
 	void applyToAppliesPostProcessing() {
 		int before = this.environment.getPropertySources().size();
-		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, "dev");
+		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
+		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, Collections.singleton("dev"),
+				listener);
 		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
+		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
+		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
 	}
 
 }
