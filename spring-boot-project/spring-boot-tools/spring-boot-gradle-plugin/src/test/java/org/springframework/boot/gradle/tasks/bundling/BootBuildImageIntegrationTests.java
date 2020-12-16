@@ -181,6 +181,35 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("requires docker.publishRegistry");
 	}
 
+	@TestTemplate
+	void failsWithWarPackaging() {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "-PapplyWarPlugin");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("Executable jar file required for building image");
+	}
+
+	@TestTemplate
+	void buildsImageWithWarPackagingAndJarConfiguration() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles())
+				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
 	private void writeMainClass() {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/example");
 		examplePackage.mkdirs();
