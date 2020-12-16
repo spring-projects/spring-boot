@@ -1,10 +1,10 @@
 plugins {
-	id 'java'
+	id 'war'
 	id 'org.springframework.boot' version '{version}'
 }
 
-if (project.hasProperty('applyWarPlugin')) {
-	apply plugin: 'war'
+bootBuildImage {
+	jar = bootWar.archiveFile
 }
 
 sourceCompatibility = '1.8'

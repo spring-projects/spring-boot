@@ -22,6 +22,7 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.FileCollection;
+import org.gradle.api.file.RegularFile;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.WarPlugin;
@@ -30,6 +31,7 @@ import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 
+import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
 
 /**
@@ -54,12 +56,18 @@ class WarPluginAction implements PluginApplicationAction {
 	@Override
 	public void execute(Project project) {
 		disableWarTask(project);
+		disableBootBuildImageTask(project);
 		TaskProvider<BootWar> bootWar = configureBootWarTask(project);
 		configureArtifactPublication(bootWar);
 	}
 
 	private void disableWarTask(Project project) {
 		project.getTasks().named(WarPlugin.WAR_TASK_NAME).configure((war) -> war.setEnabled(false));
+	}
+
+	private void disableBootBuildImageTask(Project project) {
+		project.getTasks().named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
+				.configure((buildImage) -> buildImage.getJar().set((RegularFile) null));
 	}
 
 	private TaskProvider<BootWar> configureBootWarTask(Project project) {
