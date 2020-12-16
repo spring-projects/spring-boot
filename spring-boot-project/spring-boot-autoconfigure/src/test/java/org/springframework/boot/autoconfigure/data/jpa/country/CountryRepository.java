@@ -14,19 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa.city;
+package org.springframework.boot.autoconfigure.data.jpa.country;
 
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.history.RevisionRepository;
 
-public interface CityRepository extends JpaRepository<City, Long> {
-
-	@Override
-	Page<City> findAll(Pageable pageable);
-
-	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country, Pageable pageable);
-
-	City findByNameAndCountryAllIgnoringCase(String name, String country);
+public interface CountryRepository extends JpaRepository<Country, Long>, RevisionRepository<Country, Long, Integer> {
 
 }

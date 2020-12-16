@@ -113,6 +113,7 @@ dependencies {
 	optional("org.springframework.batch:spring-batch-core")
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-jpa")
+	optional("org.springframework.data:spring-data-envers")
 	optional("org.springframework.data:spring-data-rest-webmvc")
 	optional("org.springframework.data:spring-data-cassandra")
 	optional("org.springframework.data:spring-data-elasticsearch") {
