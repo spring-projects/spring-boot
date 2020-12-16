@@ -58,7 +58,7 @@ dependencies {
 	optional("io.micrometer:micrometer-registry-signalfx")
 	optional("io.micrometer:micrometer-registry-statsd")
 	optional("io.micrometer:micrometer-registry-wavefront")
-	optional("io.projectreactor.netty:reactor-netty")
+	optional("io.projectreactor.netty:reactor-netty-http")
 	optional("io.r2dbc:r2dbc-pool")
 	optional("io.r2dbc:r2dbc-spi")
 	optional("jakarta.jms:jakarta.jms-api")
@@ -86,6 +86,7 @@ dependencies {
 	optional("org.liquibase:liquibase-core")
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
+	optional("org.neo4j.driver:neo4j-java-driver")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-messaging")
@@ -96,7 +97,6 @@ dependencies {
 	optional("org.springframework.data:spring-data-couchbase")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
-	optional("org.springframework.data:spring-data-neo4j")
 	optional("org.springframework.data:spring-data-redis")
 	optional("org.springframework.data:spring-data-elasticsearch")
 	optional("org.springframework.data:spring-data-solr")
@@ -122,6 +122,7 @@ dependencies {
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.eclipse.jetty:jetty-webapp")
 	testImplementation("org.glassfish.jersey.ext:jersey-spring5")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
@@ -129,6 +130,7 @@ dependencies {
 	testImplementation("org.hsqldb:hsqldb")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-orm")
 	testImplementation("org.springframework.data:spring-data-elasticsearch") {
@@ -145,14 +147,6 @@ dependencies {
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-jose")
 	testRuntimeOnly("org.springframework.security:spring-security-oauth2-resource-server")
 	testRuntimeOnly("org.springframework.security:spring-security-saml2-service-provider")
-}
-
-compileJava {
-	options.compilerArgs << "-parameters"
-}
-
-compileTestJava {
-	options.compilerArgs << "-parameters"
 }
 
 test {
@@ -172,11 +166,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 		def integrationDocs = String.format("https://docs.spring.io/spring-integration/docs/%s/reference/html/", integrationVersion)
 		attributes "spring-integration-docs": integrationDocs
 	}
+	dependsOn test
+	inputs.dir("${buildDir}/generated-snippets")
 }
 
 asciidoctor {
 	configurations "asciidoctorExtensions"
-	dependsOn test
 	sources {
 		include "index.adoc"
 	}
@@ -184,7 +179,6 @@ asciidoctor {
 
 asciidoctorPdf {
 	configurations "asciidoctorExtensions"
-	dependsOn test
 	sources {
 		include "index.adoc"
 	}
@@ -198,7 +192,7 @@ task zip(type: Zip) {
 		rename { "spring-boot-actuator-web-api.pdf" }
 	}
 	from(asciidoctor.outputDir) {
-		into "html"
+		into "htmlsingle"
 	}
 }
 

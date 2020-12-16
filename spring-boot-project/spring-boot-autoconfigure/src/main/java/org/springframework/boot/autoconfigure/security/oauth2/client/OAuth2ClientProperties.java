@@ -20,8 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import javax.annotation.PostConstruct;
-
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
 
@@ -35,7 +34,7 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 @ConfigurationProperties(prefix = "spring.security.oauth2.client")
-public class OAuth2ClientProperties {
+public class OAuth2ClientProperties implements InitializingBean {
 
 	/**
 	 * OAuth provider details.
@@ -55,7 +54,11 @@ public class OAuth2ClientProperties {
 		return this.registration;
 	}
 
-	@PostConstruct
+	@Override
+	public void afterPropertiesSet() {
+		validate();
+	}
+
 	public void validate() {
 		getRegistration().values().forEach(this::validateRegistration);
 	}
@@ -105,7 +108,8 @@ public class OAuth2ClientProperties {
 		private String redirectUri;
 
 		/**
-		 * Authorization scopes. May be left blank when using a pre-defined provider.
+		 * Authorization scopes. When left blank the provider's default scopes, if any,
+		 * will be used.
 		 */
 		private Set<String> scope;
 

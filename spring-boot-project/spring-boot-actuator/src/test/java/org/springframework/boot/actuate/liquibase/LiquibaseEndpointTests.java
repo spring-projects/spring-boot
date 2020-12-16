@@ -63,6 +63,17 @@ class LiquibaseEndpointTests {
 	}
 
 	@Test
+	void liquibaseReportIsReturnedForContextHierarchy() {
+		this.contextRunner.withUserConfiguration().run((parent) -> {
+			this.contextRunner.withUserConfiguration(Config.class).withParent(parent).run((context) -> {
+				Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class).liquibaseBeans()
+						.getContexts().get(parent.getId()).getLiquibaseBeans();
+				assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
+			});
+		});
+	}
+
+	@Test
 	void invokeWithCustomSchema() {
 		this.contextRunner.withUserConfiguration(Config.class)
 				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA",
@@ -152,7 +163,7 @@ class LiquibaseEndpointTests {
 
 		private DataSource createEmbeddedDatabase() {
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true)
-					.setType(EmbeddedDatabaseConnection.HSQL.getType()).build();
+					.setType(EmbeddedDatabaseConnection.HSQLDB.getType()).build();
 		}
 
 		private SpringLiquibase createSpringLiquibase(String changeLog, DataSource dataSource) {

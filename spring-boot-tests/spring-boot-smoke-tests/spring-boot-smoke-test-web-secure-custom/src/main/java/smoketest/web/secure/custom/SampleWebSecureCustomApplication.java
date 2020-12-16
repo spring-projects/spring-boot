@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,10 +21,11 @@ import java.util.Map;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.config.annotation.web.configurers.LogoutConfigurer;
+import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -58,10 +59,10 @@ public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	protected static class ApplicationSecurity extends WebSecurityConfigurerAdapter {
+	protected static class ApplicationSecurity {
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
+		@Bean
+		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests((requests) -> {
 				requests.antMatchers("/css/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
@@ -71,6 +72,7 @@ public class SampleWebSecureCustomApplication implements WebMvcConfigurer {
 				form.failureUrl("/login?error").permitAll();
 			});
 			http.logout(LogoutConfigurer::permitAll);
+			return http.build();
 		}
 
 	}

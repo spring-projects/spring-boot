@@ -26,17 +26,18 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link PullImageUpdateEvent}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
-class PullImageUpdateEventTests extends ProgressUpdateEventTests {
+class PullImageUpdateEventTests extends ProgressUpdateEventTests<PullImageUpdateEvent> {
 
 	@Test
 	void getIdReturnsId() {
-		PullImageUpdateEvent event = (PullImageUpdateEvent) createEvent();
+		PullImageUpdateEvent event = createEvent();
 		assertThat(event.getId()).isEqualTo("id");
 	}
 
 	@Override
-	protected ProgressUpdateEvent createEvent(String status, ProgressDetail progressDetail, String progress) {
+	protected PullImageUpdateEvent createEvent(String status, ProgressDetail progressDetail, String progress) {
 		return new PullImageUpdateEvent("id", status, progressDetail, progress);
 	}
 

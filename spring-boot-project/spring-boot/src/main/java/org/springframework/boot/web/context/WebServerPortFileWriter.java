@@ -105,7 +105,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 	 */
 	protected File getPortFile(ApplicationContext applicationContext) {
 		String namespace = getServerNamespace(applicationContext);
-		if (StringUtils.isEmpty(namespace)) {
+		if (!StringUtils.hasLength(namespace)) {
 			return this.file;
 		}
 		String name = this.file.getName();

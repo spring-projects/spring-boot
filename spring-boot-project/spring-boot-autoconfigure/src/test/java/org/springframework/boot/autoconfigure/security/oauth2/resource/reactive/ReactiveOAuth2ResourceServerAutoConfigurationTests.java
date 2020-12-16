@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource.reactive;
 
 import java.io.IOException;
@@ -74,7 +75,7 @@ import static org.mockito.Mockito.mock;
  */
 class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 
-	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveOAuth2ResourceServerAutoConfiguration.class))
 			.withUserConfiguration(TestConfig.class);
 
@@ -105,7 +106,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 						"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS512")
 				.run((context) -> {
 					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2")
+					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$2.arg$1.jwsAlgs")
 							.matches((algorithms) -> ((Set<JWSAlgorithm>) algorithms).contains(JWSAlgorithm.RS512));
 				});
 	}

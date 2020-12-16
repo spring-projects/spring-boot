@@ -2,6 +2,7 @@ plugins {
 	id "java-library"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.annotation-processor"
 }
 
 description = "Spring Boot Configuration Annotation Processor"

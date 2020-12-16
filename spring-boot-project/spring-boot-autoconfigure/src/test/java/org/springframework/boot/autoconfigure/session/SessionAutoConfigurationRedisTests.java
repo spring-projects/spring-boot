@@ -26,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.RedisSessionConfiguration.SpringBootRedisHttpSessionConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -84,6 +85,18 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 	}
 
 	@Test
+	void defaultConfigWithCustomTimeout() {
+		this.contextRunner
+				.withPropertyValues("spring.session.store-type=redis", "spring.redis.host=" + redis.getHost(),
+						"spring.redis.port=" + redis.getFirstMappedPort(), "spring.session.timeout=1m")
+				.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class)).run((context) -> {
+					RedisIndexedSessionRepository repository = validateSessionRepository(context,
+							RedisIndexedSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
+				});
+	}
+
+	@Test
 	void redisSessionStoreWithCustomizations() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(RedisAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
@@ -126,6 +139,8 @@ class SessionAutoConfigurationRedisTests extends AbstractSessionAutoConfiguratio
 		return (context) -> {
 			RedisIndexedSessionRepository repository = validateSessionRepository(context,
 					RedisIndexedSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+					(int) new ServerProperties().getServlet().getSession().getTimeout().getSeconds());
 			assertThat(repository.getSessionCreatedChannelPrefix()).isEqualTo(sessionCreatedChannelPrefix);
 			assertThat(repository).hasFieldOrPropertyWithValue("flushMode", flushMode);
 			SpringBootRedisHttpSessionConfiguration configuration = context

@@ -118,7 +118,7 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationManagementConfiguration {
 
 		@Configuration(proxyBeanMethods = false)
-		@EnableIntegrationManagement(defaultCountsEnabled = "true")
+		@EnableIntegrationManagement
 		protected static class EnableIntegrationManagementConfiguration {
 
 		}
@@ -155,9 +155,8 @@ public class IntegrationAutoConfiguration {
 	/**
 	 * Integration RSocket configuration.
 	 */
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ IntegrationRSocketEndpoint.class, RSocketRequester.class, io.rsocket.RSocketFactory.class })
+	@ConditionalOnClass({ IntegrationRSocketEndpoint.class, RSocketRequester.class, io.rsocket.RSocket.class })
 	@Conditional(IntegrationRSocketConfiguration.AnyRSocketChannelAdapterAvailable.class)
 	protected static class IntegrationRSocketConfiguration {
 

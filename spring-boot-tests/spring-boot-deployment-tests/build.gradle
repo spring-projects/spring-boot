@@ -30,5 +30,9 @@ dependencies {
 }
 
 intTest {
-	dependsOn war
+	inputs.files(war).withNormalizer(ClasspathNormalizer)
+}
+
+war {
+	archiveVersion = ''
 }

@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.data.elasticsearch.city.CityReposi
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
 import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
 import org.springframework.data.elasticsearch.repository.config.EnableElasticsearchRepositories;
@@ -48,10 +49,10 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ElasticsearchRepositoriesAutoConfigurationTests {
 
 	@Container
-	static final ElasticsearchContainer elasticsearch = new VersionOverridingElasticsearchContainer()
+	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer(DockerImageNames.elasticsearch())
 			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
 					ElasticsearchRepositoriesAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class))
 			.withPropertyValues("spring.elasticsearch.rest.uris=" + elasticsearch.getHttpHostAddress());

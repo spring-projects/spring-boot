@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.io.File;
 import java.nio.file.Files;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.spring.concourse.releasescripts.ReleaseInfo;
@@ -40,6 +42,7 @@ import org.springframework.util.Assert;
  * Command used to deploy builds from Artifactory to Bintray.
  *
  * @author Madhura Bhave
+ * @author Phillip Webb
  */
 @Component
 public class DistributeCommand implements Command {
@@ -50,9 +53,14 @@ public class DistributeCommand implements Command {
 
 	private final ObjectMapper objectMapper;
 
-	public DistributeCommand(ArtifactoryService artifactoryService, ObjectMapper objectMapper) {
+	private final List<Pattern> optionalDeployments;
+
+	public DistributeCommand(ArtifactoryService artifactoryService, ObjectMapper objectMapper,
+			DistributeProperties distributeProperties) {
 		this.artifactoryService = artifactoryService;
 		this.objectMapper = objectMapper;
+		this.optionalDeployments = distributeProperties.getOptionalDeployments().stream().map(Pattern::compile)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -80,8 +88,18 @@ public class DistributeCommand implements Command {
 			}
 		}
 		ReleaseInfo releaseInfo = ReleaseInfo.from(buildInfo);
-		Set<String> artifactDigests = buildInfo.getArtifactDigests((artifact) -> !artifact.getName().endsWith(".zip"));
+		Set<String> artifactDigests = buildInfo.getArtifactDigests(this::isIncluded);
 		this.artifactoryService.distribute(type.getRepo(), releaseInfo, artifactDigests);
+	}
+
+	private boolean isIncluded(Artifact artifact) {
+		String path = artifact.getName();
+		for (Pattern optionalDeployment : this.optionalDeployments) {
+			if (optionalDeployment.matcher(path).matches()) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 }

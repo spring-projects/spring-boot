@@ -378,6 +378,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	void mimeType() throws Exception {
 		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.xxcss")));
 		AbstractServletWebServerFactory factory = getFactory();
+		factory.setRegisterDefaultServlet(true);
 		factory.setDocumentRoot(this.tempDir);
 		MimeMappings mimeMappings = new MimeMappings();
 		mimeMappings.add("xxcss", "text/css");
@@ -544,6 +545,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	@Test
 	void sslNeedsClientAuthenticationSucceedsWithClientCertificate() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
+		factory.setRegisterDefaultServlet(true);
 		addTestTxtFile(factory);
 		factory.setSsl(getSsl(ClientAuth.NEED, "password", "classpath:test.jks", "classpath:test.jks", null, null));
 		this.webServer = factory.getWebServer();
@@ -1200,6 +1202,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	private void addTestTxtFile(AbstractServletWebServerFactory factory) throws IOException {
 		FileCopyUtils.copy("test", new FileWriter(new File(this.tempDir, "test.txt")));
 		factory.setDocumentRoot(this.tempDir);
+		factory.setRegisterDefaultServlet(true);
 	}
 
 	protected String getLocalUrl(String resourcePath) {
@@ -1352,7 +1355,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 
 	private class TestGzipInputStreamFactory implements InputStreamFactory {
 
-		private final AtomicBoolean requested = new AtomicBoolean(false);
+		private final AtomicBoolean requested = new AtomicBoolean();
 
 		@Override
 		public InputStream create(InputStream in) throws IOException {

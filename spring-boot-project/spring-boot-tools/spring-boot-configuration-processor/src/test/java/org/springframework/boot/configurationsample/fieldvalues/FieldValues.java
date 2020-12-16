@@ -125,6 +125,8 @@ public class FieldValues {
 
 	private Duration durationDays = Duration.ofDays(50);
 
+	private Duration durationZero = Duration.ZERO;
+
 	private DataSize dataSizeNone;
 
 	private DataSize dataSizeBytes = DataSize.ofBytes(5);
@@ -146,5 +148,7 @@ public class FieldValues {
 	private Period periodMonths = Period.ofMonths(10);
 
 	private Period periodYears = Period.ofYears(15);
+
+	private Period periodZero = Period.ZERO;
 
 }

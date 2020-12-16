@@ -232,6 +232,17 @@ class DefaultErrorAttributesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
+	void excludeExceptionAttributeWithDeprecatedConstructor() {
+		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(false);
+		RuntimeException ex = new RuntimeException("Test");
+		this.request.setAttribute("javax.servlet.error.exception", ex);
+		Map<String, Object> attributes = errorAttributes.getErrorAttributes(this.webRequest,
+				ErrorAttributeOptions.of());
+		assertThat(attributes.get("exception")).isNull();
+	}
+
+	@Test
 	void withStackTraceAttribute() {
 		RuntimeException ex = new RuntimeException("Test");
 		this.request.setAttribute("javax.servlet.error.exception", ex);
@@ -255,6 +266,19 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes.get("path")).isEqualTo("path");
+	}
+
+	@Test
+	void whenGetMessageIsOverriddenThenMessageAttributeContainsValueReturnedFromIt() {
+		Map<String, Object> attributes = new DefaultErrorAttributes() {
+
+			@Override
+			protected String getMessage(WebRequest webRequest, Throwable error) {
+				return "custom message";
+			}
+
+		}.getErrorAttributes(this.webRequest, ErrorAttributeOptions.of(Include.MESSAGE));
+		assertThat(attributes).containsEntry("message", "custom message");
 	}
 
 }

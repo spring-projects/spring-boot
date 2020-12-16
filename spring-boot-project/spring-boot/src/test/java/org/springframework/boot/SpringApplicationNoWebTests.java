@@ -42,8 +42,8 @@ class SpringApplicationNoWebTests {
 	@Test
 	void specificApplicationContextClass() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextFactory(
-				ApplicationContextFactory.forContextClass(StaticApplicationContext.class));
+		application
+				.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class));
 		ConfigurableApplicationContext context = application.run();
 		assertThat(context).isInstanceOf(StaticApplicationContext.class);
 		context.close();

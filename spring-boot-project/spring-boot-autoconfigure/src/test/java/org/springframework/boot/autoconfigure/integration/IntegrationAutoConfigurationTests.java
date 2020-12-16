@@ -70,7 +70,7 @@ import static org.mockito.Mockito.mock;
  */
 class IntegrationAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class));
 
 	@Test
@@ -192,14 +192,6 @@ class IntegrationAutoConfigurationTests {
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 				});
-	}
-
-	@Test
-	void integrationEnablesDefaultCounts() {
-		this.contextRunner.withUserConfiguration(MessageSourceConfiguration.class).run((context) -> {
-			assertThat(context).hasBean("myMessageSource");
-			assertThat(((MessageProcessorMessageSource) context.getBean("myMessageSource")).isCountsEnabled()).isTrue();
-		});
 	}
 
 	@Test

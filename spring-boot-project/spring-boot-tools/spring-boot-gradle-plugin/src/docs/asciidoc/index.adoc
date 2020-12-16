@@ -4,6 +4,7 @@ Andy Wilkinson, Scott Frederick
 :toc: left
 :toclevels: 4
 :numbered:
+:sectanchors:
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
@@ -33,6 +34,7 @@ Andy Wilkinson, Scott Frederick
 :boot-run-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html
 :github-code: https://github.com/spring-projects/spring-boot/tree/{github-tag}
 :buildpacks-reference: https://buildpacks.io/docs
+:paketo-java-reference: https://paketo.io/docs/buildpacks/language-family-buildpacks/java
 
 
 [[introduction]]
@@ -41,6 +43,7 @@ The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org
 It allows you to package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
 Spring Boot's Gradle plugin requires Gradle 6 (6.3 or later).
 Gradle 5.6 is also supported but this support is deprecated and will be removed in a future release.
+Gradle's {gradle-userguide}/configuration_cache.html[configuration cache] is supported when using Gradle 6.7 or later.
 
 In addition to this user guide, {api-documentation}[API documentation] is also available.
 

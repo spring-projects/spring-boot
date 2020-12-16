@@ -26,11 +26,11 @@ import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.http.client.config.RequestConfig;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
@@ -76,6 +76,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  * @author Kevin Strijbos
  * @author Ilya Lukyanovich
  */
+@ExtendWith(MockitoExtension.class)
 class RestTemplateBuilderTests {
 
 	private RestTemplateBuilder builder = new RestTemplateBuilder();
@@ -85,11 +86,6 @@ class RestTemplateBuilderTests {
 
 	@Mock
 	private ClientHttpRequestInterceptor interceptor;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void createWhenCustomizersAreNullShouldThrowException() {

@@ -22,6 +22,7 @@ import java.util.function.Function;
 import org.apache.maven.artifact.Artifact;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
@@ -37,46 +38,108 @@ import org.springframework.util.StringUtils;
  */
 public class Image {
 
-	/**
-	 * The name of the created image.
-	 */
 	String name;
 
-	/**
-	 * The builder used to create the image.
-	 */
 	String builder;
 
-	/**
-	 * The run image used to launch the built image.
-	 */
 	String runImage;
 
-	/**
-	 * Environment properties that should be passed to the builder.
-	 */
 	Map<String, String> env;
 
-	/**
-	 * If the cache should be cleaned before building.
-	 */
-	boolean cleanCache;
+	Boolean cleanCache;
+
+	boolean verboseLogging;
+
+	PullPolicy pullPolicy;
+
+	Boolean publish;
 
 	/**
-	 * If verbose logging is required.
+	 * The name of the created image.
+	 * @return the image name
 	 */
-	boolean verboseLogging;
+	public String getName() {
+		return this.name;
+	}
 
 	void setName(String name) {
 		this.name = name;
+	}
+
+	/**
+	 * The name of the builder image to use to create the image.
+	 * @return the builder image name
+	 */
+	public String getBuilder() {
+		return this.builder;
 	}
 
 	void setBuilder(String builder) {
 		this.builder = builder;
 	}
 
+	/**
+	 * The name of the run image to use to create the image.
+	 * @return the builder image name
+	 */
+	public String getRunImage() {
+		return this.runImage;
+	}
+
 	void setRunImage(String runImage) {
 		this.runImage = runImage;
+	}
+
+	/**
+	 * Environment properties that should be passed to the builder.
+	 * @return the environment properties
+	 */
+	public Map<String, String> getEnv() {
+		return this.env;
+	}
+
+	/**
+	 * If the cache should be cleaned before building.
+	 * @return {@code true} if the cache should be cleaned
+	 */
+	public Boolean getCleanCache() {
+		return this.cleanCache;
+	}
+
+	void setCleanCache(Boolean cleanCache) {
+		this.cleanCache = cleanCache;
+	}
+
+	/**
+	 * If verbose logging is required.
+	 * @return {@code true} for verbose logging
+	 */
+	public boolean isVerboseLogging() {
+		return this.verboseLogging;
+	}
+
+	/**
+	 * If images should be pulled from a remote repository during image build.
+	 * @return the pull policy
+	 */
+	public PullPolicy getPullPolicy() {
+		return this.pullPolicy;
+	}
+
+	void setPullPolicy(PullPolicy pullPolicy) {
+		this.pullPolicy = pullPolicy;
+	}
+
+	/**
+	 * If the built image should be pushed to a registry.
+	 * @return {@code true} if the image should be published
+	 */
+	public Boolean getPublish() {
+		return this.publish;
+	}
+
+	void setPublish(Boolean publish) {
+		this.publish = publish;
 	}
 
 	BuildRequest getBuildRequest(Artifact artifact, Function<Owner, TarArchive> applicationContent) {
@@ -101,8 +164,16 @@ public class Image {
 		if (this.env != null && !this.env.isEmpty()) {
 			request = request.withEnv(this.env);
 		}
-		request = request.withCleanCache(this.cleanCache);
+		if (this.cleanCache != null) {
+			request = request.withCleanCache(this.cleanCache);
+		}
 		request = request.withVerboseLogging(this.verboseLogging);
+		if (this.pullPolicy != null) {
+			request = request.withPullPolicy(this.pullPolicy);
+		}
+		if (this.publish != null) {
+			request = request.withPublish(this.publish);
+		}
 		return request;
 	}
 

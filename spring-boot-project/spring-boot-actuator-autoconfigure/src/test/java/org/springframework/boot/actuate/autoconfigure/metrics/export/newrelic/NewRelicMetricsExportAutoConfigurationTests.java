@@ -102,7 +102,15 @@ class NewRelicMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void autoConfigurationCanBeDisabled() {
+	void autoConfigurationCanBeDisabledWithDefaultsEnabledProperty() {
+		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
+				.withPropertyValues("management.metrics.export.defaults.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(NewRelicMeterRegistry.class)
+						.doesNotHaveBean(NewRelicConfig.class));
+	}
+
+	@Test
+	void autoConfigurationCanBeDisabledWithSpecificEnabledProperty() {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("management.metrics.export.newrelic.enabled=false")
 				.run((context) -> assertThat(context).doesNotHaveBean(NewRelicMeterRegistry.class)

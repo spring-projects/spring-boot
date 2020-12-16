@@ -80,9 +80,7 @@ public abstract class Launcher {
 	protected ClassLoader createClassLoader(Iterator<Archive> archives) throws Exception {
 		List<URL> urls = new ArrayList<>(50);
 		while (archives.hasNext()) {
-			Archive archive = archives.next();
-			urls.add(archive.getUrl());
-			archive.close();
+			urls.add(archives.next().getUrl());
 		}
 		return createClassLoader(urls.toArray(new URL[0]));
 	}

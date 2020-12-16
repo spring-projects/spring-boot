@@ -34,6 +34,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import io.r2dbc.spi.ConnectionFactory;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
 
@@ -135,8 +136,25 @@ class DataSourceAutoConfigurationTests {
 		assertDataSource(org.apache.commons.dbcp2.BasicDataSource.class,
 				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat"), (dataSource) -> {
 					assertThat(dataSource.getTestOnBorrow()).isTrue();
-					assertThat(dataSource.getValidationQuery()).isNull(); // Use
-																			// Connection#isValid()
+					// Use Connection#isValid()
+					assertThat(dataSource.getValidationQuery()).isNull();
+				});
+	}
+
+	@Test
+	void oracleUcpIsFallback() {
+		assertDataSource(PoolDataSourceImpl.class,
+				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"),
+				(dataSource) -> assertThat(dataSource.getURL()).startsWith("jdbc:hsqldb:mem:testdb"));
+	}
+
+	@Test
+	void oracleUcpValidatesConnectionByDefault() {
+		assertDataSource(PoolDataSourceImpl.class,
+				Arrays.asList("com.zaxxer.hikari", "org.apache.tomcat", "org.apache.commons.dbcp2"), (dataSource) -> {
+					assertThat(dataSource.getValidateConnectionOnBorrow()).isTrue();
+					// Use an internal ping when using an Oracle JDBC driver
+					assertThat(dataSource.getSQLForValidateConnection()).isNull();
 				});
 	}
 
@@ -225,8 +243,8 @@ class DataSourceAutoConfigurationTests {
 	}
 
 	private static Function<ApplicationContextRunner, ApplicationContextRunner> hideConnectionPools() {
-		return (runner) -> runner.withClassLoader(
-				new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari", "org.apache.commons.dbcp2"));
+		return (runner) -> runner.withClassLoader(new FilteredClassLoader("org.apache.tomcat", "com.zaxxer.hikari",
+				"org.apache.commons.dbcp2", "oracle.ucp.jdbc"));
 	}
 
 	private <T extends DataSource> void assertDataSource(Class<T> expectedType, List<String> hiddenPackages,

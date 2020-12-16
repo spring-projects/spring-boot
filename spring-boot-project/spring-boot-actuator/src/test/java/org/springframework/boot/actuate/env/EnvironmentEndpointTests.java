@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.env;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.math.BigInteger;
 import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -29,6 +33,8 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceDe
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertySourceEntryDescriptor;
 import org.springframework.boot.actuate.env.EnvironmentEndpoint.PropertyValueDescriptor;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.origin.Origin;
+import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,6 +43,8 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.io.InputStreamSource;
+import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,6 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author HaiTao Zhang
  * @author Chris Bono
+ * @author Scott Frederick
  */
 class EnvironmentEndpointTests {
 
@@ -191,15 +200,39 @@ class EnvironmentEndpointTests {
 	}
 
 	@Test
-	@SuppressWarnings("unchecked")
-	void propertyWithTypeOtherThanStringShouldNotFail() {
+	void propertyWithComplexTypeShouldNotFail() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources()
 				.addFirst(singleKeyPropertySource("test", "foo", Collections.singletonMap("bar", "baz")));
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
-		Map<String, String> foo = (Map<String, String>) propertySources(descriptor).get("test").getProperties()
-				.get("foo").getValue();
-		assertThat(foo.get("bar")).isEqualTo("baz");
+		String value = (String) propertySources(descriptor).get("test").getProperties().get("foo").getValue();
+		assertThat(value).isEqualTo("Complex property type java.util.Collections$SingletonMap");
+	}
+
+	@Test
+	void propertyWithPrimitiveOrWrapperTypeIsHandledCorrectly() {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		Map<String, Object> map = new LinkedHashMap<>();
+		map.put("char", 'a');
+		map.put("integer", 100);
+		map.put("boolean", true);
+		map.put("biginteger", BigInteger.valueOf(200));
+		environment.getPropertySources().addFirst(new MapPropertySource("test", map));
+		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
+		Map<String, PropertyValueDescriptor> properties = propertySources(descriptor).get("test").getProperties();
+		assertThat(properties.get("char").getValue()).isEqualTo('a');
+		assertThat(properties.get("integer").getValue()).isEqualTo(100);
+		assertThat(properties.get("boolean").getValue()).isEqualTo(true);
+		assertThat(properties.get("biginteger").getValue()).isEqualTo(BigInteger.valueOf(200));
+	}
+
+	@Test
+	void propertyWithCharSequenceTypeIsConvertedToString() throws Exception {
+		ConfigurableEnvironment environment = emptyEnvironment();
+		environment.getPropertySources().addFirst(singleKeyPropertySource("test", "foo", new CharSequenceProperty()));
+		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);
+		String value = (String) propertySources(descriptor).get("test").getProperties().get("foo").getValue();
+		assertThat(value).isEqualTo("test value");
 	}
 
 	@Test
@@ -220,6 +253,18 @@ class EnvironmentEndpointTests {
 			assertPropertySourceEntryDescriptor(sources.get("systemEnvironment"), null, null);
 			return null;
 		});
+	}
+
+	@Test
+	void originAndOriginParents() {
+		StandardEnvironment environment = new StandardEnvironment();
+		OriginParentMockPropertySource propertySource = new OriginParentMockPropertySource();
+		propertySource.setProperty("name", "test");
+		environment.getPropertySources().addFirst(propertySource);
+		EnvironmentEntryDescriptor descriptor = new EnvironmentEndpoint(environment).environmentEntry("name");
+		PropertySourceEntryDescriptor entryDescriptor = propertySources(descriptor).get("mockProperties");
+		assertThat(entryDescriptor.getProperty().getOrigin()).isEqualTo("name");
+		assertThat(entryDescriptor.getProperty().getOriginParents()).containsExactly("spring", "boot");
 	}
 
 	@Test
@@ -302,6 +347,38 @@ class EnvironmentEndpointTests {
 
 	}
 
+	static class OriginParentMockPropertySource extends MockPropertySource implements OriginLookup<String> {
+
+		@Override
+		public Origin getOrigin(String key) {
+			return new MockOrigin(key, new MockOrigin("spring", new MockOrigin("boot", null)));
+		}
+
+	}
+
+	static class MockOrigin implements Origin {
+
+		private final String value;
+
+		private final MockOrigin parent;
+
+		MockOrigin(String value, MockOrigin parent) {
+			this.value = value;
+			this.parent = parent;
+		}
+
+		@Override
+		public Origin getParent() {
+			return this.parent;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class Config {
@@ -309,6 +386,37 @@ class EnvironmentEndpointTests {
 		@Bean
 		EnvironmentEndpoint environmentEndpoint(Environment environment) {
 			return new EnvironmentEndpoint(environment);
+		}
+
+	}
+
+	public static class CharSequenceProperty implements CharSequence, InputStreamSource {
+
+		private final String value = "test value";
+
+		@Override
+		public int length() {
+			return this.value.length();
+		}
+
+		@Override
+		public char charAt(int index) {
+			return this.value.charAt(index);
+		}
+
+		@Override
+		public CharSequence subSequence(int start, int end) {
+			return this.value.subSequence(start, end);
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+		@Override
+		public InputStream getInputStream() throws IOException {
+			return new ByteArrayInputStream(this.value.getBytes());
 		}
 
 	}

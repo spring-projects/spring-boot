@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -87,12 +88,21 @@ class RestartApplicationListenerTests {
 		assertThat(output).contains("Restart disabled due to System property");
 	}
 
+	@Test
+	void enableWithSystemProperty(CapturedOutput output) {
+		System.setProperty(ENABLED_PROPERTY, "true");
+		testInitialize(false);
+		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", true);
+		assertThat(output).contains("Restart enabled irrespective of application packaging due to System property");
+	}
+
 	private void testInitialize(boolean failed) {
 		Restarter.clearInstance();
 		RestartApplicationListener listener = new RestartApplicationListener();
+		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 		SpringApplication application = new SpringApplication();
 		ConfigurableApplicationContext context = mock(ConfigurableApplicationContext.class);
-		listener.onApplicationEvent(new ApplicationStartingEvent(application, ARGS));
+		listener.onApplicationEvent(new ApplicationStartingEvent(bootstrapContext, application, ARGS));
 		assertThat(Restarter.getInstance()).isNotEqualTo(nullValue());
 		assertThat(Restarter.getInstance().isFinished()).isFalse();
 		listener.onApplicationEvent(new ApplicationPreparedEvent(application, ARGS, context));

@@ -20,6 +20,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.gradle.api.GradleException;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.testfixtures.ProjectBuilder;
@@ -27,14 +28,17 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.PullPolicy;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
  * Tests for {@link BootBuildImage}.
  *
  * @author Andy Wilkinson
  * @author Scott Frederick
+ * @author Andrey Shlykov
  */
 class BootBuildImageTests {
 
@@ -173,8 +177,20 @@ class BootBuildImageTests {
 	}
 
 	@Test
+	void whenUsingDefaultConfigurationThenRequestHasPublishDisabled() {
+		assertThat(this.buildImage.createRequest().isPublish()).isFalse();
+	}
+
+	@Test
+	void whenPublishIsEnabledWithoutPublishRegistryThenExceptionIsThrown() {
+		this.buildImage.setPublish(true);
+		assertThatExceptionOfType(GradleException.class).isThrownBy(this.buildImage::createRequest)
+				.withMessageContaining("Publishing an image requires docker.publishRegistry to be configured");
+	}
+
+	@Test
 	void whenNoBuilderIsConfiguredThenRequestHasDefaultBuilder() {
-		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("paketo-buildpacks/builder");
+		assertThat(this.buildImage.createRequest().getBuilder().getName()).isEqualTo("paketobuildpacks/builder");
 	}
 
 	@Test
@@ -192,6 +208,17 @@ class BootBuildImageTests {
 	void whenRunImageIsConfiguredThenRequestUsesSpecifiedRunImage() {
 		this.buildImage.setRunImage("example.com/test/run:1.0");
 		assertThat(this.buildImage.createRequest().getRunImage().getName()).isEqualTo("test/run");
+	}
+
+	@Test
+	void whenUsingDefaultConfigurationThenRequestHasAlwaysPullPolicy() {
+		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.ALWAYS);
+	}
+
+	@Test
+	void whenPullPolicyIsConfiguredThenRequestHasPullPolicy() {
+		this.buildImage.setPullPolicy(PullPolicy.NEVER);
+		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.NEVER);
 	}
 
 }

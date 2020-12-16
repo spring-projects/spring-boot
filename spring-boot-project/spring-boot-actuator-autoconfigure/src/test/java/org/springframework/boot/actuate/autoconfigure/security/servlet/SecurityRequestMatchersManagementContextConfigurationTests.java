@@ -39,7 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SecurityRequestMatchersManagementContextConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(SecurityRequestMatchersManagementContextConfiguration.class));
 
 	@Test

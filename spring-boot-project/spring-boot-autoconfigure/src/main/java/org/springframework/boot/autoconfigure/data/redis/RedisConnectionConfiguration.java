@@ -60,11 +60,13 @@ abstract class RedisConnectionConfiguration {
 			ConnectionInfo connectionInfo = parseUrl(this.properties.getUrl());
 			config.setHostName(connectionInfo.getHostName());
 			config.setPort(connectionInfo.getPort());
+			config.setUsername(connectionInfo.getUsername());
 			config.setPassword(RedisPassword.of(connectionInfo.getPassword()));
 		}
 		else {
 			config.setHostName(this.properties.getHost());
 			config.setPort(this.properties.getPort());
+			config.setUsername(this.properties.getUsername());
 			config.setPassword(RedisPassword.of(this.properties.getPassword()));
 		}
 		config.setDatabase(this.properties.getDatabase());
@@ -80,6 +82,7 @@ abstract class RedisConnectionConfiguration {
 			RedisSentinelConfiguration config = new RedisSentinelConfiguration();
 			config.master(sentinelProperties.getMaster());
 			config.setSentinels(createSentinels(sentinelProperties));
+			config.setUsername(this.properties.getUsername());
 			if (this.properties.getPassword() != null) {
 				config.setPassword(RedisPassword.of(this.properties.getPassword()));
 			}
@@ -108,6 +111,7 @@ abstract class RedisConnectionConfiguration {
 		if (clusterProperties.getMaxRedirects() != null) {
 			config.setMaxRedirects(clusterProperties.getMaxRedirects());
 		}
+		config.setUsername(this.properties.getUsername());
 		if (this.properties.getPassword() != null) {
 			config.setPassword(RedisPassword.of(this.properties.getPassword()));
 		}
@@ -141,15 +145,20 @@ abstract class RedisConnectionConfiguration {
 				throw new RedisUrlSyntaxException(url);
 			}
 			boolean useSsl = ("rediss".equals(scheme));
+			String username = null;
 			String password = null;
 			if (uri.getUserInfo() != null) {
-				password = uri.getUserInfo();
-				int index = password.indexOf(':');
+				String candidate = uri.getUserInfo();
+				int index = candidate.indexOf(':');
 				if (index >= 0) {
-					password = password.substring(index + 1);
+					username = candidate.substring(0, index);
+					password = candidate.substring(index + 1);
+				}
+				else {
+					password = candidate;
 				}
 			}
-			return new ConnectionInfo(uri, useSsl, password);
+			return new ConnectionInfo(uri, useSsl, username, password);
 		}
 		catch (URISyntaxException ex) {
 			throw new RedisUrlSyntaxException(url, ex);
@@ -162,11 +171,14 @@ abstract class RedisConnectionConfiguration {
 
 		private final boolean useSsl;
 
+		private final String username;
+
 		private final String password;
 
-		ConnectionInfo(URI uri, boolean useSsl, String password) {
+		ConnectionInfo(URI uri, boolean useSsl, String username, String password) {
 			this.uri = uri;
 			this.useSsl = useSsl;
+			this.username = username;
 			this.password = password;
 		}
 
@@ -180,6 +192,10 @@ abstract class RedisConnectionConfiguration {
 
 		int getPort() {
 			return this.uri.getPort();
+		}
+
+		String getUsername() {
+			return this.username;
 		}
 
 		String getPassword() {

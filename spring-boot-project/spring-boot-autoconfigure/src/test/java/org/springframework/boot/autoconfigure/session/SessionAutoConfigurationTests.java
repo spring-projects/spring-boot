@@ -64,7 +64,7 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 	void contextFailsIfMultipleStoresAreAvailable() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasFailed();
-			assertThat(context).getFailure().hasCauseInstanceOf(NonUniqueSessionRepositoryException.class);
+			assertThat(context).getFailure().hasRootCauseInstanceOf(NonUniqueSessionRepositoryException.class);
 			assertThat(context).getFailure()
 					.hasMessageContaining("Multiple session repository candidates are available");
 		});
@@ -93,22 +93,6 @@ class SessionAutoConfigurationTests extends AbstractSessionAutoConfigurationTest
 					MapSessionRepository repository = validateSessionRepository(context, MapSessionRepository.class);
 					assertThat(context).getBean("mySessionRepository").isSameAs(repository);
 				});
-	}
-
-	@Test
-	void autoConfigWhenSpringSessionTimeoutIsSetShouldUseThat() {
-		this.contextRunner
-				.withUserConfiguration(ServerPropertiesConfiguration.class, SessionRepositoryConfiguration.class)
-				.withPropertyValues("server.servlet.session.timeout=1", "spring.session.timeout=3")
-				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout()).hasSeconds(3));
-	}
-
-	@Test
-	void autoConfigWhenSpringSessionTimeoutIsNotSetShouldUseServerSessionTimeout() {
-		this.contextRunner
-				.withUserConfiguration(ServerPropertiesConfiguration.class, SessionRepositoryConfiguration.class)
-				.withPropertyValues("server.servlet.session.timeout=3")
-				.run((context) -> assertThat(context.getBean(SessionProperties.class).getTimeout()).hasSeconds(3));
 	}
 
 	@Test

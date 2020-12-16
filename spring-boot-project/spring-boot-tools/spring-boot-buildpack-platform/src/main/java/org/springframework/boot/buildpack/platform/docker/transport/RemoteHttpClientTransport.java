@@ -28,6 +28,7 @@ import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.docker.ssl.SslContextFactory;
 import org.springframework.boot.buildpack.platform.system.Environment;
 import org.springframework.util.Assert;
@@ -52,16 +53,17 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		super(client, host);
 	}
 
-	static RemoteHttpClientTransport createIfPossible(Environment environment) {
-		return createIfPossible(environment, new SslContextFactory());
+	static RemoteHttpClientTransport createIfPossible(Environment environment, DockerHost dockerHost) {
+		return createIfPossible(environment, dockerHost, new SslContextFactory());
 	}
 
-	static RemoteHttpClientTransport createIfPossible(Environment environment, SslContextFactory sslContextFactory) {
-		String host = environment.get(DOCKER_HOST);
-		if (host == null || isLocalFileReference(host)) {
+	static RemoteHttpClientTransport createIfPossible(Environment environment, DockerHost dockerHost,
+			SslContextFactory sslContextFactory) {
+		DockerHost host = getHost(environment, dockerHost);
+		if (host == null || host.getAddress() == null || isLocalFileReference(host.getAddress())) {
 			return null;
 		}
-		return create(environment, sslContextFactory, HttpHost.create(host));
+		return create(host, sslContextFactory, HttpHost.create(host.getAddress()));
 	}
 
 	private static boolean isLocalFileReference(String host) {
@@ -74,35 +76,49 @@ final class RemoteHttpClientTransport extends HttpClientTransport {
 		}
 	}
 
-	private static RemoteHttpClientTransport create(Environment environment, SslContextFactory sslContextFactory,
+	private static RemoteHttpClientTransport create(DockerHost host, SslContextFactory sslContextFactory,
 			HttpHost tcpHost) {
 		HttpClientBuilder builder = HttpClients.custom();
-		boolean secure = isSecure(environment);
-		if (secure) {
-			builder.setSSLSocketFactory(getSecureConnectionSocketFactory(environment, sslContextFactory));
+		if (host.isSecure()) {
+			builder.setSSLSocketFactory(getSecureConnectionSocketFactory(host, sslContextFactory));
 		}
-		String scheme = secure ? "https" : "http";
+		String scheme = host.isSecure() ? "https" : "http";
 		HttpHost httpHost = new HttpHost(tcpHost.getHostName(), tcpHost.getPort(), scheme);
 		return new RemoteHttpClientTransport(builder.build(), httpHost);
 	}
 
-	private static LayeredConnectionSocketFactory getSecureConnectionSocketFactory(Environment environment,
+	private static LayeredConnectionSocketFactory getSecureConnectionSocketFactory(DockerHost host,
 			SslContextFactory sslContextFactory) {
-		String directory = environment.get(DOCKER_CERT_PATH);
+		String directory = host.getCertificatePath();
 		Assert.hasText(directory,
-				() -> DOCKER_TLS_VERIFY + " requires trust material location to be specified with " + DOCKER_CERT_PATH);
+				() -> "Docker host TLS verification requires trust material location to be specified with certificate path");
 		SSLContext sslContext = sslContextFactory.forDirectory(directory);
 		return new SSLConnectionSocketFactory(sslContext);
 	}
 
-	private static boolean isSecure(Environment environment) {
-		String secure = environment.get(DOCKER_TLS_VERIFY);
-		try {
-			return (secure != null) && (Integer.parseInt(secure) == 1);
+	private static DockerHost getHost(Environment environment, DockerHost dockerHost) {
+		if (environment.get(DOCKER_HOST) != null) {
+			return new EnvironmentDockerHost(environment);
 		}
-		catch (NumberFormatException ex) {
-			return false;
+		return dockerHost;
+	}
+
+	private static class EnvironmentDockerHost extends DockerHost {
+
+		EnvironmentDockerHost(Environment environment) {
+			super(environment.get(DOCKER_HOST), isTrue(environment.get(DOCKER_TLS_VERIFY)),
+					environment.get(DOCKER_CERT_PATH));
 		}
+
+		private static boolean isTrue(String value) {
+			try {
+				return (value != null) && (Integer.parseInt(value) == 1);
+			}
+			catch (NumberFormatException ex) {
+				return false;
+			}
+		}
+
 	}
 
 }

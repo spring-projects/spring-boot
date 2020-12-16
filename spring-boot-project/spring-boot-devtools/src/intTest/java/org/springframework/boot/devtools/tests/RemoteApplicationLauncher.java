@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.function.BiFunction;
 
 import org.awaitility.Awaitility;
+import org.awaitility.core.ConditionTimeoutException;
 
 import org.springframework.boot.devtools.RemoteSpringApplication;
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
@@ -77,7 +78,7 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 						createRemoteSpringApplicationClassPath(classesDirectory),
 						RemoteSpringApplication.class.getName(), "--spring.devtools.remote.secret=secret",
 						"http://localhost:" + port);
-				awaitRemoteSpringApplication(remoteSpringApplicationJvm.getStandardOut());
+				awaitRemoteSpringApplication(remoteSpringApplicationJvm);
 				return remoteSpringApplicationJvm.getProcess();
 			}
 			catch (Exception ex) {
@@ -100,15 +101,27 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 	}
 
 	private int awaitServerPort(LaunchedJvm jvm, File serverPortFile) throws Exception {
-		return Awaitility.waitAtMost(Duration.ofSeconds(30))
+		return Awaitility.waitAtMost(Duration.ofMinutes(3))
 				.until(() -> new ApplicationState(serverPortFile, jvm), ApplicationState::hasServerPort)
 				.getServerPort();
 	}
 
-	private void awaitRemoteSpringApplication(File standardOut) throws Exception {
-		FileContents contents = new FileContents(standardOut);
-		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(contents::get,
-				containsString("Started RemoteSpringApplication"));
+	private void awaitRemoteSpringApplication(LaunchedJvm launchedJvm) throws Exception {
+		FileContents contents = new FileContents(launchedJvm.getStandardOut());
+		try {
+			Awaitility.waitAtMost(Duration.ofMinutes(3)).until(contents::get,
+					containsString("Started RemoteSpringApplication"));
+		}
+		catch (ConditionTimeoutException ex) {
+			if (!launchedJvm.getProcess().isAlive()) {
+				throw new IllegalStateException(
+						"Process exited with status " + launchedJvm.getProcess().exitValue()
+								+ " before producing expected standard output.\n\nStandard output:\n\n" + contents.get()
+								+ "\n\nStandard error:\n\n" + new FileContents(launchedJvm.getStandardError()).get(),
+						ex);
+			}
+			throw ex;
+		}
 	}
 
 }

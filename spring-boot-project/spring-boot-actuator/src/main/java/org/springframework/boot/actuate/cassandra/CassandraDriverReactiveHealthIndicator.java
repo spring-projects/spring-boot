@@ -13,16 +13,21 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.cassandra;
 
-import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import java.util.Collection;
+import java.util.Optional;
+
 import com.datastax.oss.driver.api.core.CqlSession;
-import com.datastax.oss.driver.api.core.cql.SimpleStatement;
+import com.datastax.oss.driver.api.core.metadata.Node;
+import com.datastax.oss.driver.api.core.metadata.NodeState;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.ReactiveHealthIndicator;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.util.Assert;
 
 /**
@@ -30,17 +35,15 @@ import org.springframework.util.Assert;
  * for Cassandra data stores.
  *
  * @author Alexandre Dutra
+ * @author Tomasz Lelek
  * @since 2.4.0
  */
 public class CassandraDriverReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
 
-	private static final SimpleStatement SELECT = SimpleStatement
-			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
-
 	private final CqlSession session;
 
 	/**
-	 * Create a new {@link CassandraHealthIndicator} instance.
+	 * Create a new {@link CassandraDriverReactiveHealthIndicator} instance.
 	 * @param session the {@link CqlSession}.
 	 */
 	public CassandraDriverReactiveHealthIndicator(CqlSession session) {
@@ -51,8 +54,13 @@ public class CassandraDriverReactiveHealthIndicator extends AbstractReactiveHeal
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		return Mono.from(this.session.executeReactive(SELECT))
-				.map((row) -> builder.up().withDetail("version", row.getString(0)).build());
+		return Mono.fromSupplier(() -> {
+			Collection<Node> nodes = this.session.getMetadata().getNodes().values();
+			Optional<Node> nodeUp = nodes.stream().filter((node) -> node.getState() == NodeState.UP).findAny();
+			builder.status(nodeUp.isPresent() ? Status.UP : Status.DOWN);
+			nodeUp.map(Node::getCassandraVersion).ifPresent((version) -> builder.withDetail("version", version));
+			return builder.build();
+		});
 	}
 
 }

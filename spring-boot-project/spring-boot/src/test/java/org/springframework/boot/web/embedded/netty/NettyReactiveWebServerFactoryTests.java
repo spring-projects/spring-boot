@@ -140,7 +140,7 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		WebClient client = WebClient.builder().baseUrl("https://localhost:" + this.webServer.getPort())
 				.clientConnector(connector).build();
 		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World"))
-				.exchange().flatMap((response) -> response.bodyToMono(String.class));
+				.retrieve().bodyToMono(String.class);
 	}
 
 }

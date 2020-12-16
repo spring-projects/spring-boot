@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,13 +29,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataObjectPropertyNameTests {
 
 	@Test
-	void toDashedCaseShouldConvertValue() {
+	void toDashedCaseConvertsValue() {
 		assertThat(DataObjectPropertyName.toDashedForm("Foo")).isEqualTo("foo");
 		assertThat(DataObjectPropertyName.toDashedForm("foo")).isEqualTo("foo");
 		assertThat(DataObjectPropertyName.toDashedForm("fooBar")).isEqualTo("foo-bar");
 		assertThat(DataObjectPropertyName.toDashedForm("foo_bar")).isEqualTo("foo-bar");
 		assertThat(DataObjectPropertyName.toDashedForm("_foo_bar")).isEqualTo("-foo-bar");
 		assertThat(DataObjectPropertyName.toDashedForm("foo_Bar")).isEqualTo("foo-bar");
+	}
+
+	@Test
+	void toDashedFormWhenContainsIndexedAddsNoDashToIndex() throws Exception {
+		assertThat(DataObjectPropertyName.toDashedForm("test[fooBar]")).isEqualTo("test[fooBar]");
+		assertThat(DataObjectPropertyName.toDashedForm("testAgain[fooBar]")).isEqualTo("test-again[fooBar]");
 	}
 
 }

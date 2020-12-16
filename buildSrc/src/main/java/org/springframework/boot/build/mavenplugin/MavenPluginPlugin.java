@@ -17,9 +17,11 @@
 package org.springframework.boot.build.mavenplugin;
 
 import java.io.File;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 
 import io.spring.javaformat.formatter.FileEdit;
@@ -28,13 +30,23 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.ComponentMetadataContext;
+import org.gradle.api.artifacts.ComponentMetadataRule;
+import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ModuleVersionIdentifier;
+import org.gradle.api.artifacts.component.ModuleComponentIdentifier;
+import org.gradle.api.artifacts.result.ResolvedArtifactResult;
+import org.gradle.api.attributes.DocsType;
 import org.gradle.api.file.CopySpec;
+import org.gradle.api.file.DirectoryProperty;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaLibraryPlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.maven.MavenPublication;
 import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
+import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputDirectory;
@@ -85,16 +97,30 @@ public class MavenPluginPlugin implements Plugin<Project> {
 	}
 
 	private void addPopulateIntTestMavenRepositoryTask(Project project) {
+		RuntimeClasspathMavenRepository runtimeClasspathMavenRepository = project.getTasks()
+				.create("runtimeClasspathMavenRepository", RuntimeClasspathMavenRepository.class);
+		runtimeClasspathMavenRepository.getOutputDirectory()
+				.set(new File(project.getBuildDir(), "runtime-classpath-repository"));
+		Configuration runtimeClasspathWithMetadata = project.getConfigurations().create("runtimeClasspathWithMetadata");
+		runtimeClasspathWithMetadata
+				.extendsFrom(project.getConfigurations().getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME));
+		runtimeClasspathWithMetadata.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
+				project.getObjects().named(DocsType.class, "maven-repository")));
+		project.getDependencies()
+				.components((components) -> components.all(MavenRepositoryComponentMetadataRule.class));
 		Copy task = project.getTasks().create("populateIntTestMavenRepository", Copy.class);
 		task.setDestinationDir(project.getBuildDir());
-		task.into("int-test-maven-repository", (copy) -> copyIntTestMavenRepositoryFiles(project, copy));
+		task.into("int-test-maven-repository",
+				(copy) -> copyIntTestMavenRepositoryFiles(project, copy, runtimeClasspathMavenRepository));
 		task.dependsOn(project.getTasks().getByName(MavenRepositoryPlugin.PUBLISH_TO_PROJECT_REPOSITORY_TASK_NAME));
 		project.getTasks().getByName(IntegrationTestPlugin.INT_TEST_TASK_NAME).dependsOn(task);
 	}
 
-	private void copyIntTestMavenRepositoryFiles(Project project, CopySpec copy) {
+	private void copyIntTestMavenRepositoryFiles(Project project, CopySpec copy,
+			RuntimeClasspathMavenRepository runtimeClasspathMavenRepository) {
 		copy.from(project.getConfigurations().getByName(MavenRepositoryPlugin.MAVEN_REPOSITORY_CONFIGURATION_NAME));
 		copy.from(new File(project.getBuildDir(), "maven-repository"));
+		copy.from(runtimeClasspathMavenRepository);
 	}
 
 	private void addDocumentPluginGoalsTask(Project project, MavenExec generatePluginDescriptorTask) {
@@ -177,6 +203,7 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		pluginDescriptorInputs.from(pomFile, (copy) -> replaceVersionPlaceholder(copy, project));
 		pluginDescriptorInputs.from(sourceSet.getOutput().getClassesDirs(), (sync) -> sync.into("target/classes"));
 		pluginDescriptorInputs.from(sourceSet.getAllJava().getSrcDirs(), (sync) -> sync.into("src/main/java"));
+		pluginDescriptorInputs.getInputs().property("version", project.getVersion());
 		return pluginDescriptorInputs;
 	}
 
@@ -246,6 +273,74 @@ public class MavenPluginPlugin implements Plugin<Project> {
 			}
 			catch (Exception ex) {
 				throw new TaskExecutionException(this, ex);
+			}
+		}
+
+	}
+
+	public static class MavenRepositoryComponentMetadataRule implements ComponentMetadataRule {
+
+		private final ObjectFactory objects;
+
+		@javax.inject.Inject
+		public MavenRepositoryComponentMetadataRule(ObjectFactory objects) {
+			this.objects = objects;
+		}
+
+		@Override
+		public void execute(ComponentMetadataContext context) {
+			context.getDetails().maybeAddVariant("compileWithMetadata", "compile", (variant) -> {
+				variant.attributes((attributes) -> attributes.attribute(DocsType.DOCS_TYPE_ATTRIBUTE,
+						this.objects.named(DocsType.class, "maven-repository")));
+				variant.withFiles((files) -> {
+					ModuleVersionIdentifier id = context.getDetails().getId();
+					files.addFile(id.getName() + "-" + id.getVersion() + ".pom");
+				});
+			});
+		}
+
+	}
+
+	public static class RuntimeClasspathMavenRepository extends DefaultTask {
+
+		private final Configuration runtimeClasspath;
+
+		private final DirectoryProperty outputDirectory;
+
+		public RuntimeClasspathMavenRepository() {
+			this.runtimeClasspath = getProject().getConfigurations()
+					.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
+			this.outputDirectory = getProject().getObjects().directoryProperty();
+		}
+
+		@OutputDirectory
+		public DirectoryProperty getOutputDirectory() {
+			return this.outputDirectory;
+		}
+
+		@Classpath
+		public Configuration getRuntimeClasspath() {
+			return this.runtimeClasspath;
+		}
+
+		@TaskAction
+		public void createRepository() {
+			for (ResolvedArtifactResult result : this.runtimeClasspath.getIncoming().getArtifacts()) {
+				if (result.getId().getComponentIdentifier() instanceof ModuleComponentIdentifier) {
+					ModuleComponentIdentifier identifier = (ModuleComponentIdentifier) result.getId()
+							.getComponentIdentifier();
+					File repositoryLocation = this.outputDirectory.dir(identifier.getGroup().replace('.', '/') + "/"
+							+ identifier.getModule() + "/" + identifier.getVersion() + "/" + result.getFile().getName())
+							.get().getAsFile();
+					repositoryLocation.getParentFile().mkdirs();
+					try {
+						Files.copy(result.getFile().toPath(), repositoryLocation.toPath(),
+								StandardCopyOption.REPLACE_EXISTING);
+					}
+					catch (IOException ex) {
+						throw new RuntimeException("Failed to copy artifact '" + result + "'", ex);
+					}
+				}
 			}
 		}
 

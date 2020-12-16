@@ -54,6 +54,8 @@ public class FileSystemWatcher {
 
 	private final long quietPeriod;
 
+	private final SnapshotStateRepository snapshotStateRepository;
+
 	private final AtomicInteger remainingScans = new AtomicInteger(-1);
 
 	private final Map<File, DirectorySnapshot> directories = new HashMap<>();
@@ -79,6 +81,20 @@ public class FileSystemWatcher {
 	 * ensure that updates have completed
 	 */
 	public FileSystemWatcher(boolean daemon, Duration pollInterval, Duration quietPeriod) {
+		this(daemon, pollInterval, quietPeriod, null);
+	}
+
+	/**
+	 * Create a new {@link FileSystemWatcher} instance.
+	 * @param daemon if a daemon thread used to monitor changes
+	 * @param pollInterval the amount of time to wait between checking for changes
+	 * @param quietPeriod the amount of time required after a change has been detected to
+	 * ensure that updates have completed
+	 * @param snapshotStateRepository the snapshot state repository
+	 * @since 2.4.0
+	 */
+	public FileSystemWatcher(boolean daemon, Duration pollInterval, Duration quietPeriod,
+			SnapshotStateRepository snapshotStateRepository) {
 		Assert.notNull(pollInterval, "PollInterval must not be null");
 		Assert.notNull(quietPeriod, "QuietPeriod must not be null");
 		Assert.isTrue(pollInterval.toMillis() > 0, "PollInterval must be positive");
@@ -88,6 +104,8 @@ public class FileSystemWatcher {
 		this.daemon = daemon;
 		this.pollInterval = pollInterval.toMillis();
 		this.quietPeriod = quietPeriod.toMillis();
+		this.snapshotStateRepository = (snapshotStateRepository != null) ? snapshotStateRepository
+				: SnapshotStateRepository.NONE;
 	}
 
 	/**
@@ -150,11 +168,12 @@ public class FileSystemWatcher {
 	 */
 	public void start() {
 		synchronized (this.monitor) {
-			saveInitialSnapshots();
+			createOrRestoreInitialSnapshots();
 			if (this.watchThread == null) {
 				Map<File, DirectorySnapshot> localDirectories = new HashMap<>(this.directories);
-				this.watchThread = new Thread(new Watcher(this.remainingScans, new ArrayList<>(this.listeners),
-						this.triggerFilter, this.pollInterval, this.quietPeriod, localDirectories));
+				Watcher watcher = new Watcher(this.remainingScans, new ArrayList<>(this.listeners), this.triggerFilter,
+						this.pollInterval, this.quietPeriod, localDirectories, this.snapshotStateRepository);
+				this.watchThread = new Thread(watcher);
 				this.watchThread.setName("File Watcher");
 				this.watchThread.setDaemon(this.daemon);
 				this.watchThread.start();
@@ -162,8 +181,13 @@ public class FileSystemWatcher {
 		}
 	}
 
-	private void saveInitialSnapshots() {
-		this.directories.replaceAll((f, v) -> new DirectorySnapshot(f));
+	@SuppressWarnings("unchecked")
+	private void createOrRestoreInitialSnapshots() {
+		Map<File, DirectorySnapshot> restored = (Map<File, DirectorySnapshot>) this.snapshotStateRepository.restore();
+		this.directories.replaceAll((f, v) -> {
+			DirectorySnapshot restoredSnapshot = (restored != null) ? restored.get(f) : null;
+			return (restoredSnapshot != null) ? restoredSnapshot : new DirectorySnapshot(f);
+		});
 	}
 
 	/**
@@ -213,14 +237,19 @@ public class FileSystemWatcher {
 
 		private Map<File, DirectorySnapshot> directories;
 
+		private SnapshotStateRepository snapshotStateRepository;
+
 		private Watcher(AtomicInteger remainingScans, List<FileChangeListener> listeners, FileFilter triggerFilter,
-				long pollInterval, long quietPeriod, Map<File, DirectorySnapshot> directories) {
+				long pollInterval, long quietPeriod, Map<File, DirectorySnapshot> directories,
+				SnapshotStateRepository snapshotStateRepository) {
 			this.remainingScans = remainingScans;
 			this.listeners = listeners;
 			this.triggerFilter = triggerFilter;
 			this.pollInterval = pollInterval;
 			this.quietPeriod = quietPeriod;
 			this.directories = directories;
+			this.snapshotStateRepository = snapshotStateRepository;
+
 		}
 
 		@Override
@@ -288,10 +317,11 @@ public class FileSystemWatcher {
 					changeSet.add(changedFiles);
 				}
 			}
+			this.directories = updated;
+			this.snapshotStateRepository.save(updated);
 			if (!changeSet.isEmpty()) {
 				fireListeners(Collections.unmodifiableSet(changeSet));
 			}
-			this.directories = updated;
 		}
 
 		private void fireListeners(Set<ChangedFiles> changeSet) {

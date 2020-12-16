@@ -24,8 +24,6 @@ import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthCont
 import org.springframework.boot.actuate.autoconfigure.health.CompositeReactiveHealthContributorConfiguration;
 import org.springframework.boot.actuate.cassandra.CassandraDriverHealthIndicator;
 import org.springframework.boot.actuate.cassandra.CassandraDriverReactiveHealthIndicator;
-import org.springframework.boot.actuate.cassandra.CassandraHealthIndicator;
-import org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator;
 import org.springframework.boot.actuate.health.HealthContributor;
 import org.springframework.boot.actuate.health.ReactiveHealthContributor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
@@ -59,8 +57,9 @@ class CassandraHealthContributorConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(CassandraOperations.class)
 	@ConditionalOnBean(CassandraOperations.class)
-	static class CassandraOperationsConfiguration
-			extends CompositeHealthContributorConfiguration<CassandraHealthIndicator, CassandraOperations> {
+	@Deprecated
+	static class CassandraOperationsConfiguration extends
+			CompositeHealthContributorConfiguration<org.springframework.boot.actuate.cassandra.CassandraHealthIndicator, CassandraOperations> {
 
 		@Bean
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })
@@ -86,8 +85,9 @@ class CassandraHealthContributorConfigurations {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ReactiveCassandraOperations.class)
 	@ConditionalOnBean(ReactiveCassandraOperations.class)
+	@Deprecated
 	static class CassandraReactiveOperationsConfiguration extends
-			CompositeReactiveHealthContributorConfiguration<CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {
+			CompositeReactiveHealthContributorConfiguration<org.springframework.boot.actuate.cassandra.CassandraReactiveHealthIndicator, ReactiveCassandraOperations> {
 
 		@Bean
 		@ConditionalOnMissingBean(name = { "cassandraHealthIndicator", "cassandraHealthContributor" })

@@ -36,8 +36,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class ElasticsearchReactiveHealthContributorAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-			.of(ElasticsearchDataAutoConfiguration.class, ReactiveElasticsearchRestClientAutoConfiguration.class,
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ElasticsearchDataAutoConfiguration.class,
+					ReactiveElasticsearchRestClientAutoConfiguration.class,
 					ElasticsearchRestClientAutoConfiguration.class,
 					ElasticSearchReactiveHealthContributorAutoConfiguration.class,
 					HealthContributorAutoConfiguration.class));

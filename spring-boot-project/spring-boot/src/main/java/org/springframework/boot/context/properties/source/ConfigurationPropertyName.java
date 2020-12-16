@@ -89,6 +89,20 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 	}
 
 	/**
+	 * Return {@code true} if any element in the name is indexed.
+	 * @return if the element has one or more indexed elements
+	 * @since 2.2.10
+	 */
+	public boolean hasIndexedElement() {
+		for (int i = 0; i < getNumberOfElements(); i++) {
+			if (isIndexed(i)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
 	 * Return if the element in the name is indexed.
 	 * @param elementIndex the index of the element
 	 * @return {@code true} if the element is indexed
@@ -326,12 +340,10 @@ public final class ConfigurationPropertyName implements Comparable<Configuration
 		if (type1.allowsFastEqualityCheck() && type2.allowsFastEqualityCheck()) {
 			return !fastElementEquals(e1, e2, i);
 		}
-		else if (type1.allowsDashIgnoringEqualityCheck() && type2.allowsDashIgnoringEqualityCheck()) {
+		if (type1.allowsDashIgnoringEqualityCheck() && type2.allowsDashIgnoringEqualityCheck()) {
 			return !dashIgnoringElementEquals(e1, e2, i);
 		}
-		else {
-			return !defaultElementEquals(e1, e2, i);
-		}
+		return !defaultElementEquals(e1, e2, i);
 	}
 
 	private boolean fastElementEquals(Elements e1, Elements e2, int i) {

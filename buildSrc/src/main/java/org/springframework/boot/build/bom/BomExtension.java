@@ -169,15 +169,18 @@ public class BomExtension {
 
 	private void addLibrary(Library library) {
 		this.libraries.add(library);
-		this.properties.put(library.getVersionProperty(), library.getVersion());
+		String versionProperty = library.getVersionProperty();
+		if (versionProperty != null) {
+			this.properties.put(versionProperty, library.getVersion());
+		}
 		for (Group group : library.getGroups()) {
 			for (Module module : group.getModules()) {
-				putArtifactVersionProperty(group.getId(), module.getName(), library.getVersionProperty());
+				putArtifactVersionProperty(group.getId(), module.getName(), versionProperty);
 				this.dependencyHandler.getConstraints().add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
 						createDependencyNotation(group.getId(), module.getName(), library.getVersion()));
 			}
 			for (String bomImport : group.getBoms()) {
-				putArtifactVersionProperty(group.getId(), bomImport, library.getVersionProperty());
+				putArtifactVersionProperty(group.getId(), bomImport, versionProperty);
 				String bomDependency = createDependencyNotation(group.getId(), bomImport, library.getVersion());
 				this.dependencyHandler.add(JavaPlatformPlugin.API_CONFIGURATION_NAME,
 						this.dependencyHandler.platform(bomDependency));
@@ -341,7 +344,7 @@ public class BomExtension {
 
 		private String repository = "spring-boot";
 
-		private List<String> issueLabels;
+		private final List<String> issueLabels;
 
 		private GitHub(String organization, String repository, List<String> issueLabels) {
 			this.organization = organization;

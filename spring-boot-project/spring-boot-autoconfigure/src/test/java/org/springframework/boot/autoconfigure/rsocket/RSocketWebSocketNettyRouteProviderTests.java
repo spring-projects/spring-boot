@@ -75,7 +75,6 @@ class RSocketWebSocketNettyRouteProviderTests {
 					WebTestClient client = createWebTestClient(serverContext.getWebServer());
 					client.get().uri("/protocol").exchange().expectStatus().isOk().expectBody().jsonPath("name",
 							"http");
-					assertThat(WebConfiguration.processorCallCount).isEqualTo(1);
 				});
 	}
 
@@ -87,13 +86,11 @@ class RSocketWebSocketNettyRouteProviderTests {
 		int port = server.getPort();
 		RSocketRequester.Builder builder = context.getBean(RSocketRequester.Builder.class);
 		return builder.dataMimeType(MediaType.APPLICATION_CBOR)
-				.connectWebSocket(URI.create("ws://localhost:" + port + "/rsocket")).block();
+				.websocket(URI.create("ws://localhost:" + port + "/rsocket"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
 	static class WebConfiguration {
-
-		static int processorCallCount = 0;
 
 		@Bean
 		WebController webController() {
@@ -105,15 +102,6 @@ class RSocketWebSocketNettyRouteProviderTests {
 			NettyReactiveWebServerFactory serverFactory = new NettyReactiveWebServerFactory(0);
 			serverFactory.addRouteProviders(routeProvider);
 			return serverFactory;
-		}
-
-		@Bean
-		@SuppressWarnings("deprecation")
-		org.springframework.boot.rsocket.server.ServerRSocketFactoryProcessor myRSocketFactoryProcessor() {
-			return (server) -> {
-				processorCallCount++;
-				return server;
-			};
 		}
 
 	}

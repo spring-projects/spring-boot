@@ -48,7 +48,7 @@ import static org.mockito.Mockito.mock;
  */
 class DataSourceHealthContributorAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
 					HealthContributorAutoConfiguration.class, DataSourceHealthContributorAutoConfiguration.class))
 			.withPropertyValues("spring.datasource.initialization-mode=never");
@@ -74,7 +74,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWithRoutingAndEmbeddedDataSourceShouldIncludeRoutingDataSource() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDatasourceConfig.class)
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDataSourceConfig.class)
 				.run((context) -> {
 					CompositeHealthContributor composite = context.getBean(CompositeHealthContributor.class);
 					assertThat(composite.getContributor("dataSource")).isInstanceOf(DataSourceHealthIndicator.class);
@@ -85,7 +85,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWithRoutingAndEmbeddedDataSourceShouldNotIncludeRoutingDataSourceWhenIgnored() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDatasourceConfig.class)
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, RoutingDataSourceConfig.class)
 				.withPropertyValues("management.health.db.ignore-routing-datasources:true").run((context) -> {
 					assertThat(context).doesNotHaveBean(CompositeHealthContributor.class);
 					assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
@@ -95,13 +95,13 @@ class DataSourceHealthContributorAutoConfigurationTests {
 
 	@Test
 	void runWithOnlyRoutingDataSourceShouldIncludeRoutingDataSource() {
-		this.contextRunner.withUserConfiguration(RoutingDatasourceConfig.class)
+		this.contextRunner.withUserConfiguration(RoutingDataSourceConfig.class)
 				.run((context) -> assertThat(context).hasSingleBean(RoutingDataSourceHealthIndicator.class));
 	}
 
 	@Test
 	void runWithOnlyRoutingDataSourceShouldCrashWhenIgnored() {
-		this.contextRunner.withUserConfiguration(RoutingDatasourceConfig.class)
+		this.contextRunner.withUserConfiguration(RoutingDataSourceConfig.class)
 				.withPropertyValues("management.health.db.ignore-routing-datasources:true")
 				.run((context) -> assertThat(context).hasFailed().getFailure()
 						.hasRootCauseInstanceOf(IllegalArgumentException.class));
@@ -140,7 +140,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class RoutingDatasourceConfig {
+	static class RoutingDataSourceConfig {
 
 		@Bean
 		AbstractRoutingDataSource routingDataSource() {

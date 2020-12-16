@@ -71,11 +71,31 @@ class MongoDataAutoConfigurationTests {
 
 	@Test
 	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.database:grid").run((context) -> {
+			assertThat(context).hasSingleBean(GridFsTemplate.class);
+			GridFsTemplate template = context.getBean(GridFsTemplate.class);
+			MongoDatabaseFactory factory = (MongoDatabaseFactory) ReflectionTestUtils.getField(template, "dbFactory");
+			assertThat(factory.getMongoDatabase().getName()).isEqualTo("grid");
+		});
+	}
+
+	@Test
+	@Deprecated
+	void whenGridFsDatabaseIsConfiguredWithDeprecatedPropertyThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridFsDatabase:grid").run((context) -> {
 			assertThat(context).hasSingleBean(GridFsTemplate.class);
 			GridFsTemplate template = context.getBean(GridFsTemplate.class);
 			MongoDatabaseFactory factory = (MongoDatabaseFactory) ReflectionTestUtils.getField(template, "dbFactory");
 			assertThat(factory.getMongoDatabase().getName()).isEqualTo("grid");
+		});
+	}
+
+	@Test
+	void whenGridFsBucketIsConfiguredThenGridFsTemplateIsAutoConfiguredAndUsesIt() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
+			assertThat(context).hasSingleBean(GridFsTemplate.class);
+			GridFsTemplate template = context.getBean(GridFsTemplate.class);
+			assertThat(template).hasFieldOrPropertyWithValue("bucket", "test-bucket");
 		});
 	}
 

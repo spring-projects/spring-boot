@@ -4,7 +4,7 @@ plugins {
 }
 
 bootJar {
-	mainClassName 'com.example.ExampleApplication'
+	mainClass = 'com.example.ExampleApplication'
 }
 
 // tag::layered[]
@@ -17,6 +17,9 @@ bootJar {
 			intoLayer("application")
 		}
 		dependencies {
+			intoLayer("application") {
+				includeProjectDependencies()
+			}
 			intoLayer("snapshot-dependencies") {
 				include "*:*:*SNAPSHOT"
 			}

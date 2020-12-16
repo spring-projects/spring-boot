@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -88,14 +88,18 @@ class AutoConfigurationSorter {
 		}
 		processing.add(current);
 		for (String after : classes.getClassesRequestedAfter(current)) {
-			Assert.state(!processing.contains(after),
-					"AutoConfigure cycle detected between " + current + " and " + after);
+			checkForCycles(processing, current, after);
 			if (!sorted.contains(after) && toSort.contains(after)) {
 				doSortByAfterAnnotation(classes, toSort, sorted, processing, after);
 			}
 		}
 		processing.remove(current);
 		sorted.add(current);
+	}
+
+	private void checkForCycles(Set<String> processing, String current, String after) {
+		Assert.state(!processing.contains(after),
+				() -> "AutoConfigure cycle detected between " + current + " and " + after);
 	}
 
 	private static class AutoConfigurationClasses {

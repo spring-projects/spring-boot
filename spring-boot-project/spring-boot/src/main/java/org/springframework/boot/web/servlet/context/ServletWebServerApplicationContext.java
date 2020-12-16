@@ -49,6 +49,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextException;
 import org.springframework.core.io.Resource;
+import org.springframework.core.metrics.StartupStep;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ContextLoaderListener;
 import org.springframework.web.context.ServletContextAware;
@@ -174,8 +175,11 @@ public class ServletWebServerApplicationContext extends GenericWebApplicationCon
 		WebServer webServer = this.webServer;
 		ServletContext servletContext = getServletContext();
 		if (webServer == null && servletContext == null) {
+			StartupStep createWebServer = this.getApplicationStartup().start("spring.boot.webserver.create");
 			ServletWebServerFactory factory = getWebServerFactory();
+			createWebServer.tag("factory", factory.getClass().toString());
 			this.webServer = factory.getWebServer(getSelfInitializer());
+			createWebServer.end();
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
 					new WebServerGracefulShutdownLifecycle(this.webServer));
 			getBeanFactory().registerSingleton("webServerStartStop",

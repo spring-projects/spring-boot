@@ -28,6 +28,7 @@ dependencies {
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 	intTestImplementation("org.testcontainers:testcontainers")
+	intTestImplementation("org.testcontainers:junit-jupiter")
 
 	optional("org.apache.maven.plugins:maven-shade-plugin")
 
@@ -36,6 +37,7 @@ dependencies {
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-core")
 }
 
@@ -83,12 +85,6 @@ javadoc {
 	}
 }
 
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	attributes	"maven-jar-plugin-version": "1.2.3",
-				"maven-failsafe-plugin-version": "1.2.3",
-				"build-helper-maven-plugin-version": "1.2.3"
-}
-
 task zip(type: Zip) {
 	dependsOn asciidoctor, asciidoctorPdf
 	duplicatesStrategy "fail"
@@ -97,7 +93,7 @@ task zip(type: Zip) {
 		rename "index.pdf", "${project.name}-reference.pdf"
 	}
 	from(asciidoctor.outputDir) {
-		into "reference/html"
+		into "reference/htmlsingle"
 	}
 	from(javadoc) {
 		into "api"

@@ -212,9 +212,9 @@ class BasicErrorControllerMockMvcTests {
 
 	private class ErrorDispatcher implements RequestBuilder {
 
-		private MvcResult result;
+		private final MvcResult result;
 
-		private String path;
+		private final String path;
 
 		ErrorDispatcher(MvcResult result, String path) {
 			this.result = result;

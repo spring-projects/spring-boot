@@ -49,7 +49,7 @@ public final class WebFluxTags {
 
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
-	private static final Pattern TRAILING_SLASH_PATTERN = Pattern.compile("/$");
+	private static final Pattern FORWARD_SLASHES_PATTERN = Pattern.compile("//+");
 
 	private WebFluxTags() {
 	}
@@ -108,7 +108,7 @@ public final class WebFluxTags {
 		if (pathPattern != null) {
 			String patternString = pathPattern.getPatternString();
 			if (ignoreTrailingSlash && patternString.length() > 1) {
-				patternString = TRAILING_SLASH_PATTERN.matcher(patternString).replaceAll("");
+				patternString = removeTrailingSlash(patternString);
 			}
 			if (patternString.isEmpty()) {
 				return URI_ROOT;
@@ -134,7 +134,15 @@ public final class WebFluxTags {
 	private static String getPathInfo(ServerWebExchange exchange) {
 		String path = exchange.getRequest().getPath().value();
 		String uri = StringUtils.hasText(path) ? path : "/";
-		return uri.replaceAll("//+", "/").replaceAll("/$", "");
+		String singleSlashes = FORWARD_SLASHES_PATTERN.matcher(uri).replaceAll("/");
+		return removeTrailingSlash(singleSlashes);
+	}
+
+	private static String removeTrailingSlash(String text) {
+		if (!StringUtils.hasLength(text)) {
+			return text;
+		}
+		return text.endsWith("/") ? text.substring(0, text.length() - 1) : text;
 	}
 
 	/**

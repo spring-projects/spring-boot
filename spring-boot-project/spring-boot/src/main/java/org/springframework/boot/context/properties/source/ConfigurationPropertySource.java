@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.context.properties.source;
 import java.util.function.Predicate;
 
 import org.springframework.boot.origin.OriginTrackedValue;
+import org.springframework.core.env.PropertySource;
 
 /**
  * A source of {@link ConfigurationProperty ConfigurationProperties}.
@@ -79,6 +80,20 @@ public interface ConfigurationPropertySource {
 	 */
 	default Object getUnderlyingSource() {
 		return null;
+	}
+
+	/**
+	 * Return a single new {@link ConfigurationPropertySource} adapted from the given
+	 * Spring {@link PropertySource} or {@code null} if the source cannot be adapted.
+	 * @param source the Spring property source to adapt
+	 * @return an adapted source or {@code null} {@link SpringConfigurationPropertySource}
+	 * @since 2.4.0
+	 */
+	static ConfigurationPropertySource from(PropertySource<?> source) {
+		if (source instanceof ConfigurationPropertySourcesPropertySource) {
+			return null;
+		}
+		return SpringConfigurationPropertySource.from(source);
 	}
 
 }

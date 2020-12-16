@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.jdbc;
 
 import java.sql.SQLException;
+import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
@@ -88,11 +89,17 @@ class DataSourceUnwrapperTests {
 	}
 
 	@Test
+	void unwrappingIsNotAttemptedWhenTargetIsNotAnInterface() throws SQLException {
+		DataSource dataSource = mock(DataSource.class);
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class)).isNull();
+		verifyNoMoreInteractions(dataSource);
+	}
+
+	@Test
 	void unwrappingIsNotAttemptedWhenDataSourceIsNotWrapperForTarget() throws SQLException {
 		DataSource dataSource = mock(DataSource.class);
-		DataSource actual = DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
-		assertThat(actual).isNull();
-		verify(dataSource).isWrapperFor(HikariDataSource.class);
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, Consumer.class)).isNull();
+		verify(dataSource).isWrapperFor(Consumer.class);
 		verifyNoMoreInteractions(dataSource);
 	}
 

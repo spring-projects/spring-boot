@@ -128,8 +128,7 @@ public final class StaticResourceRequest {
 		}
 
 		private Stream<String> getPatterns() {
-			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns)
-					.map((pattern) -> pattern.replace("/**/", "/*/"));
+			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns);
 		}
 
 		@Override

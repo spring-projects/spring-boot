@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 public class ConfigurationTableTests {
 
-	private static String NEWLINE = System.lineSeparator();
+	private static final String NEWLINE = System.lineSeparator();
 
 	@Test
 	void simpleTable() {
@@ -38,11 +38,12 @@ public class ConfigurationTableTests {
 				"This is another description.", false);
 		table.addEntry(new SingleConfigurationTableEntry(first));
 		table.addEntry(new SingleConfigurationTableEntry(second));
-		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"1,1,2\", options=\"header\"]" + NEWLINE + "|==="
-				+ NEWLINE + "|Key|Default Value|Description" + NEWLINE + NEWLINE + "|`+spring.test.other+`" + NEWLINE
-				+ "|`+other value+`" + NEWLINE + "|+++This is another description.+++" + NEWLINE + NEWLINE
-				+ "|`+spring.test.prop+`" + NEWLINE + "|`+something+`" + NEWLINE + "|+++This is a description.+++"
-				+ NEWLINE + NEWLINE + "|===" + NEWLINE);
+		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"2,1,1\", options=\"header\"]" + NEWLINE + "|==="
+				+ NEWLINE + "|Key|Default Value|Description" + NEWLINE + NEWLINE
+				+ "|[[spring.test.other]]<<spring.test.other,`+spring.test.other+`>>" + NEWLINE + "|`+other value+`"
+				+ NEWLINE + "|+++This is another description.+++" + NEWLINE + NEWLINE
+				+ "|[[spring.test.prop]]<<spring.test.prop,`+spring.test.prop+`>>" + NEWLINE + "|`+something+`"
+				+ NEWLINE + "|+++This is a description.+++" + NEWLINE + NEWLINE + "|===" + NEWLINE);
 	}
 
 }

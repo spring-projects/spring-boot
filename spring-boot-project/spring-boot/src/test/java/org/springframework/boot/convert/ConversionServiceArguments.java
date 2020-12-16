@@ -57,6 +57,13 @@ final class ConversionServiceArguments {
 						"Application conversion service")));
 	}
 
+	static boolean isApplicationConversionService(ConversionService conversionService) {
+		if (conversionService instanceof NamedConversionService) {
+			return isApplicationConversionService(((NamedConversionService) conversionService).delegate);
+		}
+		return conversionService instanceof ApplicationConversionService;
+	}
+
 	static class NamedConversionService implements ConversionService {
 
 		private final ConversionService delegate;

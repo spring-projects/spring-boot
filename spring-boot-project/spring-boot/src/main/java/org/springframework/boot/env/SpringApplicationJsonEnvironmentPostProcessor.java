@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -123,9 +124,17 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	@SuppressWarnings("unchecked")
 	private void extract(String name, Map<String, Object> result, Object value) {
 		if (value instanceof Map) {
+			if (CollectionUtils.isEmpty((Map<?, ?>) value)) {
+				result.put(name, value);
+				return;
+			}
 			flatten(name, result, (Map<String, Object>) value);
 		}
 		else if (value instanceof Collection) {
+			if (CollectionUtils.isEmpty((Collection<?>) value)) {
+				result.put(name, value);
+				return;
+			}
 			int index = 0;
 			for (Object object : (Collection<Object>) value) {
 				extract(name + "[" + index + "]", result, object);

@@ -4,7 +4,7 @@ plugins {
 }
 
 bootJar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 }
 
 repositories {
@@ -18,4 +18,10 @@ dependencies {
 
 bootJar {
 	classpath configurations.developmentOnly
+}
+
+bootJar {
+	layered {
+		enabled = false
+	}
 }

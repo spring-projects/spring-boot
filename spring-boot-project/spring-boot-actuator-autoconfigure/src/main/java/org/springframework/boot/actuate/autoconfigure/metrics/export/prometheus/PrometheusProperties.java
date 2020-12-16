@@ -102,6 +102,16 @@ public class PrometheusProperties {
 		private String baseUrl = "http://localhost:9091";
 
 		/**
+		 * Login user of the Prometheus Pushgateway.
+		 */
+		private String username;
+
+		/**
+		 * Login password of the Prometheus Pushgateway.
+		 */
+		private String password;
+
+		/**
 		 * Frequency with which to push metrics.
 		 */
 		private Duration pushRate = Duration.ofMinutes(1);
@@ -135,6 +145,22 @@ public class PrometheusProperties {
 
 		public void setBaseUrl(String baseUrl) {
 			this.baseUrl = baseUrl;
+		}
+
+		public String getUsername() {
+			return this.username;
+		}
+
+		public void setUsername(String username) {
+			this.username = username;
+		}
+
+		public String getPassword() {
+			return this.password;
+		}
+
+		public void setPassword(String password) {
+			this.password = password;
 		}
 
 		public Duration getPushRate() {

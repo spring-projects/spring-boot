@@ -32,7 +32,7 @@ final class ApiVersions {
 	/**
 	 * The platform API versions supported by this release.
 	 */
-	static final ApiVersions SUPPORTED_PLATFORMS = new ApiVersions(ApiVersion.of(0, 3));
+	static final ApiVersions SUPPORTED_PLATFORMS = new ApiVersions(ApiVersion.of(0, 3), ApiVersion.of(0, 4));
 
 	private final ApiVersion[] apiVersions;
 
@@ -41,17 +41,24 @@ final class ApiVersions {
 	}
 
 	/**
-	 * Assert that the specified version is supported by these API versions.
-	 * @param other the version to check against
+	 * Find the latest version among the specified versions that is supported by these API
+	 * versions.
+	 * @param others the versions to check against
+	 * @return the version
 	 */
-	void assertSupports(ApiVersion other) {
-		for (ApiVersion apiVersion : this.apiVersions) {
-			if (apiVersion.supports(other)) {
-				return;
+	ApiVersion findLatestSupported(String... others) {
+		for (int versionsIndex = this.apiVersions.length - 1; versionsIndex >= 0; versionsIndex--) {
+			ApiVersion apiVersion = this.apiVersions[versionsIndex];
+			for (int otherIndex = others.length - 1; otherIndex >= 0; otherIndex--) {
+				ApiVersion other = ApiVersion.parse(others[otherIndex]);
+				if (apiVersion.supports(other)) {
+					return apiVersion;
+				}
 			}
 		}
 		throw new IllegalStateException(
-				"Detected platform API version '" + other + "' is not included in supported versions '" + this + "'");
+				"Detected platform API versions '" + StringUtils.arrayToCommaDelimitedString(others)
+						+ "' are not included in supported versions '" + this + "'");
 	}
 
 	@Override

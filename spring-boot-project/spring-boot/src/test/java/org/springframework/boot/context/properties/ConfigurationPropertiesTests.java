@@ -18,6 +18,7 @@ package org.springframework.boot.context.properties;
 
 import java.beans.PropertyEditorSupport;
 import java.io.File;
+import java.text.ParseException;
 import java.time.Duration;
 import java.time.Period;
 import java.time.temporal.ChronoUnit;
@@ -26,6 +27,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
@@ -56,7 +58,11 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 import org.springframework.boot.context.properties.bind.validation.BindValidationException;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.convert.DataSizeUnit;
+import org.springframework.boot.convert.DurationFormat;
+import org.springframework.boot.convert.DurationStyle;
 import org.springframework.boot.convert.DurationUnit;
+import org.springframework.boot.convert.PeriodFormat;
+import org.springframework.boot.convert.PeriodStyle;
 import org.springframework.boot.convert.PeriodUnit;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
@@ -77,6 +83,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.ProtocolResolver;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.format.Formatter;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.stereotype.Component;
 import org.springframework.test.context.support.TestPropertySourceUtils;
@@ -172,6 +179,14 @@ class ConfigurationPropertiesTests {
 		removeSystemProperties();
 		assertThatExceptionOfType(ConfigurationPropertiesBindException.class)
 				.isThrownBy(() -> load(IgnoreUnknownFieldsFalseConfiguration.class, "name=foo", "bar=baz"))
+				.withCauseInstanceOf(BindException.class);
+	}
+
+	@Test
+	void givenIgnoreUnknownFieldsFalseAndIgnoreInvalidFieldsTrueWhenThereAreUnknownFieldsThenBindingShouldFail() {
+		removeSystemProperties();
+		assertThatExceptionOfType(ConfigurationPropertiesBindException.class).isThrownBy(
+				() -> load(IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueConfiguration.class, "name=foo", "bar=baz"))
 				.withCauseInstanceOf(BindException.class);
 	}
 
@@ -606,7 +621,7 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadShouldUseConfigurationConverter() {
+	void loadShouldUseConverterBean() {
 		prepareConverterContext(ConverterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
@@ -622,8 +637,16 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
-	void loadShouldUseGenericConfigurationConverter() {
+	void loadShouldUseGenericConverterBean() {
 		prepareConverterContext(GenericConverterConfiguration.class, PersonProperties.class);
+		Person person = this.context.getBean(PersonProperties.class).getPerson();
+		assertThat(person.firstName).isEqualTo("John");
+		assertThat(person.lastName).isEqualTo("Smith");
+	}
+
+	@Test
+	void loadShouldUseFormatterBean() {
+		prepareConverterContext(FormatterConfiguration.class, PersonProperties.class);
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
@@ -798,6 +821,51 @@ class ConfigurationPropertiesTests {
 		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
 		assertThat(bean.getSize()).isEqualTo(DataSize.ofMegabytes(3));
 		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(4));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithCustomDataFormatShouldBind() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "12d");
+		source.put("test.period", "13y");
+		sources.addLast(new MapPropertySource("test", source));
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+				.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(12));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(13));
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomDurationFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.duration", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithNotMatchingCustomPeriodFormatShouldFail() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		Map<String, Object> source = new HashMap<>();
+		source.put("test.period", "P12D");
+		sources.addLast(new MapPropertySource("test", source));
+		assertThatExceptionOfType(Exception.class)
+				.isThrownBy(() -> load(ConstructorParameterWithFormatConfiguration.class)).havingCause()
+				.isInstanceOf(BindException.class);
+	}
+
+	@Test
+	void loadWhenBindingToConstructorParametersWithDefaultDataFormatShouldBind() {
+		load(ConstructorParameterWithFormatConfiguration.class);
+		ConstructorParameterWithFormatProperties bean = this.context
+				.getBean(ConstructorParameterWithFormatProperties.class);
+		assertThat(bean.getDuration()).isEqualTo(Duration.ofDays(2));
+		assertThat(bean.getPeriod()).isEqualTo(Period.ofYears(3));
 	}
 
 	@Test
@@ -997,6 +1065,12 @@ class ConfigurationPropertiesTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(IgnoreUnknownFieldsFalseProperties.class)
 	static class IgnoreUnknownFieldsFalseConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueProperties.class)
+	static class IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueConfiguration {
 
 	}
 
@@ -1264,6 +1338,17 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	static class FormatterConfiguration {
+
+		@Bean
+		@ConfigurationPropertiesBinding
+		Formatter<Person> personFormatter() {
+			return new PersonFormatter();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
 	static class NonQualifiedGenericConverterConfiguration {
 
 		@Bean
@@ -1444,6 +1529,11 @@ class ConfigurationPropertiesTests {
 
 	@ConfigurationProperties(ignoreUnknownFields = false)
 	static class IgnoreUnknownFieldsFalseProperties extends BasicProperties {
+
+	}
+
+	@ConfigurationProperties(ignoreUnknownFields = false, ignoreInvalidFields = true)
+	static class IgnoreUnknownFieldsFalseIgnoreInvalidFieldsTrueProperties extends BasicProperties {
 
 	}
 
@@ -1990,6 +2080,31 @@ class ConfigurationPropertiesTests {
 
 	@ConstructorBinding
 	@ConfigurationProperties(prefix = "test")
+	static class ConstructorParameterWithFormatProperties {
+
+		private final Duration duration;
+
+		private final Period period;
+
+		ConstructorParameterWithFormatProperties(
+				@DefaultValue("2d") @DurationFormat(DurationStyle.SIMPLE) Duration duration,
+				@DefaultValue("3y") @PeriodFormat(PeriodStyle.SIMPLE) Period period) {
+			this.duration = duration;
+			this.period = period;
+		}
+
+		Duration getDuration() {
+			return this.duration;
+		}
+
+		Period getPeriod() {
+			return this.period;
+		}
+
+	}
+
+	@ConstructorBinding
+	@ConfigurationProperties(prefix = "test")
 	@Validated
 	static class ConstructorParameterValidatedProperties {
 
@@ -2013,6 +2128,11 @@ class ConfigurationPropertiesTests {
 
 	@EnableConfigurationProperties(ConstructorParameterWithUnitProperties.class)
 	static class ConstructorParameterWithUnitConfiguration {
+
+	}
+
+	@EnableConfigurationProperties(ConstructorParameterWithFormatProperties.class)
+	static class ConstructorParameterWithFormatConfiguration {
 
 	}
 
@@ -2060,12 +2180,27 @@ class ConfigurationPropertiesTests {
 
 	}
 
+	static class PersonFormatter implements Formatter<Person> {
+
+		@Override
+		public String print(Person person, Locale locale) {
+			return person.getFirstName() + " " + person.getLastName();
+		}
+
+		@Override
+		public Person parse(String text, Locale locale) throws ParseException {
+			String[] content = text.split(" ");
+			return new Person(content[0], content[1]);
+		}
+
+	}
+
 	static class PersonPropertyEditor extends PropertyEditorSupport {
 
 		@Override
 		public void setAsText(String text) throws IllegalArgumentException {
-			String[] split = text.split(",");
-			setValue(new Person(split[1], split[0]));
+			String[] content = text.split(",");
+			setValue(new Person(content[1], content[0]));
 		}
 
 	}
@@ -2079,6 +2214,14 @@ class ConfigurationPropertiesTests {
 		Person(String firstName, String lastName) {
 			this.firstName = firstName;
 			this.lastName = lastName;
+		}
+
+		String getFirstName() {
+			return this.firstName;
+		}
+
+		String getLastName() {
+			return this.lastName;
 		}
 
 	}

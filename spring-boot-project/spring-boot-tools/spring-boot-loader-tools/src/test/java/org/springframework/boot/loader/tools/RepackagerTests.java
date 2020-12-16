@@ -140,6 +140,15 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 	}
 
 	@Test
+	void layoutFactoryGetsOriginalFile() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), false);
+		repackager.setLayoutFactory(new TestLayoutFactory());
+		repackager.repackage(this.destination, NO_LIBRARIES);
+		assertThat(hasLauncherClasses(this.destination)).isTrue();
+	}
+
+	@Test
 	void addLauncherScript() throws Exception {
 		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
 		File source = this.testJarFile.getFile();
@@ -262,6 +271,16 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 		@Override
 		public byte[] toByteArray() {
 			return this.bytes;
+		}
+
+	}
+
+	static class TestLayoutFactory implements LayoutFactory {
+
+		@Override
+		public Layout getLayout(File source) {
+			assertThat(source.length()).isGreaterThan(0);
+			return new DefaultLayoutFactory().getLayout(source);
 		}
 
 	}

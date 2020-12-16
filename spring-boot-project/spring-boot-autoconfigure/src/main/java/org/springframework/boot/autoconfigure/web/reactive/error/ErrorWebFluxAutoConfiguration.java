@@ -25,8 +25,8 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
@@ -48,11 +48,13 @@ import org.springframework.web.reactive.result.view.ViewResolver;
  * @author Scott Frederick
  * @since 2.0.0
  */
+@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = ConditionalOnWebApplication.Type.REACTIVE)
 @ConditionalOnClass(WebFluxConfigurer.class)
 @AutoConfigureBefore(WebFluxAutoConfiguration.class)
-@EnableConfigurationProperties({ ServerProperties.class, ResourceProperties.class })
+@EnableConfigurationProperties({ ServerProperties.class,
+		org.springframework.boot.autoconfigure.web.ResourceProperties.class, WebProperties.class })
 public class ErrorWebFluxAutoConfiguration {
 
 	private final ServerProperties serverProperties;
@@ -65,10 +67,12 @@ public class ErrorWebFluxAutoConfiguration {
 	@ConditionalOnMissingBean(value = ErrorWebExceptionHandler.class, search = SearchStrategy.CURRENT)
 	@Order(-1)
 	public ErrorWebExceptionHandler errorWebExceptionHandler(ErrorAttributes errorAttributes,
-			ResourceProperties resourceProperties, ObjectProvider<ViewResolver> viewResolvers,
+			org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+			WebProperties webProperties, ObjectProvider<ViewResolver> viewResolvers,
 			ServerCodecConfigurer serverCodecConfigurer, ApplicationContext applicationContext) {
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
-				resourceProperties, this.serverProperties.getError(), applicationContext);
+				resourceProperties.hasBeenCustomized() ? resourceProperties : webProperties.getResources(),
+				this.serverProperties.getError(), applicationContext);
 		exceptionHandler.setViewResolvers(viewResolvers.orderedStream().collect(Collectors.toList()));
 		exceptionHandler.setMessageWriters(serverCodecConfigurer.getWriters());
 		exceptionHandler.setMessageReaders(serverCodecConfigurer.getReaders());

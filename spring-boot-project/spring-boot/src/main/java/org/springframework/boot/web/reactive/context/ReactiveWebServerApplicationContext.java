@@ -24,6 +24,7 @@ import org.springframework.boot.web.context.ConfigurableWebServerApplicationCont
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.ApplicationContextException;
+import org.springframework.core.metrics.StartupStep;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.util.StringUtils;
 
@@ -84,14 +85,17 @@ public class ReactiveWebServerApplicationContext extends GenericReactiveWebAppli
 	private void createWebServer() {
 		WebServerManager serverManager = this.serverManager;
 		if (serverManager == null) {
+			StartupStep createWebServer = this.getApplicationStartup().start("spring.boot.webserver.create");
 			String webServerFactoryBeanName = getWebServerFactoryBeanName();
 			ReactiveWebServerFactory webServerFactory = getWebServerFactory(webServerFactoryBeanName);
+			createWebServer.tag("factory", webServerFactory.getClass().toString());
 			boolean lazyInit = getBeanFactory().getBeanDefinition(webServerFactoryBeanName).isLazyInit();
 			this.serverManager = new WebServerManager(this, webServerFactory, this::getHttpHandler, lazyInit);
 			getBeanFactory().registerSingleton("webServerGracefulShutdown",
 					new WebServerGracefulShutdownLifecycle(this.serverManager));
 			getBeanFactory().registerSingleton("webServerStartStop",
 					new WebServerStartStopLifecycle(this.serverManager));
+			createWebServer.end();
 		}
 		initPropertySources();
 	}

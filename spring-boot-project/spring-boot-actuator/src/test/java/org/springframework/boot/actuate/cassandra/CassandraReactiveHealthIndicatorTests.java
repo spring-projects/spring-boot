@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.cassandra;
 
 import com.datastax.oss.driver.api.core.cql.SimpleStatement;
@@ -37,6 +38,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Artsiom Yudovin
  */
+@Deprecated
 class CassandraReactiveHealthIndicatorTests {
 
 	@Test

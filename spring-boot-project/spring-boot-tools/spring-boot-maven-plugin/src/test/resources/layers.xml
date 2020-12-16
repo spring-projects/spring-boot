@@ -1,7 +1,7 @@
 <layers xmlns="http://www.springframework.org/schema/boot/layers"
 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
 	xsi:schemaLocation="http://www.springframework.org/schema/boot/layers
-					  https://www.springframework.org/schema/boot/layers/layers-2.3.xsd">
+					  https://www.springframework.org/schema/boot/layers/layers-2.4.xsd">
 	<application>
 		<into layer="my-resources">
 			<include>META-INF/resources/**</include>
@@ -15,6 +15,10 @@
 	<dependencies>
 		<into layer="snapshot-dependencies">
 			<include>*:*:*-SNAPSHOT</include>
+			<excludeModuleDependencies/>
+		</into>
+		<into layer="application">
+			<includeModuleDependencies/>
 		</into>
 		<into layer="my-deps">
 			<include>com.acme:*</include>

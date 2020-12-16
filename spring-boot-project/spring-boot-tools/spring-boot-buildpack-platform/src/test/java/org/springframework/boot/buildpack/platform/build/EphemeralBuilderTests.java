@@ -25,7 +25,7 @@ import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
-import java.util.Collections;
+import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -68,7 +68,9 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 	void setup() throws Exception {
 		this.image = Image.of(getContent("image.json"));
 		this.metadata = BuilderMetadata.fromImage(this.image);
-		this.env = Collections.singletonMap("spring", "boot");
+		this.env = new HashMap<>();
+		this.env.put("spring", "boot");
+		this.env.put("empty", null);
 	}
 
 	@Test
@@ -113,6 +115,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
 		File directory = unpack(getLayer(builder.getArchive(), 0), "env");
 		assertThat(new File(directory, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
+		assertThat(new File(directory, "platform/env/empty")).usingCharset(StandardCharsets.UTF_8).hasContent("");
 	}
 
 	private TarArchiveInputStream getLayer(ImageArchive archive, int index) throws Exception {

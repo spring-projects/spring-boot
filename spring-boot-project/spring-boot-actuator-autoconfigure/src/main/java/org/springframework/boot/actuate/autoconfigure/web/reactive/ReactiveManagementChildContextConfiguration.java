@@ -16,9 +16,13 @@
 
 package org.springframework.boot.actuate.autoconfigure.web.reactive;
 
+import java.util.Collections;
+import java.util.Map;
+
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.ManagementContextType;
+import org.springframework.boot.actuate.autoconfigure.web.server.ManagementServerProperties;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementWebServerFactoryCustomizer;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
@@ -31,7 +35,9 @@ import org.springframework.boot.autoconfigure.web.reactive.TomcatReactiveWebServ
 import org.springframework.boot.web.reactive.server.ConfigurableReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
+import org.springframework.http.server.reactive.ContextPathCompositeHandler;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.util.StringUtils;
 import org.springframework.web.reactive.config.EnableWebFlux;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 
@@ -45,7 +51,7 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
  * @since 2.0.0
  */
 @EnableWebFlux
-@ManagementContextConfiguration(ManagementContextType.CHILD)
+@ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.REACTIVE)
 public class ReactiveManagementChildContextConfiguration {
 
@@ -56,8 +62,13 @@ public class ReactiveManagementChildContextConfiguration {
 	}
 
 	@Bean
-	public HttpHandler httpHandler(ApplicationContext applicationContext) {
-		return WebHttpHandlerBuilder.applicationContext(applicationContext).build();
+	public HttpHandler httpHandler(ApplicationContext applicationContext, ManagementServerProperties properties) {
+		HttpHandler httpHandler = WebHttpHandlerBuilder.applicationContext(applicationContext).build();
+		if (StringUtils.hasText(properties.getBasePath())) {
+			Map<String, HttpHandler> handlersMap = Collections.singletonMap(properties.getBasePath(), httpHandler);
+			return new ContextPathCompositeHandler(handlersMap);
+		}
+		return httpHandler;
 	}
 
 	static class ReactiveManagementWebServerFactoryCustomizer

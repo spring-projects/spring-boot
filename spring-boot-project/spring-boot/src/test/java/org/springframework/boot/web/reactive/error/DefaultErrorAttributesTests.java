@@ -165,6 +165,19 @@ class DefaultErrorAttributesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
+	void excludeExceptionWithDeprecatedConstructor() {
+		RuntimeException error = new RuntimeException("Test");
+		this.errorAttributes = new DefaultErrorAttributes(false);
+		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
+		ServerRequest serverRequest = buildServerRequest(request, error);
+		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
+				ErrorAttributeOptions.of());
+		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+		assertThat(attributes.get("exception")).isNull();
+	}
+
+	@Test
 	void processResponseStatusException() {
 		RuntimeException nested = new RuntimeException("Test");
 		ResponseStatusException error = new ResponseStatusException(HttpStatus.BAD_REQUEST, "invalid request", nested);

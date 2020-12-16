@@ -16,12 +16,19 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.util.regex.Pattern;
+
+import org.apache.kafka.streams.StreamsBuilder;
+import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.KTable;
+import org.apache.kafka.streams.kstream.Materialized;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.kafka.KafkaAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.kafka.annotation.EnableKafkaStreams;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
@@ -92,6 +99,12 @@ class KafkaMetricsAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableKafkaStreams
 	static class EnableKafkaStreamsConfiguration {
+
+		@Bean
+		KTable<?, ?> table(StreamsBuilder builder) {
+			KStream<Object, Object> stream = builder.stream(Pattern.compile("test"));
+			return stream.groupByKey().count(Materialized.as("store"));
+		}
 
 	}
 

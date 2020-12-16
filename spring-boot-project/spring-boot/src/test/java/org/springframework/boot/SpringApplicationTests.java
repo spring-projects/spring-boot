@@ -24,6 +24,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
+import java.util.function.Supplier;
 
 import javax.annotation.PostConstruct;
 
@@ -47,6 +48,7 @@ import org.springframework.beans.factory.support.BeanDefinitionOverrideException
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.beans.factory.support.DefaultBeanNameGenerator;
+import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
@@ -100,8 +102,12 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.metrics.ApplicationStartup;
+import org.springframework.core.metrics.StartupStep;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.test.context.support.TestPropertySourceUtils;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.ConfigurableWebEnvironment;
 import org.springframework.web.context.WebApplicationContext;
@@ -111,11 +117,15 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.argThat;
 import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.BDDMockito.willThrow;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.mockingDetails;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
@@ -134,6 +144,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Artsiom Yudovin
+ * @author Marten Deinum
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -331,8 +342,8 @@ class SpringApplicationTests {
 	@Test
 	void specificApplicationContextFactory() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextFactory(
-				ApplicationContextFactory.forContextClass(StaticApplicationContext.class));
+		application
+				.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class));
 		this.context = application.run();
 		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
 	}
@@ -587,8 +598,8 @@ class SpringApplicationTests {
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		this.context = application.run("--spring.profiles.active=bar,spam");
-		// Command line should always come last
-		assertThat(environment.getActiveProfiles()).containsExactly("foo", "bar", "spam");
+		// Since Boot 2.4 additional should always be last
+		assertThat(environment.getActiveProfiles()).containsExactly("bar", "spam", "foo");
 	}
 
 	@Test
@@ -679,13 +690,11 @@ class SpringApplicationTests {
 		application.addListeners(eventListener);
 		this.context = application.run();
 		InOrder applicationRunnerOrder = Mockito.inOrder(eventListener, applicationRunner);
-		applicationRunnerOrder.verify(applicationRunner).run(ArgumentMatchers.any(ApplicationArguments.class));
-		applicationRunnerOrder.verify(eventListener)
-				.onApplicationEvent(ArgumentMatchers.any(ApplicationReadyEvent.class));
+		applicationRunnerOrder.verify(applicationRunner).run(any(ApplicationArguments.class));
+		applicationRunnerOrder.verify(eventListener).onApplicationEvent(any(ApplicationReadyEvent.class));
 		InOrder commandLineRunnerOrder = Mockito.inOrder(eventListener, commandLineRunner);
 		commandLineRunnerOrder.verify(commandLineRunner).run();
-		commandLineRunnerOrder.verify(eventListener)
-				.onApplicationEvent(ArgumentMatchers.any(ApplicationReadyEvent.class));
+		commandLineRunnerOrder.verify(eventListener).onApplicationEvent(any(ApplicationReadyEvent.class));
 	}
 
 	@Test
@@ -889,8 +898,7 @@ class SpringApplicationTests {
 	@Test
 	void registerShutdownHook() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application
-				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
+		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		this.context = application.run();
 		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
 		verify(applicationContext.getApplicationContext()).registerShutdownHook();
@@ -899,8 +907,7 @@ class SpringApplicationTests {
 	@Test
 	void registerListener() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class, ListenerConfig.class);
-		application
-				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
+		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
@@ -913,8 +920,7 @@ class SpringApplicationTests {
 	void registerListenerWithCustomMulticaster() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class, ListenerConfig.class,
 				Multicaster.class);
-		application
-				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
+		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		Set<ApplicationEvent> events = new LinkedHashSet<>();
 		application.addListeners((ApplicationListener<ApplicationEvent>) events::add);
 		this.context = application.run();
@@ -994,8 +1000,7 @@ class SpringApplicationTests {
 	@Test
 	void registerShutdownHookOff() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application
-				.setApplicationContextFactory(ApplicationContextFactory.forContextClass(SpyApplicationContext.class));
+		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		application.setRegisterShutdownHook(false);
 		this.context = application.run();
 		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
@@ -1151,6 +1156,81 @@ class SpringApplicationTests {
 		assertThat(new SpringApplication(LazyInitializationExcludeFilterConfig.class)
 				.run("--spring.main.web-application-type=none", "--spring.main.lazy-initialization=true")
 				.getBean(AtomicInteger.class)).hasValue(1);
+	}
+
+	@Test
+	void customApplicationStartupPublishStartupSteps() {
+		ApplicationStartup applicationStartup = mock(ApplicationStartup.class);
+		StartupStep startupStep = mock(StartupStep.class);
+		given(applicationStartup.start(anyString())).willReturn(startupStep);
+		given(startupStep.tag(anyString(), anyString())).willReturn(startupStep);
+		given(startupStep.tag(anyString(), ArgumentMatchers.<Supplier<String>>any())).willReturn(startupStep);
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setApplicationStartup(applicationStartup);
+		this.context = application.run();
+		assertThat(this.context.getBean(ApplicationStartup.class)).isEqualTo(applicationStartup);
+		verify(applicationStartup).start("spring.boot.application.starting");
+		verify(applicationStartup).start("spring.boot.application.environment-prepared");
+		verify(applicationStartup).start("spring.boot.application.context-prepared");
+		verify(applicationStartup).start("spring.boot.application.context-loaded");
+		verify(applicationStartup).start("spring.boot.application.started");
+		verify(applicationStartup).start("spring.boot.application.running");
+		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
+		long endCount = mockingDetails(startupStep).getInvocations().stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("end(")).count();
+		assertThat(startCount).isEqualTo(endCount);
+	}
+
+	@Test
+	void customApplicationStartupPublishStartupStepsWithFailure() {
+		ApplicationStartup applicationStartup = mock(ApplicationStartup.class);
+		StartupStep startupStep = mock(StartupStep.class);
+		given(applicationStartup.start(anyString())).willReturn(startupStep);
+		given(startupStep.tag(anyString(), anyString())).willReturn(startupStep);
+		given(startupStep.tag(anyString(), ArgumentMatchers.<Supplier<String>>any())).willReturn(startupStep);
+		SpringApplication application = new SpringApplication(BrokenPostConstructConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setApplicationStartup(applicationStartup);
+		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
+		verify(applicationStartup).start("spring.boot.application.starting");
+		verify(applicationStartup).start("spring.boot.application.environment-prepared");
+		verify(applicationStartup).start("spring.boot.application.failed");
+		long startCount = mockingDetails(applicationStartup).getInvocations().stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("start(")).count();
+		long endCount = mockingDetails(startupStep).getInvocations().stream()
+				.filter((invocation) -> invocation.getMethod().toString().contains("end(")).count();
+		assertThat(startCount).isEqualTo(endCount);
+	}
+
+	@Test
+	void addBootstrapper() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.addBootstrapper(
+				(bootstrapContext) -> bootstrapContext.register(String.class, InstanceSupplier.of("boot")));
+		TestApplicationListener listener = new TestApplicationListener();
+		application.addListeners(listener);
+		application.run();
+		ApplicationStartingEvent startingEvent = listener.getEvent(ApplicationStartingEvent.class);
+		assertThat(startingEvent.getBootstrapContext().get(String.class));
+		ApplicationEnvironmentPreparedEvent environmentPreparedEvent = listener
+				.getEvent(ApplicationEnvironmentPreparedEvent.class);
+		assertThat(environmentPreparedEvent.getBootstrapContext().get(String.class));
+	}
+
+	@Test
+	void addBootstrapperCanRegisterBeans() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.addBootstrapper((bootstrapContext) -> {
+			bootstrapContext.register(String.class, InstanceSupplier.of("boot"));
+			bootstrapContext.addCloseListener((event) -> event.getApplicationContext().getBeanFactory()
+					.registerSingleton("test", event.getBootstrapContext().get(String.class)));
+		});
+		ConfigurableApplicationContext applicationContext = application.run();
+		assertThat(applicationContext.getBean("test")).isEqualTo("boot");
 	}
 
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
@@ -1426,7 +1506,7 @@ class SpringApplicationTests {
 
 		@Bean
 		AtomicInteger counter() {
-			return new AtomicInteger(0);
+			return new AtomicInteger();
 		}
 
 		@Bean
@@ -1449,7 +1529,7 @@ class SpringApplicationTests {
 
 		@Bean
 		AtomicInteger counter() {
-			return new AtomicInteger(0);
+			return new AtomicInteger();
 		}
 
 		@Bean
@@ -1473,7 +1553,7 @@ class SpringApplicationTests {
 
 		@Bean
 		AtomicInteger counter() {
-			return new AtomicInteger(0);
+			return new AtomicInteger();
 		}
 
 		@Bean
@@ -1606,6 +1686,22 @@ class SpringApplicationTests {
 		@Override
 		public ClassLoader getClassLoader() {
 			return getClass().getClassLoader();
+		}
+
+	}
+
+	static class TestApplicationListener implements ApplicationListener<ApplicationEvent> {
+
+		private final MultiValueMap<Class<?>, ApplicationEvent> events = new LinkedMultiValueMap<>();
+
+		@Override
+		public void onApplicationEvent(ApplicationEvent event) {
+			this.events.add(event.getClass(), event);
+		}
+
+		@SuppressWarnings("unchecked")
+		<E extends ApplicationEvent> E getEvent(Class<E> type) {
+			return (E) this.events.get(type).get(0);
 		}
 
 	}

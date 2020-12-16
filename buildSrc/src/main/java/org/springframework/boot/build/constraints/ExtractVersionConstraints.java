@@ -103,7 +103,10 @@ public class ExtractVersionConstraints extends DefaultTask {
 		Object bom = getProject().project(projectPath).getExtensions().getByName("bom");
 		BomExtension bomExtension = (BomExtension) bom;
 		for (Library lib : bomExtension.getLibraries()) {
-			this.versionProperties.add(new VersionProperty(lib.getName(), lib.getVersionProperty()));
+			String versionProperty = lib.getVersionProperty();
+			if (versionProperty != null) {
+				this.versionProperties.add(new VersionProperty(lib.getName(), versionProperty));
+			}
 		}
 	}
 

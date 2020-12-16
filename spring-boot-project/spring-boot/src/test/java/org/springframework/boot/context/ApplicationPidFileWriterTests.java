@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationPreparedEvent;
@@ -123,7 +124,8 @@ class ApplicationPidFileWriterTests {
 		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.setTriggerEventType(ApplicationStartingEvent.class);
-		listener.onApplicationEvent(new ApplicationStartingEvent(new SpringApplication(), new String[] {}));
+		listener.onApplicationEvent(
+				new ApplicationStartingEvent(new DefaultBootstrapContext(), new SpringApplication(), new String[] {}));
 		assertThat(contentOf(file)).isNotEmpty();
 	}
 
@@ -170,7 +172,8 @@ class ApplicationPidFileWriterTests {
 
 	private SpringApplicationEvent createEnvironmentPreparedEvent(String propName, String propValue) {
 		ConfigurableEnvironment environment = createEnvironment(propName, propValue);
-		return new ApplicationEnvironmentPreparedEvent(new SpringApplication(), new String[] {}, environment);
+		return new ApplicationEnvironmentPreparedEvent(new DefaultBootstrapContext(), new SpringApplication(),
+				new String[] {}, environment);
 	}
 
 	private SpringApplicationEvent createPreparedEvent(String propName, String propValue) {

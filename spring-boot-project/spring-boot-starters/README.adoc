@@ -4,7 +4,7 @@ Spring Boot Starters are a set of convenient dependency descriptors that you can
 in your application. You get a one-stop-shop for all the Spring and related technology
 that you need without having to hunt through sample code and copy paste loads of
 dependency descriptors. For example, if you want to get started using Spring and
-JPA for database access just include the `spring-boot-starter-data-jpa` dependency in
+JPA for database access include the `spring-boot-starter-data-jpa` dependency in
 your project, and you are good to go.
 
 For complete details see the
@@ -12,7 +12,7 @@ https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot
 
 == Community Contributions
 If you create a starter for a technology that is not already in the standard list we can
-list it here. Just send a pull request for this page.
+list it here. To ask us to do so, please open a pull request that updates this page.
 
 WARNING: While the
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
@@ -21,6 +21,9 @@ do as they were designed before this was clarified.
 
 |===
 | Name | Location
+
+| AOProfiling (Aspect-oriented profiling)
+| https://github.com/rechnerherz/aoprofiling-spring-boot-starter
 
 | https://camel.apache.org/camel-spring-boot/latest/spring-boot.html[Apache Camel]
 | https://github.com/apache/camel-spring-boot
@@ -70,6 +73,9 @@ do as they were designed before this was clarified.
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
+| https://github.com/Allurx/desensitization[desensitization]
+| https://github.com/Allurx/desensitization-spring-boot
+
 | https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
 | https://github.com/jliu666/docker-api-spring-boot
 
@@ -112,6 +118,9 @@ do as they were designed before this was clarified.
 | Hiatus for Spring Boot
 | https://github.com/jihor/hiatus-spring-boot
 
+| https://www.hyperledger.org/use/fabric[Hyperledger Fabric]
+| https://github.com/bxforce/hyperledger-fabric-spring-boot
+
 | https://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
@@ -123,6 +132,9 @@ do as they were designed before this was clarified.
 
 | https://javers.org[JaVers]
 | https://github.com/javers/javers
+
+| https://www.jobrunr.io[JobRunr]
+| https://github.com/jobrunr/jobrunr
 
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter

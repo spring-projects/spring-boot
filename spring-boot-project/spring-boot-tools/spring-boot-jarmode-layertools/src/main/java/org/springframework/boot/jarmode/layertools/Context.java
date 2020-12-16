@@ -40,7 +40,7 @@ class Context {
 
 	private final File workingDir;
 
-	private String relativeDir;
+	private final String relativeDir;
 
 	/**
 	 * Create a new {@link Context} instance.

@@ -96,9 +96,11 @@ For these reasons, lazy initialization is not enabled by default and it is recom
 Lazy initialization can be enabled programmatically using the `lazyInitialization` method on `SpringApplicationBuilder` or the `setLazyInitialization` method on `SpringApplication`.
 Alternatively, it can be enabled using the configprop:spring.main.lazy-initialization[] property as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.main.lazy-initialization=true
+	spring:
+	  main:
+	    lazy-initialization: true
 ----
 
 TIP: If you want to disable lazy initialization for certain beans while using lazy initialization for the rest of the application, you can explicitly set their lazy attribute to false using the `@Lazy(false)` annotation.
@@ -312,7 +314,7 @@ Application events are sent in the following order, as your application runs:
 . An `ApplicationPreparedEvent` is sent just before the refresh is started but after bean definitions have been loaded.
 . An `ApplicationStartedEvent` is sent after the context has been refreshed but before any application and command-line runners have been called.
 . An `AvailabilityChangeEvent` is sent right after with `LivenessState.CORRECT` to indicate that the application is considered as live.
-. An `ApplicationReadyEvent` is sent after any application and command-line runners have been called.
+. An `ApplicationReadyEvent` is sent after any <<boot-features-command-line-runner,application and command-line runners>> have been called.
 . An `AvailabilityChangeEvent` is sent right after with `ReadinessState.ACCEPTING_TRAFFIC` to indicate that the application is ready to service requests.
 . An `ApplicationFailedEvent` is sent if there is an exception on startup.
 
@@ -326,6 +328,9 @@ In addition to these, the following events are also published after `Application
 TIP: You often need not use application events, but it can be handy to know that they exist.
 Internally, Spring Boot uses events to handle a variety of tasks.
 
+NOTE: Event listeners should not run potentially lengthy tasks as they execute in the same thread by default.
+Consider using <<boot-features-command-line-runner,application and command-line runners>> instead.
+
 Application events are sent by using Spring Framework's event publishing mechanism.
 Part of this mechanism ensures that an event published to the listeners in a child context is also published to the listeners in any ancestor contexts.
 As a result of this, if your application uses a hierarchy of `SpringApplication` instances, a listener may receive multiple instances of the same type of application event.
@@ -338,7 +343,7 @@ The context can be injected by implementing `ApplicationContextAware` or, if the
 [[boot-features-web-environment]]
 === Web Environment
 A `SpringApplication` attempts to create the right type of `ApplicationContext` on your behalf.
-The algorithm used to determine a `WebApplicationType` is fairly simple:
+The algorithm used to determine a `WebApplicationType` is the following:
 
 * If Spring MVC is present, an `AnnotationConfigServletWebServerApplicationContext` is used
 * If Spring MVC is not present and Spring WebFlux is present, an `AnnotationConfigReactiveWebServerApplicationContext` is used
@@ -387,7 +392,10 @@ This lets you also inject single application arguments by using the `@Value` ann
 If you need to run some specific code once the `SpringApplication` has started, you can implement the `ApplicationRunner` or `CommandLineRunner` interfaces.
 Both interfaces work in the same way and offer a single `run` method, which is called just before `SpringApplication.run(...)` completes.
 
-The `CommandLineRunner` interfaces provides access to application arguments as a simple string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
+NOTE: This contract is well suited for tasks that should run after application startup but before it starts accepting traffic.
+
+
+The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
 
 [source,java,indent=0]
@@ -438,35 +446,72 @@ TIP: If you want to know on which HTTP port the application is running, get the 
 
 
 
+[[boot-features-application-startup-tracking]]
+=== Application Startup tracking
+During the application startup, the `SpringApplication` and the `ApplicationContext` perform many tasks related to the application lifecycle,
+the beans lifecycle or even processing application events.
+With {spring-framework-api}/core/metrics/ApplicationStartup.html[`ApplicationStartup`], Spring Framework  {spring-framework-docs}/core.html#context-functionality-startup[allows you to track the application startup sequence with ``StartupStep``s].
+This data can be collected for profiling purposes, or just to have a better understanding of an application startup process.
+
+You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.
+For example, to use the `BufferingApplicationStartup`, you could write:
+
+[source,java,indent=0]
+----
+	public static void main(String[] args) {
+		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
+		app.setApplicationStartup(new BufferingApplicationStartup(2048));
+		app.run(args);
+	}
+----
+
+The first available implementation, `FlightRecorderApplicationStartup` is provided by Spring Framework.
+It adds Spring-specific startup events to a Java Flight Recorder session and is meant for profiling applications and correlating their Spring context lifecycle with JVM events (such as allocations, GCs, class loading...).
+Once configured, you can record data by running the application with the Flight Recorder enabled:
+
+[source,bash,indent=0]
+----
+	$ java -XX:StartFlightRecording:filename=recording.jfr,duration=10s -jar demo.jar
+----
+
+Spring Boot ships with the `BufferingApplicationStartup` variant; this implementation is meant for buffering the startup steps and draining them into an external metrics system.
+Applications can ask for the bean of type `BufferingApplicationStartup` in any component.
+Additionally, Spring Boot Actuator will <<production-ready-features.adoc#production-ready-endpoints, expose a `startup` endpoint to expose this information as a JSON document>>.
+
 [[boot-features-external-config]]
 == Externalized Configuration
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
-You can use properties files, YAML files, environment variables, and command-line arguments to externalize configuration.
+You can use a variety of external configuration sources, include Java properties files, YAML files, environment variables, and command-line arguments.
+
 Property values can be injected directly into your beans by using the `@Value` annotation, accessed through Spring's `Environment` abstraction, or be <<boot-features-external-config-typesafe-configuration-properties,bound to structured objects>> through `@ConfigurationProperties`.
 
 Spring Boot uses a very particular `PropertySource` order that is designed to allow sensible overriding of values.
-Properties are considered in the following order:
+Properties are considered in the following order (with values from lower items overriding earlier ones):
 
-. <<using-spring-boot.adoc#using-boot-devtools-globalsettings,Devtools global settings properties>> in the `$HOME/.config/spring-boot` directory when devtools is active.
-. {spring-framework-api}/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
-. `properties` attribute on your tests.
-  Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test annotations for testing a particular slice of your application>>.
-. Command line arguments.
-. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
-. `ServletConfig` init parameters.
-. `ServletContext` init parameters.
-. JNDI attributes from `java:comp/env`.
-. Java System properties (`System.getProperties()`).
-. OS environment variables.
-. A `RandomValuePropertySource` that has properties only in `+random.*+`.
-. <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
-. <<boot-features-external-config-profile-specific-properties,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
-. <<boot-features-external-config-application-property-files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
-. <<boot-features-external-config-application-property-files,Application properties>> packaged inside your jar (`application.properties` and YAML variants).
+. Default properties (specified by setting `SpringApplication.setDefaultProperties`).
 . {spring-framework-api}/context/annotation/PropertySource.html[`@PropertySource`] annotations on your `@Configuration` classes.
   Please note that such property sources are not added to the `Environment` until the application context is being refreshed.
   This is too late to configure certain properties such as `+logging.*+` and `+spring.main.*+` which are read before refresh begins.
-. Default properties (specified by setting `SpringApplication.setDefaultProperties`).
+. Config data (such as `application.properties` files)
+. A `RandomValuePropertySource` that has properties only in `+random.*+`.
+. OS environment variables.
+. Java System properties (`System.getProperties()`).
+. JNDI attributes from `java:comp/env`.
+. `ServletContext` init parameters.
+. `ServletConfig` init parameters.
+. Properties from `SPRING_APPLICATION_JSON` (inline JSON embedded in an environment variable or system property).
+. Command line arguments.
+. `properties` attribute on your tests.
+  Available on {spring-boot-test-module-api}/context/SpringBootTest.html[`@SpringBootTest`] and the <<boot-features-testing-spring-boot-applications-testing-autoconfigured-tests,test annotations for testing a particular slice of your application>>.
+. {spring-framework-api}/test/context/TestPropertySource.html[`@TestPropertySource`] annotations on your tests.
+. <<using-spring-boot.adoc#using-boot-devtools-globalsettings,Devtools global settings properties>> in the `$HOME/.config/spring-boot` directory when devtools is active.
+
+Config data files are considered in the following order:
+
+. <<boot-features-external-config-files,Application properties>> packaged inside your jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-files-profile-specific,Profile-specific application properties>> packaged inside your jar (`application-\{profile}.properties` and YAML variants).
+. <<boot-features-external-config-files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
+. <<boot-features-external-config-files-profile-specific,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
@@ -478,10 +523,10 @@ To provide a concrete example, suppose you develop a `@Component` that uses a `n
 	@Component
 	public class MyBean {
 
-	    @Value("${name}")
-	    private String name;
+		@Value("${name}")
+		private String name;
 
-	    // ...
+		// ...
 
 	}
 ----
@@ -490,24 +535,25 @@ On your application classpath (for example, inside your jar) you can have an `ap
 When running in a new environment, an `application.properties` file can be provided outside of your jar that overrides the `name`.
 For one-off testing, you can launch with a specific command line switch (for example, `java -jar app.jar --name="Spring"`).
 
-Spring Boot also supports wildcard locations when loading configuration files.
-By default, a wildcard location of `config/*/` outside of your jar is supported.
-Wildcard locations are also supported when specifying `spring.config.additional-location` and `spring.config.location`.
 
-Wildcard locations are particularly useful in an environment such as Kubernetes when there are multiple sources of config properties.
-For example, if you have some Redis configuration and some MySQL configuration, you might want to keep those two pieces of configuration separate, while requiring that both those are present in an `application.properties` that the app can bind to.
-This might result in two separate `application.properties` files mounted at different locations such as `/config/redis/application.properties` and `/config/mysql/application.properties`.
-In such a case, having a wildcard location of `config/*/`, will result in both files being processed.
 
-NOTE: A wildcard location must contain only one `*` and end with `*/` for search locations that are directories or `*/<filename>` for search locations that are files.
-Locations with wildcards are sorted alphabetically based on the absolute path of the file names.
+[[boot-features-external-config-command-line-args]]
+=== Accessing Command Line Properties
+By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
+As mentioned previously, command line properties always take precedence over file based property sources.
+
+If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
+
 
 
 [[boot-features-external-config-application-json]]
-[TIP]
-====
-The `SPRING_APPLICATION_JSON` properties can be supplied on the command line with an environment variable.
-For example, you could use the following line in a UN{asterisk}X shell:
+=== JSON Application Properties
+Environment variables and system properties often have restrictions that mean some property names cannot be used.
+To help with this, Spring Boot allows you to encode a block of properties into a single JSON structure.
+
+When your application starts, any `spring.application.json` or `SPRING_APPLICATION_JSON` properties will be parsed and added to the `Environment`.
+
+For example, the `SPRING_APPLICATION_JSON` property can be supplied on the command line in a UN{asterisk}X shell as an environment variable:
 
 [indent=0]
 ----
@@ -515,68 +561,43 @@ For example, you could use the following line in a UN{asterisk}X shell:
 ----
 
 In the preceding example, you end up with `acme.name=test` in the Spring `Environment`.
-You can also supply the JSON as `spring.application.json` in a System property, as shown in the following example:
+
+The same JSON can also be provided as a system property:
 
 [indent=0]
 ----
-	$ java -Dspring.application.json='{"name":"test"}' -jar myapp.jar
+	$ java -Dspring.application.json='{"acme":{"name":"test"}}' -jar myapp.jar
 ----
 
-You can also supply the JSON by using a command line argument, as shown in the following example:
+Or you could supply the JSON by using a command line argument:
 
 [indent=0]
 ----
-	$ java -jar myapp.jar --spring.application.json='{"name":"test"}'
+	$ java -jar myapp.jar --spring.application.json='{"acme":{"name":"test"}}'
 ----
 
-You can also supply the JSON as a JNDI variable, as follows: `java:comp/env/spring.application.json`.
-====
+If you are deploying to a classic Application Server, you could also use a JNDI variable named `java:comp/env/spring.application.json`.
 
-
-
-[[boot-features-external-config-random-values]]
-=== Configuring Random Values
-The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
-It can produce integers, longs, uuids, or strings, as shown in the following example:
-
-[source,properties,indent=0]
-----
-	my.secret=${random.value}
-	my.number=${random.int}
-	my.bignumber=${random.long}
-	my.uuid=${random.uuid}
-	my.number.less.than.ten=${random.int(10)}
-	my.number.in.range=${random.int[1024,65536]}
-----
-
-The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any character and `value,max` are integers.
-If `max` is provided, then `value` is the minimum value and `max` is the maximum value (exclusive).
-
-
-
-[[boot-features-external-config-command-line-args]]
-=== Accessing Command Line Properties
-By default, `SpringApplication` converts any command line option arguments (that is, arguments starting with `--`, such as `--server.port=9000`) to a `property` and adds them to the Spring `Environment`.
-As mentioned previously, command line properties always take precedence over other property sources.
-
-If you do not want command line properties to be added to the `Environment`, you can disable them by using `SpringApplication.setAddCommandLineProperties(false)`.
+NOTE: Although `null` values from the JSON will be added to the resulting property source, the `PropertySourcesPropertyResolver` treats `null` properties as missing values.
+This means that the JSON cannot override properties from lower order property sources with a `null` value.
 
 
 
 [[boot-features-external-config-application-property-files]]
-=== Application Property Files
-`SpringApplication` loads properties from `application.properties` files in the following locations and adds them to the Spring `Environment`:
+[[boot-features-external-config-files]]
+=== External Application Properties
+Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
 
-. A `/config` subdirectory of the current directory
-. The current directory
-. A classpath `/config` package
 . The classpath root
+. The classpath `/config` package
+. The current directory
+. The `/config` subdirectory in the current directory
+. Immediate child directories of the `/config` subdirectory
 
-The list is ordered by precedence (properties defined in locations higher in the list override those defined in lower locations).
+The list is ordered by precedence (with values from lower items overriding earlier ones).
+Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
 
-NOTE: You can also <<boot-features-external-config-yaml, use YAML ('.yml') files>> as an alternative to '.properties'.
-
-If you do not like `application.properties` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
+If you do not like `application` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
 You can also refer to an explicit location by using the `spring.config.location` environment property (which is a comma-separated list of directory locations or file paths).
 The following example shows how to specify a different file name:
 
@@ -589,42 +610,38 @@ The following example shows how to specify two locations:
 
 [indent=0]
 ----
-	$ java -jar myproject.jar --spring.config.location=classpath:/default.properties,classpath:/override.properties
+	$ java -jar myproject.jar --spring.config.location=optional:classpath:/default.properties,optional:classpath:/override.properties
 ----
+
+TIP: Use the prefix `optional:` if the <<boot-features-external-config-optional-prefix,locations are optional>> and you don't mind if they don't exist.
 
 WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
 
-If `spring.config.location` contains directories (as opposed to files), they should end in `/` (and, at runtime, be appended with the names generated from `spring.config.name` before being loaded, including profile-specific file names).
-Files specified in `spring.config.location` are used as-is, with no support for profile-specific variants, and are overridden by any profile-specific properties.
+If `spring.config.location` contains directories (as opposed to files), they should end in `/` (at runtime they will be appended with the names generated from `spring.config.name` before being loaded).
+Files specified in `spring.config.location` are used as-is.
+Whether specified directly or contained in a directory, configuration files must include a file extension in their name.
+Typical extensions that are supported out-of-the-box are `.properties`, `.yaml`, and `.yml`.
 
-Config locations are searched in reverse order.
-By default, the configured locations are `classpath:/,classpath:/config/,file:./,file:./config/*/,file:./config/`.
-The resulting search order is the following:
+When multiple locations are specified, the later ones can override the values of earlier ones.
 
-. `file:./config/`
-. `file:./config/*/`
-. `file:./`
-. `classpath:/config/`
-. `classpath:/`
+Locations configured by using `spring.config.location` replace the default locations.
+For example, if `spring.config.location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
 
-When custom config locations are configured by using `spring.config.location`, they replace the default locations.
-For example, if `spring.config.location` is configured with the value `classpath:/custom-config/,file:./custom-config/`, the search order becomes the following:
+. `optional:classpath:custom-config/`
+. `optional:file:./custom-config/`
 
-. `file:./custom-config/`
-. `classpath:custom-config/`
+If you prefer to add addition locations, rather than replacing them, you can use `spring.config.additional-location`.
+Properties loaded from additional locations can override those in the default locations.
+For example, if `spring.config.additional-location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete the complete set of locations considered is:
 
-Alternatively, when custom config locations are configured by using `spring.config.additional-location`, they are used in addition to the default locations.
-Additional locations are searched before the default locations.
-For example, if additional locations of `classpath:/custom-config/,file:./custom-config/` are configured, the search order becomes the following:
-
-. `file:./custom-config/`
-. `classpath:custom-config/`
-. `file:./config/`
-. `file:./config/*/`
-. `file:./`
-. `classpath:/config/`
-. `classpath:/`
+. `optional:classpath:/`
+. `optional:classpath:/config/`
+. `optional:file:./`
+. `optional:file:./config/`
+. `optional:file:./config/*/`
+. `optional:classpath:custom-config/`
+. `optional:file:./custom-config/`
 
 This search ordering lets you specify default values in one configuration file and then selectively override those values in another.
 You can provide default values for your application in `application.properties` (or whatever other basename you choose with `spring.config.name`) in one of the default locations.
@@ -633,38 +650,308 @@ These default values can then be overridden at runtime with a different file loc
 NOTE: If you use environment variables rather than system properties, most operating systems disallow period-separated key names, but you can use underscores instead (for example, configprop:spring.config.name[format=envvar] instead of configprop:spring.config.name[]).
 See <<boot-features-external-config-relaxed-binding-from-environment-variables>> for details.
 
-NOTE: If your application runs in a container, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
+NOTE: If your application runs in a servlet container or application server, then JNDI properties (in `java:comp/env`) or servlet context initialization parameters can be used instead of, or as well as, environment variables or system properties.
 
 
 
-[[boot-features-external-config-profile-specific-properties]]
-=== Profile-specific Properties
-In addition to `application.properties` files, profile-specific properties can also be defined by using the following naming convention: `application-\{profile}.properties`.
-The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set.
-In other words, if no profiles are explicitly activated, then properties from `application-default.properties` are loaded.
+[[boot-features-external-config-optional-prefix]]
+==== Optional Locations
+By default, when a specified config data location does not exist, Spring Boot will throw a `ConfigDataLocationNotFoundException` and your application will not start.
 
-Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones, whether or not the profile-specific files are inside or outside your packaged jar.
+If you want to specify a location, but you don't mind if it doesn't always exist, you can use the `optional:` prefix.
+You can use this prefix with the `spring.config.location` and `spring.config.additional-location` properties, as well as with <<boot-features-external-config-files-importing, `spring.config.import`>> declarations.
 
+For example, a `spring.config.import` value of `optional:file:./myconfig.properties` allows your application to start, even if the `myconfig.properties` file is missing.
+
+If you want to ignore all `ConfigDataLocationNotFoundExceptions` and always continue to start your application, you can use the `spring.config.on-not-found` property.
+Set the value to `ignore` using `SpringApplication.setDefaultProperties(...)` or with a system/environment variable.
+
+
+
+[[boot-features-external-config-files-wildcards]]
+==== Wildcard Locations
+If a config file location includes the `{asterisk}` character for the last path segment, it is considered a wildcard location.
+Wildcards are expanded when the config is loaded so that immediate subdirectories are also checked.
+Wildcard locations are particularly useful in an environment such as Kubernetes when there are multiple sources of config properties.
+
+For example, if you have some Redis configuration and some MySQL configuration, you might want to keep those two pieces of configuration separate, while requiring that both those are present in an `application.properties` file.
+This might result in two separate `application.properties` files mounted at different locations such as `/config/redis/application.properties` and `/config/mysql/application.properties`.
+In such a case, having a wildcard location of `config/*/`, will result in both files being processed.
+
+By default, Spring Boot includes `config/*/` in the default search locations.
+The means that all subdirectories of the `/config` directory outside of your jar will be searched.
+
+You can use wildcard locations yourself with the `spring.config.location` and `spring.config.additional-location` properties.
+
+NOTE: A wildcard location must contain only one `{asterisk}` and end with `{asterisk}/` for search locations that are directories or `*/<filename>` for search locations that are files.
+Locations with wildcards are sorted alphabetically based on the absolute path of the file names.
+
+TIP: Wildcard locations only work with external directories.
+You cannot use a wildcard in a `classpath:` location.
+
+
+
+[[boot-features-external-config-files-profile-specific]]
+==== Profile Specific Files
+As well as `application` property files, Spring Boot will also attempt to load profile-specific files using the naming convention `application-\{profile}`.
+For example, if your application activates a profile named `prod` and uses YAML files, then both `application.yml` and `application-prod.yml` will be considered.
+
+Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones.
 If several profiles are specified, a last-wins strategy applies.
-For example, profiles specified by the configprop:spring.profiles.active[] property are added after those configured through the `SpringApplication` API and therefore take precedence.
+For example, if profiles `prod,live` are specified by the configprop:spring.profiles.active[] property, values in `application-prod.properties` can be overridden by those in `application-live.properties`.
 
-NOTE: If you have specified any files in configprop:spring.config.location[], profile-specific variants of those files are not considered.
-Use directories in configprop:spring.config.location[] if you want to also use profile-specific properties.
+The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set.
+In other words, if no profiles are explicitly activated, then properties from `application-default` are considered.
+
+NOTE: Properties files are only ever loaded once.
+If you've already directly <<boot-features-external-config-files-importing,imported>> a profile specific property files then it won't be imported a second time.
+
+
+
+[[boot-features-external-config-files-importing]]
+==== Importing Additional Data
+Application properties may import further config data from other locations using the `spring.config.import` property.
+Imports are processed as they are discovered, and are treated as additional documents inserted immediately below the one that declares the import.
+
+For example, you might have the following in your classpath `application.properties` file:
+
+[source,yaml,indent=0,configblocks]
+----
+	spring:
+	  application:
+	    name: "myapp"
+	  config:
+	    import: "optional:file:./dev.properties"
+----
+
+This will trigger the import of a `dev.properties` file in current directory (if such a file exists).
+Values from the imported `dev.properties` will take precedence over the file that triggered the import.
+In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
+An import will only be imported once no matter how many times it is declared.
+The order an import is defined inside a single document within the properties/yaml file doesn't matter.
+For instance, the two examples below produce the same result:
+
+[source,yaml,indent=0,configblocks]
+----
+	spring:
+	  config:
+	    import: my.properties
+	my:
+	  property: value
+----
+
+[source,yaml,indent=0,configblocks]
+----
+	my:
+	  property: value
+	spring:
+	  config:
+	    import: my.properties
+----
+
+In both of the above examples, the values from the `my.properties` file will take precedence over the file that triggered its import.
+
+Several locations can be specified under a single `spring.config.import` key.
+Locations will be processed in the order that they are defined, with later imports taking precedence.
+
+[TIP]
+====
+Spring Boot includes pluggable API that allows various different location addresses to be supported.
+By default you can import Java Properties, YAML and "`<<boot-features-external-config-files-configtree, configuration trees>>`".
+
+Third-party jars can offer support for additional technologies (there's no requirement for files to be local).
+For example, you can imagine config data being from external stores such as Consul, Apache ZooKeeper or Netflix Archaius.
+
+If you want to support your own locations, see the `ConfigDataLocationResolver` and `ConfigDataLoader` classes in the `org.springframework.boot.context.config` package.
+====
+
+
+
+==== Importing Extensionless Files
+Some cloud platforms cannot add a file extension to volume mounted files.
+To import these extensionless files, you need to give Spring Boot a hint so that it knows how to load them.
+You can do this by putting an extension hint in square brackets.
+
+For example, suppose you have a `/etc/config/myconfig` file that you wish to import as yaml.
+You can import it from your `application.properties` using the following:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  config:
+	    import: "file:/etc/config/myconfig[.yaml]"
+----
+
+
+
+[[boot-features-external-config-files-configtree]]
+==== Using Configuration Trees
+When running applications on a cloud platform (such as Kubernetes) you often need to read config values that the platform supplies.
+It's not uncommon to use environment variables for such purposes, but this can have drawbacks, especially if the value is supposed to be kept secret.
+
+As an alternative to environment variables, many cloud platforms now allow you to map configuration into mounted data volumes.
+For example, Kubernetes can volume mount both https://kubernetes.io/docs/tasks/configure-pod-container/configure-pod-configmap/#populate-a-volume-with-data-stored-in-a-configmap[`ConfigMaps`] and https://kubernetes.io/docs/concepts/configuration/secret/#using-secrets-as-files-from-a-pod[`Secrets`].
+
+There are two common volume mount patterns that can be use:
+
+. A single file contains a complete set of properties (usually written as YAML).
+. Multiple files are written to a directory tree, with the filename becoming the '`key`' and the contents becoming the '`value`'.
+
+For the first case, you can import the YAML or Properties file directly using `spring.config.import` as described <<boot-features-external-config-files-importing,above>>.
+For the second case, you need to use the `configtree:` prefix so that Spring Boot knows it needs to expose all the files as properties.
+
+As an example, let's imagine that Kubernetes has mounted the following volume:
+
+[source,indent=0]
+----
+	etc/
+	  config/
+	    myapp/
+	      username
+	      password
+----
+
+The contents of the `username` file would be a config value, and the contents of `password` would be a secret.
+
+To import these properties, you can add the following to your `application.properties` or `application.yaml` file:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  config:
+	    import: "optional:configtree:/etc/config/"
+----
+
+You can then access or inject `myapp.username` and `myapp.password` properties from the `Environment` in the usual way.
+
+TIP: Configuration tree values can be bound to both string `String` and `byte[]` types depending on the contents expected.
+
+If you have multiple config trees to import from the same parent folder you can use a wildcard shortcut.
+Any `configtree:` location that ends with `/*/` will import all immediate children as config trees.
+
+For example, given the following volume:
+
+[source,indent=0]
+----
+	etc/
+	  config/
+	    dbconfig/
+	      db/
+	        username
+	        password
+	    mqconfig/
+	      mq/
+	        username
+	        password
+----
+
+You can use `configtree:/etc/config/*/` as the import location:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  config:
+	    import: "optional:configtree:/etc/config/*/"
+----
+
+This will add `db.username`, `db.password`, `mq.username` and `mq.password` properties.
+
+NOTE: Directories loaded using a wildcard are sorted alphabetically.
+If you need a different order, then you should list each location as a separate import
 
 
 
 [[boot-features-external-config-placeholders-in-properties]]
-=== Placeholders in Properties
-The values in `application.properties` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties).
+==== Property Placeholders
+The values in `application.properties` and `application.yml` are filtered through the existing `Environment` when they are used, so you can refer back to previously defined values (for example, from System properties).
+The standard `$\{name}` property-placeholder syntax can be used anywhere within a value.
 
-[source,properties,indent=0]
+For example, the following file will set `app.description` to "`MyApp is a Spring Boot application`":
+
+[source,yaml,indent=0,configblocks]
 ----
-	app.name=MyApp
-	app.description=${app.name} is a Spring Boot application
+	app:
+	  name: "MyApp"
+	  description: "${app.name} is a Spring Boot application"
 ----
 
 TIP: You can also use this technique to create "`short`" variants of existing Spring Boot properties.
 See the _<<howto.adoc#howto-use-short-command-line-arguments>>_ how-to for details.
+
+
+
+[[boot-features-external-config-files-multi-document]]
+==== Working with Multi-Document Files
+Spring Boot allows you to split a single physical file into multiple logical documents which are each added independently.
+Documents are processed in order, from top to bottom.
+Later documents can override the properties defined in earlier ones.
+
+For `application.yml` files, the standard YAML multi-document syntax is used.
+Three consecutive hyphens represent the end of one document, and the start of the next.
+
+For example, the following file has two logical documents:
+
+[source,yaml,indent=0]
+----
+	spring.application.name: MyApp
+	---
+	spring.config.activate.on-cloud-platform: kubernetes
+	spring.application.name: MyCloudApp
+----
+
+For `application.properties` files a special `#---` comment is used to mark the document splits:
+
+[source,properties,indent=0]
+----
+	spring.application.name=MyApp
+	#---
+	spring.config.activate.on-cloud-platform=kubernetes
+	spring.application.name=MyCloudApp
+----
+
+NOTE: Property file separators must not have any leading whitespace and must have exactly three hyphen characters.
+The lines immediately before and after the separator must not be comments.
+
+TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
+See the <<boot-features-external-config-file-activation-properties, next section>> for details.
+
+
+
+[[boot-features-external-config-file-activation-properties]]
+==== Activation Properties
+It's sometimes useful to only activate a given get of properties when certain conditions are met.
+For example, you might have properties that are only relevant when a specific profile is active.
+
+You can conditionally activate a properties document using `spring.config.activate.*`.
+
+The following activation properties are available:
+
+.activation properties
+[cols="1,4"]
+|===
+| Property | Note
+
+| `on-profile`
+| A profile expression that must match for the document to be active.
+
+| `on-cloud-platform`
+| The `CloudPlatform` that must be detected for the document to be active.
+|===
+
+For example, the following specifies that the second document is only active when running on Kubernetes, and only when either the "`prod`" or "`staging`" profiles are active:
+
+[source,yaml,indent=0,configblocks]
+----
+	myprop:
+	  always-set
+	---
+	spring:
+	  config:
+	    activate:
+	      on-cloud-platform: "kubernetes"
+	      on-profile: "prod | staging"
+	myotherprop: sometimes-set
+----
 
 
 
@@ -679,7 +966,7 @@ If you're looking for a secure way to store credentials and passwords, the https
 
 
 [[boot-features-external-config-yaml]]
-=== Using YAML Instead of Properties
+=== Working with YAML
 https://yaml.org[YAML] is a superset of JSON and, as such, is a convenient format for specifying hierarchical configuration data.
 The `SpringApplication` class automatically supports YAML as an alternative to properties whenever you have the https://bitbucket.org/asomov/snakeyaml[SnakeYAML] library on your classpath.
 
@@ -687,25 +974,22 @@ NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-bo
 
 
 
-[[boot-features-external-config-loading-yaml]]
-==== Loading YAML
-Spring Framework provides two convenient classes that can be used to load YAML documents.
-The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
-
+==== Mapping YAML to Properties
+YAML documents need to be converted from their hierarchical format to a flat structure that can be used with the Spring `Environment`.
 For example, consider the following YAML document:
 
 [source,yaml,indent=0]
 ----
 	environments:
-		dev:
-			url: https://dev.example.com
-			name: Developer Setup
-		prod:
-			url: https://another.example.com
-			name: My Cool App
+	  dev:
+	    url: https://dev.example.com
+	    name: Developer Setup
+	  prod:
+	    url: https://another.example.com
+	    name: My Cool App
 ----
 
-The preceding example would be transformed into the following properties:
+In order to access these properties from the `Environment`, they would be flattened as follows:
 
 [source,properties,indent=0]
 ----
@@ -715,15 +999,16 @@ The preceding example would be transformed into the following properties:
 	environments.prod.name=My Cool App
 ----
 
-YAML lists are represented as property keys with `[index]` dereferencers.
+Likewise, YAML lists also need to be flattened.
+They are represented as property keys with `[index]` dereferencers.
 For example, consider the following YAML:
 
 [source,yaml,indent=0]
 ----
 	 my:
-		servers:
-			- dev.example.com
-			- another.example.com
+	  servers:
+	  - dev.example.com
+	  - another.example.com
 ----
 
 The preceding example would be transformed into these properties:
@@ -734,91 +1019,18 @@ The preceding example would be transformed into these properties:
 	my.servers[1]=another.example.com
 ----
 
-To bind to properties like that by using Spring Boot's `Binder` utilities (which is what `@ConfigurationProperties` does), you need to have a property in the target bean of type `java.util.List` (or `Set`) and you either need to provide a setter or initialize it with a mutable value.
-For example, the following example binds to the properties shown previously:
-
-[source,java,indent=0]
-----
-	@ConfigurationProperties(prefix="my")
-	public class Config {
-
-		private List<String> servers = new ArrayList<String>();
-
-		public List<String> getServers() {
-			return this.servers;
-		}
-	}
-----
+TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
+For more details see the "`<<boot-features-external-config-typesafe-configuration-properties>>`" section below.
 
 
 
+[[boot-features-external-config-loading-yaml]]
 [[boot-features-external-config-exposing-yaml-to-spring]]
-==== Exposing YAML as Properties in the Spring Environment
-The `YamlPropertySourceLoader` class can be used to expose YAML as a `PropertySource` in the Spring `Environment`.
-Doing so lets you use the `@Value` annotation with placeholders syntax to access YAML properties.
+==== Directly Loading YAML
+Spring Framework provides two convenient classes that can be used to load YAML documents.
+The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
 
-
-
-[[boot-features-external-config-multi-profile-yaml]]
-==== Multi-profile YAML Documents
-You can specify multiple profile-specific YAML documents in a single file by using a `spring.profiles` key to indicate when the document applies, as shown in the following example:
-
-[source,yaml,indent=0]
-----
-	server:
-		address: 192.168.1.100
-	---
-	spring:
-		profiles: development
-	server:
-		address: 127.0.0.1
-	---
-	spring:
-		profiles: production & eu-central
-	server:
-		address: 192.168.1.120
-----
-
-In the preceding example, if the `development` profile is active, the configprop:server.address[] property is `127.0.0.1`.
-Similarly, if the `production` *and* `eu-central` profiles are active, the configprop:server.address[] property is `192.168.1.120`.
-If the `development`, `production` and `eu-central` profiles are *not* enabled, then the value for the property is `192.168.1.100`.
-
-[NOTE]
-====
-`spring.profiles` can therefore contain a simple profile name (for example `production`) or a profile expression.
-A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
-Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
-====
-
-If none are explicitly active when the application context starts, the default profiles are activated.
-So, in the following YAML, we set a value for `spring.security.user.password` that is available *only* in the "default" profile:
-
-[source,yaml,indent=0]
-----
-	server:
-	  port: 8000
-	---
-	spring:
-	  profiles: default
-	  security:
-	    user:
-	      password: weak
-----
-
-Whereas, in the following example, the password is always set because it is not attached to any profile, and it would have to be explicitly reset in all other profiles as necessary:
-
-[source,yaml,indent=0]
-----
-	server:
-	  port: 8000
-	spring:
-	  security:
-	    user:
-	      password: weak
-----
-
-Spring profiles designated by using the `spring.profiles` element may optionally be negated by using the `!` character.
-If both negated and non-negated profiles are specified for a single document, at least one non-negated profile must match, and no negated profiles may match.
+You can also use the `YamlPropertySourceLoader` class if you want to load YAML as a Spring `PropertySource`.
 
 
 
@@ -827,29 +1039,46 @@ If both negated and non-negated profiles are specified for a single document, at
 YAML files cannot be loaded by using the `@PropertySource` annotation.
 So, in the case that you need to load values that way, you need to use a properties file.
 
-Using the multi YAML document syntax in profile-specific YAML files can lead to unexpected behavior.
+Using the multi-document YAML syntax in profile-specific YAML files can lead to unexpected behavior.
 For example, consider the following config in a file:
 
 .application-dev.yml
 [source,yaml,indent=0]
 ----
-	server:
-	  port: 8000
+	server.port: 8000
 	---
-	spring:
-	  profiles: "!test"
-	  security:
-	    user:
-	      password: "secret"
+	spring.config.activate.on-profile: "!test"
+	mypassword: "secret"
 ----
 
-If you run the application with the argument `--spring.profiles.active=dev` you might expect `security.user.password` to be set to "`secret`", but this is not the case.
+If you run the application with the argument `--spring.profiles.active=dev` you might expect `mypassword` to be set to "`secret`", but this is not the case.
 
 The nested document will be filtered because the main file is named `application-dev.yml`.
 It is already considered to be profile-specific, and nested documents will be ignored.
 
 TIP: We recommend that you don't mix profile-specific YAML files and multiple YAML documents.
 Stick to using only one of them.
+
+
+
+[[boot-features-external-config-random-values]]
+=== Configuring Random Values
+The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
+It can produce integers, longs, uuids, or strings, as shown in the following example:
+
+[source,yaml,indent=0,configblocks]
+----
+	my:
+	  secret: "${random.value}"
+	  number: "${random.int}"
+	  bignumber: "${random.long}"
+	  uuid: "${random.uuid}"
+	  number-less-than-ten: "${random.int(10)}"
+	  number-in-range: "${random.int[1024,65536]}"
+----
+
+The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` are any character and `value,max` are integers.
+If `max` is provided, then `value` is the minimum value and `max` is the maximum value (exclusive).
 
 
 
@@ -1058,6 +1287,10 @@ You cannot use constructor binding with beans that are created by the regular Sp
 
 TIP: If you have more than one constructor for your class you can also use `@ConstructorBinding` directly on the constructor that should be bound.
 
+NOTE: The use of `java.util.Optional` with `@ConfigurationProperties` is not recommended as it is primarily intended for use as a return type.
+As such, it is not well-suited to configuration property injection.
+For consistency with properties of other types, if you do declare an `Optional` property and it has no value, `null` rather than an empty `Optional` will be bound.
+
 
 
 [[boot-features-external-config-enabling]]
@@ -1110,8 +1343,6 @@ This style of configuration works particularly well with the `SpringApplication`
 
 [source,yaml,indent=0]
 ----
-	# application.yml
-
 	acme:
 		remote-address: 192.168.1.1
 		security:
@@ -1119,8 +1350,6 @@ This style of configuration works particularly well with the `SpringApplication`
 			roles:
 			  - USER
 			  - ADMIN
-
-	# additional configuration as required
 ----
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
@@ -1134,7 +1363,7 @@ To work with `@ConfigurationProperties` beans, you can inject them in the same w
 
 		@Autowired
 		public MyService(AcmeProperties properties) {
-		    this.properties = properties;
+			this.properties = properties;
 		}
 
 	 	//...
@@ -1235,7 +1464,7 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 
 | Environment Variables
 | Upper case format with underscore as the delimiter (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>).
-| Numeric values surrounded by underscores (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>)`
+| Numeric values surrounded by underscores (see <<boot-features-external-config-relaxed-binding-from-environment-variables>>)
 
 | System properties
 | Camel case, kebab case, or underscore notation
@@ -1252,19 +1481,29 @@ When binding to `Map` properties, if the `key` contains anything other than lowe
 If the key is not surrounded by `[]`, any characters that are not alpha-numeric or `-` are removed.
 For example, consider binding the following properties to a `Map`:
 
-[source,yaml,indent=0]
+
+[source,properties,indent=0,role="primary"]
+.Properties
+----
+	acme.map.[/key1]=value1
+	acme.map.[/key2]=value2
+	acme.map./key3=value3
+----
+
+[source,yaml,indent=0,role="secondary"]
+.Yaml
 ----
 	acme:
 	  map:
 	    "[/key1]": value1
 	    "[/key2]": value2
-	    /key3: value3
-
+	    "/key3": value3
 ----
 
 The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
 
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
+
 
 
 [[boot-features-external-config-relaxed-binding-from-environment-variables]]
@@ -1282,9 +1521,6 @@ To convert a property name in the canonical-form to an environment variable name
 * Convert to uppercase.
 
 For example, the configuration property `spring.main.log-startup-info` would be an environment variable named `SPRING_MAIN_LOGSTARTUPINFO`.
-
-NOTE: Underscores cannot be used to replace the dashes in property names.
-If you attempt to use `SPRING_MAIN_LOG_STARTUP_INFO` with the example above, no value will be bound.
 
 Environment variables can also be used when binding to object lists.
 To bind to a `List`, the element number should be surrounded with underscores in the variable name.
@@ -1316,18 +1552,20 @@ The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
 
 Consider the following configuration:
 
-[source,yaml,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
 	acme:
 	  list:
-	    - name: my name
-	      description: my description
+	  - name: "my name"
+	    description: "my description"
 	---
 	spring:
-	  profiles: dev
+	  config:
+	    activate:
+	      on-profile: "dev"
 	acme:
 	  list:
-	    - name: my another name
+	  - name: "my another name"
 ----
 
 If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry, as previously defined.
@@ -1337,20 +1575,22 @@ This configuration _does not_ add a second `MyPojo` instance to the list, and it
 When a `List` is specified in multiple profiles, the one with the highest priority (and only that one) is used.
 Consider the following example:
 
-[source,yaml,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
 	acme:
 	  list:
-	    - name: my name
-	      description: my description
-	    - name: another name
-	      description: another description
+	  - name: "my name"
+	    description: "my description"
+	  - name: "another name"
+	    description: "another description"
 	---
 	spring:
-	  profiles: dev
+	  config:
+	    activate:
+	      on-profile: "dev"
 	acme:
 	  list:
-	    - name: my another name
+	  - name: "my another name"
 ----
 
 In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains _one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
@@ -1376,29 +1616,31 @@ The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
 
 Consider the following configuration:
 
-[source,yaml,indent=0]
+[source,yaml,indent=0,configblocks]
 ----
 	acme:
 	  map:
 	    key1:
-	      name: my name 1
-	      description: my description 1
+	      name: "my name 1"
+	      description: "my description 1"
 	---
 	spring:
-	  profiles: dev
+	  config:
+	    activate:
+	      on-profile: "dev"
 	acme:
 	  map:
 	    key1:
-	      name: dev name 1
+	      name: "dev name 1"
 	    key2:
-	      name: dev name 2
-	      description: dev description 2
+	      name: "dev name 2"
+	      description: "dev description 2"
 ----
 
 If the `dev` profile is not active, `AcmeProperties.map` contains one entry with key `key1` (with a name of `my name 1` and a description of `my description 1`).
 If the `dev` profile is enabled, however, `map` contains two entries with keys `key1` (with a name of `dev name 1` and a description of `my description 1`) and `key2` (with a name of `dev name 2` and a description of `dev description 2`).
 
-NOTE: The preceding merging rules apply to properties from all property sources and not just YAML files.
+NOTE: The preceding merging rules apply to properties from all property sources, and not just files.
 
 
 
@@ -1474,7 +1716,7 @@ The following units are supported with the simple format:
 * `w` for weeks
 * `d` for days
 
-NOTE: The `java.time.Period` type never actually stores the number of weeks, it is simply a shortcut that means "`7 days`".
+NOTE: The `java.time.Period` type never actually stores the number of weeks, it is a shortcut that means "`7 days`".
 
 
 
@@ -1592,7 +1834,7 @@ The following table summarizes the features that are supported by `@Configuratio
 
 | <<boot-features-external-config-relaxed-binding,Relaxed binding>>
 | Yes
-| Limited (see note below)
+| Limited (see <<boot-features-external-config-vs-value-note,note below>>)
 
 | <<appendix-configuration-metadata.adoc#configuration-metadata,Meta-data support>>
 | Yes
@@ -1603,15 +1845,15 @@ The following table summarizes the features that are supported by `@Configuratio
 | Yes
 |===
 
-If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
-Doing so will provide you with structured, type-safe object that you can inject into your own beans.
-
-If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
+NOTE: [[boot-features-external-config-vs-value-note]] If you do want to use `@Value`, we recommend that you refer to property names using their canonical form (kebab-case using only lowercase letters).
 This will allow Spring Boot to use the same logic as it does when relaxed binding `@ConfigurationProperties`.
 For example, `@Value("{demo.item-price}")` will pick up `demo.item-price` and `demo.itemPrice` forms from the `application.properties` file, as well as `DEMO_ITEMPRICE` from the system environment.
 If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_ITEMPRICE` would not be considered.
 
-Finally, while you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-application-property-files,application property files>>.
+If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
+Doing so will provide you with structured, type-safe object that you can inject into your own beans.
+
+While you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-files,application property files>>.
 
 
 
@@ -1638,9 +1880,11 @@ You can use a configprop:spring.profiles.active[] `Environment` property to spec
 You can specify the property in any of the ways described earlier in this chapter.
 For example, you could include it in your `application.properties`, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.profiles.active=dev,hsqldb
+	spring:
+	  profiles:
+	    active: "dev,hsqldb"
 ----
 
 You could also specify it on the command line by using the following switch: `--spring.profiles.active=dev,hsqldb`.
@@ -1652,26 +1896,33 @@ You could also specify it on the command line by using the following switch: `--
 The configprop:spring.profiles.active[] property follows the same ordering rules as other properties: The highest `PropertySource` wins.
 This means that you can specify active profiles in `application.properties` and then *replace* them by using the command line switch.
 
-Sometimes, it is useful to have profile-specific properties that *add* to the active profiles rather than replace them.
-The configprop:spring.profiles.include[] property can be used to unconditionally add active profiles.
-The `SpringApplication` entry point also has a Java API for setting additional profiles (that is, on top of those activated by the configprop:spring.profiles.active[] property).
+Sometimes, it is useful to have properties that *add* to the active profiles rather than replace them.
+The `SpringApplication` entry point has a Java API for setting additional profiles (that is, on top of those activated by the configprop:spring.profiles.active[] property).
 See the `setAdditionalProfiles()` method in {spring-boot-module-api}/SpringApplication.html[SpringApplication].
+Profile groups, which are described in the <<boot-features-profiles-groups,next section>> can also be used to add active profiles if a given profile is active.
 
-For example, when an application with the following properties is run by using the switch, `--spring.profiles.active=prod`, the `proddb` and `prodmq` profiles are also activated:
 
-[source,yaml,indent=0]
+[[boot-features-profiles-groups]]
+=== Profile Groups
+Occasionally the profiles that you define and use in your application are too fine-grained and become cumbersome to use.
+For example, you might have `proddb` and `prodmq` profiles that you use to enable database and messaging features independently.
+
+To help with this, Spring Boot lets you define profile groups.
+A profile group allows you to define a logical name for a related group of profiles.
+
+For example, we can create a `production` group that consists of our `proddb` and `prodmq` profiles.
+
+[source,yaml,indent=0,configblocks]
 ----
-	---
-	my.property: fromyamlfile
-	---
-	spring.profiles: prod
-	spring.profiles.include:
-	  - proddb
-	  - prodmq
+	spring:
+	  profiles:
+	    group:
+	      production:
+	      - "proddb"
+	      - "prodmq"
 ----
 
-NOTE: Remember that the `spring.profiles` property can be defined in a YAML document to determine when this particular document is included in the configuration.
-See <<howto.adoc#howto-change-configuration-depending-on-the-environment>> for more details.
+Our application can now be started using `--spring.profiles.active=production` to active the `production`, `proddb` and `prodmq` profiles in one hit.
 
 
 
@@ -1685,7 +1936,7 @@ It is also possible to activate profiles by using Spring's `ConfigurableEnvironm
 [[boot-features-profile-specific-configuration]]
 === Profile-specific Configuration Files
 Profile-specific variants of both `application.properties` (or `application.yml`) and files referenced through `@ConfigurationProperties` are considered as files and loaded.
-See "<<boot-features-external-config-profile-specific-properties>>" for details.
+See "<<boot-features-external-config-files-profile-specific>>" for details.
 
 
 
@@ -1843,14 +2094,37 @@ The following table shows how the `logging.*` properties can be used together:
 |===
 
 Log files rotate when they reach 10 MB and, as with console output, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged by default.
-Size limits can be changed using the configprop:logging.file.max-size[] property.
-Rotated log files of the last 7 days are kept by default unless the configprop:logging.file.max-history[] property has been set.
-The total size of log archives can be capped using configprop:logging.file.total-size-cap[].
-When the total size of log archives exceeds that threshold, backups will be deleted.
-To force log archive cleanup on application startup, use the configprop:logging.file.clean-history-on-start[] property.
 
 TIP: Logging properties are independent of the actual logging infrastructure.
 As a result, specific configuration keys (such as `logback.configurationFile` for Logback) are not managed by spring Boot.
+
+
+
+[[boot-features-logging-file-rotation]]
+=== File Rotation
+If you are using the Logback, it's possible to fine-tune log rotation settings using your `application.properties` or `application.yaml` file.
+For all other logging system, you'll need to configure rotation settings directly yourself (for example, if you use Log4J2 then you could add a `log4j.xml` file).
+
+The following rotation policy properties are supported:
+
+|===
+| Name | Description
+
+| configprop:logging.logback.rollingpolicy.file-name-pattern[]
+| The filename pattern used to create log archives.
+
+| configprop:logging.logback.rollingpolicy.clean-history-on-start[]
+| If log archive cleanup should occur when the application starts.
+
+| configprop:logging.logback.rollingpolicy.max-file-size[]
+| The maximum size of log file before it's archived.
+
+| configprop:logging.logback.rollingpolicy.total-size-cap[]
+| The maximum amount of size log archives can take before being deleted.
+
+| configprop:logging.logback.rollingpolicy.max-history[]
+| The number of days to keep log archives (defaults to 7)
+|===
 
 
 
@@ -1861,11 +2135,22 @@ The `root` logger can be configured by using `logging.level.root`.
 
 The following example shows potential logging settings in `application.properties`:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops,role="primary"]
+.Properties
 ----
 	logging.level.root=warn
 	logging.level.org.springframework.web=debug
 	logging.level.org.hibernate=error
+----
+
+[source,properties,indent=0,subs="verbatim,quotes,attributes",role="secondary"]
+.Yaml
+----
+	logging:
+	  level:
+	    root: "warn"
+	    org.springframework.web: "debug"
+	    org.hibernate: "error"
 ----
 
 It's also possible to set logging levels using environment variables.
@@ -1885,16 +2170,20 @@ For example, you might commonly change the logging levels for _all_ Tomcat relat
 To help with this, Spring Boot allows you to define logging groups in your Spring `Environment`.
 For example, here's how you could define a "`tomcat`" group by adding it to your `application.properties`:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	logging.group.tomcat=org.apache.catalina, org.apache.coyote, org.apache.tomcat
+	logging:
+	  group:
+	    tomcat: "org.apache.catalina,org.apache.coyote,org.apache.tomcat"
 ----
 
 Once defined, you can change the level for all the loggers in the group with a single line:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	logging.level.tomcat=TRACE
+	logging:
+	  level:
+	    tomcat: "trace"
 ----
 
 Spring Boot includes the following pre-defined logging groups that can be used out-of-the-box:
@@ -1953,63 +2242,69 @@ To help with the customization, some other properties are transferred from the S
 | `LOG_EXCEPTION_CONVERSION_WORD`
 | The conversion word used when logging exceptions.
 
-| configprop:logging.file.clean-history-on-start[]
-| `LOG_FILE_CLEAN_HISTORY_ON_START`
-| Whether to clean the archive log files on startup (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
-
 | configprop:logging.file.name[]
 | `LOG_FILE`
 | If defined, it is used in the default log configuration.
-
-| configprop:logging.file.max-size[]
-| `LOG_FILE_MAX_SIZE`
-| Maximum log file size (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
-
-| configprop:logging.file.max-history[]
-| `LOG_FILE_MAX_HISTORY`
-| Maximum number of archive log files to keep (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
 
 | configprop:logging.file.path[]
 | `LOG_PATH`
 | If defined, it is used in the default log configuration.
 
-| configprop:logging.file.total-size-cap[]
-| `LOG_FILE_TOTAL_SIZE_CAP`
-| Total size of log backups to be kept (if LOG_FILE enabled).
-  (Only supported with the default Logback setup.)
-
 | configprop:logging.pattern.console[]
 | `CONSOLE_LOG_PATTERN`
 | The log pattern to use on the console (stdout).
-  (Only supported with the default Logback setup.)
 
 | configprop:logging.pattern.dateformat[]
 | `LOG_DATEFORMAT_PATTERN`
 | Appender pattern for log date format.
-  (Only supported with the default Logback setup.)
+
+| configprop:logging.charset.console[]
+| `CONSOLE_LOG_CHARSET`
+| The charset to use for console logging.
 
 | configprop:logging.pattern.file[]
 | `FILE_LOG_PATTERN`
 | The log pattern to use in a file (if `LOG_FILE` is enabled).
-  (Only supported with the default Logback setup.)
+
+| configprop:logging.charset.file[]
+| `FILE_LOG_CHARSET`
+| The charset to use for file logging (if `LOG_FILE` is enabled).
 
 | configprop:logging.pattern.level[]
 | `LOG_LEVEL_PATTERN`
 | The format to use when rendering the log level (default `%5p`).
-  (Only supported with the default Logback setup.)
-
-| configprop:logging.pattern.rolling-file-name[]
-| `ROLLING_FILE_NAME_PATTERN`
-| Pattern for rolled-over log file names (default `$\{LOG_FILE}.%d\{yyyy-MM-dd}.%i.gz`).
-  (Only supported with the default Logback setup.)
 
 | `PID`
 | `PID`
 | The current process ID (discovered if possible and when not already defined as an OS environment variable).
 |===
+
+If you're using Logback, the following properties are also transfered:
+
+|===
+| Spring Environment | System Property | Comments
+
+| configprop:logging.logback.rollingpolicy.file-name-pattern[]
+| `LOGBACK_ROLLINGPOLICY_FILE_NAME_PATTERN`
+| Pattern for rolled-over log file names (default `$\{LOG_FILE}.%d\{yyyy-MM-dd}.%i.gz`).
+
+| configprop:logging.logback.rollingpolicy.clean-history-on-start[]
+| `LOGBACK_ROLLINGPOLICY_CLEAN_HISTORY_ON_START`
+| Whether to clean the archive log files on startup.
+
+| configprop:logging.logback.rollingpolicy.max-file-size[]
+| `LOGBACK_ROLLINGPOLICY_MAX_FILE_SIZE`
+| Maximum log file size.
+
+| configprop:logging.logback.rollingpolicy.total-size-cap[]
+| `LOGBACK_ROLLINGPOLICY_TOTAL_SIZE_CAP`
+| Total size of log backups to be kept.
+
+| configprop:logging.logback.rollingpolicy.max-history[]
+| `LOGBACK_ROLLINGPOLICY_MAX_HISTORY`
+| Maximum number of archive log files to keep.
+|===
+
 
 All the supported logging systems can consult System properties when parsing their configuration files.
 See the default configurations in `spring-boot.jar` for examples:
@@ -2061,7 +2356,7 @@ If you attempt to do so, making changes to the configuration file results in an 
 The `<springProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
 Profile sections are supported anywhere within the `<configuration>` element.
 Use the `name` attribute to specify which profile accepts the configuration.
-The `<springProfile>` tag can contain a simple profile name (for example `staging`) or a profile expression.
+The `<springProfile>` tag can contain a profile name (for example `staging`) or a profile expression.
 A profile expression allows for more complicated profile logic to be expressed, for example `production & (eu-central | eu-west)`.
 Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
 The following listing shows three sample profiles:
@@ -2118,10 +2413,12 @@ If no properties file is found that matches any of the configured base names, th
 
 The basename of the resource bundle as well as several other attributes can be configured using the `spring.messages` namespace, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.messages.basename=messages,config.i18n.messages
-	spring.messages.fallback-to-system-locale=false
+	spring:
+	  messages:
+	    basename: "messages,config.i18n.messages"
+	    fallback-to-system-locale: false
 ----
 
 TIP: `spring.messages.basename` supports comma-separated list of locations, either a package qualifier or a resource resolved from the classpath root.
@@ -2180,7 +2477,7 @@ If you have not yet developed a Spring Boot web application, you can follow the 
 
 [[boot-features-spring-mvc]]
 === The "`Spring Web MVC Framework`"
-The {spring-framework-docs}/web.html#mvc[Spring Web MVC framework] (often referred to as simply "`Spring MVC`") is a rich "`model view controller`" web framework.
+The {spring-framework-docs}/web.html#mvc[Spring Web MVC framework] (often referred to as "`Spring MVC`") is a rich "`model view controller`" web framework.
 Spring MVC lets you create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
 Methods in your controller are mapped to HTTP by using `@RequestMapping` annotations.
 
@@ -2227,7 +2524,6 @@ The auto-configuration adds the following features on top of Spring's defaults:
 * Support for `HttpMessageConverters` (covered <<boot-features-spring-mvc-message-converters,later in this document>>).
 * Automatic registration of `MessageCodesResolver` (covered <<boot-features-spring-message-codes,later in this document>>).
 * Static `index.html` support.
-* Custom `Favicon` support (covered <<boot-features-spring-mvc-favicon,later in this document>>).
 * Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<boot-features-spring-mvc-web-binding-initializer,later in this document>>).
 
 If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
@@ -2325,12 +2621,14 @@ Most of the time, this does not happen (unless you modify the default MVC config
 By default, resources are mapped on `+/**+`, but you can tune that with the configprop:spring.mvc.static-path-pattern[] property.
 For instance, relocating all resources to `/resources/**` can be achieved as follows:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.mvc.static-path-pattern=/resources/**
+	spring:
+	  mvc:
+	    static-path-pattern: "/resources/**"
 ----
 
-You can also customize the static resource locations by using the configprop:spring.resources.static-locations[] property (replacing the default values with a list of directory locations).
+You can also customize the static resource locations by using the configprop:spring.web.resources.static-locations[] property (replacing the default values with a list of directory locations).
 The root Servlet context path, `"/"`, is automatically added as a location as well.
 
 In addition to the "`standard`" static resource locations mentioned earlier, a special case is made for https://www.webjars.org/[Webjars content].
@@ -2350,10 +2648,16 @@ Otherwise, all Webjars resolve as a `404`.
 
 To use cache busting, the following configuration configures a cache busting solution for all static resources, effectively adding a content hash, such as `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`, in URLs:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.resources.chain.strategy.content.enabled=true
-	spring.resources.chain.strategy.content.paths=/**
+	spring:
+	  web:
+	    resources:
+	      chain:
+	        strategy:
+	          content:
+	            enabled: true
+	            paths: "/**"
 ----
 
 NOTE: Links to resources are rewritten in templates at runtime, thanks to a `ResourceUrlEncodingFilter` that is auto-configured for Thymeleaf and FreeMarker.
@@ -2364,13 +2668,20 @@ When loading resources dynamically with, for example, a JavaScript module loader
 That is why other strategies are also supported and can be combined.
 A "fixed" strategy adds a static version string in the URL without changing the file name, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.resources.chain.strategy.content.enabled=true
-	spring.resources.chain.strategy.content.paths=/**
-	spring.resources.chain.strategy.fixed.enabled=true
-	spring.resources.chain.strategy.fixed.paths=/js/lib/
-	spring.resources.chain.strategy.fixed.version=v12
+	spring:
+	  web:
+	    resources:
+	      chain:
+	        strategy:
+	          content:
+	            enabled: true
+	            paths: "/**"
+	          fixed:
+	            enabled: true
+	            paths: "/js/lib/"
+	            version: "v12"
 ----
 
 With this configuration, JavaScript modules located under `"/js/lib/"` use a fixed versioning strategy (`"/v12/js/lib/mymodule.js"`), while other resources still use the content one (`<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`).
@@ -2391,13 +2702,6 @@ If either is found, it is automatically used as the welcome page of the applicat
 
 
 
-[[boot-features-spring-mvc-favicon]]
-==== Custom Favicon
-As with other static resources, Spring Boot looks for a `favicon.ico` in the configured static content locations.
-If such a file is present, it is automatically used as the favicon of the application.
-
-
-
 [[boot-features-spring-mvc-pathmatch]]
 ==== Path Matching and Content Negotiation
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and matching it to the mappings defined in your application (for example, `@GetMapping` annotations on Controller methods).
@@ -2410,16 +2714,37 @@ Nowadays, Content Negotiation is much more reliable.
 There are other ways to deal with HTTP clients that don't consistently send proper "Accept" request headers.
 Instead of using suffix matching, we can use a query parameter to ensure that requests like `"GET /projects/spring-boot?format=json"` will be mapped to `@GetMapping("/projects/spring-boot")`:
 
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
+----
+	spring:
+	  mvc:
+	    contentnegotiation:
+	      favor-parameter: true
+----
+
+Or if you prefer to use a different parameter name:
+
 [source,properties,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	spring.mvc.contentnegotiation.favor-parameter=true
-
-	# We can change the parameter name, which is "format" by default:
-	# spring.mvc.contentnegotiation.parameter-name=myparam
-
-	# We can also register additional file extensions/media types with:
-	spring.mvc.contentnegotiation.media-types.markdown=text/markdown
+	spring:
+	  mvc:
+	    contentnegotiation:
+	      favor-parameter: true
+	      parameter-name: "myparam"
 ----
+
+Most standard media types are supported out-of-the-box, but you can also define new ones:
+
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
+----
+	spring:
+	  mvc:
+	    contentnegotiation:
+	      media-types:
+	        markdown: "text/markdown"
+----
+
+
 
 Suffix pattern matching is deprecated and will be removed in a future release.
 If you understand the caveats and would still like your application to use suffix pattern matching, the following configuration is required:
@@ -2430,24 +2755,28 @@ If you understand the caveats and would still like your application to use suffi
 	spring.mvc.pathmatch.use-suffix-pattern=true
 ----
 
-Alternatively, rather than open all suffix patterns, it's more secure to just support registered suffix patterns:
+Alternatively, rather than open all suffix patterns, it's more secure to only support registered suffix patterns:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.mvc.contentnegotiation.favor-path-extension=true
-	spring.mvc.pathmatch.use-registered-suffix-pattern=true
-
-	# You can also register additional file extensions/media types with:
-	# spring.mvc.contentnegotiation.media-types.adoc=text/asciidoc
+	spring:
+	  mvc:
+	    contentnegotiation:
+	      favor-path-extension: true
+	    pathmatch:
+	      use-registered-suffix-pattern: true
 ----
 
 As of Spring Framework 5.3, Spring MVC supports several implementation strategies for matching request paths to Controller handlers.
 It was previously only supporting the `AntPathMatcher` strategy, but it now also offers `PathPatternParser`.
 Spring Boot now provides a configuration property to choose and opt in the new strategy:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.mvc.pathmatch.matching-strategy=path_pattern_parser
+	spring:
+	  mvc:
+	    pathmatch:
+	      matching-strategy: "path-pattern-parser"
 ----
 
 For more details on why you should consider this new implementation, please check out the
@@ -2486,11 +2815,10 @@ There are several <<boot-features-jsp-limitations, known limitations>> when usin
 
 When you use one of these templating engines with the default configuration, your templates are picked up automatically from `src/main/resources/templates`.
 
-TIP: Depending on how you run your application, IntelliJ IDEA orders the classpath differently.
+TIP: Depending on how you run your application, your IDE may order the classpath differently.
 Running your application in the IDE from its main method results in a different ordering than when you run your application by using Maven or Gradle or from its packaged jar.
-This can cause Spring Boot to fail to find the templates on the classpath.
+This can cause Spring Boot to fail to find the expected template.
 If you have this problem, you can reorder the classpath in the IDE to place the module's classes and resources first.
-Alternatively, you can configure the template prefix to search every `templates` directory on the classpath, as follows: `classpath*:/templates/`.
 
 
 
@@ -2499,6 +2827,10 @@ Alternatively, you can configure the template prefix to search every `templates`
 By default, Spring Boot provides an `/error` mapping that handles all errors in a sensible way, and it is registered as a "`global`" error page in the servlet container.
 For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message.
 For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
+
+There are a number of `server.error` properties that can be set if you want to customize the default error handling behavior.
+See the <<appendix-application-properties.adoc#common-application-properties-server, "`Server Properties`">> section of the Appendix.  
+
 To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
 TIP: The `BasicErrorController` can be used as a base class for a custom `ErrorController`.
@@ -2821,12 +3153,14 @@ It uses the `ResourceWebHandler` from Spring WebFlux so that you can modify that
 By default, resources are mapped on `+/**+`, but you can tune that by setting the configprop:spring.webflux.static-path-pattern[] property.
 For instance, relocating all resources to `/resources/**` can be achieved as follows:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.webflux.static-path-pattern=/resources/**
+	spring:
+	  webflux:
+	    static-path-pattern: "/resources/**"
 ----
 
-You can also customize the static resource locations by using `spring.resources.static-locations`.
+You can also customize the static resource locations by using `spring.web.resources.static-locations`.
 Doing so replaces the default values with a list of directory locations.
 If you do so, the default welcome page detection switches to your custom locations.
 So, if there is an `index.html` in any of your locations on startup, it is the home page of the application.
@@ -3049,7 +3383,7 @@ If a Servlet filter wraps the request, it should be configured with an order tha
 TIP: To see the order of every `Filter` in your application, enable debug level logging for the `web` <<boot-features-custom-log-groups,logging group>> (`logging.level.web=debug`).
 Details of the registered filters, including their order and URL patterns, will then be logged at startup.
 
-WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifectyle.
+WARNING: Take care when registering `Filter` beans since they are initialized very early in the application lifecycle.
 If you need to register a `Filter` that interacts with other beans, consider using a {spring-boot-module-api}/web/servlet/DelegatingFilterProxyRegistrationBean.html[`DelegatingFilterProxyRegistrationBean`] instead.
 
 
@@ -3086,7 +3420,7 @@ Most applications are auto-configured, and the appropriate `ApplicationContext` 
 [[boot-features-customizing-embedded-containers]]
 ==== Customizing Embedded Servlet Containers
 Common servlet container settings can be configured by using Spring `Environment` properties.
-Usually, you would define the properties in your `application.properties` file.
+Usually, you would define the properties in your `application.properties` or `application.yaml` file.
 
 Common server settings include:
 
@@ -3204,17 +3538,23 @@ NOTE: Graceful shutdown with Tomcat requires Tomcat 9.0.33 or later.
 
 To enable graceful shutdown, configure the configprop:server.shutdown[] property, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-server.shutdown=graceful
+server:
+  shutdown: "graceful"
 ----
 
 To configure the timeout period, configure the configprop:spring.lifecycle.timeout-per-shutdown-phase[] property, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-spring.lifecycle.timeout-per-shutdown-phase=20s
+spring:
+  lifecycle:
+    timeout-per-shutdown-phase: "20s"
 ----
+
+IMPORTANT: Using graceful shutdown with your IDE may not work properly if it does not send a proper `SIGTERM` signal.
+Refer to the documentation of your IDE for more details.
 
 
 
@@ -3253,11 +3593,13 @@ This depends on the type of application and its configuration.
 
 For WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the Web Server only if the following properties match:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.rsocket.server.mapping-path=/rsocket # a mapping path is defined
-	spring.rsocket.server.transport=websocket # websocket is chosen as a transport
-	#spring.rsocket.server.port= # no port is defined
+	spring:
+	  rsocket:
+	    server:
+	      mapping-path: "/rsocket"
+	      transport: "websocket"
 ----
 
 WARNING: Plugging RSocket into a web server is only supported with Reactor Netty, as RSocket itself is built with that library.
@@ -3265,10 +3607,12 @@ WARNING: Plugging RSocket into a web server is only supported with Reactor Netty
 Alternatively, an RSocket TCP or websocket server is started as an independent, embedded server.
 Besides the dependency requirements, the only required configuration is to define a port for that server:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
-	spring.rsocket.server.port=9898 # the only required configuration
-	spring.rsocket.server.transport=tcp # you're free to configure other properties
+	spring:
+	  rsocket:
+	    server:
+	      port: 9898
 ----
 
 
@@ -3393,38 +3737,47 @@ https://oauth.net/2/[OAuth2] is a widely used authorization framework that is su
 
 [[boot-features-security-oauth2-client]]
 ==== Client
-If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to make it easy to set up an OAuth2/Open ID Connect clients.
+If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up an OAuth2/Open ID Connect clients.
 This configuration makes use of the properties under `OAuth2ClientProperties`.
 The same properties are applicable to both servlet and reactive applications.
 
 You can register multiple OAuth2 clients and providers under the `spring.security.oauth2.client` prefix, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.security.oauth2.client.registration.my-client-1.client-id=abcd
-	spring.security.oauth2.client.registration.my-client-1.client-secret=password
-	spring.security.oauth2.client.registration.my-client-1.client-name=Client for user scope
-	spring.security.oauth2.client.registration.my-client-1.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.my-client-1.scope=user
-	spring.security.oauth2.client.registration.my-client-1.redirect-uri=https://my-redirect-uri.com
-	spring.security.oauth2.client.registration.my-client-1.client-authentication-method=basic
-	spring.security.oauth2.client.registration.my-client-1.authorization-grant-type=authorization_code
+	spring:
+	  security:
+	    oauth2:
+	      client:
+	        registration:
+	          my-client-1:
+	            client-id: "abcd"
+	            client-secret: "password"
+	            client-name: "Client for user scope"
+	            provider: "my-oauth-provider"
+	            scope: "user"
+	            redirect-uri: "https://my-redirect-uri.com"
+	            client-authentication-method: "basic"
+	            authorization-grant-type: "authorization-code"
 
-	spring.security.oauth2.client.registration.my-client-2.client-id=abcd
-	spring.security.oauth2.client.registration.my-client-2.client-secret=password
-	spring.security.oauth2.client.registration.my-client-2.client-name=Client for email scope
-	spring.security.oauth2.client.registration.my-client-2.provider=my-oauth-provider
-	spring.security.oauth2.client.registration.my-client-2.scope=email
-	spring.security.oauth2.client.registration.my-client-2.redirect-uri=https://my-redirect-uri.com
-	spring.security.oauth2.client.registration.my-client-2.client-authentication-method=basic
-	spring.security.oauth2.client.registration.my-client-2.authorization-grant-type=authorization_code
+	          my-client-2:
+	            client-id: "abcd"
+	            client-secret: "password"
+	            client-name: "Client for email scope"
+	            provider: "my-oauth-provider"
+	            scope: "email"
+	            redirect-uri: "https://my-redirect-uri.com"
+	            client-authentication-method: "basic"
+	            authorization-grant-type: "authorization_code"
 
-	spring.security.oauth2.client.provider.my-oauth-provider.authorization-uri=https://my-auth-server/oauth/authorize
-	spring.security.oauth2.client.provider.my-oauth-provider.token-uri=https://my-auth-server/oauth/token
-	spring.security.oauth2.client.provider.my-oauth-provider.user-info-uri=https://my-auth-server/userinfo
-	spring.security.oauth2.client.provider.my-oauth-provider.user-info-authentication-method=header
-	spring.security.oauth2.client.provider.my-oauth-provider.jwk-set-uri=https://my-auth-server/token_keys
-	spring.security.oauth2.client.provider.my-oauth-provider.user-name-attribute=name
+	        provider:
+	          my-oauth-provider:
+	            authorization-uri: "https://my-auth-server/oauth/authorize"
+	            token-uri: "https://my-auth-server/oauth/token"
+	            user-info-uri: "https://my-auth-server/userinfo"
+	            user-info-authentication-method: "header"
+	            jwk-set-uri: "https://my-auth-server/token_keys"
+	            user-name-attribute: "name"
 ----
 
 For OpenID Connect providers that support https://openid.net/specs/openid-connect-discovery-1_0.html[OpenID Connect discovery], the configuration can be further simplified.
@@ -3433,9 +3786,15 @@ For example, if the `issuer-uri` provided is "https://example.com", then an `Ope
 The result is expected to be an `OpenID Provider Configuration Response`.
 The following example shows how an OpenID Connect Provider can be configured with the `issuer-uri`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.security.oauth2.client.provider.oidc-provider.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
+	spring:
+	  security:
+	    oauth2:
+	      client:
+	        provider:
+	          oidc-provider:
+	            issuer-uri: "https://dev-123456.oktapreview.com/oauth2/default/"
 ----
 
 By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes URLs matching `/login/oauth2/code/*`.
@@ -3470,14 +3829,20 @@ Also, if the key for the client registration matches a default supported provide
 
 In other words, the two configurations in the following example use the Google provider:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.security.oauth2.client.registration.my-client.client-id=abcd
-	spring.security.oauth2.client.registration.my-client.client-secret=password
-	spring.security.oauth2.client.registration.my-client.provider=google
-
-	spring.security.oauth2.client.registration.google.client-id=abcd
-	spring.security.oauth2.client.registration.google.client-secret=password
+	spring:
+	  security:
+	    oauth2:
+	      client:
+	        registration:
+	          my-client:
+	            client-id: "abcd"
+	            client-secret: "password"
+	            provider: "google"
+	          google:
+	            client-id: "abcd"
+	            client-secret: "password"
 ----
 
 
@@ -3487,14 +3852,24 @@ In other words, the two configurations in the following example use the Google p
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can set up an OAuth2 Resource Server.
 For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, as shown in the following examples:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.security.oauth2.resourceserver.jwt.jwk-set-uri=https://example.com/oauth2/default/v1/keys
+	spring:
+	  security:
+	    oauth2:
+	      resourceserver:
+	        jwt:
+	          jwk-set-uri: "https://example.com/oauth2/default/v1/keys"
 ----
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.security.oauth2.resourceserver.jwt.issuer-uri=https://dev-123456.oktapreview.com/oauth2/default/
+	spring:
+	  security:
+	    oauth2:
+	      resourceserver:
+	        jwt:
+	          issuer-uri: "https://dev-123456.oktapreview.com/oauth2/default/"
 ----
 
 NOTE: If the authorization server does not support a JWK Set URI, you can configure the resource server with the Public Key used for verifying the signature of the JWT.
@@ -3506,11 +3881,16 @@ Alternatively, you can define your own `JwtDecoder` bean for servlet application
 
 In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens via introspection:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.security.oauth2.resourceserver.opaquetoken.introspection-uri=https://example.com/check-token
-	spring.security.oauth2.resourceserver.opaquetoken.client-id=my-client-id
-	spring.security.oauth2.resourceserver.opaquetoken.client-secret=my-client-secret
+	spring:
+	  security:
+	    oauth2:
+	      resourceserver:
+	        opaquetoken:
+	          introspection-uri: "https://example.com/check-token"
+	          client-id: "my-client-id"
+	          client-secret: "my-client-secret"
 ----
 
 Again, the same properties are applicable for both servlet and reactive applications.
@@ -3532,25 +3912,49 @@ Until then, you can use the `spring-security-oauth2-autoconfigure` module to eas
 
 [[boot-features-security-saml2-relying-party]]
 ==== Relying Party
-If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to make it easy to set up a SAML 2.0 Relying Party.
+If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
 This configuration makes use of the properties under `Saml2RelyingPartyProperties`.
 
 A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
 You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.security.saml2.relyingparty.registration.my-relying-party1.signing.credentials[0].private-key-location=path-to-private-key
-	spring.security.saml2.relyingparty.registration.my-relying-party1.signing.credentials[0].certificate-location=path-to-certificate
-	spring.security.saml2.relyingparty.registration.my-relying-party1.identityprovider.verification.credentials[0].certificate-location=path-to-verification-cert
-	spring.security.saml2.relyingparty.registration.my-relying-party1.identityprovider.entity-id=remote-idp-entity-id1
-	spring.security.saml2.relyingparty.registration.my-relying-party1.identityprovider.sso-url=https://remoteidp1.sso.url
-
-	spring.security.saml2.relyingparty.registration.my-relying-party2.signing.credentials[0].private-key-location=path-to-private-key
-    spring.security.saml2.relyingparty.registration.my-relying-party2.signing.credentials[0].certificate-location=path-to-certificate
-    spring.security.saml2.relyingparty.registration.my-relying-party2.identityprovider.verification.credentials[0].certificate-location=path-to-other-verification-cert
-    spring.security.saml2.relyingparty.registration.my-relying-party2.identityprovider.entity-id=remote-idp-entity-id2
-    spring.security.saml2.relyingparty.registration.my-relying-party2.identityprovider.sso-url=https://remoteidp2.sso.url
+	spring:
+	  security:
+	    saml2:
+	      relyingparty:
+	        registration:
+	          my-relying-party1:
+	            signing:
+                  credentials:
+                  - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+	            decryption:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+	            identityprovider:
+	              verification:
+	                credentials:
+	                - certificate-location: "path-to-verification-cert"
+	              entity-id: "remote-idp-entity-id1"
+	              sso-url: "https://remoteidp1.sso.url"
+	          my-relying-party2:
+	            signing:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+                decryption:
+	              credentials:
+	              - private-key-location: "path-to-private-key"
+                    certificate-location: "path-to-certificate"
+                identityprovider:
+                  verification:
+                    credentials:
+                    - certificate-location: "path-to-other-verification-cert"
+                  entity-id: "remote-idp-entity-id2"
+                  sso-url: "https://remoteidp2.sso.url"
 ----
 
 
@@ -3560,8 +3964,8 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 For security purposes, all actuators other than `/health` and `/info` are disabled by default.
 The configprop:management.endpoints.web.exposure.include[] property can be used to enable the actuators.
 
-If Spring Security is on the classpath and no other WebSecurityConfigurerAdapter is present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
-If you define a custom `WebSecurityConfigurerAdapter`, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
+If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
+If you define a custom `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information and/or are secured by placing them behind a firewall or by something like Spring Security.
 
@@ -3645,7 +4049,8 @@ Spring Boot uses the following algorithm for choosing a specific implementation:
 . We prefer https://github.com/brettwooldridge/HikariCP[HikariCP] for its performance and concurrency.
   If HikariCP is available, we always choose it.
 . Otherwise, if the Tomcat pooling `DataSource` is available, we use it.
-. If neither HikariCP nor the Tomcat pooling datasource are available and if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
+. Otherwise, if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
+. If none of HikariCP, Tomcat, and DBCP2 are available and if Oracle UCP is available, we use it.
 
 If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` "`starters`", you automatically get a dependency to `HikariCP`.
 
@@ -3658,40 +4063,43 @@ If you define your own `DataSource` bean, auto-configuration does not occur.
 DataSource configuration is controlled by external configuration properties in `+spring.datasource.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.datasource.url=jdbc:mysql://localhost/test
-	spring.datasource.username=dbuser
-	spring.datasource.password=dbpass
-	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
+	spring:
+	  datasource:
+	    url: "jdbc:mysql://localhost/test"
+	    username: "dbuser"
+	    password: "dbpass"
 ----
 
 NOTE: You should at least specify the URL by setting the configprop:spring.datasource.url[] property.
 Otherwise, Spring Boot tries to auto-configure an embedded database.
 
-TIP: You often do not need to specify the `driver-class-name`, since Spring Boot can deduce it for most databases from the `url`.
+TIP: Spring Boot can deduce the JDBC driver class for most databases from the URL.
+If you need to specify a specific class, you can use the configprop:spring.datasource.driver-class-name[] property.
+
 
 NOTE: For a pooling `DataSource` to be created, we need to be able to verify that a valid `Driver` class is available, so we check for that before doing anything.
 In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`, then that class has to be loadable.
 
 See {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[`DataSourceProperties`] for more of the supported options.
 These are the standard options that work regardless of the actual implementation.
-It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, and `+spring.datasource.dbcp2.*+`).
+It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
 Refer to the documentation of the connection pool implementation you are using for more details.
 
 For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	# Number of ms to wait before throwing an exception if no connection is available.
-	spring.datasource.tomcat.max-wait=10000
-
-	# Maximum number of active connections that can be allocated from this pool at the same time.
-	spring.datasource.tomcat.max-active=50
-
-	# Validate the connection before borrowing it from the pool.
-	spring.datasource.tomcat.test-on-borrow=true
+	spring:
+	  datasource:
+	    tomcat:
+	      max-wait: 10000
+	      max-active: 50
+	      test-on-borrow: true
 ----
+
+This will set the pool to wait 10000 ms before throwing an exception if no connection is available, limit the maximum number of connections to 50 and validate the connection before borrowing it from the pool.
 
 
 
@@ -3702,9 +4110,11 @@ If you deploy your Spring Boot application to an Application Server, you might w
 The configprop:spring.datasource.jndi-name[] property can be used as an alternative to the configprop:spring.datasource.url[], configprop:spring.datasource.username[], and configprop:spring.datasource.password[] properties to access the `DataSource` from a specific JNDI location.
 For example, the following section in `application.properties` shows how you can access a JBoss AS defined `DataSource`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.datasource.jndi-name=java:jboss/datasources/customers
+	spring:
+	  datasource:
+	    jndi-name: "java:jboss/datasources/customers"
 ----
 
 
@@ -3736,9 +4146,12 @@ Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-config
 
 You can customize some properties of the template by using the `spring.jdbc.template.*` properties, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.jdbc.template.max-rows=500
+	spring:
+	  jdbc:
+	    template:
+	      max-rows: 500
 ----
 
 NOTE: The `NamedParameterJdbcTemplate` reuses the same `JdbcTemplate` instance behind the scenes.
@@ -3753,8 +4166,8 @@ The `spring-boot-starter-data-jpa` POM provides a quick way to get started.
 It provides the following key dependencies:
 
 * Hibernate: One of the most popular JPA implementations.
-* Spring Data JPA: Makes it easy to implement JPA-based repositories.
-* Spring ORMs: Core ORM support from the Spring Framework.
+* Spring Data JPA: Helps you to implement JPA-based repositories.
+* Spring ORM: Core ORM support from the Spring Framework.
 
 TIP: We do not go into too many details of JPA or {spring-data}[Spring Data] here.
 You can follow the https://spring.io/guides/gs/accessing-data-jpa/["`Accessing Data with JPA`"] guide from https://spring.io and read the {spring-data-jpa}[Spring Data JPA] and https://hibernate.org/orm/documentation/[Hibernate] reference documentation.
@@ -3853,6 +4266,8 @@ Spring Data JPA repositories support three different modes of bootstrapping: def
 To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.repositories.bootstrap-mode[] property to `deferred` or `lazy` respectively.
 When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
 If more than one exists, the one named `applicationTaskExecutor` will be used.
+
+NOTE: When using deferred or lazy bootstraping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
 
 TIP: We have barely scratched the surface of Spring Data JPA.
 For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
@@ -4042,11 +4457,13 @@ Connections are provided via a `ConnectionFactory`, similar to a `DataSource` wi
 `ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.r2dbc.url=r2dbc:postgresql://localhost/test
-	spring.r2dbc.username=dbuser
-	spring.r2dbc.password=dbpass
+	spring:
+	  r2dbc:
+	    url: "r2dbc:postgresql://localhost/test"
+	    username: "dbuser"
+	    password: "dbpass"
 ----
 
 TIP: You do not need to specify a driver class name, since Spring Boot obtains the driver from R2DBC's Connection Factory discovery.
@@ -4067,7 +4484,7 @@ The following example shows how to manually override the database port while the
 	}
 ----
 
-The following examples shows how to set some PostgreSQL connection options:
+The following examples show how to set some PostgreSQL connection options:
 
 [source,java,indent=0]
 ----
@@ -4080,7 +4497,8 @@ The following examples shows how to set some PostgreSQL connection options:
 	}
 ----
 
-When a `ConnectionFactory` bean is available, the regular jdbc `DataSource` auto-configuration backs off.
+When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
+If you want to retain the JDBC `DataSource` auto-configuration, and are comfortable with the risk of using the blocking JDBC API in a reactive application, add `@Import(DataSourceAutoConfiguration.class)` on a `@Configuration` class in your application to re-enable it.
 
 
 
@@ -4109,7 +4527,7 @@ If you want to make sure that each context has a separate embedded database, you
 
 [[boot-features-r2dbc-using-database-client]]
 ==== Using DatabaseClient
-Spring Data's `DatabaseClient` class is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
+A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -4195,7 +4613,7 @@ There is a `spring-boot-starter-data-redis` "`Starter`" for collecting the depen
 By default, it uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
 That starter handles both traditional and reactive applications.
 
-TIP: we also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for consistency with the other stores with reactive support.
+TIP: We also provide a `spring-boot-starter-data-redis-reactive` "`Starter`" for consistency with the other stores with reactive support.
 
 
 
@@ -4268,6 +4686,14 @@ The following example shows how to connect to a MongoDB database:
 	}
 ----
 
+If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
+
+The auto-configured `MongoClient` is created using a `MongoClientSettings` bean.
+If you have defined your own `MongoClientSettings`, it will be used without modification and the `spring.data.mongodb` properties will be ignored.
+Otherwise a `MongoClientSettings` will be auto-configured and will have the `spring.data.mongodb` properties applied to it.
+In either case, you can declare one or more `MongoClientSettingsBuilderCustomizer` beans to fine-tune the `MongoClientSettings` configuration.
+Each will be called in order with the `MongoClientSettings.Builder` that is used to build the `MongoClientSettings`.
+
 You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
 [source,properties,indent=0,configprops]
@@ -4278,16 +4704,17 @@ You can set the configprop:spring.data.mongodb.uri[] property to change the URL 
 Alternatively, you can specify connection details using discrete properties.
 For example, you might declare the following settings in your `application.properties`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.data.mongodb.host=mongoserver.example.com
-	spring.data.mongodb.port=27017
-	spring.data.mongodb.database=test
-	spring.data.mongodb.username=user
-	spring.data.mongodb.password=secret
+	spring:
+	  data:
+	    mongodb:
+	      host: "mongoserver.example.com"
+	      port: 27017
+	      database: "test"
+	      username: "user"
+	      password: "secret"
 ----
-
-If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
 
 TIP: If `spring.data.mongodb.port` is not specified, the default of `27017` is used.
 You could delete this line from the example shown earlier.
@@ -4386,20 +4813,20 @@ Spring Boot offers several conveniences for working with Neo4j, including the `s
 
 [[boot-features-connecting-to-neo4j]]
 ==== Connecting to a Neo4j Database
-To access a Neo4j server, you can inject an auto-configured `org.neo4j.ogm.session.Session`.
+To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Driver`.
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
-The following example shows how to inject a Neo4j `Session`:
+The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
 
 [source,java,indent=0]
 ----
 	@Component
 	public class MyBean {
 
-		private final Session session;
+		private final Driver driver;
 
 		@Autowired
-		public MyBean(Session session) {
-			this.session = session;
+		public MyBean(Driver driver) {
+			this.driver = driver;
 		}
 
 		// ...
@@ -4407,66 +4834,32 @@ The following example shows how to inject a Neo4j `Session`:
 	}
 ----
 
-You can configure the uri and credentials to use by setting the `spring.data.neo4j.*` properties, as shown in the following example:
+You can configure various aspects of the driver using `spring.neo4j.*` properties.
+The following example shows how to configure the uri and credentials to use:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.data.neo4j.uri=bolt://my-server:7687
-	spring.data.neo4j.username=neo4j
-	spring.data.neo4j.password=secret
-----
-
-You can take full control over the session creation by adding either an `org.neo4j.ogm.config.Configuration` bean or an `org.neo4j.ogm.session.SessionFactory` bean.
-
-
-
-[[boot-features-connecting-to-neo4j-embedded]]
-==== Using the Embedded Mode
-If you add `org.neo4j:neo4j-ogm-embedded-driver` to the dependencies of your application, Spring Boot automatically configures an in-process embedded instance of Neo4j that does not persist any data when your application shuts down.
-
-NOTE: As the embedded Neo4j OGM  driver  does not provide the Neo4j kernel itself, you have to declare `org.neo4j:neo4j` as dependency yourself.
-Refer to https://neo4j.com/docs/ogm-manual/current/reference/#reference:getting-started[the Neo4j OGM documentation] for a list of compatible versions.
-
-The embedded driver takes precedence over the other drivers when there are multiple drivers on the classpath.
-You can explicitly disable the embedded mode by setting `spring.data.neo4j.embedded.enabled=false`.
-
-<<boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test,Data Neo4j Tests>> automatically make use of an embedded Neo4j instance if the embedded driver and Neo4j kernel are on the classpath as described above.
-
-NOTE: You can enable persistence for the embedded mode by providing a path to a database file in your configuration, e.g. `spring.data.neo4j.uri=file://var/tmp/graph.db`.
-
-
-
-[[boot-features-neo4j-ogm-native-types]]
-==== Using Native Types
-Neo4j-OGM can map some types, like those in `java.time.*`, to `String`-based properties or to one of the native types that Neo4j provides.
-For backwards compatibility reasons the default for Neo4j-OGM is to use a `String`-based representation.
-To use native types, add a dependency on either `org.neo4j:neo4j-ogm-bolt-native-types` or `org.neo4j:neo4j-ogm-embedded-native-types`, and configure the configprop:spring.data.neo4j.use-native-types[] property as shown in the following example:
-
-[source,properties,indent=0,configprops]
-----
-	spring.data.neo4j.use-native-types=true
+	spring:
+	  neo4j:
+	    uri: "bolt://my-server:7687"
+	    authentication:
+	      username: "neo4j"
+	      password: "secret"
 ----
 
-
-
-[[boot-features-neo4j-ogm-session]]
-==== Neo4jSession
-By default, if you are running a web application, the session is bound to the thread for the entire processing of the request (that is, it uses the "Open Session in View" pattern).
-If you do not want this behavior, add the following line to your `application.properties` file:
-
-[source,properties,indent=0,configprops]
-----
-	spring.data.neo4j.open-in-view=false
-----
+The auto-configured `Driver` is created using `ConfigBuilder`.
+To fine-tune its configuration, declare one or more `ConfigBuilderCustomizer` beans.
+Each will be called in order with the `ConfigBuilder` that is used to build the `Driver`.
 
 
 
 [[boot-features-spring-data-neo4j-repositories]]
 ==== Spring Data Neo4j Repositories
 Spring Data includes repository support for Neo4j.
+For complete details of Spring Data Neo4j, refer to the {spring-data-neo4j-docs}[reference documentation].
 
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
-You could take the JPA example from earlier and define `City` as Neo4j OGM `@NodeEntity` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
+You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -4484,9 +4877,21 @@ You could take the JPA example from earlier and define `City` as Neo4j OGM `@Nod
 ----
 
 The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
+Spring Boot supports both classic and reactive Neo4j repositories, using the `Neo4jTemplate` or `ReactiveNeo4jTemplate` beans.
+When Project Reactor is available on the classpath, the reactive style is also auto-configured.
+
 You can customize the locations to look for repositories and entities by using `@EnableNeo4jRepositories` and `@EntityScan` respectively on a `@Configuration`-bean.
 
-TIP: For complete details of Spring Data Neo4j, including its object mapping technologies, refer to the {spring-data-neo4j-docs}[reference documentation].
+[NOTE]
+====
+In an application using the reactive style, a `ReactiveTransactionManager` is not auto-configured.
+To enable transaction management, the following bean must be defined in your configuration:
+
+[source,java,indent=0]
+----
+include::{code-examples}/neo4j/Neo4jReactiveTransactionManagerExample.java[tag=configuration]
+----
+====
 
 
 
@@ -4550,25 +4955,31 @@ Spring Boot supports several clients:
 Spring Boot provides a dedicated "`Starter`", `spring-boot-starter-data-elasticsearch`.
 
 
+
 [[boot-features-connecting-to-elasticsearch-rest]]
 ==== Connecting to Elasticsearch using REST clients
 Elasticsearch ships https://www.elastic.co/guide/en/elasticsearch/client/java-rest/current/index.html[two different REST clients] that you can use to query a cluster: the "Low Level" client and the "High Level" client.
+Spring Boot provides support for the "High Level" client, which ships with `org.elasticsearch.client:elasticsearch-rest-high-level-client`.
 
-If you have the `org.elasticsearch.client:elasticsearch-rest-client` dependency on the classpath, Spring Boot will auto-configure and register a `RestClient` bean that by default targets `http://localhost:9200`.
-You can further tune how `RestClient` is configured, as shown in the following example:
+If you have this dependency on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean that by default targets `http://localhost:9200`.
+You can further tune how `RestHighLevelClient` is configured, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.elasticsearch.rest.uris=https://search.example.com:9200
-	spring.elasticsearch.rest.read-timeout=10s
-	spring.elasticsearch.rest.username=user
-	spring.elasticsearch.rest.password=secret
+	spring:
+	  elasticsearch:
+	    rest:
+	      uris: "https://search.example.com:9200"
+	      read-timeout: "10s"
+	      username: "user"
+	      password: "secret"
 ----
 
 You can also register an arbitrary number of beans that implement `RestClientBuilderCustomizer` for more advanced customizations.
-To take full control over the registration, define a `RestClient` bean.
+To take full control over the registration, define a `RestClientBuilder` bean.
 
-If you have the `org.elasticsearch.client:elasticsearch-rest-high-level-client` dependency on the classpath, Spring Boot will auto-configure a `RestHighLevelClient`, which wraps any existing `RestClient` bean, reusing its HTTP configuration.
+TIP: If your application needs access to a "Low Level" `RestClient`, you can get it by calling `client.getLowLevelClient()` on the auto-configured `RestHighLevelClient`.
+
 
 
 [[boot-features-connecting-to-elasticsearch-reactive-rest]]
@@ -4580,17 +4991,24 @@ By default, Spring Boot will auto-configure and register a `ReactiveElasticsearc
 bean that targets `http://localhost:9200`.
 You can further tune how it is configured, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.data.elasticsearch.client.reactive.endpoints=search.example.com:9200
-	spring.data.elasticsearch.client.reactive.use-ssl=true
-	spring.data.elasticsearch.client.reactive.socket-timeout=10s
-	spring.data.elasticsearch.client.reactive.username=user
-	spring.data.elasticsearch.client.reactive.password=secret
+	spring:
+	  data:
+	    elasticsearch:
+	      client:
+	        reactive:
+	          endpoints: "search.example.com:9200"
+	          use-ssl: true
+	          socket-timeout: "10s"
+	          username: "user"
+	          password: "secret"
 ----
 
 If the configuration properties are not enough and you'd like to fully control the client
 configuration, you can register a custom `ClientConfiguration` bean.
+
+
 
 [[boot-features-connecting-to-elasticsearch-spring-data]]
 ==== Connecting to Elasticsearch by Using Spring Data
@@ -4639,9 +5057,13 @@ Same applies to `ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperat
 
 You can choose to disable the repositories support with the following property:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-    spring.data.elasticsearch.repositories.enabled=false
+    spring:
+      data:
+        elasticsearch:
+          repositories:
+            enabled: false
 ----
 
 
@@ -4659,27 +5081,39 @@ You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession
 The `spring.data.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.data.cassandra.keyspace-name=mykeyspace
-	spring.data.cassandra.contact-points=cassandrahost1:9042,cassandrahost2:9042
-	spring.data.cassandra.local-datacenter=datacenter1
+	spring:
+	  data:
+	    cassandra:
+	      keyspace-name: "mykeyspace"
+	      contact-points: "cassandrahost1:9042,cassandrahost2:9042"
+	      local-datacenter: "datacenter1"
 ----
 
 If the port is the same for all your contact points you can use a shortcut and only specify the host names, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.data.cassandra.keyspace-name=mykeyspace
-	spring.data.cassandra.contact-points=cassandrahost1,cassandrahost2
-	spring.data.cassandra.local-datacenter=datacenter1
+	spring:
+	  data:
+	    cassandra:
+	      keyspace-name: "mykeyspace"
+	      contact-points: "cassandrahost1,cassandrahost2"
+	      local-datacenter: "datacenter1"
 ----
 
 TIP: Those two examples are identical as the port default to `9042`.
 If you need to configure the port, use `spring.data.cassandra.port`.
 
-You can also register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer` for more advanced driver customizations.
+[NOTE]
+====
+The Cassandra driver has its own configuration infrastructure that loads an `application.conf` at the root of the classpath.
+
+Spring Boot does not look for such a file and rather provides a number of configuration properties via the `spring.data.cassandra.*` namespace.
+For more advanced driver customizations, you can register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer`.
 The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
+====
 
 NOTE: If you're using `CqlSessionBuilder` to create multiple `CqlSession` beans, keep in mind the builder is mutable so make sure to inject a fresh copy for each session.
 
@@ -4728,21 +5162,28 @@ You can get a `Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
 Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.couchbase.connection-string=couchbase://192.168.1.123
-	spring.couchbase.username=user
-	spring.couchbase.password=secret
+	spring:
+	  couchbase:
+	    connection-string: "couchbase://192.168.1.123"
+	    username: "user"
+	    password: "secret"
 ----
 
 It is also possible to customize some of the `ClusterEnvironment` settings.
 For instance, the following configuration changes the timeout to use to open a new `Bucket` and enables SSL support:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.couchbase.env.timeouts.connect=3000
-	spring.couchbase.env.ssl.key-store=/location/of/keystore.jks
-	spring.couchbase.env.ssl.key-store-password=secret
+	spring:
+	  couchbase:
+	    env:
+	      timeouts:
+	        connect: "3s"
+	      ssl:
+	        key-store: "/location/of/keystore.jks"
+	        key-store-password: "secret"
 ----
 
 TIP: Check the `spring.couchbase.env.*` properties for more details.
@@ -4756,11 +5197,14 @@ Spring Data includes repository support for Couchbase.
 For complete details of Spring Data Couchbase, refer to the {spring-data-couchbase-docs}[reference documentation].
 
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
-This happens when a `Cluster` is availabe, as described above, and a bucket name as been specified:
+This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.data.couchbase.bucket-name=my-bucket
+	spring:
+	  data:
+	    couchbase:
+	      bucket-name: "my-bucket"
 ----
 
 The following examples shows how to inject a `CouchbaseTemplate` bean:
@@ -4822,11 +5266,13 @@ There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the depend
 ==== Connecting to an LDAP Server
 To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.ldap.urls=ldap://myserver:1235
-	spring.ldap.username=admin
-	spring.ldap.password=secret
+	spring:
+	  ldap:
+	    urls: "ldap://myserver:1235"
+	    username: "admin"
+	    password: "secret"
 ----
 
 If you need to customize connection settings, you can use the `spring.ldap.base` and `spring.ldap.base-environment` properties.
@@ -4870,32 +5316,26 @@ You can also inject an auto-configured `LdapTemplate` instance as you would with
 For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.ldap.embedded.base-dn=dc=spring,dc=io
+	spring:
+	  ldap:
+	    embedded:
+	      base-dn: "dc=spring,dc=io"
 ----
 
 [NOTE]
 ====
 It is possible to define multiple base-dn values, however, since distinguished names usually contain commas, they must be defined using the correct notation.
 
-In yaml files, you can use the yaml list notation:
+In yaml files, you can use the yaml list notation. In properties files, you must include the index as part of the property name:
 
-[source,yaml,indent=0]
+[source,yaml,indent=0,configprops,configblocks]
 ----
 	spring.ldap.embedded.base-dn:
 	  - dc=spring,dc=io
 	  - dc=pivotal,dc=io
 ----
-
-In properties files, you must include the index as part of the property name:
-
-[source,properties,indent=0,configprops]
-----
-	spring.ldap.embedded.base-dn[0]=dc=spring,dc=io
-	spring.ldap.embedded.base-dn[1]=dc=pivotal,dc=io
-----
-
 ====
 
 By default, the server starts on a random port and triggers the regular LDAP support.
@@ -4920,9 +5360,11 @@ https://www.influxdata.com/[InfluxDB] is an open-source time series database opt
 ==== Connecting to InfluxDB
 Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.influx.url=https://172.0.0.1:8086
+	spring:
+	  influx:
+	    url: "https://172.0.0.1:8086"
 ----
 
 If the connection to InfluxDB requires a user and password, you can set the `spring.influx.user` and `spring.influx.password` properties accordingly.
@@ -4941,7 +5383,7 @@ Spring Boot auto-configures the cache infrastructure as long as caching support 
 
 NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section] of the Spring Framework reference for more details.
 
-In a nutshell, adding caching to an operation of your service is as easy as adding the relevant annotation to its method, as shown in the following example:
+In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -5009,10 +5451,12 @@ The following example sets a flag to say that `null` values should be passed dow
 	@Bean
 	public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
 		return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
+
 			@Override
 			public void customize(ConcurrentMapCacheManager cacheManager) {
 				cacheManager.setAllowNullValues(false);
 			}
+
 		};
 	}
 ----
@@ -5039,11 +5483,14 @@ Any other compliant library can be added as well.
 It might happen that more than one provider is present, in which case the provider must be explicitly specified.
 Even if the JSR-107 standard does not enforce a standardized way to define the location of the configuration file, Spring Boot does its best to accommodate setting a cache with implementation details, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
     # Only necessary if more than one provider is present
-	spring.cache.jcache.provider=com.acme.MyCachingProvider
-	spring.cache.jcache.config=classpath:acme.xml
+	spring:
+	  cache:
+	    jcache:
+	      provider: "com.acme.MyCachingProvider"
+	      config: "classpath:acme.xml"
 ----
 
 NOTE: When a cache library offers both a native implementation and JSR-107 support, Spring Boot prefers the JSR-107 support, so that the same features are available if you switch to a different JSR-107 implementation.
@@ -5068,9 +5515,12 @@ https://www.ehcache.org/[EhCache] 2.x is used if a file named `ehcache.xml` can 
 If EhCache 2.x is found, the `EhCacheCacheManager` provided by the `spring-boot-starter-cache` "`Starter`" is used to bootstrap the cache manager.
 An alternate configuration file can be provided as well, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.cache.ehcache.config=classpath:config/another-config.xml
+	spring:
+	  cache:
+	    ehcache:
+	      config: "classpath:config/another-config.xml"
 ----
 
 
@@ -5087,9 +5537,12 @@ If a `HazelcastInstance` has been auto-configured, it is automatically wrapped i
 https://infinispan.org/[Infinispan] has no default configuration file location, so it must be specified explicitly.
 Otherwise, the default bootstrap is used.
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.cache.infinispan.config=infinispan.xml
+	spring:
+	  cache:
+	    infinispan:
+	      config: "infinispan.xml"
 ----
 
 Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
@@ -5103,48 +5556,26 @@ See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentat
 
 [[boot-features-caching-provider-couchbase]]
 ==== Couchbase
-If the https://www.couchbase.com/[Couchbase] Java client and the `couchbase-spring-cache` implementation are available and Couchbase is <<boot-features-couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
-It is also possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property.
-These caches operate on the `Bucket` that was auto-configured.
-You can _also_ create additional caches on another `Bucket` by using the customizer.
-Assume you need two caches (`cache1` and `cache2`) on the "main" `Bucket` and one (`cache3`) cache with a custom time to live of 2 seconds on the "`another`" `Bucket`.
-You can create the first two caches through configuration, as follows:
+If Spring Data Couchbase is available and Couchbase is <<boot-features-couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
+It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
+For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.cache.cache-names=cache1,cache2
+	spring:
+	  cache:
+	    cache-names: "cache1,cache2"
+        couchbase:
+          expiration: "10m"
 ----
 
-Then you can define a `@Configuration` class to configure the extra `Bucket` and the `cache3` cache, as follows:
+If you need more control over the configuration, consider registering a `CouchbaseCacheManagerBuilderCustomizer` bean.
+The following example shows a customizer that configures a specific entry expiration for `cache1` and `cache2`:
 
 [source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class CouchbaseCacheConfiguration {
-
-		private final Cluster cluster;
-
-		public CouchbaseCacheConfiguration(Cluster cluster) {
-			this.cluster = cluster;
-		}
-
-		@Bean
-		public Bucket anotherBucket() {
-			return this.cluster.openBucket("another", "secret");
-		}
-
-		@Bean
-		public CacheManagerCustomizer<CouchbaseCacheManager> cacheManagerCustomizer() {
-			return c -> {
-				c.prepareCache("cache3", CacheBuilder.newInstance(anotherBucket())
-						.withExpiration(2));
-			};
-		}
-
-	}
+include::{code-examples}/cache/CouchbaseCacheManagerCustomizationExample.java[tag=configuration]
 ----
-
-This sample configuration reuses the `Cluster` that was created through auto-configuration.
 
 
 
@@ -5154,10 +5585,13 @@ If https://redis.io/[Redis] is available and configured, a `RedisCacheManager` i
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.redis.*` properties.
 For instance, the following configuration creates `cache1` and `cache2` caches with a _time to live_ of 10 minutes:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.cache.cache-names=cache1,cache2
-	spring.cache.redis.time-to-live=600000
+	spring:
+	  cache:
+	    cache-names: "cache1,cache2"
+	    redis:
+	      time-to-live: "10m"
 ----
 
 NOTE: By default, a key prefix is added so that, if two separate caches use the same key, Redis does not have overlapping keys and cannot return invalid values.
@@ -5189,10 +5623,13 @@ Caches can be created on startup by setting the configprop:spring.cache.cache-na
 
 For instance, the following configuration creates `cache1` and `cache2` caches with a maximum size of 500 and a _time to live_ of 10 minutes
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.cache.cache-names=cache1,cache2
-	spring.cache.caffeine.spec=maximumSize=500,expireAfterAccess=600s
+	spring:
+	  cache:
+	    cache-names: "cache1,cache2"
+	    caffeine:
+	      spec: "maximumSize=500,expireAfterAccess=600s"
 ----
 
 If a `com.github.benmanes.caffeine.cache.CacheLoader` bean is defined, it is automatically associated to the `CaffeineCacheManager`.
@@ -5208,9 +5645,11 @@ This is the default if no caching library is present in your application.
 By default, caches are created as needed, but you can restrict the list of available caches by setting the `cache-names` property.
 For instance, if you want only `cache1` and `cache2` caches, set the `cache-names` property as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.cache.cache-names=cache1,cache2
+	spring:
+	  cache:
+	    cache-names: "cache1,cache2"
 ----
 
 If you do so and your application uses a cache not listed, then it fails at runtime when the cache is needed, but not on startup.
@@ -5223,9 +5662,11 @@ This is similar to the way the "real" cache providers behave if you use an undec
 When `@EnableCaching` is present in your configuration, a suitable cache configuration is expected as well.
 If you need to disable caching altogether in certain environments, force the cache type to `none` to use a no-op implementation, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.cache.type=none
+	spring:
+	  cache:
+	    type: "none"
 ----
 
 
@@ -5259,26 +5700,34 @@ NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to c
 ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.activemq.broker-url=tcp://192.168.1.210:9876
-	spring.activemq.user=admin
-	spring.activemq.password=secret
+	spring:
+	  activemq:
+	    broker-url: "tcp://192.168.1.210:9876"
+	    user: "admin"
+	    password: "secret"
 ----
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.jms.cache.session-cache-size=5
+	spring:
+	  jms:
+	    cache:
+	      session-cache-size: 5
 ----
 
 If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.activemq.pool.enabled=true
-	spring.activemq.pool.max-connections=50
+	spring:
+	  activemq:
+	    pool:
+	      enabled: true
+	      max-connections: 50
 ----
 
 TIP: See {spring-boot-autoconfigure-module-code}/jms/activemq/ActiveMQProperties.java[`ActiveMQProperties`] for more of the supported options.
@@ -5301,13 +5750,15 @@ Adding `org.apache.activemq:artemis-jms-server` to your application lets you use
 Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.artemis.mode=native
-	spring.artemis.host=192.168.1.210
-	spring.artemis.port=9876
-	spring.artemis.user=admin
-	spring.artemis.password=secret
+	spring:
+	  artemis:
+	    mode: native
+	    host: "192.168.1.210"
+	    port: 9876
+	    user: "admin"
+	    password: "secret"
 ----
 
 When embedding the broker, you can choose if you want to enable persistence and list the destinations that should be made available.
@@ -5315,17 +5766,23 @@ These can be specified as a comma-separated list to create them with the default
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.jms.cache.session-cache-size=5
+	spring:
+	  jms:
+	    cache:
+	      session-cache-size: 5
 ----
 
 If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.artemis.pool.enabled=true
-	spring.artemis.pool.max-connections=50
+	spring:
+	  artemis:
+	    pool:
+	      enabled: true
+	      max-connections: 50
 ----
 
 See {spring-boot-autoconfigure-module-code}/jms/artemis/ArtemisProperties.java[`ArtemisProperties`] for more supported options.
@@ -5340,9 +5797,11 @@ If you are running your application in an application server, Spring Boot tries 
 By default, the `java:/JmsXA` and `java:/XAConnectionFactory` location are checked.
 You can use the configprop:spring.jms.jndi-name[] property if you need to specify an alternative location, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.jms.jndi-name=java:/MyConnectionFactory
+	spring:
+	  jms:
+	    jndi-name: "java:/MyConnectionFactory"
 ----
 
 
@@ -5463,19 +5922,23 @@ Spring uses `RabbitMQ` to communicate through the AMQP protocol.
 RabbitMQ configuration is controlled by external configuration properties in `+spring.rabbitmq.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.rabbitmq.host=localhost
-	spring.rabbitmq.port=5672
-	spring.rabbitmq.username=admin
-	spring.rabbitmq.password=secret
+	spring:
+	  rabbitmq:
+	    host: "localhost"
+	    port: 5672
+	    username: "admin"
+	    password: "secret"
 ----
 
 Alternatively, you could configure the same connection using the `addresses` attribute:
 
-[source,properties,indent=0]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.rabbitmq.addresses=amqp://admin:secret@localhost
+	spring:
+	  rabbitmq:
+	    addresses: "amqp://admin:secret@localhost"
 ----
 
 NOTE: When specifying addresses that way, the `host` and `port` properties are ignored.
@@ -5523,10 +5986,14 @@ If necessary, any `org.springframework.amqp.core.Queue` that is defined as a bea
 
 To retry operations, you can enable retries on the `AmqpTemplate` (for example, in the event that the broker connection is lost):
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.rabbitmq.template.retry.enabled=true
-	spring.rabbitmq.template.retry.initial-interval=2s
+	spring:
+	  rabbitmq:
+	    template:
+	      retry:
+	        enabled: true
+	        initial-interval: "2s"
 ----
 
 Retries are disabled by default.
@@ -5619,10 +6086,13 @@ https://kafka.apache.org/[Apache Kafka] is supported by providing auto-configura
 Kafka configuration is controlled by external configuration properties in `spring.kafka.*`.
 For example, you might declare the following section in `application.properties`:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.kafka.bootstrap-servers=localhost:9092
-	spring.kafka.consumer.group-id=myGroup
+	spring:
+	  kafka:
+	    bootstrap-servers: "localhost:9092"
+	    consumer:
+	      group-id: "myGroup"
 ----
 
 TIP: To create a topic on startup, add a bean of type `NewTopic`.
@@ -5679,7 +6149,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 ----
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
-Similarly, if a `ErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
+Similarly, if a `RecordFilterStrategy`, `ErrorHandler`, `AfterRollbackProcessor` or `ConsumerAwareRebalanceListener` bean is defined, it is automatically associated to the default factory.
 
 Depending on the listener type, a `RecordMessageConverter` or `BatchMessageConverter` bean is associated to the default factory.
 If only a `RecordMessageConverter` bean is present for a batch listener, it is wrapped in a `BatchMessageConverter`.
@@ -5695,12 +6165,12 @@ Spring Boot auto-configures the required `KafkaStreamsConfiguration` bean as lon
 
 Enabling Kafka Streams means that the application id and bootstrap servers must be set.
 The former can be configured using `spring.kafka.streams.application-id`, defaulting to `spring.application.name` if not set.
-The latter can be set globally or specifically overridden just for streams.
+The latter can be set globally or specifically overridden only for streams.
 
 Several additional properties are available using dedicated properties; other arbitrary Kafka properties can be set using the `spring.kafka.streams.properties` namespace.
 See also <<boot-features-kafka-extra-props>> for more information.
 
-To use the factory bean, simply wire `StreamsBuilder` into your `@Bean` as shown in the following example:
+To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -5725,32 +6195,51 @@ Spring Boot auto-configuration supports all HIGH importance properties, some sel
 Only a subset of the properties supported by Kafka are available directly through the `KafkaProperties` class.
 If you wish to configure the producer or consumer with additional properties that are not directly supported, use the following properties:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.kafka.properties.prop.one=first
-	spring.kafka.admin.properties.prop.two=second
-	spring.kafka.consumer.properties.prop.three=third
-	spring.kafka.producer.properties.prop.four=fourth
-	spring.kafka.streams.properties.prop.five=fifth
+	spring:
+	  kafka:
+	    properties:
+	      "[prop.one]": "first"
+	    admin:
+	      properties:
+	        "[prop.two]": "second"
+	    consumer:
+	      properties:
+	        "[prop.three]": "third"
+	    producer:
+	      properties:
+	        "[prop.four]": "fourth"
+	    streams:
+	      properties:
+	        "[prop.five]": "fifth"
 ----
 
 This sets the common `prop.one` Kafka property to `first` (applies to producers, consumers and admins), the `prop.two` admin property to `second`, the `prop.three` consumer property to `third`, the `prop.four` producer property to `fourth` and the `prop.five` streams property to `fifth`.
 
 You can also configure the Spring Kafka `JsonDeserializer` as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.kafka.consumer.value-deserializer=org.springframework.kafka.support.serializer.JsonDeserializer
-	spring.kafka.consumer.properties.spring.json.value.default.type=com.example.Invoice
-	spring.kafka.consumer.properties.spring.json.trusted.packages=com.example,org.acme
+	spring:
+	  kafka:
+	    consumer:
+	      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
+	      properties:
+	        "[spring.json.value.default.type]": "com.example.Invoice"
+	        "[spring.json.trusted.packages]": "com.example,org.acme"
 ----
 
 Similarly, you can disable the `JsonSerializer` default behavior of sending type information in headers:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.kafka.producer.value-serializer=org.springframework.kafka.support.serializer.JsonSerializer
-	spring.kafka.producer.properties.spring.json.add.type.headers=false
+	spring:
+	  kafka:
+	    producer:
+	      value-serializer: "org.springframework.kafka.support.serializer.JsonSerializer"
+	      properties:
+	        "[spring.json.add.type.headers]": false
 ----
 
 IMPORTANT: Properties set in this way override any configuration item that Spring Boot explicitly supports.
@@ -5770,24 +6259,26 @@ There are several ways to do that:
 
 [source,java,indent=0]
 ----
-static {
-    System.setProperty(EmbeddedKafkaBroker.BROKER_LIST_PROPERTY, "spring.kafka.bootstrap-servers");
-}
+	static {
+	    System.setProperty(EmbeddedKafkaBroker.BROKER_LIST_PROPERTY, "spring.kafka.bootstrap-servers");
+	}
 ----
 
 * Configure a property name on the `@EmbeddedKafka` annotation:
 
 [source,java,indent=0]
 ----
-@EmbeddedKafka(topics = "someTopic",
-        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+	@EmbeddedKafka(topics = "someTopic",
+	        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
 ----
 
 * Use a placeholder in configuration properties:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-spring.kafka.bootstrap-servers=${spring.embedded.kafka.brokers}
+	spring:
+	  kafka:
+	    bootstrap-servers: "${spring.embedded.kafka.brokers}"
 ----
 
 
@@ -5841,7 +6332,16 @@ The following example shows a customizer that configures the use of a proxy for 
 include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
 ----
 
-Finally, the most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean.
+Finally, you can also create your own `RestTemplateBuilder` bean.
+To prevent switching off the auto-configuration of a `RestTemplateBuilder` and prevent any `RestTemplateCustomizer` beans from being used, make sure to configure your custom instance with a `RestTemplateBuilderConfigurer`.
+The following example exposes a `RestTemplateBuilder` with what Spring Boot would auto-configure, except that custom connect and read timeouts are also specified:
+
+[source,java,indent=0]
+----
+include::{code-examples}/web/client/RestTemplateBuilderCustomizationExample.java[tag=customizer]
+----
+
+The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
 Doing so switches off the auto-configuration of a `RestTemplateBuilder` and prevents any `RestTemplateCustomizer` beans from being used.
 
 
@@ -5936,7 +6436,7 @@ For instance, the following service triggers the validation of the first argumen
 
 [[boot-features-email]]
 == Sending Email
-The Spring Framework provides an easy abstraction for sending email by using the `JavaMailSender` interface, and Spring Boot provides auto-configuration for it as well as a starter module.
+The Spring Framework provides an abstraction for sending email by using the `JavaMailSender` interface, and Spring Boot provides auto-configuration for it as well as a starter module.
 
 TIP: See the {spring-framework-docs}/integration.html#mail[reference documentation] for a detailed explanation of how you can use `JavaMailSender`.
 
@@ -5946,18 +6446,23 @@ See {spring-boot-autoconfigure-module-code}/mail/MailProperties.java[`MailProper
 
 In particular, certain default timeout values are infinite, and you may want to change that to avoid having a thread blocked by an unresponsive mail server, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.mail.properties.mail.smtp.connectiontimeout=5000
-	spring.mail.properties.mail.smtp.timeout=3000
-	spring.mail.properties.mail.smtp.writetimeout=5000
+	spring:
+	  mail:
+	    properties:
+	      "[mail.smtp.connectiontimeout]": 5000
+	      "[mail.smtp.timeout]": 3000
+	      "[mail.smtp.writetimeout]": 5000
 ----
 
 It is also possible to configure a `JavaMailSender` with an existing `Session` from JNDI:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.mail.jndi-name=mail/Session
+	spring:
+	  mail:
+	    jndi-name: "mail/Session"
 ----
 
 When a `jndi-name` is set, it takes precedence over all other Session-related settings.
@@ -6065,27 +6570,33 @@ The {spring-boot-module-code}/jta/atomikos/AtomikosXAConnectionFactoryWrapper.ja
 == Hazelcast
 If https://hazelcast.com/[Hazelcast] is on the classpath and a suitable configuration is found, Spring Boot auto-configures a `HazelcastInstance` that you can inject in your application.
 
-If you define a `com.hazelcast.config.Config` bean, Spring Boot uses that.
-If your configuration defines an instance name, Spring Boot tries to locate an existing instance rather than creating a new one.
-
-You could also specify the Hazelcast configuration file to use through configuration, as shown in the following example:
-
-[source,properties,indent=0,configprops]
-----
-	spring.hazelcast.config=classpath:config/my-hazelcast.xml
-----
-
-Otherwise, Spring Boot tries to find the Hazelcast configuration from the default locations: `hazelcast.xml` in the working directory or at the root of the classpath, or a `.yaml` counterpart in the same locations.
-We also check if the `hazelcast.config` system property is set.
-See the https://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast documentation] for more details.
-
-If `hazelcast-client` is present on the classpath, Spring Boot first attempts to create a client by checking the following configuration options:
+Spring Boot first attempts to create a client by checking the following configuration options:
 
 * The presence of a `com.hazelcast.client.config.ClientConfig` bean.
 * A configuration file defined by the configprop:spring.hazelcast.config[] property.
 * The presence of the `hazelcast.client.config` system property.
 * A `hazelcast-client.xml` in the working directory or at the root of the classpath.
 * A `hazelcast-client.yaml` in the working directory or at the root of the classpath.
+
+NOTE: Spring Boot supports both Hazelcast 4 and Hazelcast 3.
+If you downgrade to Hazelcast 3, `hazelcast-client` should be added to the classpath to configure a client.
+
+If a client can't be created, Spring Boot attempts to configure an embedded server.
+If you define a `com.hazelcast.config.Config` bean, Spring Boot uses that.
+If your configuration defines an instance name, Spring Boot tries to locate an existing instance rather than creating a new one.
+
+You could also specify the Hazelcast configuration file to use through configuration, as shown in the following example:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  hazelcast:
+	    config: "classpath:config/my-hazelcast.xml"
+----
+
+Otherwise, Spring Boot tries to find the Hazelcast configuration from the default locations: `hazelcast.xml` in the working directory or at the root of the classpath, or a `.yaml` counterpart in the same locations.
+We also check if the `hazelcast.config` system property is set.
+See the https://docs.hazelcast.org/docs/latest/manual/html-single/[Hazelcast documentation] for more details.
 
 NOTE: Spring Boot also has <<boot-features-caching-provider-hazelcast,explicit caching support for Hazelcast>>.
 If caching is enabled, the `HazelcastInstance` is automatically wrapped in a `CacheManager` implementation.
@@ -6107,16 +6618,21 @@ Beans of the following types are automatically picked up and associated with the
 By default, an in-memory `JobStore` is used.
 However, it is possible to configure a JDBC-based store if a `DataSource` bean is available in your application and if the configprop:spring.quartz.job-store-type[] property is configured accordingly, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.quartz.job-store-type=jdbc
+	spring:
+	  quartz:
+	    job-store-type: "jdbc"
 ----
 
 When the JDBC store is used, the schema can be initialized on startup, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.quartz.jdbc.initialize-schema=always
+	spring:
+	  quartz:
+	    jdbc:
+	      initialize-schema: "always"
 ----
 
 WARNING: By default, the database is detected and initialized by using the standard scripts provided with the Quartz library.
@@ -6125,6 +6641,7 @@ It is also possible to provide a custom script by setting the configprop:spring.
 
 To have Quartz use a `DataSource` other than the application's main `DataSource`, declare a `DataSource` bean, annotating its `@Bean` method with `@QuartzDataSource`.
 Doing so ensures that the Quartz-specific `DataSource` is used by both the `SchedulerFactoryBean` and for schema initialization.
+Similarly, to have Quartz use a `TransactionManager` other than the application's main `TransactionManager` declare a `TransactionManager` bean, annotating its `@Bean` method with `@QuartzTransactionManager`.
 
 By default, jobs created by configuration will not overwrite already registered jobs that have been read from a persistent job store.
 To enable overwriting existing job definitions set the configprop:spring.quartz.overwrite-existing-jobs[] property.
@@ -6178,11 +6695,15 @@ The auto-configured `TaskExecutorBuilder` allows you to easily create instances 
 The thread pool uses 8 core threads that can grow and shrink according to the load.
 Those default settings can be fine-tuned using the `spring.task.execution` namespace as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.task.execution.pool.max-size=16
-	spring.task.execution.pool.queue-capacity=100
-	spring.task.execution.pool.keep-alive=10s
+	spring:
+	  task:
+	    execution:
+	      pool:
+	        max-size: 16
+	        queue-capacity: 100
+	        keep-alive: "10s"
 ----
 
 This changes the thread pool to use a bounded queue so that when the queue is full (100 tasks), the thread pool increases to maximum 16 threads.
@@ -6205,9 +6726,12 @@ Spring Boot also configures some features that are triggered by the presence of 
 If `spring-integration-jmx` is also on the classpath, message processing statistics are published over JMX.
 If `spring-integration-jdbc` is available, the default database schema can be created on startup, as shown in the following line:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.integration.jdbc.initialize-schema=always
+	spring:
+	  integration:
+	    jdbc:
+	      initialize-schema: "always"
 ----
 
 If `spring-integration-rsocket` is available, developers can configure an RSocket server using `"spring.rsocket.server.*"` properties and let it use `IntegrationRSocketEndpoint` or `RSocketOutboundGateway` components to handle incoming RSocket messages.
@@ -6215,14 +6739,25 @@ This infrastructure can handle Spring Integration RSocket channel adapters and `
 
 Spring Boot can also auto-configure an `ClientRSocketConnector` using configuration properties:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
 	# Connecting to a RSocket server over TCP
-	spring.integration.rsocket.client.host=example.org
-	spring.integration.rsocket.client.port=9898
+	spring:
+	  integration:
+	    rsocket:
+	      client:
+	        host: "example.org"
+	        port: 9898
+----
 
+[source,yaml,indent=0,configprops,configblocks]
+----
 	# Connecting to a RSocket Server over WebSocket
-	spring.integration.rsocket.client.uri=ws://example.org
+	spring:
+	  integration:
+	    rsocket:
+	      client:
+	        uri: "ws://example.org"
 ----
 
 See the {spring-boot-autoconfigure-module-code}/integration/IntegrationAutoConfiguration.java[`IntegrationAutoConfiguration`] and {spring-boot-autoconfigure-module-code}/integration/IntegrationProperties.java[`IntegrationProperties`] classes for more details.
@@ -6242,18 +6777,24 @@ When building a Servlet web application, the following stores can be auto-config
 * Hazelcast
 * MongoDB
 
+The Servlet auto-configuration replaces the need to use `@Enable*HttpSession`.
+
 When building a reactive web application, the following stores can be auto-configured:
 
 * Redis
 * MongoDB
 
+The reactive auto-configuration replaces the need to use `@Enable*WebSession`.
+
 If a single Spring Session module is present on the classpath, Spring Boot uses that store implementation automatically.
 If you have more than one implementation, you must choose the {spring-boot-autoconfigure-module-code}/session/StoreType.java[`StoreType`] that you wish to use to store the sessions.
 For instance, to use JDBC as the back-end store, you can configure your application as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-    spring.session.store-type=jdbc
+    spring:
+      session:
+        store-type: "jdbc"
 ----
 
 TIP: You can disable Spring Session by setting the `store-type` to `none`.
@@ -6261,13 +6802,21 @@ TIP: You can disable Spring Session by setting the `store-type` to `none`.
 Each store has specific additional settings.
 For instance, it is possible to customize the name of the table for the JDBC store, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-    spring.session.jdbc.table-name=SESSIONS
+    spring:
+      session:
+        jdbc:
+          table-name: "SESSIONS"
 ----
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
-If that property is not set, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+If that property is not set with a Servlet web appplication, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+
+
+You can take control over Spring Session's configuration using `@Enable*HttpSession` (Servlet) or `@Enable*WebSession` (Reactive).
+This will cause the auto-configuration to back off.
+Spring Session can then be configured using the annotation's attributes rather than the previously described configuration properties.
 
 
 [[boot-features-jmx]]
@@ -6539,6 +7088,14 @@ include::{test-examples}/jmx/SampleJmxTests.java[tag=test]
 
 
 
+[[boot-features-testing-spring-boot-applications-metrics]]
+==== Using Metrics
+Regardless of your classpath, meter registries, except the in-memory backed, are not auto-configured when using `@SpringBootTest`.
+
+If you need to export metrics to a different backend as part of an integration test, annotate it with `@AutoConfigureMetrics`.
+
+
+
 [[boot-features-testing-spring-boot-applications-mocking-beans]]
 ==== Mocking and Spying Beans
 When running tests, it is sometimes necessary to mock certain components within your application context.
@@ -6611,6 +7168,9 @@ NOTE: While Spring's test framework caches application contexts between tests an
 
 TIP: If you are using `@SpyBean` to spy on a bean with `@Cacheable` methods that refer to parameters by name, your application must be compiled with `-parameters`.
 This ensures that the parameter names are available to the caching infrastructure once the bean has been spied upon.
+
+TIP: When you are using `@SpyBean` to spy on a bean that is proxied by Spring, you may need to remove Spring's proxy in some situations, for example when setting expectations using `given` or `when`.
+Use `AopTestUtils.getTargetObject(yourProxiedSpy)` to do so.
 
 
 
@@ -6711,7 +7271,8 @@ assertThat(json.write(message))
 ==== Auto-configured Spring MVC Tests
 To test whether Spring MVC controllers are working as expected, use the `@WebMvcTest` annotation.
 `@WebMvcTest` auto-configures the Spring MVC infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `Filter`, `HandlerInterceptor`, `WebMvcConfigurer`, and `HandlerMethodArgumentResolver`.
-Regular `@Component` beans are not scanned when using this annotation.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6811,7 +7372,8 @@ TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you 
 ==== Auto-configured Spring WebFlux Tests
 To test that {spring-framework-docs}/web-reactive.html[Spring WebFlux] controllers are working as expected, you can use the `@WebFluxTest` annotation.
 `@WebFluxTest` auto-configures the Spring WebFlux infrastructure and limits scanned beans to `@Controller`, `@ControllerAdvice`, `@JsonComponent`, `Converter`, `GenericConverter`, `WebFilter`, and `WebFluxConfigurer`.
-Regular `@Component` beans are not scanned when the `@WebFluxTest` annotation is used.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6867,12 +7429,42 @@ TIP: Sometimes writing Spring WebFlux tests is not enough; Spring Boot can help 
 
 
 
+[[boot-features-testing-spring-boot-applications-testing-autoconfigured-cassandra-test]]
+==== Auto-configured Data Cassandra Tests
+You can use `@DataCassandraTest` to test Cassandra applications.
+By default, it configures a `CassandraTemplate`, scans for `@Table` classes, and configures Spring Data Cassandra repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataCassandraTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
+(For more about using Cassandra with Spring Boot, see "<<boot-features-cassandra>>", earlier in this chapter.)
+
+TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+
+The following example shows a typical setup for using Cassandra tests in Spring Boot:
+
+[source,java,indent=0]
+----
+	import org.springframework.beans.factory.annotation.Autowired;
+	import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
+
+	@DataCassandraTest
+	class ExampleDataCassandraTests {
+
+		@Autowired
+		private YourRepository repository;
+
+		//
+	}
+----
+
+
+
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-jpa-test]]
 ==== Auto-configured Data JPA Tests
 You can use the `@DataJpaTest` annotation to test JPA applications.
 By default, it scans for `@Entity` classes and configures Spring Data JPA repositories.
 If an embedded database is available on the classpath, it configures one as well.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6946,7 +7538,8 @@ If, however, you prefer to run tests against a real database you can use the `@A
 ==== Auto-configured JDBC Tests
 `@JdbcTest` is similar to `@DataJpaTest` but is for tests that only require a `DataSource` and do not use Spring Data JDBC.
 By default, it configures an in-memory embedded database and a `JdbcTemplate`.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JdbcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6977,7 +7570,8 @@ If you prefer your test to run against a real database, you can use the `@AutoCo
 ==== Auto-configured Data JDBC Tests
 `@DataJdbcTest` is similar to `@JdbcTest` but is for tests that use Spring Data JDBC repositories.
 By default, it configures an in-memory embedded database, a `JdbcTemplate`, and Spring Data JDBC repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJdbcTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -6996,12 +7590,12 @@ You can use `@JooqTest` in a similar fashion as `@JdbcTest` but for jOOQ-related
 As jOOQ relies heavily on a Java-based schema that corresponds with the database schema, the existing `DataSource` is used.
 If you want to replace it with an in-memory database, you can use `@AutoConfigureTestDatabase` to override those settings.
 (For more about using jOOQ with Spring Boot, see "<<boot-features-jooq>>", earlier in this chapter.)
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
 `@JooqTest` configures a `DSLContext`.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
 The following example shows the `@JooqTest` annotation in use:
 
 [source,java,indent=0]
@@ -7027,7 +7621,8 @@ If that is not what you want, you can disable transaction management for a test 
 ==== Auto-configured Data MongoDB Tests
 You can use `@DataMongoTest` to test MongoDB applications.
 By default, it configures an in-memory embedded MongoDB (if available), configures a `MongoTemplate`, scans for `@Document` classes, and configures Spring Data MongoDB repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataMongoTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using MongoDB with Spring Boot, see "<<boot-features-mongodb>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -7069,8 +7664,9 @@ If, however, you prefer to run tests against a real MongoDB server, you should e
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-neo4j-test]]
 ==== Auto-configured Data Neo4j Tests
 You can use `@DataNeo4jTest` to test Neo4j applications.
-By default, it uses an in-memory embedded Neo4j (if the embedded driver is available), scans for `@NodeEntity` classes, and configures Spring Data Neo4j repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+By default, it scans for `@Node` classes, and configures Spring Data Neo4j repositories.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataNeo4jTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Neo4J with Spring Boot, see "<<boot-features-neo4j>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -7109,13 +7705,17 @@ If that is not what you want, you can disable transaction management for a test 
 	}
 ----
 
+NOTE: Transactional tests are not supported with reactive access.
+If you are using this style, you must configure `@DataNeo4jTest` tests as described above.
+
 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-redis-test]]
 ==== Auto-configured Data Redis Tests
 You can use `@DataRedisTest` to test Redis applications.
 By default, it scans for `@RedisHash` classes and configures Spring Data Redis repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataRedisTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Redis with Spring Boot, see "<<boot-features-redis>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -7143,7 +7743,8 @@ The following example shows the `@DataRedisTest` annotation in use:
 ==== Auto-configured Data LDAP Tests
 You can use `@DataLdapTest` to test LDAP applications.
 By default, it configures an in-memory embedded LDAP (if available), configures an `LdapTemplate`, scans for `@Entry` classes, and configures Spring Data LDAP repositories.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataLdapTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using LDAP with Spring Boot, see "<<boot-features-ldap>>", earlier in this chapter.)
 
 TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
@@ -7186,7 +7787,8 @@ If, however, you prefer to run tests against a real LDAP server, you should excl
 ==== Auto-configured REST Clients
 You can use the `@RestClientTest` annotation to test REST clients.
 By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `RestTemplateBuilder`, and adds support for `MockRestServiceServer`.
-Regular `@Component` beans are not loaded into the `ApplicationContext`.
+Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@RestClientTest` annotation is used.
+`@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
 TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be <<appendix-test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
 
@@ -7229,7 +7831,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-mock-mvc]]
 ===== Auto-configured Spring REST Docs Tests with Mock MVC
-`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs.
+`@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0]
@@ -7299,7 +7901,7 @@ The following example shows a `RestDocumentationResultHandler` being defined:
 
 [[boot-features-testing-spring-boot-applications-testing-autoconfigured-rest-docs-web-test-client]]
 ===== Auto-configured Spring REST Docs Tests with WebTestClient
-`@AutoConfigureRestDocs` can also be used with `WebTestClient`.
+`@AutoConfigureRestDocs` can also be used with `WebTestClient` when testing reactive web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and Spring REST Docs, as shown in the following example:
 
 [source,java,indent=0]
@@ -7372,7 +7974,7 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 [[boot-features-testing-spring-boot-applications-testing-auto-configured-additional-auto-config]]
 ==== Additional Auto-configuration and Slicing
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
-Additional auto-configurations can be added by creating a custom `@AutoConfigure...` annotation or simply by adding `@ImportAutoConfiguration` to the test as shown in the following example:
+Additional auto-configurations can be added on a test-by-test basis by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -7384,6 +7986,15 @@ Additional auto-configurations can be added by creating a custom `@AutoConfigure
 ----
 
 NOTE: Make sure to not use the regular `@Import` annotation to import auto-configurations as they are handled in a specific way by Spring Boot.
+
+Alternatively, additional auto-configurations can be added for any use of a slice annotation by registering them in `META-INF/spring.factories` as shown in the following example:
+
+[indent=0]
+----
+	org.springframework.boot.test.autoconfigure.jdbc.JdbcTest=com.example.IntegrationAutoConfiguration
+----
+
+TIP: A slice or `@AutoConfigure...` annotation can be customized this way as long as it is meta-annotated with `@ImportAutoConfiguration`.
 
 
 
@@ -7592,9 +8203,11 @@ The {spring-webservices-docs}[Spring Web Services features] can be easily access
 To do so, configure their location, as shown in the following example:
 
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,configprops,configblocks]
 ----
-	spring.webservices.wsdl-locations=classpath:/wsdl
+	spring:
+	  webservices:
+	    wsdl-locations: "classpath:/wsdl"
 ----
 
 
@@ -7770,6 +8383,10 @@ For this reason, we recommend using only `@ConditionalOnBean` and `@ConditionalO
 NOTE: `@ConditionalOnBean` and `@ConditionalOnMissingBean` do not prevent `@Configuration` classes from being created.
 The only difference between using these conditions at the class level and marking each contained `@Bean` method with the annotation is that the former prevents registration of the `@Configuration` class as a bean if the condition does not match.
 
+TIP: When declaring a `@Bean` method, provide as much type information as possible in the method's return type.
+For example, if your bean's concrete class implements an interface the bean method's return type should be the concrete class and not the interface.
+Providing as much type information as possible in `@Bean` methods is particularly important when using bean conditions as their evaluation can only rely upon to type information that's available in the method signature.
+
 
 
 [[boot-features-property-conditions]]
@@ -7823,7 +8440,7 @@ TIP: If multiple auto-configurations have to be defined, there is no need to ord
 
 Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
-Invoking `run` provides a callback context that can be used with `Assert4J`.
+Invoking `run` provides a callback context that can be used with `AssertJ`.
 
 [source,java,indent=0]
 ----
@@ -7935,7 +8552,7 @@ Make sure that configuration keys are documented by adding field javadoc for eac
 	}
 ----
 
-NOTE: You should only use simple text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
+NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
 Here are some rules we follow internally to make sure descriptions are consistent:
 
@@ -8168,7 +8785,7 @@ Note that some features (such as detecting the default value or deprecated items
 === Testing
 While it is possible to use JUnit 4 to test Kotlin code, JUnit 5 is provided by default and is recommended.
 JUnit 5 enables a test class to be instantiated once and reused for all of the class's tests.
-This makes it possible to use `@BeforeClass` and `@AfterClass` annotations on non-static methods, which is a good fit for Kotlin.
+This makes it possible to use `@BeforeAll` and `@AfterAll` annotations on non-static methods, which is a good fit for Kotlin.
 
 To mock Kotlin classes, https://mockk.io/[MockK] is recommended.
 If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testing-spring-boot-applications-mocking-beans,`@MockBean` and `@SpyBean` annotations>>, you can use https://github.com/Ninja-Squad/springmockk[SpringMockK] which provides similar `@MockkBean` and `@SpykBean` annotations.
@@ -8209,7 +8826,7 @@ If you need the `Mockk` equivalent of the Mockito specific <<boot-features-testi
 
 [[boot-features-container-images]]
 == Building Container Images
-Spring Boot applications can be containerized either by <<boot-features-container-images-docker,packaging them into Docker images>>, or by <<boot-features-container-images-buildpacks,using Buildpacks to create docker compatible container images that you can run anywhere>>.
+Spring Boot applications can be containerized either by <<boot-features-container-images-docker,packaging them into Docker images>>, or by <<boot-features-container-images-buildpacks,using Buildpacks to create Docker compatible container images that you can run anywhere>>.
 
 
 
@@ -8237,19 +8854,19 @@ Out-of-the-box, the following layers are supported:
 
 The following shows an example of a `layers.idx` file:
 
-[source]
+[source,yaml,indent=0]
 ----
-- "dependencies":
-  - BOOT-INF/lib/library1.jar
-  - BOOT-INF/lib/library2.jar
-- "spring-boot-loader":
-  - org/springframework/boot/loader/JarLauncher.class
-  - org/springframework/boot/loader/jar/JarEntry.class
-- "snapshot-dependencies":
-  - BOOT-INF/lib/library3-SNAPSHOT.jar
-- "application":
-  - META-INF/MANIFEST.MF
-  - BOOT-INF/classes/a/b/C.class
+	- "dependencies":
+	  - BOOT-INF/lib/library1.jar
+	  - BOOT-INF/lib/library2.jar
+	- "spring-boot-loader":
+	  - org/springframework/boot/loader/JarLauncher.class
+	  - org/springframework/boot/loader/jar/JarEntry.class
+	- "snapshot-dependencies":
+	  - BOOT-INF/lib/library3-SNAPSHOT.jar
+	- "application":
+	  - META-INF/MANIFEST.MF
+	  - BOOT-INF/classes/a/b/C.class
 ----
 
 This layering is designed to separate code based on how likely it is to change between application builds.
@@ -8264,6 +8881,10 @@ For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-jars
 ==== Writing the Dockerfile
 When you create a jar containing the layers index file, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
+
+CAUTION: The `layertools` mode can not be used with a <<deployment.adoc#deployment-install, fully executable Spring Boot archive>> that includes a launch script.
+Disable launch script configuration when building a jar file that is intended to be used with `layertools`.
+
 Here’s how you can launch your jar with a `layertools` jar mode:
 
 [source]
@@ -8333,7 +8954,9 @@ This means you can just type a single command and quickly get a sensible image i
 
 Refer to the individual plugin documentation on how to use buildpacks with {spring-boot-maven-plugin-docs}#build-image[Maven] and {spring-boot-gradle-plugin-docs}#build-image[Gradle].
 
-
+NOTE: In order to achieve reproducible builds and container image caching, Buildpacks can manipulate the application resources metadata (such as the file "last modified" information).
+You should ensure that your application does not rely on that metadata at runtime.
+Spring Boot can use that information when serving static resources, but this can be disabled with configprop:spring.web.resources.cache.use-last-modified[]
 
 [[boot-features-whats-next]]
 == What to Read Next

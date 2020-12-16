@@ -69,8 +69,10 @@ final class LocalHttpClientTransport extends HttpClientTransport {
 
 	private static String socketFilePath(Environment environment) {
 		String host = environment.get(DOCKER_HOST);
-		return (host != null && host.startsWith(UNIX_SOCKET_PREFIX)) ? host.substring(UNIX_SOCKET_PREFIX.length())
-				: host;
+		if (host != null && host.startsWith(UNIX_SOCKET_PREFIX)) {
+			return host.substring(UNIX_SOCKET_PREFIX.length());
+		}
+		return host;
 	}
 
 	/**

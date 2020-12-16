@@ -49,10 +49,6 @@
       "defaultValue": "never"
     },
     {
-      "name": "server.forward-headers-strategy",
-      "defaultValue": "ncsa"
-    },
-    {
       "name": "server.http2.enabled",
       "description": "Whether to enable HTTP/2 support, if the current environment supports it.",
       "defaultValue": false
@@ -70,6 +66,10 @@
         "replacement": "server.jetty.accesslog.format",
         "level": "error"
       }
+    },
+    {
+      "name": "server.jetty.accesslog.format",
+      "defaultValue": "ncsa"
     },
     {
       "name": "server.jetty.accesslog.locale",
@@ -205,6 +205,10 @@
       "description": "Session tracking modes."
     },
     {
+      "name": "server.shutdown",
+      "defaultValue": "immediate"
+    },
+    {
       "name": "server.ssl.ciphers",
       "description": "Supported SSL ciphers."
     },
@@ -265,9 +269,6 @@
     {
       "name": "server.ssl.trust-store-type",
       "description": "Type of the trust store."
-    },
-    { "name": "server.shutdown",
-      "defaultValue:": "immediate"
     },
     {
       "name": "server.tomcat.max-http-post-size",
@@ -621,7 +622,7 @@
       "name": "spring.data.jpa.repositories.bootstrap-mode",
       "type": "org.springframework.data.repository.config.BootstrapMode",
       "description": "Bootstrap mode for JPA repositories.",
-      "defaultValue": "deferred"
+      "defaultValue": "default"
     },
     {
       "name": "spring.data.jpa.repositories.enabled",
@@ -651,19 +652,81 @@
     },
     {
       "name": "spring.data.neo4j.auto-index",
-      "defaultValue": "none"
+      "description": "Auto index mode.",
+      "defaultValue": "none",
+      "deprecation": {
+        "reason": "Automatic index creation is no longer supported.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.embedded.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable embedded mode if the embedded driver is available.",
+      "deprecation": {
+        "reason": "Embedded mode is no longer supported, please use Testcontainers instead.",
+        "level": "error"
+      }
     },
     {
       "name": "spring.data.neo4j.open-in-view",
       "type": "java.lang.Boolean",
       "description": "Register OpenSessionInViewInterceptor that binds a Neo4j Session to the thread for the entire processing of the request.",
-      "defaultValue": false
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.password",
+      "type": "java.lang.String",
+      "description": "Login password of the server.",
+      "deprecation": {
+        "replacement": "spring.neo4j.authentication.password",
+        "level": "warning"
+      }
     },
     {
       "name": "spring.data.neo4j.repositories.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable Neo4j repositories.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.data.neo4j.repositories.type",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.repositories.type",
+      "type": "org.springframework.boot.autoconfigure.data.RepositoryType",
+      "description": "Type of Neo4j repositories to enable.",
+      "defaultValue": "auto"
+    },
+    {
+      "name": "spring.data.neo4j.uri",
+      "type": "java.lang.String",
+      "description": "URI used by the driver. Auto-detected by default.",
+      "deprecation": {
+        "replacement": "spring.neo4j.uri",
+        "level": "warning"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.use-native-types",
+      "type": "java.lang.Boolean",
+      "description": "Whether to use Neo4j native types wherever possible.",
+      "deprecation": {
+        "reason": "Native type support is now built-in.",
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.data.neo4j.username",
+      "type": "java.lang.String",
+      "description": "Login user of the server.",
+      "deprecation": {
+        "replacement": "spring.neo4j.authentication.password",
+        "level": "warning"
+      }
     },
     {
       "name": "spring.data.r2dbc.repositories.enabled",
@@ -793,6 +856,10 @@
       "defaultValue": [
         "classpath:db/migration"
       ]
+    },
+    {
+      "name": "spring.flyway.lock-retry-count",
+      "defaultValue": 50
     },
     {
       "name": "spring.flyway.sql-migration-suffix",
@@ -1251,6 +1318,10 @@
       }
     },
     {
+      "name": "spring.kafka.consumer.isolation-level",
+      "defaultValue": "read-uncommitted"
+    },
+    {
       "name": "spring.kafka.consumer.ssl.keystore-location",
       "type": "org.springframework.core.io.Resource",
       "description": "Location of the key store file.",
@@ -1445,6 +1516,18 @@
       "defaultValue": "accept-header"
     },
     {
+      "name": "spring.mvc.pathmatch.matching-strategy",
+      "defaultValue": "ant-path-matcher"
+    },
+    {
+      "name": "spring.neo4j.security.trust-strategy",
+      "defaultValue": "trust-system-ca-signed-certificates"
+    },
+    {
+      "name": "spring.neo4j.uri",
+      "defaultValue": "bolt://localhost:7687"
+    },
+    {
       "name": "spring.quartz.jdbc.comment-prefix",
       "defaultValue": [
         "#",
@@ -1471,6 +1554,10 @@
     {
       "name": "spring.r2dbc.pool.validation-depth",
       "defaultValue": "local"
+    },
+    {
+      "name": "spring.rabbitmq.address-shuffle-mode",
+      "defaultValue": "none"
     },
     {
       "name": "spring.rabbitmq.cache.connection.mode",
@@ -1588,6 +1675,10 @@
     {
       "name": "spring.thymeleaf.suffix",
       "defaultValue": ".html"
+    },
+    {
+      "name": "spring.web.locale-resolver",
+      "defaultValue": "accept-header"
     },
     {
       "name": "spring.webflux.hiddenmethod.filter.enabled",
@@ -1989,7 +2080,7 @@
         },
         {
           "value": "iso",
-          "description": "ISO-8601 extended local time format"
+          "description": "ISO-8601 extended local time format."
         },
         {
           "value": "iso-offset",

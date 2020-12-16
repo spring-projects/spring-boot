@@ -54,7 +54,7 @@ public class HttpHandlerAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	public static class AnnotationConfig {
 
-		private ApplicationContext applicationContext;
+		private final ApplicationContext applicationContext;
 
 		public AnnotationConfig(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;

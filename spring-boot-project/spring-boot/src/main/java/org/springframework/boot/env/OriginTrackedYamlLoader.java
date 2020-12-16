@@ -19,6 +19,7 @@ package org.springframework.boot.env;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -29,6 +30,7 @@ import org.yaml.snakeyaml.constructor.BaseConstructor;
 import org.yaml.snakeyaml.constructor.Constructor;
 import org.yaml.snakeyaml.constructor.SafeConstructor;
 import org.yaml.snakeyaml.error.Mark;
+import org.yaml.snakeyaml.nodes.CollectionNode;
 import org.yaml.snakeyaml.nodes.MappingNode;
 import org.yaml.snakeyaml.nodes.Node;
 import org.yaml.snakeyaml.nodes.NodeTuple;
@@ -62,12 +64,18 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 
 	@Override
 	protected Yaml createYaml() {
-		BaseConstructor constructor = new OriginTrackingConstructor();
+		LoaderOptions loaderOptions = new LoaderOptions();
+		loaderOptions.setAllowDuplicateKeys(false);
+		loaderOptions.setMaxAliasesForCollections(Integer.MAX_VALUE);
+		loaderOptions.setAllowRecursiveKeys(true);
+		return createYaml(loaderOptions);
+	}
+
+	private Yaml createYaml(LoaderOptions loaderOptions) {
+		BaseConstructor constructor = new OriginTrackingConstructor(loaderOptions);
 		Representer representer = new Representer();
 		DumperOptions dumperOptions = new DumperOptions();
 		LimitedResolver resolver = new LimitedResolver();
-		LoaderOptions loaderOptions = new LoaderOptions();
-		loaderOptions.setAllowDuplicateKeys(false);
 		return new Yaml(constructor, representer, dumperOptions, loaderOptions, resolver);
 	}
 
@@ -82,14 +90,30 @@ class OriginTrackedYamlLoader extends YamlProcessor {
 	 */
 	private class OriginTrackingConstructor extends SafeConstructor {
 
+		OriginTrackingConstructor(LoaderOptions loadingConfig) {
+			super(loadingConfig);
+		}
+
+		@Override
+		public Object getData() throws NoSuchElementException {
+			Object data = super.getData();
+			if (data instanceof CharSequence && ((CharSequence) data).length() == 0) {
+				return null;
+			}
+			return data;
+		}
+
 		@Override
 		protected Object constructObject(Node node) {
+			if (node instanceof CollectionNode && ((CollectionNode<?>) node).getValue().isEmpty()) {
+				return constructTrackedObject(node, super.constructObject(node));
+			}
 			if (node instanceof ScalarNode) {
 				if (!(node instanceof KeyScalarNode)) {
 					return constructTrackedObject(node, super.constructObject(node));
 				}
 			}
-			else if (node instanceof MappingNode) {
+			if (node instanceof MappingNode) {
 				replaceMappingNodeKeys((MappingNode) node);
 			}
 			return super.constructObject(node);

@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cloud;
 
+import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.EnumerablePropertySource;
 import org.springframework.core.env.Environment;
@@ -131,6 +132,8 @@ public enum CloudPlatform {
 
 	};
 
+	private static final String PROPERTY_NAME = "spring.main.cloud-platform";
+
 	/**
 	 * Determines if the platform is active (i.e. the application is running in it).
 	 * @param environment the environment
@@ -148,7 +151,21 @@ public enum CloudPlatform {
 	 * @since 2.3.0
 	 */
 	public boolean isEnforced(Environment environment) {
-		String platform = environment.getProperty("spring.main.cloud-platform");
+		return isEnforced(environment.getProperty(PROPERTY_NAME));
+	}
+
+	/**
+	 * Determines if the platform is enforced by looking at the
+	 * {@code "spring.main.cloud-platform"} configuration property.
+	 * @param binder the binder
+	 * @return if the platform is enforced
+	 * @since 2.4.0
+	 */
+	public boolean isEnforced(Binder binder) {
+		return isEnforced(binder.bind(PROPERTY_NAME, String.class).orElse(null));
+	}
+
+	private boolean isEnforced(String platform) {
 		return name().equalsIgnoreCase(platform);
 	}
 

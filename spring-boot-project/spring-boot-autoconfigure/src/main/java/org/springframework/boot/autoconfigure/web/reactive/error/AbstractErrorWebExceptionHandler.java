@@ -28,7 +28,7 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
@@ -82,7 +82,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 
 	private final ErrorAttributes errorAttributes;
 
-	private final ResourceProperties resourceProperties;
+	private final Resources resources;
 
 	private final TemplateAvailabilityProviders templateAvailabilityProviders;
 
@@ -92,13 +92,35 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 
 	private List<ViewResolver> viewResolvers = Collections.emptyList();
 
-	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
+	/**
+	 * Create a new {@code AbstractErrorWebExceptionHandler}.
+	 * @param errorAttributes the error attributes
+	 * @param resourceProperties the resource properties
+	 * @param applicationContext the application context
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #AbstractErrorWebExceptionHandler(ErrorAttributes, Resources, ApplicationContext)}
+	 */
+	@Deprecated
+	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes,
+			org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+			ApplicationContext applicationContext) {
+		this(errorAttributes, (Resources) resourceProperties, applicationContext);
+	}
+
+	/**
+	 * Create a new {@code AbstractErrorWebExceptionHandler}.
+	 * @param errorAttributes the error attributes
+	 * @param resources the resources configuration properties
+	 * @param applicationContext the application context
+	 * @since 2.4.0
+	 */
+	public AbstractErrorWebExceptionHandler(ErrorAttributes errorAttributes, Resources resources,
 			ApplicationContext applicationContext) {
 		Assert.notNull(errorAttributes, "ErrorAttributes must not be null");
-		Assert.notNull(resourceProperties, "ResourceProperties must not be null");
+		Assert.notNull(resources, "Resources must not be null");
 		Assert.notNull(applicationContext, "ApplicationContext must not be null");
 		this.errorAttributes = errorAttributes;
-		this.resourceProperties = resourceProperties;
+		this.resources = resources;
 		this.applicationContext = applicationContext;
 		this.templateAvailabilityProviders = new TemplateAvailabilityProviders(applicationContext);
 	}
@@ -224,7 +246,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	}
 
 	private Resource resolveResource(String viewName) {
-		for (String location : this.resourceProperties.getStaticLocations()) {
+		for (String location : this.resources.getStaticLocations()) {
 			try {
 				Resource resource = this.applicationContext.getResource(location);
 				resource = resource.createRelative(viewName + ".html");

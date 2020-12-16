@@ -55,6 +55,7 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -248,10 +249,10 @@ class JarFileTests {
 		URL url = this.jarFile.getUrl();
 		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/");
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile().getParent()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap(jarURLConnection.getJarFile())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getJarEntry()).isNull();
 		assertThat(jarURLConnection.getContentLength()).isGreaterThan(1);
-		assertThat(((JarFile) jarURLConnection.getContent()).getParent()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap((java.util.jar.JarFile) jarURLConnection.getContent())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getContentType()).isEqualTo("x-java/jar");
 		assertThat(jarURLConnection.getJarFileURL().toURI()).isEqualTo(this.rootJarFile.toURI());
 	}
@@ -261,7 +262,7 @@ class JarFileTests {
 		URL url = new URL(this.jarFile.getUrl(), "1.dat");
 		assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/1.dat");
 		JarURLConnection jarURLConnection = (JarURLConnection) url.openConnection();
-		assertThat(jarURLConnection.getJarFile().getParent()).isSameAs(this.jarFile);
+		assertThat(JarFileWrapper.unwrap(jarURLConnection.getJarFile())).isSameAs(this.jarFile);
 		assertThat(jarURLConnection.getJarEntry()).isSameAs(this.jarFile.getJarEntry("1.dat"));
 		assertThat(jarURLConnection.getContentLength()).isEqualTo(1);
 		assertThat(jarURLConnection.getContent()).isInstanceOf(InputStream.class);
@@ -315,7 +316,7 @@ class JarFileTests {
 			URL url = nestedJarFile.getUrl();
 			assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar!/");
 			JarURLConnection conn = (JarURLConnection) url.openConnection();
-			assertThat(conn.getJarFile().getParent()).isSameAs(nestedJarFile);
+			assertThat(JarFileWrapper.unwrap(conn.getJarFile())).isSameAs(nestedJarFile);
 			assertThat(conn.getJarFileURL().toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/nested.jar");
 			assertThat(conn.getInputStream()).isNotNull();
 			JarInputStream jarInputStream = new JarInputStream(conn.getInputStream());
@@ -344,7 +345,8 @@ class JarFileTests {
 
 			URL url = nestedJarFile.getUrl();
 			assertThat(url.toString()).isEqualTo("jar:" + this.rootJarFile.toURI() + "!/d!/");
-			assertThat(((JarURLConnection) url.openConnection()).getJarFile().getParent()).isSameAs(nestedJarFile);
+			JarURLConnection connection = (JarURLConnection) url.openConnection();
+			assertThat(JarFileWrapper.unwrap(connection.getJarFile())).isSameAs(nestedJarFile);
 		}
 	}
 
@@ -426,29 +428,36 @@ class JarFileTests {
 
 	@Test
 	void verifySignedJar() throws Exception {
-		String classpath = System.getProperty("java.class.path");
-		String[] entries = classpath.split(System.getProperty("path.separator"));
-		String signedJarFile = null;
+		File signedJarFile = getSignedJarFile();
+		assertThat(signedJarFile).exists();
+		try (java.util.jar.JarFile expected = new java.util.jar.JarFile(signedJarFile)) {
+			try (JarFile actual = new JarFile(signedJarFile)) {
+				StopWatch stopWatch = new StopWatch();
+				Enumeration<JarEntry> actualEntries = actual.entries();
+				while (actualEntries.hasMoreElements()) {
+					JarEntry actualEntry = actualEntries.nextElement();
+					java.util.jar.JarEntry expectedEntry = expected.getJarEntry(actualEntry.getName());
+					StreamUtils.drain(expected.getInputStream(expectedEntry));
+					if (!actualEntry.getName().equals("META-INF/MANIFEST.MF")) {
+						assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCertificates());
+						assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCodeSigners());
+					}
+				}
+				assertThat(stopWatch.getTotalTimeSeconds()).isLessThan(3.0);
+			}
+		}
+	}
+
+	private File getSignedJarFile() {
+		String[] entries = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 		for (String entry : entries) {
 			if (entry.contains("bcprov")) {
-				signedJarFile = entry;
+				return new File(entry);
 			}
 		}
-		assertThat(signedJarFile).isNotNull();
-		java.util.jar.JarFile jarFile = new JarFile(new File(signedJarFile));
-		jarFile.getManifest();
-		Enumeration<JarEntry> jarEntries = jarFile.entries();
-		while (jarEntries.hasMoreElements()) {
-			JarEntry jarEntry = jarEntries.nextElement();
-			InputStream inputStream = jarFile.getInputStream(jarEntry);
-			inputStream.skip(Long.MAX_VALUE);
-			inputStream.close();
-			if (!jarEntry.getName().startsWith("META-INF") && !jarEntry.isDirectory()
-					&& !jarEntry.getName().endsWith("TigerDigest.class")) {
-				assertThat(jarEntry.getCertificates()).isNotNull();
-			}
-		}
-		jarFile.close();
+		return null;
 	}
 
 	@Test
@@ -563,8 +572,7 @@ class JarFileTests {
 			for (int i = 0; i < entries.size(); i++) {
 				JarEntry entry = entries.get(i);
 				InputStream entryInput = zip64JarFile.getInputStream(entry);
-				String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
-				assertThat(contents).isEqualTo("Entry " + (i + 1));
+				assertThat(entryInput).hasContent("Entry " + (i + 1));
 			}
 		}
 	}
@@ -593,8 +601,7 @@ class JarFileTests {
 				for (int i = 0; i < entries.size(); i++) {
 					JarEntry entry = entries.get(i);
 					InputStream entryInput = nestedZip64JarFile.getInputStream(entry);
-					String contents = StreamUtils.copyToString(entryInput, StandardCharsets.UTF_8);
-					assertThat(contents).isEqualTo("Entry " + (i + 1));
+					assertThat(entryInput).hasContent("Entry " + (i + 1));
 				}
 			}
 		}

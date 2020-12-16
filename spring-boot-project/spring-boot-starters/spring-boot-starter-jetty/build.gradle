@@ -19,6 +19,7 @@ dependencies {
 		exclude group: "javax.servlet", module: "javax.servlet-api"
 		exclude group: "javax.websocket", module: "javax.websocket-api"
 		exclude group: "javax.websocket", module: "javax.websocket-client-api"
+		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
 	}
 	api("org.glassfish:jakarta.el")
 }

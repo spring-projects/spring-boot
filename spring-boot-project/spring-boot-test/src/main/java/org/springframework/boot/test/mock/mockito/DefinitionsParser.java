@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.mock.mockito;
 
 import java.lang.reflect.AnnotatedElement;
 import java.lang.reflect.Field;
+import java.lang.reflect.TypeVariable;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -114,7 +115,9 @@ class DefinitionsParser {
 			types.add(ResolvableType.forClass(clazz));
 		}
 		if (types.isEmpty() && element instanceof Field) {
-			types.add(ResolvableType.forField((Field) element, source));
+			Field field = (Field) element;
+			types.add((field.getGenericType() instanceof TypeVariable) ? ResolvableType.forField(field, source)
+					: ResolvableType.forField(field));
 		}
 		return types;
 	}

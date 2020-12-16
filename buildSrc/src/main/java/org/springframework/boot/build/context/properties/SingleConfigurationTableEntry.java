@@ -30,8 +30,11 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 
 	private final String defaultValue;
 
+	private final String anchor;
+
 	SingleConfigurationTableEntry(ConfigurationProperty property) {
 		this.key = property.getName();
+		this.anchor = this.key;
 		if (property.getType() != null && property.getType().startsWith("java.util.Map")) {
 			this.key += ".*";
 		}
@@ -52,7 +55,7 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 
 	@Override
 	void write(AsciidocBuilder builder) {
-		builder.appendln("|`+", this.key, "+`");
+		builder.appendln("|[[" + this.anchor + "]]<<" + this.anchor + ",`+", this.key, "+`>>");
 		writeDefaultValue(builder);
 		writeDescription(builder);
 		builder.appendln();

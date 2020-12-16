@@ -51,7 +51,6 @@ import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.jta.JtaTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -81,7 +80,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	void customPlatformTransactionManager() {
+	void customTransactionManager() {
 		this.context = new AnnotationConfigApplicationContext(CustomTransactionManagerConfig.class,
 				JtaAutoConfiguration.class);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
@@ -240,8 +239,8 @@ class JtaAutoConfigurationTests {
 	static class CustomTransactionManagerConfig {
 
 		@Bean
-		PlatformTransactionManager transactionManager() {
-			return mock(PlatformTransactionManager.class);
+		org.springframework.transaction.TransactionManager testTransactionManager() {
+			return mock(org.springframework.transaction.TransactionManager.class);
 		}
 
 	}

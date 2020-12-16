@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class WebMvcEndpointChildContextConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withAllowBeanDefinitionOverriding(true);
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@ import java.util.function.Function;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
@@ -45,6 +46,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
+@ExtendWith(MockitoExtension.class)
 class CachingOperationInvokerAdvisorTests {
 
 	@Mock
@@ -57,7 +59,6 @@ class CachingOperationInvokerAdvisorTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.advisor = new CachingOperationInvokerAdvisor(this.timeToLive);
 	}
 

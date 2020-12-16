@@ -17,6 +17,7 @@
 package org.springframework.boot.devtools.tests;
 
 import java.io.File;
+import java.time.Instant;
 
 import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
 
@@ -27,6 +28,8 @@ import org.springframework.boot.devtools.tests.JvmLauncher.LaunchedJvm;
  */
 final class ApplicationState {
 
+	private final Instant launchTime;
+
 	private final Integer serverPort;
 
 	private final FileContents out;
@@ -34,17 +37,18 @@ final class ApplicationState {
 	private final FileContents err;
 
 	ApplicationState(File serverPortFile, LaunchedJvm jvm) {
-		this(serverPortFile, jvm.getStandardOut(), jvm.getStandardError());
+		this(serverPortFile, jvm.getStandardOut(), jvm.getStandardError(), jvm.getLaunchTime());
 	}
 
 	ApplicationState(File serverPortFile, LaunchedApplication application) {
-		this(serverPortFile, application.getStandardOut(), application.getStandardError());
+		this(serverPortFile, application.getStandardOut(), application.getStandardError(), application.getLaunchTime());
 	}
 
-	private ApplicationState(File serverPortFile, File out, File err) {
+	private ApplicationState(File serverPortFile, File out, File err, Instant launchTime) {
 		this.serverPort = new FileContents(serverPortFile).get(Integer::parseInt);
 		this.out = new FileContents(out);
 		this.err = new FileContents(err);
+		this.launchTime = launchTime;
 	}
 
 	boolean hasServerPort() {
@@ -57,7 +61,8 @@ final class ApplicationState {
 
 	@Override
 	public String toString() {
-		return String.format("Application output:%n%s%n%s", this.out, this.err);
+		return String.format("Application launched at %s produced output:%n%s%n%s", this.launchTime, this.out,
+				this.err);
 	}
 
 }

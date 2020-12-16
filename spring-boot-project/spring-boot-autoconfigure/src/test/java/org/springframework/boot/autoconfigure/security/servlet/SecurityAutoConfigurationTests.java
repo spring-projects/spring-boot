@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoCon
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.DelegatingFilterProxyRegistrationBean;
 import org.springframework.boot.web.servlet.filter.OrderedFilter;
@@ -37,12 +38,14 @@ import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.security.authentication.AuthenticationEventPublisher;
 import org.springframework.security.authentication.DefaultAuthenticationEventPublisher;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.data.repository.query.SecurityEvaluationContextExtension;
 import org.springframework.security.web.FilterChainProxy;
+import org.springframework.security.web.SecurityFilterChain;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -56,7 +59,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class SecurityAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(SecurityAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class));
 
 	@Test
@@ -64,6 +67,34 @@ class SecurityAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context.getBean(AuthenticationManagerBuilder.class)).isNotNull();
 			assertThat(context.getBean(FilterChainProxy.class).getFilterChains()).hasSize(1);
+		});
+	}
+
+	@Test
+	void enableWebSecurityIsConditionalOnClass() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.springframework.security.config"))
+				.run((context) -> assertThat(context).doesNotHaveBean("springSecurityFilterChain"));
+	}
+
+	@Test
+	void filterChainBeanIsConditionalOnClassSecurityFilterChain() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(SecurityFilterChain.class));
+	}
+
+	@Test
+	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
+		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
+			assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);
+			assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
+		});
+	}
+
+	@Test
+	void securityConfigurerBacksOffWhenOtherWebSecurityAdapterBeanPresent() {
+		this.contextRunner.withUserConfiguration(WebSecurity.class).run((context) -> {
+			assertThat(context.getBeansOfType(WebSecurityConfigurerAdapter.class).size()).isEqualTo(1);
+			assertThat(context.containsBean("securityAutoConfigurationTests.WebSecurity")).isTrue();
 		});
 	}
 
@@ -204,6 +235,18 @@ class SecurityAutoConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebSecurity
 	static class WebSecurity extends WebSecurityConfigurerAdapter {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestSecurityFilterChainConfig {
+
+		@Bean
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+			return http.antMatcher("/**").authorizeRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
+
+		}
 
 	}
 

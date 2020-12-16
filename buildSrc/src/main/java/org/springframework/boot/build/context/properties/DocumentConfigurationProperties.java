@@ -72,16 +72,18 @@ public class DocumentConfigurationProperties extends DefaultTask {
 				.addSection("mail").withKeyPrefixes("spring.mail", "spring.sendgrid").addSection("cache")
 				.withKeyPrefixes("spring.cache").addSection("server").withKeyPrefixes("server").addSection("web")
 				.withKeyPrefixes("spring.hateoas", "spring.http", "spring.servlet", "spring.jersey", "spring.mvc",
-						"spring.resources", "spring.webflux")
+						"spring.resources", "spring.session", "spring.web", "spring.webflux")
 				.addSection("json").withKeyPrefixes("spring.jackson", "spring.gson").addSection("rsocket")
 				.withKeyPrefixes("spring.rsocket").addSection("templating")
 				.withKeyPrefixes("spring.freemarker", "spring.groovy", "spring.mustache", "spring.thymeleaf")
 				.addOverride("spring.groovy.template.configuration", "See GroovyMarkupConfigurer")
-				.addSection("security").withKeyPrefixes("spring.security", "spring.ldap", "spring.session")
-				.addSection("data-migration").withKeyPrefixes("spring.flyway", "spring.liquibase").addSection("data")
+				.addSection("security").withKeyPrefixes("spring.security").addSection("data-migration")
+				.withKeyPrefixes("spring.flyway", "spring.liquibase").addSection("data")
 				.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2", "spring.influx",
-						"spring.mongodb", "spring.redis", "spring.dao", "spring.data", "spring.datasource",
-						"spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
+						"spring.ldap", "spring.mongodb", "spring.neo4j", "spring.redis", "spring.dao", "spring.data",
+						"spring.datasource", "spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")
+				.addOverride("spring.datasource.oracleucp",
+						"Oracle UCP specific settings bound to an instance of Oracle UCP's PoolDataSource")
 				.addOverride("spring.datasource.dbcp2",
 						"Commons DBCP2 specific settings bound to an instance of DBCP2's BasicDataSource")
 				.addOverride("spring.datasource.tomcat",

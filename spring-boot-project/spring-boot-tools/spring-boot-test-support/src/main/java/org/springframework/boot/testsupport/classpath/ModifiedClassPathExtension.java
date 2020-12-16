@@ -35,9 +35,10 @@ import org.springframework.util.ReflectionUtils;
 /**
  * A custom {@link Extension} that runs tests using a modified class path. Entries are
  * excluded from the class path using {@link ClassPathExclusions @ClassPathExclusions} and
- * overridden using {@link ClassPathOverrides @ClassPathOverrides} on the test class. A
- * class loader is created with the customized class path and is used both to load the
- * test class and as the thread context class loader while the test is being run.
+ * overridden using {@link ClassPathOverrides @ClassPathOverrides} on the test class. For
+ * an unchanged copy of the class path {@link ForkedClassPath @ForkedClassPath} can be
+ * used. A class loader is created with the customized class path and is used both to load
+ * the test class and as the thread context class loader while the test is being run.
  *
  * @author Christoph Dreis
  */

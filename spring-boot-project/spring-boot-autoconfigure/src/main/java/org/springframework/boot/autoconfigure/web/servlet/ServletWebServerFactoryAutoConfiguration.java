@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletRequest;
@@ -24,6 +25,7 @@ import javax.servlet.ServletRequest;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -38,6 +40,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.WebListenerRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -69,8 +72,10 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 public class ServletWebServerFactoryAutoConfiguration {
 
 	@Bean
-	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		return new ServletWebServerFactoryCustomizer(serverProperties);
+	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
+			ObjectProvider<WebListenerRegistrar> webListenerRegistrars) {
+		return new ServletWebServerFactoryCustomizer(serverProperties,
+				webListenerRegistrars.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean

@@ -235,7 +235,7 @@ public class ServerProperties {
 		/**
 		 * Whether to register the default Servlet with the container.
 		 */
-		private boolean registerDefaultServlet = true;
+		private boolean registerDefaultServlet = false;
 
 		@NestedConfigurationProperty
 		private final Encoding encoding = new Encoding();
@@ -335,7 +335,8 @@ public class ServerProperties {
 
 		/**
 		 * Whether requests to the context root should be redirected by appending a / to
-		 * the path.
+		 * the path. When using SSL terminated at a proxy, this property should be set to
+		 * false.
 		 */
 		private Boolean redirectContextRoot = true;
 
@@ -1396,12 +1397,77 @@ public class ServerProperties {
 		 */
 		private Duration connectionTimeout;
 
+		/**
+		 * Maximum content length of an H2C upgrade request.
+		 */
+		private DataSize h2cMaxContentLength = DataSize.ofBytes(0);
+
+		/**
+		 * Initial buffer size for HTTP request decoding.
+		 */
+		private DataSize initialBufferSize = DataSize.ofBytes(128);
+
+		/**
+		 * Maximum chunk size that can be decoded for an HTTP request.
+		 */
+		private DataSize maxChunkSize = DataSize.ofKilobytes(8);
+
+		/**
+		 * Maximum length that can be decoded for an HTTP request's initial line.
+		 */
+		private DataSize maxInitialLineLength = DataSize.ofKilobytes(4);
+
+		/**
+		 * Whether to validate headers when decoding requests.
+		 */
+		private boolean validateHeaders = true;
+
 		public Duration getConnectionTimeout() {
 			return this.connectionTimeout;
 		}
 
 		public void setConnectionTimeout(Duration connectionTimeout) {
 			this.connectionTimeout = connectionTimeout;
+		}
+
+		public DataSize getH2cMaxContentLength() {
+			return this.h2cMaxContentLength;
+		}
+
+		public void setH2cMaxContentLength(DataSize h2cMaxContentLength) {
+			this.h2cMaxContentLength = h2cMaxContentLength;
+		}
+
+		public DataSize getInitialBufferSize() {
+			return this.initialBufferSize;
+		}
+
+		public void setInitialBufferSize(DataSize initialBufferSize) {
+			this.initialBufferSize = initialBufferSize;
+		}
+
+		public DataSize getMaxChunkSize() {
+			return this.maxChunkSize;
+		}
+
+		public void setMaxChunkSize(DataSize maxChunkSize) {
+			this.maxChunkSize = maxChunkSize;
+		}
+
+		public DataSize getMaxInitialLineLength() {
+			return this.maxInitialLineLength;
+		}
+
+		public void setMaxInitialLineLength(DataSize maxInitialLineLength) {
+			this.maxInitialLineLength = maxInitialLineLength;
+		}
+
+		public boolean isValidateHeaders() {
+			return this.validateHeaders;
+		}
+
+		public void setValidateHeaders(boolean validateHeaders) {
+			this.validateHeaders = validateHeaders;
 		}
 
 	}
@@ -1482,6 +1548,11 @@ public class ServerProperties {
 		 * it is closed by the server.
 		 */
 		private Duration noRequestTimeout;
+
+		/**
+		 * Whether to preserve the path of a request when it is forwarded.
+		 */
+		private boolean preservePathOnForward = false;
 
 		private final Accesslog accesslog = new Accesslog();
 
@@ -1608,6 +1679,14 @@ public class ServerProperties {
 
 		public void setNoRequestTimeout(Duration noRequestTimeout) {
 			this.noRequestTimeout = noRequestTimeout;
+		}
+
+		public boolean isPreservePathOnForward() {
+			return this.preservePathOnForward;
+		}
+
+		public void setPreservePathOnForward(boolean preservePathOnForward) {
+			this.preservePathOnForward = preservePathOnForward;
 		}
 
 		public Accesslog getAccesslog() {

@@ -94,6 +94,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("durationMinutes")).isEqualTo("30m");
 		assertThat(values.get("durationHours")).isEqualTo("40h");
 		assertThat(values.get("durationDays")).isEqualTo("50d");
+		assertThat(values.get("durationZero")).isEqualTo(0);
 		assertThat(values.get("dataSizeNone")).isNull();
 		assertThat(values.get("dataSizeBytes")).isEqualTo("5B");
 		assertThat(values.get("dataSizeKilobytes")).isEqualTo("10KB");
@@ -105,6 +106,7 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("periodWeeks")).isEqualTo("2w");
 		assertThat(values.get("periodMonths")).isEqualTo("10m");
 		assertThat(values.get("periodYears")).isEqualTo("15y");
+		assertThat(values.get("periodZero")).isEqualTo(0);
 	}
 
 	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })

@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.docker.type;
 
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.Arrays;
 
 import org.junit.jupiter.api.Test;
 
@@ -65,6 +66,15 @@ class LayerIdTests {
 		digest.update("test".getBytes(StandardCharsets.UTF_8));
 		LayerId id = LayerId.ofSha256Digest(digest.digest());
 		assertThat(id.toString()).isEqualTo("sha256:9f86d081884c7d659a2feaa0c55ad015a3bf4f1b2b0b822cd15d6c15b0f00a08");
+	}
+
+	@Test
+	void ofSha256DigestWithZeroPadding() {
+		byte[] digest = new byte[32];
+		Arrays.fill(digest, (byte) 127);
+		digest[0] = 1;
+		LayerId id = LayerId.ofSha256Digest(digest);
+		assertThat(id.toString()).isEqualTo("sha256:017f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f7f");
 	}
 
 	@Test

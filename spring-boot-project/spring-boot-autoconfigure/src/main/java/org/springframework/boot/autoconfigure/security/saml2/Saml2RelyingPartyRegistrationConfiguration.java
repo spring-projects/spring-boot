@@ -20,27 +20,32 @@ import java.io.InputStream;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Decryption;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Identityprovider.Verification;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyProperties.Registration.Signing;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
 import org.springframework.security.converter.RsaKeyConverters;
-import org.springframework.security.saml2.credentials.Saml2X509Credential;
-import org.springframework.security.saml2.credentials.Saml2X509Credential.Saml2X509CredentialType;
+import org.springframework.security.saml2.core.Saml2X509Credential;
+import org.springframework.security.saml2.core.Saml2X509Credential.Saml2X509CredentialType;
 import org.springframework.security.saml2.provider.service.registration.InMemoryRelyingPartyRegistrationRepository;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.AssertingPartyDetails;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration.Builder;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
-import org.springframework.security.saml2.provider.service.servlet.filter.Saml2WebSsoAuthenticationFilter;
+import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrations;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Configuration @Configuration} used to map {@link Saml2RelyingPartyProperties} to
@@ -66,19 +71,38 @@ class Saml2RelyingPartyRegistrationConfiguration {
 	}
 
 	private RelyingPartyRegistration asRegistration(String id, Registration properties) {
-		boolean signRequest = properties.getIdentityprovider().getSinglesignon().isSignRequest();
+		boolean usingMetadata = StringUtils.hasText(properties.getIdentityprovider().getMetadataUri());
+		Builder builder = (usingMetadata) ? RelyingPartyRegistrations
+				.fromMetadataLocation(properties.getIdentityprovider().getMetadataUri()).registrationId(id)
+				: RelyingPartyRegistration.withRegistrationId(id);
+		builder.assertionConsumerServiceLocation(properties.getAcs().getLocation());
+		builder.assertionConsumerServiceBinding(properties.getAcs().getBinding());
+		builder.assertingPartyDetails(mapIdentityProvider(properties, usingMetadata));
+		builder.signingX509Credentials((credentials) -> properties.getSigning().getCredentials().stream()
+				.map(this::asSigningCredential).forEach(credentials::add));
+		builder.decryptionX509Credentials((credentials) -> properties.getDecryption().getCredentials().stream()
+				.map(this::asDecryptionCredential).forEach(credentials::add));
+		builder.assertingPartyDetails((details) -> details
+				.verificationX509Credentials((credentials) -> properties.getIdentityprovider().getVerification()
+						.getCredentials().stream().map(this::asVerificationCredential).forEach(credentials::add)));
+		builder.entityId(properties.getEntityId());
+		RelyingPartyRegistration registration = builder.build();
+		boolean signRequest = registration.getAssertingPartyDetails().getWantAuthnRequestsSigned();
 		validateSigningCredentials(properties, signRequest);
-		RelyingPartyRegistration.Builder builder = RelyingPartyRegistration.withRegistrationId(id);
-		builder.assertionConsumerServiceUrlTemplate(
-				"{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
-		builder.providerDetails(
-				(details) -> details.webSsoUrl(properties.getIdentityprovider().getSinglesignon().getUrl()));
-		builder.providerDetails((details) -> details.entityId(properties.getIdentityprovider().getEntityId()));
-		builder.providerDetails(
-				(details) -> details.binding(properties.getIdentityprovider().getSinglesignon().getBinding()));
-		builder.providerDetails((details) -> details.signAuthNRequest(signRequest));
-		builder.credentials((credentials) -> credentials.addAll(asCredentials(properties)));
-		return builder.build();
+		return registration;
+	}
+
+	private Consumer<AssertingPartyDetails.Builder> mapIdentityProvider(Registration properties,
+			boolean usingMetadata) {
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
+		return (details) -> {
+			map.from(identityprovider::getEntityId).to(details::entityId);
+			map.from(identityprovider.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
+			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
+			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
+					.to(details::wantAuthnRequestsSigned);
+		};
 	}
 
 	private void validateSigningCredentials(Registration properties, boolean signRequest) {
@@ -88,30 +112,27 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		}
 	}
 
-	private List<Saml2X509Credential> asCredentials(Registration properties) {
-		List<Saml2X509Credential> credentials = new ArrayList<>();
-		properties.getSigning().getCredentials().stream().map(this::asSigningCredential).forEach(credentials::add);
-		properties.getIdentityprovider().getVerification().getCredentials().stream().map(this::asVerificationCredential)
-				.forEach(credentials::add);
-		return credentials;
-	}
-
 	private Saml2X509Credential asSigningCredential(Signing.Credential properties) {
 		RSAPrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
 		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
-		return new Saml2X509Credential(privateKey, certificate, Saml2X509CredentialType.SIGNING,
-				Saml2X509CredentialType.DECRYPTION);
+		return new Saml2X509Credential(privateKey, certificate, Saml2X509CredentialType.SIGNING);
+	}
+
+	private Saml2X509Credential asDecryptionCredential(Decryption.Credential properties) {
+		RSAPrivateKey privateKey = readPrivateKey(properties.getPrivateKeyLocation());
+		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
+		return new Saml2X509Credential(privateKey, certificate, Saml2X509CredentialType.DECRYPTION);
 	}
 
 	private Saml2X509Credential asVerificationCredential(Verification.Credential properties) {
 		X509Certificate certificate = readCertificate(properties.getCertificateLocation());
-		return new Saml2X509Credential(certificate, Saml2X509CredentialType.ENCRYPTION,
-				Saml2X509CredentialType.VERIFICATION);
+		return new Saml2X509Credential(certificate, Saml2X509Credential.Saml2X509CredentialType.ENCRYPTION,
+				Saml2X509Credential.Saml2X509CredentialType.VERIFICATION);
 	}
 
 	private RSAPrivateKey readPrivateKey(Resource location) {
 		Assert.state(location != null, "No private key location specified");
-		Assert.state(location.exists(), "Private key location '" + location + "' does not exist");
+		Assert.state(location.exists(), () -> "Private key location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
 			return RsaKeyConverters.pkcs8().convert(inputStream);
 		}
@@ -122,7 +143,7 @@ class Saml2RelyingPartyRegistrationConfiguration {
 
 	private X509Certificate readCertificate(Resource location) {
 		Assert.state(location != null, "No certificate location specified");
-		Assert.state(location.exists(), "Certificate  location '" + location + "' does not exist");
+		Assert.state(location.exists(), () -> "Certificate  location '" + location + "' does not exist");
 		try (InputStream inputStream = location.getInputStream()) {
 			return (X509Certificate) CertificateFactory.getInstance("X.509").generateCertificate(inputStream);
 		}

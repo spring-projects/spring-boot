@@ -39,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class MavenExec extends JavaExec {
 
-	private Logger log = LoggerFactory.getLogger(MavenExec.class);
+	private final Logger log = LoggerFactory.getLogger(MavenExec.class);
 
 	private File projectDir;
 

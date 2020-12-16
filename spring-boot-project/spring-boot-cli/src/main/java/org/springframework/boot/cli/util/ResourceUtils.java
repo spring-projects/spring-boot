@@ -152,19 +152,17 @@ public abstract class ResourceUtils {
 			if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 				return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 			}
-			else {
-				if (location.startsWith(FILE_URL_PREFIX)) {
-					return this.files.getResource(location);
-				}
-				try {
-					// Try to parse the location as a URL...
-					URL url = new URL(location);
-					return new UrlResource(url);
-				}
-				catch (MalformedURLException ex) {
-					// No URL -> resolve as resource path.
-					return getResourceByPath(location);
-				}
+			if (location.startsWith(FILE_URL_PREFIX)) {
+				return this.files.getResource(location);
+			}
+			try {
+				// Try to parse the location as a URL...
+				URL url = new URL(location);
+				return new UrlResource(url);
+			}
+			catch (MalformedURLException ex) {
+				// No URL -> resolve as resource path.
+				return getResourceByPath(location);
 			}
 		}
 

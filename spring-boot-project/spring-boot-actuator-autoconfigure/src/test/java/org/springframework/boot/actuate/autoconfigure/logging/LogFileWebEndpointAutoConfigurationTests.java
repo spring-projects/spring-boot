@@ -42,7 +42,7 @@ import static org.assertj.core.api.Assertions.contentOf;
  */
 class LogFileWebEndpointAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
 
 	@Test

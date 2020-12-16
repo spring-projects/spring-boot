@@ -22,7 +22,6 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.internal.async.client.AsyncMongoClient;
 import com.mongodb.reactivestreams.client.MongoClient;
 
-import org.springframework.core.env.Environment;
 import org.springframework.test.util.ReflectionTestUtils;
 
 /**
@@ -35,9 +34,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 class ReactiveMongoClientFactoryTests extends MongoClientFactorySupportTests<MongoClient> {
 
 	@Override
-	protected MongoClient createMongoClient(MongoProperties properties, Environment environment,
-			List<MongoClientSettingsBuilderCustomizer> customizers, MongoClientSettings settings) {
-		return new ReactiveMongoClientFactory(properties, environment, customizers).createMongoClient(settings);
+	protected MongoClient createMongoClient(List<MongoClientSettingsBuilderCustomizer> customizers,
+			MongoClientSettings settings) {
+		return new ReactiveMongoClientFactory(customizers).createMongoClient(settings);
 	}
 
 	@Override

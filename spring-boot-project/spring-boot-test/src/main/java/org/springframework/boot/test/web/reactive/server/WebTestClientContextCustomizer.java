@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.BeanDefinitionRegistryPostProcessor;
 import org.springframework.beans.factory.support.RootBeanDefinition;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.context.ApplicationContext;
@@ -39,11 +38,9 @@ import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.ConfigurationClassPostProcessor;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.MergedAnnotation;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.reactive.function.client.ExchangeStrategies;
@@ -57,9 +54,9 @@ class WebTestClientContextCustomizer implements ContextCustomizer {
 
 	@Override
 	public void customizeContext(ConfigurableApplicationContext context, MergedContextConfiguration mergedConfig) {
-		MergedAnnotation<?> annotation = MergedAnnotations
-				.from(mergedConfig.getTestClass(), SearchStrategy.INHERITED_ANNOTATIONS).get(SpringBootTest.class);
-		if (annotation.getEnum("webEnvironment", WebEnvironment.class).isEmbedded()) {
+		SpringBootTest springBootTest = TestContextAnnotationUtils.findMergedAnnotation(mergedConfig.getTestClass(),
+				SpringBootTest.class);
+		if (springBootTest.webEnvironment().isEmbedded()) {
 			registerWebTestClient(context);
 		}
 	}

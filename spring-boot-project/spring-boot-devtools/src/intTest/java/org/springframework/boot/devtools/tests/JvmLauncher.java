@@ -18,6 +18,7 @@ package org.springframework.boot.devtools.tests;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -66,6 +67,8 @@ class JvmLauncher implements BeforeTestExecutionCallback {
 
 		private final Process process;
 
+		private final Instant launchTime = Instant.now();
+
 		private final File standardOut;
 
 		private final File standardError;
@@ -78,6 +81,10 @@ class JvmLauncher implements BeforeTestExecutionCallback {
 
 		Process getProcess() {
 			return this.process;
+		}
+
+		Instant getLaunchTime() {
+			return this.launchTime;
 		}
 
 		File getStandardOut() {

@@ -47,9 +47,8 @@ import org.springframework.web.util.pattern.PathPatternRouteMatcher;
  * @author Brian Clozel
  * @since 2.2.0
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ io.rsocket.RSocketFactory.class, RSocketStrategies.class, PooledByteBufAllocator.class })
+@ConditionalOnClass({ io.rsocket.RSocket.class, RSocketStrategies.class, PooledByteBufAllocator.class })
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
 public class RSocketStrategiesAutoConfiguration {
 

@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
+import java.time.Clock;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -62,6 +65,22 @@ class ErrorMvcAutoConfigurationTests {
 					"<p>This application has no explicit mapping for /error, so you are seeing this as a fallback.</p>")
 					.contains("<div>Exception message</div>")
 					.contains("<div style='white-space:pre-wrap;'>java.lang.IllegalStateException");
+		});
+	}
+
+	@Test
+	void renderCanUseJavaTimeTypeAsTimestamp() throws Exception { // gh-23256
+		this.contextRunner.run((context) -> {
+			View errorView = context.getBean("error", View.class);
+			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
+			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
+					false);
+			Map<String, Object> attributes = errorAttributes.getErrorAttributes(webRequest, withAllOptions());
+			attributes.put("timestamp", Clock.systemUTC().instant());
+			errorView.render(attributes, webRequest.getRequest(), webRequest.getResponse());
+			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
+			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
+			assertThat(responseString).contains("This application has no explicit mapping for /error");
 		});
 	}
 

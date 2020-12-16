@@ -27,8 +27,9 @@ import org.codehaus.groovy.ast.expr.ConstantExpression;
 import org.codehaus.groovy.control.SourceUnit;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.cli.compiler.dependencies.ArtifactCoordinatesResolver;
 import org.springframework.boot.cli.compiler.grape.DependencyResolutionContext;
@@ -41,6 +42,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
+@ExtendWith(MockitoExtension.class)
 class DependencyCustomizerTests {
 
 	private final ModuleNode moduleNode = new ModuleNode((SourceUnit) null);
@@ -54,10 +56,6 @@ class DependencyCustomizerTests {
 
 	@BeforeEach
 	void setUp() {
-		MockitoAnnotations.initMocks(this);
-		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn("org.springframework.boot");
-		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn("spring-boot-starter-logging");
-		given(this.resolver.getVersion("spring-boot-starter-logging")).willReturn("1.2.3");
 		this.moduleNode.addClass(this.classNode);
 		this.dependencyCustomizer = new DependencyCustomizer(new GroovyClassLoader(getClass().getClassLoader()),
 				this.moduleNode, new DependencyResolutionContext() {
@@ -72,6 +70,9 @@ class DependencyCustomizerTests {
 
 	@Test
 	void basicAdd() {
+		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn("org.springframework.boot");
+		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn("spring-boot-starter-logging");
+		given(this.resolver.getVersion("spring-boot-starter-logging")).willReturn("1.2.3");
 		this.dependencyCustomizer.add("spring-boot-starter-logging");
 		List<AnnotationNode> grabAnnotations = this.classNode.getAnnotations(new ClassNode(Grab.class));
 		assertThat(grabAnnotations).hasSize(1);
@@ -82,6 +83,9 @@ class DependencyCustomizerTests {
 
 	@Test
 	void nonTransitiveAdd() {
+		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn("org.springframework.boot");
+		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn("spring-boot-starter-logging");
+		given(this.resolver.getVersion("spring-boot-starter-logging")).willReturn("1.2.3");
 		this.dependencyCustomizer.add("spring-boot-starter-logging", false);
 		List<AnnotationNode> grabAnnotations = this.classNode.getAnnotations(new ClassNode(Grab.class));
 		assertThat(grabAnnotations).hasSize(1);
@@ -92,6 +96,9 @@ class DependencyCustomizerTests {
 
 	@Test
 	void fullyCustomized() {
+		given(this.resolver.getGroupId("spring-boot-starter-logging")).willReturn("org.springframework.boot");
+		given(this.resolver.getArtifactId("spring-boot-starter-logging")).willReturn("spring-boot-starter-logging");
+		given(this.resolver.getVersion("spring-boot-starter-logging")).willReturn("1.2.3");
 		this.dependencyCustomizer.add("spring-boot-starter-logging", "my-classifier", "my-type", false);
 		List<AnnotationNode> grabAnnotations = this.classNode.getAnnotations(new ClassNode(Grab.class));
 		assertThat(grabAnnotations).hasSize(1);

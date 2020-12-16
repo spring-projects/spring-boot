@@ -4,7 +4,7 @@ plugins {
 }
 
 bootJar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 }
 
 repositories {
@@ -15,4 +15,10 @@ dependencies {
 	developmentOnly("org.apache.commons:commons-lang3:3.9")
 	developmentOnly("commons-io:commons-io:2.6")
 	implementation("commons-io:commons-io:2.6")
+}
+
+bootJar {
+	layered {
+		enabled = false
+	}
 }

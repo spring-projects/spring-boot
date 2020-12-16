@@ -51,11 +51,12 @@ org.springframework.boot.autoconfigure.data.mongo.MongoReactiveDataAutoConfigura
 org.springframework.boot.autoconfigure.data.mongo.MongoReactiveRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.mongo.MongoRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveDataAutoConfiguration,\
+org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.r2dbc.R2dbcTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisReactiveAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisRepositoriesAutoConfiguration,\
@@ -100,9 +101,11 @@ org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfigura
 org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration,\
 org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration,\
 org.springframework.boot.autoconfigure.mustache.MustacheAutoConfiguration,\
+org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
 org.springframework.boot.autoconfigure.quartz.QuartzAutoConfiguration,\
 org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration,\
+org.springframework.boot.autoconfigure.r2dbc.R2dbcTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration,\
 org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration,\
 org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration,\

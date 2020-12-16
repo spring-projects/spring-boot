@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
 import java.nio.charset.StandardCharsets;
-import java.util.Date;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -47,8 +46,9 @@ import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcProperties;
@@ -89,7 +89,7 @@ import org.springframework.web.util.HtmlUtils;
 @ConditionalOnClass({ Servlet.class, DispatcherServlet.class })
 // Load before the main WebMvcAutoConfiguration so that the error View is available
 @AutoConfigureBefore(WebMvcAutoConfiguration.class)
-@EnableConfigurationProperties({ ServerProperties.class, ResourceProperties.class, WebMvcProperties.class })
+@EnableConfigurationProperties({ ServerProperties.class, WebMvcProperties.class })
 public class ErrorMvcAutoConfiguration {
 
 	private final ServerProperties serverProperties;
@@ -122,24 +122,29 @@ public class ErrorMvcAutoConfiguration {
 		return new PreserveErrorControllerTargetClassPostProcessor();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties({ org.springframework.boot.autoconfigure.web.ResourceProperties.class,
+			WebProperties.class, WebMvcProperties.class })
 	static class DefaultErrorViewResolverConfiguration {
 
 		private final ApplicationContext applicationContext;
 
-		private final ResourceProperties resourceProperties;
+		private final Resources resources;
 
 		DefaultErrorViewResolverConfiguration(ApplicationContext applicationContext,
-				ResourceProperties resourceProperties) {
+				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
+				WebProperties webProperties) {
 			this.applicationContext = applicationContext;
-			this.resourceProperties = resourceProperties;
+			this.resources = webProperties.getResources().hasBeenCustomized() ? webProperties.getResources()
+					: resourceProperties;
 		}
 
 		@Bean
 		@ConditionalOnBean(DispatcherServlet.class)
 		@ConditionalOnMissingBean(ErrorViewResolver.class)
 		DefaultErrorViewResolver conventionErrorViewResolver() {
-			return new DefaultErrorViewResolver(this.applicationContext, this.resourceProperties);
+			return new DefaultErrorViewResolver(this.applicationContext, this.resources);
 		}
 
 	}
@@ -207,7 +212,7 @@ public class ErrorMvcAutoConfiguration {
 			}
 			response.setContentType(TEXT_HTML_UTF8.toString());
 			StringBuilder builder = new StringBuilder();
-			Date timestamp = (Date) model.get("timestamp");
+			Object timestamp = model.get("timestamp");
 			Object message = model.get("message");
 			Object trace = model.get("trace");
 			if (response.getContentType() == null) {

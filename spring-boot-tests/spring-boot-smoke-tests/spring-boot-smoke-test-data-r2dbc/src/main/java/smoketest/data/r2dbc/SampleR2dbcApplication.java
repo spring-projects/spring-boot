@@ -24,7 +24,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.data.r2dbc.connectionfactory.init.ResourceDatabasePopulator;
+import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 
 @SpringBootApplication
 public class SampleR2dbcApplication {
@@ -37,7 +37,7 @@ public class SampleR2dbcApplication {
 	public ApplicationRunner initializeDatabase(ConnectionFactory connectionFactory, ResourceLoader resourceLoader) {
 		return (arguments) -> {
 			Resource[] scripts = new Resource[] { resourceLoader.getResource("classpath:database-init.sql") };
-			new ResourceDatabasePopulator(scripts).execute(connectionFactory).block();
+			new ResourceDatabasePopulator(scripts).populate(connectionFactory).block();
 		};
 
 	}

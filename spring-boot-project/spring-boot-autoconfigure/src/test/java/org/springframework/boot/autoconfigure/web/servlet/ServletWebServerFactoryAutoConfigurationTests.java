@@ -79,7 +79,7 @@ import static org.mockito.Mockito.verify;
  */
 class ServletWebServerFactoryAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 			AnnotationConfigServletWebServerApplicationContext::new)
 					.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class,
 							DispatcherServletAutoConfiguration.class))
@@ -241,6 +241,17 @@ class ServletWebServerFactoryAutoConfigurationTests {
 			UndertowServletWebServerFactory factory = context.getBean(UndertowServletWebServerFactory.class);
 			assertThat(factory.getBuilderCustomizers()).hasSize(1);
 		});
+	}
+
+	@Test
+	void undertowServletWebServerFactoryCustomizerIsAutoConfigured() {
+		WebApplicationContextRunner runner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withClassLoader(new FilteredClassLoader(Tomcat.class, HttpServer.class, Server.class))
+						.withConfiguration(AutoConfigurations.of(ServletWebServerFactoryAutoConfiguration.class))
+						.withUserConfiguration(UndertowBuilderCustomizerConfiguration.class)
+						.withPropertyValues("server.port:0");
+		runner.run((context) -> assertThat(context).hasSingleBean(UndertowServletWebServerFactoryCustomizer.class));
 	}
 
 	@Test

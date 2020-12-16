@@ -32,6 +32,7 @@ import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
@@ -108,7 +109,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	@Override
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
-		if (this.includeException != null) {
+		if (Boolean.TRUE.equals(this.includeException)) {
 			options = options.including(Include.EXCEPTION);
 		}
 		if (!options.isIncluded(Include.EXCEPTION)) {
@@ -180,14 +181,32 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private void addExceptionErrorMessage(Map<String, Object> errorAttributes, WebRequest webRequest, Throwable error) {
+		errorAttributes.put("message", getMessage(webRequest, error));
+	}
+
+	/**
+	 * Returns the message to be included as the value of the {@code message} error
+	 * attribute. By default the returned message is the first of the following that is
+	 * not empty:
+	 * <ol>
+	 * <li>Value of the {@link RequestDispatcher#ERROR_MESSAGE} request attribute.
+	 * <li>Message of the given {@code error}.
+	 * <li>{@code No message available}.
+	 * </ol>
+	 * @param webRequest current request
+	 * @param error current error, if any
+	 * @return message to include in the error attributes
+	 * @since 2.4.0
+	 */
+	protected String getMessage(WebRequest webRequest, Throwable error) {
 		Object message = getAttribute(webRequest, RequestDispatcher.ERROR_MESSAGE);
-		if (StringUtils.isEmpty(message) && error != null) {
-			message = error.getMessage();
+		if (!ObjectUtils.isEmpty(message)) {
+			return message.toString();
 		}
-		if (StringUtils.isEmpty(message)) {
-			message = "No message available";
+		if (error != null && StringUtils.hasLength(error.getMessage())) {
+			return error.getMessage();
 		}
-		errorAttributes.put("message", message);
+		return "No message available";
 	}
 
 	private void addBindingResultErrorMessage(Map<String, Object> errorAttributes, BindingResult result) {

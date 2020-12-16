@@ -23,8 +23,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -75,9 +77,7 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		if (!name.startsWith(PREFIX)) {
 			return null;
 		}
-		if (logger.isTraceEnabled()) {
-			logger.trace("Generating random property for '" + name + "'");
-		}
+		logger.trace(LogMessage.format("Generating random property for '%s'", name));
 		return getRandomValue(name.substring(PREFIX.length()));
 	}
 
@@ -138,8 +138,23 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	public static void addToEnvironment(ConfigurableEnvironment environment) {
-		environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
-				new RandomValuePropertySource(RANDOM_PROPERTY_SOURCE_NAME));
+		addToEnvironment(environment, logger);
+	}
+
+	static void addToEnvironment(ConfigurableEnvironment environment, Log logger) {
+		MutablePropertySources sources = environment.getPropertySources();
+		PropertySource<?> existing = sources.get(RANDOM_PROPERTY_SOURCE_NAME);
+		if (existing != null) {
+			logger.trace("RandomValuePropertySource already present");
+			return;
+		}
+		RandomValuePropertySource randomSource = new RandomValuePropertySource(RANDOM_PROPERTY_SOURCE_NAME);
+		if (sources.get(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME) != null) {
+			sources.addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME, randomSource);
+		}
+		else {
+			sources.addLast(randomSource);
+		}
 		logger.trace("RandomValuePropertySource add to Environment");
 	}
 

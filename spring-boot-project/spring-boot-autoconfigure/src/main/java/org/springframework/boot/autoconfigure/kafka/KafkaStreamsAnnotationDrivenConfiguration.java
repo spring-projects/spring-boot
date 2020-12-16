@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.CleanupConfig;
 
 /**
  * Configuration for Kafka Streams annotation-driven support.
@@ -91,6 +92,9 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			this.factoryBean.setAutoStartup(this.properties.getStreams().isAutoStartup());
+			KafkaProperties.Cleanup cleanup = this.properties.getStreams().getCleanup();
+			CleanupConfig cleanupConfig = new CleanupConfig(cleanup.isOnStartup(), cleanup.isOnShutdown());
+			this.factoryBean.setCleanupConfig(cleanupConfig);
 		}
 
 	}

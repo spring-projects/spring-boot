@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.mongo.MongoProperties;
+import org.springframework.boot.autoconfigure.mongo.MongoProperties.Gridfs;
 import org.springframework.boot.autoconfigure.mongo.MongoReactiveAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
@@ -113,12 +114,12 @@ public class MongoReactiveDataAutoConfiguration {
 			MongoProperties properties) {
 		return new ReactiveGridFsTemplate(dataBufferFactory,
 				new GridFsReactiveMongoDatabaseFactory(reactiveMongoDatabaseFactory, properties), mappingMongoConverter,
-				null);
+				properties.getGridfs().getBucket());
 	}
 
 	/**
-	 * {@link ReactiveMongoDatabaseFactory} decorator to use
-	 * {@link MongoProperties#getGridFsDatabase()} when set.
+	 * {@link ReactiveMongoDatabaseFactory} decorator to use {@link Gridfs#getDatabase()}
+	 * when set.
 	 */
 	static class GridFsReactiveMongoDatabaseFactory implements ReactiveMongoDatabaseFactory {
 
@@ -138,7 +139,7 @@ public class MongoReactiveDataAutoConfiguration {
 
 		@Override
 		public Mono<MongoDatabase> getMongoDatabase() throws DataAccessException {
-			String gridFsDatabase = this.properties.getGridFsDatabase();
+			String gridFsDatabase = this.properties.getGridfs().getDatabase();
 			if (StringUtils.hasText(gridFsDatabase)) {
 				return this.delegate.getMongoDatabase(gridFsDatabase);
 			}

@@ -67,7 +67,7 @@ public class LdapProperties {
 	 */
 	private final Map<String, String> baseEnvironment = new HashMap<>();
 
-	private Template template = new Template();
+	private final Template template = new Template();
 
 	public String[] getUrls() {
 		return this.urls;

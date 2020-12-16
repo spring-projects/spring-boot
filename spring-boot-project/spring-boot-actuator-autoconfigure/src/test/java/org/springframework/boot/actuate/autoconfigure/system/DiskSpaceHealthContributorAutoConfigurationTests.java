@@ -34,8 +34,9 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class DiskSpaceHealthContributorAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(AutoConfigurations
-			.of(DiskSpaceHealthContributorAutoConfiguration.class, HealthContributorAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(DiskSpaceHealthContributorAutoConfiguration.class,
+					HealthContributorAutoConfiguration.class));
 
 	@Test
 	void runShouldCreateIndicator() {

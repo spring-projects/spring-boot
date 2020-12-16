@@ -31,6 +31,7 @@ import org.springframework.boot.devtools.classpath.ClassPathRestartStrategy;
 import org.springframework.boot.devtools.classpath.PatternClassPathRestartStrategy;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
+import org.springframework.boot.devtools.filewatch.SnapshotStateRepository;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
 import org.springframework.boot.devtools.restart.ConditionalOnInitializedRestarter;
 import org.springframework.boot.devtools.restart.RestartScope;
@@ -141,7 +142,7 @@ public class LocalDevToolsAutoConfiguration {
 		private FileSystemWatcher newFileSystemWatcher() {
 			Restart restartProperties = this.properties.getRestart();
 			FileSystemWatcher watcher = new FileSystemWatcher(true, restartProperties.getPollInterval(),
-					restartProperties.getQuietPeriod());
+					restartProperties.getQuietPeriod(), SnapshotStateRepository.STATIC);
 			String triggerFile = restartProperties.getTriggerFile();
 			if (StringUtils.hasLength(triggerFile)) {
 				watcher.setTriggerFilter(new TriggerFileFilter(triggerFile));

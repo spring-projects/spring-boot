@@ -63,6 +63,7 @@ dependencies {
 	testImplementation("org.codehaus.groovy:groovy-templates")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-test")
 
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator", configuration: "mavenRepository"))

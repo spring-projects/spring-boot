@@ -43,7 +43,7 @@ import static org.mockito.Mockito.mock;
  */
 class ElasticsearchDataAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
 					ReactiveElasticsearchRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class));
 

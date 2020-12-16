@@ -42,6 +42,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.test.web.reactive.server.HttpHandlerConnector.FailureAfterResponseCompletedException;
 import org.springframework.test.web.reactive.server.WebTestClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -303,7 +304,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			WebTestClient client = getWebClient(context);
 			assertThatExceptionOfType(RuntimeException.class)
 					.isThrownBy(() -> client.get().uri("/commit").exchange().expectStatus())
-					.withCauseInstanceOf(IllegalStateException.class)
+					.withCauseInstanceOf(FailureAfterResponseCompletedException.class)
 					.withMessageContaining("Error occurred after response was completed");
 		});
 	}

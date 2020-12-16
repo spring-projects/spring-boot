@@ -49,7 +49,7 @@ import static org.mockito.Mockito.mock;
 @ExtendWith(OutputCaptureExtension.class)
 class WebFluxMetricsAutoConfigurationTests {
 
-	private ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.with(MetricsRun.simple()).withConfiguration(AutoConfigurations.of(WebFluxMetricsAutoConfiguration.class));
 
 	@Test

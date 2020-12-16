@@ -5,6 +5,6 @@ plugins {
 
 // tag::main-class[]
 springBoot {
-	mainClassName = "com.example.ExampleApplication"
+	mainClass.set("com.example.ExampleApplication")
 }
 // end::main-class[]

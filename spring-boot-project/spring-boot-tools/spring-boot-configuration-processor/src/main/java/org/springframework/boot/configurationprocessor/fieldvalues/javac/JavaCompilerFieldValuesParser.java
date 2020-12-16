@@ -98,6 +98,8 @@ public class JavaCompilerFieldValuesParser implements FieldValuesParser {
 			values.put("StandardCharsets.UTF_8", "UTF-8");
 			values.put("StandardCharsets.UTF_16", "UTF-16");
 			values.put("StandardCharsets.US_ASCII", "US-ASCII");
+			values.put("Duration.ZERO", 0);
+			values.put("Period.ZERO", 0);
 			WELL_KNOWN_STATIC_FINALS = Collections.unmodifiableMap(values);
 		}
 

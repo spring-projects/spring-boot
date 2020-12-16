@@ -30,6 +30,7 @@ dependencies {
 	optional("org.springframework:spring-web")
 	optional("org.springframework:spring-webmvc")
 	optional("org.springframework:spring-webflux")
+	optional("org.springframework.data:spring-data-cassandra")
 	optional("org.springframework.data:spring-data-jdbc")
 	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
@@ -48,13 +49,15 @@ dependencies {
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 
+	testImplementation(project(":spring-boot-project:spring-boot-actuator"))
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("ch.qos.logback:logback-classic")
 	testImplementation("com.fasterxml.jackson.module:jackson-module-parameter-names")
 	testImplementation("com.h2database:h2")
 	testImplementation("com.unboundid:unboundid-ldapsdk")
-	testImplementation("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 	testImplementation("io.lettuce:lettuce-core")
+	testImplementation("io.micrometer:micrometer-registry-prometheus")
 	testImplementation("io.projectreactor:reactor-core")
 	testImplementation("io.projectreactor:reactor-test")
 	testImplementation("io.r2dbc:r2dbc-h2")
@@ -72,22 +75,27 @@ dependencies {
 	testImplementation("org.junit.platform:junit-platform-engine")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework.hateoas:spring-hateoas")
 	testImplementation("org.springframework.plugin:spring-plugin-core")
+	testImplementation("org.testcontainers:cassandra")
 	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-compileJava {
-	options.compilerArgs << "-parameters"
+configurations {
+	configurationPropertiesMetadata
 }
 
-compileTestJava {
-	options.compilerArgs << "-parameters"
+artifacts {
+	configurationPropertiesMetadata new File(sourceSets.main.output.resourcesDir, "META-INF/spring-configuration-metadata.json"), { artifact ->
+		artifact.builtBy sourceSets.main.processResourcesTaskName
+	}
 }
 
 test {

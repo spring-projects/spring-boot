@@ -54,8 +54,24 @@ class MongoReactiveDataAutoConfigurationTests {
 
 	@Test
 	void whenGridFsDatabaseIsConfiguredThenGridFsTemplateUsesIt() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.database:grid")
+				.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid"));
+	}
+
+	@Test
+	@Deprecated
+	void whenGridFsDatabaseIsConfiguredWithDeprecatedPropertyThenGridFsTemplateUsesIt() {
 		this.contextRunner.withPropertyValues("spring.data.mongodb.gridFsDatabase:grid")
 				.run((context) -> assertThat(grisFsTemplateDatabaseName(context)).isEqualTo("grid"));
+	}
+
+	@Test
+	void whenGridFsBucketIsConfiguredThenGridFsTemplateUsesIt() {
+		this.contextRunner.withPropertyValues("spring.data.mongodb.gridfs.bucket:test-bucket").run((context) -> {
+			assertThat(context).hasSingleBean(ReactiveGridFsTemplate.class);
+			ReactiveGridFsTemplate template = context.getBean(ReactiveGridFsTemplate.class);
+			assertThat(template).hasFieldOrPropertyWithValue("bucket", "test-bucket");
+		});
 	}
 
 	@Test

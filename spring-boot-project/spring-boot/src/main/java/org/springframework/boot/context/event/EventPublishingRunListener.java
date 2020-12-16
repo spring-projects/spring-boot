@@ -19,6 +19,7 @@ package org.springframework.boot.context.event;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationRunListener;
 import org.springframework.boot.availability.AvailabilityChangeEvent;
@@ -70,14 +71,16 @@ public class EventPublishingRunListener implements SpringApplicationRunListener,
 	}
 
 	@Override
-	public void starting() {
-		this.initialMulticaster.multicastEvent(new ApplicationStartingEvent(this.application, this.args));
+	public void starting(ConfigurableBootstrapContext bootstrapContext) {
+		this.initialMulticaster
+				.multicastEvent(new ApplicationStartingEvent(bootstrapContext, this.application, this.args));
 	}
 
 	@Override
-	public void environmentPrepared(ConfigurableEnvironment environment) {
-		this.initialMulticaster
-				.multicastEvent(new ApplicationEnvironmentPreparedEvent(this.application, this.args, environment));
+	public void environmentPrepared(ConfigurableBootstrapContext bootstrapContext,
+			ConfigurableEnvironment environment) {
+		this.initialMulticaster.multicastEvent(
+				new ApplicationEnvironmentPreparedEvent(bootstrapContext, this.application, this.args, environment));
 	}
 
 	@Override

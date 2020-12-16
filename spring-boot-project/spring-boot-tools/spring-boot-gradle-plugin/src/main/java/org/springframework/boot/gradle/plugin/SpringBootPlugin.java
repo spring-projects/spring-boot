@@ -23,7 +23,6 @@ import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.dsl.SpringBootExtension;
@@ -91,7 +90,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 		createExtension(project);
 		Configuration bootArchives = createBootArchivesConfiguration(project);
 		registerPluginActions(project, bootArchives);
-		unregisterUnresolvedDependenciesAnalyzer(project);
 	}
 
 	private void verifyGradleVersion() {
@@ -111,6 +109,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 	private Configuration createBootArchivesConfiguration(Project project) {
 		Configuration bootArchives = project.getConfigurations().create(BOOT_ARCHIVES_CONFIGURATION_NAME);
 		bootArchives.setDescription("Configuration for Spring Boot archive artifacts.");
+		bootArchives.setCanBeResolved(false);
 		return bootArchives;
 	}
 
@@ -125,20 +124,6 @@ public class SpringBootPlugin implements Plugin<Project> {
 				project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project));
 			}
 		}
-	}
-
-	private void unregisterUnresolvedDependenciesAnalyzer(Project project) {
-		UnresolvedDependenciesAnalyzer unresolvedDependenciesAnalyzer = new UnresolvedDependenciesAnalyzer();
-		project.getConfigurations().all((configuration) -> {
-			ResolvableDependencies incoming = configuration.getIncoming();
-			incoming.afterResolve((resolvableDependencies) -> {
-				if (incoming.equals(resolvableDependencies)) {
-					unresolvedDependenciesAnalyzer.analyze(configuration.getResolvedConfiguration()
-							.getLenientConfiguration().getUnresolvedModuleDependencies());
-				}
-			});
-		});
-		project.getGradle().buildFinished((buildResult) -> unresolvedDependenciesAnalyzer.buildFinished(project));
 	}
 
 }

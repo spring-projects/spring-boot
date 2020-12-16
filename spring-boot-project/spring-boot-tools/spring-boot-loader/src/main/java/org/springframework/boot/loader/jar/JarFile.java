@@ -17,6 +17,7 @@
 package org.springframework.boot.loader.jar;
 
 import java.io.File;
+import java.io.FilePermission;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.SoftReference;
@@ -24,12 +25,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLStreamHandler;
 import java.net.URLStreamHandlerFactory;
+import java.security.Permission;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.Spliterator;
 import java.util.Spliterators;
 import java.util.function.Supplier;
-import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
@@ -52,7 +53,7 @@ import org.springframework.boot.loader.data.RandomAccessDataFile;
  * @author Andy Wilkinson
  * @since 1.0.0
  */
-public class JarFile extends java.util.jar.JarFile implements Iterable<java.util.jar.JarEntry> {
+public class JarFile extends AbstractJarFile implements Iterable<java.util.jar.JarEntry> {
 
 	private static final String MANIFEST_NAME = "META-INF/MANIFEST.MF";
 
@@ -64,7 +65,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 
 	private static final AsciiBytes SIGNATURE_FILE_EXTENSION = new AsciiBytes(".SF");
 
-	private final JarFile parent;
+	private static final String READ_ACTION = "read";
 
 	private final RandomAccessDataFile rootFile;
 
@@ -109,28 +110,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 	}
 
 	/**
-	 * Create a new JarFile copy based on a given parent.
-	 * @param parent the parent jar
-	 * @throws IOException if the file cannot be read
-	 */
-	JarFile(JarFile parent) throws IOException {
-		super(parent.rootFile.getFile());
-		super.close();
-		this.parent = parent;
-		this.rootFile = parent.rootFile;
-		this.pathFromRoot = parent.pathFromRoot;
-		this.data = parent.data;
-		this.type = parent.type;
-		this.url = parent.url;
-		this.urlString = parent.urlString;
-		this.entries = parent.entries;
-		this.manifestSupplier = parent.manifestSupplier;
-		this.manifest = parent.manifest;
-		this.signed = parent.signed;
-		this.comment = parent.comment;
-	}
-
-	/**
 	 * Private constructor used to create a new {@link JarFile} either directly or from a
 	 * nested entry.
 	 * @param rootFile the root jar file
@@ -141,14 +120,13 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 	 */
 	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarFileType type)
 			throws IOException {
-		this(null, rootFile, pathFromRoot, data, null, type, null);
+		this(rootFile, pathFromRoot, data, null, type, null);
 	}
 
-	private JarFile(JarFile parent, RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data,
-			JarEntryFilter filter, JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
+	private JarFile(RandomAccessDataFile rootFile, String pathFromRoot, RandomAccessData data, JarEntryFilter filter,
+			JarFileType type, Supplier<Manifest> manifestSupplier) throws IOException {
 		super(rootFile.getFile());
 		super.close();
-		this.parent = parent;
 		this.rootFile = rootFile;
 		this.pathFromRoot = pathFromRoot;
 		CentralDirectoryParser parser = new CentralDirectoryParser();
@@ -198,8 +176,9 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 		};
 	}
 
-	JarFile getParent() {
-		return this.parent;
+	@Override
+	Permission getPermission() {
+		return new FilePermission(this.rootFile.getFile().getPath(), READ_ACTION);
 	}
 
 	protected final RandomAccessDataFile getRootJarFile() {
@@ -268,6 +247,11 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 	}
 
 	@Override
+	InputStream getInputStream() throws IOException {
+		return this.data.getInputStream();
+	}
+
+	@Override
 	public synchronized InputStream getInputStream(ZipEntry entry) throws IOException {
 		ensureOpen();
 		if (entry instanceof JarEntry) {
@@ -320,9 +304,8 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 			}
 			return null;
 		};
-		return new JarFile(this, this.rootFile,
-				this.pathFromRoot + "!/" + entry.getName().substring(0, name.length() - 1), this.data, filter,
-				JarFileType.NESTED_DIRECTORY, this.manifestSupplier);
+		return new JarFile(this.rootFile, this.pathFromRoot + "!/" + entry.getName().substring(0, name.length() - 1),
+				this.data, filter, JarFileType.NESTED_DIRECTORY, this.manifestSupplier);
 	}
 
 	private JarFile createJarFileFromFileEntry(JarEntry entry) throws IOException {
@@ -355,7 +338,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 			return;
 		}
 		this.closed = true;
-		if (this.type == JarFileType.DIRECT && this.parent == null) {
+		if (this.type == JarFileType.DIRECT) {
 			this.rootFile.close();
 		}
 	}
@@ -377,12 +360,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 		return this.urlString;
 	}
 
-	/**
-	 * Return a URL that can be used to access this JAR file. NOTE: the specified URL
-	 * cannot be serialized and or cloned.
-	 * @return the URL
-	 * @throws MalformedURLException if the URL is malformed
-	 */
+	@Override
 	public URL getUrl() throws MalformedURLException {
 		if (this.url == null) {
 			String file = this.rootFile.getFile().toURI() + this.pathFromRoot + "!/";
@@ -406,30 +384,12 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 		return this.signed;
 	}
 
-	void setupEntryCertificates(JarEntry entry) {
-		// Fallback to JarInputStream to obtain certificates, not fast but hopefully not
-		// happening that often.
+	JarEntryCertification getCertification(JarEntry entry) {
 		try {
-			try (JarInputStream inputStream = new JarInputStream(getData().getInputStream())) {
-				java.util.jar.JarEntry certEntry = inputStream.getNextJarEntry();
-				while (certEntry != null) {
-					inputStream.closeEntry();
-					if (entry.getName().equals(certEntry.getName())) {
-						setCertificates(entry, certEntry);
-					}
-					setCertificates(getJarEntry(certEntry.getName()), certEntry);
-					certEntry = inputStream.getNextJarEntry();
-				}
-			}
+			return this.entries.getCertification(entry);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException(ex);
-		}
-	}
-
-	private void setCertificates(JarEntry entry, java.util.jar.JarEntry certEntry) {
-		if (entry != null) {
-			entry.setCertificates(certEntry);
 		}
 	}
 
@@ -441,6 +401,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 		return this.pathFromRoot;
 	}
 
+	@Override
 	JarFileType getType() {
 		return this.type;
 	}
@@ -452,7 +413,7 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 	public static void registerUrlProtocolHandler() {
 		String handlers = System.getProperty(PROTOCOL_HANDLER, "");
 		System.setProperty(PROTOCOL_HANDLER,
-				("".equals(handlers) ? HANDLERS_PACKAGE : handlers + "|" + HANDLERS_PACKAGE));
+				((handlers == null || handlers.isEmpty()) ? HANDLERS_PACKAGE : handlers + "|" + HANDLERS_PACKAGE));
 		resetCachedUrlHandlers();
 	}
 
@@ -468,15 +429,6 @@ public class JarFile extends java.util.jar.JarFile implements Iterable<java.util
 		catch (Error ex) {
 			// Ignore
 		}
-	}
-
-	/**
-	 * The type of a {@link JarFile}.
-	 */
-	enum JarFileType {
-
-		DIRECT, NESTED_DIRECTORY, NESTED_JAR
-
 	}
 
 	/**

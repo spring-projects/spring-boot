@@ -36,9 +36,8 @@ import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHa
  * @author Brian Clozel
  * @since 2.2.0
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ RSocketRequester.class, io.rsocket.RSocketFactory.class, TcpServerTransport.class })
+@ConditionalOnClass({ RSocketRequester.class, io.rsocket.RSocket.class, TcpServerTransport.class })
 @AutoConfigureAfter(RSocketStrategiesAutoConfiguration.class)
 public class RSocketMessagingAutoConfiguration {
 
