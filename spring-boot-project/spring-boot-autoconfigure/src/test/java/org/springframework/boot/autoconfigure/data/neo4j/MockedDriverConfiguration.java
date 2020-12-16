@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
-import org.mockito.Mockito;
+import org.mockito.ArgumentMatchers;
 import org.neo4j.driver.Driver;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.SessionConfig;
@@ -43,7 +43,7 @@ class MockedDriverConfiguration {
 		TypeSystem typeSystem = mock(TypeSystem.class);
 		Session session = mock(Session.class);
 		given(driver.defaultTypeSystem()).willReturn(typeSystem);
-		given(driver.session(Mockito.any(SessionConfig.class))).willReturn(session);
+		given(driver.session(ArgumentMatchers.any(SessionConfig.class))).willReturn(session);
 		return driver;
 	}
 
