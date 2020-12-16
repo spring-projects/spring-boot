@@ -18,24 +18,22 @@ package org.springframework.boot.autoconfigure.data.jpa;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.factory.BeanCreationException;
-import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
+import org.springframework.boot.autoconfigure.data.jpa.country.CountryRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link JpaRepositoriesAutoConfiguration} without Spring Data Envers on the
+ * Tests for {@link JpaRepositoriesAutoConfiguration} with Spring Data Envers on the
  * classpath.
  *
  * @author Stefano Cordio
  */
-@ClassPathExclusions("spring-data-envers-*.jar")
-class JpaRepositoriesAutoConfigurationTests extends AbstractJpaRepositoriesAutoConfigurationTests {
+class EnversRevisionRepositoriesAutoConfigurationTests extends AbstractJpaRepositoriesAutoConfigurationTests {
 
 	@Test
-	void autoConfigurationShouldFailWithRevisionRepository() {
+	void autoConfigurationShouldSucceedWithRevisionRepository() {
 		this.contextRunner.withUserConfiguration(RevisionRepositoryConfiguration.class)
-				.run((context) -> assertThat(context).getFailure().isInstanceOf(BeanCreationException.class));
+				.run((context) -> assertThat(context).hasSingleBean(CountryRepository.class));
 	}
 
 }

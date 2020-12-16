@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryBuilderCustomizer;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
@@ -35,6 +36,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
@@ -52,11 +54,19 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
  * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
  * <p>
+ * In case
+ * {@link org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean}
+ * is on the classpath, it is used instead of
+ * {@link org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean} to
+ * support {@link org.springframework.data.repository.history.RevisionRepository} with
+ * Hibernate Envers.
+ * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
  *
  * @author Phillip Webb
  * @author Josh Long
  * @author Scott Frederick
+ * @author Stefano Cordio
  * @since 1.0.0
  * @see EnableJpaRepositories
  */
@@ -66,7 +76,6 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
-@Import(JpaRepositoriesRegistrar.class)
 @AutoConfigureAfter({ HibernateJpaAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
 
@@ -105,6 +114,20 @@ public class JpaRepositoriesAutoConfiguration {
 		static class LazyBootstrapMode {
 
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(EnversRevisionRepositoryFactoryBean.class)
+	@Import(EnversRevisionRepositoriesRegistrar.class)
+	public static class EnversRevisionRepositoriesRegistrarConfiguration {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnMissingClass("org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean")
+	@Import(JpaRepositoriesRegistrar.class)
+	public static class JpaRepositoriesRegistrarConfiguration {
 
 	}
 

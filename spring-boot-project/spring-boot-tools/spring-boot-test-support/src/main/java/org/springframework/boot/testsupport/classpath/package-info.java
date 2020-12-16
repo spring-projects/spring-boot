@@ -15,6 +15,6 @@
  */
 
 /**
- * Custom JUnit runner to change the classpath.
+ * Custom JUnit extension to change the classpath.
  */
 package org.springframework.boot.testsupport.classpath;
