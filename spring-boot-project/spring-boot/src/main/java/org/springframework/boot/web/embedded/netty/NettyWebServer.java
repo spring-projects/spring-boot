@@ -21,6 +21,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 
 import io.netty.channel.group.DefaultChannelGroup;
 import io.netty.channel.unix.Errors.NativeIoException;
@@ -106,9 +107,42 @@ public class NettyWebServer implements WebServer {
 				});
 				throw new WebServerException("Unable to start Netty", ex);
 			}
-			logger.info("Netty started on port(s): " + getPort());
+			if (this.disposableServer != null) {
+				logger.info("Netty started" + getStartedOnMessage(this.disposableServer));
+			}
 			startDaemonAwaitThread(this.disposableServer);
 		}
+	}
+
+	private String getStartedOnMessage(DisposableServer server) {
+		StringBuilder message = new StringBuilder();
+		tryAppend(message, "port %s", () -> server.port());
+		tryAppend(message, "path %s", () -> server.path());
+		return (message.length() > 0) ? " on " + message : "";
+	}
+
+	private void tryAppend(StringBuilder message, String format, Supplier<Object> supplier) {
+		try {
+			Object value = supplier.get();
+			message.append((message.length() != 0) ? " " : "");
+			message.append(String.format(format, value));
+		}
+		catch (UnsupportedOperationException ex) {
+		}
+	}
+
+	DisposableServer startHttpServer() {
+		HttpServer server = this.httpServer;
+		if (this.routeProviders.isEmpty()) {
+			server = server.handle(this.handler);
+		}
+		else {
+			server = server.route(this::applyRouteProviders);
+		}
+		if (this.lifecycleTimeout != null) {
+			return server.bindNow(this.lifecycleTimeout);
+		}
+		return server.bindNow();
 	}
 
 	private boolean isPermissionDenied(Throwable bindExceptionCause) {
@@ -129,20 +163,6 @@ public class NettyWebServer implements WebServer {
 			return;
 		}
 		this.gracefulShutdown.shutDownGracefully(callback);
-	}
-
-	private DisposableServer startHttpServer() {
-		HttpServer server = this.httpServer;
-		if (this.routeProviders.isEmpty()) {
-			server = server.handle(this.handler);
-		}
-		else {
-			server = server.route(this::applyRouteProviders);
-		}
-		if (this.lifecycleTimeout != null) {
-			return server.bindNow(this.lifecycleTimeout);
-		}
-		return server.bindNow();
 	}
 
 	private void applyRouteProviders(HttpServerRoutes routes) {
@@ -190,7 +210,12 @@ public class NettyWebServer implements WebServer {
 	@Override
 	public int getPort() {
 		if (this.disposableServer != null) {
-			return this.disposableServer.port();
+			try {
+				return this.disposableServer.port();
+			}
+			catch (UnsupportedOperationException ex) {
+				return -1;
+			}
 		}
 		return 0;
 	}
