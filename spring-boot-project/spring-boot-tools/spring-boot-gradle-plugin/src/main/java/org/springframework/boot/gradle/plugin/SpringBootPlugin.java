@@ -18,6 +18,7 @@ package org.springframework.boot.gradle.plugin;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.function.Consumer;
 
 import org.gradle.api.GradleException;
 import org.gradle.api.Plugin;
@@ -119,10 +120,18 @@ public class SpringBootPlugin implements Plugin<Project> {
 				new WarPluginAction(singlePublishedArtifact), new MavenPluginAction(bootArchives.getUploadTaskName()),
 				new DependencyManagementPluginAction(), new ApplicationPluginAction(), new KotlinPluginAction());
 		for (PluginApplicationAction action : actions) {
-			Class<? extends Plugin<? extends Project>> pluginClass = action.getPluginClass();
-			if (pluginClass != null) {
-				project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project));
-			}
+			withPluginClassOfAction(action,
+					(pluginClass) -> project.getPlugins().withType(pluginClass, (plugin) -> action.execute(project)));
+		}
+	}
+
+	private void withPluginClassOfAction(PluginApplicationAction action,
+			Consumer<Class<? extends Plugin<? extends Project>>> consumer) {
+		try {
+			consumer.accept(action.getPluginClass());
+		}
+		catch (Throwable ex) {
+			// Plugin class unavailable. Continue.
 		}
 	}
 
