@@ -30,6 +30,7 @@ import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
+import org.springframework.boot.context.config.TestConfigDataEnvironmentUpdateListener.AddedPropertySource;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -65,14 +66,14 @@ class ConfigDataEnvironmentTests {
 		this.environment.setProperty("spring.config.use-legacy-processing", "true");
 		assertThatExceptionOfType(UseLegacyConfigProcessingException.class)
 				.isThrownBy(() -> new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, this.environment,
-						this.resourceLoader, this.additionalProfiles));
+						this.resourceLoader, this.additionalProfiles, null));
 	}
 
 	@Test
 	void createExposesEnvironmentBinderToConfigDataLocationResolvers() {
 		this.environment.setProperty("spring", "boot");
 		TestConfigDataEnvironment configDataEnvironment = new TestConfigDataEnvironment(this.logFactory,
-				this.bootstrapContext, this.environment, this.resourceLoader, this.additionalProfiles);
+				this.bootstrapContext, this.environment, this.resourceLoader, this.additionalProfiles, null);
 		assertThat(configDataEnvironment.getConfigDataLocationResolversBinder().bind("spring", String.class).get())
 				.isEqualTo("boot");
 	}
@@ -86,7 +87,7 @@ class ConfigDataEnvironmentTests {
 		this.environment.getPropertySources().addLast(propertySource2);
 		this.environment.getPropertySources().addLast(propertySource3);
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
 				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
 		Object[] wrapped = children.stream().filter((child) -> child.getKind() == Kind.EXISTING)
@@ -105,7 +106,7 @@ class ConfigDataEnvironmentTests {
 		this.environment.getPropertySources().addLast(propertySource1);
 		this.environment.getPropertySources().addLast(propertySource2);
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
 				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
 		Object[] wrapped = children.stream().filter((child) -> child.getKind() == Kind.EXISTING)
@@ -121,7 +122,7 @@ class ConfigDataEnvironmentTests {
 		this.environment.setProperty("spring.config.additional-location", "a1,a2");
 		this.environment.setProperty("spring.config.import", "i1,i2");
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		List<ConfigDataEnvironmentContributor> children = configDataEnvironment.getContributors().getRoot()
 				.getChildren(ImportPhase.BEFORE_PROFILE_ACTIVATION);
 		Object[] imports = children.stream().filter((child) -> child.getKind() == Kind.INITIAL_IMPORT)
@@ -133,7 +134,7 @@ class ConfigDataEnvironmentTests {
 	void processAndApplyAddsImportedSourceToEnvironment(TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		configDataEnvironment.processAndApply();
 		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
 	}
@@ -142,7 +143,7 @@ class ConfigDataEnvironmentTests {
 	void processAndApplyOnlyAddsActiveContributors(TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		configDataEnvironment.processAndApply();
 		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
 		assertThat(this.environment.getProperty("other")).isNull();
@@ -154,7 +155,7 @@ class ConfigDataEnvironmentTests {
 		this.environment.getPropertySources().addFirst(defaultPropertySource);
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		configDataEnvironment.processAndApply();
 		List<PropertySource<?>> sources = this.environment.getPropertySources().stream().collect(Collectors.toList());
 		assertThat(sources.get(sources.size() - 1)).isSameAs(defaultPropertySource);
@@ -164,7 +165,7 @@ class ConfigDataEnvironmentTests {
 	void processAndApplySetsDefaultProfiles(TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		configDataEnvironment.processAndApply();
 		assertThat(this.environment.getDefaultProfiles()).containsExactly("one", "two", "three");
 	}
@@ -173,7 +174,7 @@ class ConfigDataEnvironmentTests {
 	void processAndApplySetsActiveProfiles(TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		configDataEnvironment.processAndApply();
 		assertThat(this.environment.getActiveProfiles()).containsExactly("one", "two", "three");
 	}
@@ -182,7 +183,7 @@ class ConfigDataEnvironmentTests {
 	void processAndApplySetsActiveProfilesAndProfileGroups(TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		configDataEnvironment.processAndApply();
 		assertThat(this.environment.getActiveProfiles()).containsExactly("one", "four", "five", "two", "three");
 	}
@@ -192,9 +193,34 @@ class ConfigDataEnvironmentTests {
 	void processAndApplyWhenHasInvalidPropertyThrowsException() {
 		this.environment.setProperty("spring.profile", "a");
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
-				this.environment, this.resourceLoader, this.additionalProfiles);
+				this.environment, this.resourceLoader, this.additionalProfiles, null);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
 				.isThrownBy(() -> configDataEnvironment.processAndApply());
+	}
+
+	@Test
+	void processAndApplyWhenHasListenerCallsOnPropertySourceAdded(TestInfo info) {
+		this.environment.setProperty("spring.config.location", getConfigLocation(info));
+		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
+		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
+				this.environment, this.resourceLoader, this.additionalProfiles, listener);
+		configDataEnvironment.processAndApply();
+		assertThat(listener.getAddedPropertySources()).hasSize(1);
+		AddedPropertySource addedPropertySource = listener.getAddedPropertySources().get(0);
+		assertThat(addedPropertySource.getPropertySource().getProperty("spring")).isEqualTo("boot");
+		assertThat(addedPropertySource.getLocation().toString()).isEqualTo(getConfigLocation(info));
+		assertThat(addedPropertySource.getResource().toString()).contains("class path resource")
+				.contains(info.getTestMethod().get().getName());
+	}
+
+	@Test
+	void processAndApplyWhenHasListenerCallsOnSetProfiles(TestInfo info) {
+		this.environment.setProperty("spring.config.location", getConfigLocation(info));
+		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
+		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
+				this.environment, this.resourceLoader, this.additionalProfiles, listener);
+		configDataEnvironment.processAndApply();
+		assertThat(listener.getProfiles().getActive()).containsExactly("one", "two", "three");
 	}
 
 	private String getConfigLocation(TestInfo info) {
@@ -208,8 +234,9 @@ class ConfigDataEnvironmentTests {
 
 		TestConfigDataEnvironment(DeferredLogFactory logFactory, ConfigurableBootstrapContext bootstrapContext,
 				ConfigurableEnvironment environment, ResourceLoader resourceLoader,
-				Collection<String> additionalProfiles) {
-			super(logFactory, bootstrapContext, environment, resourceLoader, additionalProfiles);
+				Collection<String> additionalProfiles, ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
+			super(logFactory, bootstrapContext, environment, resourceLoader, additionalProfiles,
+					environmentUpdateListener);
 		}
 
 		@Override
