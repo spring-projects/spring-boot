@@ -164,6 +164,12 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 						.containsPattern("Builder lifecycle '.*' failed with status code"));
 	}
 
+	@TestTemplate
+	void failsWithWarPackaging(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-war-packaging").goals("package").executeAndFail(
+				(project) -> assertThat(buildLog(project)).contains("Executable jar file required for building image"));
+	}
+
 	private void writeLongNameResource(File project) {
 		StringBuilder name = new StringBuilder();
 		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
