@@ -65,7 +65,12 @@ public class StandardConfigDataResource extends ConfigDataResource {
 		return this.reference;
 	}
 
-	Resource getResource() {
+	/**
+	 * Return the underlying Spring {@link Resource} being loaded.
+	 * @return the underlying resource
+	 * @since 2.4.2
+	 */
+	public Resource getResource() {
 		return this.resource;
 	}
 
