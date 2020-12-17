@@ -150,7 +150,12 @@ public class Builder {
 	private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pullingImage(reference, imageType);
 		TotalProgressPullListener listener = new TotalProgressPullListener(progressConsumer);
-		Image image = this.docker.image().pull(reference, listener, getBuilderAuthHeader());
+		String registryUrl = this.dockerConfiguration.getRegistryUrl();
+		String authHeader = null;
+		if (registryUrl != null && registryUrl.contains(reference.getDomain())) {
+			authHeader = getBuilderAuthHeader();
+		}
+		Image image = this.docker.image().pull(reference, listener, authHeader);
 		this.log.pulledImage(image, imageType);
 		return image;
 	}

@@ -33,19 +33,31 @@ public final class DockerConfiguration {
 
 	private final DockerRegistryAuthentication publishAuthentication;
 
+	private final String registryUrl;
+
 	public DockerConfiguration() {
 		this(null, null, null);
 	}
 
 	private DockerConfiguration(DockerHost host, DockerRegistryAuthentication builderAuthentication,
 			DockerRegistryAuthentication publishAuthentication) {
+		this(host, builderAuthentication, publishAuthentication, null);
+	}
+
+	private DockerConfiguration(DockerHost host, DockerRegistryAuthentication builderAuthentication,
+			DockerRegistryAuthentication publishAuthentication, String registryUrl) {
 		this.host = host;
 		this.builderAuthentication = builderAuthentication;
 		this.publishAuthentication = publishAuthentication;
+		this.registryUrl = registryUrl;
 	}
 
 	public DockerHost getHost() {
 		return this.host;
+	}
+
+	public String getRegistryUrl() {
+		return this.registryUrl;
 	}
 
 	public DockerRegistryAuthentication getBuilderRegistryAuthentication() {
@@ -73,7 +85,7 @@ public final class DockerConfiguration {
 		Assert.notNull(username, "Username must not be null");
 		Assert.notNull(password, "Password must not be null");
 		return new DockerConfiguration(this.host, new DockerRegistryUserAuthentication(username, password, url, email),
-				this.publishAuthentication);
+				this.publishAuthentication, url);
 	}
 
 	public DockerConfiguration withPublishRegistryTokenAuthentication(String token) {
