@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.Environment;
+import org.springframework.util.Assert;
 
 /**
  * A simple object registry that is available during startup and {@link Environment}
@@ -47,7 +48,8 @@ public interface BootstrapRegistry {
 
 	/**
 	 * Register a specific type with the registry. If the specified type has already been
-	 * registered, but not get obtained, it will be replaced.
+	 * registered and has not been obtained as a {@link Scope#SINGLETON singleton}, it
+	 * will be replaced.
 	 * @param <T> the instance type
 	 * @param type the instance type
 	 * @param instanceSupplier the instance supplier
@@ -87,11 +89,13 @@ public interface BootstrapRegistry {
 	void addCloseListener(ApplicationListener<BootstrapContextClosedEvent> listener);
 
 	/**
-	 * Supplier used to provide the actual instance the first time it is accessed.
+	 * Supplier used to provide the actual instance when needed.
 	 *
 	 * @param <T> the instance type
+	 * @see Scope
 	 */
-	public interface InstanceSupplier<T> {
+	@FunctionalInterface
+	interface InstanceSupplier<T> {
 
 		/**
 		 * Factory method used to create the instance when needed.
@@ -100,6 +104,39 @@ public interface BootstrapRegistry {
 		 * @return the instance
 		 */
 		T get(BootstrapContext context);
+
+		/**
+		 * Return the scope of the supplied instance.
+		 * @return the scope
+		 * @since 2.4.2
+		 */
+		default Scope getScope() {
+			return Scope.SINGLETON;
+		}
+
+		/**
+		 * Return a new {@link InstanceSupplier} with an updated {@link Scope}.
+		 * @param scope the new scope
+		 * @return a new {@link InstanceSupplier} instance with the new scope
+		 * @since 2.4.2
+		 */
+		default InstanceSupplier<T> withScope(Scope scope) {
+			Assert.notNull(scope, "Scope must not be null");
+			InstanceSupplier<T> parent = this;
+			return new InstanceSupplier<T>() {
+
+				@Override
+				public T get(BootstrapContext context) {
+					return parent.get(context);
+				}
+
+				@Override
+				public Scope getScope() {
+					return scope;
+				}
+
+			};
+		}
 
 		/**
 		 * Factory method that can be used to create a {@link InstanceSupplier} for a
@@ -122,6 +159,26 @@ public interface BootstrapRegistry {
 		static <T> InstanceSupplier<T> from(Supplier<T> supplier) {
 			return (registry) -> (supplier != null) ? supplier.get() : null;
 		}
+
+	}
+
+	/**
+	 * The scope of a instance.
+	 * @since 2.4.2
+	 */
+	enum Scope {
+
+		/**
+		 * A singleton instance. The {@link InstanceSupplier} will be called only once and
+		 * the same instance will be returned each time.
+		 */
+		SINGLETON,
+
+		/**
+		 * A prototype instance. The {@link InstanceSupplier} will be called whenver an
+		 * instance is needed.
+		 */
+		PROTOTYPE
 
 	}
 
