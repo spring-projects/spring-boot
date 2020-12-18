@@ -1612,7 +1612,9 @@ If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_IT
 If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
 Doing so will provide you with structured, type-safe object that you can inject into your own beans.
 
-While you can write a `SpEL` expression in `@Value`, such expressions are not processed from <<boot-features-external-config-application-property-files,application property files>>.
+`SpEL` expressions from  <<boot-features-external-config-application-property-files,application property files>> are not processed at time of parsing these files and populating the environment.
+However, it is possible to write a `SpEL` expression in `@Value`.
+If the value of a property from an application property file is a `SpEL` expression, it will be evaluated when consumed via `@Value`.
 
 
 
