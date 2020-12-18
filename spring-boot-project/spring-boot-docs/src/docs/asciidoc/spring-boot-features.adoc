@@ -583,9 +583,8 @@ This means that the JSON cannot override properties from lower order property so
 
 
 
-[[boot-features-external-config-application-property-files]]
 [[boot-features-external-config-files]]
-=== External Application Properties
+=== External Application Properties [[boot-features-external-config-application-property-files]] 
 Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
 
 . The classpath root
@@ -1853,7 +1852,7 @@ If you used `@Value("{demo.itemPrice}")` instead, `demo.item-price` and `DEMO_IT
 If you define a set of configuration keys for your own components, we recommend you group them in a POJO annotated with `@ConfigurationProperties`.
 Doing so will provide you with structured, type-safe object that you can inject into your own beans.
 
-`SpEL` expressions from  <<boot-features-external-config-application-property-files,application property files>> are not processed at time of parsing these files and populating the environment.
+`SpEL` expressions from  <<boot-features-external-config-files,application property files>> are not processed at time of parsing these files and populating the environment.
 However, it is possible to write a `SpEL` expression in `@Value`.
 If the value of a property from an application property file is a `SpEL` expression, it will be evaluated when consumed via `@Value`.
 
