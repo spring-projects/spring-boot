@@ -28,6 +28,8 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 import org.testcontainers.utility.MountableFile;
 
+import org.springframework.util.Assert;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -49,12 +51,10 @@ class LoaderIntegrationTests {
 			.withCommand("java", "-jar", "app.jar");
 
 	private static File findApplication() {
-		File appJar = new File("build/app/build/libs/app.jar");
-		if (appJar.isFile()) {
-			return appJar;
-		}
-		throw new IllegalStateException(
-				"Could not find test application in build/app/build/libs directory. Have you built it?");
+		String name = String.format("build/%1$s/build/libs/%1$s.jar", "spring-boot-loader-tests-app");
+		File jar = new File(name);
+		Assert.state(jar.isFile(), () -> "Could not find " + name + ". Have you built it?");
+		return jar;
 	}
 
 	@Test
