@@ -59,8 +59,9 @@ class LoaderIntegrationTests {
 
 	@Test
 	void readUrlsWithoutWarning() {
+		System.out.println(output.toUtf8String());
 		assertThat(output.toUtf8String()).contains(">>>>> 287649 BYTES from").doesNotContain("WARNING:")
-				.doesNotContain("illegal");
+				.doesNotContain("illegal").doesNotContain("jar written to temp");
 	}
 
 }

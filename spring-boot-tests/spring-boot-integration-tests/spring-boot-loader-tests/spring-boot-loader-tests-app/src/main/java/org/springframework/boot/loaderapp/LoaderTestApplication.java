@@ -16,6 +16,8 @@
 
 package org.springframework.boot.loaderapp;
 
+import java.io.File;
+import java.net.JarURLConnection;
 import java.net.URL;
 import java.util.Arrays;
 
@@ -33,7 +35,14 @@ public class LoaderTestApplication {
 	@Bean
 	public CommandLineRunner commandLineRunner(ServletContext servletContext) {
 		return (args) -> {
+			File temp = new File(System.getProperty("java.io.tmpdir"));
 			URL resourceUrl = servletContext.getResource("webjars/jquery/3.5.0/jquery.js");
+			JarURLConnection connection = (JarURLConnection) resourceUrl.openConnection();
+			String jarName = connection.getJarFile().getName();
+			System.out.println(">>>>> jar file " + jarName);
+			if(jarName.contains(temp.getAbsolutePath())) {
+				System.out.println(">>>>> jar written to temp");
+			}
 			byte[] resourceContent = FileCopyUtils.copyToByteArray(resourceUrl.openStream());
 			URL directUrl = new URL(resourceUrl.toExternalForm());
 			byte[] directContent = FileCopyUtils.copyToByteArray(directUrl.openStream());

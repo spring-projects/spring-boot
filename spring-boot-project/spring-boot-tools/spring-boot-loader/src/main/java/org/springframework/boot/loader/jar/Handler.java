@@ -47,6 +47,8 @@ public class Handler extends URLStreamHandler {
 
 	private static final String FILE_PROTOCOL = "file:";
 
+	private static final String TOMCAT_WARFILE_PROTOCOL = "war:file:";
+
 	private static final String SEPARATOR = "!/";
 
 	private static final Pattern SEPARATOR_PATTERN = Pattern.compile(SEPARATOR, Pattern.LITERAL);
@@ -102,7 +104,8 @@ public class Handler extends URLStreamHandler {
 
 	private URLConnection openFallbackConnection(URL url, Exception reason) throws IOException {
 		try {
-			URLConnection connection = openFallbackContextConnection(url);
+			URLConnection connection = openFallbackTomcatConnection(url);
+			connection = (connection != null) ? connection : openFallbackContextConnection(url);
 			return (connection != null) ? connection : openFallbackHandlerConnection(url);
 		}
 		catch (Exception ex) {
@@ -116,6 +119,44 @@ public class Handler extends URLStreamHandler {
 			}
 			throw new IllegalStateException(reason);
 		}
+	}
+
+	/**
+	 * Attempt to open a Tomcat formatted 'jar:war:file:...' URL. This method allows us to
+	 * use our own nested JAR support to open the content rather than the logic in
+	 * {@code sun.net.www.protocol.jar.URLJarFile} which will extract the nested jar to
+	 * the temp folder to that its content can be accessed.
+	 * @param url the URL to open
+	 * @return a {@link URLConnection} or {@code null}
+	 */
+	private URLConnection openFallbackTomcatConnection(URL url) {
+		String file = url.getFile();
+		if (isTomcatWarUrl(file)) {
+			file = file.substring(TOMCAT_WARFILE_PROTOCOL.length());
+			file = file.replaceFirst("\\*/", "!/");
+			try {
+				URLConnection connection = openConnection(new URL("jar:file:" + file));
+				connection.getInputStream().close();
+				return connection;
+			}
+			catch (IOException ex) {
+			}
+		}
+		return null;
+	}
+
+	private boolean isTomcatWarUrl(String file) {
+		if (file.startsWith(TOMCAT_WARFILE_PROTOCOL) || !file.contains("*/")) {
+			try {
+				URLConnection connection = new URL(file).openConnection();
+				if (connection.getClass().getName().startsWith("org.apache.catalina")) {
+					return true;
+				}
+			}
+			catch (Exception ex) {
+			}
+		}
+		return false;
 	}
 
 	/**
