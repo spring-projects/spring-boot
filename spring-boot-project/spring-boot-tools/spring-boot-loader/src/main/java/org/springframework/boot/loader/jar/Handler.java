@@ -57,7 +57,11 @@ public class Handler extends URLStreamHandler {
 
 	private static final String PARENT_DIR = "/../";
 
+	private static final String PROTOCOL_HANDLER = "java.protocol.handler.pkgs";
+
 	private static final String[] FALLBACK_HANDLERS = { "sun.net.www.protocol.jar.Handler" };
+
+	private static URL jarContextUrl;
 
 	private static SoftReference<Map<File, JarFile>> rootFileCache;
 
@@ -98,7 +102,8 @@ public class Handler extends URLStreamHandler {
 
 	private URLConnection openFallbackConnection(URL url, Exception reason) throws IOException {
 		try {
-			return openConnection(getFallbackHandler(), url);
+			URLConnection connection = openFallbackContextConnection(url);
+			return (connection != null) ? connection : openFallbackHandlerConnection(url);
 		}
 		catch (Exception ex) {
 			if (reason instanceof IOException) {
@@ -113,16 +118,35 @@ public class Handler extends URLStreamHandler {
 		}
 	}
 
-	private void log(boolean warning, String message, Exception cause) {
+	/**
+	 * Attempt to open a fallback connection by using a context URL captured before the
+	 * jar handler was replaced with our own version. Since this method doesn't use
+	 * reflection it won't trigger "illegal reflective access operation has occurred"
+	 * warnings on Java 13+.
+	 * @param url the URL to open
+	 * @return a {@link URLConnection} or {@code null}
+	 */
+	private URLConnection openFallbackContextConnection(URL url) {
 		try {
-			Level level = warning ? Level.WARNING : Level.FINEST;
-			Logger.getLogger(getClass().getName()).log(level, message, cause);
-		}
-		catch (Exception ex) {
-			if (warning) {
-				System.err.println("WARNING: " + message);
+			if (jarContextUrl != null) {
+				return new URL(jarContextUrl, url.toExternalForm()).openConnection();
 			}
 		}
+		catch (Exception ex) {
+		}
+		return null;
+	}
+
+	/**
+	 * Attempt to open a fallback connection by using reflection to access Java's default
+	 * jar {@link URLStreamHandler}.
+	 * @param url the URL to open
+	 * @return the {@link URLConnection}
+	 * @throws Exception if not connection could be opened
+	 */
+	private URLConnection openFallbackHandlerConnection(URL url) throws Exception {
+		URLStreamHandler fallbackHandler = getFallbackHandler();
+		return new URL(null, url.toExternalForm(), fallbackHandler).openConnection();
 	}
 
 	private URLStreamHandler getFallbackHandler() {
@@ -142,8 +166,16 @@ public class Handler extends URLStreamHandler {
 		throw new IllegalStateException("Unable to find fallback handler");
 	}
 
-	private URLConnection openConnection(URLStreamHandler handler, URL url) throws Exception {
-		return new URL(null, url.toExternalForm(), handler).openConnection();
+	private void log(boolean warning, String message, Exception cause) {
+		try {
+			Level level = warning ? Level.WARNING : Level.FINEST;
+			Logger.getLogger(getClass().getName()).log(level, message, cause);
+		}
+		catch (Exception ex) {
+			if (warning) {
+				System.err.println("WARNING: " + message);
+			}
+		}
 	}
 
 	@Override
@@ -331,6 +363,53 @@ public class Handler extends URLStreamHandler {
 			rootFileCache = new SoftReference<>(cache);
 		}
 		cache.put(sourceFile, jarFile);
+	}
+
+	/**
+	 * If possible, capture a URL that is configured with the original jar handler so that
+	 * we can use it as a fallback context later. We can only do this if we know that we
+	 * can reset the handlers after.
+	 */
+	static void captureJarContextUrl() {
+		if (canResetCachedUrlHandlers()) {
+			String handlers = System.getProperty(PROTOCOL_HANDLER, "");
+			try {
+				System.clearProperty(PROTOCOL_HANDLER);
+				try {
+					resetCachedUrlHandlers();
+					jarContextUrl = new URL("jar:file:context.jar!/");
+					URLConnection connection = jarContextUrl.openConnection();
+					if (connection instanceof JarURLConnection) {
+						jarContextUrl = null;
+					}
+				}
+				catch (Exception ex) {
+				}
+			}
+			finally {
+				if (handlers == null) {
+					System.clearProperty(PROTOCOL_HANDLER);
+				}
+				else {
+					System.setProperty(PROTOCOL_HANDLER, handlers);
+				}
+			}
+			resetCachedUrlHandlers();
+		}
+	}
+
+	private static boolean canResetCachedUrlHandlers() {
+		try {
+			resetCachedUrlHandlers();
+			return true;
+		}
+		catch (Error ex) {
+			return false;
+		}
+	}
+
+	private static void resetCachedUrlHandlers() {
+		URL.setURLStreamHandlerFactory(null);
 	}
 
 	/**
