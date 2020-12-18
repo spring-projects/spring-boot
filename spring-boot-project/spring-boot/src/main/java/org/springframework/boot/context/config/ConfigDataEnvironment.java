@@ -22,10 +22,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 
 import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.BootstrapRegistry.Scope;
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributors.BinderOption;
@@ -220,16 +222,19 @@ class ConfigDataEnvironment {
 	void processAndApply() {
 		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, this.notFoundAction, this.resolvers,
 				this.loaders);
-		this.bootstrapContext.register(Binder.class, InstanceSupplier
-				.from(() -> this.contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE)));
+		registerBootstrapBinder(() -> this.contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE));
 		ConfigDataEnvironmentContributors contributors = processInitial(this.contributors, importer);
 		Binder initialBinder = contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
-		this.bootstrapContext.register(Binder.class, InstanceSupplier.of(initialBinder));
+		registerBootstrapBinder(() -> initialBinder);
 		ConfigDataActivationContext activationContext = createActivationContext(initialBinder);
 		contributors = processWithoutProfiles(contributors, importer, activationContext);
 		activationContext = withProfiles(contributors, activationContext);
 		contributors = processWithProfiles(contributors, importer, activationContext);
 		applyToEnvironment(contributors, activationContext);
+	}
+
+	private void registerBootstrapBinder(Supplier<Binder> supplier) {
+		this.bootstrapContext.register(Binder.class, InstanceSupplier.from(supplier).withScope(Scope.PROTOTYPE));
 	}
 
 	private ConfigDataEnvironmentContributors processInitial(ConfigDataEnvironmentContributors contributors,
