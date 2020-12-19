@@ -2531,7 +2531,7 @@ Gradle users can achieve the same result by using the https://plugins.gradle.org
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "2.2.2"
+		id "com.gorylenko.gradle-git-properties" version "2.2.4"
 	}
 ----
 
