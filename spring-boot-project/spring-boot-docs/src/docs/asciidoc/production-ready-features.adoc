@@ -1122,6 +1122,13 @@ If you want to display the full git information (that is, the full content of `g
 	management.info.git.mode=full
 ----
 
+To disable the git commit information from the `info` endpoint completely, set the configprop:management.info.git.enabled[] property to `false`, as follows:
+
+[source,properties,indent=0,configprops]
+----
+	management.info.git.enabled=false
+----
+
 
 
 [[production-ready-application-info-build]]
