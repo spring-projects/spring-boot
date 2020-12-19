@@ -1177,11 +1177,13 @@ Assuming you use Maven, you could rewrite the preceding example as follows:
 [[production-ready-application-info-git]]
 ==== Git Commit Information
 Another useful feature of the `info` endpoint is its ability to publish information about the state of your `git` source code repository when the project was built.
-If a `GitProperties` bean is available, the `git.branch`, `git.commit.id`, and `git.commit.time` properties are exposed.
+If a `GitProperties` bean is available, the `info` endpoint can be used to expose these properties.
 
 TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
 See "<<howto.adoc#howto-git-info,Generate git information>>" for more details.
 
+By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.time` properties, if present.
+If you don't want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
 If you want to display the full git information (that is, the full content of `git.properties`), use the configprop:management.info.git.mode[] property, as follows:
 
 [source,yaml,indent=0,configprops,configblocks]
