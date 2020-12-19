@@ -41,6 +41,7 @@ class TestConfigDataBootstrap {
 
 		@Override
 		public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
+			context.getBootstrapContext().get(Binder.class); // gh-24559
 			return location.hasPrefix("testbootstrap:");
 		}
 
