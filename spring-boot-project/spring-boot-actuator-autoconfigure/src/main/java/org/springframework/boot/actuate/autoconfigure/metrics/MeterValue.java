@@ -108,6 +108,7 @@ public final class MeterValue {
 	 * Return a new {@link MeterValue} instance for the given double value.
 	 * @param value the source value
 	 * @return a {@link MeterValue} instance
+	 * @since 2.3.0
 	 */
 	public static MeterValue valueOf(double value) {
 		return new MeterValue(value);
@@ -115,9 +116,9 @@ public final class MeterValue {
 
 	private static Double safeParseDouble(String value) {
 		try {
-			return Double.parseDouble(value);
+			return Double.valueOf(value);
 		}
-		catch (NumberFormatException nfe) {
+		catch (NumberFormatException ex) {
 			return null;
 		}
 	}
