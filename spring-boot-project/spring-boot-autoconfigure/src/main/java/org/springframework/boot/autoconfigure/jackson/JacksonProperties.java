@@ -51,7 +51,7 @@ public class JacksonProperties {
 
 	/**
 	 * One of the constants on Jackson's PropertyNamingStrategies. Can also be a
-	 * fully-qualified class name of a PropertyNamingStrategy subclass.
+	 * fully-qualified class name of a PropertyNamingStrategy implementation.
 	 */
 	private String propertyNamingStrategy;
 
