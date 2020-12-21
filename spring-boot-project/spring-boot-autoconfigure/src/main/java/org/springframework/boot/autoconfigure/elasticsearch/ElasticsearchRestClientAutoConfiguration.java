@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
+import java.time.temporal.TemporalUnit;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -31,6 +32,8 @@ import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
 
+import org.elasticsearch.client.sniff.Sniffer;
+import org.elasticsearch.client.sniff.SnifferBuilder;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -78,6 +81,17 @@ public class ElasticsearchRestClientAutoConfiguration {
 			});
 			builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 			return builder;
+		}
+
+		@Bean
+		Sniffer elasticsearchSnifferBuilder(ElasticsearchSnifferProperties properties,
+											RestClient elasticSearchRestClient) {
+			return Sniffer.builder(elasticSearchRestClient)
+					.setSniffIntervalMillis(
+							Math.toIntExact(properties.getSniffInterval().getSeconds() * 1000))
+					.setSniffAfterFailureDelayMillis(
+							Math.toIntExact(properties.getSniffFailureDelay().getSeconds() * 1000))
+					.build();
 		}
 
 		private HttpHost createHttpHost(String uri) {

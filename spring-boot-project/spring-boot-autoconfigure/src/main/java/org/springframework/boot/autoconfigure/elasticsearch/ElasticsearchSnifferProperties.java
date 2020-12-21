@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.elasticsearch.sniff;
+package org.springframework.boot.autoconfigure.elasticsearch;
 
 import org.elasticsearch.client.sniff.NodesSniffer;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -25,34 +25,33 @@ import java.util.Collections;
 import java.util.List;
 
 /**
- * Configuration properties for Elasticsearch sniffer.
  *
  */
 @ConfigurationProperties(prefix = "spring.elasticsearch.sniff")
 public class ElasticsearchSnifferProperties {
 
 	/**
-	 * Sniffer interval millis
+	 * Sniffer interval
 	 */
-	private Duration sniffIntervalMillis = Duration.ofMillis(1L);
+	private Duration sniffInterval = Duration.ofMinutes(5L);
 	/**
-	 * Sniffer failure delay millis.
+	 * Sniffer failure delay.
 	 */
-	private Duration sniffFailureDelayMillis = Duration.ofMillis(1L);
+	private Duration sniffFailureDelay = Duration.ofMinutes(1L);
 
-	public Duration getSniffIntervalMillis() {
-		return sniffIntervalMillis;
+	public Duration getSniffInterval() {
+		return sniffInterval;
 	}
 
-	public void setSniffIntervalMillis(Duration sniffIntervalMillis) {
-		this.sniffIntervalMillis = sniffIntervalMillis;
+	public void setSniffInterval(Duration sniffInterval) {
+		this.sniffInterval = sniffInterval;
 	}
 
-	public Duration getSniffFailureDelayMillis() {
-		return sniffFailureDelayMillis;
+	public Duration getSniffFailureDelay() {
+		return sniffFailureDelay;
 	}
 
-	public void setSniffFailureDelayMillis(Duration sniffFailureDelayMillis) {
-		this.sniffFailureDelayMillis = sniffFailureDelayMillis;
+	public void setSniffFailureDelay(Duration sniffFailureDelay) {
+		this.sniffFailureDelay = sniffFailureDelay;
 	}
 }

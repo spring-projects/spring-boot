@@ -16,8 +16,10 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpHost;
@@ -34,6 +36,10 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.sniff.NodesSniffer;
+import org.elasticsearch.client.sniff.Sniffer;
+import org.elasticsearch.client.sniff.SnifferBuilder;
+import org.junit.Assert;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -218,6 +224,37 @@ class ElasticsearchRestClientAutoConfigurationTests {
 								assertThat(defaultCredentials.getPassword()).isEqualTo("admin");
 							});
 				});
+	}
+
+	@Test
+	void configureShouldOnlyCreateSnifferInstance() {
+		this.contextRunner.run(
+				(context) -> assertThat(context).doesNotHaveBean(RestClient.class)
+				.hasSingleBean(RestHighLevelClient.class));
+		this.contextRunner.run(
+				(context) -> assertThat(context).hasSingleBean(Sniffer.class));
+	}
+
+	@Test
+	void configureShouldHaveSnifferInstance() {
+		this.contextRunner.run(
+				(context) -> assertThat(context).doesNotHaveBean(RestClient.class)
+						.hasSingleBean(RestHighLevelClient.class));
+		this.contextRunner.run(
+				(context) -> {
+					assertThat(context).hasSingleBean(Sniffer.class);
+					Sniffer sniffer = context.getBean(Sniffer.class);
+					Assert.assertNotNull(sniffer);
+				});
+	}
+
+	@Test
+	void configureWithCustomSetIntervalProperties() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.sniff.sniffInterval=15s, " +
+				"spring.elasticsearch.sniff.sniffFailureDelay=15s").run((context) -> {
+			Sniffer sniffer = context.getBean(Sniffer.class);
+			Assert.assertNotNull(sniffer);
+			});
 	}
 
 	@Configuration(proxyBeanMethods = false)
