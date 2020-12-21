@@ -353,6 +353,10 @@
       "defaultValue": "org.springframework.boot:type=Admin,name=SpringApplication"
     },
     {
+      "name": "spring.artemis.broker-url",
+      "defaultValue": "tcp://localhost:61616"
+    },
+    {
       "name": "spring.artemis.pool.maximum-active-session-per-connection",
       "deprecation": {
         "replacement": "spring.artemis.pool.max-sessions-per-connection"

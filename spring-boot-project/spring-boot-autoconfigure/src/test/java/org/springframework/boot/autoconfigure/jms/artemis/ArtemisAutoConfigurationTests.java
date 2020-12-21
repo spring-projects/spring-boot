@@ -124,20 +124,31 @@ class ArtemisAutoConfigurationTests {
 	}
 
 	@Test
-	void nativeConnectionFactoryCustomHost() {
+	void nativeConnectionFactoryCustomBrokerUrl() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.host:192.168.1.144",
-						"spring.artemis.port:9876", "spring.artemis.broker-url: ")
+				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.broker-url:tcp://192.168.1.144:9876")
 				.run((context) -> assertNettyConnectionFactory(
 						getActiveMQConnectionFactory(getConnectionFactory(context)), "192.168.1.144", 9876));
 	}
 
 	@Test
-	void nativeConnectionFactoryCustomUrl() {
+	@Deprecated
+	void nativeConnectionFactoryCustomHost() {
 		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
-				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.broker-url:tcp://192.168.1.144:9876")
+				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.host:192.168.1.144",
+						"spring.artemis.port:9876")
 				.run((context) -> assertNettyConnectionFactory(
 						getActiveMQConnectionFactory(getConnectionFactory(context)), "192.168.1.144", 9876));
+	}
+
+	@Test
+	@Deprecated
+	void nativeConnectionFactoryCustomBrokerUrlAndHost() {
+		this.contextRunner.withUserConfiguration(EmptyConfiguration.class)
+				.withPropertyValues("spring.artemis.mode:native", "spring.artemis.host:192.168.1.144",
+						"spring.artemis.port:9876", "spring.artemis.broker-url=tcp://192.168.1.221:6543")
+				.run((context) -> assertNettyConnectionFactory(
+						getActiveMQConnectionFactory(getConnectionFactory(context)), "192.168.1.221", 6543));
 	}
 
 	@Test
