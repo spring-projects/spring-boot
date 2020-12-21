@@ -27,12 +27,12 @@ import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.Version;
-import de.flapdoodle.embed.process.config.IRuntimeConfig;
-import de.flapdoodle.embed.process.config.store.IDownloadConfig;
+import de.flapdoodle.embed.process.config.RuntimeConfig;
+import de.flapdoodle.embed.process.config.store.DownloadConfig;
 import org.bson.Document;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -143,7 +143,7 @@ class EmbeddedMongoAutoConfigurationTests {
 	@Test
 	void defaultStorageConfiguration() {
 		load(MongoClientConfiguration.class);
-		Storage replication = this.context.getBean(IMongodConfig.class).replication();
+		Storage replication = this.context.getBean(MongodConfig.class).replication();
 		assertThat(replication.getOplogSize()).isEqualTo(0);
 		assertThat(replication.getDatabaseDir()).isNull();
 		assertThat(replication.getReplSetName()).isNull();
@@ -161,26 +161,26 @@ class EmbeddedMongoAutoConfigurationTests {
 	@Test
 	void customOpLogSizeIsAppliedToConfiguration() {
 		load("spring.mongodb.embedded.storage.oplogSize=1024KB");
-		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize()).isEqualTo(1);
+		assertThat(this.context.getBean(MongodConfig.class).replication().getOplogSize()).isEqualTo(1);
 	}
 
 	@Test
 	void customOpLogSizeUsesMegabytesPerDefault() {
 		load("spring.mongodb.embedded.storage.oplogSize=10");
-		assertThat(this.context.getBean(IMongodConfig.class).replication().getOplogSize()).isEqualTo(10);
+		assertThat(this.context.getBean(MongodConfig.class).replication().getOplogSize()).isEqualTo(10);
 	}
 
 	@Test
 	void customReplicaSetNameIsAppliedToConfiguration() {
 		load("spring.mongodb.embedded.storage.replSetName=testing");
-		assertThat(this.context.getBean(IMongodConfig.class).replication().getReplSetName()).isEqualTo("testing");
+		assertThat(this.context.getBean(MongodConfig.class).replication().getReplSetName()).isEqualTo("testing");
 	}
 
 	@Test
 	void customizeDownloadConfiguration() {
 		load(DownloadConfigBuilderCustomizerConfiguration.class);
-		IRuntimeConfig runtimeConfig = this.context.getBean(IRuntimeConfig.class);
-		IDownloadConfig downloadConfig = (IDownloadConfig) new DirectFieldAccessor(runtimeConfig.getArtifactStore())
+		RuntimeConfig runtimeConfig = this.context.getBean(RuntimeConfig.class);
+		DownloadConfig downloadConfig = (DownloadConfig) new DirectFieldAccessor(runtimeConfig.artifactStore())
 				.getPropertyValue("downloadConfig");
 		assertThat(downloadConfig.getUserAgent()).isEqualTo("Test User Agent");
 	}
@@ -265,7 +265,7 @@ class EmbeddedMongoAutoConfigurationTests {
 	static class CustomMongoConfiguration {
 
 		@Bean(initMethod = "start", destroyMethod = "stop")
-		MongodExecutable customMongoServer(IRuntimeConfig runtimeConfig, IMongodConfig mongodConfig) {
+		MongodExecutable customMongoServer(RuntimeConfig runtimeConfig, MongodConfig mongodConfig) {
 			MongodStarter mongodStarter = MongodStarter.getInstance(runtimeConfig);
 			return mongodStarter.prepare(mongodConfig);
 		}
