@@ -40,6 +40,7 @@ import de.flapdoodle.embed.process.config.RuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
 import de.flapdoodle.embed.process.config.store.DownloadConfig;
 import de.flapdoodle.embed.process.config.store.ImmutableDownloadConfig;
+import de.flapdoodle.embed.process.distribution.Version.GenericVersion;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
 import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
@@ -148,12 +149,14 @@ public class EmbeddedMongoAutoConfiguration {
 					return version;
 				}
 			}
-			return Versions
-					.withFeatures(de.flapdoodle.embed.process.distribution.Version.of(embeddedProperties.getVersion()));
+			return Versions.withFeatures(createEmbeddedMongoVersion(embeddedProperties));
 		}
-		return Versions.withFeatures(
-				de.flapdoodle.embed.process.distribution.Version.of(embeddedProperties.getVersion()),
+		return Versions.withFeatures(createEmbeddedMongoVersion(embeddedProperties),
 				embeddedProperties.getFeatures().toArray(new Feature[0]));
+	}
+
+	private GenericVersion createEmbeddedMongoVersion(EmbeddedMongoProperties embeddedProperties) {
+		return de.flapdoodle.embed.process.distribution.Version.of(embeddedProperties.getVersion());
 	}
 
 	private InetAddress getHost() throws UnknownHostException {
@@ -200,7 +203,6 @@ public class EmbeddedMongoAutoConfiguration {
 			ProcessOutput processOutput = new ProcessOutput(Processors.logTo(logger, Slf4jLevel.INFO),
 					Processors.logTo(logger, Slf4jLevel.ERROR),
 					Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
-
 			return Defaults.runtimeConfigFor(Command.MongoD, logger).processOutput(processOutput)
 					.artifactStore(getArtifactStore(logger, downloadConfigBuilderCustomizers.orderedStream()))
 					.isDaemonProcess(false).build();
