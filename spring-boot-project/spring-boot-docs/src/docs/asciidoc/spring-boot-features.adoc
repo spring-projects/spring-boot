@@ -5739,16 +5739,16 @@ By default, ActiveMQ creates a destination if it does not yet exist so that dest
 
 
 [[boot-features-artemis]]
-==== Artemis Support
-Spring Boot can auto-configure a `ConnectionFactory` when it detects that https://activemq.apache.org/components/artemis/[Artemis] is available on the classpath.
+==== ActiveMQ Artemis Support
+Spring Boot can auto-configure a `ConnectionFactory` when it detects that https://activemq.apache.org/components/artemis/[ActiveMQ Artemis] is available on the classpath.
 If the broker is present, an embedded broker is automatically started and configured (unless the mode property has been explicitly set).
 The supported modes are `embedded` (to make explicit that an embedded broker is required and that an error should occur if the broker is not available on the classpath) and `native` (to connect to a broker using the `netty` transport protocol).
 When the latter is configured, Spring Boot configures a `ConnectionFactory` that connects to a broker running on the local machine with the default settings.
 
-NOTE: If you use `spring-boot-starter-artemis`, the necessary dependencies to connect to an existing Artemis instance are provided, as well as the Spring infrastructure to integrate with JMS.
+NOTE: If you use `spring-boot-starter-artemis`, the necessary dependencies to connect to an existing ActiveMQ Artemis instance are provided, as well as the Spring infrastructure to integrate with JMS.
 Adding `org.apache.activemq:artemis-jms-server` to your application lets you use embedded mode.
 
-Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
+ActiveMQ Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
 
 [source,yaml,indent=0,configprops,configblocks]
@@ -5756,8 +5756,7 @@ For example, you might declare the following section in `application.properties`
 	spring:
 	  artemis:
 	    mode: native
-	    host: "192.168.1.210"
-	    port: 9876
+	    broker-url: "tcp://192.168.1.210:9876"
 	    user: "admin"
 	    password: "secret"
 ----
