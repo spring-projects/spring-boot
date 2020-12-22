@@ -60,6 +60,11 @@ class JarTypeFilterTests {
 		assertThat(new JarTypeFilter().filter(createArtifact("annotation-processor"))).isTrue();
 	}
 
+	@Test
+	void whenArtifactHasNoManifestFileThenItIsIncluded() {
+		assertThat(new JarTypeFilter().filter(createArtifactWithNoManifest())).isFalse();
+	}
+
 	private Artifact createArtifact(String jarType) {
 		Path jarPath = this.temp.resolve("test.jar");
 		Manifest manifest = new Manifest();
@@ -69,6 +74,19 @@ class JarTypeFilterTests {
 		}
 		try {
 			new JarOutputStream(new FileOutputStream(jarPath.toFile()), manifest).close();
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		Artifact artifact = mock(Artifact.class);
+		given(artifact.getFile()).willReturn(jarPath.toFile());
+		return artifact;
+	}
+
+	private Artifact createArtifactWithNoManifest() {
+		Path jarPath = this.temp.resolve("test.jar");
+		try {
+			new JarOutputStream(new FileOutputStream(jarPath.toFile())).close();
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

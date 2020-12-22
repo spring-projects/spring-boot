@@ -20,8 +20,10 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
 
@@ -43,8 +45,9 @@ class JarTypeFilter extends DependencyFilter {
 	@Override
 	protected boolean filter(Artifact artifact) {
 		try (JarFile jarFile = new JarFile(artifact.getFile())) {
-			String jarType = jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Jar-Type");
-			return jarType != null && EXCLUDED_JAR_TYPES.contains(jarType);
+			return Optional.ofNullable(jarFile.getManifest()).map(Manifest::getMainAttributes)
+					.map((attributes) -> attributes.getValue("Spring-Boot-Jar-Type")).map(EXCLUDED_JAR_TYPES::contains)
+					.orElse(Boolean.FALSE);
 		}
 		catch (IOException ex) {
 			return false;
