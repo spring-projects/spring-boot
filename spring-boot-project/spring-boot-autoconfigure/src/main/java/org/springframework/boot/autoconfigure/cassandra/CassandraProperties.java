@@ -105,6 +105,11 @@ public class CassandraProperties {
 	 */
 	private final Request request = new Request();
 
+	/**
+	 * Control connection configuration.
+	 */
+	private final Controlconnection controlconnection = new Controlconnection();
+
 	public String getKeyspaceName() {
 		return this.keyspaceName;
 	}
@@ -259,6 +264,10 @@ public class CassandraProperties {
 		return this.request;
 	}
 
+	public Controlconnection getControlconnection() {
+		return this.controlconnection;
+	}
+
 	public static class Connection {
 
 		/**
@@ -382,6 +391,23 @@ public class CassandraProperties {
 
 		public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
+		}
+
+	}
+
+	public static class Controlconnection {
+
+		/**
+		 * Timeout to use for control queries.
+		 */
+		private Duration timeout = Duration.ofSeconds(5);
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
 		}
 
 	}
