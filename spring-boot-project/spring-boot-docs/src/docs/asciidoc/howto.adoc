@@ -2434,19 +2434,15 @@ You can switch on the valve by adding some entries to `application.properties`, 
 (The presence of either of those properties switches on the valve.
 Alternatively, you can add the `RemoteIpValve` by adding a `TomcatServletWebServerFactory` bean.)
 
-To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `WebSecurityConfigurerAdapter` that adds the following `HttpSecurity` configuration:
+To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `SecurityFilterChain` bean that adds the following `HttpSecurity` configuration:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class SslWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			// Customize the application security
-			http.requiresChannel().anyRequest().requiresSecure();
-		}
-
+	@Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        // Customize the application security
+		http.requiresChannel().anyRequest().requiresSecure();
+        return http.build();
 	}
 ----
 

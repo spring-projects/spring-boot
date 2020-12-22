@@ -359,16 +359,12 @@ A typical Spring Security configuration might look something like the following 
 
 [source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
-					requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
-			http.httpBasic();
-		}
-
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+                requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
+        http.httpBasic();
+        return http.build();
 	}
 ----
 
@@ -392,17 +388,16 @@ Additionally, if Spring Security is present, you would need to add custom securi
 
 [source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
 				requests.anyRequest().permitAll());
-		}
-
-	}
+        return http.build();
+    }
 ----
+
+NOTE: In both the examples above, the configuration applies only to the actuator endpoints.
+Since Spring Boot's security configuration backs off completely in the presence of any `SecurityFilterChain` bean, you will need to configure an additional `SecurityFilterChain` bean with rules that apply to the rest of the application.
 
 
 
