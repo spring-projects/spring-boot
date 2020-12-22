@@ -512,6 +512,14 @@
       "defaultValue": "none"
     },
     {
+      "name": "spring.data.cassandra.connection.connection-timeout",
+      "defaultValue": "5s"
+    },
+    {
+      "name": "spring.data.cassandra.connection.init-query-timeout",
+      "defaultValue": "5s"
+    },
+    {
       "name": "spring.data.cassandra.contact-points",
       "defaultValue": [
         "127.0.0.1:9042"
@@ -566,6 +574,14 @@
       "defaultValue": "auto"
     },
     {
+      "name": "spring.data.cassandra.request.page-size",
+      "defaultValue": 5000
+    },
+    {
+      "name": "spring.data.cassandra.request.timeout",
+      "defaultValue": "2s"
+    },
+    {
       "name": "spring.data.cassandra.request.throttler.type",
       "defaultValue": "none"
     },
@@ -576,6 +592,14 @@
       "deprecation": {
         "level": "error"
       }
+    },
+    {
+      "name": "spring.data.cassandra.pool.heartbeat-interval",
+      "defaultValue": "30s"
+    },
+    {
+      "name": "spring.data.cassandra.pool.idle-timeout",
+      "defaultValue": "5s"
     },
     {
       "name": "spring.data.couchbase.consistency",

@@ -4554,7 +4554,9 @@ If you need to configure the port, use `spring.data.cassandra.port`.
 ====
 The Cassandra driver has its own configuration infrastructure that loads an `application.conf` at the root of the classpath.
 
-Spring Boot does not look for such a file and rather provides a number of configuration properties via the `spring.data.cassandra.*` namespace.
+Spring Boot does not look for such a file by default but can load one using `spring.data.cassandra.config`.
+If a property is both present in `+spring.data.cassandra.*+` and the configuration file, the value in `+spring.data.cassandra.*+` takes precedence.
+
 For more advanced driver customizations, you can register an arbitrary number of beans that implement `DriverConfigLoaderBuilderCustomizer`.
 The `CqlSession` can be customized with a bean of type `CqlSessionBuilderCustomizer`.
 ====

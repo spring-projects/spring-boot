@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import java.time.Duration;
+
 import com.datastax.oss.driver.api.core.config.OptionsMap;
 import com.datastax.oss.driver.api.core.config.TypedDriverOption;
 import org.junit.jupiter.api.Test;
@@ -26,27 +28,34 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link CassandraProperties}.
  *
  * @author Chris Bono
+ * @author Stephane Nicoll
  */
 class CassandraPropertiesTests {
 
+	/**
+	 * To let a configuration file override values, {@link CassandraProperties} can't have
+	 * any default hardcoded. This test makes sure that the default that we moved to
+	 * manual meta-data are accurate.
+	 */
 	@Test
-	void defaultValuesAreConsistent() {
-		CassandraProperties properties = new CassandraProperties();
+	void defaultValuesInManualMetadataAreConsistent() {
 		OptionsMap driverDefaults = OptionsMap.driverDefaults();
-		assertThat(properties.getConnection().getConnectTimeout())
-				.isEqualTo(driverDefaults.get(TypedDriverOption.CONNECTION_CONNECT_TIMEOUT));
-		assertThat(properties.getConnection().getInitQueryTimeout())
-				.isEqualTo(driverDefaults.get(TypedDriverOption.CONNECTION_INIT_QUERY_TIMEOUT));
-		assertThat(properties.getRequest().getTimeout())
-				.isEqualTo(driverDefaults.get(TypedDriverOption.REQUEST_TIMEOUT));
-		assertThat(properties.getRequest().getPageSize())
-				.isEqualTo(driverDefaults.get(TypedDriverOption.REQUEST_PAGE_SIZE));
-		assertThat(properties.getRequest().getThrottler().getType().type())
-				.isEqualTo(driverDefaults.get(TypedDriverOption.REQUEST_THROTTLER_CLASS));
-		assertThat(properties.getPool().getHeartbeatInterval())
-				.isEqualTo(driverDefaults.get(TypedDriverOption.HEARTBEAT_INTERVAL));
-		assertThat(properties.getPool().getIdleTimeout())
-				.isEqualTo(driverDefaults.get(TypedDriverOption.HEARTBEAT_TIMEOUT));
+		// spring.data.cassandra.connection.connection-timeout
+		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_CONNECT_TIMEOUT)).isEqualTo(Duration.ofSeconds(5));
+		// spring.data.cassandra.connection.init-query-timeout
+		assertThat(driverDefaults.get(TypedDriverOption.CONNECTION_INIT_QUERY_TIMEOUT))
+				.isEqualTo(Duration.ofSeconds(5));
+		// spring.data.cassandra.request.timeout
+		assertThat(driverDefaults.get(TypedDriverOption.REQUEST_TIMEOUT)).isEqualTo(Duration.ofSeconds(2));
+		// spring.data.cassandra.request.page-size
+		assertThat(driverDefaults.get(TypedDriverOption.REQUEST_PAGE_SIZE)).isEqualTo(5000);
+		// spring.data.cassandra.request.throttler.type
+		assertThat(driverDefaults.get(TypedDriverOption.REQUEST_THROTTLER_CLASS))
+				.isEqualTo("PassThroughRequestThrottler"); // "none"
+		// spring.data.cassandra.pool.heartbeat-interval
+		assertThat(driverDefaults.get(TypedDriverOption.HEARTBEAT_INTERVAL)).isEqualTo(Duration.ofSeconds(30));
+		// spring.data.cassandra.pool.idle-timeout
+		assertThat(driverDefaults.get(TypedDriverOption.HEARTBEAT_TIMEOUT)).isEqualTo(Duration.ofSeconds(5));
 	}
 
 }

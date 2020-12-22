@@ -24,6 +24,7 @@ import java.util.List;
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.core.io.Resource;
 
 /**
  * Configuration properties for Cassandra.
@@ -36,6 +37,11 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
 public class CassandraProperties {
+
+	/**
+	 * Location of the configuration file to use.
+	 */
+	private Resource config;
 
 	/**
 	 * Keyspace name to use.
@@ -108,6 +114,14 @@ public class CassandraProperties {
 	 * Control connection configuration.
 	 */
 	private final Controlconnection controlconnection = new Controlconnection();
+
+	public Resource getConfig() {
+		return this.config;
+	}
+
+	public void setConfig(Resource config) {
+		this.config = config;
+	}
 
 	public String getKeyspaceName() {
 		return this.keyspaceName;
@@ -206,13 +220,13 @@ public class CassandraProperties {
 		/**
 		 * Timeout to use when establishing driver connections.
 		 */
-		private Duration connectTimeout = Duration.ofSeconds(5);
+		private Duration connectTimeout;
 
 		/**
 		 * Timeout to use for internal queries that run as part of the initialization
 		 * process, just after a connection is opened.
 		 */
-		private Duration initQueryTimeout = Duration.ofSeconds(5);
+		private Duration initQueryTimeout;
 
 		public Duration getConnectTimeout() {
 			return this.connectTimeout;
@@ -237,7 +251,7 @@ public class CassandraProperties {
 		/**
 		 * How long the driver waits for a request to complete.
 		 */
-		private Duration timeout = Duration.ofSeconds(2);
+		private Duration timeout;
 
 		/**
 		 * Queries consistency level.
@@ -252,7 +266,7 @@ public class CassandraProperties {
 		/**
 		 * How many rows will be retrieved simultaneously in a single network roundtrip.
 		 */
-		private int pageSize = 5000;
+		private int pageSize;
 
 		private final Throttler throttler = new Throttler();
 
@@ -302,13 +316,13 @@ public class CassandraProperties {
 		/**
 		 * Idle timeout before an idle connection is removed.
 		 */
-		private Duration idleTimeout = Duration.ofSeconds(5);
+		private Duration idleTimeout;
 
 		/**
 		 * Heartbeat interval after which a message is sent on an idle connection to make
 		 * sure it's still alive.
 		 */
-		private Duration heartbeatInterval = Duration.ofSeconds(30);
+		private Duration heartbeatInterval;
 
 		public Duration getIdleTimeout() {
 			return this.idleTimeout;
@@ -350,7 +364,7 @@ public class CassandraProperties {
 		/**
 		 * Request throttling type.
 		 */
-		private ThrottlerType type = ThrottlerType.NONE;
+		private ThrottlerType type;
 
 		/**
 		 * Maximum number of requests that can be enqueued when the throttling threshold

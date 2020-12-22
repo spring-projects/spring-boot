@@ -16,10 +16,13 @@
 
 package org.springframework.boot.autoconfigure.cassandra;
 
+import java.time.Duration;
+
 import com.datastax.oss.driver.api.core.CqlIdentifier;
 import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
+import com.datastax.oss.driver.api.core.config.DriverConfig;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
 import com.datastax.oss.driver.api.core.config.DriverExecutionProfile;
 import com.datastax.oss.driver.internal.core.session.throttling.ConcurrencyLimitingRequestThrottler;
@@ -226,6 +229,31 @@ class CassandraAutoConfigurationTests {
 					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_MAX_QUEUE_SIZE)).isEqualTo(72);
 					assertThat(config.getInt(DefaultDriverOption.REQUEST_THROTTLER_DRAIN_INTERVAL)).isEqualTo(16);
 				});
+	}
+
+	@Test
+	void driverConfigLoaderWithConfigComplementSettings() {
+		String configLocation = "org/springframework/boot/autoconfigure/cassandra/simple.conf";
+		this.contextRunner.withPropertyValues("spring.data.cassandra.session-name=testcluster",
+				"spring.data.cassandra.config=" + configLocation).run((context) -> {
+					assertThat(context).hasSingleBean(DriverConfigLoader.class);
+					assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+							.getString(DefaultDriverOption.SESSION_NAME)).isEqualTo("testcluster");
+					assertThat(context.getBean(DriverConfigLoader.class).getInitialConfig().getDefaultProfile()
+							.getDuration(DefaultDriverOption.REQUEST_TIMEOUT)).isEqualTo(Duration.ofMillis(500));
+				});
+	}
+
+	@Test
+	void driverConfigLoaderWithConfigCreateProfiles() {
+		String configLocation = "org/springframework/boot/autoconfigure/cassandra/profiles.conf";
+		this.contextRunner.withPropertyValues("spring.data.cassandra.config=" + configLocation).run((context) -> {
+			assertThat(context).hasSingleBean(DriverConfigLoader.class);
+			DriverConfig driverConfig = context.getBean(DriverConfigLoader.class).getInitialConfig();
+			assertThat(driverConfig.getProfiles()).containsOnlyKeys("default", "first", "second");
+			assertThat(driverConfig.getProfile("first").getDuration(DefaultDriverOption.REQUEST_TIMEOUT))
+					.isEqualTo(Duration.ofMillis(100));
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
