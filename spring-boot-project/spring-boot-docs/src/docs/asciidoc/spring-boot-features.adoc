@@ -3450,6 +3450,10 @@ public class OAuth2LoginSecurityConfig extends WebSecurityConfigurerAdapter {
 }
 ----
 
+TIP: Spring Boot auto-configures an `InMemoryOAuth2AuthorizedClientService` which is used by Spring Security for the management of client registrations.
+The `InMemoryOAuth2AuthorizedClientService` has limited capabilities and we recommend using it only for development environments.
+For production environments, consider using a `JdbcOAuth2AuthorizedClientService` or creating your own implementation of `OAuth2AuthorizedClientService`.
+
 
 
 [[boot-features-security-oauth2-common-providers]]
