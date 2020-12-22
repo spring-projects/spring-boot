@@ -93,6 +93,7 @@ public class ArtemisProperties {
 	/**
 	 * Return the host of the broker.
 	 * @return the host
+	 * @deprecated as of 2.5.0 in favor of broker url
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.artemis.broker-url")
@@ -108,6 +109,7 @@ public class ArtemisProperties {
 	/**
 	 * Return the port of the broker.
 	 * @return the port
+	 * @deprecated as of 2.5.0 in favor of broker url
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.artemis.broker-url")
