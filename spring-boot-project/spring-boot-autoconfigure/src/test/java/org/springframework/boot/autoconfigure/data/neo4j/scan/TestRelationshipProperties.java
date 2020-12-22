@@ -16,18 +16,9 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j.scan;
 
-import org.springframework.data.annotation.Persistent;
-import org.springframework.data.neo4j.core.schema.GeneratedValue;
-import org.springframework.data.neo4j.core.schema.Id;
+import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 
-/**
- * @author Gerrit Meier
- */
-@Persistent
-public class AnnotatedWithPersistent {
-
-	@Id
-	@GeneratedValue
-	private Long id;
+@RelationshipProperties
+public class TestRelationshipProperties {
 
 }

@@ -19,10 +19,7 @@ package org.springframework.boot.autoconfigure.data.neo4j.scan;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
 
-/**
- * @author Gerrit Meier
- */
-public class NotAnnotatedEntity {
+public class TestNonAnnotated {
 
 	@Id
 	@GeneratedValue

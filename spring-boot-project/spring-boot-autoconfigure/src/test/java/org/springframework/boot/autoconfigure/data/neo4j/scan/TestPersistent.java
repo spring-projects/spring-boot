@@ -16,15 +16,12 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j.scan;
 
+import org.springframework.data.annotation.Persistent;
 import org.springframework.data.neo4j.core.schema.GeneratedValue;
 import org.springframework.data.neo4j.core.schema.Id;
-import org.springframework.data.neo4j.core.schema.Node;
 
-/**
- * @author Gerrit Meier
- */
-@Node
-public class AnnotatedWithNode {
+@Persistent
+public class TestPersistent {
 
 	@Id
 	@GeneratedValue

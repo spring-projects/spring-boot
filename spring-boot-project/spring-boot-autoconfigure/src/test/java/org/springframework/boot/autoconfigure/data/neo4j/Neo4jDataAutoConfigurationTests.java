@@ -20,10 +20,10 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
-import org.springframework.boot.autoconfigure.data.neo4j.scan.AnnotatedWithNode;
-import org.springframework.boot.autoconfigure.data.neo4j.scan.AnnotatedWithPersistent;
-import org.springframework.boot.autoconfigure.data.neo4j.scan.AnnotatedWithRelationshipProperties;
-import org.springframework.boot.autoconfigure.data.neo4j.scan.NotAnnotatedEntity;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNode;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNonAnnotated;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestPersistent;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestRelationshipProperties;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -145,12 +145,12 @@ class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	void shouldFilterInitialEntityScanWithKnownAnnotations() {
-		this.contextRunner.withUserConfiguration(PackageConfig.class).run((context) -> {
+		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			Neo4jMappingContext mappingContext = context.getBean(Neo4jMappingContext.class);
-			assertThat(mappingContext.hasPersistentEntityFor(AnnotatedWithNode.class)).isTrue();
-			assertThat(mappingContext.hasPersistentEntityFor(AnnotatedWithPersistent.class)).isTrue();
-			assertThat(mappingContext.hasPersistentEntityFor(AnnotatedWithRelationshipProperties.class)).isTrue();
-			assertThat(mappingContext.hasPersistentEntityFor(NotAnnotatedEntity.class)).isFalse();
+			assertThat(mappingContext.hasPersistentEntityFor(TestNode.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestPersistent.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestRelationshipProperties.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestNonAnnotated.class)).isFalse();
 		});
 	}
 
@@ -165,8 +165,8 @@ class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(AnnotatedWithPersistent.class)
-	static class PackageConfig {
+	@TestAutoConfigurationPackage(TestPersistent.class)
+	static class EntityScanConfig {
 
 	}
 
