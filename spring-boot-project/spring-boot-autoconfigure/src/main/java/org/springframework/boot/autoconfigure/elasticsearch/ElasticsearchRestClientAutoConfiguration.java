@@ -41,6 +41,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
@@ -84,14 +85,16 @@ public class ElasticsearchRestClientAutoConfiguration {
 		}
 
 		@Bean
-		Sniffer elasticsearchSnifferBuilder(ElasticsearchSnifferProperties properties,
+		@Conditional(IsSnifferAvailableOnClasspathCondition.class)
+		@ConditionalOnMissingBean(RestHighLevelClient.class)
+		Sniffer elasticsearchSnifferBuilder(ElasticsearchRestClientProperties properties,
 											RestClient elasticSearchRestClient) {
 			return Sniffer.builder(elasticSearchRestClient)
 					.setSniffIntervalMillis(
-							Math.toIntExact(properties.getSniffInterval().getSeconds() * 1000))
+							Math.toIntExact(properties.getSniffInterval().toMillis()))
 					.setSniffAfterFailureDelayMillis(
-							Math.toIntExact(properties.getSniffFailureDelay().getSeconds() * 1000))
-					.build();
+							Math.toIntExact(properties.getSniffFailureDelay().toMillis()))
+							.build();
 		}
 
 		private HttpHost createHttpHost(String uri) {

@@ -243,19 +243,33 @@ class ElasticsearchRestClientAutoConfigurationTests {
 		this.contextRunner.run(
 				(context) -> {
 					assertThat(context).hasSingleBean(Sniffer.class);
-					Sniffer sniffer = context.getBean(Sniffer.class);
-					Assert.assertNotNull(sniffer);
+					Assert.assertNotNull(context.getBean(Sniffer.class));
 				});
 	}
 
 	@Test
 	void configureWithCustomSetIntervalProperties() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.sniff.sniffInterval=15s, " +
-				"spring.elasticsearch.sniff.sniffFailureDelay=15s").run((context) -> {
-			Sniffer sniffer = context.getBean(Sniffer.class);
-			Assert.assertNotNull(sniffer);
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.sniffInterval=15s, " +
+				"spring.elasticsearch.rest.sniffFailureDelay=15s").run((context) -> {
+			Assert.assertNotNull(context.getBean(Sniffer.class));
 			});
 	}
+
+	@Test
+	void configureWithNoAutoConfigurationPropertySet() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).doesNotHaveBean(Sniffer.class);
+			Assert.assertNull(context.getBean(Sniffer.class));
+		});
+	}
+
+	@Test
+	void configureWhenCustomSnifferWhenPresent() {
+		this.contextRunner.withBean("customSniffer", Sniffer.class, () -> mock(Sniffer.class))
+				.run((context) -> assertThat(context).hasSingleBean(RestHighLevelClient.class)
+						.hasSingleBean(Sniffer.class).hasBean("customSniffer"));
+	}
+
 
 	@Configuration(proxyBeanMethods = false)
 	static class BuilderCustomizerConfiguration {
