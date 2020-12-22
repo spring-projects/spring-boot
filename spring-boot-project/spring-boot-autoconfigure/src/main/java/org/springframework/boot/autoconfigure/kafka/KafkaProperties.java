@@ -917,7 +917,7 @@ public class KafkaProperties {
 		 * Whether to suppress the entire record from being written to the log when
 		 * retries are being attempted.
 		 */
-		private Boolean onlyLogRecordMetadata;
+		private boolean onlyLogRecordMetadata;
 
 		/**
 		 * Whether the container should fail to start if at least one of the configured
@@ -1021,11 +1021,11 @@ public class KafkaProperties {
 			this.logContainerConfig = logContainerConfig;
 		}
 
-		public Boolean getOnlyLogRecordMetadata() {
+		public boolean isOnlyLogRecordMetadata() {
 			return this.onlyLogRecordMetadata;
 		}
 
-		public void setOnlyLogRecordMetadata(Boolean onlyLogRecordMetadata) {
+		public void setOnlyLogRecordMetadata(boolean onlyLogRecordMetadata) {
 			this.onlyLogRecordMetadata = onlyLogRecordMetadata;
 		}
 

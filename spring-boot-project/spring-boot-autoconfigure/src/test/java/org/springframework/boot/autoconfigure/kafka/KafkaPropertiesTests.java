@@ -47,6 +47,7 @@ class KafkaPropertiesTests {
 	void listenerDefaultValuesAreConsistent() {
 		ContainerProperties container = new ContainerProperties("test");
 		Listener listenerProperties = new KafkaProperties().getListener();
+		assertThat(listenerProperties.isOnlyLogRecordMetadata()).isEqualTo(container.isOnlyLogRecordMetadata());
 		assertThat(listenerProperties.isMissingTopicsFatal()).isEqualTo(container.isMissingTopicsFatal());
 	}
 
