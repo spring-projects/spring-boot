@@ -1662,7 +1662,7 @@ bom {
 			]
 		}
 	}
-	library("Thymeleaf", "3.0.11.RELEASE") {
+	library("Thymeleaf", "3.0.12.RELEASE") {
 		group("org.thymeleaf") {
 			modules = [
 				"thymeleaf",
