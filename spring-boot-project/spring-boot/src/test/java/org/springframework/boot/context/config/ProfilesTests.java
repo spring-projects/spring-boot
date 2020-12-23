@@ -360,7 +360,7 @@ class ProfilesTests {
 	}
 
 	@Test
-	void simpleRecursiveReferenceInProfileGroupThrowsException() {
+	void simpleRecursiveReferenceInProfileGroupIgnoresDuplicates() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setProperty("spring.profiles.active", "a,b,c");
 		environment.setProperty("spring.profiles.group.a", "a,e,f");
