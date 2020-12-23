@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.integrationtest;
 
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.options;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -143,6 +146,29 @@ class WebFluxEndpointCorsIntegrationTests {
 						"management.endpoints.web.cors.allow-credentials:false")
 				.run(withWebTestClient((webTestClient) -> performAcceptedCorsRequest(webTestClient, "/actuator/beans")
 						.expectHeader().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_CREDENTIALS)));
+	}
+
+	@Test
+	void settingAllowedOriginsPattern() {
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.com",
+						"management.endpoints.web.cors.allow-credentials:true")
+				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
+						.header("Origin", "spring.example.com")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD").exchange().expectStatus().isOk()
+						.expectHeader().valueEquals(HttpHeaders.ACCESS_CONTROL_ALLOW_METHODS, "GET,HEAD")));
+	}
+
+	@Test
+	void requestsWithDisallowedOriginPatternsAreRejected() {
+		this.contextRunner
+				.withPropertyValues("management.endpoints.web.cors.allowed-origin-patterns:*.example.com",
+						"management.endpoints.web.cors.allow-credentials:true")
+				.run(withWebTestClient((webTestClient) -> webTestClient.options().uri("/actuator/beans")
+						.header("Origin", "spring.example.org")
+						.header(HttpHeaders.ACCESS_CONTROL_REQUEST_METHOD, "HEAD").exchange().expectStatus()
+						.isForbidden()));
+
 	}
 
 	private ContextConsumer<ReactiveWebApplicationContext> withWebTestClient(Consumer<WebTestClient> webTestClient) {
