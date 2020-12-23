@@ -65,12 +65,12 @@ class JarTypeFilterTests {
 		assertThat(new JarTypeFilter().filter(createArtifactWithNoManifest())).isFalse();
 	}
 
-	private Artifact createArtifact(String jarType) {
+	private Artifact createArtifact(String springBootJarType) {
 		Path jarPath = this.temp.resolve("test.jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-		if (jarType != null) {
-			manifest.getMainAttributes().putValue("Spring-Boot-Jar-Type", jarType);
+		if (springBootJarType != null) {
+			manifest.getMainAttributes().putValue("Spring-Boot-Jar-Type", springBootJarType);
 		}
 		try {
 			new JarOutputStream(new FileOutputStream(jarPath.toFile()), manifest).close();
@@ -78,9 +78,7 @@ class JarTypeFilterTests {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-		Artifact artifact = mock(Artifact.class);
-		given(artifact.getFile()).willReturn(jarPath.toFile());
-		return artifact;
+		return mockArtifact(jarPath);
 	}
 
 	private Artifact createArtifactWithNoManifest() {
@@ -91,6 +89,10 @@ class JarTypeFilterTests {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		return mockArtifact(jarPath);
+	}
+
+	private Artifact mockArtifact(Path jarPath) {
 		Artifact artifact = mock(Artifact.class);
 		given(artifact.getFile()).willReturn(jarPath.toFile());
 		return artifact;
