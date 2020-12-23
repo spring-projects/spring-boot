@@ -38,9 +38,16 @@ public class CorsEndpointProperties {
 
 	/**
 	 * Comma-separated list of origins to allow. '*' allows all origins. When not set,
-	 * CORS support is disabled.
+	 * CORS support is disabled. When credentials are supported only explicit urls are
+	 * allowed.
 	 */
 	private List<String> allowedOrigins = new ArrayList<>();
+
+	/**
+	 * Comma-separated list of origins patterns to allow. Must be used when credentials
+	 * are supported and do you want to use wildcard urls.
+	 */
+	private List<String> allowedOriginPatterns = new ArrayList<>();
 
 	/**
 	 * Comma-separated list of methods to allow. '*' allows all methods. When not set,
@@ -76,6 +83,14 @@ public class CorsEndpointProperties {
 
 	public void setAllowedOrigins(List<String> allowedOrigins) {
 		this.allowedOrigins = allowedOrigins;
+	}
+
+	public List<String> getAllowedOriginPatterns() {
+		return this.allowedOriginPatterns;
+	}
+
+	public void setAllowedOriginPatterns(List<String> allowedOriginPatterns) {
+		this.allowedOriginPatterns = allowedOriginPatterns;
 	}
 
 	public List<String> getAllowedMethods() {
@@ -119,12 +134,13 @@ public class CorsEndpointProperties {
 	}
 
 	public CorsConfiguration toCorsConfiguration() {
-		if (CollectionUtils.isEmpty(this.allowedOrigins)) {
+		if (CollectionUtils.isEmpty(this.allowedOrigins) && CollectionUtils.isEmpty(this.allowedOriginPatterns)) {
 			return null;
 		}
 		PropertyMapper map = PropertyMapper.get();
 		CorsConfiguration configuration = new CorsConfiguration();
 		map.from(this::getAllowedOrigins).to(configuration::setAllowedOrigins);
+		map.from(this::getAllowedOriginPatterns).to(configuration::setAllowedOriginPatterns);
 		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedHeaders);
 		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedMethods);
 		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setExposedHeaders);
