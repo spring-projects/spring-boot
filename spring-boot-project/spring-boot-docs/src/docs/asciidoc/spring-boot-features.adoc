@@ -4991,9 +4991,9 @@ You can further tune how `Sniffer` is configured, as shown in the following exam
 	spring:
 	  elasticsearch:
 	    rest:
-          sniffer:
-            interval: 10m
-            delay-after-failure: 30s
+	      sniffer:
+	        interval: 10m
+	        delay-after-failure: 30s
 ----
 
 
