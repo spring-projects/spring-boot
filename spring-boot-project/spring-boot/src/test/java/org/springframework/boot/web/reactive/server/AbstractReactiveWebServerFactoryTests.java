@@ -116,6 +116,16 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	void portIsMinusOneWhenConnectionIsClosed() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(this.webServer.getPort()).isGreaterThan(0);
+		this.webServer.stop();
+		assertThat(this.webServer.getPort()).isEqualTo(-1);
+	}
+
+	@Test
 	void basicSslFromClassPath() {
 		testBasicSslWithKeyStore("classpath:test.jks", "password");
 	}
