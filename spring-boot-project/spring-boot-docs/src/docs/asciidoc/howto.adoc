@@ -2439,10 +2439,10 @@ To configure Spring Security to require a secure channel for all (or some) reque
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        // Customize the application security
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		// Customize the application security
 		http.requiresChannel().anyRequest().requiresSecure();
-        return http.build();
+		return http.build();
 	}
 ----
 
