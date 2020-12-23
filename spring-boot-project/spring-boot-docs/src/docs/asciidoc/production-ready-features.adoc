@@ -359,12 +359,12 @@ A typical Spring Security configuration might look something like the following 
 
 [source,java,indent=0]
 ----
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
-                requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
-        http.httpBasic();
-        return http.build();
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+			requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
+		http.httpBasic();
+		return http.build();
 	}
 ----
 
@@ -388,12 +388,12 @@ Additionally, if Spring Security is present, you would need to add custom securi
 
 [source,java,indent=0]
 ----
-    @Bean
-    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-        http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
 				requests.anyRequest().permitAll());
-        return http.build();
-    }
+		return http.build();
+	}
 ----
 
 NOTE: In both the examples above, the configuration applies only to the actuator endpoints.
