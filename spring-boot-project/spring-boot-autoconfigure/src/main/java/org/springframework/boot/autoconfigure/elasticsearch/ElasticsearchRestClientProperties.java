@@ -56,14 +56,6 @@ public class ElasticsearchRestClientProperties {
 	 * Read timeout.
 	 */
 	private Duration readTimeout = Duration.ofSeconds(30);
-	/**
-	 * Sniffer interval
-	 */
-	private Duration sniffInterval = Duration.ofMinutes(5L);
-	/**
-	 * Sniffer failure delay.
-	 */
-	private Duration sniffFailureDelay = Duration.ofMinutes(1L);
 
 	public List<String> getUris() {
 		return this.uris;
@@ -105,19 +97,39 @@ public class ElasticsearchRestClientProperties {
 		this.readTimeout = readTimeout;
 	}
 
-	public Duration getSniffInterval() {
-		return sniffInterval;
+	/**
+	 * Sniffer specific properties.
+	 */
+	public static class Sniffer {
+
+		private Duration readTimeout = Duration.ofSeconds(30);
+
+		/**
+		 * Sniffer interval.
+		 */
+		private static Duration sniffInterval = Duration.ofMinutes(5L);
+
+		/**
+		 * Sniffer failure delay.
+		 */
+		private static Duration sniffFailureDelay = Duration.ofMinutes(1L);
+
+		public static Duration getSniffInterval() {
+			return sniffInterval;
+		}
+
+		public void setSniffInterval(Duration sniffInterval) {
+			Sniffer.sniffInterval = sniffInterval;
+		}
+
+		public static Duration getSniffFailureDelay() {
+			return sniffFailureDelay;
+		}
+
+		public void setSniffFailureDelay(Duration sniffFailureDelay) {
+			Sniffer.sniffFailureDelay = sniffFailureDelay;
+		}
+
 	}
 
-	public void setSniffInterval(Duration sniffInterval) {
-		this.sniffInterval = sniffInterval;
-	}
-
-	public Duration getSniffFailureDelay() {
-		return sniffFailureDelay;
-	}
-
-	public void setSniffFailureDelay(Duration sniffFailureDelay) {
-		this.sniffFailureDelay = sniffFailureDelay;
-	}
 }

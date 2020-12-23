@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.elasticsearch;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.time.Duration;
-import java.time.temporal.TemporalUnit;
 
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -31,9 +30,8 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
-
 import org.elasticsearch.client.sniff.Sniffer;
-import org.elasticsearch.client.sniff.SnifferBuilder;
+
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -41,7 +39,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.util.StringUtils;
 
@@ -85,16 +82,17 @@ public class ElasticsearchRestClientAutoConfiguration {
 		}
 
 		@Bean
-		@Conditional(IsSnifferAvailableOnClasspathCondition.class)
+		@ConditionalOnClass(name = "org.elasticsearch.client.sniff.Sniffer")
 		@ConditionalOnMissingBean(RestHighLevelClient.class)
-		Sniffer elasticsearchSnifferBuilder(ElasticsearchRestClientProperties properties,
-											RestClient elasticSearchRestClient) {
-			return Sniffer.builder(elasticSearchRestClient)
+		Sniffer elasticsearchSniffer(ElasticsearchRestClientProperties properties) {
+			RestClient restClient = new RestHighLevelClient(this.elasticsearchRestClientBuilder(properties, null))
+					.getLowLevelClient();
+			return Sniffer.builder(restClient)
 					.setSniffIntervalMillis(
-							Math.toIntExact(properties.getSniffInterval().toMillis()))
+							Math.toIntExact(ElasticsearchRestClientProperties.Sniffer.getSniffInterval().toMillis()))
 					.setSniffAfterFailureDelayMillis(
-							Math.toIntExact(properties.getSniffFailureDelay().toMillis()))
-							.build();
+							Math.toIntExact(ElasticsearchRestClientProperties.Sniffer.getSniffInterval().toMillis()))
+					.build();
 		}
 
 		private HttpHost createHttpHost(String uri) {

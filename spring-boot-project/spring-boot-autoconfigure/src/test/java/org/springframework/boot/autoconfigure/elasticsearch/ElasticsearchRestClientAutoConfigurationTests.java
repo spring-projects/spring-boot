@@ -16,12 +16,6 @@
 
 package org.springframework.boot.autoconfigure.elasticsearch;
 
-import java.io.IOException;
-import java.time.Duration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.Credentials;
@@ -31,25 +25,22 @@ import org.apache.http.impl.nio.client.HttpAsyncClientBuilder;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.elasticsearch.action.get.GetRequest;
 import org.elasticsearch.action.index.IndexRequest;
-import org.elasticsearch.client.Node;
-import org.elasticsearch.client.RequestOptions;
-import org.elasticsearch.client.RestClient;
-import org.elasticsearch.client.RestClientBuilder;
-import org.elasticsearch.client.RestHighLevelClient;
-import org.elasticsearch.client.sniff.NodesSniffer;
+import org.elasticsearch.client.*;
 import org.elasticsearch.client.sniff.Sniffer;
-import org.elasticsearch.client.sniff.SnifferBuilder;
 import org.junit.Assert;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.testcontainers.elasticsearch.ElasticsearchContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
+
+import java.time.Duration;
+import java.util.HashMap;
+import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -228,31 +219,34 @@ class ElasticsearchRestClientAutoConfigurationTests {
 
 	@Test
 	void configureShouldOnlyCreateSnifferInstance() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(RestClient.class)
-				.hasSingleBean(RestHighLevelClient.class));
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(Sniffer.class));
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Sniffer.class);
+			assertThat(context).doesNotHaveBean(RestClient.class).hasSingleBean(RestHighLevelClient.class);
+		});
 	}
 
 	@Test
 	void configureShouldHaveSnifferInstance() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).doesNotHaveBean(RestClient.class)
-						.hasSingleBean(RestHighLevelClient.class));
-		this.contextRunner.run(
-				(context) -> {
-					assertThat(context).hasSingleBean(Sniffer.class);
-					Assert.assertNotNull(context.getBean(Sniffer.class));
-				});
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Sniffer.class);
+			assertThat(context).doesNotHaveBean(RestClient.class).hasSingleBean(RestHighLevelClient.class);
+			Assert.assertNotNull(context.getBean(Sniffer.class));
+		});
 	}
 
 	@Test
 	void configureWithCustomSetIntervalProperties() {
-		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.sniffInterval=15s, " +
-				"spring.elasticsearch.rest.sniffFailureDelay=15s").run((context) -> {
-			Assert.assertNotNull(context.getBean(Sniffer.class));
-			});
+		this.contextRunner.withPropertyValues(
+				"spring.elasticsearch.rest.sniffInterval=1m, " + "spring.elasticsearch.rest.sniffFailureDelay=1m")
+				.run((context) -> {
+					Assert.assertNotNull(context.getBean(Sniffer.class));
+					assertThat(context).hasSingleBean(RestHighLevelClient.class);
+					RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
+					assertThat(restClient.getLowLevelClient()).extracting("spring.elasticsearch.rest.sniffInterval")
+							.isEqualTo(Math.toIntExact(Duration.ofMinutes(1L).toMillis()));
+					assertThat(restClient.getLowLevelClient()).extracting("spring.elasticsearch.rest.sniffFailureDelay")
+							.isEqualTo(Math.toIntExact(Duration.ofMinutes(1L).toMillis()));
+				});
 	}
 
 	@Test
@@ -269,7 +263,6 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				.run((context) -> assertThat(context).hasSingleBean(RestHighLevelClient.class)
 						.hasSingleBean(Sniffer.class).hasBean("customSniffer"));
 	}
-
 
 	@Configuration(proxyBeanMethods = false)
 	static class BuilderCustomizerConfiguration {
