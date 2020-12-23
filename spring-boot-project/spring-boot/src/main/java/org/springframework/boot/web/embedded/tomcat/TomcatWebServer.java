@@ -364,7 +364,7 @@ public class TomcatWebServer implements WebServer {
 		if (connector != null) {
 			return connector.getLocalPort();
 		}
-		return 0;
+		return -1;
 	}
 
 	private String getContextPath() {

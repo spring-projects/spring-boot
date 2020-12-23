@@ -295,7 +295,7 @@ public class UndertowWebServer implements WebServer {
 	public int getPort() {
 		List<Port> ports = getActualPorts();
 		if (ports.isEmpty()) {
-			return 0;
+			return -1;
 		}
 		return ports.get(0).getNumber();
 	}

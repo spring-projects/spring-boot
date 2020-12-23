@@ -192,7 +192,7 @@ public class NettyWebServer implements WebServer {
 		if (this.disposableServer != null) {
 			return this.disposableServer.port();
 		}
-		return 0;
+		return -1;
 	}
 
 }

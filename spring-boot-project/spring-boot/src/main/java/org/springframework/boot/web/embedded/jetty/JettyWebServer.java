@@ -275,11 +275,13 @@ public class JettyWebServer implements WebServer {
 	@Override
 	public int getPort() {
 		Connector[] connectors = this.server.getConnectors();
+		Integer localPort = -1;
 		for (Connector connector : connectors) {
 			// Probably only one...
-			return getLocalPort(connector);
+			localPort = getLocalPort(connector);
+			break;
 		}
-		return 0;
+		return (localPort > 0) ? localPort : -1;
 	}
 
 	@Override
