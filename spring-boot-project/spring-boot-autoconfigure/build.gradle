@@ -76,6 +76,7 @@ dependencies {
 	optional("org.eclipse.jetty.websocket:javax-websocket-server-impl")
 	optional("org.ehcache:ehcache")
 	optional("org.elasticsearch.client:elasticsearch-rest-client")
+	optional("org.elasticsearch.client:elasticsearch-rest-client-sniffer")
 	optional("org.elasticsearch.client:elasticsearch-rest-high-level-client")
 	optional("org.flywaydb:flyway-core")
 	optional("org.freemarker:freemarker")
