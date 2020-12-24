@@ -911,7 +911,7 @@ public class KafkaProperties {
 		/**
 		 * Whether to log the container configuration during initialization (INFO level).
 		 */
-		private Boolean logContainerConfig;
+		private boolean logContainerConfig;
 
 		/**
 		 * Whether to suppress the entire record from being written to the log when
