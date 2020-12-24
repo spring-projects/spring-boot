@@ -187,13 +187,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	@SuppressWarnings("deprecation")
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:
 			return true;
 		case ON_PARAM:
-		case ON_TRACE_PARAM:
 			return isTraceEnabled(request);
 		default:
 			return false;

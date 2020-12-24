@@ -61,7 +61,7 @@ class ManagementErrorEndpointTests {
 
 	@Test
 	void errorResponseAlwaysDetails() {
-		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ALWAYS);
+		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeAttribute.ALWAYS);
 		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ALWAYS);
 		this.request.addParameter("trace", "false");
 		this.request.addParameter("message", "false");
@@ -74,7 +74,7 @@ class ManagementErrorEndpointTests {
 
 	@Test
 	void errorResponseParamsAbsent() {
-		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_PARAM);
+		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
@@ -84,7 +84,7 @@ class ManagementErrorEndpointTests {
 
 	@Test
 	void errorResponseParamsTrue() {
-		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_PARAM);
+		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.request.addParameter("trace", "true");
 		this.request.addParameter("message", "true");
@@ -97,7 +97,7 @@ class ManagementErrorEndpointTests {
 
 	@Test
 	void errorResponseParamsFalse() {
-		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeStacktrace.ON_PARAM);
+		this.errorProperties.setIncludeStacktrace(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		this.request.addParameter("trace", "false");
 		this.request.addParameter("message", "false");
