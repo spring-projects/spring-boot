@@ -2,12 +2,12 @@
 class Example {
 
 	@Autowired
-	private MyService myService;
+	private MyService myService
 
 	@RequestMapping("/")
 	@ResponseBody
 	public String helloWorld() {
-		return myService.sayWorld();
+		return myService.sayWorld()
 	}
 
 }
@@ -16,6 +16,6 @@ class Example {
 class MyService {
 
 	public String sayWorld() {
-		return "World!";
+		return "World!"
 	}
 }
