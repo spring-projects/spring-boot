@@ -36,7 +36,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 
 	private final Resource resource;
 
-	private boolean emptyDirectory;
+	private final boolean emptyDirectory;
 
 	/**
 	 * Create a new {@link StandardConfigDataResource} instance.
