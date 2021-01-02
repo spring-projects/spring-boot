@@ -83,7 +83,7 @@ import org.springframework.util.StopWatch;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
-/**
+/** 提供了大量的静态方法，可以很容易运行一个独立的 Spring 应用程序 <br>
  * Class that can be used to bootstrap and launch a Spring application from a Java main
  * method. By default class will perform the following steps to bootstrap your
  * application:

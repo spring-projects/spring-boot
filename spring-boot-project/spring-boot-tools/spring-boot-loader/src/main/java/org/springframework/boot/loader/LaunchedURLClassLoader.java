@@ -25,11 +25,15 @@ import java.security.AccessController;
 import java.security.PrivilegedExceptionAction;
 import java.util.Enumeration;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.jar.Handler;
 
-/**
- * {@link ClassLoader} used by the {@link Launcher}.
+/**spring-boot-loader 项目自定义的类加载器
+ * 实现对 jar 包中 {@literal 'BOOT-INF/classes'} 目录下的类
+ * 和 {@literal 'BOOT-INF/lib'} 内嵌的 jar 包中的类的加载，
+ * 也就是加载 jar 包中内嵌的类
+ * <p> {@link ClassLoader} used by the {@link Launcher}.
  *
  * @author Phillip Webb
  * @author Dave Syer
@@ -45,7 +49,10 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	/**
 	 * Create a new {@link LaunchedURLClassLoader} instance.
 	 * @param urls the URLs from which to load classes and resources
+	 *             使用的是 {@link org.springframework.boot.loader.archive.Archive}
+	 *             集合对应的 URL 地址们，从而告诉 {@link LaunchedURLClassLoader} 读取 jar 的地址。
 	 * @param parent the parent class loader for delegation
+	 *               设置 {@link LaunchedURLClassLoader} 的父加载器
 	 */
 	public LaunchedURLClassLoader(URL[] urls, ClassLoader parent) {
 		super(urls, parent);
@@ -77,6 +84,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	protected Class<?> loadClass(String name, boolean resolve) throws ClassNotFoundException {
 		Handler.setUseFastConnectionExceptions(true);
 		try {
+			// 定义包所在的路径
 			try {
 				definePackageIfNecessary(name);
 			}
@@ -89,6 +97,10 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 					throw new AssertionError("Package " + name + " has already been defined but it could not be found");
 				}
 			}
+			/**
+			 * 加载类，调用父类的 {@link ClassLoader#loadClass(String, boolean)}
+			 * 加载 jar 包中内嵌的类
+			 */
 			return super.loadClass(name, resolve);
 		}
 		finally {
@@ -105,8 +117,13 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	private void definePackageIfNecessary(String className) {
 		int lastDot = className.lastIndexOf('.');
 		if (lastDot >= 0) {
+			// 获取类所在的包名
 			String packageName = className.substring(0, lastDot);
 			if (getPackage(packageName) == null) {
+				/**
+				 * 通过父类的 {@link ClassLoader#getPackage(String)} 方法获取不到指定类所在的包时
+				 * 通过遍历 urls 数组，从 jar 包中加载类所在的包
+				 */
 				try {
 					definePackage(className, packageName);
 				}
@@ -127,6 +144,7 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 	private void definePackage(String className, String packageName) {
 		try {
 			AccessController.doPrivileged((PrivilegedExceptionAction<Object>) () -> {
+				// 把类名解析成路径并加上 .class 后缀
 				String packageEntryName = packageName.replace('.', '/') + "/";
 				String classEntryName = className.replace('.', '/') + ".class";
 				for (URL url : getURLs()) {
@@ -136,6 +154,10 @@ public class LaunchedURLClassLoader extends URLClassLoader {
 							JarFile jarFile = ((JarURLConnection) connection).getJarFile();
 							if (jarFile.getEntry(classEntryName) != null && jarFile.getEntry(packageEntryName) != null
 									&& jarFile.getManifest() != null) {
+								/**
+								 * 当找到包时，会调用 {@link URLClassLoader#definePackage(String, Manifest, URL)} 方法，
+								 * 设置包所在的 {@link org.springframework.boot.loader.archive.Archive} 对应的 url。
+								 */
 								definePackage(packageName, jarFile.getManifest(), url);
 								return null;
 							}

@@ -23,8 +23,8 @@ import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.archive.Archive;
 
-/**
- * Base class for executable archive {@link Launcher}s.
+/** 可执行的归档（jar）
+ * <p> Base class for executable archive {@link Launcher}s.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -51,8 +51,14 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 		return this.archive;
 	}
 
+	/**
+	 * 从 jar 包的 MANIFEST.MF 文件的 Start-Class 配置项，获得我们设置的 Spring Boot 的主启动类
+	 * @return
+	 * @throws Exception
+	 */
 	@Override
 	protected String getMainClass() throws Exception {
+		// 获得启动的类的全名
 		Manifest manifest = this.archive.getManifest();
 		String mainClass = null;
 		if (manifest != null) {
@@ -66,7 +72,9 @@ public abstract class ExecutableArchiveLauncher extends Launcher {
 
 	@Override
 	protected List<Archive> getClassPathArchives() throws Exception {
+		// 获得所有 Archive，过滤出满足条件的内嵌归档文件
 		List<Archive> archives = new ArrayList<>(this.archive.getNestedArchives(this::isNestedArchive));
+		// 后续处理
 		postProcessClassPathArchives(archives);
 		return archives;
 	}

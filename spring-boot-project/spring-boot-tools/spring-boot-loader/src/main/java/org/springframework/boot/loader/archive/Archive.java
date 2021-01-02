@@ -24,8 +24,8 @@ import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.Launcher;
 
-/**
- * An archive that can be launched by the {@link Launcher}.
+/** 可以由启动程序启动的归档，定义的归档抽象
+ * <p> An archive that can be launched by the {@link Launcher}.
  *
  * @author Phillip Webb
  * @since 1.0.0
@@ -47,8 +47,8 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	 */
 	Manifest getManifest() throws IOException;
 
-	/**
-	 * Returns nested {@link Archive}s for entries that match the specified filter.
+	/** 获得 archive 内嵌的 Archive 集合
+	 * <p> Returns nested {@link Archive}s for entries that match the specified filter.
 	 * @param filter the filter used to limit entries
 	 * @return nested archives
 	 * @throws IOException if nested archives cannot be read

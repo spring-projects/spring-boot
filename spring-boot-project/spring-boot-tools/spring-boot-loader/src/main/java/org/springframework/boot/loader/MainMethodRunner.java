@@ -43,7 +43,12 @@ public class MainMethodRunner {
 	}
 
 	public void run() throws Exception {
+		// 加载 Spring Boot
+		/**
+		 * 通过 {@link LaunchedURLClassLoader} 类加载器，加载到我们设置的 Spring Boot 的主启动类
+		 */
 		Class<?> mainClass = Thread.currentThread().getContextClassLoader().loadClass(this.mainClassName);
+		// 反射调用 main 方法
 		Method mainMethod = mainClass.getDeclaredMethod("main", String[].class);
 		mainMethod.invoke(null, new Object[] { this.args });
 	}

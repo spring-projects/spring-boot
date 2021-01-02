@@ -35,7 +35,12 @@ import org.springframework.boot.loader.data.RandomAccessData;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 
 /**
- * Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but
+ * {@link java.util.jar.JarFile} 的变体，提供了一下额外的功能：
+ * <ul>
+ *     <li>1、可以根据任何目录条目获得嵌套的 JarFile。</li>
+ *     <li>2、可以为嵌入的 JAR 文件获得嵌套的 JAR 文件(只要它们的条目没有被压缩)。</li>
+ * </ul>
+ * <p> Extended variant of {@link java.util.jar.JarFile} that behaves in the same way but
  * offers the following additional functionality.
  * <ul>
  * <li>A nested {@link JarFile} can be {@link #getNestedJarFile(ZipEntry) obtained} based
@@ -237,8 +242,8 @@ public class JarFile extends java.util.jar.JarFile {
 		return this.entries.getInputStream(name);
 	}
 
-	/**
-	 * Return a nested {@link JarFile} loaded from the specified entry.
+	/**	获取内嵌的 jar 包
+	 * <p> Return a nested {@link JarFile} loaded from the specified entry.
 	 * @param entry the zip entry
 	 * @return a {@link JarFile} for the entry
 	 * @throws IOException if the nested jar file cannot be read
@@ -387,19 +392,36 @@ public class JarFile extends java.util.jar.JarFile {
 		return this.type;
 	}
 
-	/**
-	 * Register a {@literal 'java.protocol.handler.pkgs'} property so that a
+	/** 注册一个 {@literal 'java.protocol.handler.pkgs'} 的属性，注册 Spring Boot
+	 * 自定义的 {@link URLStreamHandler} 实现类，用于 jar 包的加载读取
+	 * <h3>目的</h3>
+	 * 通过将 {@literal 'org.springframework.boot.loader'} 包设置到 {@literal 'java.protocol.handler.pkgs'}
+	 * 环境变量，从而使用到自定义的 {@link URLStreamHandler} 实现类 {@link Handler}，处理 jar: 协议的 URL。
+	 * <p> https://www.iteye.com/blog/mercyblitz-735529
+	 * <p> Register a {@literal 'java.protocol.handler.pkgs'} property so that a
 	 * {@link URLStreamHandler} will be located to deal with jar URLs.
 	 */
 	public static void registerUrlProtocolHandler() {
+		/**
+		 * 获取 {@link URLStreamHandler} 的路径
+		 */
+		// java.protocol.handler.pkgs -> org.springframework.boot.loader
 		String handlers = System.getProperty(PROTOCOL_HANDLER, "");
+		/**
+		 * 将 Spring Boot 自定义的 HANDLERS_PACKAGE(org.springframework.boot.loader) 补充上去
+		 */
+		// java.protocol.handler.pkgs -> org.springframework.boot.loader|org.springframework.boot.loader
 		System.setProperty(PROTOCOL_HANDLER,
 				("".equals(handlers) ? HANDLERS_PACKAGE : handlers + "|" + HANDLERS_PACKAGE));
+		/**
+		 * 重置已缓存的 {@link URLStreamHandler} 处理器们
+		 */
 		resetCachedUrlHandlers();
 	}
 
-	/**
-	 * Reset any cached handlers just in case a jar protocol has already been used. We
+	/**重置 URL 中的 URLStreamHandler 的缓存，防止 `jar://` 协议对应的 {@link URLStreamHandler}
+	 * 已经创建我们通过设置 {@link URLStreamHandlerFactory} 为 null 的方式，清空 URL 中的该缓存。
+	 * <p> Reset any cached handlers just in case a jar protocol has already been used. We
 	 * reset the handler by trying to set a null {@link URLStreamHandlerFactory} which
 	 * should have no effect other than clearing the handlers cache.
 	 */

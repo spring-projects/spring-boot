@@ -34,8 +34,8 @@ import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.jar.JarFile;
 
-/**
- * {@link Archive} implementation backed by a {@link JarFile}.
+/**是针对 jar 包的 {@link Archive} 实现类
+ * <p> {@link Archive} implementation backed by a {@link JarFile}.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
@@ -79,11 +79,26 @@ public class JarFileArchive implements Archive {
 		return this.jarFile.getManifest();
 	}
 
+	/**
+	 * 获得 archive 内嵌的 {@link Archive} 集合，封装为 {@link JarFileArchive}
+	 * 	jar -> BOOT-INF/lib（BOOT-INF/classes）
+	 * @param filter the filter used to limit entries
+	 * @return
+	 * @throws IOException
+	 */
 	@Override
 	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
 		List<Archive> nestedArchives = new ArrayList<>();
+		/**
+		 * 遍历每个 Entry，{@link Archive} 实现了 {@link Iterator} 接口
+		 * 所以可以这么遍历
+		 */
 		for (Entry entry : this) {
+			// 过滤匹配
 			if (filter.matches(entry)) {
+				/**
+				 * 创建 {@link JarFileArchive} 对象
+				 */
 				nestedArchives.add(getNestedArchive(entry));
 			}
 		}
@@ -102,11 +117,15 @@ public class JarFileArchive implements Archive {
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		JarEntry jarEntry = ((JarFileEntry) entry).getJarEntry();
-		if (jarEntry.getComment().startsWith(UNPACK_MARKER)) {
+		if (jarEntry.getComment().startsWith(UNPACK_MARKER)) { // UNPACK:
 			return getUnpackedNestedArchive(jarEntry);
 		}
 		try {
 			JarFile jarFile = this.jarFile.getNestedJarFile(jarEntry);
+			/**
+			 * 创建 {@link JarFileArchive} 对象
+			 * BOOT-INF/lib/ 目录下的每个内嵌 jar 包都对应一个 Archive 对象
+			 */
 			return new JarFileArchive(jarFile);
 		}
 		catch (Exception ex) {
@@ -123,6 +142,10 @@ public class JarFileArchive implements Archive {
 		if (!file.exists() || file.length() != jarEntry.getSize()) {
 			unpack(jarEntry, file);
 		}
+		/**
+		 * 创建 {@link JarFileArchive} 对象
+		 * BOOT-INF/classes/ 目录被归类为一个 Archive 对象
+		 */
 		return new JarFileArchive(file, file.toURI().toURL());
 	}
 

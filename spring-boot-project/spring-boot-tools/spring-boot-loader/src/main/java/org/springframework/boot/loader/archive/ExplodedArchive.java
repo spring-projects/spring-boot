@@ -34,8 +34,8 @@ import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.jar.Manifest;
 
-/**
- * {@link Archive} implementation backed by an exploded archive directory.
+/**针对目录的 {@link Archive} 实现类
+ * <p> {@link Archive} implementation backed by an exploded archive directory.
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
