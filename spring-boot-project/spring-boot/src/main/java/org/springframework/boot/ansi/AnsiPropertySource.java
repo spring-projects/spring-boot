@@ -74,16 +74,21 @@ public class AnsiPropertySource extends PropertySource<AnsiElement> {
 
 	@Override
 	public Object getProperty(String name) {
-		if (StringUtils.hasLength(name)) {
-			for (Mapping mapping : MAPPINGS) {
-				String prefix = mapping.getPrefix();
-				if (name.startsWith(prefix)) {
-					String postfix = name.substring(prefix.length());
-					AnsiElement element = mapping.getElement(postfix);
-					if (element != null) {
-						return (this.encode) ? AnsiOutput.encode(element) : element;
-					}
-				}
+		if (!StringUtils.hasLength(name)) {
+			return null;
+		}
+		
+		for (Mapping mapping : MAPPINGS) {
+			String prefix = mapping.getPrefix();
+			AnsiElement element = null;
+			
+			if (name.startsWith(prefix)) {
+				String postfix = name.substring(prefix.length());
+				element = mapping.getElement(postfix);
+			}
+			
+			if (element != null) {
+				return (this.encode) ? AnsiOutput.encode(element) : element;
 			}
 		}
 		return null;
