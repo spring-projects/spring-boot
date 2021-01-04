@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group 'org.springframework.boot'
+version '2.3.6.BUILD-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+
+    annotationProcessor(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor"))
+
+    implementation(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+    implementation(project(":spring-boot-project:spring-boot"))
+    /*implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starters-web"))*/
+    implementation("jakarta.validation:jakarta.validation-api")
+
+    testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+    testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"))
+}
