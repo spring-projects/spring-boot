@@ -1,20 +1,33 @@
 plugins {
 	id "java-gradle-plugin"
-	id "io.spring.javaformat" version "${javaFormatVersion}"
+	id "io.spring.javaformat" version "0.0.26"
 	id "checkstyle"
 }
 
+//repositories {
+//	mavenCentral()
+//	gradlePluginPortal()
+//	maven { url "https://repo.spring.io/release" }
+//}
+
 repositories {
+	maven { url "https://maven.aliyun.com/repository/public" }
+	maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter/" }
+	maven { url "https://maven.aliyun.com/repository/spring-plugin" }
+	// mavenLocal()
 	mavenCentral()
-	gradlePluginPortal()
+	maven { url "https://repo.spring.io/libs-spring-framework-build" }
+	maven { url "https://repo.spring.io/milestone" }
+	maven { url "https://repo.spring.io/plugins-release" }
 	maven { url "https://repo.spring.io/release" }
+	gradlePluginPortal()
 }
 
 sourceCompatibility = 1.8
 targetCompatibility = 1.8
 
 dependencies {
-	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
+	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:0.0.26"
 	implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
 	implementation("commons-codec:commons-codec:1.13")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
@@ -24,7 +37,7 @@ dependencies {
 	implementation("org.springframework:spring-core:5.2.2.RELEASE")
 	implementation("org.springframework:spring-web:5.2.2.RELEASE")
 	implementation("com.google.code.gson:gson:2.8.5")
-	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
+	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.26")
 	testImplementation("org.assertj:assertj-core:3.11.1")
 	testImplementation("org.apache.logging.log4j:log4j-core:2.12.1")
 	testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")

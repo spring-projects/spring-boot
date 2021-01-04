@@ -16,16 +16,24 @@ allprojects {
 	group "org.springframework.boot"
 
 	repositories {
-		mavenCentral()
-		if (version.contains('-')) {
-			maven { url "https://repo.spring.io/milestone" }
-		}
-		if (version.endsWith('-SNAPSHOT')) {
-			maven { url "https://repo.spring.io/snapshot" }
-		}
-	}
+        maven { url "https://maven.aliyun.com/repository/public" }
+        maven { url "https://maven.aliyun.com/nexus/content/repositories/jcenter/" }
+        maven { url "https://maven.aliyun.com/repository/spring-plugin" }
+        maven { url "https://repo.spring.io/libs-spring-framework-build" }
+        maven { url "https://repo.spring.io/milestone" }
+        mavenCentral()
+        maven { url "https://repo.spring.io/plugins-release" }
+        if (version.contains('-')) {
+            maven { url "https://repo.spring.io/milestone" }
+        }
+        if (version.endsWith('-SNAPSHOT')) {
+            maven { url "https://repo.spring.io/snapshot" }
+        }
+        mavenLocal()
+    }
 
 	configurations.all {
 		resolutionStrategy.cacheChangingModulesFor 0, "minutes"
 	}
 }
+
