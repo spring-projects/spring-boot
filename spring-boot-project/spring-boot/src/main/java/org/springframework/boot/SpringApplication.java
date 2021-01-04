@@ -158,36 +158,32 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
  * @see #SpringApplication(Class...)
+ *
+ * 官方文档
+ * @link https://docs.spring.io/spring-boot/docs/current/reference/html/
+ * @link https://docs.spring.io/spring-boot/docs/current/reference/html/spring-boot-features.html#boot-features-external-config -- 外部化配置优先级
  */
 public class SpringApplication {
 
+	/** ---------- {@link ApplicationContextFactory} ---------- **/
 	/**
-	 * The class name of application context that will be used by default for non-web
-	 * environments.
+	 * The class name of application context that will be used by default for
+	 * non-web, web, reactive web environments.
 	 * @deprecated since 2.4.0 in favour of using a {@link ApplicationContextFactory}
 	 */
 	@Deprecated
 	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
 
-	/**
-	 * The class name of application context that will be used by default for web
-	 * environments.
-	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
-	 */
 	@Deprecated
 	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
 			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
 
-	/**
-	 * The class name of application context that will be used by default for reactive web
-	 * environments.
-	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
-	 */
 	@Deprecated
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
 			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
 
+	/** ---------- banner ---------- **/
 	/**
 	 * Default banner location.
 	 */
@@ -202,18 +198,22 @@ public class SpringApplication {
 
 	private static final Log logger = LogFactory.getLog(SpringApplication.class);
 
+	/** ---------- Sources ---------- **/
 	private Set<Class<?>> primarySources;
 
 	private Set<String> sources = new LinkedHashSet<>();
 
+	// 主引导类 : main 方法
 	private Class<?> mainApplicationClass;
 
 	private Banner.Mode bannerMode = Banner.Mode.CONSOLE;
 
 	private boolean logStartupInfo = true;
 
+	// 命令行
 	private boolean addCommandLineProperties = true;
 
+	// 类型转换器
 	private boolean addConversionService = true;
 
 	private Banner banner;
@@ -230,8 +230,10 @@ public class SpringApplication {
 
 	private boolean registerShutdownHook = true;
 
+	// 上下文初始化器
 	private List<ApplicationContextInitializer<?>> initializers;
 
+	// 监听器 -- 重要
 	private List<ApplicationListener<?>> listeners;
 
 	private Map<String, Object> defaultProperties;
@@ -240,10 +242,14 @@ public class SpringApplication {
 
 	private Set<String> additionalProfiles = Collections.emptySet();
 
+	/**
+	 * {@link DefaultListableBeanFactory#allowAliasOverriding}
+	 */
 	private boolean allowBeanDefinitionOverriding;
 
 	private boolean isCustomEnvironment = false;
 
+	// 懒加载
 	private boolean lazyInitialization = false;
 
 	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
@@ -280,6 +286,9 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		/**
+		 * {@link SpringFactoriesLoader#loadFactoryNames} spring boot SPI
+		 */
 		this.bootstrappers = new ArrayList<>(getSpringFactoriesInstances(Bootstrapper.class));
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
@@ -310,13 +319,24 @@ public class SpringApplication {
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
+		/**
+		 * 在 ApplicationContext 准备好之前共享, 内含 spring boot test
+		 * {@link BootstrapRegistry}
+		 * {@link BootstrapContext}
+ 		 */
 		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
 		configureHeadlessProperty();
+		/**
+		 * SpringApplicationRunListeners: SpringApplication 上下文准备好之前触发监听器
+		 * {@link SpringApplicationRunListener}
+		 * Spring 监听器三大组件: ApplicationEventMulticaster, ApplicationEvent, ApplicationListener
+		 */
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
+			// 系统环境变量
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
@@ -355,12 +375,25 @@ public class SpringApplication {
 
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
 			DefaultBootstrapContext bootstrapContext, ApplicationArguments applicationArguments) {
-		// Create and configure the environment
+		// Create and configure the environment. system, JVM, servletContext, servletConfig, JNDI
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
+		// 命令行
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
+		/**
+		 * 使 {@link ConfigurableEnvironment} 支持 {@link org.springframework.core.env.PropertyResolver}
+ 		 */
 		ConfigurationPropertySources.attach(environment);
+		/**
+		 * {@link org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor}
+		 * 加载配置文件 application-{dev}.[properties|yml]
+		 *
+		 * 自定义配置文件前缀 spring.config.name
+		 * 生命周期 environmentPrepared --> 自定义配置文件
+		 */
 		listeners.environmentPrepared(bootstrapContext, environment);
+		// defaultProperties
 		DefaultPropertiesPropertySource.moveToEnd(environment);
+		// activePeofiles + additionalProfiles --> setActiveProfiles
 		configureAdditionalProfiles(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
@@ -497,9 +530,11 @@ public class SpringApplication {
 	 */
 	protected void configureEnvironment(ConfigurableEnvironment environment, String[] args) {
 		if (this.addConversionService) {
+			// 转换服务
 			ConversionService conversionService = ApplicationConversionService.getSharedInstance();
 			environment.setConversionService((ConfigurableConversionService) conversionService);
 		}
+		// 命令行
 		configurePropertySources(environment, args);
 		configureProfiles(environment, args);
 	}

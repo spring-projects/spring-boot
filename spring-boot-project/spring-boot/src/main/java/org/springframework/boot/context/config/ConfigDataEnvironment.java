@@ -218,18 +218,27 @@ class ConfigDataEnvironment {
 	/**
 	 * Process all contributions and apply any newly imported property sources to the
 	 * {@link Environment}.
+	 * ConfigDataImporter, ConfigDataEnvironmentContributors,
 	 */
 	void processAndApply() {
+		// ConfigDataImporter: 用于导入配置文件
 		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, this.notFoundAction, this.resolvers,
 				this.loaders);
+		// 向 bootstrapContext 注册一个 Binder(ConfigDataEnvironmentContributorPlaceholdersResolver)
 		registerBootstrapBinder(() -> this.contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE));
+		/** 
+		 * 调用 {@link ConfigDataImporter#resolveAndLoad(ConfigDataActivationContext, ConfigDataLocationResolverContext, ConfigDataLoaderContext, List)}
+		 * 解析路径获取配置文件, 加载配置
+		 */
 		ConfigDataEnvironmentContributors contributors = processInitial(this.contributors, importer);
 		Binder initialBinder = contributors.getBinder(null, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		registerBootstrapBinder(() -> initialBinder);
+		// cloudPlatform & profiles
 		ConfigDataActivationContext activationContext = createActivationContext(initialBinder);
 		contributors = processWithoutProfiles(contributors, importer, activationContext);
 		activationContext = withProfiles(contributors, activationContext);
 		contributors = processWithProfiles(contributors, importer, activationContext);
+		// 加载 propertiesSource 到 Environment
 		applyToEnvironment(contributors, activationContext);
 	}
 

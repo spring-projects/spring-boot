@@ -34,6 +34,8 @@ import org.springframework.boot.logging.DeferredLogFactory;
  * {@link ConfigDataLoader loading} locations. {@link ConfigDataResource resources} are
  * tracked to ensure that they are not imported multiple times.
  *
+ * 导入配置文件
+ *
  * @author Phillip Webb
  * @author Madhura Bhave
  */
@@ -78,6 +80,10 @@ class ConfigDataImporter {
 			List<ConfigDataLocation> locations) {
 		try {
 			Profiles profiles = (activationContext != null) ? activationContext.getProfiles() : null;
+			/**
+			 * 获取配置文件路径 {@link StandardConfigDataLocationResolver#resolve(ConfigDataLocationResolverContext, ConfigDataLocation)}
+			 * {@link ConfigDataLoaders#load(ConfigDataLoaderContext, ConfigDataResource)} 根据文件路径加载配置文件
+			 */
 			List<ConfigDataResolutionResult> resolved = resolve(locationResolverContext, profiles, locations);
 			return load(loaderContext, resolved);
 		}

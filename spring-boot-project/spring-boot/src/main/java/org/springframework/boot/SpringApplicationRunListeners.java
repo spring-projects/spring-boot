@@ -58,6 +58,7 @@ class SpringApplicationRunListeners {
 				});
 	}
 
+	// 环境准备完毕
 	void environmentPrepared(ConfigurableBootstrapContext bootstrapContext, ConfigurableEnvironment environment) {
 		doWithListeners("spring.boot.application.environment-prepared",
 				(listener) -> listener.environmentPrepared(bootstrapContext, environment));

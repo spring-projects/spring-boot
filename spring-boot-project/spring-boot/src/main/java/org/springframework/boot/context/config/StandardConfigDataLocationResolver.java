@@ -113,6 +113,7 @@ public class StandardConfigDataLocationResolver
 		return resolve(getReferences(context, location));
 	}
 
+	// 目录 文件 两种方式加载
 	private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
 			ConfigDataLocation configDataLocation) {
 		String resourceLocation = getResourceLocation(context, configDataLocation);
@@ -167,6 +168,10 @@ public class StandardConfigDataLocationResolver
 		return getReferencesForFile(configDataLocation, resourceLocation, profile);
 	}
 
+	/**
+	 * this.configNames: 默认 application | 自定义 spring.config.name
+	 * PropertySourceLoader: 默认 properties yml | 自定义 spring.factories {@link PropertySourceLoader}
+	 */
 	private Set<StandardConfigDataReference> getReferencesForDirectory(ConfigDataLocation configDataLocation,
 			String directory, String profile) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();

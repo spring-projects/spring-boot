@@ -85,6 +85,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	}
 
 	@Override
+	// 入口
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
 		postProcessEnvironment(environment, application.getResourceLoader(), application.getAdditionalProfiles());
 	}
@@ -94,6 +95,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 		try {
 			this.logger.trace("Post-processing environment to add config data");
 			resourceLoader = (resourceLoader != null) ? resourceLoader : new DefaultResourceLoader();
+			// 加载配置文件
 			getConfigDataEnvironment(environment, resourceLoader, additionalProfiles).processAndApply();
 		}
 		catch (UseLegacyConfigProcessingException ex) {

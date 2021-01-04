@@ -77,6 +77,9 @@ public final class ConfigurationPropertySources {
 			attached = null;
 		}
 		if (attached == null) {
+			/**
+			 * {@link ConfigurationPropertySourcesPropertySource} 使 {@link ConfigurableEnvironment} 中支持 {@link PropertyResolver}
+			 */
 			sources.addFirst(new ConfigurationPropertySourcesPropertySource(ATTACHED_PROPERTY_SOURCE_NAME,
 					new SpringConfigurationPropertySources(sources)));
 		}
