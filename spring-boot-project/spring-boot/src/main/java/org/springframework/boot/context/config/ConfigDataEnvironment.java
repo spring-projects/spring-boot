@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -348,7 +348,9 @@ class ConfigDataEnvironment {
 			ConfigDataActivationContext activationContext) {
 		Set<ConfigDataLocation> mandatoryLocations = new LinkedHashSet<>();
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
-			mandatoryLocations.addAll(getMandatoryImports(contributor));
+			if (contributor.isActive(activationContext)) {
+				mandatoryLocations.addAll(getMandatoryImports(contributor));
+			}
 		}
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			if (contributor.getLocation() != null) {
