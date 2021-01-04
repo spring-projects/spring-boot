@@ -63,7 +63,6 @@ public class ManagementWebSecurityAutoConfiguration {
 			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
 			requests.anyRequest().authenticated();
 		});
-		http.cors();
 		http.formLogin(Customizer.withDefaults());
 		http.httpBasic(Customizer.withDefaults());
 		return http.build();
