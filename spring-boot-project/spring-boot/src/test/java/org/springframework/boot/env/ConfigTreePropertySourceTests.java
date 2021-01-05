@@ -89,6 +89,15 @@ class ConfigTreePropertySourceTests {
 	}
 
 	@Test
+	void getPropertyNamesFromNestedWithSymlinkInPathReturnsPropertyNames() throws Exception {
+		addNested();
+		Path symlinkTempDir = Files.createSymbolicLink(this.directory.resolveSibling("symlinkTempDir"), this.directory);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", symlinkTempDir);
+		Files.delete(symlinkTempDir);
+		assertThat(propertySource.getPropertyNames()).containsExactly("c", "fa.a", "fa.b", "fb.a", "fb.fa.a");
+	}
+
+	@Test
 	void getPropertyNamesFromFlatWithSymlinksIgnoresHiddenFiles() throws Exception {
 		ConfigTreePropertySource propertySource = getSymlinkedFlatPropertySource();
 		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c");
