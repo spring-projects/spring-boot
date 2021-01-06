@@ -86,7 +86,8 @@ class OperationMethodParameterTests {
 		assertThat(parameter.isMandatory()).isFalse();
 	}
 
-	public void isMandatoryWhenJsrNonnullAnnotationShouldReturnTrue() {
+	@Test
+	void isMandatoryWhenJsrNonnullAnnotationShouldReturnTrue() {
 		OperationMethodParameter parameter = new OperationMethodParameter("name",
 				this.exampleJsr305NonNull.getParameters()[1]);
 		assertThat(parameter.isMandatory()).isTrue();
