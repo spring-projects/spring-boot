@@ -45,6 +45,9 @@ class OperationMethodParameterTests {
 	private Method exampleMetaJsr305 = ReflectionUtils.findMethod(getClass(), "exampleMetaJsr305", String.class,
 			String.class);
 
+	private Method exampleJsr305NonNull = ReflectionUtils.findMethod(getClass(), "exampleJsr305NonNull", String.class,
+			String.class);
+
 	@Test
 	void getNameShouldReturnName() {
 		OperationMethodParameter parameter = new OperationMethodParameter("name", this.example.getParameters()[0]);
@@ -83,16 +86,22 @@ class OperationMethodParameterTests {
 		assertThat(parameter.isMandatory()).isFalse();
 	}
 
-	void example(String one, @Nullable String two) {
+	public void isMandatoryWhenJsrNonnullAnnotationShouldReturnTrue() {
+		OperationMethodParameter parameter = new OperationMethodParameter("name",
+				this.exampleJsr305NonNull.getParameters()[1]);
+		assertThat(parameter.isMandatory()).isTrue();
+	}
 
+	void example(String one, @Nullable String two) {
 	}
 
 	void exampleJsr305(String one, @javax.annotation.Nullable String two) {
-
 	}
 
 	void exampleMetaJsr305(String one, @MetaNullable String two) {
+	}
 
+	void exampleJsr305NonNull(String one, @javax.annotation.Nonnull String two) {
 	}
 
 	@TypeQualifier
