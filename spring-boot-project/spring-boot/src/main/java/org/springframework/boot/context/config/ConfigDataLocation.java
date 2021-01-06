@@ -22,7 +22,7 @@ import org.springframework.util.StringUtils;
 
 /**
  * A user specified location that can be {@link ConfigDataLocationResolver resolved} to
- * one or {@link ConfigDataResource config data resources}. A {@link ConfigDataLocation}
+ * one or more {@link ConfigDataResource config data resources}. A {@link ConfigDataLocation}
  * is a simple wrapper around a {@link String} value. The exact format of the value will
  * depend on the underlying technology, but is usually a URL like syntax consisting of a
  * prefix and path. For example, {@code crypt:somehost/somepath}.
