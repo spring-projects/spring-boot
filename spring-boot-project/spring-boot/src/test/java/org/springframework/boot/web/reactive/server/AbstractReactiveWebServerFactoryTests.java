@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -113,6 +113,16 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 				.bodyToMono(String.class);
 		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
 		assertThat(this.webServer.getPort()).isEqualTo(specificPort);
+	}
+
+	@Test
+	void portIsMinusOneWhenConnectionIsClosed() {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(this.webServer.getPort()).isGreaterThan(0);
+		this.webServer.stop();
+		assertThat(this.webServer.getPort()).isEqualTo(-1);
 	}
 
 	@Test
