@@ -149,7 +149,7 @@ To use the installer:
 
 * Download and run the latest https://download.eclipse.org/justj/?file=oomph/products/latest[Eclipse Installer] (must be 1.19.0 or above).
 * Switch to "Advanced Mode" using the drop down menu on the right.
-* Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to install, `2020-09` as the product version, and click "`next`".
+* Select "`Eclipse IDE for Java Developers`" under "`Eclipse.org`" as the product to install, `2020-12` as the product version, and click "`next`".
 * For the "`Project`" click on "`+`" to add a new setup file. Select "`Github Projects`" and browse for `<checkout>/eclipse/spring-boot-project.setup` from your locally cloned copy of the source code.
   Click "`OK`" to add the setup file to the list.
 * Double-click on "`Spring Boot`" from the project list to add it to the list that will be provisioned then click "`Next`".
