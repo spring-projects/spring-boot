@@ -118,7 +118,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		if (!options.isIncluded(Include.STACK_TRACE)) {
 			errorAttributes.remove("trace");
 		}
-		if (!options.isIncluded(Include.MESSAGE) && errorAttributes.get("message") != null) {
+		if (!options.isIncluded(Include.MESSAGE)) {
 			errorAttributes.put("message", "");
 		}
 		if (!options.isIncluded(Include.BINDING_ERRORS)) {
