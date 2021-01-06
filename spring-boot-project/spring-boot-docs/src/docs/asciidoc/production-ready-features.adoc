@@ -467,7 +467,7 @@ Operations on an endpoint receive input via their parameters.
 When exposed via the web, the values for these parameters are taken from the URL's query parameters and from the JSON request body.
 When exposed via JMX, the parameters are mapped to the parameters of the MBean's operations.
 Parameters are required by default.
-They can be made optional by annotating them with `@org.springframework.lang.Nullable`.
+They can be made optional by annotating them with either `@javax.annotation.Nonnull` or `@org.springframework.lang.Nullable`.
 
 Each root property in the JSON request body can be mapped to a parameter of the endpoint.
 Consider the following JSON request body:
