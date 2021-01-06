@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,8 +92,10 @@ import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -134,6 +136,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * @author Kristine Jetzke
  * @author Bruce Brouwer
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -461,6 +464,20 @@ public class WebMvcAutoConfiguration {
 					: this.mvcProperties.getLocale();
 			localeResolver.setDefaultLocale(locale);
 			return localeResolver;
+		}
+
+		@Override
+		@Bean
+		@ConditionalOnMissingBean(name = DispatcherServlet.THEME_RESOLVER_BEAN_NAME)
+		public ThemeResolver themeResolver() {
+			return super.themeResolver();
+		}
+
+		@Override
+		@Bean
+		@ConditionalOnMissingBean(name = DispatcherServlet.FLASH_MAP_MANAGER_BEAN_NAME)
+		public FlashMapManager flashMapManager() {
+			return super.flashMapManager();
 		}
 
 		private Optional<Resource> getWelcomePage() {
