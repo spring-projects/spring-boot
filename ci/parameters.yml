@@ -3,6 +3,7 @@ email-from: "ci@spring.io"
 email-to: ["spring-boot-dev@pivotal.io"]
 github-repo: "https://github.com/spring-projects/spring-boot.git"
 github-repo-name: "spring-projects/spring-boot"
+homebrew-tap-repo: "https://github.com/spring-io/homebrew-tap.git"
 docker-hub-organization: "springci"
 artifactory-server: "https://repo.spring.io"
 branch: "master"

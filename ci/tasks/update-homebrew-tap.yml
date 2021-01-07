@@ -1,0 +1,11 @@
+---
+platform: linux
+inputs:
+  - name: git-repo
+  - name: artifactory-repo
+outputs:
+  - name: updated-repo
+params:
+  LATEST_GA:
+run:
+  path: git-repo/ci/scripts/update-homebrew-tap.sh
