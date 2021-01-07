@@ -73,6 +73,11 @@ anchors:
     silent: true
     icon_emoji: ":concourse:"
     username: concourse-ci
+  homebrew-tap-repo-resource-source: &homebrew-tap-repo-resource-source
+    uri: ((homebrew-tap-repo))
+    username: ((github-username))
+    password: ((github-password))
+    branch: master
 resource_types:
 - name: artifactory-resource
   type: registry-image
@@ -206,6 +211,11 @@ resources:
   type: time
   icon: clock-outline
   source: { interval: "24h" }
+- name: homebrew-tap-repo
+  type: git
+  icon: github
+  source:
+    <<: *homebrew-tap-repo-resource-source
 jobs:
 - name: build-ci-images
   plan:
@@ -614,11 +624,31 @@ jobs:
         RELEASE_TYPE: RELEASE
         BRANCH: ((branch))
         LATEST_GA: false
+- name: update-homebrew-tap
+  serial: true
+  plan:
+    - get: ci-image
+    - get: git-repo
+      resource: homebrew-tap-repo
+    - get: artifactory-repo
+      passed: [sync-to-maven-central]
+      params:
+        download_artifacts: false
+        save_build_info: true
+    - task: update-homebrew-tap
+      image: ci-image
+      file: git-repo/ci/tasks/update-homebrew-tap.yml
+      params:
+        LATEST_GA: false
+    - put: git-repo
+      resource: homebrew-tap-repo
+      params:
+        repository: updated-repo
 groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk15-build", "windows-build"]
 - name: "releases"
-  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central", "publish-to-sdkman"]
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central", "publish-to-sdkman", "update-homebrew-tap"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
