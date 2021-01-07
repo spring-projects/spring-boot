@@ -291,8 +291,8 @@ If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spri
 
 [indent=0]
 ----
-	$ brew tap pivotal/tap
-	$ brew install springboot
+	$ brew tap spring-io/tap
+	$ brew install spring-boot
 ----
 
 Homebrew installs `spring` to `/usr/local/bin`.
