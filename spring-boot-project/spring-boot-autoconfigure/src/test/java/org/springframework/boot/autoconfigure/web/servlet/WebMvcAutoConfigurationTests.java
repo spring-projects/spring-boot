@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -87,10 +87,13 @@ import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.FlashMap;
+import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerAdapter;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -119,6 +122,9 @@ import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceTransformer;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
 import org.springframework.web.servlet.resource.VersionStrategy;
+import org.springframework.web.servlet.support.AbstractFlashMapManager;
+import org.springframework.web.servlet.support.SessionFlashMapManager;
+import org.springframework.web.servlet.theme.FixedThemeResolver;
 import org.springframework.web.servlet.view.AbstractView;
 import org.springframework.web.servlet.view.ContentNegotiatingViewResolver;
 import org.springframework.web.util.UrlPathHelper;
@@ -137,6 +143,7 @@ import static org.mockito.Mockito.mock;
  * @author Eddú Meléndez
  * @author Kristine Jetzke
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  */
 class WebMvcAutoConfigurationTests {
 
@@ -359,6 +366,42 @@ class WebMvcAutoConfigurationTests {
 				.run((context) -> {
 					assertThat(context.getBean("customLocaleResolver")).isInstanceOf(CustomLocaleResolver.class);
 					assertThat(context.getBean("localeResolver")).isInstanceOf(AcceptHeaderLocaleResolver.class);
+				});
+	}
+
+	@Test
+	void customThemeResolverWithMatchingNameReplacesDefaultThemeResolver() {
+		this.contextRunner.withBean("themeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ThemeResolver.class);
+					assertThat(context.getBean("themeResolver")).isInstanceOf(CustomThemeResolver.class);
+				});
+	}
+
+	@Test
+	void customThemeResolverWithDifferentNameDoesNotReplaceDefaultThemeResolver() {
+		this.contextRunner.withBean("customThemeResolver", CustomThemeResolver.class, CustomThemeResolver::new)
+				.run((context) -> {
+					assertThat(context.getBean("customThemeResolver")).isInstanceOf(CustomThemeResolver.class);
+					assertThat(context.getBean("themeResolver")).isInstanceOf(FixedThemeResolver.class);
+				});
+	}
+
+	@Test
+	void customFlashMapManagerWithMatchingNameReplacesDefaultFlashMapManager() {
+		this.contextRunner.withBean("flashMapManager", CustomFlashMapManager.class, CustomFlashMapManager::new)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(FlashMapManager.class);
+					assertThat(context.getBean("flashMapManager")).isInstanceOf(CustomFlashMapManager.class);
+				});
+	}
+
+	@Test
+	void customFlashMapManagerWithDifferentNameDoesNotReplaceDefaultFlashMapManager() {
+		this.contextRunner.withBean("customFlashMapManager", CustomFlashMapManager.class, CustomFlashMapManager::new)
+				.run((context) -> {
+					assertThat(context.getBean("customFlashMapManager")).isInstanceOf(CustomFlashMapManager.class);
+					assertThat(context.getBean("flashMapManager")).isInstanceOf(SessionFlashMapManager.class);
 				});
 	}
 
@@ -1403,6 +1446,35 @@ class WebMvcAutoConfigurationTests {
 
 		@Override
 		public void setLocale(HttpServletRequest request, HttpServletResponse response, Locale locale) {
+		}
+
+	}
+
+	static class CustomThemeResolver implements ThemeResolver {
+
+		@Override
+		public String resolveThemeName(HttpServletRequest request) {
+			return "custom";
+		}
+
+		@Override
+		public void setThemeName(HttpServletRequest request, HttpServletResponse response, String themeName) {
+
+		}
+
+	}
+
+	static class CustomFlashMapManager extends AbstractFlashMapManager {
+
+		@Override
+		protected List<FlashMap> retrieveFlashMaps(HttpServletRequest request) {
+			return null;
+		}
+
+		@Override
+		protected void updateFlashMaps(List<FlashMap> flashMaps, HttpServletRequest request,
+				HttpServletResponse response) {
+
 		}
 
 	}
