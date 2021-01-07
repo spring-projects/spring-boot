@@ -5,7 +5,7 @@ package com.example
 class RestTests {
 
 	@Autowired
-	TestRestTemplate testRestTemplate;
+	TestRestTemplate testRestTemplate
 
 	@Test
 	void testHome() {

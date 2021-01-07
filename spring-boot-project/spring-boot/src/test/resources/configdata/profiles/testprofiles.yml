@@ -12,4 +12,7 @@ dev:
 spring.config.activate.on-profile: other
 my:
   property: fromotherprofile
+---
+spring.config.activate.on-profile: prod
+spring.config.import: file:./non-existent.yml
 
