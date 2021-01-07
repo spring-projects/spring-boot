@@ -46,7 +46,7 @@ public class ErrorProperties {
 	private IncludeAttribute includeStacktrace = IncludeAttribute.NEVER;
 
 	/**
-	 * When to include data in "message" attribute.
+	 * When to persist data in "message" attribute.
 	 */
 	private IncludeAttribute includeMessage = IncludeAttribute.NEVER;
 
