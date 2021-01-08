@@ -175,9 +175,9 @@ public class StandardConfigDataLocationResolver
 	private Set<StandardConfigDataReference> getReferencesForDirectory(ConfigDataLocation configDataLocation,
 			String directory, String profile) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
-		for (String name : this.configNames) {
-			for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
-				for (String extension : propertySourceLoader.getFileExtensions()) {
+		for (String name : this.configNames) {	// application
+			for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {	// yml | properties
+				for (String extension : propertySourceLoader.getFileExtensions()) {	// yml yaml | properties xml
 					StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation,
 							directory, directory + name, profile, extension, propertySourceLoader);
 					references.add(reference);
