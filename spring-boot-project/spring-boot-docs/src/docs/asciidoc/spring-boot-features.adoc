@@ -3462,29 +3462,25 @@ The following example shows programmatically setting the port:
 	}
 ----
 
-NOTE: `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
+`TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
+The following example shows how to customize `TomcatServletWebServerFactory` that provides access to Tomcat-specific configuration options:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{code-examples}/context/embedded/TomcatServerCustomizerExample.java[tag=configuration]
+----
 
 
 
 [[boot-features-customizing-configurableservletwebserverfactory-directly]]
 ===== Customizing ConfigurableServletWebServerFactory Directly
-If the preceding customization techniques are too limited, you can register the `TomcatServletWebServerFactory`, `JettyServletWebServerFactory`, or `UndertowServletWebServerFactory` bean yourself.
-
-[source,java,indent=0]
-----
-	@Bean
-	public ConfigurableServletWebServerFactory webServerFactory() {
-		TomcatServletWebServerFactory factory = new TomcatServletWebServerFactory();
-		factory.setPort(9000);
-		factory.setSessionTimeout(10, TimeUnit.MINUTES);
-		factory.addErrorPages(new ErrorPage(HttpStatus.NOT_FOUND, "/notfound.html"));
-		return factory;
-	}
-----
+For more advanced use cases that require you to extend from `ServletWebServerFactory`, you can expose a bean of such type yourself.
 
 Setters are provided for many configuration options.
 Several protected method "`hooks`" are also provided should you need to do something more exotic.
 See the {spring-boot-module-api}/web/servlet/server/ConfigurableServletWebServerFactory.html[source code documentation] for details.
+
+NOTE: Auto-configured customizers are still applied on your custom factory, so use that option carefully.
 
 
 
