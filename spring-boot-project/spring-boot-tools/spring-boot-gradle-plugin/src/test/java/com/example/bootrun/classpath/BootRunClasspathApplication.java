@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.classpath;
+package com.example.bootrun.classpath;
 
 import java.io.File;
 import java.lang.management.ManagementFactory;

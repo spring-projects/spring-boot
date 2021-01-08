@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -479,13 +479,9 @@ public abstract class Packager {
 		}
 
 		private void writeClasspathIndex(RepackagingLayout layout, AbstractJarWriter writer) throws IOException {
-			List<String> names = this.libraries.keySet().stream().map(this::getJarName)
-					.map((name) -> "- \"" + name + "\"").collect(Collectors.toList());
+			List<String> names = this.libraries.keySet().stream().map((path) -> "- \"" + path + "\"")
+					.collect(Collectors.toList());
 			writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
-		}
-
-		private String getJarName(String path) {
-			return path.substring(path.lastIndexOf('/') + 1);
 		}
 
 	}
