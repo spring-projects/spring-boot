@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -39,8 +38,7 @@ import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security when actuator is
- * on the classpath. It allows unauthenticated access to the {@link HealthEndpoint} and
- * {@link InfoEndpoint}. If the user specifies their own
+ * on the classpath. It allows unauthenticated access to the {@link HealthEndpoint}. If the user specifies their own
  * {@link WebSecurityConfigurerAdapter} or {@link SecurityFilterChain} bean, this will
  * back-off completely and the user should specify all the bits that they want to
  * configure as part of the custom security configuration.
@@ -64,7 +62,7 @@ public class ManagementWebSecurityAutoConfiguration {
 		@Override
 		protected void configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests((requests) -> {
-				requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
+				requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 				requests.anyRequest().authenticated();
 			});
 			http.formLogin(Customizer.withDefaults());

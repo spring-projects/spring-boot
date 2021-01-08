@@ -16,10 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.Test;
-
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration;
@@ -47,6 +44,8 @@ import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.context.WebApplicationContext;
 
+import java.io.IOException;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -66,14 +65,6 @@ class ManagementWebSecurityAutoConfigurationTests {
 	void permitAllForHealth() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator/health");
-			assertThat(status).isEqualTo(HttpStatus.OK);
-		});
-	}
-
-	@Test
-	void permitAllForInfo() {
-		this.contextRunner.run((context) -> {
-			HttpStatus status = getResponseStatus(context, "/actuator/info");
 			assertThat(status).isEqualTo(HttpStatus.OK);
 		});
 	}

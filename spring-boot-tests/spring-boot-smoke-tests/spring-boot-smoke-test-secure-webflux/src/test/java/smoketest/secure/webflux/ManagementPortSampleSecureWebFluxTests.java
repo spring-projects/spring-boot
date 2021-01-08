@@ -92,7 +92,7 @@ class ManagementPortSampleSecureWebFluxTests {
 		@Bean
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
 			http.authorizeExchange((exchanges) -> {
-				exchanges.matchers(EndpointRequest.to("health", "info")).permitAll();
+				exchanges.matchers(EndpointRequest.to("health")).permitAll();
 				exchanges.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
 						.hasRole("ACTUATOR");
 				exchanges.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
