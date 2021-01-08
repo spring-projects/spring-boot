@@ -720,6 +720,11 @@ The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stac
 	}
 ----
 
+NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
+Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
+
+Once you've got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
+
 In addition Spring Boot provides:
 
 [[howto-configure-webserver-customizers]]
@@ -744,10 +749,8 @@ In addition Spring Boot provides:
 | `NettyReactiveWebServerFactory`
 |===
 
-Once you've got access to a `WebServerFactory`, you can often add customizers to it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
-
-As a last resort, you can also declare your own `WebServerFactory` component, which will override the one provided by Spring Boot.
-In this case, you can't rely on configuration properties in the `server` namespace anymore.
+As a last resort, you can also declare your own `WebServerFactory` bean, which will override the one provided by Spring Boot.
+When you do so, auto-configured customizers are still applied on your custom factory, so use that option carefully.
 
 
 
@@ -892,7 +895,7 @@ If you use YAML, single backslashes are sufficient, and a value equivalent to th
 
 NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but do not do so in production).
 
-You can take complete control of the configuration of Tomcat's `RemoteIpValve` by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance in a `TomcatServletWebServerFactory` bean.
+You can take complete control of the configuration of Tomcat's `RemoteIpValve` by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a `WebServerFactoryCustomizer` bean.
 
 
 
@@ -902,35 +905,7 @@ You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWe
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public ServletWebServerFactory servletContainer() {
-		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
-		tomcat.addAdditionalTomcatConnectors(createSslConnector());
-		return tomcat;
-	}
-
-	private Connector createSslConnector() {
-		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-		Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
-		try {
-			File keystore = new ClassPathResource("keystore").getFile();
-			File truststore = new ClassPathResource("keystore").getFile();
-			connector.setScheme("https");
-			connector.setSecure(true);
-			connector.setPort(8443);
-			protocol.setSSLEnabled(true);
-			protocol.setKeystoreFile(keystore.getAbsolutePath());
-			protocol.setKeystorePass("changeit");
-			protocol.setTruststoreFile(truststore.getAbsolutePath());
-			protocol.setTruststorePass("changeit");
-			protocol.setKeyAlias("apitester");
-			return connector;
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("can't access keystore: [" + keystore
-					+ "] or truststore: [" + truststore + "]", ex);
-		}
-	}
+include::{code-examples}/context/embedded/TomcatMultipleConnectorsExample.java[tag=configuration]
 ----
 
 
@@ -974,19 +949,7 @@ Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public UndertowServletWebServerFactory servletWebServerFactory() {
-		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
-		factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
-
-			@Override
-			public void customize(Builder builder) {
-				builder.addHttpListener(8080, "0.0.0.0");
-			}
-
-		});
-		return factory;
-	}
+include::{code-examples}/context/embedded/UndertowMultipleListenersExample.java[tag=configuration]
 ----
 
 
@@ -2367,7 +2330,7 @@ You can switch on the valve by adding some entries to `application.properties`, 
 ----
 
 (The presence of either of those properties switches on the valve.
-Alternatively, you can add the `RemoteIpValve` by adding a `TomcatServletWebServerFactory` bean.)
+Alternatively, you can add the `RemoteIpValve` by customizing the `TomcatServletWebServerFactory` using a `WebServerFactoryCustomizer` bean.)
 
 To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `WebSecurityConfigurerAdapter` that adds the following `HttpSecurity` configuration:
 

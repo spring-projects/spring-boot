@@ -71,6 +71,7 @@ dependencies {
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-core")
 	implementation("io.projectreactor.netty:reactor-netty")
+	implementation("io.undertow:undertow-core")
 	implementation("jakarta.servlet:jakarta.servlet-api")
 	implementation("org.apache.commons:commons-dbcp2")
 	implementation("org.apache.kafka:kafka-streams")
