@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -230,9 +230,10 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 	@Test
 	void whenJarIsLayeredClasspathIndexPointsToLayeredLibs() throws IOException {
 		try (JarFile jarFile = new JarFile(createLayeredJar())) {
-			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("- \"first-library.jar\"",
-					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"", "- \"first-project-library.jar\"",
-					"- \"second-project-library-SNAPSHOT.jar\"");
+			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly(
+					"- \"BOOT-INF/lib/first-library.jar\"", "- \"BOOT-INF/lib/second-library.jar\"",
+					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/first-project-library.jar\"",
+					"- \"BOOT-INF/lib/second-project-library-SNAPSHOT.jar\"");
 		}
 	}
 
@@ -254,9 +255,10 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 		try (JarFile jarFile = new JarFile(createPopulatedJar())) {
 			assertThat(jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Classpath-Index"))
 					.isEqualTo("BOOT-INF/classpath.idx");
-			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly("- \"first-library.jar\"",
-					"- \"second-library.jar\"", "- \"third-library-SNAPSHOT.jar\"", "- \"first-project-library.jar\"",
-					"- \"second-project-library-SNAPSHOT.jar\"");
+			assertThat(entryLines(jarFile, "BOOT-INF/classpath.idx")).containsExactly(
+					"- \"BOOT-INF/lib/first-library.jar\"", "- \"BOOT-INF/lib/second-library.jar\"",
+					"- \"BOOT-INF/lib/third-library-SNAPSHOT.jar\"", "- \"BOOT-INF/lib/first-project-library.jar\"",
+					"- \"BOOT-INF/lib/second-project-library-SNAPSHOT.jar\"");
 		}
 	}
 

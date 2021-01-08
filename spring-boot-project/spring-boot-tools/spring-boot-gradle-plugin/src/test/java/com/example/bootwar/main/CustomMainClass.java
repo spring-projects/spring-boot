@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.main;
+package com.example.bootwar.main;
 
 /**
  * Application used for testing {@code BootRun}'s main class configuration.

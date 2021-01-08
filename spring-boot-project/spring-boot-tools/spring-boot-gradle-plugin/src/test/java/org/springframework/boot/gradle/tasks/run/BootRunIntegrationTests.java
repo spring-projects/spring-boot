@@ -71,7 +71,7 @@ class BootRunIntegrationTests {
 		copyMainClassApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("com.example.main.CustomMainClass");
+		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
 	}
 
 	@TestTemplate
@@ -79,7 +79,7 @@ class BootRunIntegrationTests {
 		copyMainClassApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("com.example.main.CustomMainClass");
+		assertThat(result.getOutput()).contains("com.example.bootrun.main.CustomMainClass");
 	}
 
 	@TestTemplate
@@ -87,7 +87,8 @@ class BootRunIntegrationTests {
 		copyClasspathApplication();
 		BuildResult result = this.gradleBuild.build("bootRun");
 		assertThat(result.task(":bootRun").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("Main class name = com.example.classpath.BootRunClasspathApplication");
+		assertThat(result.getOutput())
+				.contains("Main class name = com.example.bootrun.classpath.BootRunClasspathApplication");
 	}
 
 	@TestTemplate
@@ -150,9 +151,9 @@ class BootRunIntegrationTests {
 	}
 
 	private void copyApplication(String name) throws IOException {
-		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example/" + name);
+		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example/bootrun/" + name);
 		output.mkdirs();
-		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/" + name), output);
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/bootrun/" + name), output);
 	}
 
 	private String canonicalPathOf(String path) throws IOException {
