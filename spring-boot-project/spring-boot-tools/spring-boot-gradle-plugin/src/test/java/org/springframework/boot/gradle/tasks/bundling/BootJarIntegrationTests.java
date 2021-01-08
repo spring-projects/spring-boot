@@ -44,6 +44,7 @@ import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.loader.tools.JarModeLibrary;
+import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -240,6 +241,28 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertExtractedLayers(layerNames, indexedLayers);
 	}
 
+	@TestTemplate
+	void packagedApplicationClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("launch");
+		String output = result.getOutput();
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+		assertThat(output).doesNotContain("4. ");
+	}
+
+	@TestTemplate
+	void explodedApplicationClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("launch");
+		String output = result.getOutput();
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+		assertThat(output).doesNotContain("4. ");
+	}
+
 	private void assertExtractedLayers(List<String> layerNames, Map<String, List<String>> indexedLayers)
 			throws IOException {
 		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);
@@ -337,6 +360,16 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 							.map(Path::toString).map(StringUtils::cleanPath).collect(Collectors.toList()));
 		}
 		return extractedLayers;
+	}
+
+	private void copyClasspathApplication() throws IOException {
+		copyApplication("classpath");
+	}
+
+	private void copyApplication(String name) throws IOException {
+		File output = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example/bootjar/" + name);
+		output.mkdirs();
+		FileSystemUtils.copyRecursively(new File("src/test/java/com/example/bootjar/" + name), output);
 	}
 
 }

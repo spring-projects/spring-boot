@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package com.example.jvmargs;
+package com.example.bootrun.jvmargs;
 
 import java.lang.management.ManagementFactory;
 
