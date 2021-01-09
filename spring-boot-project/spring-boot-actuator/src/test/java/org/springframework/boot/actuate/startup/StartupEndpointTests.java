@@ -30,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link StartupEndpoint}.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  */
 class StartupEndpointTests {
 
@@ -57,6 +58,19 @@ class StartupEndpointTests {
 			StartupEndpoint.StartupResponse startup = context.getBean(StartupEndpoint.class).startup();
 			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
 			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isEmpty();
+		});
+	}
+
+	@Test
+	void bufferIsNotDrained() {
+		BufferingApplicationStartup applicationStartup = new BufferingApplicationStartup(256);
+		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+				.withInitializer((context) -> context.setApplicationStartup(applicationStartup))
+				.withUserConfiguration(EndpointConfiguration.class);
+		contextRunner.run((context) -> {
+			StartupEndpoint.StartupResponse startup = context.getBean(StartupEndpoint.class).startupSnapshot();
+			assertThat(startup.getTimeline().getEvents()).isNotEmpty();
+			assertThat(applicationStartup.getBufferedTimeline().getEvents()).isNotEmpty();
 		});
 	}
 

@@ -16,7 +16,9 @@ The resulting response is similar to the following:
 
 include::{snippets}/startup/http-response.adoc[]
 
-
+NOTE: The above call resets the application startup steps buffer - subsequent calls to the endpoint will
+not include the returned steps. To retrieve a snapshot of the steps recorded so far without removing them
+from the startup buffer, make a `GET` request to `/actuator/startup`.
 
 [[startup-retrieving-response-structure]]
 === Response Structure
