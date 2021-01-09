@@ -65,6 +65,7 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.jasper.servlet.JspServlet;
 import org.apache.tomcat.JarScanFilter;
 import org.apache.tomcat.JarScanType;
+import org.apache.tomcat.util.scan.StandardJarScanFilter;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
@@ -442,6 +443,18 @@ class TomcatServletWebServerFactoryTests extends AbstractServletWebServerFactory
 		assertThat(jarScanFilter.check(JarScanType.TLD, "foo.jar")).isFalse();
 		assertThat(jarScanFilter.check(JarScanType.TLD, "bar.jar")).isFalse();
 		assertThat(jarScanFilter.check(JarScanType.TLD, "test.jar")).isTrue();
+	}
+
+	@Test
+	void tldScanPatternsShouldBeAppliedToContextJarScanner() {
+		TomcatServletWebServerFactory factory = getFactory();
+		this.webServer = factory.getWebServer();
+		this.webServer.start();
+		Tomcat tomcat = ((TomcatWebServer) this.webServer).getTomcat();
+		Context context = (Context) tomcat.getHost().findChildren()[0];
+		JarScanFilter jarScanFilter = context.getJarScanner().getJarScanFilter();
+		String tldScan = ((StandardJarScanFilter) jarScanFilter).getTldScan();
+		assertThat(tldScan).isEqualTo("log4j-taglib*.jar,log4j-web*.jar,log4javascript*.jar,slf4j-taglib*.jar");
 	}
 
 	@Test

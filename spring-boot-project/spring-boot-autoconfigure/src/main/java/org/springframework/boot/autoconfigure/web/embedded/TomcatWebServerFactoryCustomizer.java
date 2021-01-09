@@ -29,7 +29,7 @@ import org.apache.coyote.ProtocolHandler;
 import org.apache.coyote.http11.AbstractHttp11Protocol;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
+import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeAttribute;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Accesslog;
 import org.springframework.boot.autoconfigure.web.ServerProperties.Tomcat.Remoteip;
@@ -292,7 +292,7 @@ public class TomcatWebServerFactoryCustomizer
 	}
 
 	private void customizeErrorReportValve(ErrorProperties error, ConfigurableTomcatWebServerFactory factory) {
-		if (error.getIncludeStacktrace() == IncludeStacktrace.NEVER) {
+		if (error.getIncludeStacktrace() == IncludeAttribute.NEVER) {
 			factory.addContextCustomizers((context) -> {
 				ErrorReportValve valve = new ErrorReportValve();
 				valve.setShowServerInfo(false);

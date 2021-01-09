@@ -37,19 +37,19 @@ class ConfigDataLocationResolverTests {
 
 	@Test
 	void resolveProfileSpecificReturnsEmptyList() {
-		assertThat(this.resolver.resolveProfileSpecific(this.context, null, true, null)).isEmpty();
+		assertThat(this.resolver.resolveProfileSpecific(this.context, null, null)).isEmpty();
 	}
 
-	static class TestConfigDataLocationResolver implements ConfigDataLocationResolver<ConfigDataLocation> {
+	static class TestConfigDataLocationResolver implements ConfigDataLocationResolver<ConfigDataResource> {
 
 		@Override
-		public boolean isResolvable(ConfigDataLocationResolverContext context, String location) {
+		public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
 			return true;
 		}
 
 		@Override
-		public List<ConfigDataLocation> resolve(ConfigDataLocationResolverContext context, String location,
-				boolean optional) {
+		public List<ConfigDataResource> resolve(ConfigDataLocationResolverContext context,
+				ConfigDataLocation location) {
 			return null;
 		}
 

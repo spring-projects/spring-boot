@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -243,7 +243,7 @@ class BootZipCopyAction implements CopyAction {
 			details.copyTo(this.out);
 			this.out.closeArchiveEntry();
 			if (BootZipCopyAction.this.librarySpec.isSatisfiedBy(details)) {
-				this.writtenLibraries.add(name.substring(name.lastIndexOf('/') + 1));
+				this.writtenLibraries.add(name);
 			}
 			if (BootZipCopyAction.this.layerResolver != null) {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(details);

@@ -22,6 +22,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerHost;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.system.Environment;
 
@@ -49,6 +51,15 @@ public interface HttpTransport {
 	 * @throws IOException on IO error
 	 */
 	Response post(URI uri) throws IOException;
+
+	/**
+	 * Perform a HTTP POST operation.
+	 * @param uri the destination URI (excluding any host/port)
+	 * @param registryAuth registry authentication credentials
+	 * @return the operation response
+	 * @throws IOException on IO error
+	 */
+	Response post(URI uri, String registryAuth) throws IOException;
 
 	/**
 	 * Perform a HTTP POST operation.
@@ -88,13 +99,34 @@ public interface HttpTransport {
 	}
 
 	/**
+	 * Create the most suitable {@link HttpTransport} based on the
+	 * {@link Environment#SYSTEM system environment}.
+	 * @param dockerHost the Docker engine host configuration
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create(DockerHost dockerHost) {
+		return create(Environment.SYSTEM, dockerHost);
+	}
+
+	/**
 	 * Create the most suitable {@link HttpTransport} based on the given
 	 * {@link Environment}.
 	 * @param environment the source environment
 	 * @return a {@link HttpTransport} instance
 	 */
 	static HttpTransport create(Environment environment) {
-		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment);
+		return create(environment, null);
+	}
+
+	/**
+	 * Create the most suitable {@link HttpTransport} based on the given
+	 * {@link Environment} and {@link DockerConfiguration}.
+	 * @param environment the source environment
+	 * @param dockerHost the Docker engine host configuration
+	 * @return a {@link HttpTransport} instance
+	 */
+	static HttpTransport create(Environment environment, DockerHost dockerHost) {
+		HttpTransport remote = RemoteHttpClientTransport.createIfPossible(environment, dockerHost);
 		return (remote != null) ? remote : LocalHttpClientTransport.create(environment);
 	}
 

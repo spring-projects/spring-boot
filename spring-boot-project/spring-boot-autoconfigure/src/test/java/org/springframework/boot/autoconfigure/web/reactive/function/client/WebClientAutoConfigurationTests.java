@@ -20,6 +20,7 @@ import java.net.URI;
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -88,6 +89,7 @@ class WebClientAutoConfigurationTests {
 	void shouldGetPrototypeScopedBean() {
 		this.contextRunner.withUserConfiguration(WebClientCustomizerConfig.class).run((context) -> {
 			ClientHttpResponse response = mock(ClientHttpResponse.class);
+			given(response.getBody()).willReturn(Flux.empty());
 			given(response.getHeaders()).willReturn(new HttpHeaders());
 			ClientHttpConnector firstConnector = mock(ClientHttpConnector.class);
 			given(firstConnector.connect(any(), any(), any())).willReturn(Mono.just(response));
@@ -98,8 +100,8 @@ class WebClientAutoConfigurationTests {
 			WebClient.Builder secondBuilder = context.getBean(WebClient.Builder.class);
 			secondBuilder.clientConnector(secondConnector).baseUrl("https://second.example.org");
 			assertThat(firstBuilder).isNotEqualTo(secondBuilder);
-			firstBuilder.build().get().uri("/foo").exchange().block(Duration.ofSeconds(30));
-			secondBuilder.build().get().uri("/foo").exchange().block(Duration.ofSeconds(30));
+			firstBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
+			secondBuilder.build().get().uri("/foo").retrieve().toBodilessEntity().block(Duration.ofSeconds(30));
 			verify(firstConnector).connect(eq(HttpMethod.GET), eq(URI.create("https://first.example.org/foo")), any());
 			verify(secondConnector).connect(eq(HttpMethod.GET), eq(URI.create("https://second.example.org/foo")),
 					any());

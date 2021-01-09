@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.neo4j.country.CountryRepository;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 import org.springframework.test.context.DynamicPropertyRegistry;
@@ -43,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
-	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>("neo4j:4.0");
+	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j());
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {

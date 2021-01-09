@@ -23,7 +23,9 @@ import org.springframework.boot.buildpack.platform.build.BuilderMetadata.Stack;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressEvent;
 import org.springframework.boot.buildpack.platform.docker.TotalProgressPullListener;
+import org.springframework.boot.buildpack.platform.docker.TotalProgressPushListener;
 import org.springframework.boot.buildpack.platform.docker.UpdateListener;
+import org.springframework.boot.buildpack.platform.docker.configuration.DockerConfiguration;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
@@ -44,18 +46,47 @@ public class Builder {
 
 	private final DockerApi docker;
 
+	private final DockerConfiguration dockerConfiguration;
+
+	/**
+	 * Create a new builder instance.
+	 */
 	public Builder() {
 		this(BuildLog.toSystemOut());
 	}
 
-	public Builder(BuildLog log) {
-		this(log, new DockerApi());
+	/**
+	 * Create a new builder instance.
+	 * @param dockerConfiguration the docker configuration
+	 * @since 2.4.0
+	 */
+	public Builder(DockerConfiguration dockerConfiguration) {
+		this(BuildLog.toSystemOut(), dockerConfiguration);
 	}
 
-	Builder(BuildLog log, DockerApi docker) {
+	/**
+	 * Create a new builder instance.
+	 * @param log a logger used to record output
+	 */
+	public Builder(BuildLog log) {
+		this(log, new DockerApi(), null);
+	}
+
+	/**
+	 * Create a new builder instance.
+	 * @param log a logger used to record output
+	 * @param dockerConfiguration the docker configuration
+	 * @since 2.4.0
+	 */
+	public Builder(BuildLog log, DockerConfiguration dockerConfiguration) {
+		this(log, new DockerApi(dockerConfiguration), dockerConfiguration);
+	}
+
+	Builder(BuildLog log, DockerApi docker, DockerConfiguration dockerConfiguration) {
 		Assert.notNull(log, "Log must not be null");
 		this.log = log;
 		this.docker = docker;
+		this.dockerConfiguration = dockerConfiguration;
 	}
 
 	public void build(BuildRequest request) throws DockerEngineException, IOException {
@@ -70,6 +101,9 @@ public class Builder {
 		this.docker.image().load(builder.getArchive(), UpdateListener.none());
 		try {
 			executeLifecycle(request, builder);
+			if (request.isPublish()) {
+				pushImage(request.getName());
+			}
 		}
 		finally {
 			this.docker.image().remove(builder.getName(), true);
@@ -116,9 +150,26 @@ public class Builder {
 	private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
 		Consumer<TotalProgressEvent> progressConsumer = this.log.pullingImage(reference, imageType);
 		TotalProgressPullListener listener = new TotalProgressPullListener(progressConsumer);
-		Image image = this.docker.image().pull(reference, listener);
+		Image image = this.docker.image().pull(reference, listener, getBuilderAuthHeader());
 		this.log.pulledImage(image, imageType);
 		return image;
+	}
+
+	private void pushImage(ImageReference reference) throws IOException {
+		Consumer<TotalProgressEvent> progressConsumer = this.log.pushingImage(reference);
+		TotalProgressPushListener listener = new TotalProgressPushListener(progressConsumer);
+		this.docker.image().push(reference, listener, getPublishAuthHeader());
+		this.log.pushedImage(reference);
+	}
+
+	private String getBuilderAuthHeader() {
+		return (this.dockerConfiguration != null && this.dockerConfiguration.getBuilderRegistryAuthentication() != null)
+				? this.dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader() : null;
+	}
+
+	private String getPublishAuthHeader() {
+		return (this.dockerConfiguration != null && this.dockerConfiguration.getPublishRegistryAuthentication() != null)
+				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader() : null;
 	}
 
 	private void assertStackIdsMatch(Image runImage, Image builderImage) {

@@ -37,6 +37,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,6 +83,10 @@ class CassandraAutoConfigurationWithPasswordAuthenticationIntegrationTests {
 
 	static final class PasswordAuthenticatorCassandraContainer
 			extends CassandraContainer<PasswordAuthenticatorCassandraContainer> {
+
+		PasswordAuthenticatorCassandraContainer() {
+			super(DockerImageNames.cassandra());
+		}
 
 		@Override
 		protected void containerIsCreated(String containerId) {

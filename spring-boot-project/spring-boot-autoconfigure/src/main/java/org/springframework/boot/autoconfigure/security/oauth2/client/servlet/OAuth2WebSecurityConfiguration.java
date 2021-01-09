@@ -17,8 +17,8 @@
 package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
@@ -54,15 +54,15 @@ class OAuth2WebSecurityConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
-	@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
-	static class OAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	@ConditionalOnDefaultWebSecurity
+	static class OAuth2SecurityFilterChainConfiguration {
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
+		@Bean
+		SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
 			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
 			http.oauth2Login(Customizer.withDefaults());
 			http.oauth2Client();
+			return http.build();
 		}
 
 	}

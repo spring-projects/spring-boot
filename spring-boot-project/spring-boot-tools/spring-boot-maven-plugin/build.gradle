@@ -28,6 +28,7 @@ dependencies {
 	intTestImplementation("org.assertj:assertj-core")
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 	intTestImplementation("org.testcontainers:testcontainers")
+	intTestImplementation("org.testcontainers:junit-jupiter")
 
 	optional("org.apache.maven.plugins:maven-shade-plugin")
 
@@ -82,12 +83,6 @@ javadoc {
 		use = true
 		windowTitle = "Spring Boot Maven Plugin ${project.version} API"
 	}
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	attributes	"maven-jar-plugin-version": "1.2.3",
-				"maven-failsafe-plugin-version": "1.2.3",
-				"build-helper-maven-plugin-version": "1.2.3"
 }
 
 task zip(type: Zip) {

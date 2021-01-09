@@ -83,7 +83,7 @@
 :spring-data-solr-docs: https://docs.spring.io/spring-data/solr/docs/{spring-data-solr-version}/reference/html/
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
-:spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/spring-framework-reference
+:spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/reference/html
 :spring-initializr-docs: https://docs.spring.io/initializr/docs/current/reference/html
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
@@ -104,7 +104,6 @@
 :gradle-docs: https://docs.gradle.org/current/userguide
 :hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
 :java-api: https://docs.oracle.com/javase/8/docs/api
-:jetty-docs: https://www.eclipse.org/jetty/documentation/{jetty-version}
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/

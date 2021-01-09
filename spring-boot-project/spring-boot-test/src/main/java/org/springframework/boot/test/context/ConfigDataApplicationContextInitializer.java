@@ -16,10 +16,10 @@
 
 package org.springframework.boot.test.context;
 
+import org.springframework.boot.DefaultBootstrapContext;
+import org.springframework.boot.DefaultPropertiesPropertySource;
 import org.springframework.boot.context.config.ConfigData;
 import org.springframework.boot.context.config.ConfigDataEnvironmentPostProcessor;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
-import org.springframework.boot.env.DefaultPropertiesPropertySource;
 import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -42,9 +42,9 @@ public class ConfigDataApplicationContextInitializer
 	public void initialize(ConfigurableApplicationContext applicationContext) {
 		ConfigurableEnvironment environment = applicationContext.getEnvironment();
 		RandomValuePropertySource.addToEnvironment(environment);
-		DefaultBootstrapRegisty bootstrapRegistry = new DefaultBootstrapRegisty();
-		ConfigDataEnvironmentPostProcessor.applyTo(environment, applicationContext, bootstrapRegistry);
-		bootstrapRegistry.applicationContextPrepared(applicationContext);
+		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+		ConfigDataEnvironmentPostProcessor.applyTo(environment, applicationContext, bootstrapContext);
+		bootstrapContext.close(applicationContext);
 		DefaultPropertiesPropertySource.moveToEnd(environment);
 	}
 

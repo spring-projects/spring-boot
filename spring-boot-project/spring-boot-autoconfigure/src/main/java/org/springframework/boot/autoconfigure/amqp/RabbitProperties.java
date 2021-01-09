@@ -121,6 +121,11 @@ public class RabbitProperties {
 	private Duration connectionTimeout;
 
 	/**
+	 * Continuation timeout for RPC calls in channels. Set it to zero to wait forever.
+	 */
+	private Duration channelRpcTimeout = Duration.ofMinutes(10);
+
+	/**
 	 * Cache configuration.
 	 */
 	private final Cache cache = new Cache();
@@ -285,7 +290,7 @@ public class RabbitProperties {
 	}
 
 	public void setVirtualHost(String virtualHost) {
-		this.virtualHost = "".equals(virtualHost) ? "/" : virtualHost;
+		this.virtualHost = StringUtils.hasText(virtualHost) ? virtualHost : "/";
 	}
 
 	public AddressShuffleMode getAddressShuffleMode() {
@@ -336,6 +341,14 @@ public class RabbitProperties {
 		this.connectionTimeout = connectionTimeout;
 	}
 
+	public Duration getChannelRpcTimeout() {
+		return this.channelRpcTimeout;
+	}
+
+	public void setChannelRpcTimeout(Duration channelRpcTimeout) {
+		this.channelRpcTimeout = channelRpcTimeout;
+	}
+
 	public Cache getCache() {
 		return this.cache;
 	}
@@ -349,6 +362,8 @@ public class RabbitProperties {
 	}
 
 	public class Ssl {
+
+		private static final String SUN_X509 = "SunX509";
 
 		/**
 		 * Whether to enable SSL support. Determined automatically if an address is
@@ -372,6 +387,11 @@ public class RabbitProperties {
 		private String keyStorePassword;
 
 		/**
+		 * Key store algorithm.
+		 */
+		private String keyStoreAlgorithm = SUN_X509;
+
+		/**
 		 * Trust store that holds SSL certificates.
 		 */
 		private String trustStore;
@@ -385,6 +405,11 @@ public class RabbitProperties {
 		 * Password used to access the trust store.
 		 */
 		private String trustStorePassword;
+
+		/**
+		 * Trust store algorithm.
+		 */
+		private String trustStoreAlgorithm = SUN_X509;
 
 		/**
 		 * SSL algorithm to use. By default, configured by the Rabbit client library.
@@ -449,6 +474,14 @@ public class RabbitProperties {
 			this.keyStorePassword = keyStorePassword;
 		}
 
+		public String getKeyStoreAlgorithm() {
+			return this.keyStoreAlgorithm;
+		}
+
+		public void setKeyStoreAlgorithm(String keyStoreAlgorithm) {
+			this.keyStoreAlgorithm = keyStoreAlgorithm;
+		}
+
 		public String getTrustStore() {
 			return this.trustStore;
 		}
@@ -471,6 +504,14 @@ public class RabbitProperties {
 
 		public void setTrustStorePassword(String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
+		}
+
+		public String getTrustStoreAlgorithm() {
+			return this.trustStoreAlgorithm;
+		}
+
+		public void setTrustStoreAlgorithm(String trustStoreAlgorithm) {
+			this.trustStoreAlgorithm = trustStoreAlgorithm;
 		}
 
 		public String getAlgorithm() {
@@ -650,6 +691,12 @@ public class RabbitProperties {
 		private Duration idleEventInterval;
 
 		/**
+		 * Whether the container should present batched messages as discrete messages or
+		 * call the listener with the batch.
+		 */
+		private boolean deBatchingEnabled = true;
+
+		/**
 		 * Optional properties for a retry interceptor.
 		 */
 		private final ListenerRetry retry = new ListenerRetry();
@@ -696,6 +743,14 @@ public class RabbitProperties {
 
 		public abstract boolean isMissingQueuesFatal();
 
+		public boolean isDeBatchingEnabled() {
+			return this.deBatchingEnabled;
+		}
+
+		public void setDeBatchingEnabled(boolean deBatchingEnabled) {
+			this.deBatchingEnabled = deBatchingEnabled;
+		}
+
 		public ListenerRetry getRetry() {
 			return this.retry;
 		}
@@ -730,6 +785,14 @@ public class RabbitProperties {
 		 */
 		private boolean missingQueuesFatal = true;
 
+		/**
+		 * Whether the container creates a batch of messages based on the
+		 * 'receive-timeout' and 'batch-size'. Coerces 'de-batching-enabled' to true to
+		 * include the contents of a producer created batch in the batch as discrete
+		 * records.
+		 */
+		private boolean consumerBatchEnabled;
+
 		public Integer getConcurrency() {
 			return this.concurrency;
 		}
@@ -761,6 +824,14 @@ public class RabbitProperties {
 
 		public void setMissingQueuesFatal(boolean missingQueuesFatal) {
 			this.missingQueuesFatal = missingQueuesFatal;
+		}
+
+		public boolean isConsumerBatchEnabled() {
+			return this.consumerBatchEnabled;
+		}
+
+		public void setConsumerBatchEnabled(boolean consumerBatchEnabled) {
+			this.consumerBatchEnabled = consumerBatchEnabled;
 		}
 
 	}

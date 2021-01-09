@@ -97,7 +97,7 @@ public class Profiles implements Iterable<String> {
 		if (hasExplicit(supplier, propertyValue, unset)) {
 			return supplier.get();
 		}
-		return binder.bind(propertyName, String[].class).orElse(StringUtils.toStringArray(unset));
+		return binder.bind(propertyName, String[].class).orElseGet(() -> StringUtils.toStringArray(unset));
 	}
 
 	private boolean hasExplicit(Supplier<String[]> supplier, String propertyValue, Set<String> unset) {
@@ -116,19 +116,20 @@ public class Profiles implements Iterable<String> {
 		Set<String> expandedProfiles = new LinkedHashSet<>();
 		while (!stack.isEmpty()) {
 			String current = stack.pop();
-			expandedProfiles.add(current);
-			asReversedList(this.groups.get(current)).forEach(stack::push);
+			if (expandedProfiles.add(current)) {
+				asReversedList(this.groups.get(current)).forEach(stack::push);
+			}
 		}
 		return asUniqueItemList(StringUtils.toStringArray(expandedProfiles));
 	}
 
 	private List<String> asReversedList(List<String> list) {
-		if (list == null || list.isEmpty()) {
+		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
 		List<String> reversed = new ArrayList<>(list);
 		Collections.reverse(reversed);
-		return Collections.unmodifiableList(reversed);
+		return reversed;
 	}
 
 	private List<String> asUniqueItemList(String[] array) {

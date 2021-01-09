@@ -94,13 +94,6 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	void testErrorForMachineClientWithTraceParamsTrue() {
-		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-trace-param",
-				"--server.error.include-message=on-param");
-		exceptionWithStackTraceAndMessage("?trace=true&message=true");
-	}
-
-	@Test
 	void testErrorForMachineClientWithParamsTrue() {
 		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-param",
 				"--server.error.include-message=on-param");

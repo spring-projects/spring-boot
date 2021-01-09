@@ -36,6 +36,7 @@ import org.apache.kafka.common.serialization.LongDeserializer;
 import org.apache.kafka.common.serialization.LongSerializer;
 import org.apache.kafka.streams.StreamsBuilder;
 import org.apache.kafka.streams.StreamsConfig;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -50,6 +51,7 @@ import org.springframework.kafka.config.ConcurrentKafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaListenerContainerFactory;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.core.ConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.core.DefaultKafkaProducerFactory;
@@ -341,6 +343,26 @@ class KafkaAutoConfigurationTests {
 	}
 
 	@Test
+	void streamsWithCleanupConfig() {
+		this.contextRunner
+				.withUserConfiguration(EnableKafkaStreamsConfiguration.class, TestKafkaStreamsConfiguration.class)
+				.withPropertyValues("spring.application.name=my-test-app",
+						"spring.kafka.bootstrap-servers=localhost:9092,localhost:9093",
+						"spring.kafka.streams.auto-startup=false", "spring.kafka.streams.cleanup.on-startup=true",
+						"spring.kafka.streams.cleanup.on-shutdown=false")
+				.run((context) -> {
+					StreamsBuilderFactoryBean streamsBuilderFactoryBean = context
+							.getBean(StreamsBuilderFactoryBean.class);
+					assertThat(streamsBuilderFactoryBean)
+							.extracting("cleanupConfig", InstanceOfAssertFactories.type(CleanupConfig.class))
+							.satisfies((cleanupConfig) -> {
+								assertThat(cleanupConfig.cleanupOnStart()).isTrue();
+								assertThat(cleanupConfig.cleanupOnStop()).isFalse();
+							});
+				});
+	}
+
+	@Test
 	void streamsApplicationIdIsMandatory() {
 		this.contextRunner.withUserConfiguration(EnableKafkaStreamsConfiguration.class).run((context) -> {
 			assertThat(context).hasFailed();
@@ -370,6 +392,7 @@ class KafkaAutoConfigurationTests {
 						"spring.kafka.listener.no-poll-threshold=2.5", "spring.kafka.listener.type=batch",
 						"spring.kafka.listener.idle-between-polls=1s", "spring.kafka.listener.idle-event-interval=1s",
 						"spring.kafka.listener.monitor-interval=45", "spring.kafka.listener.log-container-config=true",
+						"spring.kafka.listener.only-log-record-metadata=true",
 						"spring.kafka.listener.missing-topics-fatal=true", "spring.kafka.jaas.enabled=true",
 						"spring.kafka.producer.transaction-id-prefix=foo", "spring.kafka.jaas.login-module=foo",
 						"spring.kafka.jaas.control-flag=REQUISITE", "spring.kafka.jaas.options.useKeyTab=true")
@@ -396,6 +419,7 @@ class KafkaAutoConfigurationTests {
 					assertThat(containerProperties.getIdleEventInterval()).isEqualTo(1000L);
 					assertThat(containerProperties.getMonitorInterval()).isEqualTo(45);
 					assertThat(containerProperties.isLogContainerConfig()).isTrue();
+					assertThat(containerProperties.isOnlyLogRecordMetadata()).isTrue();
 					assertThat(containerProperties.isMissingTopicsFatal()).isTrue();
 					assertThat(kafkaListenerContainerFactory).extracting("concurrency").isEqualTo(3);
 					assertThat(kafkaListenerContainerFactory.isBatchListener()).isTrue();

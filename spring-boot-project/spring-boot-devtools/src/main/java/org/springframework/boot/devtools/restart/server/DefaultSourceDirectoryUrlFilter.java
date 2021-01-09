@@ -17,9 +17,6 @@
 package org.springframework.boot.devtools.restart.server;
 
 import java.net.URL;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -39,9 +36,6 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 	private static final Pattern URL_MODULE_PATTERN = Pattern.compile(".*\\/(.+)\\.jar");
 
 	private static final Pattern VERSION_PATTERN = Pattern.compile("^-\\d+(?:\\.\\d+)*(?:[.-].+)?$");
-
-	private static final Set<String> SKIPPED_PROJECTS = new HashSet<>(Arrays.asList("spring-boot",
-			"spring-boot-devtools", "spring-boot-autoconfigure", "spring-boot-actuator", "spring-boot-starter"));
 
 	@Override
 	public boolean isMatch(String sourceDirectory, URL url) {
@@ -73,7 +67,7 @@ public class DefaultSourceDirectoryUrlFilter implements SourceDirectoryUrlFilter
 	}
 
 	private boolean isDirectoryMatch(String directory, String jarName) {
-		if (!jarName.startsWith(directory) || SKIPPED_PROJECTS.contains(directory)) {
+		if (!jarName.startsWith(directory)) {
 			return false;
 		}
 		String version = jarName.substring(directory.length());

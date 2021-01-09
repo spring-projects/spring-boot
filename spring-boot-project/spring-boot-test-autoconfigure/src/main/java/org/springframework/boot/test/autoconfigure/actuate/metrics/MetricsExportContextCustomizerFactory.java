@@ -20,12 +20,11 @@ import java.util.List;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.annotation.MergedAnnotations;
-import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.test.context.ContextConfigurationAttributes;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextCustomizerFactory;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.TestContextAnnotationUtils;
 
 /**
  * {@link ContextCustomizerFactory} that globally disables metrics export unless
@@ -38,8 +37,8 @@ class MetricsExportContextCustomizerFactory implements ContextCustomizerFactory 
 	@Override
 	public ContextCustomizer createContextCustomizer(Class<?> testClass,
 			List<ContextConfigurationAttributes> configAttributes) {
-		boolean disableMetricsExport = !MergedAnnotations.from(testClass, SearchStrategy.TYPE_HIERARCHY)
-				.get(AutoConfigureMetrics.class).isPresent();
+		boolean disableMetricsExport = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				AutoConfigureMetrics.class) == null;
 		return disableMetricsExport ? new DisableMetricExportContextCustomizer() : null;
 	}
 

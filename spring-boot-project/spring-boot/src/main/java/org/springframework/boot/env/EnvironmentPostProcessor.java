@@ -18,6 +18,9 @@ package org.springframework.boot.env;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapContext;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -41,8 +44,9 @@ import org.springframework.core.env.Environment;
  * itself to configure logging levels).</li>
  * <li>{@link Log} - A log with output deferred until the application has been full
  * prepared (allowing the environment itself to configure logging levels).</li>
- * <li>{@link BootstrapRegistry} - A bootstrap registry that can be used to store objects
- * that may be expensive to create, or need to be shared.</li>
+ * <li>{@link ConfigurableBootstrapContext} - A bootstrap context that can be used to
+ * store objects that may be expensive to create, or need to be shared
+ * ({@link BootstrapContext} or {@link BootstrapRegistry} may also be used).</li>
  * </ul>
  *
  * @author Andy Wilkinson

@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -36,13 +37,13 @@ class EnvironmentPostProcessorsFactoryTests {
 
 	private final DeferredLogFactory logFactory = Supplier::get;
 
-	private final BootstrapRegistry bootstrapRegistry = new DefaultBootstrapRegisty();
+	private final DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
 
 	@Test
 	void fromSpringFactoriesReturnsFactory() {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory.fromSpringFactories(null);
 		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
-				this.bootstrapRegistry);
+				this.bootstrapContext);
 		assertThat(processors).hasSizeGreaterThan(1);
 	}
 
@@ -51,7 +52,7 @@ class EnvironmentPostProcessorsFactoryTests {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory
 				.of(TestEnvironmentPostProcessor.class);
 		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
-				this.bootstrapRegistry);
+				this.bootstrapContext);
 		assertThat(processors).hasSize(1);
 		assertThat(processors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
 	}
@@ -61,7 +62,7 @@ class EnvironmentPostProcessorsFactoryTests {
 		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory
 				.of(TestEnvironmentPostProcessor.class.getName());
 		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
-				this.bootstrapRegistry);
+				this.bootstrapContext);
 		assertThat(processors).hasSize(1);
 		assertThat(processors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
 	}

@@ -49,8 +49,7 @@ public final class ErrorAttributeOptions {
 
 	/**
 	 * Get all options for including attributes in the error response.
-	 * @return {@code true} if the {@code Include} attribute is included in the error
-	 * response, {@code false} otherwise
+	 * @return the options
 	 */
 	public Set<Include> getIncludes() {
 		return this.includes;
@@ -63,8 +62,7 @@ public final class ErrorAttributeOptions {
 	 * @return an {@code ErrorAttributeOptions}
 	 */
 	public ErrorAttributeOptions including(Include... includes) {
-		EnumSet<Include> updated = (this.includes.isEmpty()) ? EnumSet.noneOf(Include.class)
-				: EnumSet.copyOf(this.includes);
+		EnumSet<Include> updated = copyIncludes();
 		updated.addAll(Arrays.asList(includes));
 		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
 	}
@@ -76,9 +74,13 @@ public final class ErrorAttributeOptions {
 	 * @return an {@code ErrorAttributeOptions}
 	 */
 	public ErrorAttributeOptions excluding(Include... excludes) {
-		EnumSet<Include> updated = EnumSet.copyOf(this.includes);
+		EnumSet<Include> updated = copyIncludes();
 		updated.removeAll(Arrays.asList(excludes));
 		return new ErrorAttributeOptions(Collections.unmodifiableSet(updated));
+	}
+
+	private EnumSet<Include> copyIncludes() {
+		return (this.includes.isEmpty()) ? EnumSet.noneOf(Include.class) : EnumSet.copyOf(this.includes);
 	}
 
 	/**

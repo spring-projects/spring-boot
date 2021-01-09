@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ import org.springframework.util.Assert;
 
 /**
  * {@link WebServer} that can be used to control a Tomcat web server. Usually this class
- * should be created using the {@link TomcatReactiveWebServerFactory} of
+ * should be created using the {@link TomcatReactiveWebServerFactory} or
  * {@link TomcatServletWebServerFactory}, but not directly.
  *
  * @author Brian Clozel
@@ -364,7 +364,7 @@ public class TomcatWebServer implements WebServer {
 		if (connector != null) {
 			return connector.getLocalPort();
 		}
-		return 0;
+		return -1;
 	}
 
 	private String getContextPath() {

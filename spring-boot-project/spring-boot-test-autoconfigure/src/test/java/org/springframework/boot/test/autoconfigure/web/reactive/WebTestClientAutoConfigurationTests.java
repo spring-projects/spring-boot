@@ -74,7 +74,7 @@ class WebTestClientAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(BaseConfiguration.class)
 				.withPropertyValues("spring.test.webtestclient.timeout=15m").run((context) -> {
 					WebTestClient webTestClient = context.getBean(WebTestClient.class);
-					assertThat(webTestClient).hasFieldOrPropertyWithValue("timeout", Duration.ofMinutes(15));
+					assertThat(webTestClient).hasFieldOrPropertyWithValue("responseTimeout", Duration.ofMinutes(15));
 				});
 	}
 

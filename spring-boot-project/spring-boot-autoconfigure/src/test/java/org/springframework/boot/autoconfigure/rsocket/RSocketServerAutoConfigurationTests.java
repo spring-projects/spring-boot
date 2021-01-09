@@ -32,6 +32,7 @@ import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.util.unit.DataSize;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -88,6 +89,28 @@ class RSocketServerAutoConfigurationTests {
 					assertThat(context).hasSingleBean(RSocketServerFactory.class)
 							.hasSingleBean(RSocketServerBootstrap.class).hasSingleBean(RSocketServerCustomizer.class);
 					assertThat(context.getEnvironment().getProperty("local.rsocket.server.port")).isNotNull();
+				});
+	}
+
+	@Test
+	void shouldSetFragmentWhenRSocketServerFragmentSizeIsSet() {
+		reactiveWebContextRunner()
+				.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.fragment-size=12KB")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(RSocketServerFactory.class);
+					RSocketServerFactory factory = context.getBean(RSocketServerFactory.class);
+					assertThat(factory).hasFieldOrPropertyWithValue("fragmentSize", DataSize.ofKilobytes(12));
+				});
+	}
+
+	@Test
+	void shouldFailToSetFragmentWhenRSocketServerFragmentSizeIsBelow64() {
+		reactiveWebContextRunner()
+				.withPropertyValues("spring.rsocket.server.port=0", "spring.rsocket.server.fragment-size=60B")
+				.run((context) -> {
+					assertThat(context).hasFailed();
+					assertThat(context.getStartupFailure())
+							.hasMessageContaining("The smallest allowed mtu size is 64 bytes, provided: 60");
 				});
 	}
 

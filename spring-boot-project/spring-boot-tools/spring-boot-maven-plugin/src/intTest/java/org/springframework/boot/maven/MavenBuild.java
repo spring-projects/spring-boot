@@ -84,14 +84,14 @@ class MavenBuild {
 		this.pomReplacements.put("project.groupId", "org.springframework.boot");
 		this.pomReplacements.put("project.artifactId", "spring-boot-maven-plugin");
 		this.pomReplacements.put("project.version", determineVersion());
-		this.pomReplacements.put("log4j2.version", "2.12.1");
+		this.pomReplacements.put("log4j2.version", "2.13.3");
 		this.pomReplacements.put("maven-jar-plugin.version", "3.2.0");
 		this.pomReplacements.put("maven-toolchains-plugin.version", "3.0.0");
 		this.pomReplacements.put("maven-war-plugin.version", "3.2.3");
 		this.pomReplacements.put("build-helper-maven-plugin.version", "3.0.0");
-		this.pomReplacements.put("spring-framework.version", "5.2.1.RELEASE");
-		this.pomReplacements.put("jakarta-servlet.version", "4.0.2");
-		this.pomReplacements.put("kotlin.version", "1.3.60");
+		this.pomReplacements.put("spring-framework.version", "5.3.0");
+		this.pomReplacements.put("jakarta-servlet.version", "4.0.4");
+		this.pomReplacements.put("kotlin.version", "1.4.10");
 	}
 
 	MavenBuild project(String project) {
@@ -170,6 +170,7 @@ class MavenBuild {
 			request.setUserSettingsFile(new File(this.temp, "settings.xml"));
 			request.setUpdateSnapshots(true);
 			request.setBatchMode(true);
+			// request.setMavenOpts("-agentlib:jdwp=transport=dt_socket,server=y,suspend=y,address=8000");
 			File target = new File(this.temp, "target");
 			target.mkdirs();
 			if (this.preparation != null) {

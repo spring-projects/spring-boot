@@ -43,7 +43,7 @@ public class ErrorProperties {
 	/**
 	 * When to include the "trace" attribute.
 	 */
-	private IncludeStacktrace includeStacktrace = IncludeStacktrace.NEVER;
+	private IncludeAttribute includeStacktrace = IncludeAttribute.NEVER;
 
 	/**
 	 * When to include "message" attribute.
@@ -73,11 +73,11 @@ public class ErrorProperties {
 		this.includeException = includeException;
 	}
 
-	public IncludeStacktrace getIncludeStacktrace() {
+	public IncludeAttribute getIncludeStacktrace() {
 		return this.includeStacktrace;
 	}
 
-	public void setIncludeStacktrace(IncludeStacktrace includeStacktrace) {
+	public void setIncludeStacktrace(IncludeAttribute includeStacktrace) {
 		this.includeStacktrace = includeStacktrace;
 	}
 
@@ -99,34 +99,6 @@ public class ErrorProperties {
 
 	public Whitelabel getWhitelabel() {
 		return this.whitelabel;
-	}
-
-	/**
-	 * Include Stacktrace attribute options.
-	 */
-	public enum IncludeStacktrace {
-
-		/**
-		 * Never add stacktrace information.
-		 */
-		NEVER,
-
-		/**
-		 * Always add stacktrace information.
-		 */
-		ALWAYS,
-
-		/**
-		 * Add error attribute when the appropriate request parameter is "true".
-		 */
-		ON_PARAM,
-
-		/**
-		 * Add stacktrace information when the "trace" request parameter is "true".
-		 */
-		@Deprecated // since 2.3.0 in favor of {@link #ON_PARAM}
-		ON_TRACE_PARAM;
-
 	}
 
 	/**

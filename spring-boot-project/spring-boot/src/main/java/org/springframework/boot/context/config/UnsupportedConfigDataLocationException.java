@@ -25,22 +25,22 @@ package org.springframework.boot.context.config;
  */
 public class UnsupportedConfigDataLocationException extends ConfigDataException {
 
-	private final String location;
+	private final ConfigDataLocation location;
 
 	/**
 	 * Create a new {@link UnsupportedConfigDataLocationException} instance.
 	 * @param location the unsupported location
 	 */
-	UnsupportedConfigDataLocationException(String location) {
+	UnsupportedConfigDataLocationException(ConfigDataLocation location) {
 		super("Unsupported config data location '" + location + "'", null);
 		this.location = location;
 	}
 
 	/**
-	 * Return the unsupported location.
-	 * @return the unsupported location
+	 * Return the unsupported location reference.
+	 * @return the unsupported location reference
 	 */
-	public String getLocation() {
+	public ConfigDataLocation getLocation() {
 		return this.location;
 	}
 

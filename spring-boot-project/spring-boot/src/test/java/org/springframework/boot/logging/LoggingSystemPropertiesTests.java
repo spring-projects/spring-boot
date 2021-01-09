@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,8 @@ class LoggingSystemPropertiesTests {
 
 	@BeforeEach
 	void captureSystemPropertyNames() {
+		System.getProperties().remove(LoggingSystemProperties.CONSOLE_LOG_CHARSET);
+		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 	}
 
@@ -65,10 +67,35 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
+	void consoleCharsetWhenNoPropertyUsesUtf8() {
+		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_CHARSET)).isEqualTo("UTF-8");
+	}
+
+	@Test
+	void consoleCharsetIsSet() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.charset.console", "UTF-16"))
+				.apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.CONSOLE_LOG_CHARSET)).isEqualTo("UTF-16");
+	}
+
+	@Test
 	void fileLogPatternIsSet() {
 		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.pattern.file", "file pattern"))
 				.apply(null);
 		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_PATTERN)).isEqualTo("file pattern");
+	}
+
+	@Test
+	void fileCharsetWhenNoPropertyUsesUtf8() {
+		new LoggingSystemProperties(new MockEnvironment()).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_CHARSET)).isEqualTo("UTF-8");
+	}
+
+	@Test
+	void fileCharsetIsSet() {
+		new LoggingSystemProperties(new MockEnvironment().withProperty("logging.charset.file", "UTF-16")).apply(null);
+		assertThat(System.getProperty(LoggingSystemProperties.FILE_LOG_CHARSET)).isEqualTo("UTF-16");
 	}
 
 	@Test
@@ -84,6 +111,7 @@ class LoggingSystemPropertiesTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void rollingFileNameIsSet() {
 		new LoggingSystemProperties(
 				new MockEnvironment().withProperty("logging.pattern.rolling-file-name", "rolling file pattern"))

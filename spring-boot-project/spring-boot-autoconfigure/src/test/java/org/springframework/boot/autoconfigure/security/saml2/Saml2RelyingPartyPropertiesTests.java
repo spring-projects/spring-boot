@@ -90,16 +90,16 @@ class Saml2RelyingPartyPropertiesTests {
 
 	@Test
 	void customizeRelyingPartyEntityId() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.relying-party-entity-id",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.entity-id",
 				"{baseUrl}/saml2/custom-entity-id");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getRelyingPartyEntityId())
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getEntityId())
 				.isEqualTo("{baseUrl}/saml2/custom-entity-id");
 	}
 
 	@Test
 	void customizeRelyingPartyEntityIdDefaultsToServiceProviderMetadata() {
 		assertThat(RelyingPartyRegistration.withRegistrationId("id")).extracting("entityId")
-				.isEqualTo(new Saml2RelyingPartyProperties.Registration().getRelyingPartyEntityId());
+				.isEqualTo(new Saml2RelyingPartyProperties.Registration().getEntityId());
 	}
 
 	@Test

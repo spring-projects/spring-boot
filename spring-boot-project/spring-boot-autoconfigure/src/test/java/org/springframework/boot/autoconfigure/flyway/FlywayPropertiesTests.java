@@ -51,6 +51,9 @@ class FlywayPropertiesTests {
 				.isEqualTo(configuration.getLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
 		assertThat(properties.getConnectRetries()).isEqualTo(configuration.getConnectRetries());
+		// Can't assert lock retry count default as it is new in Flyway 7.1
+		// Asserting hard-coded value in the metadata instead
+		assertThat(configuration.getLockRetryCount()).isEqualTo(50);
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());
 		assertThat(properties.getSchemas()).isEqualTo(Arrays.asList(configuration.getSchemas()));
 		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.getCreateSchemas());
@@ -113,11 +116,13 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "dryRunOutputAsFile", "dryRunOutputAsFileName");
 		// Handled as createSchemas
 		ignoreProperties(configuration, "shouldCreateSchemas");
+		// Getters for the DataSource settings rather than actual properties
+		ignoreProperties(configuration, "password", "url", "user");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());
 		Collections.sort(propertiesKeys);
-		assertThat(configurationKeys).isEqualTo(propertiesKeys);
+		assertThat(configurationKeys).containsExactlyElementsOf(propertiesKeys);
 	}
 
 	private void ignoreProperties(Map<String, ?> index, String... propertyNames) {

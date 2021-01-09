@@ -122,6 +122,13 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new InputStreamSourceToByteArrayConverter());
 		registry.addConverterFactory(new LenientStringToEnumConverterFactory());
 		registry.addConverterFactory(new LenientBooleanToEnumConverterFactory());
+		if (registry instanceof ConversionService) {
+			addApplicationConverters(registry, (ConversionService) registry);
+		}
+	}
+
+	private static void addApplicationConverters(ConverterRegistry registry, ConversionService conversionService) {
+		registry.addConverter(new CharSequenceToObjectConverter(conversionService));
 	}
 
 	/**

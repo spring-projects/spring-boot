@@ -5,5 +5,7 @@ plugins {
 }
 
 // tag::main-class[]
-mainClassName = 'com.example.ExampleApplication'
+application {
+	mainClass = 'com.example.ExampleApplication'
+}
 // end::main-class[]

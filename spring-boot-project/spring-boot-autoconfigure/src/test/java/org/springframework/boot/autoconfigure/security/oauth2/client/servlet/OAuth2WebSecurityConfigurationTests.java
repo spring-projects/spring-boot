@@ -117,7 +117,7 @@ class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	void securityConfigurerBacksOffBacksOffWhenOtherWebSecurityAdapterPresent() {
+	void securityFilterChainConfigBacksOffWhenOtherWebSecurityAdapterPresent() {
 		this.contextRunner
 				.withUserConfiguration(TestWebSecurityConfigurerConfig.class, OAuth2WebSecurityConfiguration.class)
 				.run((context) -> {
@@ -128,7 +128,7 @@ class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	void securityConfigurerBacksOffBacksOffWhenOtherSecurityFilterChainBeanPresent() {
+	void securityFilterChainConfigBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner
 				.withUserConfiguration(TestSecurityFilterChainConfig.class, OAuth2WebSecurityConfiguration.class)
 				.run((context) -> {
@@ -139,7 +139,7 @@ class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	void securityConfigurerBacksOffConditionalOnSecurityFilterChainClass() {
+	void securityFilterChainConfigConditionalOnSecurityFilterChainClass() {
 		this.contextRunner
 				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
 						OAuth2WebSecurityConfiguration.class)

@@ -80,4 +80,13 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 		});
 	}
 
+	@TestTemplate
+	void whenADependencyHasSystemScopeAndInclusionOfSystemScopeDependenciesIsEnabledItIsIncludedInTheRepackagedJar(
+			MavenBuild mavenBuild) {
+		mavenBuild.project("war-system-scope").execute((project) -> {
+			File main = new File(project, "target/war-system-scope-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(jar(main)).hasEntryWithName("WEB-INF/lib-provided/sample-1.0.0.jar");
+		});
+	}
+
 }

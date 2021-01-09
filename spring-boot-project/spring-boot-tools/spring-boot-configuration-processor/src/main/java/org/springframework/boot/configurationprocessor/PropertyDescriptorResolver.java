@@ -49,19 +49,16 @@ class PropertyDescriptorResolver {
 	 * specified {@link TypeElement type} based on the specified {@link ExecutableElement
 	 * factory method}, if any.
 	 * @param type the target type
-	 * @param fromImport it the type was imported via a
-	 * {@code @ImportConfigurationPropertiesBean}
 	 * @param factoryMethod the method that triggered the metadata for that {@code type}
 	 * or {@code null}
 	 * @return the candidate properties for metadata generation
 	 */
-	Stream<PropertyDescriptor<?>> resolve(TypeElement type, boolean fromImport, ExecutableElement factoryMethod) {
+	Stream<PropertyDescriptor<?>> resolve(TypeElement type, ExecutableElement factoryMethod) {
 		TypeElementMembers members = new TypeElementMembers(this.environment, type);
 		if (factoryMethod != null) {
 			return resolveJavaBeanProperties(type, factoryMethod, members);
 		}
-		return resolve(ConfigurationPropertiesTypeElement.of(type, fromImport, this.environment), factoryMethod,
-				members);
+		return resolve(ConfigurationPropertiesTypeElement.of(type, this.environment), factoryMethod, members);
 	}
 
 	private Stream<PropertyDescriptor<?>> resolve(ConfigurationPropertiesTypeElement type,
@@ -103,10 +100,12 @@ class PropertyDescriptorResolver {
 			TypeElementMembers members) {
 		// First check if we have regular java bean properties there
 		Map<String, PropertyDescriptor<?>> candidates = new LinkedHashMap<>();
-		members.getPublicGetters().forEach((name, getter) -> {
+		members.getPublicGetters().forEach((name, getters) -> {
+			VariableElement field = members.getFields().get(name);
+			ExecutableElement getter = findMatchingGetter(members, getters, field);
 			TypeMirror propertyType = getter.getReturnType();
-			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name, propertyType,
-					members.getFields().get(name), members.getPublicSetter(name, propertyType)));
+			register(candidates, new JavaBeanPropertyDescriptor(type, factoryMethod, getter, name, propertyType, field,
+					members.getPublicSetter(name, propertyType)));
 		});
 		// Then check for Lombok ones
 		members.getFields().forEach((name, field) -> {
@@ -117,6 +116,14 @@ class PropertyDescriptorResolver {
 					new LombokPropertyDescriptor(type, factoryMethod, field, name, propertyType, getter, setter));
 		});
 		return candidates.values().stream();
+	}
+
+	private ExecutableElement findMatchingGetter(TypeElementMembers members, List<ExecutableElement> candidates,
+			VariableElement field) {
+		if (candidates.size() > 1 && field != null) {
+			return members.getMatchingGetter(candidates, field.asType());
+		}
+		return candidates.get(0);
 	}
 
 	private void register(Map<String, PropertyDescriptor<?>> candidates, PropertyDescriptor<?> descriptor) {
@@ -181,29 +188,20 @@ class PropertyDescriptorResolver {
 			return boundConstructor;
 		}
 
-		static ConfigurationPropertiesTypeElement of(TypeElement type, boolean fromImport,
-				MetadataGenerationEnvironment env) {
+		static ConfigurationPropertiesTypeElement of(TypeElement type, MetadataGenerationEnvironment env) {
+			boolean constructorBoundType = isConstructorBoundType(type, env);
 			List<ExecutableElement> constructors = ElementFilter.constructorsIn(type.getEnclosedElements());
 			List<ExecutableElement> boundConstructors = constructors.stream()
 					.filter(env::hasConstructorBindingAnnotation).collect(Collectors.toList());
-			boolean constructorBoundType = isConstructorBoundType(type, fromImport, constructors, env);
 			return new ConfigurationPropertiesTypeElement(type, constructorBoundType, constructors, boundConstructors);
 		}
 
-		private static boolean isConstructorBoundType(TypeElement type, boolean fromImport,
-				List<ExecutableElement> constructors, MetadataGenerationEnvironment env) {
+		private static boolean isConstructorBoundType(TypeElement type, MetadataGenerationEnvironment env) {
 			if (env.hasConstructorBindingAnnotation(type)) {
 				return true;
 			}
 			if (type.getNestingKind() == NestingKind.MEMBER) {
-				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), false, constructors, env);
-			}
-			if (fromImport) {
-				for (ExecutableElement constructor : constructors) {
-					if (!constructor.getParameters().isEmpty()) {
-						return true;
-					}
-				}
+				return isConstructorBoundType((TypeElement) type.getEnclosingElement(), env);
 			}
 			return false;
 		}

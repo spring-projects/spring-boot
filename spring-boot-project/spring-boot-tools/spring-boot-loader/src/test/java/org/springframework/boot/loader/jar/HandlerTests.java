@@ -163,6 +163,7 @@ class HandlerTests {
 		URLConnection jdkConnection = new URL(null, "jar:file:" + testJar.toURI().toURL() + "!/nested.jar!/",
 				this.handler).openConnection();
 		assertThat(jdkConnection).isNotInstanceOf(JarURLConnection.class);
+		assertThat(jdkConnection.getClass().getName()).endsWith(".JarURLConnection");
 	}
 
 	@Test

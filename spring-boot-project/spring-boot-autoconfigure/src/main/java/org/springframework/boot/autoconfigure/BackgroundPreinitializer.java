@@ -60,7 +60,7 @@ public class BackgroundPreinitializer implements ApplicationListener<SpringAppli
 	 */
 	public static final String IGNORE_BACKGROUNDPREINITIALIZER_PROPERTY_NAME = "spring.backgroundpreinitializer.ignore";
 
-	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean(false);
+	private static final AtomicBoolean preinitializationStarted = new AtomicBoolean();
 
 	private static final CountDownLatch preinitializationComplete = new CountDownLatch(1);
 

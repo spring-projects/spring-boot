@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,7 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.binder.jpa.HibernateMetrics;
 import org.hibernate.SessionFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -50,11 +50,25 @@ import org.springframework.util.StringUtils;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass({ EntityManagerFactory.class, SessionFactory.class, MeterRegistry.class })
 @ConditionalOnBean({ EntityManagerFactory.class, MeterRegistry.class })
-public class HibernateMetricsAutoConfiguration {
+public class HibernateMetricsAutoConfiguration implements SmartInitializingSingleton {
 
 	private static final String ENTITY_MANAGER_FACTORY_SUFFIX = "entityManagerFactory";
 
-	@Autowired
+	private final Map<String, EntityManagerFactory> entityManagerFactories;
+
+	private final MeterRegistry meterRegistry;
+
+	public HibernateMetricsAutoConfiguration(Map<String, EntityManagerFactory> entityManagerFactories,
+			MeterRegistry meterRegistry) {
+		this.entityManagerFactories = entityManagerFactories;
+		this.meterRegistry = meterRegistry;
+	}
+
+	@Override
+	public void afterSingletonsInstantiated() {
+		bindEntityManagerFactoriesToRegistry(this.entityManagerFactories, this.meterRegistry);
+	}
+
 	public void bindEntityManagerFactoriesToRegistry(Map<String, EntityManagerFactory> entityManagerFactories,
 			MeterRegistry registry) {
 		entityManagerFactories.forEach((name, factory) -> bindEntityManagerFactoryToRegistry(name, factory, registry));

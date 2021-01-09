@@ -75,16 +75,6 @@ class SpringBootPluginIntegrationTests {
 		this.gradleBuild.gradleVersion("6.3").build();
 	}
 
-	@Test
-	void unresolvedDependenciesAreAnalyzedWhenDependencyResolutionFails() throws IOException {
-		createMinimalMainSource();
-		BuildResult result = this.gradleBuild.buildAndFail("compileJava");
-		assertThat(result.getOutput())
-				.contains("During the build, one or more dependencies that were declared without a"
-						+ " version failed to resolve:")
-				.contains("    org.springframework.boot:spring-boot-starter:");
-	}
-
 	private void createMinimalMainSource() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();

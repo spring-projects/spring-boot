@@ -180,7 +180,7 @@ class TypeUtils {
 		if (javadoc != null) {
 			javadoc = NEW_LINE_PATTERN.matcher(javadoc).replaceAll("").trim();
 		}
-		return "".equals(javadoc) ? null : javadoc;
+		return (javadoc == null || javadoc.isEmpty()) ? null : javadoc;
 	}
 
 	/**

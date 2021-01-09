@@ -38,6 +38,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.security.config.BeanIds;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistration;
 import org.springframework.security.saml2.provider.service.registration.RelyingPartyRegistrationRepository;
@@ -93,11 +94,13 @@ class Saml2RelyingPartyAutoConfigurationTests {
 			assertThat(registration.getAssertingPartyDetails().getEntityId())
 					.isEqualTo("https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php");
 			assertThat(registration.getAssertionConsumerServiceLocation())
-					.isEqualTo("{baseUrl}" + Saml2WebSsoAuthenticationFilter.DEFAULT_FILTER_PROCESSES_URI);
+					.isEqualTo("{baseUrl}/login/saml2/foo-entity-id");
+			assertThat(registration.getAssertionConsumerServiceBinding()).isEqualTo(Saml2MessageBinding.REDIRECT);
 			assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
 					.isEqualTo(Saml2MessageBinding.POST);
 			assertThat(registration.getAssertingPartyDetails().getWantAuthnRequestsSigned()).isEqualTo(false);
-			assertThat(registration.getSigningX509Credentials()).isNotNull();
+			assertThat(registration.getSigningX509Credentials()).hasSize(1);
+			assertThat(registration.getDecryptionX509Credentials()).hasSize(1);
 			assertThat(registration.getAssertingPartyDetails().getVerificationX509Credentials()).isNotNull();
 			assertThat(registration.getEntityId()).isEqualTo("{baseUrl}/saml2/foo-entity-id");
 		});
@@ -181,12 +184,16 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		return new String[] {
 				PREFIX + ".foo.signing.credentials[0].private-key-location=classpath:saml/private-key-location",
 				PREFIX + ".foo.signing.credentials[0].certificate-location=classpath:saml/certificate-location",
+				PREFIX + ".foo.decryption.credentials[0].private-key-location=classpath:saml/private-key-location",
+				PREFIX + ".foo.decryption.credentials[0].certificate-location=classpath:saml/certificate-location",
 				PREFIX + ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
 				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
 				PREFIX + ".foo.identityprovider.singlesignon.sign-request=false",
 				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location",
-				PREFIX + ".foo.relying-party-entity-id={baseUrl}/saml2/foo-entity-id" };
+				PREFIX + ".foo.entity-id={baseUrl}/saml2/foo-entity-id",
+				PREFIX + ".foo.acs.location={baseUrl}/login/saml2/foo-entity-id",
+				PREFIX + ".foo.acs.binding=redirect" };
 	}
 
 	private boolean hasFilter(AssertableWebApplicationContext context, Class<? extends Filter> filter) {
@@ -211,6 +218,11 @@ class Saml2RelyingPartyAutoConfigurationTests {
 		RelyingPartyRegistrationRepository testRegistrationRepository() {
 			return mock(RelyingPartyRegistrationRepository.class);
 		}
+
+	}
+
+	@EnableWebSecurity
+	static class WebSecurityEnablerConfiguration {
 
 	}
 

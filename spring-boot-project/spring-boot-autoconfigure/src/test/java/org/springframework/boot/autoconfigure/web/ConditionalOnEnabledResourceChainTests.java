@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,8 @@ package org.springframework.boot.autoconfigure.web;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -46,27 +48,31 @@ class ConditionalOnEnabledResourceChainTests {
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
-	@Test
-	void disabledExplicitly() {
-		load("spring.resources.chain.enabled:false");
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void disabledExplicitly(String prefix) {
+		load(prefix + "chain.enabled:false");
 		assertThat(this.context.containsBean("foo")).isFalse();
 	}
 
-	@Test
-	void enabledViaMainEnabledFlag() {
-		load("spring.resources.chain.enabled:true");
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void enabledViaMainEnabledFlag(String prefix) {
+		load(prefix + "chain.enabled:true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
-	@Test
-	void enabledViaFixedStrategyFlag() {
-		load("spring.resources.chain.strategy.fixed.enabled:true");
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void enabledViaFixedStrategyFlag(String prefix) {
+		load(prefix + "chain.strategy.fixed.enabled:true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 
-	@Test
-	void enabledViaContentStrategyFlag() {
-		load("spring.resources.chain.strategy.content.enabled:true");
+	@ParameterizedTest
+	@ValueSource(strings = { "spring.resources.", "spring.web.resources." })
+	void enabledViaContentStrategyFlag(String prefix) {
+		load(prefix + "chain.strategy.content.enabled:true");
 		assertThat(this.context.containsBean("foo")).isTrue();
 	}
 

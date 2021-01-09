@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,13 +19,17 @@ package org.springframework.boot.context.config;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
-import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.boot.BootstrapContextClosedEvent;
+import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.context.ApplicationListener;
 import org.springframework.core.env.MapPropertySource;
 
 /**
  * Test classes used with
- * {@link ConfigDataEnvironmentPostProcessorBootstrapRegistryIntegrationTests} to show how
+ * {@link ConfigDataEnvironmentPostProcessorBootstrapContextIntegrationTests} to show how
  * a bootstrap registry can be used. This example will create helper instances during
  * result and load. It also shows how the helper can ultimately be registered as a bean.
  *
@@ -33,39 +37,43 @@ import org.springframework.core.env.MapPropertySource;
  */
 class TestConfigDataBootstrap {
 
-	static class LocationResolver implements ConfigDataLocationResolver<Location> {
+	static class LocationResolver implements ConfigDataLocationResolver<Resource> {
 
 		@Override
-		public boolean isResolvable(ConfigDataLocationResolverContext context, String location) {
-			return location.startsWith("testbootstrap:");
+		public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
+			context.getBootstrapContext().get(Binder.class); // gh-24559
+			return location.hasPrefix("testbootstrap:");
 		}
 
 		@Override
-		public List<Location> resolve(ConfigDataLocationResolverContext context, String location, boolean optional) {
-			ResolverHelper helper = context.getBootstrapRegistry().get(ResolverHelper.class,
-					() -> new ResolverHelper(location));
-			return Collections.singletonList(new Location(helper));
+		public List<Resource> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
+			context.getBootstrapContext().registerIfAbsent(ResolverHelper.class,
+					InstanceSupplier.from(() -> new ResolverHelper(location)));
+			ResolverHelper helper = context.getBootstrapContext().get(ResolverHelper.class);
+			return Collections.singletonList(new Resource(helper));
 		}
 
 	}
 
-	static class Loader implements ConfigDataLoader<Location> {
+	static class Loader implements ConfigDataLoader<Resource> {
 
 		@Override
-		public ConfigData load(ConfigDataLoaderContext context, Location location) throws IOException {
-			context.getBootstrapRegistry().get(LoaderHelper.class, () -> new LoaderHelper(location),
-					LoaderHelper::addToContext);
+		public ConfigData load(ConfigDataLoaderContext context, Resource location) throws IOException {
+			context.getBootstrapContext().registerIfAbsent(LoaderHelper.class,
+					(bootstrapContext) -> new LoaderHelper(location, () -> bootstrapContext.get(Binder.class)));
+			LoaderHelper helper = context.getBootstrapContext().get(LoaderHelper.class);
+			context.getBootstrapContext().addCloseListener(helper);
 			return new ConfigData(
 					Collections.singleton(new MapPropertySource("loaded", Collections.singletonMap("test", "test"))));
 		}
 
 	}
 
-	static class Location extends ConfigDataLocation {
+	static class Resource extends ConfigDataResource {
 
 		private final ResolverHelper resolverHelper;
 
-		Location(ResolverHelper resolverHelper) {
+		Resource(ResolverHelper resolverHelper) {
 			this.resolverHelper = resolverHelper;
 		}
 
@@ -82,32 +90,44 @@ class TestConfigDataBootstrap {
 
 	static class ResolverHelper {
 
-		private final String location;
+		private final ConfigDataLocation location;
 
-		ResolverHelper(String location) {
+		ResolverHelper(ConfigDataLocation location) {
 			this.location = location;
 		}
 
-		String getLocation() {
+		ConfigDataLocation getLocation() {
 			return this.location;
 		}
 
 	}
 
-	static class LoaderHelper {
+	static class LoaderHelper implements ApplicationListener<BootstrapContextClosedEvent> {
 
-		private final Location location;
+		private final Resource location;
 
-		LoaderHelper(Location location) {
+		private final Supplier<Binder> binder;
+
+		LoaderHelper(Resource location, Supplier<Binder> binder) {
 			this.location = location;
+			this.binder = binder;
 		}
 
-		Location getLocation() {
+		Resource getLocation() {
 			return this.location;
 		}
 
-		static void addToContext(ConfigurableApplicationContext context, LoaderHelper loaderHelper) {
-			context.getBeanFactory().registerSingleton("loaderHelper", loaderHelper);
+		String getBound() {
+			return this.binder.get().bind("myprop", String.class).orElse(null);
+		}
+
+		String getProfileBound() {
+			return this.binder.get().bind("myprofileprop", String.class).orElse(null);
+		}
+
+		@Override
+		public void onApplicationEvent(BootstrapContextClosedEvent event) {
+			event.getApplicationContext().getBeanFactory().registerSingleton("loaderHelper", this);
 		}
 
 	}

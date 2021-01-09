@@ -136,11 +136,7 @@ public class DocumentPluginGoals extends DefaultTask {
 		for (Parameter parameter : parameters) {
 			String name = parameter.getName();
 			writer.printf("| <<%s-%s,%s>>%n", detailsSectionId, name, name);
-			String type = parameter.getType();
-			if (type.lastIndexOf('.') >= 0) {
-				type = type.substring(type.lastIndexOf('.') + 1);
-			}
-			writer.printf("| `%s`%n", type);
+			writer.printf("| `%s`%n", typeNameToJavadocLink(shortTypeName(parameter.getType()), parameter.getType()));
 			String defaultValue = parameter.getDefaultValue();
 			if (defaultValue != null) {
 				writer.printf("| `%s`%n", defaultValue);
@@ -166,7 +162,7 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println("|===");
 			writer.println();
 			writeDetail(writer, "Name", name);
-			writeDetail(writer, "Type", parameter.getType());
+			writeDetail(writer, "Type", typeNameToJavadocLink(parameter.getType()));
 			writeOptionalDetail(writer, "Default value", parameter.getDefaultValue());
 			writeOptionalDetail(writer, "User property", parameter.getUserProperty());
 			writeOptionalDetail(writer, "Since", parameter.getSince());
@@ -189,6 +185,34 @@ public class DocumentPluginGoals extends DefaultTask {
 			writer.println("|");
 		}
 		writer.println();
+	}
+
+	private String shortTypeName(String name) {
+		if (name.lastIndexOf('.') >= 0) {
+			name = name.substring(name.lastIndexOf('.') + 1);
+		}
+		if (name.lastIndexOf('$') >= 0) {
+			name = name.substring(name.lastIndexOf('$') + 1);
+		}
+		return name;
+	}
+
+	private String typeNameToJavadocLink(String name) {
+		return typeNameToJavadocLink(name, name);
+	}
+
+	private String typeNameToJavadocLink(String shortName, String name) {
+		if (name.startsWith("org.springframework.boot.maven")) {
+			return "{spring-boot-docs}/maven-plugin/api/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
+		}
+		if (name.startsWith("org.springframework.boot")) {
+			return "{spring-boot-docs}/api/" + typeNameToJavadocPath(name) + ".html[" + shortName + "]";
+		}
+		return shortName;
+	}
+
+	private String typeNameToJavadocPath(String name) {
+		return name.replace(".", "/").replace("$", ".");
 	}
 
 }

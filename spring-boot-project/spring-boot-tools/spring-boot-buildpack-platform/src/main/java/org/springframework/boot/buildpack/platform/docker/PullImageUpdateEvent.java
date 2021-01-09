@@ -22,24 +22,14 @@ import com.fasterxml.jackson.annotation.JsonCreator;
  * A {@link ProgressUpdateEvent} fired as an image is pulled.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
-public class PullImageUpdateEvent extends ProgressUpdateEvent {
-
-	private final String id;
+public class PullImageUpdateEvent extends ImageProgressUpdateEvent {
 
 	@JsonCreator
 	public PullImageUpdateEvent(String id, String status, ProgressDetail progressDetail, String progress) {
-		super(status, progressDetail, progress);
-		this.id = id;
-	}
-
-	/**
-	 * Return the ID of the layer being updated if available.
-	 * @return the ID of the updated layer or {@code null}
-	 */
-	public String getId() {
-		return this.id;
+		super(id, status, progressDetail, progress);
 	}
 
 }

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.context.properties;
 
 import java.io.IOException;
@@ -22,6 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.core.type.AnnotationMetadata;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,11 +53,11 @@ class EnableConfigurationPropertiesRegistrarTests {
 	}
 
 	@Test
-	void typeWithDefaultConstructorShouldRegisterConfigurationPropertiesBeanDefinition() throws Exception {
+	void typeWithDefaultConstructorShouldRegisterGenericBeanDefinition() throws Exception {
 		register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory
 				.getBeanDefinition("foo-" + getClass().getName() + "$FooProperties");
-		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 	}
 
 	@Test
@@ -67,11 +69,11 @@ class EnableConfigurationPropertiesRegistrarTests {
 	}
 
 	@Test
-	void typeWithMultipleConstructorsShouldRegisterConfigurationPropertiesBeanDefinition() throws Exception {
+	void typeWithMultipleConstructorsShouldRegisterGenericBeanDefinition() throws Exception {
 		register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory
 				.getBeanDefinition("bing-" + getClass().getName() + "$BingProperties");
-		assertThat(beanDefinition).isExactlyInstanceOf(ConfigurationPropertiesBeanDefinition.class);
+		assertThat(beanDefinition).isExactlyInstanceOf(GenericBeanDefinition.class);
 	}
 
 	@Test

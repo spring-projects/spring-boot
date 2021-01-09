@@ -28,6 +28,11 @@
 	</build>
 	<dependencies>
 		<dependency>
+			<groupId>org.apache.logging.log4j</groupId>
+			<artifactId>log4j-api</artifactId>
+			<version>@log4j2.version@</version>
+		</dependency>
+		<dependency>
 			<groupId>org.springframework.boot.maven.it</groupId>
 			<artifactId>jar-snapshot</artifactId>
 			<version>0.0.1.BUILD-SNAPSHOT</version>

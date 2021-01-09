@@ -46,6 +46,7 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
@@ -60,6 +61,7 @@ dependencies {
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
 	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
 
 	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
 
@@ -70,6 +72,7 @@ dependencies {
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-core")
 	implementation("io.projectreactor.netty:reactor-netty-http")
+	implementation("io.undertow:undertow-core")
 	implementation("jakarta.servlet:jakarta.servlet-api")
 	implementation("org.apache.commons:commons-dbcp2")
 	implementation("org.apache.kafka:kafka-streams")
@@ -81,6 +84,7 @@ dependencies {
 	implementation("org.springframework:spring-web")
 	implementation("org.springframework:spring-webflux")
 	implementation("org.springframework.data:spring-data-couchbase")
+	implementation("org.springframework.data:spring-data-neo4j")
 	implementation("org.springframework.data:spring-data-redis")
 	implementation("org.springframework.data:spring-data-r2dbc")
 	implementation("org.springframework.kafka:spring-kafka")
@@ -116,6 +120,7 @@ task aggregatedJavadoc(type: Javadoc) {
 		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project}
 			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
 			.findAll { !excludedProjects.contains(it.name) }
+			.findAll { !it.name.startsWith('spring-boot-starter') }
 		dependsOn publishedProjects.javadoc
 		source publishedProjects.javadoc.source
 		classpath = project.files(publishedProjects.javadoc.classpath)
@@ -142,7 +147,6 @@ task aggregatedJavadoc(type: Javadoc) {
 				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
 				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
 				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
-				"https://www.eclipse.org/jetty/javadoc/${versionConstraints["org.eclipse.jetty:jetty-server"]}/",
 				"https://www.thymeleaf.org/apidocs/thymeleaf/${versionConstraints["org.thymeleaf:thymeleaf"]}/"
 			] as String[]
 		}

@@ -57,8 +57,7 @@ class OriginTrackedPropertiesLoader {
 	}
 
 	/**
-	 * Load {@code .properties} data and return a map of {@code String} ->
-	 * {@link OriginTrackedValue}.
+	 * Load {@code .properties} data and return a list of documents.
 	 * @return the loaded properties
 	 * @throws IOException on read error
 	 */
@@ -74,46 +73,58 @@ class OriginTrackedPropertiesLoader {
 	 * @throws IOException on read error
 	 */
 	List<Document> load(boolean expandLists) throws IOException {
-		List<Document> result = new ArrayList<>();
+		List<Document> documents = new ArrayList<>();
 		Document document = new Document();
+		StringBuilder buffer = new StringBuilder();
 		try (CharacterReader reader = new CharacterReader(this.resource)) {
-			StringBuilder buffer = new StringBuilder();
 			while (reader.read()) {
-				if (reader.getCharacter() == '#') {
+				if (reader.isPoundCharacter()) {
 					if (isNewDocument(reader)) {
 						if (!document.isEmpty()) {
-							result.add(document);
+							documents.add(document);
 						}
 						document = new Document();
 					}
 					else {
+						if (document.isEmpty() && !documents.isEmpty()) {
+							document = documents.remove(documents.size() - 1);
+						}
+						reader.setLastLineComment(true);
 						reader.skipComment();
 					}
 				}
-				String key = loadKey(buffer, reader).trim();
-				if (expandLists && key.endsWith("[]")) {
-					key = key.substring(0, key.length() - 2);
-					int index = 0;
-					do {
-						OriginTrackedValue value = loadValue(buffer, reader, true);
-						document.put(key + "[" + (index++) + "]", value);
-						if (!reader.isEndOfLine()) {
-							reader.read();
-						}
-					}
-					while (!reader.isEndOfLine());
-				}
 				else {
-					OriginTrackedValue value = loadValue(buffer, reader, false);
-					document.put(key, value);
+					reader.setLastLineComment(false);
+					loadKeyAndValue(expandLists, document, reader, buffer);
 				}
 			}
 
 		}
-		if (!document.isEmpty() && !result.contains(document)) {
-			result.add(document);
+		if (!document.isEmpty() && !documents.contains(document)) {
+			documents.add(document);
 		}
-		return result;
+		return documents;
+	}
+
+	private void loadKeyAndValue(boolean expandLists, Document document, CharacterReader reader, StringBuilder buffer)
+			throws IOException {
+		String key = loadKey(buffer, reader).trim();
+		if (expandLists && key.endsWith("[]")) {
+			key = key.substring(0, key.length() - 2);
+			int index = 0;
+			do {
+				OriginTrackedValue value = loadValue(buffer, reader, true);
+				document.put(key + "[" + (index++) + "]", value);
+				if (!reader.isEndOfLine()) {
+					reader.read();
+				}
+			}
+			while (!reader.isEndOfLine());
+		}
+		else {
+			OriginTrackedValue value = loadValue(buffer, reader, false);
+			document.put(key, value);
+		}
 	}
 
 	private String loadKey(StringBuilder buffer, CharacterReader reader) throws IOException {
@@ -149,13 +160,19 @@ class OriginTrackedPropertiesLoader {
 		return OriginTrackedValue.of(buffer.toString(), origin);
 	}
 
-	boolean isNewDocument(CharacterReader reader) throws IOException {
-		boolean result = reader.isPoundCharacter();
+	private boolean isNewDocument(CharacterReader reader) throws IOException {
+		if (reader.isLastLineComment()) {
+			return false;
+		}
+		boolean result = reader.getLocation().getColumn() == 0 && reader.isPoundCharacter();
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
-		result = result && readAndExpect(reader, reader::isEndOfLine);
-		return result;
+		if (!reader.isEndOfLine()) {
+			reader.read();
+			reader.skipWhitespace();
+		}
+		return result && reader.isEndOfLine();
 	}
 
 	private boolean readAndExpect(CharacterReader reader, BooleanSupplier check) throws IOException {
@@ -179,6 +196,8 @@ class OriginTrackedPropertiesLoader {
 
 		private int character;
 
+		private boolean lastLineComment;
+
 		CharacterReader(Resource resource) throws IOException {
 			this.reader = new LineNumberReader(
 					new InputStreamReader(resource.getInputStream(), StandardCharsets.ISO_8859_1));
@@ -198,7 +217,7 @@ class OriginTrackedPropertiesLoader {
 			this.character = this.reader.read();
 			this.columnNumber++;
 			if (this.columnNumber == 0) {
-				skipLeadingWhitespace();
+				skipWhitespace();
 				if (!wrappedLine) {
 					if (this.character == '!') {
 						skipComment();
@@ -215,11 +234,19 @@ class OriginTrackedPropertiesLoader {
 			return !isEndOfFile();
 		}
 
-		private void skipLeadingWhitespace() throws IOException {
+		private void skipWhitespace() throws IOException {
 			while (isWhiteSpace()) {
 				this.character = this.reader.read();
 				this.columnNumber++;
 			}
+		}
+
+		private void setLastLineComment(boolean lastLineComment) {
+			this.lastLineComment = lastLineComment;
+		}
+
+		private boolean isLastLineComment() {
+			return this.lastLineComment;
 		}
 
 		private void skipComment() throws IOException {

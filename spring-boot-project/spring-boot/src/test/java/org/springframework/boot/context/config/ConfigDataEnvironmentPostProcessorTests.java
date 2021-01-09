@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -27,8 +28,8 @@ import org.mockito.Mock;
 import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
-import org.springframework.boot.env.DefaultBootstrapRegisty;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
@@ -60,7 +61,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 
 	@Spy
 	private ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(Supplier::get,
-			new DefaultBootstrapRegisty());
+			new DefaultBootstrapContext());
 
 	@Captor
 	private ArgumentCaptor<Set<String>> additionalProfilesCaptor;
@@ -119,9 +120,13 @@ class ConfigDataEnvironmentPostProcessorTests {
 	@Test
 	void applyToAppliesPostProcessing() {
 		int before = this.environment.getPropertySources().size();
-		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, "dev");
+		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
+		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, Collections.singleton("dev"),
+				listener);
 		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
+		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
+		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
 	}
 
 }

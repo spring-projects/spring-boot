@@ -21,6 +21,7 @@ import java.util.Deque;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Random;
 import java.util.function.Function;
 
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -123,8 +124,14 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 		}
 
 		private boolean isIgnored(PropertySource<?> candidate) {
-			return (candidate instanceof StubPropertySource
+			return (isRandomPropertySource(candidate) || candidate instanceof StubPropertySource
 					|| candidate instanceof ConfigurationPropertySourcesPropertySource);
+		}
+
+		private boolean isRandomPropertySource(PropertySource<?> candidate) {
+			Object source = candidate.getSource();
+			return (source instanceof Random) || (source instanceof PropertySource<?>
+					&& ((PropertySource<?>) source).getSource() instanceof Random);
 		}
 
 	}

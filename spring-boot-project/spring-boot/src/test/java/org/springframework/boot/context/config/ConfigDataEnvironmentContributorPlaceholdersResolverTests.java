@@ -122,7 +122,7 @@ class ConfigDataEnvironmentContributorPlaceholdersResolverTests {
 		private final boolean active;
 
 		protected TestConfigDataEnvironmentContributor(PropertySource<?> propertySource, boolean active) {
-			super(Kind.ROOT, null, propertySource, null, null, false, null);
+			super(Kind.ROOT, null, null, propertySource, null, null, false, null);
 			this.active = active;
 		}
 

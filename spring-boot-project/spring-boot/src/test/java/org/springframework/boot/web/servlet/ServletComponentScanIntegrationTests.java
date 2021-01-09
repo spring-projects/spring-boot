@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Map;
 import java.util.Properties;
+import java.util.stream.Stream;
 
 import javax.servlet.MultipartConfigElement;
 import javax.servlet.annotation.WebFilter;
@@ -30,12 +31,19 @@ import javax.servlet.annotation.WebListener;
 import javax.servlet.annotation.WebServlet;
 
 import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.Arguments;
+import org.junit.jupiter.params.provider.MethodSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
+import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
+import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.boot.web.servlet.testcomponents.TestMultipartServlet;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -52,6 +60,9 @@ class ServletComponentScanIntegrationTests {
 
 	private AnnotationConfigServletWebServerApplicationContext context;
 
+	@TempDir
+	File temp;
+
 	@AfterEach
 	void cleanUp() {
 		if (this.context != null) {
@@ -59,37 +70,40 @@ class ServletComponentScanIntegrationTests {
 		}
 	}
 
-	@Test
-	void componentsAreRegistered() {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	void componentsAreRegistered(String serverName, Class<?> configuration) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(TestConfiguration.class);
+		this.context.register(configuration);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		String port = this.context.getEnvironment().getProperty("local.server.port");
 		String response = new RestTemplate().getForObject("http://localhost:" + port + "/test", String.class);
-		assertThat(response).isEqualTo("alpha bravo");
+		assertThat(response).isEqualTo("alpha bravo charlie");
 	}
 
-	@Test
-	void indexedComponentsAreRegistered(@TempDir File temp) throws IOException {
-		writeIndex(temp);
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	void indexedComponentsAreRegistered(String serverName, Class<?> configuration) throws IOException {
+		writeIndex(this.temp);
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { temp.toURI().toURL() },
+		try (URLClassLoader classLoader = new URLClassLoader(new URL[] { this.temp.toURI().toURL() },
 				getClass().getClassLoader())) {
 			this.context.setClassLoader(classLoader);
-			this.context.register(TestConfiguration.class);
+			this.context.register(configuration);
 			new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 			this.context.refresh();
 			String port = this.context.getEnvironment().getProperty("local.server.port");
 			String response = new RestTemplate().getForObject("http://localhost:" + port + "/test", String.class);
-			assertThat(response).isEqualTo("alpha bravo");
+			assertThat(response).isEqualTo("alpha bravo charlie");
 		}
 	}
 
-	@Test
-	void multipartConfigIsHonoured() {
+	@ParameterizedTest(name = "{0}")
+	@MethodSource("testConfiguration")
+	void multipartConfigIsHonoured(String serverName, Class<?> configuration) {
 		this.context = new AnnotationConfigServletWebServerApplicationContext();
-		this.context.register(TestConfiguration.class);
+		this.context.register(configuration);
 		new ServerPortInfoApplicationContextInitializer().initialize(this.context);
 		this.context.refresh();
 		@SuppressWarnings("rawtypes")
@@ -118,13 +132,52 @@ class ServletComponentScanIntegrationTests {
 		}
 	}
 
-	@Configuration(proxyBeanMethods = false)
+	static Stream<Arguments> testConfiguration() {
+		return Stream.of(Arguments.of("Jetty", JettyTestConfiguration.class),
+				Arguments.of("Tomcat", TomcatTestConfiguration.class),
+				Arguments.of("Undertow", UndertowTestConfiguration.class));
+	}
+
 	@ServletComponentScan(basePackages = "org.springframework.boot.web.servlet.testcomponents")
-	static class TestConfiguration {
+	abstract static class AbstractTestConfiguration {
 
 		@Bean
-		TomcatServletWebServerFactory webServerFactory() {
+		protected ServletWebServerFactory webServerFactory(ObjectProvider<WebListenerRegistrar> webListenerRegistrars) {
+			ConfigurableServletWebServerFactory factory = createWebServerFactory();
+			webListenerRegistrars.orderedStream().forEach((registrar) -> registrar.register(factory));
+			return factory;
+		}
+
+		abstract ConfigurableServletWebServerFactory createWebServerFactory();
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class JettyTestConfiguration extends AbstractTestConfiguration {
+
+		@Override
+		ConfigurableServletWebServerFactory createWebServerFactory() {
+			return new JettyServletWebServerFactory(0);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TomcatTestConfiguration extends AbstractTestConfiguration {
+
+		@Override
+		ConfigurableServletWebServerFactory createWebServerFactory() {
 			return new TomcatServletWebServerFactory(0);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class UndertowTestConfiguration extends AbstractTestConfiguration {
+
+		@Override
+		ConfigurableServletWebServerFactory createWebServerFactory() {
+			return new UndertowServletWebServerFactory(0);
 		}
 
 	}

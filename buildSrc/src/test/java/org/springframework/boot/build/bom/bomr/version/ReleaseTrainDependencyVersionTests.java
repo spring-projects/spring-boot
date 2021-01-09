@@ -92,8 +92,27 @@ public class ReleaseTrainDependencyVersionTests {
 		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(version("Kay-SR7"))).isFalse();
 	}
 
+	@Test
+	void releaseTrainVersionIsNotNewerThanCalendarVersion() {
+		assertThat(version("Kay-SR6").isNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void releaseTrainVersionIsNotSameMajorAsCalendarTrainVersion() {
+		assertThat(version("Kay-SR6").isSameMajorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void releaseTrainVersionIsNotSameMinorAsCalendarVersion() {
+		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
 	private static ReleaseTrainDependencyVersion version(String input) {
 		return ReleaseTrainDependencyVersion.parse(input);
+	}
+
+	private CalendarVersionDependencyVersion calendarVersion(String version) {
+		return CalendarVersionDependencyVersion.parse(version);
 	}
 
 }

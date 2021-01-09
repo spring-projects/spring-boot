@@ -51,7 +51,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 			doHealthCheck(builder, connection);
 		}
 		finally {
-			RedisConnectionUtils.releaseConnection(connection, this.redisConnectionFactory, false);
+			RedisConnectionUtils.releaseConnection(connection, this.redisConnectionFactory);
 		}
 	}
 
@@ -60,7 +60,7 @@ public class RedisHealthIndicator extends AbstractHealthIndicator {
 			RedisHealth.up(builder, ((RedisClusterConnection) connection).clusterGetClusterInfo());
 		}
 		else {
-			RedisHealth.up(builder, connection.info());
+			RedisHealth.up(builder, connection.info("server"));
 		}
 	}
 

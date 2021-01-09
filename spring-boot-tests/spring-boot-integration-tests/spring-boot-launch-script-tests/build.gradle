@@ -28,8 +28,8 @@ task syncMavenRepository(type: Sync) {
 }
 
 task syncAppSource(type: Sync) {
-	from "app"
-	into "${buildDir}/app"
+	from "spring-boot-launch-script-tests-app"
+	into "${buildDir}/spring-boot-launch-script-tests-app"
 	filter { line ->
 		line.replace("id \"org.springframework.boot\"", "id \"org.springframework.boot\" version \"${project.version}\"")
 	}
@@ -37,7 +37,7 @@ task syncAppSource(type: Sync) {
 
 task buildApp(type: GradleBuild) {
 	dependsOn syncAppSource, syncMavenRepository
-	dir = "${buildDir}/app"
+	dir = "${buildDir}/spring-boot-launch-script-tests-app"
 	startParameter.buildCacheEnabled = false
 	tasks  = ["build"]
 }

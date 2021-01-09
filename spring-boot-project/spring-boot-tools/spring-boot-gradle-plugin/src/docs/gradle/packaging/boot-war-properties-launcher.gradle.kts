@@ -6,7 +6,7 @@ plugins {
 }
 
 tasks.getByName<BootWar>("bootWar") {
-	mainClassName = "com.example.ExampleApplication"
+	mainClass.set("com.example.ExampleApplication")
 }
 
 // tag::properties-launcher[]

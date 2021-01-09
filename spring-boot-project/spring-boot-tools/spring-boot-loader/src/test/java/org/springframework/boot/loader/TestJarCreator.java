@@ -98,6 +98,7 @@ public abstract class TestJarCreator {
 			writeEntry(jarOutputStream, "META-INF/versions/13/multi-release.dat", 13);
 			writeEntry(jarOutputStream, "META-INF/versions/14/multi-release.dat", 14);
 			writeEntry(jarOutputStream, "META-INF/versions/15/multi-release.dat", 15);
+			writeEntry(jarOutputStream, "META-INF/versions/16/multi-release.dat", 16);
 		}
 		else {
 			writeEntry(jarOutputStream, "3.dat", 3);

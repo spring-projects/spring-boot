@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,11 +106,13 @@ public class QuartzAutoConfiguration {
 		@Order(0)
 		public SchedulerFactoryBeanCustomizer dataSourceCustomizer(QuartzProperties properties, DataSource dataSource,
 				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
-				ObjectProvider<PlatformTransactionManager> transactionManager) {
+				ObjectProvider<PlatformTransactionManager> transactionManager,
+				@QuartzTransactionManager ObjectProvider<PlatformTransactionManager> quartzTransactionManager) {
 			return (schedulerFactoryBean) -> {
 				DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
 				schedulerFactoryBean.setDataSource(dataSourceToUse);
-				PlatformTransactionManager txManager = transactionManager.getIfUnique();
+				PlatformTransactionManager txManager = getTransactionManager(transactionManager,
+						quartzTransactionManager);
 				if (txManager != null) {
 					schedulerFactoryBean.setTransactionManager(txManager);
 				}
@@ -120,6 +122,14 @@ public class QuartzAutoConfiguration {
 		private DataSource getDataSource(DataSource dataSource, ObjectProvider<DataSource> quartzDataSource) {
 			DataSource dataSourceIfAvailable = quartzDataSource.getIfAvailable();
 			return (dataSourceIfAvailable != null) ? dataSourceIfAvailable : dataSource;
+		}
+
+		private PlatformTransactionManager getTransactionManager(
+				ObjectProvider<PlatformTransactionManager> transactionManager,
+				ObjectProvider<PlatformTransactionManager> quartzTransactionManager) {
+			PlatformTransactionManager transactionManagerIfAvailable = quartzTransactionManager.getIfAvailable();
+			return (transactionManagerIfAvailable != null) ? transactionManagerIfAvailable
+					: transactionManager.getIfUnique();
 		}
 
 		@Bean

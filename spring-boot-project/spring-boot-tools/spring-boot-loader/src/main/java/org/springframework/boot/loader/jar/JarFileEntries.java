@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.jar.Attributes;
 import java.util.jar.Attributes.Name;
+import java.util.jar.JarInputStream;
 import java.util.jar.Manifest;
 import java.util.zip.ZipEntry;
 
@@ -94,14 +95,13 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private Boolean multiReleaseJar;
 
+	private JarEntryCertification[] certifications;
+
 	private final Map<Integer, FileHeader> entriesCache = Collections
 			.synchronizedMap(new LinkedHashMap<Integer, FileHeader>(16, 0.75f, true) {
 
 				@Override
 				protected boolean removeEldestEntry(Map.Entry<Integer, FileHeader> eldest) {
-					if (JarFileEntries.this.jarFile.isSigned()) {
-						return false;
-					}
 					return size() >= ENTRY_CACHE_SIZE;
 				}
 
@@ -320,7 +320,7 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 			FileHeader entry = (cached != null) ? cached : CentralDirectoryFileHeader
 					.fromRandomAccessData(this.centralDirectoryData, this.centralDirectoryOffsets[index], this.filter);
 			if (CentralDirectoryFileHeader.class.equals(entry.getClass()) && type.equals(JarEntry.class)) {
-				entry = new JarEntry(this.jarFile, (CentralDirectoryFileHeader) entry, nameAlias);
+				entry = new JarEntry(this.jarFile, index, (CentralDirectoryFileHeader) entry, nameAlias);
 			}
 			if (cacheEntry && cached != entry) {
 				this.entriesCache.put(index, entry);
@@ -349,6 +349,42 @@ class JarFileEntries implements CentralDirectoryVisitor, Iterable<JarEntry> {
 
 	private AsciiBytes applyFilter(AsciiBytes name) {
 		return (this.filter != null) ? this.filter.apply(name) : name;
+	}
+
+	JarEntryCertification getCertification(JarEntry entry) throws IOException {
+		JarEntryCertification[] certifications = this.certifications;
+		if (certifications == null) {
+			certifications = new JarEntryCertification[this.size];
+			// We fallback to use JarInputStream to obtain the certs. This isn't that
+			// fast, but hopefully doesn't happen too often.
+			try (JarInputStream certifiedJarStream = new JarInputStream(this.jarFile.getData().getInputStream())) {
+				java.util.jar.JarEntry certifiedEntry = null;
+				while ((certifiedEntry = certifiedJarStream.getNextJarEntry()) != null) {
+					// Entry must be closed to trigger a read and set entry certificates
+					certifiedJarStream.closeEntry();
+					int index = getEntryIndex(certifiedEntry.getName());
+					if (index != -1) {
+						certifications[index] = JarEntryCertification.from(certifiedEntry);
+					}
+				}
+			}
+			this.certifications = certifications;
+		}
+		JarEntryCertification certification = certifications[entry.getIndex()];
+		return (certification != null) ? certification : JarEntryCertification.NONE;
+	}
+
+	private int getEntryIndex(CharSequence name) {
+		int hashCode = AsciiBytes.hashCode(name);
+		int index = getFirstIndex(hashCode);
+		while (index >= 0 && index < this.size && this.hashCodes[index] == hashCode) {
+			FileHeader candidate = getEntry(index, FileHeader.class, false, null);
+			if (candidate.hasName(name, NO_SUFFIX)) {
+				return index;
+			}
+			index++;
+		}
+		return -1;
 	}
 
 	/**

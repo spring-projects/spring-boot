@@ -39,6 +39,7 @@ import org.springframework.util.StringUtils;
  * Configuration used when creating a new container.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class ContainerConfig {
@@ -46,7 +47,7 @@ public class ContainerConfig {
 	private final String json;
 
 	ContainerConfig(String user, ImageReference image, String command, List<String> args, Map<String, String> labels,
-			Map<String, String> binds) throws IOException {
+			Map<String, String> binds, Map<String, String> env) throws IOException {
 		Assert.notNull(image, "Image must not be null");
 		Assert.hasText(command, "Command must not be empty");
 		ObjectMapper objectMapper = SharedObjectMapper.get();
@@ -58,6 +59,8 @@ public class ContainerConfig {
 		ArrayNode commandNode = node.putArray("Cmd");
 		commandNode.add(command);
 		args.forEach(commandNode::add);
+		ArrayNode envNode = node.putArray("Env");
+		env.forEach((name, value) -> envNode.add(name + "=" + value));
 		ObjectNode labelsNode = node.putObject("Labels");
 		labels.forEach(labelsNode::put);
 		ObjectNode hostConfigNode = node.putObject("HostConfig");
@@ -109,6 +112,8 @@ public class ContainerConfig {
 
 		private final Map<String, String> binds = new LinkedHashMap<>();
 
+		private final Map<String, String> env = new LinkedHashMap<>();
+
 		Update(ImageReference image) {
 			this.image = image;
 		}
@@ -116,7 +121,8 @@ public class ContainerConfig {
 		private ContainerConfig run(Consumer<Update> update) {
 			update.accept(this);
 			try {
-				return new ContainerConfig(this.user, this.image, this.command, this.args, this.labels, this.binds);
+				return new ContainerConfig(this.user, this.image, this.command, this.args, this.labels, this.binds,
+						this.env);
 			}
 			catch (IOException ex) {
 				throw new IllegalStateException(ex);
@@ -175,6 +181,15 @@ public class ContainerConfig {
 		 */
 		public void withBind(String source, String dest) {
 			this.binds.put(source, dest);
+		}
+
+		/**
+		 * Update the container config with an additional environment variable.
+		 * @param name the variable name
+		 * @param value the variable value
+		 */
+		public void withEnv(String name, String value) {
+			this.env.put(name, value);
 		}
 
 	}

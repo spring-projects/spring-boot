@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  */
+@Deprecated
 class ResourcePropertiesBindingTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
@@ -60,6 +61,7 @@ class ResourcePropertiesBindingTests {
 		};
 	}
 
+	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(ResourceProperties.class)
 	static class TestConfiguration {

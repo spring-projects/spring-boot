@@ -35,6 +35,7 @@ import org.springframework.web.reactive.function.client.WebClient;
  *
  * @author Brian Clozel
  * @author Aleksander Lech
+ * @author Scott Frederick
  * @since 2.3.2
  */
 public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
@@ -53,11 +54,11 @@ public class ElasticsearchReactiveHealthIndicator extends AbstractReactiveHealth
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		return this.client.execute(this::getHealth).flatMap((response) -> doHealthCheck(builder, response));
+		return this.client.execute((webClient) -> getHealth(builder, webClient));
 	}
 
-	private Mono<ClientResponse> getHealth(WebClient webClient) {
-		return webClient.get().uri("/_cluster/health/").exchange();
+	private Mono<Health> getHealth(Health.Builder builder, WebClient webClient) {
+		return webClient.get().uri("/_cluster/health/").exchangeToMono((response) -> doHealthCheck(builder, response));
 	}
 
 	private Mono<Health> doHealthCheck(Health.Builder builder, ClientResponse response) {

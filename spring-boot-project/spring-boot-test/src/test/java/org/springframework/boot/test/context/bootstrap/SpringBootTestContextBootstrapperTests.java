@@ -23,6 +23,7 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.test.context.BootstrapContext;
 import org.springframework.test.context.CacheAwareContextLoaderDelegate;
+import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -56,19 +57,45 @@ class SpringBootTestContextBootstrapperTests {
 	@Test
 	void mergedContextConfigurationWhenArgsDifferentShouldNotBeConsideredEqual() {
 		TestContext context = buildTestContext(SpringBootTestArgsConfiguration.class);
-		Object contextConfiguration = ReflectionTestUtils.getField(context, "mergedContextConfiguration");
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
 		TestContext otherContext2 = buildTestContext(SpringBootTestOtherArgsConfiguration.class);
-		Object otherContextConfiguration = ReflectionTestUtils.getField(otherContext2, "mergedContextConfiguration");
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext2);
 		assertThat(contextConfiguration).isNotEqualTo(otherContextConfiguration);
 	}
 
 	@Test
 	void mergedContextConfigurationWhenArgsSameShouldBeConsideredEqual() {
 		TestContext context = buildTestContext(SpringBootTestArgsConfiguration.class);
-		Object contextConfiguration = ReflectionTestUtils.getField(context, "mergedContextConfiguration");
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
 		TestContext otherContext2 = buildTestContext(SpringBootTestSameArgsConfiguration.class);
-		Object otherContextConfiguration = ReflectionTestUtils.getField(otherContext2, "mergedContextConfiguration");
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext2);
 		assertThat(contextConfiguration).isEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationWhenWebEnvironmentsDifferentShouldNotBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestMockWebEnvironmentConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		TestContext otherContext = buildTestContext(SpringBootTestDefinedPortWebEnvironmentConfiguration.class);
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext);
+		assertThat(contextConfiguration).isNotEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationWhenWebEnvironmentsSameShouldBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestMockWebEnvironmentConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		TestContext otherContext = buildTestContext(SpringBootTestAnotherMockWebEnvironmentConfiguration.class);
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext);
+		assertThat(contextConfiguration).isEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationClassesShouldNotContainDuplicates() {
+		TestContext context = buildTestContext(SpringBootTestClassesConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		Class<?>[] classes = contextConfiguration.getClasses();
+		assertThat(classes).containsExactly(SpringBootTestContextBootstrapperExampleConfig.class);
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -80,6 +107,10 @@ class SpringBootTestContextBootstrapperTests {
 		CacheAwareContextLoaderDelegate contextLoaderDelegate = mock(CacheAwareContextLoaderDelegate.class);
 		given(bootstrapContext.getCacheAwareContextLoaderDelegate()).willReturn(contextLoaderDelegate);
 		return bootstrapper.buildTestContext();
+	}
+
+	private MergedContextConfiguration getMergedContextConfiguration(TestContext context) {
+		return (MergedContextConfiguration) ReflectionTestUtils.getField(context, "mergedContextConfiguration");
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -99,6 +130,21 @@ class SpringBootTestContextBootstrapperTests {
 
 	}
 
+	@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+	static class SpringBootTestMockWebEnvironmentConfiguration {
+
+	}
+
+	@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+	static class SpringBootTestAnotherMockWebEnvironmentConfiguration {
+
+	}
+
+	@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+	static class SpringBootTestDefinedPortWebEnvironmentConfiguration {
+
+	}
+
 	@SpringBootTest(args = "--app.test=same")
 	static class SpringBootTestSameArgsConfiguration {
 
@@ -106,6 +152,11 @@ class SpringBootTestContextBootstrapperTests {
 
 	@SpringBootTest(args = "--app.test=different")
 	static class SpringBootTestOtherArgsConfiguration {
+
+	}
+
+	@SpringBootTest(classes = SpringBootTestContextBootstrapperExampleConfig.class)
+	static class SpringBootTestClassesConfiguration {
 
 	}
 

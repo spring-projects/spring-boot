@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ public final class SimpleRabbitListenerContainerFactoryConfigurer
 		map.from(config::getConcurrency).whenNonNull().to(factory::setConcurrentConsumers);
 		map.from(config::getMaxConcurrency).whenNonNull().to(factory::setMaxConcurrentConsumers);
 		map.from(config::getBatchSize).whenNonNull().to(factory::setBatchSize);
+		map.from(config::isConsumerBatchEnabled).to(factory::setConsumerBatchEnabled);
 	}
 
 }

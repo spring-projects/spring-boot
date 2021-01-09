@@ -121,6 +121,8 @@ public class WebMvcProperties {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.web.locale")
 	public Locale getLocale() {
 		return this.locale;
 	}
@@ -129,6 +131,8 @@ public class WebMvcProperties {
 		this.locale = locale;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.web.locale-resolver")
 	public LocaleResolver getLocaleResolver() {
 		return this.localeResolver;
 	}
@@ -543,6 +547,12 @@ public class WebMvcProperties {
 
 	}
 
+	/**
+	 * Locale resolution options.
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link org.springframework.boot.autoconfigure.web.WebProperties.LocaleResolver}
+	 */
+	@Deprecated
 	public enum LocaleResolver {
 
 		/**

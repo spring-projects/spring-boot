@@ -32,7 +32,6 @@ import org.springframework.boot.actuate.web.mappings.HandlerMethodDescription;
 import org.springframework.boot.actuate.web.mappings.MappingDescriptionProvider;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.ApplicationContext;
-import org.springframework.util.ClassUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -50,18 +49,15 @@ import org.springframework.web.servlet.mvc.method.RequestMappingInfoHandlerMappi
  * @author Stephane Nicoll
  * @since 2.0.0
  */
-@SuppressWarnings("deprecation")
 public class DispatcherServletsMappingDescriptionProvider implements MappingDescriptionProvider {
 
-	private static final List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> descriptionProviders;
+	private static final List<HandlerMappingDescriptionProvider<?>> descriptionProviders;
 
 	static {
-		List<HandlerMappingDescriptionProvider<? extends HandlerMapping>> providers = new ArrayList<>();
+		List<HandlerMappingDescriptionProvider<?>> providers = new ArrayList<>();
 		providers.add(new RequestMappingInfoHandlerMappingDescriptionProvider());
 		providers.add(new UrlHandlerMappingDescriptionProvider());
-		if (ClassUtils.isPresent("org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping", null)) {
-			providers.add(new DelegatingHandlerMappingDescriptionProvider(new ArrayList<>(providers)));
-		}
+		providers.add(new IterableDelegatesHandlerMappingDescriptionProvider(new ArrayList<>(providers)));
 		descriptionProviders = Collections.unmodifiableList(providers);
 	}
 
@@ -105,12 +101,12 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		return mappings.getHandlerMappings().stream().flatMap(this::describe).collect(Collectors.toList());
 	}
 
-	private <T extends HandlerMapping> Stream<DispatcherServletMappingDescription> describe(T handlerMapping) {
+	private <T> Stream<DispatcherServletMappingDescription> describe(T handlerMapping) {
 		return describe(handlerMapping, descriptionProviders).stream();
 	}
 
 	@SuppressWarnings("unchecked")
-	private static <T extends HandlerMapping> List<DispatcherServletMappingDescription> describe(T handlerMapping,
+	private static <T> List<DispatcherServletMappingDescription> describe(T handlerMapping,
 			List<HandlerMappingDescriptionProvider<?>> descriptionProviders) {
 		for (HandlerMappingDescriptionProvider<?> descriptionProvider : descriptionProviders) {
 			if (descriptionProvider.getMappingClass().isInstance(handlerMapping)) {
@@ -120,7 +116,7 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 		return Collections.emptyList();
 	}
 
-	private interface HandlerMappingDescriptionProvider<T extends HandlerMapping> {
+	private interface HandlerMappingDescriptionProvider<T> {
 
 		Class<T> getMappingClass();
 
@@ -171,26 +167,26 @@ public class DispatcherServletsMappingDescriptionProvider implements MappingDesc
 
 	}
 
-	private static final class DelegatingHandlerMappingDescriptionProvider implements
-			HandlerMappingDescriptionProvider<org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping> {
+	@SuppressWarnings("rawtypes")
+	private static final class IterableDelegatesHandlerMappingDescriptionProvider
+			implements HandlerMappingDescriptionProvider<Iterable> {
 
 		private final List<HandlerMappingDescriptionProvider<?>> descriptionProviders;
 
-		private DelegatingHandlerMappingDescriptionProvider(
+		private IterableDelegatesHandlerMappingDescriptionProvider(
 				List<HandlerMappingDescriptionProvider<?>> descriptionProviders) {
 			this.descriptionProviders = descriptionProviders;
 		}
 
 		@Override
-		public Class<org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping> getMappingClass() {
-			return org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping.class;
+		public Class<Iterable> getMappingClass() {
+			return Iterable.class;
 		}
 
 		@Override
-		public List<DispatcherServletMappingDescription> describe(
-				org.springframework.data.rest.webmvc.support.DelegatingHandlerMapping handlerMapping) {
+		public List<DispatcherServletMappingDescription> describe(Iterable handlerMapping) {
 			List<DispatcherServletMappingDescription> descriptions = new ArrayList<>();
-			for (HandlerMapping delegate : handlerMapping.getDelegates()) {
+			for (Object delegate : handlerMapping) {
 				descriptions.addAll(
 						DispatcherServletsMappingDescriptionProvider.describe(delegate, this.descriptionProviders));
 			}

@@ -17,7 +17,9 @@
 package org.springframework.boot.gradle.docs;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.condition.DisabledForJreRange;
@@ -43,20 +45,23 @@ class RunningDocumentationTests {
 	@TestTemplate
 	@DisabledForJreRange(min = JRE.JAVA_13)
 	void bootRunMain() throws IOException {
-		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-main").build("configuredMainClass")
-				.getOutput()).contains("com.example.ExampleApplication");
+		writeMainClass();
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-main").build("bootRun").getOutput())
+				.contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
-	void applicationPluginMainClassName() {
+	void applicationPluginMainClassName() throws IOException {
+		writeMainClass();
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/application-plugin-main-class-name")
-				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
+				.build("bootRun").getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
 	void springBootDslMainClassName() throws IOException {
-		assertThat(this.gradleBuild.script("src/docs/gradle/running/spring-boot-dsl-main-class-name")
-				.build("configuredMainClass").getOutput()).contains("com.example.ExampleApplication");
+		writeMainClass();
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/spring-boot-dsl-main-class-name").build("bootRun")
+				.getOutput()).contains("com.example.ExampleApplication");
 	}
 
 	@TestTemplate
@@ -69,6 +74,33 @@ class RunningDocumentationTests {
 	void bootRunDisableOptimizedLaunch() throws IOException {
 		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-disable-optimized-launch")
 				.build("optimizedLaunch").getOutput()).contains("false");
+	}
+
+	@TestTemplate
+	void bootRunSystemPropertyDefaultValue() throws IOException {
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-system-property")
+				.build("configuredSystemProperties").getOutput()).contains("com.example.property = default");
+	}
+
+	@TestTemplate
+	void bootRunSystemPropetry() throws IOException {
+		assertThat(this.gradleBuild.script("src/docs/gradle/running/boot-run-system-property")
+				.build("-Pexample=custom", "configuredSystemProperties").getOutput())
+						.contains("com.example.property = custom");
+	}
+
+	private void writeMainClass() throws IOException {
+		File exampleApplication = new File(this.gradleBuild.getProjectDir(),
+				"src/main/java/com/example/ExampleApplication.java");
+		exampleApplication.getParentFile().mkdirs();
+		try (PrintWriter writer = new PrintWriter(new FileWriter(exampleApplication))) {
+			writer.println("package com.example;");
+			writer.println("public class ExampleApplication {");
+			writer.println("    public static void main(String[] args) {");
+			writer.println("        System.out.println(ExampleApplication.class.getName());");
+			writer.println("    }");
+			writer.println("}");
+		}
 	}
 
 }

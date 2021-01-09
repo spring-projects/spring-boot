@@ -89,6 +89,16 @@ class LifecycleTests {
 	}
 
 	@Test
+	void executeExecutesPhasesWithPlatformApi03() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		createLifecycle("builder-metadata-platform-api-0.3.json").execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator-platform-api-0.3.json"));
+		assertThat(this.out.toString()).contains("Successfully built image 'docker.io/library/my-application:latest'");
+	}
+
+	@Test
 	void executeOnlyUploadsContentOnce() throws Exception {
 		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
 		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
@@ -130,6 +140,35 @@ class LifecycleTests {
 	}
 
 	@Test
+	void executeWhenPlatformApiNotSupportedThrowsException() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-api.json").execute())
+				.withMessage("Detected platform API versions '0.2' are not included in supported versions '0.3,0.4'");
+	}
+
+	@Test
+	void executeWhenMultiplePlatformApisNotSupportedThrowsException() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		assertThatIllegalStateException()
+				.isThrownBy(() -> createLifecycle("builder-metadata-unsupported-apis.json").execute()).withMessage(
+						"Detected platform API versions '0.5,0.6' are not included in supported versions '0.3,0.4'");
+	}
+
+	@Test
+	void executeWhenMultiplePlatformApisSupportedExecutesPhase() throws Exception {
+		given(this.docker.container().create(any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().create(any(), any())).willAnswer(answerWithGeneratedContainerId());
+		given(this.docker.container().wait(any())).willReturn(ContainerStatus.of(0, null));
+		createLifecycle("builder-metadata-supported-apis.json").execute();
+		assertPhaseWasRun("creator", withExpectedConfig("lifecycle-creator.json"));
+	}
+
+	@Test
 	void closeClearsVolumes() throws Exception {
 		createLifecycle().close();
 		verify(this.docker.volume()).delete(VolumeName.of("pack-layers-aaaaaaaaaa"), true);
@@ -159,12 +198,25 @@ class LifecycleTests {
 
 	private Lifecycle createLifecycle(BuildRequest request) throws IOException {
 		EphemeralBuilder builder = mockEphemeralBuilder();
-		return new TestLifecycle(BuildLog.to(this.out), this.docker, request, builder);
+		return createLifecycle(request, builder);
+	}
+
+	private Lifecycle createLifecycle(String builderMetadata) throws IOException {
+		EphemeralBuilder builder = mockEphemeralBuilder(builderMetadata);
+		return createLifecycle(getTestRequest(), builder);
+	}
+
+	private Lifecycle createLifecycle(BuildRequest request, EphemeralBuilder ephemeralBuilder) {
+		return new TestLifecycle(BuildLog.to(this.out), this.docker, request, ephemeralBuilder);
 	}
 
 	private EphemeralBuilder mockEphemeralBuilder() throws IOException {
+		return mockEphemeralBuilder("builder-metadata.json");
+	}
+
+	private EphemeralBuilder mockEphemeralBuilder(String builderMetadata) throws IOException {
 		EphemeralBuilder builder = mock(EphemeralBuilder.class);
-		byte[] metadataContent = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream("builder-metadata.json"));
+		byte[] metadataContent = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream(builderMetadata));
 		BuilderMetadata metadata = BuilderMetadata.fromJson(new String(metadataContent, StandardCharsets.UTF_8));
 		given(builder.getName()).willReturn(ImageReference.of("pack.local/ephemeral-builder"));
 		given(builder.getBuilderMetadata()).willReturn(metadata);

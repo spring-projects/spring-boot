@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
 
 import org.springframework.core.io.FileSystemResourceLoader;
 import org.springframework.core.io.Resource;
@@ -93,9 +94,7 @@ public class SpringBootMockServletContext extends MockServletContext {
 			try {
 				if (this.emptyRootDirectory == null) {
 					synchronized (this) {
-						File tempDirectory = File.createTempFile("spr", "servlet");
-						tempDirectory.delete();
-						tempDirectory.mkdirs();
+						File tempDirectory = Files.createTempDirectory("spr-servlet").toFile();
 						tempDirectory.deleteOnExit();
 						this.emptyRootDirectory = tempDirectory;
 					}

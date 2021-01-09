@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,8 +38,11 @@ public class WebEndpointProperties {
 	private final Exposure exposure = new Exposure();
 
 	/**
-	 * Base path for Web endpoints. Relative to server.servlet.context-path or
-	 * management.server.servlet.context-path if management.server.port is configured.
+	 * Base path for Web endpoints. Relative to the servlet context path
+	 * (server.servlet.context-path) or WebFlux base path (spring.webflux.base-path) when
+	 * the management server is sharing the main server port. Relative to the management
+	 * server base path (management.server.base-path) when a separate management server
+	 * port (management.server.port) is configured.
 	 */
 	private String basePath = "/actuator";
 

@@ -21,6 +21,9 @@ import java.util.List;
 
 import org.apache.commons.logging.Log;
 
+import org.springframework.boot.BootstrapContext;
+import org.springframework.boot.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.boot.util.Instantiator;
 
@@ -48,12 +51,14 @@ class ReflectionEnvironmentPostProcessorsFactory implements EnvironmentPostProce
 
 	@Override
 	public List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
-			BootstrapRegistry bootstrapRegistry) {
+			ConfigurableBootstrapContext bootstrapContext) {
 		Instantiator<EnvironmentPostProcessor> instantiator = new Instantiator<>(EnvironmentPostProcessor.class,
 				(parameters) -> {
 					parameters.add(DeferredLogFactory.class, logFactory);
 					parameters.add(Log.class, logFactory::getLog);
-					parameters.add(BootstrapRegistry.class, bootstrapRegistry);
+					parameters.add(ConfigurableBootstrapContext.class, bootstrapContext);
+					parameters.add(BootstrapContext.class, bootstrapContext);
+					parameters.add(BootstrapRegistry.class, bootstrapContext);
 				});
 		return instantiator.instantiate(this.classNames);
 	}

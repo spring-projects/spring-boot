@@ -122,6 +122,7 @@ dependencies {
 	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
 	testImplementation("org.aspectj:aspectjrt")
 	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.awaitility:awaitility")
 	testImplementation("org.eclipse.jetty:jetty-webapp")
 	testImplementation("org.glassfish.jersey.ext:jersey-spring5")
 	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")

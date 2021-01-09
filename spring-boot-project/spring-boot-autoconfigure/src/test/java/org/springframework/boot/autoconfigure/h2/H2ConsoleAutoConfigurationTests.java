@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.h2;
 
 import java.sql.Connection;
+import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
@@ -31,8 +32,12 @@ import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link H2ConsoleAutoConfiguration}
@@ -40,6 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  * @author Marten Deinum
  * @author Stephane Nicoll
+ * @author Shraddha Yeole
  */
 class H2ConsoleAutoConfigurationTests {
 
@@ -117,6 +123,25 @@ class H2ConsoleAutoConfigurationTests {
 								.contains("Database available at '" + connection.getMetaData().getURL() + "'");
 					}
 				});
+	}
+
+	@Test
+	void h2ConsoleShouldNotFailIfDatabaseConnectionFails() {
+		this.contextRunner.withUserConfiguration(CustomDataSourceConfiguration.class)
+				.withPropertyValues("spring.h2.console.enabled=true")
+				.run((context) -> assertThat(context.isRunning()).isTrue());
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDataSourceConfiguration {
+
+		@Bean
+		DataSource dataSource() throws SQLException {
+			DataSource dataSource = mock(DataSource.class);
+			given(dataSource.getConnection()).willThrow(IllegalStateException.class);
+			return dataSource;
+		}
+
 	}
 
 }

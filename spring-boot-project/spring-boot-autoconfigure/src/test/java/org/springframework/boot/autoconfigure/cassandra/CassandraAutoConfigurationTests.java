@@ -167,6 +167,16 @@ class CassandraAutoConfigurationTests {
 	}
 
 	@Test
+	void driverConfigLoaderCustomizeControlConnectionOptions() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.controlconnection.timeout=200ms")
+				.run((context) -> {
+					DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()
+							.getDefaultProfile();
+					assertThat(config.getInt(DefaultDriverOption.CONTROL_CONNECTION_TIMEOUT)).isEqualTo(200);
+				});
+	}
+
+	@Test
 	void driverConfigLoaderUsePassThroughLimitingRequestThrottlerByDefault() {
 		this.contextRunner.withPropertyValues().run((context) -> {
 			DriverExecutionProfile config = context.getBean(DriverConfigLoader.class).getInitialConfig()

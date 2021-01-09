@@ -30,12 +30,11 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 /**
- * {@link EnableAutoConfiguration Auto-configuration} for
- * {@link DataSourceTransactionManager}.
+ * {@link EnableAutoConfiguration Auto-configuration} for {@link JdbcTransactionManager}.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
@@ -51,13 +50,13 @@ public class DataSourceTransactionManagerAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(DataSource.class)
-	static class DataSourceTransactionManagerConfiguration {
+	static class JdbcTransactionManagerConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(TransactionManager.class)
-		DataSourceTransactionManager transactionManager(DataSource dataSource,
+		JdbcTransactionManager transactionManager(DataSource dataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			DataSourceTransactionManager transactionManager = new DataSourceTransactionManager(dataSource);
+			JdbcTransactionManager transactionManager = new JdbcTransactionManager(dataSource);
 			transactionManagerCustomizers.ifAvailable((customizers) -> customizers.customize(transactionManager));
 			return transactionManager;
 		}

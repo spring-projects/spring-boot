@@ -59,7 +59,7 @@ class ImageTests {
 	void getBuildRequestWhenNoCustomizationsUsesDefaults() {
 		BuildRequest request = new Image().getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getName().toString()).isEqualTo("docker.io/library/my-app:0.0.1-SNAPSHOT");
-		assertThat(request.getBuilder().toString()).contains("paketo-buildpacks/builder");
+		assertThat(request.getBuilder().toString()).contains("paketobuildpacks/builder");
 		assertThat(request.getRunImage()).isNull();
 		assertThat(request.getEnv()).isEmpty();
 		assertThat(request.isCleanCache()).isFalse();
@@ -113,6 +113,14 @@ class ImageTests {
 		image.setPullPolicy(PullPolicy.NEVER);
 		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
 		assertThat(request.getPullPolicy()).isEqualTo(PullPolicy.NEVER);
+	}
+
+	@Test
+	void getBuildRequestWhenHasPublishUsesPublish() {
+		Image image = new Image();
+		image.publish = true;
+		BuildRequest request = image.getBuildRequest(createArtifact(), mockApplicationContent());
+		assertThat(request.isPublish()).isTrue();
 	}
 
 	private Artifact createArtifact() {

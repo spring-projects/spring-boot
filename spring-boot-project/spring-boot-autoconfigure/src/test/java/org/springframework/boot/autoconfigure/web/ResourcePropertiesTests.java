@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.autoconfigure.web.ResourceProperties.Cache;
 import org.springframework.http.CacheControl;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -31,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Kristine Jetzke
  */
+@Deprecated
 class ResourcePropertiesTests {
 
 	private final ResourceProperties properties = new ResourceProperties();
@@ -78,7 +78,7 @@ class ResourcePropertiesTests {
 
 	@Test
 	void cacheControlAllPropertiesSet() {
-		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
+		ResourceProperties.Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setCachePrivate(true);
 		properties.setCachePublic(true);
@@ -96,7 +96,7 @@ class ResourcePropertiesTests {
 
 	@Test
 	void invalidCacheControlCombination() {
-		Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
+		ResourceProperties.Cache.Cachecontrol properties = this.properties.getCache().getCachecontrol();
 		properties.setMaxAge(Duration.ofSeconds(4));
 		properties.setNoStore(true);
 		CacheControl cacheControl = properties.toHttpCacheControl();

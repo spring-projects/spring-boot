@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.lang.Nullable;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.PropertyPlaceholderHelper;
 import org.springframework.util.StringUtils;
 import org.springframework.util.SystemPropertyUtils;
@@ -57,6 +58,7 @@ import org.springframework.util.SystemPropertyUtils;
  * @author Christian Dupuis
  * @author Madhura Bhave
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @Endpoint(id = "env")
@@ -143,7 +145,7 @@ public class EnvironmentEndpoint {
 			PlaceholdersResolver resolver) {
 		Object resolved = resolver.resolvePlaceholders(source.getProperty(name));
 		Origin origin = ((source instanceof OriginLookup) ? ((OriginLookup<Object>) source).getOrigin(name) : null);
-		return new PropertyValueDescriptor(sanitize(name, resolved), origin);
+		return new PropertyValueDescriptor(stringifyIfNecessary(sanitize(name, resolved)), origin);
 	}
 
 	private PlaceholdersResolver getResolver() {
@@ -180,6 +182,17 @@ public class EnvironmentEndpoint {
 
 	public Object sanitize(String name, Object object) {
 		return this.sanitizer.sanitize(name, object);
+	}
+
+	protected Object stringifyIfNecessary(Object value) {
+		if (value == null || ClassUtils.isPrimitiveOrWrapper(value.getClass())
+				|| Number.class.isAssignableFrom(value.getClass())) {
+			return value;
+		}
+		if (CharSequence.class.isAssignableFrom(value.getClass())) {
+			return value.toString();
+		}
+		return "Complex property type " + value.getClass().getName();
 	}
 
 	/**

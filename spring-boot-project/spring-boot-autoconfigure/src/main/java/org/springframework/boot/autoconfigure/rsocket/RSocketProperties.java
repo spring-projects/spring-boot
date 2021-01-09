@@ -22,6 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.boot.rsocket.server.RSocketServer;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.unit.DataSize;
 
 /**
  * {@link ConfigurationProperties properties} for RSocket support.
@@ -33,6 +34,7 @@ import org.springframework.boot.web.server.Ssl;
 @ConfigurationProperties("spring.rsocket")
 public class RSocketProperties {
 
+	@NestedConfigurationProperty
 	private final Server server = new Server();
 
 	public Server getServer() {
@@ -61,6 +63,12 @@ public class RSocketProperties {
 		 * transport).
 		 */
 		private String mappingPath;
+
+		/**
+		 * Maximum transmission unit. Frames larger than the specified value are
+		 * fragmented.
+		 */
+		private DataSize fragmentSize;
 
 		@NestedConfigurationProperty
 		private Ssl ssl;
@@ -95,6 +103,14 @@ public class RSocketProperties {
 
 		public void setMappingPath(String mappingPath) {
 			this.mappingPath = mappingPath;
+		}
+
+		public DataSize getFragmentSize() {
+			return this.fragmentSize;
+		}
+
+		public void setFragmentSize(DataSize fragmentSize) {
+			this.fragmentSize = fragmentSize;
 		}
 
 		public Ssl getSsl() {

@@ -685,6 +685,8 @@ public class KafkaProperties {
 
 		private final Security security = new Security();
 
+		private final Cleanup cleanup = new Cleanup();
+
 		/**
 		 * Kafka streams application.id property; default spring.application.name.
 		 */
@@ -733,6 +735,10 @@ public class KafkaProperties {
 
 		public Security getSecurity() {
 			return this.security;
+		}
+
+		public Cleanup getCleanup() {
+			return this.cleanup;
 		}
 
 		public String getApplicationId() {
@@ -908,6 +914,12 @@ public class KafkaProperties {
 		private Boolean logContainerConfig;
 
 		/**
+		 * Whether to suppress the entire record from being written to the log when
+		 * retries are being attempted.
+		 */
+		private boolean onlyLogRecordMetadata;
+
+		/**
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
@@ -1007,6 +1019,14 @@ public class KafkaProperties {
 
 		public void setLogContainerConfig(Boolean logContainerConfig) {
 			this.logContainerConfig = logContainerConfig;
+		}
+
+		public boolean isOnlyLogRecordMetadata() {
+			return this.onlyLogRecordMetadata;
+		}
+
+		public void setOnlyLogRecordMetadata(boolean onlyLogRecordMetadata) {
+			this.onlyLogRecordMetadata = onlyLogRecordMetadata;
 		}
 
 		public boolean isMissingTopicsFatal() {
@@ -1230,6 +1250,36 @@ public class KafkaProperties {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
 			return properties;
+		}
+
+	}
+
+	public static class Cleanup {
+
+		/**
+		 * Cleanup the application’s local state directory on startup.
+		 */
+		private boolean onStartup = false;
+
+		/**
+		 * Cleanup the application’s local state directory on shutdown.
+		 */
+		private boolean onShutdown = true;
+
+		public boolean isOnStartup() {
+			return this.onStartup;
+		}
+
+		public void setOnStartup(boolean onStartup) {
+			this.onStartup = onStartup;
+		}
+
+		public boolean isOnShutdown() {
+			return this.onShutdown;
+		}
+
+		public void setOnShutdown(boolean onShutdown) {
+			this.onShutdown = onShutdown;
 		}
 
 	}

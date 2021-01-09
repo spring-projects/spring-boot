@@ -16,25 +16,23 @@
 
 package org.springframework.boot.context.config;
 
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-
-import org.springframework.core.io.Resource;
+import org.springframework.boot.origin.Origin;
+import org.springframework.util.Assert;
 
 /**
- * Exception thrown when a config data location cannot be found.
+ * {@link ConfigDataNotFoundException} thrown when a {@link ConfigDataLocation} cannot be
+ * found.
  *
  * @author Phillip Webb
  * @since 2.4.0
  */
-public class ConfigDataLocationNotFoundException extends ConfigDataException {
+public class ConfigDataLocationNotFoundException extends ConfigDataNotFoundException {
 
 	private final ConfigDataLocation location;
 
 	/**
 	 * Create a new {@link ConfigDataLocationNotFoundException} instance.
-	 * @param location the location that was not found
+	 * @param location the location that could not be found
 	 */
 	public ConfigDataLocationNotFoundException(ConfigDataLocation location) {
 		this(location, null);
@@ -42,79 +40,39 @@ public class ConfigDataLocationNotFoundException extends ConfigDataException {
 
 	/**
 	 * Create a new {@link ConfigDataLocationNotFoundException} instance.
-	 * @param location the location that was not found
-	 * @param cause the cause of the exception
+	 * @param location the location that could not be found
+	 * @param cause the exception cause
 	 */
 	public ConfigDataLocationNotFoundException(ConfigDataLocation location, Throwable cause) {
-		this(getMessage(location), location, cause);
-	}
-
-	/**
-	 * Create a new {@link ConfigDataLocationNotFoundException} instance.
-	 * @param message the exception message
-	 * @param location the location that was not found
-	 */
-	public ConfigDataLocationNotFoundException(String message, ConfigDataLocation location) {
-		this(message, location, null);
-	}
-
-	/**
-	 * Create a new {@link ConfigDataLocationNotFoundException} instance.
-	 * @param message the exception message
-	 * @param location the location that was not found
-	 * @param cause the cause of the exception
-	 */
-	public ConfigDataLocationNotFoundException(String message, ConfigDataLocation location, Throwable cause) {
-		super(message, cause);
+		super(getMessage(location), cause);
+		Assert.notNull(location, "Location must not be null");
 		this.location = location;
 	}
 
 	/**
 	 * Return the location that could not be found.
-	 * @return the location that could not be found.
+	 * @return the location
 	 */
 	public ConfigDataLocation getLocation() {
 		return this.location;
 	}
 
+	@Override
+	public Origin getOrigin() {
+		return Origin.from(this.location);
+	}
+
+	@Override
+	public String getReferenceDescription() {
+		return getReferenceDescription(this.location);
+	}
+
 	private static String getMessage(ConfigDataLocation location) {
-		return "Config data location '" + location + "' does not exist";
+		return String.format("Config data %s cannot be found", getReferenceDescription(location));
 	}
 
-	/**
-	 * Throw a {@link ConfigDataLocationNotFoundException} if the specified {@link Path}
-	 * does not exist.
-	 * @param location the location being checked
-	 * @param path the path to check
-	 */
-	public static void throwIfDoesNotExist(ConfigDataLocation location, Path path) {
-		throwIfDoesNotExist(location, Files.exists(path));
-	}
-
-	/**
-	 * Throw a {@link ConfigDataLocationNotFoundException} if the specified {@link File}
-	 * does not exist.
-	 * @param location the location being checked
-	 * @param file the file to check
-	 */
-	public static void throwIfDoesNotExist(ConfigDataLocation location, File file) {
-		throwIfDoesNotExist(location, file.exists());
-	}
-
-	/**
-	 * Throw a {@link ConfigDataLocationNotFoundException} if the specified
-	 * {@link Resource} does not exist.
-	 * @param location the location being checked
-	 * @param resource the resource to check
-	 */
-	public static void throwIfDoesNotExist(ConfigDataLocation location, Resource resource) {
-		throwIfDoesNotExist(location, resource.exists());
-	}
-
-	private static void throwIfDoesNotExist(ConfigDataLocation location, boolean exists) {
-		if (!exists) {
-			throw new ConfigDataLocationNotFoundException(location);
-		}
+	private static String getReferenceDescription(ConfigDataLocation location) {
+		return String.format("location '%s'", location);
 	}
 
 }

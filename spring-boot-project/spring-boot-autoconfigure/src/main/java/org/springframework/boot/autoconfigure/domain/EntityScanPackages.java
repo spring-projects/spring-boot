@@ -140,7 +140,7 @@ public class EntityScanPackages {
 			}
 			if (packagesToScan.isEmpty()) {
 				String packageName = ClassUtils.getPackageName(metadata.getClassName());
-				Assert.state(!StringUtils.isEmpty(packageName), "@EntityScan cannot be used with the default package");
+				Assert.state(StringUtils.hasLength(packageName), "@EntityScan cannot be used with the default package");
 				return Collections.singleton(packageName);
 			}
 			return packagesToScan;

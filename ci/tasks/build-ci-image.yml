@@ -1,0 +1,27 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: vito/oci-build-task
+inputs:
+- name: ci-images-git-repo
+outputs:
+- name: image
+caches:
+- path: ci-image-cache
+params:
+  CONTEXT: ci-images-git-repo/ci/images
+  DOCKERFILE: ci-images-git-repo/ci/images/((ci-image-name))/Dockerfile
+  REGISTRY_MIRRORS: ((docker-hub-mirror))
+  DOCKER_HUB_AUTH: ((docker-hub-auth))
+run:
+  path: /bin/sh
+  args:
+  - "-c"
+  - |
+    mkdir -p /root/.docker
+    cat > /root/.docker/config.json <<EOF
+    { "auths": { "https://index.docker.io/v1/": { "auth": "$DOCKER_HUB_AUTH" }}}
+    EOF
+    build

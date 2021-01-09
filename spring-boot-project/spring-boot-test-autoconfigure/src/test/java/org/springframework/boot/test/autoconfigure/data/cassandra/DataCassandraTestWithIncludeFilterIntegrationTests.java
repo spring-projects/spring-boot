@@ -28,6 +28,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan.Filter;
 import org.springframework.stereotype.Service;
@@ -51,8 +52,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataCassandraTestWithIncludeFilterIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra())
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
 	static void cassandraProperties(DynamicPropertyRegistry registry) {

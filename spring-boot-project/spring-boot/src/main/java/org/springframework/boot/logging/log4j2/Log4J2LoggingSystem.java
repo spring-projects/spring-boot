@@ -47,7 +47,10 @@ import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
 import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
+import org.springframework.boot.logging.LoggingSystemFactory;
 import org.springframework.boot.logging.Slf4JLoggingSystem;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ResourceUtils;
@@ -255,7 +258,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	}
 
 	private String getSubName(String name) {
-		if (StringUtils.isEmpty(name)) {
+		if (!StringUtils.hasLength(name)) {
 			return null;
 		}
 		int nested = name.lastIndexOf('$');
@@ -322,6 +325,25 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 		@Override
 		public void run() {
 			getLoggerContext().stop();
+		}
+
+	}
+
+	/**
+	 * {@link LoggingSystemFactory} that returns {@link Log4J2LoggingSystem} if possible.
+	 */
+	@Order(Ordered.LOWEST_PRECEDENCE)
+	public static class Factory implements LoggingSystemFactory {
+
+		private static final boolean PRESENT = ClassUtils
+				.isPresent("org.apache.logging.log4j.core.impl.Log4jContextFactory", Factory.class.getClassLoader());
+
+		@Override
+		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
+			if (PRESENT) {
+				return new Log4J2LoggingSystem(classLoader);
+			}
+			return null;
 		}
 
 	}

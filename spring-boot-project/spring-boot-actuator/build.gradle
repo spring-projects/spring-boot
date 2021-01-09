@@ -83,6 +83,7 @@ dependencies {
 	testImplementation("org.skyscreamer:jsonassert")
 	testImplementation("org.springframework:spring-test")
 	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("org.testcontainers:junit-jupiter")
 
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
 	testRuntimeOnly("javax.xml.bind:jaxb-api")

@@ -23,6 +23,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.util.Collections;
 import java.util.Map;
+import java.util.jar.Attributes;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 
@@ -71,21 +72,97 @@ class ConventionsPluginTests {
 			out.println("    id 'java'");
 			out.println("    id 'org.springframework.boot.conventions'");
 			out.println("}");
-			out.println("description 'Test'");
+			out.println("version = '1.2.3'");
+			out.println("sourceCompatibility = '1.8'");
+			out.println("description 'Test project for manifest customization'");
 			out.println("jar.archiveFileName = 'test.jar'");
 		}
 		runGradle("jar");
 		File file = new File(this.projectDir, "/build/libs/test.jar");
 		assertThat(file).exists();
 		try (JarFile jar = new JarFile(file)) {
-			JarEntry license = jar.getJarEntry("META-INF/LICENSE.txt");
-			assertThat(license).isNotNull();
-			JarEntry notice = jar.getJarEntry("META-INF/NOTICE.txt");
-			assertThat(notice).isNotNull();
-			String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(jar.getInputStream(notice)));
-			// Test that variables were replaced
-			assertThat(noticeContent).doesNotContain("${");
+			assertThatLicenseIsPresent(jar);
+			assertThatNoticeIsPresent(jar);
+			Attributes mainAttributes = jar.getManifest().getMainAttributes();
+			assertThat(mainAttributes.getValue("Implementation-Title"))
+					.isEqualTo("Test project for manifest customization");
+			assertThat(mainAttributes.getValue("Automatic-Module-Name"))
+					.isEqualTo(this.projectDir.getName().replace("-", "."));
+			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
+			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
 		}
+	}
+
+	@Test
+	void sourceJarIsBuilt() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'java'");
+			out.println("    id 'maven-publish'");
+			out.println("    id 'org.springframework.boot.conventions'");
+			out.println("}");
+			out.println("version = '1.2.3'");
+			out.println("sourceCompatibility = '1.8'");
+			out.println("description 'Test'");
+		}
+		runGradle("build");
+		File file = new File(this.projectDir, "/build/libs/" + this.projectDir.getName() + "-1.2.3-sources.jar");
+		assertThat(file).exists();
+		try (JarFile jar = new JarFile(file)) {
+			assertThatLicenseIsPresent(jar);
+			assertThatNoticeIsPresent(jar);
+			Attributes mainAttributes = jar.getManifest().getMainAttributes();
+			assertThat(mainAttributes.getValue("Implementation-Title"))
+					.isEqualTo("Source for " + this.projectDir.getName());
+			assertThat(mainAttributes.getValue("Automatic-Module-Name"))
+					.isEqualTo(this.projectDir.getName().replace("-", "."));
+			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
+			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+		}
+	}
+
+	@Test
+	void javadocJarIsBuilt() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'java'");
+			out.println("    id 'maven-publish'");
+			out.println("    id 'org.springframework.boot.conventions'");
+			out.println("}");
+			out.println("version = '1.2.3'");
+			out.println("sourceCompatibility = '1.8'");
+			out.println("description 'Test'");
+		}
+		runGradle("build");
+		File file = new File(this.projectDir, "/build/libs/" + this.projectDir.getName() + "-1.2.3-javadoc.jar");
+		assertThat(file).exists();
+		try (JarFile jar = new JarFile(file)) {
+			assertThatLicenseIsPresent(jar);
+			assertThatNoticeIsPresent(jar);
+			Attributes mainAttributes = jar.getManifest().getMainAttributes();
+			assertThat(mainAttributes.getValue("Implementation-Title"))
+					.isEqualTo("Javadoc for " + this.projectDir.getName());
+			assertThat(mainAttributes.getValue("Automatic-Module-Name"))
+					.isEqualTo(this.projectDir.getName().replace("-", "."));
+			assertThat(mainAttributes.getValue("Implementation-Version")).isEqualTo("1.2.3");
+			assertThat(mainAttributes.getValue("Built-By")).isEqualTo("Spring");
+			assertThat(mainAttributes.getValue("Build-Jdk-Spec")).isEqualTo("1.8");
+		}
+	}
+
+	private void assertThatLicenseIsPresent(JarFile jar) {
+		JarEntry license = jar.getJarEntry("META-INF/LICENSE.txt");
+		assertThat(license).isNotNull();
+	}
+
+	private void assertThatNoticeIsPresent(JarFile jar) throws IOException {
+		JarEntry notice = jar.getJarEntry("META-INF/NOTICE.txt");
+		assertThat(notice).isNotNull();
+		String noticeContent = FileCopyUtils.copyToString(new InputStreamReader(jar.getInputStream(notice)));
+		// Test that variables were replaced
+		assertThat(noticeContent).doesNotContain("${");
 	}
 
 	@Test

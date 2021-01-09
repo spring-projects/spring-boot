@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -86,7 +86,7 @@ public class ApplicationPidFileWriter implements ApplicationListener<SpringAppli
 		FAIL_ON_WRITE_ERROR_PROPERTIES = Collections.unmodifiableList(properties);
 	}
 
-	private static final AtomicBoolean created = new AtomicBoolean(false);
+	private static final AtomicBoolean created = new AtomicBoolean();
 
 	private int order = Ordered.HIGHEST_PRECEDENCE + 13;
 

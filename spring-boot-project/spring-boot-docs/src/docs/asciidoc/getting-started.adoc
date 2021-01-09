@@ -29,7 +29,7 @@ Our primary goals are:
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 14 (included).
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 15 (included).
 {spring-framework-docs}/[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
@@ -210,8 +210,8 @@ If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spri
 
 [indent=0]
 ----
-	$ brew tap pivotal/tap
-	$ brew install springboot
+	$ brew tap spring-io/tap
+	$ brew install spring-boot
 ----
 
 Homebrew installs `spring` to `/usr/local/bin`.

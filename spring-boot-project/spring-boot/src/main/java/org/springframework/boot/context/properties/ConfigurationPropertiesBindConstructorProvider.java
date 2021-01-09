@@ -21,7 +21,6 @@ import java.lang.reflect.Constructor;
 import org.springframework.beans.BeanUtils;
 import org.springframework.boot.context.properties.bind.BindConstructorProvider;
 import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.core.Conventions;
 import org.springframework.core.KotlinDetector;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.Assert;
@@ -37,34 +36,18 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 
 	static final ConfigurationPropertiesBindConstructorProvider INSTANCE = new ConfigurationPropertiesBindConstructorProvider();
 
-	static final String DEDUCE_BIND_CONSTRUCTOR_ATTRIUBTE = Conventions
-			.getQualifiedAttributeName(ConfigurationPropertiesBindConstructorProvider.class, "deduceBindConstructor");
-
 	@Override
 	public Constructor<?> getBindConstructor(Bindable<?> bindable, boolean isNestedConstructorBinding) {
-		Boolean deduceBindConstructor = (Boolean) bindable.getAttribute(DEDUCE_BIND_CONSTRUCTOR_ATTRIUBTE);
-		return getBindConstructor(bindable.getType().resolve(), Boolean.TRUE.equals(deduceBindConstructor),
-				isNestedConstructorBinding);
+		return getBindConstructor(bindable.getType().resolve(), isNestedConstructorBinding);
 	}
 
-	Constructor<?> getBindConstructor(Class<?> type, boolean deduceBindConstructor,
-			boolean isNestedConstructorBinding) {
+	Constructor<?> getBindConstructor(Class<?> type, boolean isNestedConstructorBinding) {
 		if (type == null) {
 			return null;
 		}
 		Constructor<?> constructor = findConstructorBindingAnnotatedConstructor(type);
-		if (constructor != null) {
-			return constructor;
-		}
-		boolean isConstructorBindingAnnotatedType = isConstructorBindingAnnotatedType(type);
-		if (deduceBindConstructor || isNestedConstructorBinding || isConstructorBindingAnnotatedType) {
+		if (constructor == null && (isConstructorBindingAnnotatedType(type) || isNestedConstructorBinding)) {
 			constructor = deduceBindConstructor(type);
-		}
-		if (deduceBindConstructor && isConstructorBindingAnnotatedType && !isNestedConstructorBinding) {
-			Assert.state(constructor != null,
-					() -> "Unable to deduce constructor for @ConstructorBinding class " + type.getName());
-			Assert.state(constructor.getParameterCount() > 0,
-					() -> "Deduced no-args constructor for @ConstructorBinding class " + type.getName());
 		}
 		return constructor;
 	}
@@ -103,7 +86,7 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 			return deducedKotlinBindConstructor(type);
 		}
 		Constructor<?>[] constructors = type.getDeclaredConstructors();
-		if (constructors.length == 1) {
+		if (constructors.length == 1 && constructors[0].getParameterCount() > 0) {
 			return constructors[0];
 		}
 		return null;
@@ -111,7 +94,7 @@ class ConfigurationPropertiesBindConstructorProvider implements BindConstructorP
 
 	private Constructor<?> deducedKotlinBindConstructor(Class<?> type) {
 		Constructor<?> primaryConstructor = BeanUtils.findPrimaryConstructor(type);
-		if (primaryConstructor != null) {
+		if (primaryConstructor != null && primaryConstructor.getParameterCount() > 0) {
 			return primaryConstructor;
 		}
 		return null;

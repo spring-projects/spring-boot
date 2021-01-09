@@ -25,7 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +47,7 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 
 	@Test
 	void transactionManagerWithoutDataSourceIsNotConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(DataSourceTransactionManager.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(TransactionManager.class));
 	}
 
 	@Test
@@ -55,8 +55,8 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TransactionManager.class)
-							.hasSingleBean(DataSourceTransactionManager.class);
-					assertThat(context.getBean(DataSourceTransactionManager.class).getDataSource())
+							.hasSingleBean(JdbcTransactionManager.class);
+					assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
 							.isSameAs(context.getBean(DataSource.class));
 				});
 	}
@@ -68,9 +68,8 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 						"spring.transaction.rollback-on-commit-failure=true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TransactionManager.class)
-							.hasSingleBean(DataSourceTransactionManager.class);
-					DataSourceTransactionManager transactionManager = context
-							.getBean(DataSourceTransactionManager.class);
+							.hasSingleBean(JdbcTransactionManager.class);
+					JdbcTransactionManager transactionManager = context.getBean(JdbcTransactionManager.class);
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(60);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 				});
@@ -93,9 +92,8 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 	@Test
 	void transactionWithMultipleDataSourcesAndPrimaryCandidateIsConfigured() {
 		this.contextRunner.withUserConfiguration(MultiDataSourceUsingPrimaryConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(TransactionManager.class)
-					.hasSingleBean(DataSourceTransactionManager.class);
-			assertThat(context.getBean(DataSourceTransactionManager.class).getDataSource())
+			assertThat(context).hasSingleBean(TransactionManager.class).hasSingleBean(JdbcTransactionManager.class);
+			assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
 					.isSameAs(context.getBean("test1DataSource"));
 		});
 	}

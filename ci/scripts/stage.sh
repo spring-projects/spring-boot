@@ -43,7 +43,7 @@ if [[ $nextVersion != $snapshotVersion ]]; then
 	sed -i "s/version=$snapshotVersion/version=$nextVersion/" gradle.properties
 	git add gradle.properties > /dev/null
 	git commit -m"Next development version (v$nextVersion)" > /dev/null
-fi;
+fi
 
 echo "DONE"
 

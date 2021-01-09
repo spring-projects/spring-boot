@@ -65,6 +65,11 @@ public class FlywayProperties {
 	private int connectRetries;
 
 	/**
+	 * Maximum number of retries when trying to obtain a lock.
+	 */
+	private Integer lockRetryCount;
+
+	/**
 	 * Default schema name managed by Flyway (case-sensitive).
 	 */
 	private String defaultSchema;
@@ -248,50 +253,80 @@ public class FlywayProperties {
 	private boolean validateOnMigrate = true;
 
 	/**
-	 * Whether to batch SQL statements when executing them. Requires Flyway Pro or Flyway
-	 * Enterprise.
+	 * Whether to batch SQL statements when executing them. Requires Flyway Teams.
 	 */
 	private Boolean batch;
 
 	/**
 	 * File to which the SQL statements of a migration dry run should be output. Requires
-	 * Flyway Pro or Flyway Enterprise.
+	 * Flyway Teams.
 	 */
 	private File dryRunOutput;
 
 	/**
 	 * Rules for the built-in error handling to override specific SQL states and error
-	 * codes. Requires Flyway Pro or Flyway Enterprise.
+	 * codes. Requires Flyway Teams.
 	 */
 	private String[] errorOverrides;
 
 	/**
-	 * Licence key for Flyway Pro or Flyway Enterprise.
+	 * Licence key for Flyway Teams.
 	 */
 	private String licenseKey;
 
 	/**
-	 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Pro or
-	 * Flyway Enterprise.
+	 * Whether to enable support for Oracle SQL*Plus commands. Requires Flyway Teams.
 	 */
 	private Boolean oracleSqlplus;
 
 	/**
 	 * Whether to issue a warning rather than an error when a not-yet-supported Oracle
-	 * SQL*Plus statement is encountered. Requires Flyway Pro or Flyway Enterprise.
+	 * SQL*Plus statement is encountered. Requires Flyway Teams.
 	 */
 	private Boolean oracleSqlplusWarn;
 
 	/**
-	 * Whether to stream SQL migrations when executing them. Requires Flyway Pro or Flyway
-	 * Enterprise.
+	 * Whether to stream SQL migrations when executing them. Requires Flyway Teams.
 	 */
 	private Boolean stream;
 
 	/**
-	 * File name prefix for undo SQL migrations. Requires Flyway Pro or Flyway Enterprise.
+	 * File name prefix for undo SQL migrations. Requires Flyway Teams.
 	 */
 	private String undoSqlMigrationPrefix;
+
+	/**
+	 * Migrations that Flyway should consider when migrating or undoing. When empty all
+	 * available migrations are considered. Requires Flyway Teams.
+	 */
+	private String[] cherryPick;
+
+	/**
+	 * Properties to pass to the JDBC driver. Requires Flyway Teams.
+	 */
+	private Map<String, String> jdbcProperties = new HashMap<>();
+
+	/**
+	 * Path of the Oracle Kerberos cache file. Requires Flyway Teams.
+	 */
+	private String oracleKerberosCacheFile;
+
+	/**
+	 * Path of the Oracle Kerberos config file. Requires Flyway Teams.
+	 */
+	private String oracleKerberosConfigFile;
+
+	/**
+	 * Whether Flyway should output a table with the results of queries when executing
+	 * migrations. Requires Flyway Teams.
+	 */
+	private Boolean outputQueryResults;
+
+	/**
+	 * Whether Flyway should skip executing the contents of the migrations and only update
+	 * the schema history table. Requires Flyway teams.
+	 */
+	private Boolean skipExecutingMigrations;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -331,6 +366,14 @@ public class FlywayProperties {
 
 	public void setConnectRetries(int connectRetries) {
 		this.connectRetries = connectRetries;
+	}
+
+	public Integer getLockRetryCount() {
+		return this.lockRetryCount;
+	}
+
+	public void setLockRetryCount(Integer lockRetryCount) {
+		this.lockRetryCount = lockRetryCount;
 	}
 
 	public String getDefaultSchema() {
@@ -679,6 +722,54 @@ public class FlywayProperties {
 
 	public void setUndoSqlMigrationPrefix(String undoSqlMigrationPrefix) {
 		this.undoSqlMigrationPrefix = undoSqlMigrationPrefix;
+	}
+
+	public String[] getCherryPick() {
+		return this.cherryPick;
+	}
+
+	public void setCherryPick(String[] cherryPick) {
+		this.cherryPick = cherryPick;
+	}
+
+	public Map<String, String> getJdbcProperties() {
+		return this.jdbcProperties;
+	}
+
+	public void setJdbcProperties(Map<String, String> jdbcProperties) {
+		this.jdbcProperties = jdbcProperties;
+	}
+
+	public String getOracleKerberosCacheFile() {
+		return this.oracleKerberosCacheFile;
+	}
+
+	public void setOracleKerberosCacheFile(String oracleKerberosCacheFile) {
+		this.oracleKerberosCacheFile = oracleKerberosCacheFile;
+	}
+
+	public String getOracleKerberosConfigFile() {
+		return this.oracleKerberosConfigFile;
+	}
+
+	public void setOracleKerberosConfigFile(String oracleKerberosConfigFile) {
+		this.oracleKerberosConfigFile = oracleKerberosConfigFile;
+	}
+
+	public Boolean getOutputQueryResults() {
+		return this.outputQueryResults;
+	}
+
+	public void setOutputQueryResults(Boolean outputQueryResults) {
+		this.outputQueryResults = outputQueryResults;
+	}
+
+	public Boolean getSkipExecutingMigrations() {
+		return this.skipExecutingMigrations;
+	}
+
+	public void setSkipExecutingMigrations(Boolean skipExecutingMigrations) {
+		this.skipExecutingMigrations = skipExecutingMigrations;
 	}
 
 }
