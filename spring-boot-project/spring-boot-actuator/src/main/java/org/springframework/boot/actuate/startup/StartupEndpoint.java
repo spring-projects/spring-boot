@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,15 +46,15 @@ public class StartupEndpoint {
 		this.applicationStartup = applicationStartup;
 	}
 
-	@WriteOperation
-	public StartupResponse startup() {
-		StartupTimeline startupTimeline = this.applicationStartup.drainBufferedTimeline();
-		return new StartupResponse(startupTimeline);
-	}
-
 	@ReadOperation
 	public StartupResponse startupSnapshot() {
 		StartupTimeline startupTimeline = this.applicationStartup.getBufferedTimeline();
+		return new StartupResponse(startupTimeline);
+	}
+
+	@WriteOperation
+	public StartupResponse startup() {
+		StartupTimeline startupTimeline = this.applicationStartup.drainBufferedTimeline();
 		return new StartupResponse(startupTimeline);
 	}
 
