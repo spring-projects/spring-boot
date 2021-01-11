@@ -20,6 +20,8 @@ import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.jooq.CharsetProvider;
+import org.jooq.ConverterProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
@@ -53,6 +55,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JooqAutoConfiguration}.
@@ -111,6 +114,23 @@ class JooqAutoConfigurationTests {
 	}
 
 	@Test
+	void dslContextWithConfigurationCustomizersAreApplied() {
+		ConverterProvider converterProvider = mock(ConverterProvider.class);
+		CharsetProvider charsetProvider = mock(CharsetProvider.class);
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class)
+				.withBean("configurationCustomizer1", DefaultConfigurationCustomizer.class,
+						() -> (configuration) -> configuration.set(converterProvider))
+				.withBean("configurationCustomizer2", DefaultConfigurationCustomizer.class,
+						() -> (configuration) -> configuration.set(charsetProvider))
+				.run((context) -> {
+					DSLContext dsl = context.getBean(DSLContext.class);
+					assertThat(dsl.configuration().converterProvider()).isSameAs(converterProvider);
+					assertThat(dsl.configuration().charsetProvider()).isSameAs(charsetProvider);
+				});
+	}
+
+	@Test
+	@Deprecated
 	void customProvidersArePickedUp() {
 		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
 				TestRecordMapperProvider.class, TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,

@@ -4429,19 +4429,8 @@ NOTE: Spring Boot can only auto-configure dialects supported by the open source 
 
 
 ==== Customizing jOOQ
-More advanced customizations can be achieved by defining your own `@Bean` definitions, which is used when the jOOQ `Configuration` is created.
-You can define beans for the following jOOQ Types:
-
-* `ConnectionProvider`
-* `ExecutorProvider`
-* `TransactionProvider`
-* `RecordMapperProvider`
-* `RecordUnmapperProvider`
-* `Settings`
-* `RecordListenerProvider`
-* `ExecuteListenerProvider`
-* `VisitListenerProvider`
-* `TransactionListenerProvider`
+More advanced customizations can be achieved by defining your own `DefaultConfigurationCustomizer` bean that will be invoked prior to creating the `org.jooq.Configuration` `@Bean`.
+This takes precedence to anything that is applied by the auto-configuration.
 
 You can also create your own `org.jooq.Configuration` `@Bean` if you want to take complete control of the jOOQ configuration.
 
