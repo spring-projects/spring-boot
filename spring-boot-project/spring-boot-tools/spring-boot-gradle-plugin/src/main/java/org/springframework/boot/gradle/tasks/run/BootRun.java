@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ package org.springframework.boot.gradle.tasks.run;
 import java.lang.reflect.Method;
 
 import org.gradle.api.file.SourceDirectorySet;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetOutput;
+import org.gradle.jvm.toolchain.JavaLauncher;
 
 /**
  * Custom {@link JavaExec} task for running a Spring Boot application.
@@ -84,6 +86,15 @@ public class BootRun extends JavaExec {
 	}
 
 	private boolean isJava13OrLater() {
+		try {
+			Property<JavaLauncher> javaLauncher = this.getJavaLauncher();
+			if (javaLauncher.isPresent()) {
+				return javaLauncher.get().getMetadata().getLanguageVersion().asInt() >= 13;
+			}
+		}
+		catch (NoSuchMethodError ex) {
+			// Continue
+		}
 		for (Method method : String.class.getMethods()) {
 			if (method.getName().equals("stripIndent")) {
 				return true;
