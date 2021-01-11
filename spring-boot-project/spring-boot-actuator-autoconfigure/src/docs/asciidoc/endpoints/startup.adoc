@@ -12,7 +12,7 @@ The application startup steps can either be retrieved as a snapshot (`GET`) or d
 [[startup-retrieving-snapshot]]
 === Retrieving a snapshot of the Application Startup steps
 
-To retrieve the steps recorded so far during the application startup phase , make a `GET` request to `/actuator/startup`, as shown in the following curl-based example:
+To retrieve the steps recorded so far during the application startup phase, make a `GET` request to `/actuator/startup`, as shown in the following curl-based example:
 
 include::{snippets}/startup-snapshot/curl-request.adoc[]
 
@@ -24,7 +24,7 @@ include::{snippets}/startup-snapshot/http-response.adoc[]
 [[startup-retrieving-drain]]
 == Draining the Application Startup steps
 
-To drain and return the steps recorded so far during the application startup phase , make a `POST` request to `/actuator/startup`, as shown in the following curl-based example:
+To drain and return the steps recorded so far during the application startup phase, make a `POST` request to `/actuator/startup`, as shown in the following curl-based example:
 
 include::{snippets}/startup/curl-request.adoc[]
 
