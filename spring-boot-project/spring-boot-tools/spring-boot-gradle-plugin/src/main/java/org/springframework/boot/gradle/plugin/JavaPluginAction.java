@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,10 +38,14 @@ import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
+import org.gradle.jvm.toolchain.JavaToolchainService;
+import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
@@ -152,7 +156,20 @@ final class JavaPluginAction implements PluginApplicationAction {
 				run.conventionMapping("main",
 						() -> resolveProvider.flatMap(ResolveMainClassName::readMainClassName).get());
 			}
+			configureToolchainConvention(project, run);
 		});
+	}
+
+	private void configureToolchainConvention(Project project, BootRun run) {
+		if (isGradle67OrLater()) {
+			JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
+			JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+			run.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
+		}
+	}
+
+	private boolean isGradle67OrLater() {
+		return GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.7")) >= 0;
 	}
 
 	private JavaPluginConvention javaPluginConvention(Project project) {
