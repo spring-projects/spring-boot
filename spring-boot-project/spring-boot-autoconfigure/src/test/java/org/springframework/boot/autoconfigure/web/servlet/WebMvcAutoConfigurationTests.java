@@ -1041,7 +1041,7 @@ class WebMvcAutoConfigurationTests {
 	protected Map<String, List<Resource>> getMappingLocations(HandlerMapping mapping) {
 		Map<String, List<Resource>> mappingLocations = new LinkedHashMap<>();
 		getHandlerMap(mapping).forEach((key, value) -> {
-			Object locations = ReflectionTestUtils.getField(value, "locations");
+			Object locations = ReflectionTestUtils.getField(value, "locationsToUse");
 			mappingLocations.put(key, (List<Resource>) locations);
 		});
 		return mappingLocations;
