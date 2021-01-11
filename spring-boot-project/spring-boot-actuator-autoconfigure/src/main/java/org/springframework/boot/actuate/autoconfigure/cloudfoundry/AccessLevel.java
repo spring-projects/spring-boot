@@ -31,7 +31,7 @@ public enum AccessLevel {
 	/**
 	 * Restricted access to a limited set of endpoints.
 	 */
-	RESTRICTED("", "health"),
+	RESTRICTED("", "health", "info"),
 
 	/**
 	 * Full access to all endpoints.
