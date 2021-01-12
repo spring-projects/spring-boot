@@ -204,7 +204,7 @@
 		<sqlite-jdbc.version>3.28.0</sqlite-jdbc.version>
 		<sun-mail.version>${jakarta-mail.version}</sun-mail.version>
 		<saaj-impl.version>1.5.2</saaj-impl.version>
-		<thymeleaf.version>3.0.11.RELEASE</thymeleaf.version>
+		<thymeleaf.version>3.0.12.RELEASE</thymeleaf.version>
 		<thymeleaf-extras-springsecurity.version>3.0.4.RELEASE</thymeleaf-extras-springsecurity.version>
 		<thymeleaf-layout-dialect.version>2.4.1</thymeleaf-layout-dialect.version>
 		<thymeleaf-extras-data-attribute.version>2.0.1</thymeleaf-extras-data-attribute.version>
