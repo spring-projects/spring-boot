@@ -162,7 +162,7 @@
 		<nekohtml.version>1.9.22</nekohtml.version>
 		<neo4j-ogm.version>3.2.18</neo4j-ogm.version>
 		<netty.version>4.1.56.Final</netty.version>
-		<netty-tcnative.version>2.0.35.Final</netty-tcnative.version>
+		<netty-tcnative.version>2.0.36.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
 		<ojdbc.version>19.3.0.0</ojdbc.version>
 		<okhttp3.version>3.14.9</okhttp3.version>
