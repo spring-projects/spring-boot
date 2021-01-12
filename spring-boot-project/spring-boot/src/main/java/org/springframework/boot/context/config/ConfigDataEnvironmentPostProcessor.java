@@ -36,7 +36,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.log.LogMessage;
 
 /**
- * {@link EnvironmentPostProcessor} that loads and apply {@link ConfigData} to Spring's
+ * {@link EnvironmentPostProcessor} that loads and applies {@link ConfigData} to Spring's
  * {@link Environment}.
  *
  * @author Phillip Webb
