@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,7 +94,7 @@ class ConfigDataProperties {
 
 	ConfigDataProperties withLegacyProfiles(String[] legacyProfiles, ConfigurationProperty property) {
 		if (this.activate != null && !ObjectUtils.isEmpty(this.activate.onProfile)) {
-			throw new InvalidConfigDataPropertyException(property, NAME.append("activate.on-profile"), null);
+			throw new InvalidConfigDataPropertyException(property, false, NAME.append("activate.on-profile"), null);
 		}
 		return new ConfigDataProperties(this.imports, new Activate(this.activate.onCloudPlatform, legacyProfiles));
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,21 +111,21 @@ class ConfigDataLocationResolvers {
 
 	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolver<?> resolver,
 			ConfigDataLocationResolverContext context, ConfigDataLocation location, Profiles profiles) {
-		List<ConfigDataResolutionResult> resolved = resolve(location, () -> resolver.resolve(context, location));
+		List<ConfigDataResolutionResult> resolved = resolve(location, false, () -> resolver.resolve(context, location));
 		if (profiles == null) {
 			return resolved;
 		}
-		List<ConfigDataResolutionResult> profileSpecific = resolve(location,
+		List<ConfigDataResolutionResult> profileSpecific = resolve(location, true,
 				() -> resolver.resolveProfileSpecific(context, location, profiles));
 		return merge(resolved, profileSpecific);
 	}
 
-	private List<ConfigDataResolutionResult> resolve(ConfigDataLocation location,
+	private List<ConfigDataResolutionResult> resolve(ConfigDataLocation location, boolean profileSpecific,
 			Supplier<List<? extends ConfigDataResource>> resolveAction) {
 		List<ConfigDataResource> resources = nonNullList(resolveAction.get());
 		List<ConfigDataResolutionResult> resolved = new ArrayList<>(resources.size());
 		for (ConfigDataResource resource : resources) {
-			resolved.add(new ConfigDataResolutionResult(location, resource));
+			resolved.add(new ConfigDataResolutionResult(location, resource, profileSpecific));
 		}
 		return resolved;
 	}
