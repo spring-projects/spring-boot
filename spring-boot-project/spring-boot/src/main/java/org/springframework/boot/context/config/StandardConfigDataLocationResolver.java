@@ -16,9 +16,11 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -171,11 +173,22 @@ public class StandardConfigDataLocationResolver
 			String directory, String profile) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
 		for (String name : this.configNames) {
-			for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
-				for (String extension : propertySourceLoader.getFileExtensions()) {
-					StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation,
-							directory, directory + name, profile, extension, propertySourceLoader);
-					references.add(reference);
+			Deque<StandardConfigDataReference> referencesForName = getReferencesForConfigName(name, configDataLocation,
+					directory, profile);
+			references.addAll(referencesForName);
+		}
+		return references;
+	}
+
+	private Deque<StandardConfigDataReference> getReferencesForConfigName(String name,
+			ConfigDataLocation configDataLocation, String directory, String profile) {
+		Deque<StandardConfigDataReference> references = new ArrayDeque<>();
+		for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
+			for (String extension : propertySourceLoader.getFileExtensions()) {
+				StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation, directory,
+						directory + name, profile, extension, propertySourceLoader);
+				if (!references.contains(reference)) {
+					references.addFirst(reference);
 				}
 			}
 		}

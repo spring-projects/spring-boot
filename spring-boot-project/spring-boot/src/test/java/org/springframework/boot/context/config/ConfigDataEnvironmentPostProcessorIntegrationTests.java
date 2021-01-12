@@ -136,6 +136,13 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	void runWhenPropertiesAndYamlShouldPreferProperties() {
+		ConfigurableApplicationContext context = this.application.run();
+		String property = context.getEnvironment().getProperty("duplicate");
+		assertThat(property).isEqualTo("properties");
+	}
+
+	@Test
 	void runWhenMultipleCustomNamesLoadsEachName() {
 		ConfigurableApplicationContext context = this.application
 				.run("--spring.config.name=moreproperties,testproperties");
