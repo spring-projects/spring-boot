@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import javax.sql.DataSource;
+
+import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -28,6 +31,9 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.session.FlushMode;
@@ -36,6 +42,7 @@ import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
 import org.springframework.session.data.redis.RedisIndexedSessionRepository;
 import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
+import org.springframework.session.jdbc.config.annotation.SpringSessionDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -105,6 +112,19 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 	}
 
 	@Test
+	void sessionDataSourceIsUsedWhenAvailable() {
+		this.contextRunner.withUserConfiguration(SessionDataSourceConfiguration.class)
+				.withPropertyValues("spring.session.store-type=jdbc").run((context) -> {
+					JdbcIndexedSessionRepository repository = validateSessionRepository(context,
+							JdbcIndexedSessionRepository.class);
+					assertThat(repository).extracting("jdbcOperations").extracting("dataSource")
+							.isEqualTo(context.getBean("sessionDataSource"));
+					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
+							() -> context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION"));
+				});
+	}
+
+	@Test
 	void customTableName() {
 		this.contextRunner
 				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.table-name=FOO_BAR",
@@ -155,6 +175,31 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 							.getBean(SpringBootJdbcHttpSessionConfiguration.class);
 					assertThat(configuration).hasFieldOrPropertyWithValue("saveMode", SaveMode.ON_GET_ATTRIBUTE);
 				});
+	}
+
+	@Configuration
+	static class SessionDataSourceConfiguration {
+
+		@Bean
+		@SpringSessionDataSource
+		DataSource sessionDataSource() {
+			BasicDataSource dataSource = new BasicDataSource();
+			dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
+			dataSource.setUrl("jdbc:hsqldb:mem:sessiondb");
+			dataSource.setUsername("sa");
+			return dataSource;
+		}
+
+		@Bean
+		@Primary
+		DataSource mainDataSource() {
+			BasicDataSource dataSource = new BasicDataSource();
+			dataSource.setDriverClassName("org.hsqldb.jdbcDriver");
+			dataSource.setUrl("jdbc:hsqldb:mem:maindb");
+			dataSource.setUsername("sa");
+			return dataSource;
+		}
+
 	}
 
 }
