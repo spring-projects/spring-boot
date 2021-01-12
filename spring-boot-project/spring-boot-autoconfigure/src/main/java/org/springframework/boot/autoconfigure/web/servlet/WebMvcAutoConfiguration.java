@@ -17,12 +17,11 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Set;
+import java.util.function.Consumer;
 
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
@@ -95,7 +94,6 @@ import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
 import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
-import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.LocaleResolver;
 import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
@@ -111,14 +109,12 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
-import org.springframework.web.servlet.handler.SimpleUrlHandlerMapping;
 import org.springframework.web.servlet.i18n.AcceptHeaderLocaleResolver;
 import org.springframework.web.servlet.i18n.FixedLocaleResolver;
 import org.springframework.web.servlet.mvc.method.annotation.ExceptionHandlerExceptionResolver;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.servlet.resource.EncodedResourceResolver;
-import org.springframework.web.servlet.resource.ResourceHttpRequestHandler;
 import org.springframework.web.servlet.resource.ResourceResolver;
 import org.springframework.web.servlet.resource.ResourceUrlProvider;
 import org.springframework.web.servlet.resource.VersionResourceResolver;
@@ -348,8 +344,6 @@ public class WebMvcAutoConfiguration {
 
 		private ResourceLoader resourceLoader;
 
-		private final Set<String> autoConfiguredResourceHandlers = new HashSet<>();
-
 		@SuppressWarnings("deprecation")
 		public EnableWebMvcConfiguration(
 				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
@@ -402,36 +396,6 @@ public class WebMvcAutoConfiguration {
 					resourceUrlProvider);
 		}
 
-		@Bean
-		@Override
-		public HandlerMapping resourceHandlerMapping(ContentNegotiationManager contentNegotiationManager,
-				FormattingConversionService conversionService, ResourceUrlProvider resourceUrlProvider) {
-			HandlerMapping mapping = super.resourceHandlerMapping(contentNegotiationManager, conversionService,
-					resourceUrlProvider);
-			if (mapping instanceof SimpleUrlHandlerMapping) {
-				addServletContextResourceHandlerMapping((SimpleUrlHandlerMapping) mapping);
-			}
-			return mapping;
-		}
-
-		private void addServletContextResourceHandlerMapping(SimpleUrlHandlerMapping mapping) {
-			Map<String, ?> urlMap = mapping.getUrlMap();
-			String pattern = this.mvcProperties.getStaticPathPattern();
-			Object handler = urlMap.get(pattern);
-			if (handler instanceof ResourceHttpRequestHandler
-					&& this.autoConfiguredResourceHandlers.contains(pattern)) {
-				addServletContextResourceHandlerMapping((ResourceHttpRequestHandler) handler);
-			}
-		}
-
-		private void addServletContextResourceHandlerMapping(ResourceHttpRequestHandler handler) {
-			ServletContext servletContext = getServletContext();
-			if (servletContext != null) {
-				List<Resource> locations = handler.getLocations();
-				locations.add(new ServletContextResource(servletContext, SERVLET_LOCATION));
-			}
-		}
-
 		@Override
 		protected void addResourceHandlers(ResourceHandlerRegistry registry) {
 			super.addResourceHandlers(registry);
@@ -439,22 +403,30 @@ public class WebMvcAutoConfiguration {
 				logger.debug("Default resource handling disabled");
 				return;
 			}
+			ServletContext servletContext = getServletContext();
 			addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
-			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(),
-					this.resourceProperties.getStaticLocations());
-
+			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
+				registration.addResourceLocations(this.resourceProperties.getStaticLocations());
+				if (servletContext != null) {
+					registration.addResourceLocations(new ServletContextResource(servletContext, SERVLET_LOCATION));
+				}
+			});
 		}
 
 		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
+			addResourceHandler(registry, pattern, (registration) -> registration.addResourceLocations(locations));
+		}
+
+		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern,
+				Consumer<ResourceHandlerRegistration> customizer) {
 			if (registry.hasMappingForPattern(pattern)) {
 				return;
 			}
 			ResourceHandlerRegistration registration = registry.addResourceHandler(pattern);
-			registration.addResourceLocations(locations);
+			customizer.accept(registration);
 			registration.setCachePeriod(getSeconds(this.resourceProperties.getCache().getPeriod()));
 			registration.setCacheControl(this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl());
 			customizeResourceHandlerRegistration(registration);
-			this.autoConfiguredResourceHandlers.add(pattern);
 		}
 
 		private Integer getSeconds(Duration cachePeriod) {
