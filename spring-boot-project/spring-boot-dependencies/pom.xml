@@ -160,7 +160,7 @@
 		<mssql-jdbc.version>7.4.1.jre8</mssql-jdbc.version>
 		<mysql.version>8.0.22</mysql.version>
 		<nekohtml.version>1.9.22</nekohtml.version>
-		<neo4j-ogm.version>3.2.18</neo4j-ogm.version>
+		<neo4j-ogm.version>3.2.19</neo4j-ogm.version>
 		<netty.version>4.1.56.Final</netty.version>
 		<netty-tcnative.version>2.0.36.Final</netty-tcnative.version>
 		<nio-multipart-parser.version>1.1.0</nio-multipart-parser.version>
