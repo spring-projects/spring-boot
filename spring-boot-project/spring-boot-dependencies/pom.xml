@@ -43,7 +43,7 @@
 		<atomikos.version>4.0.6</atomikos.version>
 		<awaitility.version>4.0.3</awaitility.version>
 		<bitronix.version>2.1.4</bitronix.version>
-		<byte-buddy.version>1.10.18</byte-buddy.version>
+		<byte-buddy.version>1.10.19</byte-buddy.version>
 		<caffeine.version>2.8.8</caffeine.version>
 		<cassandra-driver.version>3.7.2</cassandra-driver.version>
 		<classmate.version>1.5.1</classmate.version>
