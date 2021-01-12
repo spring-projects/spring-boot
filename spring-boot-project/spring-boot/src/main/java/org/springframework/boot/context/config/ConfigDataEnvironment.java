@@ -34,7 +34,6 @@ import org.springframework.boot.context.properties.bind.BindException;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.bind.PlaceholdersResolver;
-import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -97,9 +96,6 @@ class ConfigDataEnvironment {
 	}
 
 	private static final ConfigDataLocation[] EMPTY_LOCATIONS = new ConfigDataLocation[0];
-
-	private static final ConfigurationPropertyName INCLUDE_PROFILES = ConfigurationPropertyName
-			.of(Profiles.INCLUDE_PROFILES_PROPERTY_NAME);
 
 	private static final Bindable<ConfigDataLocation[]> CONFIG_DATA_LOCATION_ARRAY = Bindable
 			.of(ConfigDataLocation[].class);
@@ -293,9 +289,9 @@ class ConfigDataEnvironment {
 				continue;
 			}
 			Binder binder = new Binder(Collections.singleton(source), placeholdersResolver);
-			binder.bind(INCLUDE_PROFILES, STRING_LIST).ifBound((includes) -> {
+			binder.bind(Profiles.INCLUDE_PROFILES, STRING_LIST).ifBound((includes) -> {
 				if (!contributor.isActive(activationContext)) {
-					InactiveConfigDataAccessException.throwIfPropertyFound(contributor, INCLUDE_PROFILES);
+					InactiveConfigDataAccessException.throwIfPropertyFound(contributor, Profiles.INCLUDE_PROFILES);
 				}
 				result.addAll(includes);
 			});

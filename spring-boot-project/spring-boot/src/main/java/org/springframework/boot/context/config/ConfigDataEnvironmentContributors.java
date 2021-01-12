@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -163,12 +163,14 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		imported.forEach((resolutionResult, data) -> {
 			ConfigDataLocation location = resolutionResult.getLocation();
 			ConfigDataResource resource = resolutionResult.getResource();
+			boolean profileSpecific = resolutionResult.isProfileSpecific();
 			if (data.getPropertySources().isEmpty()) {
-				contributors.add(ConfigDataEnvironmentContributor.ofEmptyLocation(location));
+				contributors.add(ConfigDataEnvironmentContributor.ofEmptyLocation(location, profileSpecific));
 			}
 			else {
 				for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
-					contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, resource, data, i));
+					contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, resource,
+							profileSpecific, data, i));
 				}
 			}
 		});
