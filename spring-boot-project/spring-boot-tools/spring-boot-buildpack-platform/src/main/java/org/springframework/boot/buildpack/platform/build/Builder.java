@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -116,6 +116,7 @@ public class Builder {
 			ImageReference runImage = getRunImageReferenceForStack(builderStack);
 			request = request.withRunImage(runImage);
 		}
+		assertImageRegistriesMatch(request);
 		Image runImage = getImage(request, ImageType.RUNNER);
 		assertStackIdsMatch(runImage, builderImage);
 		return request;
@@ -170,6 +171,14 @@ public class Builder {
 	private String getPublishAuthHeader() {
 		return (this.dockerConfiguration != null && this.dockerConfiguration.getPublishRegistryAuthentication() != null)
 				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader() : null;
+	}
+
+	private void assertImageRegistriesMatch(BuildRequest request) {
+		if (getBuilderAuthHeader() != null) {
+			Assert.state(request.getRunImage().getDomain().equals(request.getBuilder().getDomain()),
+					"Builder image '" + request.getBuilder() + "' and run image '" + request.getRunImage()
+							+ "' must be pulled from the same authenticated registry");
+		}
 	}
 
 	private void assertStackIdsMatch(Image runImage, Image builderImage) {

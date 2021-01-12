@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -306,6 +306,42 @@ class BuilderTests {
 		BuildRequest request = getTestRequest();
 		assertThatExceptionOfType(BuilderException.class).isThrownBy(() -> builder.build(request))
 				.withMessage("Builder lifecycle 'creator' failed with status code 9");
+	}
+
+	@Test
+	void buildWhenDetectedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image-with-run-image-different-registry.json");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration()
+				.withBuilderRegistryTokenAuthentication("builder token");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+						.willAnswer(withPulledImage(builderImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
+		BuildRequest request = getTestRequest();
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
+				.withMessageContaining(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)
+				.withMessageContaining("example.com/custom/run:latest")
+				.withMessageContaining("must be pulled from the same authenticated registry");
+	}
+
+	@Test
+	void buildWhenRequestedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration()
+				.withBuilderRegistryTokenAuthentication("builder token");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+						.willAnswer(withPulledImage(builderImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
+		BuildRequest request = getTestRequest().withRunImage(ImageReference.of("example.com/custom/run:latest"));
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request))
+				.withMessageContaining(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)
+				.withMessageContaining("example.com/custom/run:latest")
+				.withMessageContaining("must be pulled from the same authenticated registry");
 	}
 
 	private DockerApi mockDockerApi() throws IOException {
