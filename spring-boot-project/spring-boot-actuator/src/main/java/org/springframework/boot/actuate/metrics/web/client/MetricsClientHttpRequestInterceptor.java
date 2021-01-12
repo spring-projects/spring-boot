@@ -25,6 +25,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.core.NamedThreadLocal;
@@ -42,6 +44,8 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Phillip Webb
  */
 class MetricsClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
+
+	private static final Log logger = LogFactory.getLog(MetricsClientHttpRequestInterceptor.class);
 
 	private static final ThreadLocal<Deque<String>> urlTemplate = new UrlTemplateThreadLocal();
 
@@ -82,8 +86,13 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 			return response;
 		}
 		finally {
-			getTimeBuilder(request, response).register(this.meterRegistry).record(System.nanoTime() - startTime,
-					TimeUnit.NANOSECONDS);
+			try {
+				getTimeBuilder(request, response).register(this.meterRegistry).record(System.nanoTime() - startTime,
+						TimeUnit.NANOSECONDS);
+			}
+			catch (Exception ex) {
+				logger.info("Failed to record metrics.", ex);
+			}
 			if (urlTemplate.get().isEmpty()) {
 				urlTemplate.remove();
 			}
