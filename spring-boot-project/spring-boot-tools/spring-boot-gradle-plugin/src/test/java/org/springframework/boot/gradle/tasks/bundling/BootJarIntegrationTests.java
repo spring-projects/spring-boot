@@ -304,7 +304,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertThat(output).containsPattern("1\\. .*classes");
 		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
 		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
-		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-layertools-.*.jar");
+		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-layertools.*.jar");
 		assertThat(output).doesNotContain("5. ");
 	}
 
@@ -314,7 +314,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		BuildResult result = this.gradleBuild.build("launch");
 		String output = result.getOutput();
 		assertThat(output).containsPattern("1\\. .*classes");
-		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-layertools-.*.jar");
+		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-layertools.*.jar");
 		assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
 		assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
 		assertThat(output).doesNotContain("5. ");
