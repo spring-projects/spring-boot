@@ -26,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -55,6 +56,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.context.properties.BoundConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
@@ -90,6 +92,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Andy Wilkinson
+ * @author Chris Bono
  * @since 2.0.0
  */
 @Endpoint(id = "configprops")
@@ -114,15 +117,21 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationProperties() {
-		return extract(this.context);
+		return extract(this.context, (bean) -> true);
 	}
 
-	private ApplicationConfigurationProperties extract(ApplicationContext context) {
+	@ReadOperation
+	public ApplicationConfigurationProperties configurationProperties(@Selector String prefix) {
+		return extract(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix));
+	}
+
+	private ApplicationConfigurationProperties extract(ApplicationContext context,
+			Predicate<ConfigurationPropertiesBean> beanFilterPredicate) {
 		ObjectMapper mapper = getObjectMapper();
 		Map<String, ContextConfigurationProperties> contexts = new HashMap<>();
 		ApplicationContext target = context;
 		while (target != null) {
-			contexts.put(target.getId(), describeBeans(mapper, target));
+			contexts.put(target.getId(), describeBeans(mapper, target, beanFilterPredicate));
 			target = target.getParent();
 		}
 		return new ApplicationConfigurationProperties(contexts);
@@ -169,10 +178,14 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		mapper.setSerializerFactory(factory);
 	}
 
-	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context) {
+	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context,
+			Predicate<ConfigurationPropertiesBean> beanFilterPredicate) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
-		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = new HashMap<>();
-		beans.forEach((beanName, bean) -> descriptors.put(beanName, describeBean(mapper, bean)));
+
+		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values().stream()
+				.filter(beanFilterPredicate::test)
+				.collect(Collectors.toMap((bean) -> bean.getName(), (bean) -> describeBean(mapper, bean)));
+
 		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
