@@ -38,10 +38,9 @@ import org.springframework.security.web.SecurityFilterChain;
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security when actuator is
  * on the classpath. It allows unauthenticated access to the {@link HealthEndpoint}. If
- * the user specifies their own {@link WebSecurityConfigurerAdapter} or
- * {@link SecurityFilterChain} bean, this will back-off completely and the user should
- * specify all the bits that they want to configure as part of the custom security
- * configuration.
+ * the user specifies their own{@link SecurityFilterChain} bean, this will back-off
+ * completely and the user should specify all the bits that they want to configure as part
+ * of the custom security configuration.
  *
  * @author Madhura Bhave
  * @since 2.1.0
