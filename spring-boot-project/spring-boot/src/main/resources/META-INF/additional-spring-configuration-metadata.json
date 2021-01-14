@@ -274,10 +274,28 @@
       "defaultValue": true
     },
     {
+      "name": "spring.config.activate.on-cloud-platform",
+      "type": "org.springframework.boot.cloud.CloudPlatform",
+      "description": "Required cloud platform for the document to be included.",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
+    },
+    {
+      "name": "spring.config.activate.on-profile",
+      "type": "java.lang.String[]",
+      "description": "Profile expressions that should match for the document to be included.",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
+    },
+    {
       "name": "spring.config.additional-location",
       "type": "java.lang.String",
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Config file locations used in addition to the defaults."
+    },
+    {
+      "name": "spring.config.import",
+      "type": "java.util.List<java.lang.String>",
+      "description": "Import additional config data.",
+      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     },
     {
       "name": "spring.config.location",
@@ -291,6 +309,12 @@
       "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
       "description": "Config file name.",
       "defaultValue": "application"
+    },
+    {
+      "name": "spring.config.use-legacy-processing",
+      "type": "java.lang.Boolean",
+      "description": "Whether to enable configuration data processing legacy mode.",
+      "defaultValue": false
     },
     {
       "name": "spring.jta.atomikos.connectionfactory.borrow-connection-timeout",
@@ -843,24 +867,6 @@
       "description": "Enable trace logs.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
       "defaultValue": false
-    },
-    {
-      "name": "spring.config.import",
-      "type": "java.util.List<java.lang.String>",
-      "description": "Import additional config data.",
-      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
-    },
-    {
-      "name": "spring.config.activate.on-cloud-platform",
-      "type": "org.springframework.boot.cloud.CloudPlatform",
-      "description": "Required cloud platform for the document to be included.",
-      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
-    },
-    {
-      "name": "spring.config.activate.on-profile",
-      "type": "java.lang.String[]",
-      "description": "Profile expressions that should match for the document to be included.",
-      "sourceType": "org.springframework.boot.context.config.ConfigDataProperties"
     }
   ],
   "hints": [
