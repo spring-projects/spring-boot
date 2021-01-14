@@ -248,15 +248,12 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	@Test
 	void configureWhenCustomSnifferShouldBackOff() {
 		Sniffer customSniffer = mock(Sniffer.class);
-		this.contextRunner.withBean(Sniffer.class, () -> customSniffer)
-				.withPropertyValues("spring.elasticsearch.rest.sniffer.interval=180s",
-						"spring.elasticsearch.rest.sniffer.delay-after-failure=30s")
-				.run((context) -> {
-					assertThat(context).hasSingleBean(Sniffer.class);
-					Sniffer sniffer = context.getBean(Sniffer.class);
-					assertThat(sniffer).isSameAs(customSniffer);
-					verifyNoInteractions(customSniffer);
-				});
+		this.contextRunner.withBean(Sniffer.class, () -> customSniffer).run((context) -> {
+			assertThat(context).hasSingleBean(Sniffer.class);
+			Sniffer sniffer = context.getBean(Sniffer.class);
+			assertThat(sniffer).isSameAs(customSniffer);
+			verifyNoInteractions(customSniffer);
+		});
 	}
 
 	@Configuration(proxyBeanMethods = false)
