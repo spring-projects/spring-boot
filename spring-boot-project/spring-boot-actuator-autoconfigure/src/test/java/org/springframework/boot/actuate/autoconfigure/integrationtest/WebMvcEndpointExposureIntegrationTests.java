@@ -91,7 +91,7 @@ class WebMvcEndpointExposureIntegrationTests {
 			assertThat(isExposed(client, HttpMethod.GET, "customservlet")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "env")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "health")).isTrue();
-			assertThat(isExposed(client, HttpMethod.GET, "info")).isTrue();
+			assertThat(isExposed(client, HttpMethod.GET, "info")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "mappings")).isFalse();
 			assertThat(isExposed(client, HttpMethod.POST, "shutdown")).isFalse();
 			assertThat(isExposed(client, HttpMethod.GET, "threaddump")).isFalse();
