@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,13 +21,16 @@ import java.util.function.Consumer;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.tomcat.jdbc.pool.DataSourceProxy;
+import org.apache.tomcat.jdbc.pool.PoolConfiguration;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
 import org.springframework.jdbc.datasource.SingleConnectionDataSource;
+import org.springframework.jdbc.datasource.SmartDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,52 +47,59 @@ class DataSourceUnwrapperTests {
 	@Test
 	void unwrapWithTarget() {
 		DataSource dataSource = new HikariDataSource();
-		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class)).isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class, HikariDataSource.class))
+				.isSameAs(dataSource);
 	}
 
 	@Test
 	void unwrapWithWrongTarget() {
 		DataSource dataSource = new HikariDataSource();
-		assertThat(DataSourceUnwrapper.unwrap(dataSource, SingleConnectionDataSource.class)).isNull();
+		assertThat(DataSourceUnwrapper.unwrap(dataSource, SmartDataSource.class, SingleConnectionDataSource.class))
+				.isNull();
 	}
 
 	@Test
 	void unwrapWithDelegate() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInDelegate(wrapInDelegate(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
+				.isSameAs(dataSource);
 	}
 
 	@Test
 	void unwrapWithProxy() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInProxy(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
+				.isSameAs(dataSource);
 	}
 
 	@Test
 	void unwrapWithProxyAndDelegate() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInDelegate(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
+				.isSameAs(dataSource);
 	}
 
 	@Test
 	void unwrapWithSeveralLevelOfWrapping() {
 		DataSource dataSource = new HikariDataSource();
 		DataSource actual = wrapInProxy(wrapInDelegate(wrapInDelegate(wrapInProxy(wrapInDelegate(dataSource)))));
-		assertThat(DataSourceUnwrapper.unwrap(actual, HikariDataSource.class)).isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, HikariConfigMXBean.class, HikariDataSource.class))
+				.isSameAs(dataSource);
 	}
 
 	@Test
 	void unwrapDataSourceProxy() {
 		org.apache.tomcat.jdbc.pool.DataSource dataSource = new org.apache.tomcat.jdbc.pool.DataSource();
 		DataSource actual = wrapInDelegate(wrapInProxy(dataSource));
-		assertThat(DataSourceUnwrapper.unwrap(actual, DataSourceProxy.class)).isSameAs(dataSource);
+		assertThat(DataSourceUnwrapper.unwrap(actual, PoolConfiguration.class, DataSourceProxy.class))
+				.isSameAs(dataSource);
 	}
 
 	@Test
-	void unwrappingIsNotAttemptedWhenTargetIsNotAnInterface() throws SQLException {
+	void unwrappingIsNotAttemptedWhenTargetIsNotAnInterface() {
 		DataSource dataSource = mock(DataSource.class);
 		assertThat(DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class)).isNull();
 		verifyNoMoreInteractions(dataSource);
