@@ -286,7 +286,7 @@ public class JettyWebServer implements WebServer {
 					.invokeMethod(ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"), connector);
 		}
 		catch (Exception ex) {
-			logger.info("could not determine port ( " + ex.getMessage() + ")");
+			logger.info("could not determine port (" + ex.getMessage() + ")");
 		}
 		return 0;
 	}

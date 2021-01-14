@@ -124,7 +124,7 @@ public class CouchbaseAutoConfiguration {
 
 		@Bean
 		@ConditionalOnSingleCandidate(ObjectMapper.class)
-		ClusterEnvironmentBuilderCustomizer cluster(ObjectMapper objectMapper) {
+		ClusterEnvironmentBuilderCustomizer jacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
 			return new JacksonClusterEnvironmentBuilderCustomizer(objectMapper);
 		}
 
