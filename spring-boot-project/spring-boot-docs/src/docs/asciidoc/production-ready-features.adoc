@@ -1055,50 +1055,62 @@ Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run
 [[production-ready-kubernetes-probes-lifecycle]]
 ==== Application lifecycle and Probes states
 An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
-Spring Boot publishes <<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events during startup and shutdown>>.
+There is a significant different between the `AvailabilityState` which is the in-memory, internal state of the application -
+and the actual Probe which exposes that state: depending on the phase of application lifecycle, the Probe might not be available.
+
+Spring Boot publishes <<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events during startup and shutdown>>,
+and Probes can listen to such events and expose the `AvailabilityState` information.
+
+The following tables show the `AvailabilityState` and the state of HTTP connectors at different stages.
 
 When a Spring Boot application starts:
 
-[cols="3,2,2,6"]
+[cols="2,2,2,3,5"]
 |===
-|Application startup phase |Liveness State |Readiness State |Notes
+|Startup phase |LivenessState |ReadinessState |HTTP server |Notes
 
 |Starting
 |`BROKEN`
 |`REFUSING_TRAFFIC`
+|Not started
 |Kubernetes checks the "liveness" Probe and restarts the application if it takes too long.
 
 |Started
 |`CORRECT`
 |`REFUSING_TRAFFIC`
+|Accepts requests
 |The application context is refreshed. The application performs startup tasks and does not receive traffic yet.
 
 |Ready
 |`CORRECT`
 |`ACCEPTING_TRAFFIC`
+|Accepts requests
 |Startup tasks are finished. The application is receiving traffic.
 |===
 
 When a Spring Boot application shuts down:
 
-[cols="3,2,2,6"]
+[cols="2,2,2,3,5"]
 |===
-|Application shutdown phase |Liveness State |Readiness State |Notes
+|Shutdown phase |Liveness State |Readiness State |HTTP server |Notes
 
 |Running
-|live
-|ready
+|`CORRECT`
+|`ACCEPTING_TRAFFIC`
+|Accepts requests
 |Shutdown has been requested.
 
 |Graceful shutdown
-|live
-|unready
+|`CORRECT`
+|`REFUSING_TRAFFIC`
+|New requests are rejected
 |If enabled, <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown processes in-flight requests>>.
 
 |Shutdown complete
-|broken
-|unready
-|The application context is closed and the application cannot serve traffic.
+|N/A
+|N/A
+|Server is shut down
+|The application context is closed and the application is shut down.
 |===
 
 TIP: Check out the <<deployment.adoc#cloud-deployment-kubernetes-container-lifecycle,Kubernetes container lifecycle section>> for more information about Kubernetes deployment.
