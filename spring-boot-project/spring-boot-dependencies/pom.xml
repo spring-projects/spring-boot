@@ -193,7 +193,7 @@
 		<spring-data-releasetrain.version>Moore-SR12</spring-data-releasetrain.version>
 		<spring-framework.version>5.2.12.RELEASE</spring-framework.version>
 		<spring-hateoas.version>1.0.5.RELEASE</spring-hateoas.version>
-		<spring-integration.version>5.2.10.RELEASE</spring-integration.version>
+		<spring-integration.version>5.2.11.RELEASE</spring-integration.version>
 		<spring-kafka.version>2.3.13.RELEASE</spring-kafka.version>
 		<spring-ldap.version>2.3.3.RELEASE</spring-ldap.version>
 		<spring-restdocs.version>2.0.5.RELEASE</spring-restdocs.version>
