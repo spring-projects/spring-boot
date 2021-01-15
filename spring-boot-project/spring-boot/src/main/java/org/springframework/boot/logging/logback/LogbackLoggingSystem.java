@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -146,15 +146,11 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		if (debug) {
 			StatusListenerConfigHelper.addOnConsoleListenerInstance(context, new OnConsoleStatusListener());
 		}
+		Environment environment = initializationContext.getEnvironment();
+		// Apply system properties directly in case the same JVM runs multiple apps
+		new LoggingSystemProperties(environment, context::putProperty).apply(logFile);
 		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
 				: new LogbackConfigurator(context);
-		Environment environment = initializationContext.getEnvironment();
-		context.putProperty(LoggingSystemProperties.LOG_LEVEL_PATTERN,
-				environment.resolvePlaceholders("${logging.pattern.level:${LOG_LEVEL_PATTERN:%5p}}"));
-		context.putProperty(LoggingSystemProperties.LOG_DATEFORMAT_PATTERN, environment.resolvePlaceholders(
-				"${logging.pattern.dateformat:${LOG_DATEFORMAT_PATTERN:yyyy-MM-dd HH:mm:ss.SSS}}"));
-		context.putProperty(LoggingSystemProperties.ROLLING_FILE_NAME_PATTERN, environment
-				.resolvePlaceholders("${logging.pattern.rolling-file-name:${LOG_FILE}.%d{yyyy-MM-dd}.%i.gz}"));
 		new DefaultLogbackConfiguration(initializationContext, logFile).apply(configurator);
 		context.setPackagingDataEnabled(true);
 	}

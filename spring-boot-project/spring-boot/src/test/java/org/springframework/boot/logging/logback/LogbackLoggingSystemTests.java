@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,9 @@ import java.io.File;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
 
@@ -87,10 +89,13 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private LoggingInitializationContext initializationContext;
 
+	private Set<Object> systemPropertyNames;
+
 	@BeforeEach
 	void setup() {
 		System.getProperties().remove(LoggingSystemProperties.CONSOLE_LOG_CHARSET);
 		System.getProperties().remove(LoggingSystemProperties.FILE_LOG_CHARSET);
+		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.loggingSystem.cleanUp();
 		this.logger = ((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).getLogger(getClass());
 		this.environment = new MockEnvironment();
@@ -101,6 +106,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@AfterEach
 	void cleanUp() {
+		System.getProperties().keySet().retainAll(this.systemPropertyNames);
 		this.loggingSystem.cleanUp();
 		((LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory()).stop();
 	}
@@ -312,6 +318,7 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testLevelPatternProperty(CapturedOutput output) {
 		this.environment.setProperty("logging.pattern.level", "X%clr(%p)X");
+		new LoggingSystemProperties(this.environment).apply();
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		initialize(loggingInitializationContext, null, null);
 		this.logger.info("Hello world");
@@ -513,6 +520,19 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 
 	@Test
 	void testDateformatPatternProperty(CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.dateformat", "yyyy-MM-dd'T'hh:mm:ss.SSSZ");
+		new LoggingSystemProperties(this.environment).apply();
+		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
+		initialize(loggingInitializationContext, null, null);
+		this.logger.info("Hello world");
+		assertThat(getLineWithText(output, "Hello world"))
+				.containsPattern("\\d{4}-\\d{2}\\-\\d{2}T\\d{2}:\\d{2}:\\d{2}");
+	}
+
+	@Test // gh-24835
+	void testDateformatPatternPropertyDirect(CapturedOutput output) {
+		this.environment.setProperty("logging.pattern.dateformat", "yyyy'T'hh:mm:ss.SSSZ");
+		new LoggingSystemProperties(this.environment).apply();
 		this.environment.setProperty("logging.pattern.dateformat", "yyyy-MM-dd'T'hh:mm:ss.SSSZ");
 		LoggingInitializationContext loggingInitializationContext = new LoggingInitializationContext(this.environment);
 		initialize(loggingInitializationContext, null, null);
