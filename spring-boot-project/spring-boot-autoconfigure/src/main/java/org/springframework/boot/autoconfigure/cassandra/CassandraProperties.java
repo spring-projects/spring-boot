@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.List;
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Cassandra.
@@ -126,17 +125,6 @@ public class CassandraProperties {
 		this.sessionName = sessionName;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.session-name")
-	public String getClusterName() {
-		return getSessionName();
-	}
-
-	@Deprecated
-	public void setClusterName(String clusterName) {
-		setSessionName(clusterName);
-	}
-
 	public List<String> getContactPoints() {
 		return this.contactPoints;
 	}
@@ -179,61 +167,6 @@ public class CassandraProperties {
 
 	public void setCompression(Compression compression) {
 		this.compression = compression;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.consistency")
-	public DefaultConsistencyLevel getConsistencyLevel() {
-		return getRequest().getConsistency();
-	}
-
-	@Deprecated
-	public void setConsistencyLevel(DefaultConsistencyLevel consistency) {
-		getRequest().setConsistency(consistency);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.serial-consistency")
-	public DefaultConsistencyLevel getSerialConsistencyLevel() {
-		return getRequest().getSerialConsistency();
-	}
-
-	@Deprecated
-	public void setSerialConsistencyLevel(DefaultConsistencyLevel serialConsistency) {
-		getRequest().setSerialConsistency(serialConsistency);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.page-size")
-	public int getFetchSize() {
-		return getRequest().getPageSize();
-	}
-
-	@Deprecated
-	public void setFetchSize(int fetchSize) {
-		getRequest().setPageSize(fetchSize);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.connection.init-query-timeout")
-	public Duration getConnectTimeout() {
-		return getConnection().getInitQueryTimeout();
-	}
-
-	@Deprecated
-	public void setConnectTimeout(Duration connectTimeout) {
-		getConnection().setInitQueryTimeout(connectTimeout);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.timeout")
-	public Duration getReadTimeout() {
-		return getRequest().getTimeout();
-	}
-
-	@Deprecated
-	public void setReadTimeout(Duration readTimeout) {
-		getRequest().setTimeout(readTimeout);
 	}
 
 	public boolean isSsl() {

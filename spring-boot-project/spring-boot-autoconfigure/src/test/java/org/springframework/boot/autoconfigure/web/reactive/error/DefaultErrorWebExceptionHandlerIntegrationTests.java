@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,6 +36,7 @@ import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplic
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.reactive.error.DefaultErrorAttributes;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.annotation.Bean;
@@ -337,7 +338,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	void defaultErrorAttributesSubclassUsingDeprecatedApiAndDelegation() {
+	void defaultErrorAttributesSubclassUsingDelegation() {
 		this.contextRunner.withUserConfiguration(CustomErrorAttributesWithDelegation.class).run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get().uri("/badRequest").exchange().expectStatus().isBadRequest().expectBody().jsonPath("status")
@@ -347,7 +348,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 	}
 
 	@Test
-	void defaultErrorAttributesSubclassUsingDeprecatedApiWithoutDelegation() {
+	void defaultErrorAttributesSubclassWithoutDelegation() {
 		this.contextRunner.withUserConfiguration(CustomErrorAttributesWithoutDelegation.class).run((context) -> {
 			WebTestClient client = getWebClient(context);
 			client.get().uri("/badRequest").exchange().expectStatus().isBadRequest().expectBody().jsonPath("status")
@@ -425,9 +426,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		ErrorAttributes errorAttributes() {
 			return new DefaultErrorAttributes() {
 				@Override
-				@SuppressWarnings("deprecation")
-				public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
-					Map<String, Object> errorAttributes = super.getErrorAttributes(request, includeStackTrace);
+				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+					Map<String, Object> errorAttributes = super.getErrorAttributes(request, options);
 					errorAttributes.put("error", "custom error");
 					errorAttributes.put("newAttribute", "value");
 					errorAttributes.remove("path");
@@ -446,8 +446,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 		ErrorAttributes errorAttributes() {
 			return new DefaultErrorAttributes() {
 				@Override
-				@SuppressWarnings("deprecation")
-				public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+				public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
 					Map<String, Object> errorAttributes = new HashMap<>();
 					errorAttributes.put("status", 400);
 					errorAttributes.put("error", "custom error");

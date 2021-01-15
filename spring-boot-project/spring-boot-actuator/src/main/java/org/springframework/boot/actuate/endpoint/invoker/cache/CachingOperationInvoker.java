@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,22 +102,6 @@ public class CachingOperationInvoker implements OperationInvoker {
 			return new ReactiveCachedResponse(response, accessTime, this.timeToLive);
 		}
 		return new CachedResponse(response, accessTime);
-	}
-
-	/**
-	 * Apply caching configuration when appropriate to the given invoker.
-	 * @param invoker the invoker to wrap
-	 * @param timeToLive the maximum time in milliseconds that a response can be cached
-	 * @return a caching version of the invoker or the original instance if caching is not
-	 * required
-	 * @deprecated as of 2.3.0 to make it package-private in 2.4
-	 */
-	@Deprecated
-	public static OperationInvoker apply(OperationInvoker invoker, long timeToLive) {
-		if (timeToLive > 0) {
-			return new CachingOperationInvoker(invoker, timeToLive);
-		}
-		return invoker;
 	}
 
 	/**

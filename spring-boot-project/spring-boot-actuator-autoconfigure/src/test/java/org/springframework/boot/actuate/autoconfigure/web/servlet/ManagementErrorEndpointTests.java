@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,13 +128,12 @@ class ManagementErrorEndpointTests {
 	}
 
 	@Test
-	void errorResponseWithDefaultErrorAttributesSubclassUsingDeprecatedApiAndDelegation() {
+	void errorResponseWithDefaultErrorAttributesSubclassUsingDelegation() {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
 
 			@Override
-			@SuppressWarnings("deprecation")
-			public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
-				Map<String, Object> response = super.getErrorAttributes(webRequest, includeStackTrace);
+			public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
+				Map<String, Object> response = super.getErrorAttributes(webRequest, options);
 				response.put("error", "custom error");
 				response.put("custom", "value");
 				response.remove("path");
@@ -151,7 +150,7 @@ class ManagementErrorEndpointTests {
 	}
 
 	@Test
-	void errorResponseWithDefaultErrorAttributesSubclassUsingDeprecatedApiWithoutDelegation() {
+	void errorResponseWithDefaultErrorAttributesSubclassWithoutDelegation() {
 		ErrorAttributes attributes = new DefaultErrorAttributes() {
 
 			@Override
