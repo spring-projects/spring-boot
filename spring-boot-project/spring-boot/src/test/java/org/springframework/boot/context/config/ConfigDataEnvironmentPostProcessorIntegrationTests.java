@@ -72,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Myeonghyeon Lee
  */
 class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
@@ -678,6 +679,14 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getProperty("first.property")).isEqualTo("apple");
 		assertThat(environment.getProperty("second.property")).isEqualTo("ball");
+	}
+
+	@Test
+	void runWhenImportNullExcludeShouldNotFail() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:configdata/yaml/");
+		String property = context.getEnvironment().getProperty("foo");
+		assertThat(property).isEqualTo("foo");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {

@@ -18,7 +18,9 @@ package org.springframework.boot.context.config;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.cloud.CloudPlatform;
 import org.springframework.boot.context.properties.bind.BindContext;
@@ -35,6 +37,7 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Myeonghyeon Lee
  */
 class ConfigDataProperties {
 
@@ -62,7 +65,8 @@ class ConfigDataProperties {
 
 	private ConfigDataProperties(List<ConfigDataLocation> imports, Activate activate,
 			List<ConfigurationProperty> boundProperties) {
-		this.imports = (imports != null) ? imports : Collections.emptyList();
+		this.imports = (imports != null) ? imports.stream().filter(Objects::nonNull).collect(Collectors.toList())
+				: Collections.emptyList();
 		this.activate = activate;
 	}
 

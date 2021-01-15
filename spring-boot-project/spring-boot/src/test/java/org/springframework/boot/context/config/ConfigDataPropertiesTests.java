@@ -36,6 +36,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Myeonghyeon Lee
  */
 class ConfigDataPropertiesTests {
 
@@ -201,6 +202,15 @@ class ConfigDataPropertiesTests {
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		assertThat(properties.getImports().get(1).getOrigin())
 				.hasToString("\"spring.config.import\" from property source \"source\"");
+	}
+
+	@Test
+	void getImportFilterBlankConfigImport() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("spring.config.import", "one,two,three,");
+		Binder binder = new Binder(source);
+		ConfigDataProperties properties = ConfigDataProperties.get(binder);
+		assertThat(properties.getImports().size()).isEqualTo(3);
 	}
 
 	@Test

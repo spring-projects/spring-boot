@@ -1,3 +1,5 @@
 foo: bar
 ---
 hello: world
+---
+spring.config.import: testimport.yml,
