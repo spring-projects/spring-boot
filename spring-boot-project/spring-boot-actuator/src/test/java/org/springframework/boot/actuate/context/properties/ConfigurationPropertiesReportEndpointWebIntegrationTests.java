@@ -66,19 +66,24 @@ class ConfigurationPropertiesReportEndpointWebIntegrationTests {
 				.jsonPath("$..beans['barDotCom']").exists();
 	}
 
-    @WebEndpointTest
-    void filterByNonExistentPrefix() {
-        this.client.get().uri("/actuator/configprops/com.zoo").exchange().expectStatus().isOk().expectBody()
-                .jsonPath("$..beans[*]").value(hasSize(0));
-    }
+	@WebEndpointTest
+	void filterByNonExistentPrefix() {
+		this.client.get().uri("/actuator/configprops/com.zoo").exchange().expectStatus().isNotFound();
+	}
 
-    @Configuration(proxyBeanMethods = false)
+	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties
 	static class TestConfiguration {
 
 		@Bean
 		ConfigurationPropertiesReportEndpoint endpoint() {
 			return new ConfigurationPropertiesReportEndpoint();
+		}
+
+		@Bean
+		ConfigurationPropertiesReportEndpointWebExtension endpointWebExtension(
+				ConfigurationPropertiesReportEndpoint endpoint) {
+			return new ConfigurationPropertiesReportEndpointWebExtension(endpoint);
 		}
 
 		@Bean
