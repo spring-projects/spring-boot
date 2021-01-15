@@ -2,6 +2,9 @@
 = Spring Boot Reference Documentation
 include::authors.adoc[]
 :docinfo: shared
+include::attributes.adoc[]
+
+*{spring-boot-version}*
 
 The reference documentation consists of the following sections:
 
