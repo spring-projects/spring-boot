@@ -2,6 +2,7 @@
 platform: linux
 inputs:
   - name: git-repo
+  - name: homebrew-tap-repo
   - name: artifactory-repo
 outputs:
   - name: updated-homebrew-tap-repo
