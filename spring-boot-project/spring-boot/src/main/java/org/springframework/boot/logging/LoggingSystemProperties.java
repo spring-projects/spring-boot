@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.logging;
 
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
+import java.util.function.BiConsumer;
 
 import org.springframework.boot.system.ApplicationPid;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -130,15 +131,35 @@ public class LoggingSystemProperties {
 	 */
 	public static final String LOG_DATEFORMAT_PATTERN = "LOG_DATEFORMAT_PATTERN";
 
+	private static final BiConsumer<String, String> systemPropertySetter = (name, value) -> {
+		if (System.getProperty(name) == null && value != null) {
+			System.setProperty(name, value);
+		}
+	};
+
 	private final Environment environment;
+
+	private final BiConsumer<String, String> setter;
 
 	/**
 	 * Create a new {@link LoggingSystemProperties} instance.
 	 * @param environment the source environment
 	 */
 	public LoggingSystemProperties(Environment environment) {
+		this(environment, systemPropertySetter);
+	}
+
+	/**
+	 * Create a new {@link LoggingSystemProperties} instance.
+	 * @param environment the source environment
+	 * @param setter setter used to apply the property
+	 * @since 2.4.2
+	 */
+	public LoggingSystemProperties(Environment environment, BiConsumer<String, String> setter) {
 		Assert.notNull(environment, "Environment must not be null");
+		Assert.notNull(setter, "Setter must not be null");
 		this.environment = environment;
+		this.setter = setter;
 	}
 
 	protected Charset getDefaultCharset() {
@@ -200,9 +221,7 @@ public class LoggingSystemProperties {
 	}
 
 	protected final void setSystemProperty(String name, String value) {
-		if (System.getProperty(name) == null && value != null) {
-			System.setProperty(name, value);
-		}
+		this.setter.accept(name, value);
 	}
 
 }
