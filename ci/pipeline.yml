@@ -629,7 +629,7 @@ jobs:
   plan:
     - get: ci-image
     - get: git-repo
-      resource: homebrew-tap-repo
+    - get: homebrew-tap-repo
     - get: artifactory-repo
       passed: [sync-to-maven-central]
       params:
@@ -640,10 +640,9 @@ jobs:
       file: git-repo/ci/tasks/update-homebrew-tap.yml
       params:
         LATEST_GA: false
-    - put: git-repo
-      resource: homebrew-tap-repo
+    - put: homebrew-tap-repo
       params:
-        repository: updated-repo
+        repository: updated-homebrew-tap-repo
 groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk15-build", "windows-build"]
