@@ -50,6 +50,7 @@ public final class DataSourceUnwrapper {
 	 * @param <I> the interface that the target type must implement
 	 * @param <T> the target type
 	 * @return an object that implements the target type or {@code null}
+	 * @since 2.3.8
 	 * @see Wrapper#unwrap(Class)
 	 */
 	public static <I, T extends I> T unwrap(DataSource dataSource, Class<I> unwrapInterface, Class<T> target) {
