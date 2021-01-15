@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -162,19 +162,6 @@ class DefaultErrorAttributesTests {
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
 		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void excludeExceptionWithDeprecatedConstructor() {
-		RuntimeException error = new RuntimeException("Test");
-		this.errorAttributes = new DefaultErrorAttributes(false);
-		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
-		ServerRequest serverRequest = buildServerRequest(request, error);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
-				ErrorAttributeOptions.of());
-		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(attributes.get("exception")).isNull();
 	}
 
 	@Test

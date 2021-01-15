@@ -62,7 +62,6 @@ dependencies {
 	optional("org.apache.tomcat.embed:tomcat-embed-el")
 	optional("org.apache.tomcat.embed:tomcat-embed-websocket")
 	optional("org.apache.tomcat:tomcat-jdbc")
-	optional("org.codehaus.btm:btm")
 	optional("org.codehaus.groovy:groovy-templates")
 	optional("com.github.ben-manes.caffeine:caffeine")
 	optional("com.github.mxab.thymeleaf.extras:thymeleaf-extras-data-attribute")

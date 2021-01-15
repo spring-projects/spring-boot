@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -77,18 +77,6 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar")).isNull();
-		}
-	}
-
-	@Test
-	@Deprecated
-	void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath() throws IOException {
-		getTask().getMainClass().set("com.example.Main");
-		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));
-		getTask().setExcludeDevtools(false);
-		executeTask();
-		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar")).isNotNull();
 		}
 	}
 

@@ -128,13 +128,6 @@ bom {
 			]
 		}
 	}
-	library("Bitronix", "2.1.4") {
-		group("org.codehaus.btm") {
-			modules = [
-				"btm"
-			]
-		}
-	}
 	library("Build Helper Maven Plugin", "3.2.0") {
 		group("org.codehaus.mojo") {
 			plugins = [
@@ -1421,7 +1414,6 @@ bom {
 				"spring-boot-starter-jooq",
 				"spring-boot-starter-json",
 				"spring-boot-starter-jta-atomikos",
-				"spring-boot-starter-jta-bitronix",
 				"spring-boot-starter-log4j2",
 				"spring-boot-starter-logging",
 				"spring-boot-starter-mail",

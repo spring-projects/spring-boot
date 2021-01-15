@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,8 +22,6 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import org.gradle.api.Action;
-import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
@@ -128,18 +126,6 @@ public class BootJar extends Jar implements BootArchive {
 		return this.support.createCopyAction(this);
 	}
 
-	/**
-	 * Returns the {@link Configuration Configurations} of the project associated with
-	 * this task.
-	 * @return the configurations
-	 * @deprecated since 2.3.5 in favor of {@link Project#getConfigurations}
-	 */
-	@Internal
-	@Deprecated
-	protected Iterable<Configuration> getConfigurations() {
-		return getProject().getConfigurations();
-	}
-
 	@Override
 	public Property<String> getMainClass() {
 		return this.mainClass;
@@ -230,18 +216,6 @@ public class BootJar extends Jar implements BootArchive {
 	@Override
 	public void setClasspath(FileCollection classpath) {
 		this.classpath = getProject().files(classpath);
-	}
-
-	@Override
-	@Deprecated
-	public boolean isExcludeDevtools() {
-		return this.support.isExcludeDevtools();
-	}
-
-	@Override
-	@Deprecated
-	public void setExcludeDevtools(boolean excludeDevtools) {
-		this.support.setExcludeDevtools(excludeDevtools);
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -229,17 +229,6 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
 		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void excludeExceptionAttributeWithDeprecatedConstructor() {
-		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(false);
-		RuntimeException ex = new RuntimeException("Test");
-		this.request.setAttribute("javax.servlet.error.exception", ex);
-		Map<String, Object> attributes = errorAttributes.getErrorAttributes(this.webRequest,
-				ErrorAttributeOptions.of());
-		assertThat(attributes.get("exception")).isNull();
 	}
 
 	@Test

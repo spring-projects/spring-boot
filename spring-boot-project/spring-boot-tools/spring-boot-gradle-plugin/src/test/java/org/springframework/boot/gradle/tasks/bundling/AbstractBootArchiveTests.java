@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -366,19 +366,6 @@ abstract class AbstractBootArchiveTests<T extends Jar & BootArchive> {
 		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
 		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry(this.libPath + "spring-boot-devtools-0.1.2.jar")).isNull();
-		}
-	}
-
-	@Test
-	@Deprecated
-	void devtoolsJarCanBeIncluded() throws IOException {
-		this.task.getMainClass().set("com.example.Main");
-		this.task.classpath(jarFile("spring-boot-devtools-0.1.2.jar"));
-		this.task.setExcludeDevtools(false);
-		executeTask();
-		assertThat(this.task.getArchiveFile().get().getAsFile()).exists();
-		try (JarFile jarFile = new JarFile(this.task.getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry(this.libPath + "spring-boot-devtools-0.1.2.jar")).isNotNull();
 		}
 	}
 

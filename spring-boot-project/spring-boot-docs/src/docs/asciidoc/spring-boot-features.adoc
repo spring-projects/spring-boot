@@ -6472,7 +6472,6 @@ When a `jndi-name` is set, it takes precedence over all other Session-related se
 [[boot-features-jta]]
 == Distributed Transactions with JTA
 Spring Boot supports distributed JTA transactions across multiple XA resources by using an https://www.atomikos.com/[Atomikos] embedded transaction manager.
-Deprecated support for using a https://github.com/bitronix/btm[Bitronix] embedded transaction manager is also provided but it will be removed in a future release.
 JTA transactions are also supported when deploying to a suitable Java EE Application Server.
 
 When a JTA environment is detected, Spring's `JtaTransactionManager` is used to manage transactions.
@@ -6495,24 +6494,6 @@ See the {spring-boot-module-api}/jta/atomikos/AtomikosProperties.html[`AtomikosP
 
 NOTE: To ensure that multiple transaction managers can safely coordinate the same resource managers, each Atomikos instance must be configured with a unique ID.
 By default, this ID is the IP address of the machine on which Atomikos is running.
-To ensure uniqueness in production, you should configure the configprop:spring.jta.transaction-manager-id[] property with a different value for each instance of your application.
-
-
-
-[[boot-features-jta-bitronix]]
-=== Using a Bitronix Transaction Manager
-NOTE: As of Spring Boot 2.3, support for Bitronix has been deprecated and will be removed in a future release.
-
-You can use the `spring-boot-starter-jta-bitronix` starter to add the appropriate Bitronix dependencies to your project.
-As with Atomikos, Spring Boot automatically configures Bitronix and post-processes your beans to ensure that startup and shutdown ordering is correct.
-
-By default, Bitronix transaction log files (`part1.btm` and `part2.btm`) are written to a `transaction-logs` directory in your application home directory.
-You can customize the location of this directory by setting the configprop:spring.jta.log-dir[] property.
-Properties starting with `spring.jta.bitronix.properties` are also bound to the `bitronix.tm.Configuration` bean, allowing for complete customization.
-See the https://github.com/bitronix/btm/wiki/Transaction-manager-configuration[Bitronix documentation] for details.
-
-NOTE: To ensure that multiple transaction managers can safely coordinate the same resource managers, each Bitronix instance must be configured with a unique ID.
-By default, this ID is the IP address of the machine on which Bitronix is running.
 To ensure uniqueness in production, you should configure the configprop:spring.jta.transaction-manager-id[] property with a different value for each instance of your application.
 
 

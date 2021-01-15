@@ -423,7 +423,7 @@ public class SpringApplication {
 				// Not allowed in some environments.
 			}
 		}
-		refresh((ApplicationContext) context);
+		refresh(context);
 	}
 
 	private void configureHeadlessProperty() {
@@ -745,18 +745,6 @@ public class SpringApplication {
 	 */
 	protected BeanDefinitionLoader createBeanDefinitionLoader(BeanDefinitionRegistry registry, Object[] sources) {
 		return new BeanDefinitionLoader(registry, sources);
-	}
-
-	/**
-	 * Refresh the underlying {@link ApplicationContext}.
-	 * @param applicationContext the application context to refresh
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #refresh(ConfigurableApplicationContext)}
-	 */
-	@Deprecated
-	protected void refresh(ApplicationContext applicationContext) {
-		Assert.isInstanceOf(ConfigurableApplicationContext.class, applicationContext);
-		refresh((ConfigurableApplicationContext) applicationContext);
 	}
 
 	/**
