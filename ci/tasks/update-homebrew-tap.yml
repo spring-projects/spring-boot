@@ -4,7 +4,7 @@ inputs:
   - name: git-repo
   - name: artifactory-repo
 outputs:
-  - name: updated-repo
+  - name: updated-homebrew-tap-repo
 params:
   LATEST_GA:
 run:

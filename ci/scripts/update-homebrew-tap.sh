@@ -3,10 +3,10 @@ set -e
 
 version=$( cat artifactory-repo/build-info.json | jq -r '.buildInfo.modules[0].id' | sed 's/.*:.*:\(.*\)/\1/' )
 
-git clone git-repo updated-repo > /dev/null
+git clone homebrew-tap-repo updated-homebrew-tap-repo > /dev/null
 
 if [[ $LATEST_GA = true ]]; then
-pushd updated-repo > /dev/null
+pushd updated-homebrew-tap-repo > /dev/null
   cd homebrew-tap
   wget https://repo.spring.io/libs-release-local/org/springframework/boot/spring-boot-cli/${version}/spring-boot-cli-${version}-homebrew.rb
   rm spring-boot.rb
