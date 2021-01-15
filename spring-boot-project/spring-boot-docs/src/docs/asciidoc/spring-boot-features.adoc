@@ -8460,7 +8460,7 @@ The following example shows how to use the `ConditionEvaluationReportLoggingList
 [source,java,indent=0]
 ----
 	@Test
-	public void autoConfigTest {
+	void autoConfigTest() {
 		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
 				LogLevel.INFO);
 		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
