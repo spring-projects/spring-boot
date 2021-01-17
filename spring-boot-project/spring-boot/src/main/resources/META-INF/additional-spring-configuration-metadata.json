@@ -21,12 +21,12 @@
     },
     {
       "name": "logging.charset.console",
-      "type": "java.nio.Charset",
+      "type": "java.nio.charset.Charset",
       "description": "Charset to use for console output."
     },
     {
       "name": "logging.charset.file",
-      "type": "java.nio.Charset",
+      "type": "java.nio.charset.Charset",
       "description": "Charset to use for file output."
     },
     {
