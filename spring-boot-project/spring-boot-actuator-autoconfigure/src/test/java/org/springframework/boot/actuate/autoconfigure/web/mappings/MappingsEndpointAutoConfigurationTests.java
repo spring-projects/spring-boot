@@ -38,10 +38,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-public class MappingsEndpointAutoConfigurationTests {
+class MappingsEndpointAutoConfigurationTests {
 
 	@Test
-	public void whenEndpointIsUnavailableThenEndpointAndDescriptionProvidersAreNotCreated() {
+	void whenEndpointIsUnavailableThenEndpointAndDescriptionProvidersAreNotCreated() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(MappingsEndpointAutoConfiguration.class,
 						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
@@ -56,7 +56,7 @@ public class MappingsEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	public void whenEndpointIsAvailableThenEndpointAndDescriptionProvidersAreCreated() {
+	void whenEndpointIsAvailableThenEndpointAndDescriptionProvidersAreCreated() {
 		new WebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(MappingsEndpointAutoConfiguration.class,
 						JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class,
