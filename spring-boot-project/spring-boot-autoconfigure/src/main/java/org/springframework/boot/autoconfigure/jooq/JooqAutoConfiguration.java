@@ -95,22 +95,23 @@ public class JooqAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
 		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
-				DataSource dataSource, ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
+				DataSource dataSource, ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
+				ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
 			DefaultConfiguration configuration = new DefaultConfiguration();
 			configuration.set(properties.determineSqlDialect(dataSource));
 			configuration.set(connectionProvider);
+			configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
 			configurationCustomizers.orderedStream().forEach((customizer) -> customizer.customize(configuration));
 			return configuration;
 		}
 
 		@Bean
 		@Deprecated
-		public DefaultConfigurationCustomizer jooQProviderDefaultConfigurationCustomizer(
+		public DefaultConfigurationCustomizer jooqProvidersDefaultConfigurationCustomizer(
 				ObjectProvider<TransactionProvider> transactionProvider,
 				ObjectProvider<RecordMapperProvider> recordMapperProvider,
 				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider, ObjectProvider<Settings> settings,
 				ObjectProvider<RecordListenerProvider> recordListenerProviders,
-				ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
 				ObjectProvider<VisitListenerProvider> visitListenerProviders,
 				ObjectProvider<TransactionListenerProvider> transactionListenerProviders,
 				ObjectProvider<ExecutorProvider> executorProvider) {
@@ -121,7 +122,6 @@ public class JooqAutoConfiguration {
 				settings.ifAvailable(configuration::set);
 				executorProvider.ifAvailable(configuration::set);
 				configuration.set(recordListenerProviders.orderedStream().toArray(RecordListenerProvider[]::new));
-				configuration.set(executeListenerProviders.orderedStream().toArray(ExecuteListenerProvider[]::new));
 				configuration.set(visitListenerProviders.orderedStream().toArray(VisitListenerProvider[]::new));
 				configuration.setTransactionListenerProvider(
 						transactionListenerProviders.orderedStream().toArray(TransactionListenerProvider[]::new));
