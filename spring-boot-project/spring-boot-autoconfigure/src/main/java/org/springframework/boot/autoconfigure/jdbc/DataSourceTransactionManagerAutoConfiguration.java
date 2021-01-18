@@ -64,7 +64,7 @@ public class DataSourceTransactionManagerAutoConfiguration {
 		}
 
 		private DataSourceTransactionManager createTransactionManager(Environment environment, DataSource dataSource) {
-			return environment.getProperty("spring.dao.exceptiontranslation.enable", Boolean.class, Boolean.TRUE)
+			return environment.getProperty("spring.dao.exceptiontranslation.enabled", Boolean.class, Boolean.TRUE)
 					? new JdbcTransactionManager(dataSource) : new DataSourceTransactionManager(dataSource);
 		}
 
