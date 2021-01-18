@@ -36,6 +36,7 @@ import org.springframework.stereotype.Repository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 
 /**
  * Tests for {@link PersistenceExceptionTranslationAutoConfiguration}
@@ -86,15 +87,12 @@ class PersistenceExceptionTranslationAutoConfigurationTests {
 		assertThat(beans).isEmpty();
 	}
 
-	// @Test
-	// public void
-	// persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
-	// this.context = new AnnotationConfigApplicationContext(
-	// EmbeddedDataSourceConfiguration.class,
-	// HibernateJpaAutoConfiguration.class, TestConfiguration.class);
-	// assertThatExceptionOfType(IllegalArgumentException.class).isThrownBy(
-	// () -> this.context.getBean(TestRepository.class).doSomething());
-	// }
+	@Test
+	void persistOfNullThrowsIllegalArgumentExceptionWithoutExceptionTranslation() {
+		this.context = new AnnotationConfigApplicationContext(EmbeddedDataSourceConfiguration.class,
+				HibernateJpaAutoConfiguration.class, TestConfiguration.class);
+		assertThatIllegalArgumentException().isThrownBy(() -> this.context.getBean(TestRepository.class).doSomething());
+	}
 
 	@Test
 	void persistOfNullThrowsInvalidDataAccessApiUsageExceptionWithExceptionTranslation() {
