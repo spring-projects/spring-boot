@@ -95,7 +95,7 @@ public class JooqAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean(org.jooq.Configuration.class)
 		public DefaultConfiguration jooqConfiguration(JooqProperties properties, ConnectionProvider connectionProvider,
-				ObjectProvider<ExecuteListenerProvider> executeListenerProviders, DataSource dataSource,
+				DataSource dataSource, ObjectProvider<ExecuteListenerProvider> executeListenerProviders,
 				ObjectProvider<DefaultConfigurationCustomizer> configurationCustomizers) {
 			DefaultConfiguration configuration = new DefaultConfiguration();
 			configuration.set(properties.determineSqlDialect(dataSource));
@@ -107,7 +107,7 @@ public class JooqAutoConfiguration {
 
 		@Bean
 		@Deprecated
-		public DefaultConfigurationCustomizer jooQProviderDefaultConfigurationCustomizer(
+		public DefaultConfigurationCustomizer jooqProvidersDefaultConfigurationCustomizer(
 				ObjectProvider<TransactionProvider> transactionProvider,
 				ObjectProvider<RecordMapperProvider> recordMapperProvider,
 				ObjectProvider<RecordUnmapperProvider> recordUnmapperProvider, ObjectProvider<Settings> settings,

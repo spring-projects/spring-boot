@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jooq;
 import javax.sql.DataSource;
 
 import org.jooq.CharsetProvider;
+import org.jooq.ConnectionProvider;
 import org.jooq.ConverterProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
@@ -31,6 +32,7 @@ import org.jooq.SQLDialect;
 import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionalRunnable;
 import org.jooq.VisitListenerProvider;
+import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.junit.jupiter.api.Test;
 
@@ -42,6 +44,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -101,7 +104,37 @@ class JooqAutoConfigurationTests {
 									"insert into jooqtest (name) values ('foo');")));
 					dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest_tx;", "1"));
 				});
+	}
 
+	@Test
+	void jooqWithDefaultConnectionProvider() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
+			DSLContext dsl = context.getBean(DSLContext.class);
+			ConnectionProvider connectionProvider = dsl.configuration().connectionProvider();
+			assertThat(connectionProvider).isInstanceOf(DataSourceConnectionProvider.class);
+			DataSource connectionProviderDataSource = ((DataSourceConnectionProvider) connectionProvider).dataSource();
+			assertThat(connectionProviderDataSource).isInstanceOf(TransactionAwareDataSourceProxy.class);
+		});
+	}
+
+	@Test
+	void jooqWithDefaultExecuteListenerProvider() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
+			DSLContext dsl = context.getBean(DSLContext.class);
+			assertThat(dsl.configuration().executeListenerProviders()).hasSize(1);
+		});
+	}
+
+	@Test
+	void jooqWithSeveralExecuteListenerProviders() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TestExecuteListenerProvider.class)
+				.run((context) -> {
+					DSLContext dsl = context.getBean(DSLContext.class);
+					ExecuteListenerProvider[] executeListenerProviders = dsl.configuration().executeListenerProviders();
+					assertThat(executeListenerProviders).hasSize(2);
+					assertThat(executeListenerProviders[0]).isInstanceOf(DefaultExecuteListenerProvider.class);
+					assertThat(executeListenerProviders[1]).isInstanceOf(TestExecuteListenerProvider.class);
+				});
 	}
 
 	@Test
@@ -129,9 +162,7 @@ class JooqAutoConfigurationTests {
 		VisitListenerProvider visitListenerProvider = mock(VisitListenerProvider.class);
 		TransactionListenerProvider transactionListenerProvider = mock(TransactionListenerProvider.class);
 		ExecutorProvider executorProvider = mock(ExecutorProvider.class);
-		this.contextRunner
-				.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
-						TestExecuteListenerProvider.class)
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class)
 				.withBean(RecordMapperProvider.class, () -> recordMapperProvider)
 				.withBean(RecordUnmapperProvider.class, () -> recordUnmapperProvider)
 				.withBean(RecordListenerProvider.class, () -> recordListenerProvider)
@@ -143,10 +174,6 @@ class JooqAutoConfigurationTests {
 					assertThat(dsl.configuration().recordUnmapperProvider()).isSameAs(recordUnmapperProvider);
 					assertThat(dsl.configuration().executorProvider()).isSameAs(executorProvider);
 					assertThat(dsl.configuration().recordListenerProviders()).containsExactly(recordListenerProvider);
-					ExecuteListenerProvider[] executeListenerProviders = dsl.configuration().executeListenerProviders();
-					assertThat(executeListenerProviders).hasSize(2);
-					assertThat(executeListenerProviders[0]).isInstanceOf(DefaultExecuteListenerProvider.class);
-					assertThat(executeListenerProviders[1]).isInstanceOf(TestExecuteListenerProvider.class);
 					assertThat(dsl.configuration().visitListenerProviders()).containsExactly(visitListenerProvider);
 					assertThat(dsl.configuration().transactionListenerProviders())
 							.containsExactly(transactionListenerProvider);
