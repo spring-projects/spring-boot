@@ -133,7 +133,7 @@ Once the checkout has completed, a pop-up will suggest to open the project.
 ==== Install the Spring Formatter plugin
 If you haven't done so, install the formatter plugin so that proper formatting rules are applied automatically when you reformat code in the IDE.
 
-* Download the latest https://search.maven.org/search?q=g:io.spring.javaformat%20AND%20a:spring-javaformat-intellij-plugin[IntelliJ IDEA plugin].
+* Download the latest https://search.maven.org/search?q=g:io.spring.javaformat%20AND%20a:spring-javaformat-intellij-idea-plugin[IntelliJ IDEA plugin].
 * Select "`IntelliJ IDEA`" -> "`Preferences`".
 * Select "`Plugins`".
 * Select the wheel and "`Install Plugin from Disk...`".
