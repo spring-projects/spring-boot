@@ -1042,6 +1042,167 @@
       "defaultValue": true
     },
     {
+      "name": "spring.jta.bitronix.properties.allow-multiple-lrc",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.asynchronous2-pc",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.background-recovery-interval",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.background-recovery-interval-seconds",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.current-node-only-recovery",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.debug-zero-resource-transaction",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.default-transaction-timeout",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.disable-jmx",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.exception-analyzer",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.filter-log-status",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.force-batching-enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.forced-write-enabled",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.graceful-shutdown-interval",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.jndi-transaction-synchronization-registry-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.jndi-user-transaction-name",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.journal",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.log-part1-filename",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.log-part2-filename",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.max-log-size-in-mb",
+      "type": "java.lang.Integer",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.resource-configuration-filename",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.server-id",
+      "type": "java.lang.String",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.skip-corrupted-logs",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
+      "name": "spring.jta.bitronix.properties.warn-about-zero-resource-transaction",
+      "type": "java.lang.Boolean",
+      "deprecation": {
+        "level": "error"
+      }
+    },
+    {
       "name": "spring.jta.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JTA support.",
