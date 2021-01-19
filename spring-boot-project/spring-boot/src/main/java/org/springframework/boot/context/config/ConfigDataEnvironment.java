@@ -181,6 +181,11 @@ class ConfigDataEnvironment {
 			this.logger.trace("Creating wrapped config data contributor for default property source");
 			contributors.add(ConfigDataEnvironmentContributor.ofExisting(defaultPropertySource));
 		}
+		return createContributors(contributors);
+	}
+
+	protected ConfigDataEnvironmentContributors createContributors(
+			List<ConfigDataEnvironmentContributor> contributors) {
 		return new ConfigDataEnvironmentContributors(this.logFactory, this.bootstrapContext, contributors);
 	}
 
@@ -263,7 +268,8 @@ class ConfigDataEnvironment {
 	private ConfigDataActivationContext withProfiles(ConfigDataEnvironmentContributors contributors,
 			ConfigDataActivationContext activationContext) {
 		this.logger.trace("Deducing profiles from current config data environment contributors");
-		Binder binder = contributors.getBinder(activationContext, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
+		Binder binder = contributors.getBinder(activationContext,
+				ConfigDataEnvironmentContributor::isNotIgnoringProfiles, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		try {
 			Set<String> additionalProfiles = new LinkedHashSet<>(this.additionalProfiles);
 			additionalProfiles.addAll(getIncludedProfiles(contributors, activationContext));
@@ -285,16 +291,15 @@ class ConfigDataEnvironment {
 		Set<String> result = new LinkedHashSet<>();
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			ConfigurationPropertySource source = contributor.getConfigurationPropertySource();
-			if (source == null) {
-				continue;
+			if (source != null && contributor.isNotIgnoringProfiles()) {
+				Binder binder = new Binder(Collections.singleton(source), placeholdersResolver);
+				binder.bind(Profiles.INCLUDE_PROFILES, STRING_LIST).ifBound((includes) -> {
+					if (!contributor.isActive(activationContext)) {
+						InactiveConfigDataAccessException.throwIfPropertyFound(contributor, Profiles.INCLUDE_PROFILES);
+					}
+					result.addAll(includes);
+				});
 			}
-			Binder binder = new Binder(Collections.singleton(source), placeholdersResolver);
-			binder.bind(Profiles.INCLUDE_PROFILES, STRING_LIST).ifBound((includes) -> {
-				if (!contributor.isActive(activationContext)) {
-					InactiveConfigDataAccessException.throwIfPropertyFound(contributor, Profiles.INCLUDE_PROFILES);
-				}
-				result.addAll(includes);
-			});
 		}
 		return result;
 	}
