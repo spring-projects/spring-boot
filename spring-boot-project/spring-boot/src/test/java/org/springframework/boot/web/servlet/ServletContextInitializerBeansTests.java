@@ -78,8 +78,8 @@ class ServletContextInitializerBeansTests {
 				this.context.getBeanFactory());
 		assertThat(initializerBeans).hasSize(1);
 		assertThat(initializerBeans).first().isInstanceOf(ServletListenerRegistrationBean.class)
-				.extracting(ServletListenerRegistrationBean.class::cast)
-				.extracting(ServletListenerRegistrationBean::getListener).isInstanceOf(HttpSessionIdListener.class);
+				.extracting((initializer) -> ((ServletListenerRegistrationBean<?>) initializer).getListener())
+				.isInstanceOf(HttpSessionIdListener.class);
 	}
 
 	private void load(Class<?>... configuration) {
