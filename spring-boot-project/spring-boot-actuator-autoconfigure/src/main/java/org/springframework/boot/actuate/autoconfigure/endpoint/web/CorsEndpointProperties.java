@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,15 +37,18 @@ import org.springframework.web.cors.CorsConfiguration;
 public class CorsEndpointProperties {
 
 	/**
-	 * Comma-separated list of origins to allow. '*' allows all origins. When not set,
-	 * CORS support is disabled. When credentials are supported only explicit urls are
-	 * allowed.
+	 * Comma-separated list of origins to allow. '*' allows all origins. When credentials
+	 * are allowed, '*' cannot be used and origin patterns should be configured instead.
+	 * When no allowed origins or allowed origin patterns are set, CORS support is
+	 * disabled.
 	 */
 	private List<String> allowedOrigins = new ArrayList<>();
 
 	/**
-	 * Comma-separated list of origins patterns to allow. Must be used when credentials
-	 * are supported and do you want to use wildcard urls.
+	 * Comma-separated list of origin patterns to allow. Unlike allowed origins which only
+	 * supports '*', origin patterns are more flexible (for example
+	 * 'https://*.example.com') and can be used when credentials are allowed. When no
+	 * allowed origin patterns or allowed origins are set, CORS support is disabled.
 	 */
 	private List<String> allowedOriginPatterns = new ArrayList<>();
 
