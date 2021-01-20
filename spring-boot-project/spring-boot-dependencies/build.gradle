@@ -1643,7 +1643,7 @@ bom {
 			]
 		}
 	}
-	library("SQLite JDBC", "3.32.3.3") {
+	library("SQLite JDBC", "3.34.0") {
 		group("org.xerial") {
 			modules = [
 				"sqlite-jdbc"
@@ -1777,5 +1777,7 @@ bom {
 generateMetadataFileForMavenPublication {
 	enabled = false
 }
+
+
 
 
