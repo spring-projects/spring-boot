@@ -1123,7 +1123,7 @@ bom {
 			]
 		}
 	}
-	library("Mockito", "3.6.28") {
+	library("Mockito", "3.7.7") {
 		group("org.mockito") {
 			modules = [
 				"mockito-core",
@@ -1777,4 +1777,5 @@ bom {
 generateMetadataFileForMavenPublication {
 	enabled = false
 }
+
 
