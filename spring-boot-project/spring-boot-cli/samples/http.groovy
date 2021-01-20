@@ -1,7 +1,6 @@
 package org.test
 
-@Grab("org.codehaus.groovy.modules.http-builder:http-builder:0.5.2") // This one just to test dependency resolution
-import groovyx.net.http.*
+import org.springframework.web.client.RestTemplate;
 
 @Controller
 class Example implements CommandLineRunner {
@@ -17,7 +16,7 @@ class Example implements CommandLineRunner {
 
 	void run(String... args) {
 		def port = context.webServer.port
-		def world = new RESTClient("http://localhost:" + port).get(path:"/").data.text
+		def world = new RestTemplate().getForObject("http://localhost:" + port + "/", String.class);
 		print "Hello " + world
 	}
 
