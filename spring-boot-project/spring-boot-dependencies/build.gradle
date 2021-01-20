@@ -209,7 +209,7 @@ bom {
 			]
 		}
 	}
-	library("Couchbase Client", "3.0.10") {
+	library("Couchbase Client", "3.1.1") {
 		group("com.couchbase.client") {
 			modules = [
 				"java-client"
@@ -1777,3 +1777,4 @@ bom {
 generateMetadataFileForMavenPublication {
 	enabled = false
 }
+
