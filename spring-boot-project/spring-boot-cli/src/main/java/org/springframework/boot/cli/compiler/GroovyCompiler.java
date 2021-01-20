@@ -236,7 +236,7 @@ public class GroovyCompiler {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void processConversionOperations(LinkedList conversionOperations) {
 		int index = getIndexOfASTTransformationVisitor(conversionOperations);
-		conversionOperations.add(index, new CompilationUnit.SourceUnitOperation() {
+		conversionOperations.add(index, new CompilationUnit.ISourceUnitOperation() {
 			@Override
 			public void call(SourceUnit source) throws CompilationFailedException {
 				ASTNode[] nodes = new ASTNode[] { source.getAST() };
