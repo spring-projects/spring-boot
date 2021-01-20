@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -115,10 +115,10 @@ class LiquibaseEndpointTests {
 							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets().get(0).getChangeLog())
-							.isEqualTo("classpath:/db/changelog/db.changelog-master.yaml");
+							.isEqualTo("db/changelog/db.changelog-master.yaml");
 					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets()).hasSize(1);
 					assertThat(liquibaseBeans.get("liquibaseBackup").getChangeSets().get(0).getChangeLog())
-							.isEqualTo("classpath:/db/changelog/db.changelog-master-backup.yaml");
+							.isEqualTo("db/changelog/db.changelog-master-backup.yaml");
 				});
 	}
 

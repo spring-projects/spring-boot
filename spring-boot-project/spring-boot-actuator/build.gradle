@@ -85,6 +85,7 @@ dependencies {
 	testImplementation("com.squareup.okhttp3:mockwebserver")
 	testImplementation("org.testcontainers:junit-jupiter")
 
+	testRuntimeOnly("ch.qos.logback:logback-classic")
 	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")

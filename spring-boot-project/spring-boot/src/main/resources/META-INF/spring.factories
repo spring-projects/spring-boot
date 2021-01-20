@@ -43,8 +43,7 @@ org.springframework.boot.context.FileEncodingApplicationListener,\
 org.springframework.boot.context.config.AnsiOutputApplicationListener,\
 org.springframework.boot.context.config.DelegatingApplicationListener,\
 org.springframework.boot.context.logging.LoggingApplicationListener,\
-org.springframework.boot.env.EnvironmentPostProcessorApplicationListener,\
-org.springframework.boot.liquibase.LiquibaseServiceLocatorApplicationListener
+org.springframework.boot.env.EnvironmentPostProcessorApplicationListener
 
 # Environment Post Processors
 org.springframework.boot.env.EnvironmentPostProcessor=\

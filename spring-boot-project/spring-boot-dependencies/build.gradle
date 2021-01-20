@@ -933,12 +933,10 @@ bom {
 			]
 		}
 	}
-	library("Liquibase", "3.10.3") {
+	library("Liquibase", "4.2.2") {
 		group("org.liquibase") {
 			modules = [
-				"liquibase-core" {
-					exclude group: "ch.qos.logback", module: "logback-classic"
-				}
+				"liquibase-core"
 			]
 			plugins = [
 				"liquibase-maven-plugin"
