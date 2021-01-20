@@ -23,6 +23,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Set;
 import java.util.stream.Stream;
 import java.util.stream.StreamSupport;
 
@@ -51,6 +52,9 @@ import org.springframework.core.env.PropertySource;
  */
 class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironmentContributor> {
 
+	private static final Set<ConfigData.Option> EMPTY_LOCATION_OPTIONS = Collections
+			.unmodifiableSet(Collections.singleton(ConfigData.Option.IGNORE_IMPORTS));
+
 	private final ConfigDataLocation location;
 
 	private final ConfigDataResource resource;
@@ -63,7 +67,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 
 	private final ConfigDataProperties properties;
 
-	private final boolean ignoreImports;
+	private final Set<ConfigData.Option> configDataOptions;
 
 	private final Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children;
 
@@ -79,13 +83,14 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 * @param configurationPropertySource the configuration property source for the data
 	 * or {@code null}
 	 * @param properties the config data properties or {@code null}
-	 * @param ignoreImports if import properties should be ignored
+	 * @param configDataOptions any config data options that should apply
 	 * @param children the children of this contributor at each {@link ImportPhase}
 	 */
 	ConfigDataEnvironmentContributor(Kind kind, ConfigDataLocation location, ConfigDataResource resource,
 			boolean profileSpecific, PropertySource<?> propertySource,
 			ConfigurationPropertySource configurationPropertySource, ConfigDataProperties properties,
-			boolean ignoreImports, Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children) {
+			Set<ConfigData.Option> configDataOptions,
+			Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children) {
 		this.kind = kind;
 		this.location = location;
 		this.resource = resource;
@@ -93,7 +98,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		this.properties = properties;
 		this.propertySource = propertySource;
 		this.configurationPropertySource = configurationPropertySource;
-		this.ignoreImports = ignoreImports;
+		this.configDataOptions = (configDataOptions != null) ? configDataOptions : Collections.emptySet();
 		this.children = (children != null) ? children : Collections.emptyMap();
 	}
 
@@ -148,6 +153,15 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	ConfigurationPropertySource getConfigurationPropertySource() {
 		return this.configurationPropertySource;
+	}
+
+	/**
+	 * Returns {@code true} if this contributor is not ignoring profile properties.
+	 * @return if the contributor is not ignoring profiles
+	 * @see ConfigData.Option#IGNORE_PROFILES
+	 */
+	boolean isNotIgnoringProfiles() {
+		return !this.configDataOptions.contains(ConfigData.Option.IGNORE_PROFILES);
 	}
 
 	/**
@@ -209,12 +223,12 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	ConfigDataEnvironmentContributor withBoundProperties(Binder binder) {
 		UseLegacyConfigProcessingException.throwIfRequested(binder);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
-		if (this.ignoreImports) {
+		if (this.configDataOptions.contains(ConfigData.Option.IGNORE_IMPORTS)) {
 			properties = properties.withoutImports();
 		}
 		return new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, this.location, this.resource,
 				this.profileSpecific, this.propertySource, this.configurationPropertySource, properties,
-				this.ignoreImports, null);
+				this.configDataOptions, null);
 	}
 
 	/**
@@ -229,7 +243,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		Map<ImportPhase, List<ConfigDataEnvironmentContributor>> updatedChildren = new LinkedHashMap<>(this.children);
 		updatedChildren.put(importPhase, children);
 		return new ConfigDataEnvironmentContributor(this.kind, this.location, this.resource, this.profileSpecific,
-				this.propertySource, this.configurationPropertySource, this.properties, this.ignoreImports,
+				this.propertySource, this.configurationPropertySource, this.properties, this.configDataOptions,
 				updatedChildren);
 	}
 
@@ -255,7 +269,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 			updatedChildren.put(importPhase, Collections.unmodifiableList(updatedContributors));
 		});
 		return new ConfigDataEnvironmentContributor(this.kind, this.location, this.resource, this.profileSpecific,
-				this.propertySource, this.configurationPropertySource, this.properties, this.ignoreImports,
+				this.propertySource, this.configurationPropertySource, this.properties, this.configDataOptions,
 				updatedChildren);
 	}
 
@@ -267,7 +281,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	static ConfigDataEnvironmentContributor of(List<ConfigDataEnvironmentContributor> contributors) {
 		Map<ImportPhase, List<ConfigDataEnvironmentContributor>> children = new LinkedHashMap<>();
 		children.put(ImportPhase.BEFORE_PROFILE_ACTIVATION, Collections.unmodifiableList(contributors));
-		return new ConfigDataEnvironmentContributor(Kind.ROOT, null, null, false, null, null, null, false, children);
+		return new ConfigDataEnvironmentContributor(Kind.ROOT, null, null, false, null, null, null, null, children);
 	}
 
 	/**
@@ -281,7 +295,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		List<ConfigDataLocation> imports = Collections.singletonList(initialImport);
 		ConfigDataProperties properties = new ConfigDataProperties(imports, null);
 		return new ConfigDataEnvironmentContributor(Kind.INITIAL_IMPORT, null, null, false, null, null, properties,
-				false, null);
+				null, null);
 	}
 
 	/**
@@ -293,7 +307,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	static ConfigDataEnvironmentContributor ofExisting(PropertySource<?> propertySource) {
 		return new ConfigDataEnvironmentContributor(Kind.EXISTING, null, null, false, propertySource,
-				ConfigurationPropertySource.from(propertySource), null, false, null);
+				ConfigurationPropertySource.from(propertySource), null, null, null);
 	}
 
 	/**
@@ -311,9 +325,8 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 			boolean profileSpecific, ConfigData configData, int propertySourceIndex) {
 		PropertySource<?> propertySource = configData.getPropertySources().get(propertySourceIndex);
 		ConfigurationPropertySource configurationPropertySource = ConfigurationPropertySource.from(propertySource);
-		boolean ignoreImports = configData.getOptions().contains(ConfigData.Option.IGNORE_IMPORTS);
 		return new ConfigDataEnvironmentContributor(Kind.UNBOUND_IMPORT, location, resource, profileSpecific,
-				propertySource, configurationPropertySource, null, ignoreImports, null);
+				propertySource, configurationPropertySource, null, configData.getOptions(), null);
 	}
 
 	/**
@@ -324,7 +337,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	 */
 	static ConfigDataEnvironmentContributor ofEmptyLocation(ConfigDataLocation location, boolean profileSpecific) {
 		return new ConfigDataEnvironmentContributor(Kind.EMPTY_LOCATION, location, null, profileSpecific, null, null,
-				null, true, null);
+				null, EMPTY_LOCATION_OPTIONS, null);
 	}
 
 	/**

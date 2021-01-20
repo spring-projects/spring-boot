@@ -16,6 +16,9 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Arrays;
+import java.util.HashSet;
+
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -29,6 +32,7 @@ import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -125,14 +129,29 @@ class InvalidConfigDataPropertyExceptionTests {
 		throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException("spring.profiles");
 	}
 
+	@Test
+	void throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyOnIgnoringProfilesContributorDoesNotThrowException() {
+		ConfigDataEnvironmentContributor contributor = createInvalidProfileSpecificPropertyContributor(
+				"spring.profiles.active", ConfigData.Option.IGNORE_PROFILES);
+		assertThatNoException()
+				.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor));
+	}
+
 	private void throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException(String name) {
-		MockPropertySource propertySource = new MockPropertySource();
-		propertySource.setProperty(name, "a");
-		ConfigDataEnvironmentContributor contributor = new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, null,
-				null, true, propertySource, ConfigurationPropertySource.from(propertySource), null, false, null);
+		ConfigDataEnvironmentContributor contributor = createInvalidProfileSpecificPropertyContributor(name);
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class)
 				.isThrownBy(() -> InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor))
 				.withMessageStartingWith("Property '" + name + "' is invalid in a profile specific resource");
+	}
+
+	private ConfigDataEnvironmentContributor createInvalidProfileSpecificPropertyContributor(String name,
+			ConfigData.Option... configDataOptions) {
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.setProperty(name, "a");
+		ConfigDataEnvironmentContributor contributor = new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, null,
+				null, true, propertySource, ConfigurationPropertySource.from(propertySource), null,
+				new HashSet<>(Arrays.asList(configDataOptions)), null);
+		return contributor;
 	}
 
 	@Test
