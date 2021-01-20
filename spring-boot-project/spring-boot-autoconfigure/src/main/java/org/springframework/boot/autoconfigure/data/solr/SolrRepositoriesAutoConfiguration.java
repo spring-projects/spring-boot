@@ -40,6 +40,7 @@ import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBea
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
+ * @deprecated since 2.3.9 as Spring Data Solr is deprecated
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -48,6 +49,7 @@ import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBea
 @ConditionalOnProperty(prefix = "spring.data.solr.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
 @Import(SolrRepositoriesRegistrar.class)
+@Deprecated
 public class SolrRepositoriesAutoConfiguration {
 
 }

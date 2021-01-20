@@ -4494,6 +4494,7 @@ https://lucene.apache.org/solr/[Apache Solr] is a search engine.
 Spring Boot offers basic auto-configuration for the Solr 5 client library and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-solr[Spring Data Solr].
 There is a `spring-boot-starter-data-solr` "`Starter`" for collecting the dependencies in a convenient way.
 
+NOTE: As of Spring Boot 2.3, support for Spring Data Solr has been deprecated and will be removed in a future release.
 
 
 [[boot-features-connecting-to-solr]]

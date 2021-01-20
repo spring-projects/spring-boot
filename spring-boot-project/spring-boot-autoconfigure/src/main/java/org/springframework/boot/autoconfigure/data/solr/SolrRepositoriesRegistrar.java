@@ -30,6 +30,7 @@ import org.springframework.data.solr.repository.config.SolrRepositoryConfigExten
  *
  * @author Christoph Strobl
  */
+@Deprecated
 class SolrRepositoriesRegistrar extends AbstractRepositoryConfigurationSourceSupport {
 
 	@Override
