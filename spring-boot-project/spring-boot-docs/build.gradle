@@ -206,7 +206,6 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
 					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
 					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
-					"spring-data-solr-version": versionConstraints["org.springframework.data:spring-data-solr"],
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],

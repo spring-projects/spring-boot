@@ -79,8 +79,6 @@
 :spring-data-r2dbc-docs: https://docs.spring.io/spring-data/r2dbc/docs/{spring-data-r2dbc-version}/reference/html/
 :spring-data-redis: https://spring.io/projects/spring-data-redis
 :spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/{spring-data-rest-version}/api/org/springframework/data/rest
-:spring-data-solr: https://spring.io/projects/spring-data-solr
-:spring-data-solr-docs: https://docs.spring.io/spring-data/solr/docs/{spring-data-solr-version}/reference/html/
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
 :spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/reference/html

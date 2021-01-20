@@ -4579,7 +4579,6 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-mongodb}[MongoDB]
 * {spring-data-neo4j}[Neo4J]
 * {spring-data-elasticsearch}[Elasticsearch]
-* {spring-data-solr}[Solr]
 * {spring-data-redis}[Redis]
 * {spring-data-gemfire}[GemFire] or {spring-data-geode}[Geode]
 * {spring-data-cassandra}[Cassandra]
@@ -4886,8 +4885,7 @@ include::{code-examples}/neo4j/Neo4jReactiveTransactionManagerExample.java[tag=c
 [[boot-features-solr]]
 === Solr
 https://lucene.apache.org/solr/[Apache Solr] is a search engine.
-Spring Boot offers basic auto-configuration for the Solr 5 client library and the abstractions on top of it provided by https://github.com/spring-projects/spring-data-solr[Spring Data Solr].
-There is a `spring-boot-starter-data-solr` "`Starter`" for collecting the dependencies in a convenient way.
+Spring Boot offers basic auto-configuration for the Solr 5 client library.
 
 
 
@@ -4915,18 +4913,6 @@ The following example shows how to inject a Solr bean:
 ----
 
 If you add your own `@Bean` of type `SolrClient`, it replaces the default.
-
-
-
-[[boot-features-spring-data-solr-repositories]]
-==== Spring Data Solr Repositories
-Spring Data includes repository support for Apache Solr.
-As with the JPA repositories discussed earlier, the basic principle is that queries are automatically constructed for you based on method names.
-
-In fact, both Spring Data JPA and Spring Data Solr share the same common infrastructure.
-You could take the JPA example from earlier and, assuming that `City` is now a `@SolrDocument` class rather than a JPA `@Entity`, it works in the same way.
-
-IP: For complete details of Spring Data Solr, refer to the {spring-data-solr-docs}[reference documentation].
 
 
 
