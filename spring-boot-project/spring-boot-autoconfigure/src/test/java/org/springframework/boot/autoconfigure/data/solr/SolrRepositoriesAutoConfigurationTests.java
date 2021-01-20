@@ -42,6 +42,7 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  * @author Christoph Strobl
  * @author Oliver Gierke
  */
+@Deprecated
 class SolrRepositoriesAutoConfigurationTests {
 
 	private AnnotationConfigApplicationContext context;

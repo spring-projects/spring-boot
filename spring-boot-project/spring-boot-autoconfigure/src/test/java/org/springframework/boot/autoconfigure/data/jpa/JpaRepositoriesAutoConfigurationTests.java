@@ -23,9 +23,9 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
+import org.springframework.boot.autoconfigure.data.alt.elasticsearch.CityElasticsearchDbRepository;
 import org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository;
 import org.springframework.boot.autoconfigure.data.alt.mongo.CityMongoDbRepository;
-import org.springframework.boot.autoconfigure.data.alt.solr.CitySolrRepository;
 import org.springframework.boot.autoconfigure.data.jpa.city.City;
 import org.springframework.boot.autoconfigure.data.jpa.city.CityRepository;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -162,7 +162,7 @@ class JpaRepositoriesAutoConfigurationTests {
 	@EnableJpaRepositories(
 			basePackageClasses = org.springframework.boot.autoconfigure.data.alt.jpa.CityJpaRepository.class,
 			excludeFilters = { @Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityMongoDbRepository.class),
-					@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CitySolrRepository.class) })
+					@Filter(type = FilterType.ASSIGNABLE_TYPE, value = CityElasticsearchDbRepository.class) })
 	@TestAutoConfigurationPackage(City.class)
 	static class CustomConfiguration {
 

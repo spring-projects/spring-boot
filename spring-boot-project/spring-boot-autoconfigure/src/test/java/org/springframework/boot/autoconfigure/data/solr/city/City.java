@@ -24,6 +24,7 @@ import org.springframework.data.solr.core.mapping.SolrDocument;
  * @author Christoph Strobl
  */
 @SolrDocument(collection = "collection1")
+@Deprecated
 public class City {
 
 	@Id
