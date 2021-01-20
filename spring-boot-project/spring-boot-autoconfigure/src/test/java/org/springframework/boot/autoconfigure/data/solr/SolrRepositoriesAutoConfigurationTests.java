@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.context.PropertyPlaceholderAutoConfiguration;
-import org.springframework.boot.autoconfigure.data.alt.solr.CitySolrRepository;
 import org.springframework.boot.autoconfigure.data.empty.EmptyDataPackage;
-import org.springframework.boot.autoconfigure.data.solr.city.City;
-import org.springframework.boot.autoconfigure.data.solr.city.CityRepository;
 import org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
@@ -55,7 +52,8 @@ class SolrRepositoriesAutoConfigurationTests {
 	@Test
 	void testDefaultRepositoryConfiguration() {
 		initContext(TestConfiguration.class);
-		assertThat(this.context.getBean(CityRepository.class)).isNotNull();
+		assertThat(this.context.getBean(org.springframework.boot.autoconfigure.data.solr.city.CityRepository.class))
+				.isNotNull();
 		assertThat(this.context.getBean(SolrClient.class)).isInstanceOf(HttpSolrClient.class);
 	}
 
@@ -68,14 +66,15 @@ class SolrRepositoriesAutoConfigurationTests {
 	@Test
 	void doesNotTriggerDefaultRepositoryDetectionIfCustomized() {
 		initContext(CustomizedConfiguration.class);
-		assertThat(this.context.getBean(CitySolrRepository.class)).isNotNull();
+		assertThat(this.context.getBean(org.springframework.boot.autoconfigure.data.solr.city.CityRepository.class))
+				.isNotNull();
 	}
 
 	@Test
 	void autoConfigurationShouldNotKickInEvenIfManualConfigDidNotCreateAnyRepositories() {
 		initContext(SortOfInvalidCustomConfiguration.class);
-		assertThatExceptionOfType(NoSuchBeanDefinitionException.class)
-				.isThrownBy(() -> this.context.getBean(CityRepository.class));
+		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(
+				() -> this.context.getBean(org.springframework.boot.autoconfigure.data.solr.city.CityRepository.class));
 	}
 
 	private void initContext(Class<?> configClass) {
@@ -87,7 +86,7 @@ class SolrRepositoriesAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@TestAutoConfigurationPackage(City.class)
+	@TestAutoConfigurationPackage(org.springframework.boot.autoconfigure.data.solr.city.City.class)
 	static class TestConfiguration {
 
 	}
@@ -100,7 +99,8 @@ class SolrRepositoriesAutoConfigurationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@TestAutoConfigurationPackage(SolrRepositoriesAutoConfigurationTests.class)
-	@EnableSolrRepositories(basePackageClasses = CitySolrRepository.class)
+	@EnableSolrRepositories(
+			basePackageClasses = org.springframework.boot.autoconfigure.data.solr.city.CityRepository.class)
 	static class CustomizedConfiguration {
 
 	}
