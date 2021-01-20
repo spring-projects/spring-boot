@@ -383,7 +383,7 @@ bom {
 			]
 		}
 	}
-	library("Hazelcast Hibernate5", "2.1.1") {
+	library("Hazelcast Hibernate5", "2.2.0") {
 		group("com.hazelcast") {
 			modules = [
 				"hazelcast-hibernate52",
