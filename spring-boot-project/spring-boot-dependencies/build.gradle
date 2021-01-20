@@ -1777,7 +1777,3 @@ bom {
 generateMetadataFileForMavenPublication {
 	enabled = false
 }
-
-
-
-
