@@ -345,7 +345,7 @@ bom {
 			]
 		}
 	}
-	library("Groovy", "2.5.14") {
+	library("Groovy", "3.0.7") {
 		group("org.codehaus.groovy") {
 			imports = [
 				"groovy-bom"
@@ -1320,9 +1320,6 @@ bom {
 		}
 	}
 	library("REST Assured", "4.2.1") {
-		prohibit("[4.3.0,)") {
-			because "it requires Groovy 3"
-		}
 		group("io.rest-assured") {
 			modules = [
 				"json-path",
