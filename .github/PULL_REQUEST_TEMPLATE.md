@@ -1,6 +1,6 @@
 <!--
 Thanks for contributing to Spring Boot. Please review the following notes before
-submitting you pull request.
+submitting a pull request.
 
 Please submit only genuine pull-requests. Do not use this repository as a GitHub
 playground.
