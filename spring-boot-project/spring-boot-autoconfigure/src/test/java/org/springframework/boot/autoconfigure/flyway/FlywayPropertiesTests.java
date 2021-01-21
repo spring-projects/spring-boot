@@ -110,7 +110,7 @@ class FlywayPropertiesTests {
 				"targetAsString");
 		// Teams-only properties that we cannot detect as no exception is thrown and
 		// getters return null
-		ignoreProperties(configuration, "conjurToken", "conjurUrl", "vaultSecret", "vaultToken", "vaultUrl");
+		ignoreProperties(configuration, "conjurToken", "conjurUrl", "vaultSecrets", "vaultToken", "vaultUrl");
 		// Handled as initSql array
 		ignoreProperties(configuration, "initSql");
 		ignoreProperties(properties, "initSqls");
