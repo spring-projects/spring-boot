@@ -9,12 +9,12 @@ description = "Spring Boot Dependencies"
 bom {
 	effectiveBomArtifact()
 	upgrade {
-		policy = "same-major-version"
+		policy = "any"
 		gitHub {
 			issueLabels = ["type: dependency-upgrade"]
 		}
 	}
-	library("ActiveMQ", "5.16.0") {
+	library("ActiveMQ", "5.16.1") {
 		group("org.apache.activemq") {
 			modules = [
 				"activemq-amqp",
