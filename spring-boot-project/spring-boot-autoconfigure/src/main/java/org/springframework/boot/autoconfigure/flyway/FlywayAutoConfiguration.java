@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -231,10 +231,10 @@ public class FlywayAutoConfiguration {
 					.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getOracleKerberosCacheFile()).whenNonNull()
-					.to((cacheFile) -> configuration.orackeKerberosCacheFile(cacheFile));
+					.to((cacheFile) -> configuration.oracleKerberosCacheFile(cacheFile));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getOracleKerberosConfigFile()).whenNonNull()
-					.to((configFile) -> configuration.orackeKerberosConfigFile(configFile));
+					.to((configFile) -> configuration.oracleKerberosConfigFile(configFile));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getOutputQueryResults()).whenNonNull()
 					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));

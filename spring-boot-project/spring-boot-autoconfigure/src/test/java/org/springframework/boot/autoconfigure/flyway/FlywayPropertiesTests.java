@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,7 +100,6 @@ class FlywayPropertiesTests {
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
 		ignoreProperties(properties, "url", "user", "password", "enabled", "checkLocation", "createDataSource");
-
 		// High level object we can't set with properties
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "resourceProvider", "resolvers");
@@ -109,6 +108,9 @@ class FlywayPropertiesTests {
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");
+		// Teams-only properties that we cannot detect as no exception is thrown and
+		// getters return null
+		ignoreProperties(configuration, "conjurToken", "conjurUrl", "vaultSecret", "vaultToken", "vaultUrl");
 		// Handled as initSql array
 		ignoreProperties(configuration, "initSql");
 		ignoreProperties(properties, "initSqls");
