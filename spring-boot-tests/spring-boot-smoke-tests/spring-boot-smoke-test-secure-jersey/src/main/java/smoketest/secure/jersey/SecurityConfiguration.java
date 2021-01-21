@@ -42,7 +42,7 @@ public class SecurityConfiguration {
 	SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		// @formatter:off
 		http.authorizeRequests()
-				.requestMatchers(EndpointRequest.to("health", "info")).permitAll()
+				.requestMatchers(EndpointRequest.to("health")).permitAll()
 				.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
 				.antMatchers("/**").hasRole("USER")
 				.and()

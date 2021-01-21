@@ -3960,10 +3960,10 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 
 [[boot-features-security-actuator]]
 === Actuator Security
-For security purposes, all actuators other than `/health` and `/info` are disabled by default.
+For security purposes, all actuators other than `/health` are disabled by default.
 The configprop:management.endpoints.web.exposure.include[] property can be used to enable the actuators.
 
-If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` and `/info` are secured by Spring Boot auto-configuration.
+If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` are secured by Spring Boot auto-configuration.
 If you define a custom `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
 
 NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information and/or are secured by placing them behind a firewall or by something like Spring Security.

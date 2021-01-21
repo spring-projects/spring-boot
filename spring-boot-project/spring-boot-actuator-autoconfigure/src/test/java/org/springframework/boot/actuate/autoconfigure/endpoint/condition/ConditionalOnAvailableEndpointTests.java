@@ -40,8 +40,8 @@ class ConditionalOnAvailableEndpointTests {
 
 	@Test
 	void outcomeShouldMatchDefaults() {
-		this.contextRunner.run((context) -> assertThat(context).hasBean("info").hasBean("health")
-				.doesNotHaveBean("spring").doesNotHaveBean("test").doesNotHaveBean("shutdown"));
+		this.contextRunner.run((context) -> assertThat(context).hasBean("health").doesNotHaveBean("spring")
+				.doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class ConditionalOnAvailableEndpointTests {
 	@Test
 	void outcomeWhenIncludeAllJmxButJmxDisabledShouldMatchDefaults() {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=*")
-				.run((context) -> assertThat(context).hasBean("info").hasBean("health").doesNotHaveBean("spring")
+				.run((context) -> assertThat(context).hasBean("health").doesNotHaveBean("spring")
 						.doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
@@ -95,8 +95,8 @@ class ConditionalOnAvailableEndpointTests {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.jmx.exposure.include=*", "spring.jmx.enabled=true",
 						"management.endpoint.shutdown.enabled=true")
-				.run((context) -> assertThat(context).hasBean("info").hasBean("health").hasBean("test")
-						.hasBean("spring").hasBean("shutdown"));
+				.run((context) -> assertThat(context).hasBean("health").hasBean("test").hasBean("spring")
+						.hasBean("shutdown"));
 	}
 
 	@Test

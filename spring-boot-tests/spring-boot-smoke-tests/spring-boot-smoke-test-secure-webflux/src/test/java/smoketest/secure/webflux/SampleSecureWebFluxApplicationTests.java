@@ -51,11 +51,6 @@ class SampleSecureWebFluxApplicationTests {
 	}
 
 	@Test
-	void infoInsecureByDefault() {
-		this.webClient.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-	}
-
-	@Test
 	void otherActuatorsSecureByDefault() {
 		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 				.isUnauthorized();

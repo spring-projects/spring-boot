@@ -111,16 +111,6 @@ class SampleActuatorApplicationTests {
 	}
 
 	@Test
-	void infoInsecureByDefault() {
-		ResponseEntity<String> entity = this.restTemplate.getForEntity("/actuator/info", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
-		assertThat(entity.getBody()).contains("\"artifact\":\"spring-boot-smoke-test-actuator\"");
-		assertThat(entity.getBody()).contains("\"someKey\":\"someValue\"");
-		assertThat(entity.getBody()).contains("\"java\":{", "\"source\":\"1.8\"", "\"target\":\"1.8\"");
-		assertThat(entity.getBody()).contains("\"encoding\":{", "\"source\":\"UTF-8\"", "\"reporting\":\"UTF-8\"");
-	}
-
-	@Test
 	void testErrorPage() {
 		ResponseEntity<String> entity = this.restTemplate.withBasicAuth("user", "password").getForEntity("/foo",
 				String.class);
