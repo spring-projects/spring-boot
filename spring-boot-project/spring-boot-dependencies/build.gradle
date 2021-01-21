@@ -1582,10 +1582,7 @@ bom {
 			]
 		}
 	}
-	library("Solr", "8.5.2") {
-		prohibit("[8.6.0,8.7.0)") {
-			because "it uses a library that is not available on Maven Central"
-		}
+	library("Solr", "8.7.0") {
 		group("org.apache.solr") {
 			modules = [
 				"solr-analysis-extras",
