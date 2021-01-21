@@ -74,14 +74,6 @@ class ManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	void permitAllForInfo() {
-		this.contextRunner.run((context) -> {
-			HttpStatus status = getResponseStatus(context, "/actuator/info");
-			assertThat(status).isEqualTo(HttpStatus.OK);
-		});
-	}
-
-	@Test
 	void securesEverythingElse() {
 		this.contextRunner.run((context) -> {
 			HttpStatus status = getResponseStatus(context, "/actuator");

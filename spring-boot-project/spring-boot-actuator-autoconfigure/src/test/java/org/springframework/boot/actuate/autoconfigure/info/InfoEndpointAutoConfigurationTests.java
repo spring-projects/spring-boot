@@ -35,18 +35,6 @@ class InfoEndpointAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(InfoEndpointAutoConfiguration.class));
 
 	@Test
-	void runShouldHaveEndpointBean() {
-		this.contextRunner.withPropertyValues("management.endpoint.shutdown.enabled:true")
-				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
-	}
-
-	@Test
-	void runShouldHaveEndpointBeanEvenIfDefaultIsDisabled() {
-		this.contextRunner.withPropertyValues("management.endpoint.default.enabled:false")
-				.run((context) -> assertThat(context).hasSingleBean(InfoEndpoint.class));
-	}
-
-	@Test
 	void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("management.endpoint.info.enabled:false")
 				.run((context) -> assertThat(context).doesNotHaveBean(InfoEndpoint.class));

@@ -57,7 +57,7 @@ public class SecurityConfiguration {
 	SecurityFilterChain configure(HttpSecurity http) throws Exception {
 		http.authorizeRequests((requests) -> {
 			requests.mvcMatchers("/actuator/beans").hasRole("BEANS");
-			requests.requestMatchers(EndpointRequest.to("health", "info")).permitAll();
+			requests.requestMatchers(EndpointRequest.to("health")).permitAll();
 			requests.requestMatchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
 					.hasRole("ACTUATOR");
 			requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();

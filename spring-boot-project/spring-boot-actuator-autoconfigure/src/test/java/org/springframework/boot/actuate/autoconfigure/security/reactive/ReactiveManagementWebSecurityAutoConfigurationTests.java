@@ -79,11 +79,6 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	}
 
 	@Test
-	void permitAllForInfo() {
-		this.contextRunner.run((context) -> assertThat(getAuthenticateHeader(context, "/actuator/info")).isNull());
-	}
-
-	@Test
 	void securesEverythingElse() {
 		this.contextRunner.run((context) -> {
 			assertThat(getAuthenticateHeader(context, "/actuator").get(0)).contains("Basic realm=");
