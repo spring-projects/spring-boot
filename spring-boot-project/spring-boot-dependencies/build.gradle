@@ -317,7 +317,7 @@ bom {
 			]
 		}
 	}
-	library("Git Commit ID Plugin", "3.0.1") {
+	library("Git Commit ID Plugin", "4.0.3") {
 		group("pl.project13.maven") {
 			plugins = [
 				"git-commit-id-plugin"
