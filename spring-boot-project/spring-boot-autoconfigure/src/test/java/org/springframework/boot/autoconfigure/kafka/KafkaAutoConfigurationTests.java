@@ -700,7 +700,7 @@ class KafkaAutoConfigurationTests {
 
 		@Bean
 		AfterRollbackProcessor<Object, Object> afterRollbackProcessor() {
-			return (records, consumer, ex, recoverable) -> {
+			return (records, consumer, ex, recoverable, eosMode) -> {
 				// no-op
 			};
 		}

@@ -917,7 +917,7 @@ public class KafkaProperties {
 		 * Whether to suppress the entire record from being written to the log when
 		 * retries are being attempted.
 		 */
-		private boolean onlyLogRecordMetadata;
+		private boolean onlyLogRecordMetadata = true;
 
 		/**
 		 * Whether the container should fail to start if at least one of the configured
