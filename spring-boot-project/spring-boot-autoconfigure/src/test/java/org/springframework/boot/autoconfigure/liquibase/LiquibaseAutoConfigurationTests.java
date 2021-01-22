@@ -320,7 +320,7 @@ class LiquibaseAutoConfigurationTests {
 				.withPropertyValues("spring.liquibase.parameters.foo:bar").run(assertLiquibase((liquibase) -> {
 					Map<String, String> parameters = (Map<String, String>) ReflectionTestUtils.getField(liquibase,
 							"parameters");
-					assertThat(parameters.containsKey("foo")).isTrue();
+					assertThat(parameters).containsKey("foo");
 					assertThat(parameters.get("foo")).isEqualTo("bar");
 				}));
 	}

@@ -256,8 +256,8 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes.get("message")).isEqualTo("");
-		assertThat(attributes.containsKey("errors")).isFalse();
+		assertThat(attributes).containsEntry("message", "");
+		assertThat(attributes).doesNotContainKey("errors");
 	}
 
 	private ServerRequest buildServerRequest(MockServerHttpRequest request, Throwable error) {
