@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,8 +150,8 @@ public class LiquibaseAutoConfiguration {
 			String user = getProperty(this.properties::getUser, dataSourceProperties::determineUsername);
 			String password = getProperty(this.properties::getPassword, dataSourceProperties::determinePassword);
 			String driverClassName = determineDriverClassName(dataSourceProperties, url);
-			return DataSourceBuilder.create().type(determineDataSourceType()).url(url).username(user).password(password)
-					.driverClassName(driverClassName).build();
+			return DataSourceBuilder.create().type(SimpleDriverDataSource.class).url(url).username(user)
+					.password(password).driverClassName(driverClassName).build();
 		}
 
 		private String determineDriverClassName(DataSourceProperties dataSourceProperties, String url) {
@@ -162,11 +162,6 @@ public class LiquibaseAutoConfiguration {
 				return dataSourceProperties.getDriverClassName();
 			}
 			return StringUtils.hasText(url) ? DatabaseDriver.fromJdbcUrl(url).getDriverClassName() : null;
-		}
-
-		private Class<? extends DataSource> determineDataSourceType() {
-			Class<? extends DataSource> type = DataSourceBuilder.findType(null);
-			return (type != null) ? type : SimpleDriverDataSource.class;
 		}
 
 		private String getProperty(Supplier<String> property, Supplier<String> defaultValue) {
