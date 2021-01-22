@@ -1476,7 +1476,6 @@ bom {
 				"spring-boot-starter-data-redis-reactive",
 				"spring-boot-starter-data-neo4j",
 				"spring-boot-starter-data-rest",
-				"spring-boot-starter-data-solr",
 				"spring-boot-starter-freemarker",
 				"spring-boot-starter-groovy-templates",
 				"spring-boot-starter-hateoas",
