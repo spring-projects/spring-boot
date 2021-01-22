@@ -73,7 +73,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 			errorAttributes.remove("trace");
 		}
 		if (!options.isIncluded(Include.MESSAGE) && errorAttributes.get("message") != null) {
-			errorAttributes.put("message", "");
+			errorAttributes.remove("message");
 		}
 		if (!options.isIncluded(Include.BINDING_ERRORS)) {
 			errorAttributes.remove("errors");

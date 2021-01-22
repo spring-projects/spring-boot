@@ -87,8 +87,8 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 			client.get().uri("/").exchange().expectStatus().isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody()
 					.jsonPath("status").isEqualTo("500").jsonPath("error")
 					.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).jsonPath("path").isEqualTo(("/"))
-					.jsonPath("message").isEmpty().jsonPath("exception").doesNotExist().jsonPath("trace").doesNotExist()
-					.jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
+					.jsonPath("message").doesNotExist().jsonPath("exception").doesNotExist().jsonPath("trace")
+					.doesNotExist().jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
 			assertThat(output).contains("500 Server Error for HTTP GET \"/\"")
 					.contains("java.lang.IllegalStateException: Expected!");
 		});
@@ -124,7 +124,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 					.isBadRequest().expectBody().jsonPath("status").isEqualTo("400").jsonPath("error")
 					.isEqualTo(HttpStatus.BAD_REQUEST.getReasonPhrase()).jsonPath("path").isEqualTo(("/bind"))
 					.jsonPath("exception").doesNotExist().jsonPath("errors").doesNotExist().jsonPath("message")
-					.isEmpty().jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
+					.doesNotExist().jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
 		});
 	}
 
@@ -227,7 +227,7 @@ class DefaultErrorWebExceptionHandlerIntegrationTests {
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR).expectBody().jsonPath("status")
 							.isEqualTo("500").jsonPath("error")
 							.isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR.getReasonPhrase()).jsonPath("exception")
-							.isEqualTo(IllegalStateException.class.getName()).jsonPath("message").isEmpty()
+							.isEqualTo(IllegalStateException.class.getName()).jsonPath("message").doesNotExist()
 							.jsonPath("requestId").isEqualTo(this.logIdFilter.getLogId());
 				});
 	}

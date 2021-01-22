@@ -113,7 +113,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message").toString()).contains("");
+		assertThat(attributes).doesNotContainKey("message");
 	}
 
 	@Test
@@ -131,7 +131,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes).doesNotContainKey("exception");
-		assertThat(attributes.get("message")).asString().contains("");
+		assertThat(attributes).doesNotContainKey("message");
 	}
 
 	@Test
@@ -210,7 +210,7 @@ class DefaultErrorAttributesTests {
 					.isEqualTo("Validation failed for object='objectName'. Error count: 1");
 		}
 		else {
-			assertThat(attributes.get("message")).isEqualTo("");
+			assertThat(attributes).doesNotContainKey("message");
 		}
 		if (options.isIncluded(Include.BINDING_ERRORS)) {
 			assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());

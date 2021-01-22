@@ -93,7 +93,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes.get("error")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
-		assertThat(attributes.get("message")).isEqualTo("");
+		assertThat(attributes).doesNotContainKey("message");
 		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
 	}
 
@@ -148,7 +148,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(attributes.get("message")).isEqualTo("");
+		assertThat(attributes).doesNotContainKey("message");
 	}
 
 	@Test
@@ -256,7 +256,7 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes).containsEntry("message", "");
+		assertThat(attributes).doesNotContainKey("message");
 		assertThat(attributes).doesNotContainKey("errors");
 	}
 

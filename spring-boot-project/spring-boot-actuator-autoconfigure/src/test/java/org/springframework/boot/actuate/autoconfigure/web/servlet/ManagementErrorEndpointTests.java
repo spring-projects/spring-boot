@@ -55,7 +55,7 @@ class ManagementErrorEndpointTests {
 	void errorResponseNeverDetails() {
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(new MockHttpServletRequest()));
-		assertThat(response).containsEntry("message", "");
+		assertThat(response).doesNotContainKey("message");
 		assertThat(response).doesNotContainKey("trace");
 	}
 
@@ -78,7 +78,7 @@ class ManagementErrorEndpointTests {
 		this.errorProperties.setIncludeMessage(ErrorProperties.IncludeAttribute.ON_PARAM);
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
-		assertThat(response).containsEntry("message", "");
+		assertThat(response).doesNotContainKey("message");
 		assertThat(response).doesNotContainKey("trace");
 	}
 
@@ -103,7 +103,7 @@ class ManagementErrorEndpointTests {
 		this.request.addParameter("message", "false");
 		ManagementErrorEndpoint endpoint = new ManagementErrorEndpoint(this.errorAttributes, this.errorProperties);
 		Map<String, Object> response = endpoint.invoke(new ServletWebRequest(this.request));
-		assertThat(response).containsEntry("message", "");
+		assertThat(response).doesNotContainKey("message");
 		assertThat(response).doesNotContainKey("trace");
 	}
 

@@ -88,7 +88,7 @@ class BasicErrorControllerIntegrationTests {
 	void testErrorForMachineClientDefault() {
 		load();
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, "", "/");
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, null, "/");
 		assertThat(entity.getBody()).doesNotContainKey("exception");
 		assertThat(entity.getBody()).doesNotContainKey("trace");
 	}
@@ -148,7 +148,7 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void exceptionWithoutStackTraceAndMessage(String path) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl(path), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class, "", "/");
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class, null, "/");
 		assertThat(entity.getBody()).doesNotContainKey("trace");
 	}
 
@@ -158,7 +158,7 @@ class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
-				"", "/annotated");
+				null, "/annotated");
 	}
 
 	@Test
@@ -176,7 +176,7 @@ class BasicErrorControllerIntegrationTests {
 		load("--server.error.include-exception=true");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
-				TestConfiguration.Errors.NoReasonExpectedException.class, "", "/annotatedNoReason");
+				TestConfiguration.Errors.NoReasonExpectedException.class, null, "/annotatedNoReason");
 	}
 
 	@Test
@@ -261,14 +261,14 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithErrors(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, "", "/bind");
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
 		assertThat(entity.getBody()).containsKey("errors");
 	}
 
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithoutErrors(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, "", "/bind");
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
 		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
 
@@ -283,7 +283,7 @@ class BasicErrorControllerIntegrationTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private void bindingExceptionWithoutMessage(String param) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, "", "/bind");
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
 		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
 
@@ -294,7 +294,7 @@ class BasicErrorControllerIntegrationTests {
 		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
-		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, "",
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
 				"/bodyValidation");
 		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
