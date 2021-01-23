@@ -64,6 +64,8 @@ class HttpClientTransportTests {
 
 	private static final String APPLICATION_JSON = "application/json";
 
+	private static final String APPLICATION_X_TAR = "application/x-tar";
+
 	@Mock
 	private CloseableHttpClient client;
 
@@ -120,48 +122,125 @@ class HttpClientTransportTests {
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
 		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+		assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER)).isNull();
 		assertThat(response.getContent()).isSameAs(this.content);
 	}
 
 	@Test
-	void postWithContentShouldExecuteHttpPost() throws Exception {
+	void postWithRegistryAuthShouldExecuteHttpPostWithHeader() throws Exception {
+		givenClientWillReturnResponse();
+		given(this.entity.getContent()).willReturn(this.content);
+		given(this.statusLine.getStatusCode()).willReturn(200);
+		Response response = this.http.post(this.uri, "auth token");
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		HttpUriRequest request = this.requestCaptor.getValue();
+		assertThat(request).isInstanceOf(HttpPost.class);
+		assertThat(request.getURI()).isEqualTo(this.uri);
+		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+		assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER).getValue()).isEqualTo("auth token");
+		assertThat(response.getContent()).isSameAs(this.content);
+	}
+
+	@Test
+	void postWithEmptyRegistryAuthShouldExecuteHttpPostWithoutHeader() throws Exception {
+		givenClientWillReturnResponse();
+		given(this.entity.getContent()).willReturn(this.content);
+		given(this.statusLine.getStatusCode()).willReturn(200);
+		Response response = this.http.post(this.uri, "");
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		HttpUriRequest request = this.requestCaptor.getValue();
+		assertThat(request).isInstanceOf(HttpPost.class);
+		assertThat(request.getURI()).isEqualTo(this.uri);
+		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE)).isNull();
+		assertThat(request.getFirstHeader(HttpClientTransport.REGISTRY_AUTH_HEADER)).isNull();
+		assertThat(response.getContent()).isSameAs(this.content);
+	}
+
+	@Test
+	void postWithJsonContentShouldExecuteHttpPost() throws Exception {
+		String content = "test";
 		givenClientWillReturnResponse();
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.post(this.uri, APPLICATION_JSON,
-				(out) -> StreamUtils.copy("test", StandardCharsets.UTF_8, out));
+				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
 		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPost.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
-		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue()).isEqualTo(APPLICATION_JSON);
 		assertThat(entity.isRepeatable()).isFalse();
-		assertThat(entity.getContentLength()).isEqualTo(-1);
+		assertThat(entity.getContentLength()).isEqualTo(content.length());
+		assertThat(entity.getContentType().getValue()).isEqualTo(APPLICATION_JSON);
 		assertThat(entity.isStreaming()).isTrue();
 		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
-		assertThat(writeToString(entity)).isEqualTo("test");
+		assertThat(writeToString(entity)).isEqualTo(content);
 		assertThat(response.getContent()).isSameAs(this.content);
 	}
 
 	@Test
-	void putWithContentShouldExecuteHttpPut() throws Exception {
+	void postWithArchiveContentShouldExecuteHttpPost() throws Exception {
+		String content = "test";
+		givenClientWillReturnResponse();
+		given(this.entity.getContent()).willReturn(this.content);
+		given(this.statusLine.getStatusCode()).willReturn(200);
+		Response response = this.http.post(this.uri, APPLICATION_X_TAR,
+				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		HttpUriRequest request = this.requestCaptor.getValue();
+		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
+		assertThat(request).isInstanceOf(HttpPost.class);
+		assertThat(request.getURI()).isEqualTo(this.uri);
+		assertThat(entity.isRepeatable()).isFalse();
+		assertThat(entity.getContentLength()).isEqualTo(-1);
+		assertThat(entity.getContentType().getValue()).isEqualTo(APPLICATION_X_TAR);
+		assertThat(entity.isStreaming()).isTrue();
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
+		assertThat(writeToString(entity)).isEqualTo(content);
+		assertThat(response.getContent()).isSameAs(this.content);
+	}
+
+	@Test
+	void putWithJsonContentShouldExecuteHttpPut() throws Exception {
+		String content = "test";
 		givenClientWillReturnResponse();
 		given(this.entity.getContent()).willReturn(this.content);
 		given(this.statusLine.getStatusCode()).willReturn(200);
 		Response response = this.http.put(this.uri, APPLICATION_JSON,
-				(out) -> StreamUtils.copy("test", StandardCharsets.UTF_8, out));
+				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
 		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
 		HttpUriRequest request = this.requestCaptor.getValue();
 		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
 		assertThat(request).isInstanceOf(HttpPut.class);
 		assertThat(request.getURI()).isEqualTo(this.uri);
-		assertThat(request.getFirstHeader(HttpHeaders.CONTENT_TYPE).getValue()).isEqualTo(APPLICATION_JSON);
 		assertThat(entity.isRepeatable()).isFalse();
-		assertThat(entity.getContentLength()).isEqualTo(-1);
+		assertThat(entity.getContentLength()).isEqualTo(content.length());
+		assertThat(entity.getContentType().getValue()).isEqualTo(APPLICATION_JSON);
 		assertThat(entity.isStreaming()).isTrue();
 		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
-		assertThat(writeToString(entity)).isEqualTo("test");
+		assertThat(writeToString(entity)).isEqualTo(content);
+		assertThat(response.getContent()).isSameAs(this.content);
+	}
+
+	@Test
+	void putWithArchiveContentShouldExecuteHttpPut() throws Exception {
+		String content = "test";
+		givenClientWillReturnResponse();
+		given(this.entity.getContent()).willReturn(this.content);
+		given(this.statusLine.getStatusCode()).willReturn(200);
+		Response response = this.http.put(this.uri, APPLICATION_X_TAR,
+				(out) -> StreamUtils.copy(content, StandardCharsets.UTF_8, out));
+		verify(this.client).execute(this.hostCaptor.capture(), this.requestCaptor.capture());
+		HttpUriRequest request = this.requestCaptor.getValue();
+		HttpEntity entity = ((HttpEntityEnclosingRequest) request).getEntity();
+		assertThat(request).isInstanceOf(HttpPut.class);
+		assertThat(request.getURI()).isEqualTo(this.uri);
+		assertThat(entity.isRepeatable()).isFalse();
+		assertThat(entity.getContentLength()).isEqualTo(-1);
+		assertThat(entity.getContentType().getValue()).isEqualTo(APPLICATION_X_TAR);
+		assertThat(entity.isStreaming()).isTrue();
+		assertThatExceptionOfType(UnsupportedOperationException.class).isThrownBy(entity::getContent);
+		assertThat(writeToString(entity)).isEqualTo(content);
 		assertThat(response.getContent()).isSameAs(this.content);
 	}
 

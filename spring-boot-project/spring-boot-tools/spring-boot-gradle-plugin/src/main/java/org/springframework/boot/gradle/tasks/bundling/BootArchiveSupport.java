@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,15 +76,12 @@ class BootArchiveSupport {
 
 	private LaunchScriptConfiguration launchScript;
 
-	private boolean excludeDevtools = false;
-
 	BootArchiveSupport(String loaderMainClass, Spec<FileCopyDetails> librarySpec,
 			Function<FileCopyDetails, ZipCompression> compressionResolver) {
 		this.loaderMainClass = loaderMainClass;
 		this.librarySpec = librarySpec;
 		this.compressionResolver = compressionResolver;
 		this.requiresUnpack.include(Specs.satisfyNone());
-		configureExclusions();
 	}
 
 	void configureManifest(Manifest manifest, String mainClass, String classes, String lib, String classPathIndex,
@@ -149,15 +146,6 @@ class BootArchiveSupport {
 		this.requiresUnpack.include(spec);
 	}
 
-	boolean isExcludeDevtools() {
-		return this.excludeDevtools;
-	}
-
-	void setExcludeDevtools(boolean excludeDevtools) {
-		this.excludeDevtools = excludeDevtools;
-		configureExclusions();
-	}
-
 	void excludeNonZipLibraryFiles(FileCopyDetails details) {
 		if (this.librarySpec.isSatisfiedBy(details)) {
 			excludeNonZipFiles(details);
@@ -188,14 +176,6 @@ class BootArchiveSupport {
 			}
 		}
 		return true;
-	}
-
-	private void configureExclusions() {
-		Set<String> excludes = new HashSet<>();
-		if (this.excludeDevtools) {
-			excludes.add("**/spring-boot-devtools-*.jar");
-		}
-		this.exclusions.setExcludes(excludes);
 	}
 
 	void moveModuleInfoToRoot(CopySpec spec) {

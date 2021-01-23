@@ -64,9 +64,9 @@ class ConfigDataEnvironmentContributorPlaceholdersResolver implements Placeholde
 			Object value = (propertySource != null) ? propertySource.getProperty(placeholder) : null;
 			if (value != null && !contributor.isActive(this.activationContext)) {
 				if (this.failOnResolveFromInactiveContributor) {
+					ConfigDataResource resource = contributor.getResource();
 					Origin origin = OriginLookup.getOrigin(propertySource, placeholder);
-					throw new InactiveConfigDataAccessException(propertySource, contributor.getLocation(), placeholder,
-							origin);
+					throw new InactiveConfigDataAccessException(propertySource, resource, placeholder, origin);
 				}
 				value = null;
 			}

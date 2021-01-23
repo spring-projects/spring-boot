@@ -20,6 +20,7 @@ import java.io.File;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Predicate;
 
 import org.assertj.core.api.Condition;
 import org.testcontainers.containers.GenericContainer;
@@ -29,6 +30,7 @@ import org.testcontainers.images.builder.ImageFromDockerfile;
 import org.testcontainers.utility.MountableFile;
 
 import org.springframework.boot.ansi.AnsiColor;
+import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.hamcrest.Matchers.containsString;
@@ -50,11 +52,13 @@ abstract class AbstractLaunchScriptIntegrationTests {
 		this.scriptsDir = scriptsDir;
 	}
 
-	static List<Object[]> parameters() {
+	static List<Object[]> parameters(Predicate<File> osFilter) {
 		List<Object[]> parameters = new ArrayList<>();
 		for (File os : new File("src/intTest/resources/conf").listFiles()) {
-			for (File version : os.listFiles()) {
-				parameters.add(new Object[] { os.getName(), version.getName() });
+			if (osFilter.test(os)) {
+				for (File version : os.listFiles()) {
+					parameters.add(new Object[] { os.getName(), version.getName() });
+				}
 			}
 		}
 		return parameters;
@@ -107,12 +111,10 @@ abstract class AbstractLaunchScriptIntegrationTests {
 		}
 
 		private static File findApplication() {
-			File appJar = new File("build/app/build/libs/app.jar");
-			if (appJar.isFile()) {
-				return appJar;
-			}
-			throw new IllegalStateException(
-					"Could not find test application in build/app/build/libs directory. Have you built it?");
+			String name = String.format("build/%1$s/build/libs/%1$s.jar", "spring-boot-launch-script-tests-app");
+			File jar = new File(name);
+			Assert.state(jar.isFile(), () -> "Could not find " + name + ". Have you built it?");
+			return jar;
 		}
 
 	}

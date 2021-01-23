@@ -73,6 +73,9 @@ do as they were designed before this was clarified.
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
+| https://github.com/Allurx/desensitization[desensitization]
+| https://github.com/Allurx/desensitization-spring-boot
+
 | https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
 | https://github.com/jliu666/docker-api-spring-boot
 
@@ -130,6 +133,9 @@ do as they were designed before this was clarified.
 | https://javers.org[JaVers]
 | https://github.com/javers/javers
 
+| https://www.jobrunr.io[JobRunr]
+| https://github.com/jobrunr/jobrunr
+
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
 
@@ -159,6 +165,9 @@ do as they were designed before this was clarified.
 
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
+
+| https://groupe-sii.github.io/ogham/[Ogham]
+| https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-all, https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-email, and https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-sms
 
 | https://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot

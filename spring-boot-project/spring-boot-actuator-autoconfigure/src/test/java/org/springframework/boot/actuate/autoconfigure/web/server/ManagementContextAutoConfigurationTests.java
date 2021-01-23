@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
 import java.util.function.Consumer;
@@ -24,6 +25,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
@@ -52,6 +54,19 @@ class ManagementContextAutoConfigurationTests {
 								EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0")
 				.run((context) -> assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2)));
+	}
+
+	@Test
+	void givenSamePortManagementServerWhenManagementServerAddressIsConfiguredThenContextRefreshFails() {
+		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+								ServletWebServerFactoryAutoConfiguration.class,
+								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+								EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
+		contextRunner.withPropertyValues("server.port=0", "management.server.address=127.0.0.1")
+				.run((context) -> assertThat(context).getFailure()
+						.hasMessageStartingWith("Management-specific server address cannot be configured"));
 	}
 
 	private <T extends CharSequence> Consumer<T> numberOfOccurrences(String substring, int expectedCount) {

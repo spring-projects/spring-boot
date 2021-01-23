@@ -178,7 +178,7 @@ public class IncludeExcludeEndpointFilter<E extends ExposableEndpoint<?>> implem
 		/**
 		 * The default set of include patterns used for web.
 		 */
-		WEB("info", "health");
+		WEB("health");
 
 		private final EndpointPatterns patterns;
 

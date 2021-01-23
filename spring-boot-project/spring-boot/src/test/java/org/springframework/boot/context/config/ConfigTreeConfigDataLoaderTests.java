@@ -50,8 +50,8 @@ public class ConfigTreeConfigDataLoaderTests {
 	void loadReturnsConfigDataWithPropertySource() throws IOException {
 		File file = this.directory.resolve("hello").toFile();
 		file.getParentFile().mkdirs();
-		FileCopyUtils.copy("world".getBytes(StandardCharsets.UTF_8), file);
-		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation(this.directory.toString());
+		FileCopyUtils.copy("world\n".getBytes(StandardCharsets.UTF_8), file);
+		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource(this.directory.toString());
 		ConfigData configData = this.loader.load(this.loaderContext, location);
 		assertThat(configData.getPropertySources().size()).isEqualTo(1);
 		PropertySource<?> source = configData.getPropertySources().get(0);
@@ -62,8 +62,8 @@ public class ConfigTreeConfigDataLoaderTests {
 	@Test
 	void loadWhenPathDoesNotExistThrowsException() {
 		File missing = this.directory.resolve("missing").toFile();
-		ConfigTreeConfigDataLocation location = new ConfigTreeConfigDataLocation(missing.toString());
-		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
+		ConfigTreeConfigDataResource location = new ConfigTreeConfigDataResource(missing.toString());
+		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class)
 				.isThrownBy(() -> this.loader.load(this.loaderContext, location));
 	}
 

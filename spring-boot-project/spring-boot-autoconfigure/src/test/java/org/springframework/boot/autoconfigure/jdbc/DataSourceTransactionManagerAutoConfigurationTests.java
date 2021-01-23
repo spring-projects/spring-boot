@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -47,7 +48,7 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 
 	@Test
 	void transactionManagerWithoutDataSourceIsNotConfigured() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(DataSourceTransactionManager.class));
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(TransactionManager.class));
 	}
 
 	@Test
@@ -55,8 +56,8 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TransactionManager.class)
-							.hasSingleBean(DataSourceTransactionManager.class);
-					assertThat(context.getBean(DataSourceTransactionManager.class).getDataSource())
+							.hasSingleBean(JdbcTransactionManager.class);
+					assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
 							.isSameAs(context.getBean(DataSource.class));
 				});
 	}
@@ -68,9 +69,8 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 						"spring.transaction.rollback-on-commit-failure=true")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(TransactionManager.class)
-							.hasSingleBean(DataSourceTransactionManager.class);
-					DataSourceTransactionManager transactionManager = context
-							.getBean(DataSourceTransactionManager.class);
+							.hasSingleBean(JdbcTransactionManager.class);
+					JdbcTransactionManager transactionManager = context.getBean(JdbcTransactionManager.class);
 					assertThat(transactionManager.getDefaultTimeout()).isEqualTo(60);
 					assertThat(transactionManager.isRollbackOnCommitFailure()).isTrue();
 				});
@@ -84,6 +84,29 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 						.hasBean("myTransactionManager"));
 	}
 
+	@Test // gh-24321
+	void transactionManagerWithDaoExceptionTranslationDisabled() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.dao.exceptiontranslation.enabled=false")
+				.run((context) -> assertThat(context.getBean(TransactionManager.class))
+						.isExactlyInstanceOf(DataSourceTransactionManager.class));
+	}
+
+	@Test // gh-24321
+	void transactionManagerWithDaoExceptionTranslationEnabled() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.dao.exceptiontranslation.enabled=true")
+				.run((context) -> assertThat(context.getBean(TransactionManager.class))
+						.isExactlyInstanceOf(JdbcTransactionManager.class));
+	}
+
+	@Test // gh-24321
+	void transactionManagerWithDaoExceptionTranslationDefault() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.run((context) -> assertThat(context.getBean(TransactionManager.class))
+						.isExactlyInstanceOf(JdbcTransactionManager.class));
+	}
+
 	@Test
 	void transactionWithMultipleDataSourcesIsNotConfigured() {
 		this.contextRunner.withUserConfiguration(MultiDataSourceConfiguration.class)
@@ -93,9 +116,8 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 	@Test
 	void transactionWithMultipleDataSourcesAndPrimaryCandidateIsConfigured() {
 		this.contextRunner.withUserConfiguration(MultiDataSourceUsingPrimaryConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(TransactionManager.class)
-					.hasSingleBean(DataSourceTransactionManager.class);
-			assertThat(context.getBean(DataSourceTransactionManager.class).getDataSource())
+			assertThat(context).hasSingleBean(TransactionManager.class).hasSingleBean(JdbcTransactionManager.class);
+			assertThat(context.getBean(JdbcTransactionManager.class).getDataSource())
 					.isSameAs(context.getBean("test1DataSource"));
 		});
 	}

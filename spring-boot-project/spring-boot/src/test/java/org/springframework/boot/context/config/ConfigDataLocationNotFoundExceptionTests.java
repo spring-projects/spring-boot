@@ -16,19 +16,12 @@
 
 package org.springframework.boot.context.config;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
-
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.io.TempDir;
 
-import org.springframework.core.io.FileSystemResource;
+import org.springframework.boot.origin.Origin;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -38,98 +31,37 @@ import static org.mockito.Mockito.mock;
  */
 class ConfigDataLocationNotFoundExceptionTests {
 
-	private ConfigDataLocation location = mock(ConfigDataLocation.class);
+	private Origin origin = mock(Origin.class);
 
-	private Throwable cause = new RuntimeException();
+	private final ConfigDataLocation location = ConfigDataLocation.of("optional:test").withOrigin(this.origin);
 
-	private String message = "message";
-
-	private File exists;
-
-	private File missing;
-
-	@TempDir
-	File temp;
-
-	@BeforeEach
-	void setup() throws IOException {
-		this.exists = new File(this.temp, "exists");
-		this.missing = new File(this.temp, "missing");
-		try (OutputStream out = new FileOutputStream(this.exists)) {
-			out.write("test".getBytes());
-		}
-	}
+	private final ConfigDataLocationNotFoundException exception = new ConfigDataLocationNotFoundException(
+			this.location);
 
 	@Test
-	void createWithLocationCreatesInstance() {
-		ConfigDataLocationNotFoundException exception = new ConfigDataLocationNotFoundException(this.location);
-		assertThat(exception.getLocation()).isSameAs(this.location);
-	}
-
-	@Test
-	void createWithLocationAndCauseCreatesInstance() {
-		ConfigDataLocationNotFoundException exception = new ConfigDataLocationNotFoundException(this.location,
-				this.cause);
-		assertThat(exception.getLocation()).isSameAs(this.location);
-		assertThat(exception.getCause()).isSameAs(this.cause);
-	}
-
-	@Test
-	void createWithMessageAndLocationCreatesInstance() {
-		ConfigDataLocationNotFoundException exception = new ConfigDataLocationNotFoundException(this.message,
-				this.location, this.cause);
-		assertThat(exception.getLocation()).isSameAs(this.location);
-		assertThat(exception.getCause()).isSameAs(this.cause);
-		assertThat(exception.getMessage()).isEqualTo(this.message);
-	}
-
-	@Test
-	void createWithMessageAndLocationAndCauseCreatesInstance() {
-		ConfigDataLocationNotFoundException exception = new ConfigDataLocationNotFoundException(this.message,
-				this.location);
-		assertThat(exception.getLocation()).isSameAs(this.location);
-		assertThat(exception.getMessage()).isEqualTo(this.message);
+	void createWhenLocationIsNullThrowsException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new ConfigDataLocationNotFoundException(null))
+				.withMessage("Location must not be null");
 	}
 
 	@Test
 	void getLocationReturnsLocation() {
-		ConfigDataLocationNotFoundException exception = new ConfigDataLocationNotFoundException(this.location);
-		assertThat(exception.getLocation()).isSameAs(this.location);
+		assertThat(this.exception.getLocation()).isSameAs(this.location);
 	}
 
 	@Test
-	void throwIfDoesNotExistWhenPathExistsDoesNothing() {
-		ConfigDataLocationNotFoundException.throwIfDoesNotExist(this.location, this.exists.toPath());
+	void getOriginReturnsLocationOrigin() {
+		assertThat(this.exception.getOrigin()).isSameAs(this.origin);
 	}
 
 	@Test
-	void throwIfDoesNotExistWhenPathDoesNotExistThrowsException() {
-		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
-				() -> ConfigDataLocationNotFoundException.throwIfDoesNotExist(this.location, this.missing.toPath()));
+	void getReferenceDescriptionReturnsLocationString() {
+		assertThat(this.exception.getReferenceDescription()).isEqualTo("location 'optional:test'");
 	}
 
 	@Test
-	void throwIfDoesNotExistWhenFileExistsDoesNothing() {
-		ConfigDataLocationNotFoundException.throwIfDoesNotExist(this.location, this.exists);
-
-	}
-
-	@Test
-	void throwIfDoesNotExistWhenFileDoesNotExistThrowsException() {
-		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
-				.isThrownBy(() -> ConfigDataLocationNotFoundException.throwIfDoesNotExist(this.location, this.missing));
-	}
-
-	@Test
-	void throwIfDoesNotExistWhenResourceExistsDoesNothing() {
-		ConfigDataLocationNotFoundException.throwIfDoesNotExist(this.location, new FileSystemResource(this.exists));
-	}
-
-	@Test
-	void throwIfDoesNotExistWhenResourceDoesNotExistThrowsException() {
-		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
-				.isThrownBy(() -> ConfigDataLocationNotFoundException.throwIfDoesNotExist(this.location,
-						new FileSystemResource(this.missing)));
+	void getMessageReturnsMessage() {
+		assertThat(this.exception).hasMessage("Config data location 'optional:test' cannot be found");
 	}
 
 }

@@ -269,7 +269,8 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 							"cloudFoundrySecurityService");
 					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
 							"webClient");
-					webClient.get().uri("https://self-signed.badssl.com/").exchange().block(Duration.ofSeconds(30));
+					webClient.get().uri("https://self-signed.badssl.com/").retrieve().toBodilessEntity()
+							.block(Duration.ofSeconds(30));
 				});
 	}
 
@@ -285,8 +286,9 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 							"cloudFoundrySecurityService");
 					WebClient webClient = (WebClient) ReflectionTestUtils.getField(interceptorSecurityService,
 							"webClient");
-					assertThatExceptionOfType(RuntimeException.class).isThrownBy(() -> webClient.get()
-							.uri("https://self-signed.badssl.com/").exchange().block(Duration.ofSeconds(30)))
+					assertThatExceptionOfType(RuntimeException.class)
+							.isThrownBy(() -> webClient.get().uri("https://self-signed.badssl.com/").retrieve()
+									.toBodilessEntity().block(Duration.ofSeconds(30)))
 							.withCauseInstanceOf(SSLException.class);
 				});
 	}

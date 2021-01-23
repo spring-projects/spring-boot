@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import org.gradle.testkit.runner.TaskOutcome;
 import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
 
+import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.util.StringUtils;
 
@@ -55,6 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Madhura Bhave
  * @author Paddy Drury
  */
+@GradleCompatibility(configurationCache = true)
 class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootJarIntegrationTests() {
@@ -62,36 +64,31 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void upToDateWhenBuiltTwiceWithLayers() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
-	}
-
-	@TestTemplate
 	void upToDateWhenBuiltWithDefaultLayeredAndThenWithExplicitLayered()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.UP_TO_DATE);
+		assertThat(this.gradleBuild.scriptProperty("layered", "").build("bootJar").task(":bootJar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(
+				this.gradleBuild.scriptProperty("layered", "layered {}").build("bootJar").task(":bootJar").getOutcome())
+						.isEqualTo(TaskOutcome.UP_TO_DATE);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenBuiltWithoutLayersAndThenWithLayers()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "-PdisableLayers=true", "bootJar").task(":bootJar")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "bootJar").task(":bootJar").getOutcome())
-				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerEnablement", "enabled = false").build("bootJar")
+				.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerEnablement", "enabled = true").build("bootJar")
+				.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
 	void notUpToDateWhenBuiltWithLayerToolsAndThenWithoutLayerTools()
 			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
-		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(this.gradleBuild.build("-PcustomizeLayered=true", "-PexcludeTools=true", "bootJar").task(":bootJar")
-				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerTools", "").build("bootJar").task(":bootJar").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(this.gradleBuild.scriptProperty("layerTools", "includeLayerTools = false").build("bootJar")
+				.task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 	}
 
 	@TestTemplate
@@ -131,6 +128,50 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("application")).containsExactly("BOOT-INF/classes/", "BOOT-INF/classpath.idx",
 				"BOOT-INF/layers.idx", "META-INF/");
+		BuildResult listLayers = this.gradleBuild.build("listLayers");
+		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		String listLayersOutput = listLayers.getOutput();
+		assertThat(new BufferedReader(new StringReader(listLayersOutput)).lines()).containsSequence(layerNames);
+		BuildResult extractLayers = this.gradleBuild.build("extractLayers");
+		assertThat(extractLayers.task(":extractLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertExtractedLayers(layerNames, indexedLayers);
+	}
+
+	@TestTemplate
+	void multiModuleImplicitLayers() throws IOException {
+		writeSettingsGradle();
+		writeMainClass();
+		writeResource();
+		assertThat(this.gradleBuild.build("bootJar").task(":bootJar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		Map<String, List<String>> indexedLayers;
+		String layerToolsJar = "BOOT-INF/lib/" + JarModeLibrary.LAYER_TOOLS.getName();
+		try (JarFile jarFile = new JarFile(new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0])) {
+			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/alpha-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/bravo-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/library-1.0-SNAPSHOT.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/example/Main.class")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/classes/static/file.txt")).isNotNull();
+			indexedLayers = readLayerIndex(jarFile);
+		}
+		List<String> layerNames = Arrays.asList("dependencies", "spring-boot-loader", "snapshot-dependencies",
+				"application");
+		assertThat(indexedLayers.keySet()).containsExactlyElementsOf(layerNames);
+		Set<String> expectedDependencies = new TreeSet<>();
+		expectedDependencies.add("BOOT-INF/lib/commons-lang3-3.9.jar");
+		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
+		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
+		Set<String> expectedSnapshotDependencies = new TreeSet<>();
+		expectedSnapshotDependencies.add("BOOT-INF/lib/library-1.0-SNAPSHOT.jar");
+		(layerToolsJar.contains("SNAPSHOT") ? expectedSnapshotDependencies : expectedDependencies).add(layerToolsJar);
+		assertThat(indexedLayers.get("dependencies")).containsExactlyElementsOf(expectedDependencies);
+		assertThat(indexedLayers.get("spring-boot-loader")).containsExactly("org/");
+		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
+		assertThat(indexedLayers.get("application")).containsExactly("BOOT-INF/classes/", "BOOT-INF/classpath.idx",
+				"BOOT-INF/layers.idx", "BOOT-INF/lib/alpha-1.2.3.jar", "BOOT-INF/lib/bravo-1.2.3.jar", "META-INF/");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String listLayersOutput = listLayers.getOutput();
@@ -248,6 +289,37 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertExtractedLayers(layerNames, indexedLayers);
 	}
 
+	@TestTemplate
+	void whenAResolvableCopyOfAnUnresolvableConfigurationIsResolvedThenResolutionSucceeds() {
+		BuildResult build = this.gradleBuild.build("resolveResolvableCopyOfUnresolvableConfiguration");
+		assertThat(build.task(":resolveResolvableCopyOfUnresolvableConfiguration").getOutcome())
+				.isEqualTo(TaskOutcome.SUCCESS);
+	}
+
+	@TestTemplate
+	void packagedApplicationClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("launch");
+		String output = result.getOutput();
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("3\\. .*commons-lang3-3.9.jar");
+		assertThat(output).containsPattern("4\\. .*spring-boot-jarmode-layertools.*.jar");
+		assertThat(output).doesNotContain("5. ");
+	}
+
+	@TestTemplate
+	void explodedApplicationClasspath() throws IOException {
+		copyClasspathApplication();
+		BuildResult result = this.gradleBuild.build("launch");
+		String output = result.getOutput();
+		assertThat(output).containsPattern("1\\. .*classes");
+		assertThat(output).containsPattern("2\\. .*spring-boot-jarmode-layertools.*.jar");
+		assertThat(output).containsPattern("3\\. .*library-1.0-SNAPSHOT.jar");
+		assertThat(output).containsPattern("4\\. .*commons-lang3-3.9.jar");
+		assertThat(output).doesNotContain("5. ");
+	}
+
 	private void assertExtractedLayers(List<String> layerNames, Map<String, List<String>> indexedLayers)
 			throws IOException {
 		Map<String, List<String>> extractedLayers = readExtractedLayers(this.gradleBuild.getProjectDir(), layerNames);
@@ -345,6 +417,10 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 							.map(Path::toString).map(StringUtils::cleanPath).collect(Collectors.toList()));
 		}
 		return extractedLayers;
+	}
+
+	private void copyClasspathApplication() throws IOException {
+		copyApplication("classpath");
 	}
 
 }

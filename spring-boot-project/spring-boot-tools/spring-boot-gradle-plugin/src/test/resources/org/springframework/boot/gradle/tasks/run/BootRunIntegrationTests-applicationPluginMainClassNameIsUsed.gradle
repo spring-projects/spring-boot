@@ -3,8 +3,4 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
-mainClassName = 'com.example.CustomMainClass'
-
-task echoMainClassName {
-	println 'Main class name = ' + bootRun.main
-}
+mainClassName = 'com.example.bootrun.main.CustomMainClass'

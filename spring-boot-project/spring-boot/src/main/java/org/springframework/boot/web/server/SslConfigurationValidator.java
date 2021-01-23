@@ -34,7 +34,7 @@ public final class SslConfigurationValidator {
 	}
 
 	public static void validateKeyAlias(KeyStore keyStore, String keyAlias) {
-		if (!StringUtils.isEmpty(keyAlias)) {
+		if (StringUtils.hasLength(keyAlias)) {
 			try {
 				Assert.state(keyStore.containsAlias(keyAlias),
 						() -> String.format("Keystore does not contain specified alias '%s'", keyAlias));

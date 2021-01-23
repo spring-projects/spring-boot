@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathJarsArePackagedInWebInfLibProvided() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"), jarFile("two.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
@@ -48,7 +48,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathCanBeSetUsingAFileCollection() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"));
 		getTask().setProvidedClasspath(getTask().getProject().files(jarFile("two.jar")));
 		executeTask();
@@ -60,7 +60,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void providedClasspathCanBeSetUsingAnObject() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(jarFile("one.jar"));
 		getTask().setProvidedClasspath(jarFile("two.jar"));
 		executeTask();
@@ -72,23 +72,11 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void devtoolsJarIsExcludedByDefaultWhenItsOnTheProvidedClasspath() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().providedClasspath(newFile("spring-boot-devtools-0.1.2.jar"));
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar")).isNull();
-		}
-	}
-
-	@Test
-	@Deprecated
-	void devtoolsJarCanBeIncludedWhenItsOnTheProvidedClasspath() throws IOException {
-		getTask().setMainClassName("com.example.Main");
-		getTask().providedClasspath(jarFile("spring-boot-devtools-0.1.2.jar"));
-		getTask().setExcludeDevtools(false);
-		executeTask();
-		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
-			assertThat(jarFile.getEntry("WEB-INF/lib-provided/spring-boot-devtools-0.1.2.jar")).isNotNull();
 		}
 	}
 
@@ -100,7 +88,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 		orgDirectory.mkdir();
 		new File(orgDirectory, "foo.txt").createNewFile();
 		getTask().from(webappDirectory);
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		executeTask();
 		try (JarFile jarFile = new JarFile(getTask().getArchiveFile().get().getAsFile())) {
 			assertThat(jarFile.getEntry("org/")).isNotNull();
@@ -110,7 +98,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Test
 	void libProvidedEntriesAreWrittenAfterLibEntries() throws IOException {
-		getTask().setMainClassName("com.example.Main");
+		getTask().getMainClass().set("com.example.Main");
 		getTask().classpath(jarFile("library.jar"));
 		getTask().providedClasspath(jarFile("provided-library.jar"));
 		executeTask();

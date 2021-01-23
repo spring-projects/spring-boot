@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,9 +29,9 @@ import org.springframework.core.env.PropertySource;
 import org.springframework.util.Assert;
 
 /**
- * Configuration data that has been loaded from an external {@link ConfigDataLocation
- * location} and may ultimately contribute {@link PropertySource property sources} to
- * Spring's {@link Environment}.
+ * Configuration data that has been loaded from a {@link ConfigDataResource} and may
+ * ultimately contribute {@link PropertySource property sources} to Spring's
+ * {@link Environment}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -44,6 +44,11 @@ public final class ConfigData {
 	private final List<PropertySource<?>> propertySources;
 
 	private final Set<Option> options;
+
+	/**
+	 * A {@link ConfigData} instance that contains no data.
+	 */
+	public static final ConfigData EMPTY = new ConfigData(Collections.emptySet());
 
 	/**
 	 * Create a new {@link ConfigData} instance.
@@ -85,7 +90,13 @@ public final class ConfigData {
 		/**
 		 * Ignore all imports properties from the sources.
 		 */
-		IGNORE_IMPORTS;
+		IGNORE_IMPORTS,
+
+		/**
+		 * Ignore all profile activation and include properties.
+		 * @since 2.4.3
+		 */
+		IGNORE_PROFILES;
 
 	}
 

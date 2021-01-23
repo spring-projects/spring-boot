@@ -65,4 +65,9 @@ public class ConfigurationProperty {
 		return this.deprecated;
 	}
 
+	@Override
+	public String toString() {
+		return "ConfigurationProperty [name=" + this.name + ", type=" + this.type + "]";
+	}
+
 }

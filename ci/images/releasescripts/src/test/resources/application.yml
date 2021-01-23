@@ -9,3 +9,6 @@ bintray:
 sonatype:
   user-token: sonatype-user
   password-token: sonatype-password
+sdkman:
+  consumer-key: sdkman-consumer-key
+  consumer-token: sdkman-consumer-token

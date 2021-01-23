@@ -38,7 +38,7 @@ public class ConfigurationTableTests {
 				"This is another description.", false);
 		table.addEntry(new SingleConfigurationTableEntry(first));
 		table.addEntry(new SingleConfigurationTableEntry(second));
-		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"1,1,2\", options=\"header\"]" + NEWLINE + "|==="
+		assertThat(table.toAsciidocTable()).isEqualTo("[cols=\"2,1,1\", options=\"header\"]" + NEWLINE + "|==="
 				+ NEWLINE + "|Key|Default Value|Description" + NEWLINE + NEWLINE
 				+ "|[[spring.test.other]]<<spring.test.other,`+spring.test.other+`>>" + NEWLINE + "|`+other value+`"
 				+ NEWLINE + "|+++This is another description.+++" + NEWLINE + NEWLINE

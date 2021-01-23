@@ -45,7 +45,9 @@ import org.springframework.transaction.annotation.Transactional;
  * configuration relevant to Neo4j tests.
  * <p>
  * By default, tests annotated with {@code @DataNeo4jTest} are transactional with the
- * usual test-related semantics (i.e. rollback by default).
+ * usual test-related semantics (i.e. rollback by default). This feature is not supported
+ * with reactive access so this should be disabled by annotating the test class with
+ * {@code @Transactional(propagation = Propagation.NOT_SUPPORTED)}.
  * <p>
  * When using JUnit 4, this annotation should be used in combination with
  * {@code @RunWith(SpringRunner.class)}.

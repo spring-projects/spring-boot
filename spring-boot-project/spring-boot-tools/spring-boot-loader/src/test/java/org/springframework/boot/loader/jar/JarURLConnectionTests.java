@@ -20,6 +20,9 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.net.URL;
+import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -198,6 +201,14 @@ class JarURLConnectionTests {
 		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/1.dat");
 		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
 		assertThat(connection.getLastModified()).isEqualTo(connection.getJarEntry().getTime());
+	}
+
+	@Test
+	void entriesCanBeStreamedFromJarFileOfConnection() throws Exception {
+		URL url = new URL("jar:" + this.rootJarFile.toURI().toURL() + "!/");
+		JarURLConnection connection = JarURLConnection.get(url, this.jarFile);
+		List<String> entryNames = connection.getJarFile().stream().map(JarEntry::getName).collect(Collectors.toList());
+		assertThat(entryNames).hasSize(12);
 	}
 
 	@Test

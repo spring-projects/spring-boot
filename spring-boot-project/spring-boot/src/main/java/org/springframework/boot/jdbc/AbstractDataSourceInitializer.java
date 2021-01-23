@@ -18,9 +18,9 @@ package org.springframework.boot.jdbc;
 
 import java.sql.DatabaseMetaData;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
@@ -35,7 +35,7 @@ import org.springframework.util.Assert;
  * @author Stephane Nicoll
  * @since 1.5.0
  */
-public abstract class AbstractDataSourceInitializer {
+public abstract class AbstractDataSourceInitializer implements InitializingBean {
 
 	private static final String PLATFORM_PLACEHOLDER = "@@platform@@";
 
@@ -50,7 +50,11 @@ public abstract class AbstractDataSourceInitializer {
 		this.resourceLoader = resourceLoader;
 	}
 
-	@PostConstruct
+	@Override
+	public void afterPropertiesSet() {
+		initialize();
+	}
+
 	protected void initialize() {
 		if (!isEnabled()) {
 			return;

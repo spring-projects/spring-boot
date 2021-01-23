@@ -31,6 +31,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -46,8 +47,8 @@ class CouchbaseAutoConfigurationIntegrationTests {
 	private static final String BUCKET_NAME = "cbbucket";
 
 	@Container
-	static final CouchbaseContainer couchbase = new CouchbaseContainer().withCredentials("spring", "password")
-			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
+	static final CouchbaseContainer couchbase = new CouchbaseContainer(DockerImageNames.couchbase())
+			.withCredentials("spring", "password").withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
 			.withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(false));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()

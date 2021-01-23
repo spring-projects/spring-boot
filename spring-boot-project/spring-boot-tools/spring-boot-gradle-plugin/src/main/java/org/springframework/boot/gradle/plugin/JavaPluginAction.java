@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
-import java.util.concurrent.Callable;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
@@ -39,9 +38,14 @@ import org.gradle.api.plugins.ApplicationPlugin;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginConvention;
+import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.compile.JavaCompile;
+import org.gradle.jvm.toolchain.JavaToolchainService;
+import org.gradle.jvm.toolchain.JavaToolchainSpec;
+import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
@@ -93,21 +97,25 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private TaskProvider<BootJar> configureBootJarTask(Project project) {
+		SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+		Configuration developmentOnly = project.getConfigurations()
+				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
+		Configuration productionRuntimeClasspath = project.getConfigurations()
+				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+		FileCollection classpath = mainSourceSet.getRuntimeClasspath()
+				.minus((developmentOnly.minus(productionRuntimeClasspath))).filter(new JarTypeFileSpec());
+		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
+				.registerForTask(SpringBootPlugin.BOOT_JAR_TASK_NAME, project, classpath);
 		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
 			bootJar.setDescription(
 					"Assembles an executable jar archive containing the main classes and their dependencies.");
 			bootJar.setGroup(BasePlugin.BUILD_GROUP);
-			SourceSet mainSourceSet = javaPluginConvention(project).getSourceSets()
-					.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
-			bootJar.classpath((Callable<FileCollection>) () -> {
-				Configuration developmentOnly = project.getConfigurations()
-						.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
-				Configuration productionRuntimeClasspath = project.getConfigurations()
-						.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
-				return mainSourceSet.getRuntimeClasspath().minus((developmentOnly.minus(productionRuntimeClasspath)))
-						.filter(new JarTypeFileSpec());
-			});
-			bootJar.conventionMapping("mainClassName", new MainClassConvention(project, bootJar::getClasspath));
+			bootJar.classpath(classpath);
+			Provider<String> manifestStartClass = project
+					.provider(() -> (String) bootJar.getManifest().getAttributes().get("Start-Class"));
+			bootJar.getMainClass().convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
+					? manifestStartClass : resolveMainClassName.get().readMainClassName()));
 		});
 	}
 
@@ -126,19 +134,42 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureBootRunTask(Project project) {
+		FileCollection classpath = javaPluginConvention(project).getSourceSets()
+				.findByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath().filter(new JarTypeFileSpec());
+		TaskProvider<ResolveMainClassName> resolveProvider = ResolveMainClassName.registerForTask("bootRun", project,
+				classpath);
 		project.getTasks().register("bootRun", BootRun.class, (run) -> {
 			run.setDescription("Runs this project as a Spring Boot application.");
 			run.setGroup(ApplicationPlugin.APPLICATION_GROUP);
-			run.classpath(javaPluginConvention(project).getSourceSets().findByName(SourceSet.MAIN_SOURCE_SET_NAME)
-					.getRuntimeClasspath().filter(new JarTypeFileSpec()));
+			run.classpath(classpath);
 			run.getConventionMapping().map("jvmArgs", () -> {
 				if (project.hasProperty("applicationDefaultJvmArgs")) {
 					return project.property("applicationDefaultJvmArgs");
 				}
 				return Collections.emptyList();
 			});
-			run.conventionMapping("main", new MainClassConvention(project, run::getClasspath));
+			try {
+				run.getMainClass().convention(resolveProvider.flatMap(ResolveMainClassName::readMainClassName));
+			}
+			catch (NoSuchMethodError ex) {
+				run.getInputs().file(resolveProvider.map((task) -> task.getOutputFile()));
+				run.conventionMapping("main",
+						() -> resolveProvider.flatMap(ResolveMainClassName::readMainClassName).get());
+			}
+			configureToolchainConvention(project, run);
 		});
+	}
+
+	private void configureToolchainConvention(Project project, BootRun run) {
+		if (isGradle67OrLater()) {
+			JavaToolchainSpec toolchain = project.getExtensions().getByType(JavaPluginExtension.class).getToolchain();
+			JavaToolchainService toolchainService = project.getExtensions().getByType(JavaToolchainService.class);
+			run.getJavaLauncher().convention(toolchainService.launcherFor(toolchain));
+		}
+	}
+
+	private boolean isGradle67OrLater() {
+		return GradleVersion.current().getBaseVersion().compareTo(GradleVersion.version("6.7")) >= 0;
 	}
 
 	private JavaPluginConvention javaPluginConvention(Project project) {

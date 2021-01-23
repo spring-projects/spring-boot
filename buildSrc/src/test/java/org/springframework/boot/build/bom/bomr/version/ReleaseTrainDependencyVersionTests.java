@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -92,8 +92,35 @@ public class ReleaseTrainDependencyVersionTests {
 		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(version("Kay-SR7"))).isFalse();
 	}
 
+	@Test
+	void releaseTrainVersionIsNotNewerThanCalendarVersion() {
+		assertThat(version("Kay-SR6").isNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void releaseTrainVersionIsNotSameMajorAsCalendarTrainVersion() {
+		assertThat(version("Kay-SR6").isSameMajorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void releaseTrainVersionIsNotSameMinorAsCalendarVersion() {
+		assertThat(version("Kay-SR6").isSameMinorAndNewerThan(calendarVersion("2020.0.0"))).isFalse();
+	}
+
+	@Test
+	void whenComparedWithADifferentDependencyVersionTypeThenTheResultsAreNonZero() {
+		ReleaseTrainDependencyVersion dysprosium = ReleaseTrainDependencyVersion.parse("Dysprosium-SR16");
+		ArtifactVersionDependencyVersion twentyTwenty = ArtifactVersionDependencyVersion.parse("2020.0.0");
+		assertThat(dysprosium.compareTo(twentyTwenty)).isLessThan(0);
+		assertThat(twentyTwenty.compareTo(dysprosium)).isGreaterThan(0);
+	}
+
 	private static ReleaseTrainDependencyVersion version(String input) {
 		return ReleaseTrainDependencyVersion.parse(input);
+	}
+
+	private CalendarVersionDependencyVersion calendarVersion(String version) {
+		return CalendarVersionDependencyVersion.parse(version);
 	}
 
 }

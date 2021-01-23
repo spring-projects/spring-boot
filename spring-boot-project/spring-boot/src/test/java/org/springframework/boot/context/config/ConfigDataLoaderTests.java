@@ -37,19 +37,19 @@ class ConfigDataLoaderTests {
 
 	@Test
 	void isLoadableAlwaysReturnsTrue() {
-		assertThat(this.loader.isLoadable(this.context, new TestConfigDataLocation())).isTrue();
+		assertThat(this.loader.isLoadable(this.context, new TestConfigDataResource())).isTrue();
 	}
 
-	static class TestConfigDataLoader implements ConfigDataLoader<TestConfigDataLocation> {
+	static class TestConfigDataLoader implements ConfigDataLoader<TestConfigDataResource> {
 
 		@Override
-		public ConfigData load(ConfigDataLoaderContext context, TestConfigDataLocation location) throws IOException {
+		public ConfigData load(ConfigDataLoaderContext context, TestConfigDataResource resource) throws IOException {
 			return null;
 		}
 
 	}
 
-	static class TestConfigDataLocation extends ConfigDataLocation {
+	static class TestConfigDataResource extends ConfigDataResource {
 
 	}
 

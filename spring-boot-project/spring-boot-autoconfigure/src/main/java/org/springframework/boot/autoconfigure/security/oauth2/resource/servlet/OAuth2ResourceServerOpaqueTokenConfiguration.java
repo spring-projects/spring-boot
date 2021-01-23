@@ -13,12 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource.servlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2ResourceServerProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -54,22 +55,15 @@ class OAuth2ResourceServerOpaqueTokenConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ SecurityFilterChain.class, WebSecurityConfigurerAdapter.class })
-	@ConditionalOnMissingBean({ WebSecurityConfigurerAdapter.class, SecurityFilterChain.class })
-	static class OAuth2WebSecurityConfigurerAdapter {
+	@ConditionalOnDefaultWebSecurity
+	static class OAuth2SecurityFilterChainConfiguration {
 
 		@Bean
 		@ConditionalOnBean(OpaqueTokenIntrospector.class)
-		WebSecurityConfigurerAdapter opaqueTokenWebSecurityConfigurerAdapter() {
-			return new WebSecurityConfigurerAdapter() {
-
-				@Override
-				protected void configure(HttpSecurity http) throws Exception {
-					http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
-					http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
-				}
-
-			};
+		SecurityFilterChain opaqueTokenSecurityFilterChain(HttpSecurity http) throws Exception {
+			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
+			http.oauth2ResourceServer(OAuth2ResourceServerConfigurer::opaqueToken);
+			return http.build();
 		}
 
 	}

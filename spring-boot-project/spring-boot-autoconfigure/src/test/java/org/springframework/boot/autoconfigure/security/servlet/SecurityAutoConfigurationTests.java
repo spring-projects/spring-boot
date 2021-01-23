@@ -77,6 +77,12 @@ class SecurityAutoConfigurationTests {
 	}
 
 	@Test
+	void filterChainBeanIsConditionalOnClassSecurityFilterChain() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(SecurityFilterChain.class));
+	}
+
+	@Test
 	void securityConfigurerBacksOffWhenOtherSecurityFilterChainBeanPresent() {
 		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
 			assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);

@@ -189,6 +189,7 @@ public class ConcurrentKafkaListenerContainerFactoryConfigurer {
 		map.from(properties::getMonitorInterval).as(Duration::getSeconds).as(Number::intValue)
 				.to(container::setMonitorInterval);
 		map.from(properties::getLogContainerConfig).to(container::setLogContainerConfig);
+		map.from(properties::isOnlyLogRecordMetadata).to(container::setOnlyLogRecordMetadata);
 		map.from(properties::isMissingTopicsFatal).to(container::setMissingTopicsFatal);
 		map.from(this.transactionManager).to(container::setTransactionManager);
 		map.from(this.rebalanceListener).to(container::setConsumerRebalanceListener);

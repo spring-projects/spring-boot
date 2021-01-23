@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
 
 /**
@@ -260,12 +259,6 @@ public class MetricsProperties {
 
 		public Map<String, double[]> getPercentiles() {
 			return this.percentiles;
-		}
-
-		@Deprecated
-		@DeprecatedConfigurationProperty(replacement = "management.metrics.distribution.slo")
-		public Map<String, ServiceLevelObjectiveBoundary[]> getSla() {
-			return this.slo;
 		}
 
 		public Map<String, ServiceLevelObjectiveBoundary[]> getSlo() {

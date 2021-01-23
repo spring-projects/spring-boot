@@ -13,14 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.build.bom;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.util.function.Consumer;
 
 import org.gradle.testkit.runner.BuildResult;
@@ -31,7 +30,6 @@ import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.build.DeployedPlugin;
 import org.springframework.boot.build.assertj.NodeAssert;
-import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -172,6 +170,33 @@ public class BomPluginIntegrationTests {
 		});
 	}
 
+	@Test
+	void libraryNamedSpringBootHasNoVersionProperty() throws IOException {
+		try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+			out.println("plugins {");
+			out.println("    id 'org.springframework.boot.bom'");
+			out.println("}");
+			out.println("bom {");
+			out.println("    library('Spring Boot', '1.2.3') {");
+			out.println("        group('org.springframework.boot') {");
+			out.println("            modules = [");
+			out.println("                'spring-boot'");
+			out.println("            ]");
+			out.println("        }");
+			out.println("    }");
+			out.println("}");
+		}
+		generatePom((pom) -> {
+			assertThat(pom).textAtPath("//properties/spring-boot.version").isEmpty();
+			NodeAssert dependency = pom.nodeAtPath("//dependencyManagement/dependencies/dependency[1]");
+			assertThat(dependency).textAtPath("groupId").isEqualTo("org.springframework.boot");
+			assertThat(dependency).textAtPath("artifactId").isEqualTo("spring-boot");
+			assertThat(dependency).textAtPath("version").isEqualTo("1.2.3");
+			assertThat(dependency).textAtPath("scope").isNullOrEmpty();
+			assertThat(dependency).textAtPath("type").isNullOrEmpty();
+		});
+	}
+
 	private BuildResult runGradle(String... args) {
 		return GradleRunner.create().withDebug(true).withProjectDir(this.projectDir).withArguments(args)
 				.withPluginClasspath().build();
@@ -180,12 +205,6 @@ public class BomPluginIntegrationTests {
 	private void generatePom(Consumer<NodeAssert> consumer) {
 		runGradle(DeployedPlugin.GENERATE_POM_TASK_NAME, "-s");
 		File generatedPomXml = new File(this.projectDir, "build/publications/maven/pom-default.xml");
-		try (Reader reader = new FileReader(generatedPomXml)) {
-			System.out.println(FileCopyUtils.copyToString(reader));
-		}
-		catch (IOException ex) {
-
-		}
 		assertThat(generatedPomXml).isFile();
 		consumer.accept(new NodeAssert(generatedPomXml));
 	}

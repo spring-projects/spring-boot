@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -90,7 +90,7 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
 		assertThat(modelAndView).isNull();
-		assertThat(attributes.containsKey("exception")).isFalse();
+		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -101,7 +101,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
-		assertThat(attributes.containsKey("exception")).isFalse();
+		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -112,8 +112,8 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(ex);
-		assertThat(attributes.containsKey("exception")).isFalse();
-		assertThat(attributes.get("message").toString()).contains("");
+		assertThat(attributes).doesNotContainKey("exception");
+		assertThat(attributes).doesNotContainKey("message");
 	}
 
 	@Test
@@ -121,7 +121,7 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
-		assertThat(attributes.containsKey("exception")).isFalse();
+		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -130,8 +130,8 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes.containsKey("exception")).isFalse();
-		assertThat(attributes.get("message")).asString().contains("");
+		assertThat(attributes).doesNotContainKey("exception");
+		assertThat(attributes).doesNotContainKey("message");
 	}
 
 	@Test
@@ -140,7 +140,7 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.message", "Test");
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
-		assertThat(attributes.containsKey("exception")).isFalse();
+		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -149,7 +149,7 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", new RuntimeException());
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
-		assertThat(attributes.containsKey("exception")).isFalse();
+		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("No message available");
 	}
 
@@ -161,7 +161,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(wrapped);
-		assertThat(attributes.containsKey("exception")).isFalse();
+		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test");
 	}
 
@@ -172,7 +172,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.of(Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(this.webRequest)).isSameAs(error);
-		assertThat(attributes.containsKey("exception")).isFalse();
+		assertThat(attributes).doesNotContainKey("exception");
 		assertThat(attributes.get("message")).isEqualTo("Test error");
 	}
 
@@ -210,13 +210,13 @@ class DefaultErrorAttributesTests {
 					.isEqualTo("Validation failed for object='objectName'. Error count: 1");
 		}
 		else {
-			assertThat(attributes.get("message")).isEqualTo("");
+			assertThat(attributes).doesNotContainKey("message");
 		}
 		if (options.isIncluded(Include.BINDING_ERRORS)) {
 			assertThat(attributes.get("errors")).isEqualTo(bindingResult.getAllErrors());
 		}
 		else {
-			assertThat(attributes.containsKey("errors")).isFalse();
+			assertThat(attributes).doesNotContainKey("errors");
 		}
 	}
 
@@ -229,17 +229,6 @@ class DefaultErrorAttributesTests {
 				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
 		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void excludeExceptionAttributeWithDeprecatedConstructor() {
-		DefaultErrorAttributes errorAttributes = new DefaultErrorAttributes(false);
-		RuntimeException ex = new RuntimeException("Test");
-		this.request.setAttribute("javax.servlet.error.exception", ex);
-		Map<String, Object> attributes = errorAttributes.getErrorAttributes(this.webRequest,
-				ErrorAttributeOptions.of());
-		assertThat(attributes.get("exception")).isNull();
 	}
 
 	@Test
@@ -257,7 +246,7 @@ class DefaultErrorAttributesTests {
 		this.request.setAttribute("javax.servlet.error.exception", ex);
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(this.webRequest,
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes.containsKey("trace")).isFalse();
+		assertThat(attributes).doesNotContainKey("trace");
 	}
 
 	@Test

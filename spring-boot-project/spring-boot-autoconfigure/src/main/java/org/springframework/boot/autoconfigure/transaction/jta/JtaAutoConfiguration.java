@@ -35,13 +35,12 @@ import org.springframework.context.annotation.Import;
  * @author Nishant Raut
  * @since 1.2.0
  */
-@SuppressWarnings("deprecation")
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(javax.transaction.Transaction.class)
 @ConditionalOnProperty(prefix = "spring.jta", value = "enabled", matchIfMissing = true)
 @AutoConfigureBefore({ XADataSourceAutoConfiguration.class, ActiveMQAutoConfiguration.class,
 		ArtemisAutoConfiguration.class, HibernateJpaAutoConfiguration.class })
-@Import({ JndiJtaConfiguration.class, BitronixJtaConfiguration.class, AtomikosJtaConfiguration.class })
+@Import({ JndiJtaConfiguration.class, AtomikosJtaConfiguration.class })
 public class JtaAutoConfiguration {
 
 }

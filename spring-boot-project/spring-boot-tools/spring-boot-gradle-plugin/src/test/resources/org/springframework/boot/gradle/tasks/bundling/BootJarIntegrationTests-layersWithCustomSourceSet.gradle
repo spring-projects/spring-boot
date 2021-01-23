@@ -8,7 +8,7 @@ sourceSets {
 }
 
 bootJar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 }
 
 repositories {

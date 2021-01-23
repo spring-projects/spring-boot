@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import java.util.List;
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Cassandra.
@@ -105,6 +104,11 @@ public class CassandraProperties {
 	 */
 	private final Request request = new Request();
 
+	/**
+	 * Control connection configuration.
+	 */
+	private final Controlconnection controlconnection = new Controlconnection();
+
 	public String getKeyspaceName() {
 		return this.keyspaceName;
 	}
@@ -119,17 +123,6 @@ public class CassandraProperties {
 
 	public void setSessionName(String sessionName) {
 		this.sessionName = sessionName;
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.session-name")
-	public String getClusterName() {
-		return getSessionName();
-	}
-
-	@Deprecated
-	public void setClusterName(String clusterName) {
-		setSessionName(clusterName);
 	}
 
 	public List<String> getContactPoints() {
@@ -176,61 +169,6 @@ public class CassandraProperties {
 		this.compression = compression;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.consistency")
-	public DefaultConsistencyLevel getConsistencyLevel() {
-		return getRequest().getConsistency();
-	}
-
-	@Deprecated
-	public void setConsistencyLevel(DefaultConsistencyLevel consistency) {
-		getRequest().setConsistency(consistency);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.serial-consistency")
-	public DefaultConsistencyLevel getSerialConsistencyLevel() {
-		return getRequest().getSerialConsistency();
-	}
-
-	@Deprecated
-	public void setSerialConsistencyLevel(DefaultConsistencyLevel serialConsistency) {
-		getRequest().setSerialConsistency(serialConsistency);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.page-size")
-	public int getFetchSize() {
-		return getRequest().getPageSize();
-	}
-
-	@Deprecated
-	public void setFetchSize(int fetchSize) {
-		getRequest().setPageSize(fetchSize);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.connection.init-query-timeout")
-	public Duration getConnectTimeout() {
-		return getConnection().getInitQueryTimeout();
-	}
-
-	@Deprecated
-	public void setConnectTimeout(Duration connectTimeout) {
-		getConnection().setInitQueryTimeout(connectTimeout);
-	}
-
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.data.cassandra.request.timeout")
-	public Duration getReadTimeout() {
-		return getRequest().getTimeout();
-	}
-
-	@Deprecated
-	public void setReadTimeout(Duration readTimeout) {
-		getRequest().setTimeout(readTimeout);
-	}
-
 	public boolean isSsl() {
 		return this.ssl;
 	}
@@ -257,6 +195,10 @@ public class CassandraProperties {
 
 	public Request getRequest() {
 		return this.request;
+	}
+
+	public Controlconnection getControlconnection() {
+		return this.controlconnection;
 	}
 
 	public static class Connection {
@@ -382,6 +324,23 @@ public class CassandraProperties {
 
 		public void setHeartbeatInterval(Duration heartbeatInterval) {
 			this.heartbeatInterval = heartbeatInterval;
+		}
+
+	}
+
+	public static class Controlconnection {
+
+		/**
+		 * Timeout to use for control queries.
+		 */
+		private Duration timeout = Duration.ofSeconds(5);
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
 		}
 
 	}

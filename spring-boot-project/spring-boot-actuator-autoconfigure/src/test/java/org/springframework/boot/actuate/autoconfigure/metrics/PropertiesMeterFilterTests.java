@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -201,15 +201,6 @@ class PropertiesMeterFilterTests {
 				createProperties("distribution.percentiles.all=1,1.5,2"));
 		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT).getPercentiles())
 				.containsExactly(1, 1.5, 2);
-	}
-
-	@Test
-	@Deprecated
-	void configureWhenHasDeprecatedSlaShouldSetSlaToValue() {
-		PropertiesMeterFilter filter = new PropertiesMeterFilter(
-				createProperties("distribution.sla.spring.boot=1,2,3"));
-		assertThat(filter.configure(createMeterId("spring.boot"), DistributionStatisticConfig.DEFAULT)
-				.getServiceLevelObjectiveBoundaries()).containsExactly(1000000, 2000000, 3000000);
 	}
 
 	@Test

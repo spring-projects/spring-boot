@@ -118,7 +118,7 @@ class CompressionHttpHandlerFactory implements HttpHandlerFactory {
 		private final Predicate maxContentSize;
 
 		MaxSizePredicate(int size) {
-			this.maxContentSize = Predicates.maxContentSize(size);
+			this.maxContentSize = Predicates.requestLargerThan(size);
 		}
 
 		@Override

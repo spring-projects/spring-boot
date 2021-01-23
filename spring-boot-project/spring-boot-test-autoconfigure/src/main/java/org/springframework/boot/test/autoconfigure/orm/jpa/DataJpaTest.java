@@ -103,11 +103,11 @@ public @interface DataJpaTest {
 
 	/**
 	 * The {@link BootstrapMode} for the test repository support. Defaults to
-	 * {@link BootstrapMode#LAZY}.
+	 * {@link BootstrapMode#DEFAULT}.
 	 * @return the {@link BootstrapMode} to use for testing the repository
 	 */
 	@PropertyMapping("spring.data.jpa.repositories.bootstrap-mode")
-	BootstrapMode bootstrapMode() default BootstrapMode.LAZY;
+	BootstrapMode bootstrapMode() default BootstrapMode.DEFAULT;
 
 	/**
 	 * Determines if default filtering should be used with

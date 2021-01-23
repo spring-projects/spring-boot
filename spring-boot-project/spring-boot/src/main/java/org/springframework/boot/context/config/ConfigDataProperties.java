@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,8 @@
 
 package org.springframework.boot.context.config;
 
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.function.Predicate;
 
 import org.springframework.boot.cloud.CloudPlatform;
@@ -28,11 +25,9 @@ import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.boot.context.properties.bind.BoundPropertiesTrackingBindHandler;
 import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
-import org.springframework.boot.origin.Origin;
 import org.springframework.util.ObjectUtils;
 
 /**
@@ -45,8 +40,6 @@ class ConfigDataProperties {
 
 	private static final ConfigurationPropertyName NAME = ConfigurationPropertyName.of("spring.config");
 
-	private static final ConfigurationPropertyName IMPORT_NAME = ConfigurationPropertyName.of("spring.config.import");
-
 	private static final ConfigurationPropertyName LEGACY_PROFILES_NAME = ConfigurationPropertyName
 			.of("spring.profiles");
 
@@ -54,55 +47,31 @@ class ConfigDataProperties {
 
 	private static final Bindable<String[]> BINDABLE_STRING_ARRAY = Bindable.of(String[].class);
 
-	private final List<String> imports;
+	private final List<ConfigDataLocation> imports;
 
 	private final Activate activate;
-
-	private final Map<ConfigurationPropertyName, ConfigurationProperty> boundProperties;
 
 	/**
 	 * Create a new {@link ConfigDataProperties} instance.
 	 * @param imports the imports requested
 	 * @param activate the activate properties
 	 */
-	ConfigDataProperties(@Name("import") List<String> imports, Activate activate) {
+	ConfigDataProperties(@Name("import") List<ConfigDataLocation> imports, Activate activate) {
 		this(imports, activate, Collections.emptyList());
 	}
 
-	private ConfigDataProperties(List<String> imports, Activate activate, List<ConfigurationProperty> boundProperties) {
+	private ConfigDataProperties(List<ConfigDataLocation> imports, Activate activate,
+			List<ConfigurationProperty> boundProperties) {
 		this.imports = (imports != null) ? imports : Collections.emptyList();
 		this.activate = activate;
-		this.boundProperties = mapByName(boundProperties);
-	}
-
-	private Map<ConfigurationPropertyName, ConfigurationProperty> mapByName(
-			List<ConfigurationProperty> boundProperties) {
-		Map<ConfigurationPropertyName, ConfigurationProperty> result = new LinkedHashMap<>();
-		boundProperties.forEach((property) -> result.put(property.getName(), property));
-		return Collections.unmodifiableMap(result);
 	}
 
 	/**
 	 * Return any additional imports requested.
 	 * @return the requested imports
 	 */
-	List<String> getImports() {
+	List<ConfigDataLocation> getImports() {
 		return this.imports;
-	}
-
-	/**
-	 * Return the {@link Origin} of a given import location.
-	 * @param importLocation the import location to check
-	 * @return the origin of the import or {@code null}
-	 */
-	Origin getImportOrigin(String importLocation) {
-		int index = this.imports.indexOf(importLocation);
-		if (index == -1) {
-			return null;
-		}
-		ConfigurationProperty bound = this.boundProperties.get(IMPORT_NAME.append("[" + index + "]"));
-		bound = (bound != null) ? bound : this.boundProperties.get(IMPORT_NAME);
-		return (bound != null) ? bound.getOrigin() : null;
 	}
 
 	/**
@@ -125,13 +94,9 @@ class ConfigDataProperties {
 
 	ConfigDataProperties withLegacyProfiles(String[] legacyProfiles, ConfigurationProperty property) {
 		if (this.activate != null && !ObjectUtils.isEmpty(this.activate.onProfile)) {
-			throw new InvalidConfigDataPropertyException(property, NAME.append("activate.on-profile"), null);
+			throw new InvalidConfigDataPropertyException(property, false, NAME.append("activate.on-profile"), null);
 		}
 		return new ConfigDataProperties(this.imports, new Activate(this.activate.onCloudPlatform, legacyProfiles));
-	}
-
-	ConfigDataProperties withBoundProperties(List<ConfigurationProperty> boundProperties) {
-		return new ConfigDataProperties(this.imports, this.activate, boundProperties);
 	}
 
 	/**
@@ -144,16 +109,14 @@ class ConfigDataProperties {
 		LegacyProfilesBindHandler legacyProfilesBindHandler = new LegacyProfilesBindHandler();
 		String[] legacyProfiles = binder.bind(LEGACY_PROFILES_NAME, BINDABLE_STRING_ARRAY, legacyProfilesBindHandler)
 				.orElse(null);
-		List<ConfigurationProperty> boundProperties = new ArrayList<>();
-		ConfigDataProperties properties = binder
-				.bind(NAME, BINDABLE_PROPERTIES, new BoundPropertiesTrackingBindHandler(boundProperties::add))
+		ConfigDataProperties properties = binder.bind(NAME, BINDABLE_PROPERTIES, new ConfigDataLocationBindHandler())
 				.orElse(null);
 		if (!ObjectUtils.isEmpty(legacyProfiles)) {
 			properties = (properties != null)
 					? properties.withLegacyProfiles(legacyProfiles, legacyProfilesBindHandler.getProperty())
 					: new ConfigDataProperties(null, new Activate(null, legacyProfiles));
 		}
-		return (properties != null) ? properties.withBoundProperties(boundProperties) : null;
+		return properties;
 	}
 
 	/**

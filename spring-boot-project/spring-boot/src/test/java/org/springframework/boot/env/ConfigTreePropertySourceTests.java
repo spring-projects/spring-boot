@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,13 +79,34 @@ class ConfigTreePropertySourceTests {
 	@Test
 	void getPropertyNamesFromFlatReturnsPropertyNames() throws Exception {
 		ConfigTreePropertySource propertySource = getFlatPropertySource();
-		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c");
+		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c", "one");
 	}
 
 	@Test
 	void getPropertyNamesFromNestedReturnsPropertyNames() throws Exception {
 		ConfigTreePropertySource propertySource = getNestedPropertySource();
 		assertThat(propertySource.getPropertyNames()).containsExactly("c", "fa.a", "fa.b", "fb.a", "fb.fa.a");
+	}
+
+	@Test
+	void getPropertyNamesFromNestedWithSymlinkInPathReturnsPropertyNames() throws Exception {
+		addNested();
+		Path symlinkTempDir = Files.createSymbolicLink(this.directory.resolveSibling("symlinkTempDir"), this.directory);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", symlinkTempDir);
+		Files.delete(symlinkTempDir);
+		assertThat(propertySource.getPropertyNames()).containsExactly("c", "fa.a", "fa.b", "fb.a", "fb.fa.a");
+	}
+
+	@Test
+	void getPropertyNamesFromFlatWithSymlinksIgnoresHiddenFiles() throws Exception {
+		ConfigTreePropertySource propertySource = getSymlinkedFlatPropertySource();
+		assertThat(propertySource.getPropertyNames()).containsExactly("a", "b", "c");
+	}
+
+	@Test
+	void getPropertyNamesFromNestedWithSymlinksIgnoresHiddenFiles() throws Exception {
+		ConfigTreePropertySource propertySource = getSymlinkedNestedPropertySource();
+		assertThat(propertySource.getPropertyNames()).containsExactly("aa", "ab", "baa", "c");
 	}
 
 	@Test
@@ -142,6 +163,7 @@ class ConfigTreePropertySourceTests {
 		assertThat(environment.getProperty("b")).isEqualTo("B");
 		assertThat(environment.getProperty("c", InputStreamSource.class).getInputStream()).hasContent("C");
 		assertThat(environment.getProperty("c", byte[].class)).contains('C');
+		assertThat(environment.getProperty("one", Integer.class)).isEqualTo(1);
 	}
 
 	@Test
@@ -187,10 +209,45 @@ class ConfigTreePropertySourceTests {
 		assertThat(propertySource.getProperty("spring")).hasToString("boot");
 	}
 
+	@Test
+	void getPropertyAsStringWhenMultiLinePropertyReturnsNonTrimmed() throws Exception {
+		addProperty("a", "a\nb\n");
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.AUTO_TRIM_TRAILING_NEW_LINE);
+		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a\nb\n");
+	}
+
+	@Test
+	void getPropertyAsStringWhenPropertyEndsWithNewLineReturnsTrimmed() throws Exception {
+		addProperty("a", "a\n");
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.AUTO_TRIM_TRAILING_NEW_LINE);
+		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+	}
+
+	@Test
+	void getPropertyAsStringWhenPropertyEndsWithWindowsNewLineReturnsTrimmed() throws Exception {
+		addProperty("a", "a\r\n");
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", this.directory,
+				Option.AUTO_TRIM_TRAILING_NEW_LINE);
+		assertThat(propertySource.getProperty("a").toString()).isEqualTo("a");
+	}
+
 	private ConfigTreePropertySource getFlatPropertySource() throws IOException {
 		addProperty("a", "A");
 		addProperty("b", "B");
 		addProperty("c", "C");
+		addProperty("one", "1");
+		return new ConfigTreePropertySource("test", this.directory);
+	}
+
+	private ConfigTreePropertySource getSymlinkedFlatPropertySource() throws IOException {
+		addProperty("..hidden-a", "A");
+		addProperty("..hidden-b", "B");
+		addProperty("..hidden-c", "C");
+		createSymbolicLink("a", "..hidden-a");
+		createSymbolicLink("b", "..hidden-b");
+		createSymbolicLink("c", "..hidden-c");
 		return new ConfigTreePropertySource("test", this.directory);
 	}
 
@@ -207,10 +264,26 @@ class ConfigTreePropertySourceTests {
 		addProperty("c", "C");
 	}
 
+	private ConfigTreePropertySource getSymlinkedNestedPropertySource() throws IOException {
+		addProperty("..hidden-a/a", "AA");
+		addProperty("..hidden-a/b", "AB");
+		addProperty("..hidden-b/fa/a", "BAA");
+		addProperty("c", "C");
+		createSymbolicLink("aa", "..hidden-a/a");
+		createSymbolicLink("ab", "..hidden-a/b");
+		createSymbolicLink("baa", "..hidden-b/fa/a");
+		return new ConfigTreePropertySource("test", this.directory);
+	}
+
 	private void addProperty(String path, String value) throws IOException {
 		File file = this.directory.resolve(path).toFile();
 		file.getParentFile().mkdirs();
 		FileCopyUtils.copy(value.getBytes(StandardCharsets.UTF_8), file);
+	}
+
+	private void createSymbolicLink(String link, String target) throws IOException {
+		Files.createSymbolicLink(this.directory.resolve(link).toAbsolutePath(),
+				this.directory.resolve(target).toAbsolutePath());
 	}
 
 }

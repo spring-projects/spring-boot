@@ -29,20 +29,45 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class ApiVersionsTests {
 
 	@Test
-	void assertSupportsWhenAllSupports() {
-		ApiVersions.parse("1.1", "2.2").assertSupports(ApiVersion.parse("1.0"));
+	void findsLatestWhenOneMatchesMajor() {
+		ApiVersion version = ApiVersions.parse("1.1", "2.2").findLatestSupported("1.0");
+		assertThat(version).isEqualTo(ApiVersion.parse("1.1"));
 	}
 
 	@Test
-	void assertSupportsWhenDoesNoneSupportedThrowsException() {
+	void findsLatestWhenOneMatchesWithReleaseVersions() {
+		ApiVersion version = ApiVersions.parse("1.1", "1.2").findLatestSupported("1.1");
+		assertThat(version).isEqualTo(ApiVersion.parse("1.2"));
+	}
+
+	@Test
+	void findsLatestWhenOneMatchesWithPreReleaseVersions() {
+		ApiVersion version = ApiVersions.parse("0.2", "0.3").findLatestSupported("0.2");
+		assertThat(version).isEqualTo(ApiVersion.parse("0.2"));
+	}
+
+	@Test
+	void findsLatestWhenMultipleMatchesWithReleaseVersions() {
+		ApiVersion version = ApiVersions.parse("1.1", "1.2").findLatestSupported("1.1", "1.2");
+		assertThat(version).isEqualTo(ApiVersion.parse("1.2"));
+	}
+
+	@Test
+	void findsLatestWhenMultipleMatchesWithPreReleaseVersions() {
+		ApiVersion version = ApiVersions.parse("0.2", "0.3").findLatestSupported("0.2", "0.3");
+		assertThat(version).isEqualTo(ApiVersion.parse("0.3"));
+	}
+
+	@Test
+	void findLatestWhenNoneSupportedThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ApiVersions.parse("1.1", "1.2").assertSupports(ApiVersion.parse("1.3")))
-				.withMessage("Detected platform API version 'v1.3' is not included in supported versions 'v1.1,v1.2'");
+				.isThrownBy(() -> ApiVersions.parse("1.1", "1.2").findLatestSupported("1.3", "1.4")).withMessage(
+						"Detected platform API versions '1.3,1.4' are not included in supported versions '1.1,1.2'");
 	}
 
 	@Test
 	void toStringReturnsString() {
-		assertThat(ApiVersions.parse("1.1", "2.2", "3.3").toString()).isEqualTo("v1.1,v2.2,v3.3");
+		assertThat(ApiVersions.parse("1.1", "2.2", "3.3").toString()).isEqualTo("1.1,2.2,3.3");
 	}
 
 	@Test

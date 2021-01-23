@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,6 +121,8 @@ public class WebMvcProperties {
 		this.messageCodesResolverFormat = messageCodesResolverFormat;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.web.locale")
 	public Locale getLocale() {
 		return this.locale;
 	}
@@ -129,6 +131,8 @@ public class WebMvcProperties {
 		this.locale = locale;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.web.locale-resolver")
 	public LocaleResolver getLocaleResolver() {
 		return this.localeResolver;
 	}
@@ -529,6 +533,10 @@ public class WebMvcProperties {
 
 	}
 
+	/**
+	 * Matching strategy options.
+	 * @since 2.4.0
+	 */
 	public enum MatchingStrategy {
 
 		/**
@@ -543,6 +551,12 @@ public class WebMvcProperties {
 
 	}
 
+	/**
+	 * Locale resolution options.
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link org.springframework.boot.autoconfigure.web.WebProperties.LocaleResolver}
+	 */
+	@Deprecated
 	public enum LocaleResolver {
 
 		/**

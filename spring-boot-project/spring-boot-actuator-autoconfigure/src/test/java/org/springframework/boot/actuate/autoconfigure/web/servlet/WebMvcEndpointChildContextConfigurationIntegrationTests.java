@@ -19,11 +19,13 @@ package org.springframework.boot.actuate.autoconfigure.web.servlet;
 import java.util.Collections;
 import java.util.Map;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import javax.validation.Valid;
 import javax.validation.constraints.NotEmpty;
 
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
@@ -40,6 +42,7 @@ import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.context.ServerPortInfoApplicationContextInitializer;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -65,7 +68,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 							ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 							EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 							ErrorMvcAutoConfiguration.class))
-					.withUserConfiguration(FailingEndpoint.class, FailingControllerEndpoint.class)
+					.withUserConfiguration(SucceedingEndpoint.class, FailingEndpoint.class,
+							FailingControllerEndpoint.class)
 					.withInitializer(new ServerPortInfoApplicationContextInitializer())
 					.withPropertyValues("server.port=0", "management.server.port=0",
 							"management.endpoints.web.exposure.include=*", "server.error.include-exception=true",
@@ -74,9 +78,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	@Test // gh-17938
 	void errorEndpointIsUsedWithEndpoint() {
 		this.runner.run(withWebTestClient((client) -> {
-			ClientResponse response = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON).exchange()
-					.block();
-			Map<String, ?> body = getResponseBody(response);
+			Map<String, ?> body = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono(toResponseBody()).block();
 			assertThat(body).hasEntrySatisfying("exception",
 					(value) -> assertThat(value).asString().contains("IllegalStateException"));
 			assertThat(body).hasEntrySatisfying("message",
@@ -88,9 +91,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	void errorPageAndErrorControllerIncludeDetails() {
 		this.runner.withPropertyValues("server.error.include-stacktrace=always", "server.error.include-message=always")
 				.run(withWebTestClient((client) -> {
-					ClientResponse response = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
-							.exchange().block();
-					Map<String, ?> body = getResponseBody(response);
+					Map<String, ?> body = client.get().uri("actuator/fail").accept(MediaType.APPLICATION_JSON)
+							.exchangeToMono(toResponseBody()).block();
 					assertThat(body).hasEntrySatisfying("message",
 							(value) -> assertThat(value).asString().contains("Epic Fail"));
 					assertThat(body).hasEntrySatisfying("trace", (value) -> assertThat(value).asString()
@@ -101,9 +103,8 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	@Test
 	void errorEndpointIsUsedWithRestControllerEndpoint() {
 		this.runner.run(withWebTestClient((client) -> {
-			ClientResponse response = client.get().uri("actuator/failController").accept(MediaType.APPLICATION_JSON)
-					.exchange().block();
-			Map<String, ?> body = getResponseBody(response);
+			Map<String, ?> body = client.get().uri("actuator/failController").accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono(toResponseBody()).block();
 			assertThat(body).hasEntrySatisfying("exception",
 					(value) -> assertThat(value).asString().contains("IllegalStateException"));
 			assertThat(body).hasEntrySatisfying("message",
@@ -114,16 +115,44 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 	@Test
 	void errorEndpointIsUsedWithRestControllerEndpointOnBindingError() {
 		this.runner.run(withWebTestClient((client) -> {
-			ClientResponse response = client.post().uri("actuator/failController")
-					.bodyValue(Collections.singletonMap("content", "")).accept(MediaType.APPLICATION_JSON).exchange()
-					.block();
-			Map<String, ?> body = getResponseBody(response);
+			Map<String, ?> body = client.post().uri("actuator/failController")
+					.bodyValue(Collections.singletonMap("content", "")).accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono(toResponseBody()).block();
 			assertThat(body).hasEntrySatisfying("exception",
 					(value) -> assertThat(value).asString().contains("MethodArgumentNotValidException"));
 			assertThat(body).hasEntrySatisfying("message",
 					(value) -> assertThat(value).asString().contains("Validation failed"));
 			assertThat(body).hasEntrySatisfying("errors", (value) -> assertThat(value).asList().isNotEmpty());
 		}));
+	}
+
+	@Test
+	void whenManagementServerBasePathIsConfiguredThenEndpointsAreBeneathThatPath() {
+		this.runner.withPropertyValues("management.server.base-path:/manage").run(withWebTestClient((client) -> {
+			String body = client.get().uri("manage/actuator/success").accept(MediaType.APPLICATION_JSON)
+					.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
+			assertThat(body).isEqualTo("Success");
+		}));
+	}
+
+	@Test
+	void whenManagementServletContextPathIsConfiguredThenEndpointsAreBeneathThatPath() {
+		this.runner.withPropertyValues("management.server.servlet.context-path:/manage")
+				.run(withWebTestClient((client) -> {
+					String body = client.get().uri("manage/actuator/success").accept(MediaType.APPLICATION_JSON)
+							.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
+					assertThat(body).isEqualTo("Success");
+				}));
+	}
+
+	@Test
+	void whenManagementBasePathAndServletContextPathAreConfiguredThenEndpointsAreBeneathBasePath() {
+		this.runner.withPropertyValues("management.server.servlet.context-path:/admin",
+				"management.server.base-path:/manage").run(withWebTestClient((client) -> {
+					String body = client.get().uri("manage/actuator/success").accept(MediaType.APPLICATION_JSON)
+							.exchangeToMono((response) -> response.bodyToMono(String.class)).block();
+					assertThat(body).isEqualTo("Success");
+				}));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> withWebTestClient(Consumer<WebClient> webClient) {
@@ -134,9 +163,9 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 		};
 	}
 
-	@SuppressWarnings("unchecked")
-	private Map<String, ?> getResponseBody(ClientResponse response) {
-		return response.bodyToMono(Map.class).block();
+	private Function<ClientResponse, ? extends Mono<Map<String, ?>>> toResponseBody() {
+		return ((clientResponse) -> clientResponse.bodyToMono(new ParameterizedTypeReference<Map<String, ?>>() {
+		}));
 	}
 
 	@Endpoint(id = "fail")
@@ -145,6 +174,16 @@ class WebMvcEndpointChildContextConfigurationIntegrationTests {
 		@ReadOperation
 		String fail() {
 			throw new IllegalStateException("Epic Fail");
+		}
+
+	}
+
+	@Endpoint(id = "success")
+	static class SucceedingEndpoint {
+
+		@ReadOperation
+		String fail() {
+			return "Success";
 		}
 
 	}

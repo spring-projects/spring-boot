@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -28,6 +29,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -41,6 +43,8 @@ import static org.mockito.BDDMockito.given;
  */
 @ExtendWith(MockitoExtension.class)
 class ConfigDataImporterTests {
+
+	private DeferredLogFactory logFactory = Supplier::get;
 
 	@Mock
 	private ConfigDataLocationResolvers resolvers;
@@ -70,43 +74,49 @@ class ConfigDataImporterTests {
 
 	@Test
 	void loadImportsResolvesAndLoadsLocations() throws Exception {
-		List<String> locations = Arrays.asList("test1", "test2");
-		TestLocation resolvedLocation1 = new TestLocation();
-		TestLocation resolvedLocation2 = new TestLocation();
-		List<ConfigDataLocation> resolvedLocations = Arrays.asList(resolvedLocation1, resolvedLocation2);
+		ConfigDataLocation location1 = ConfigDataLocation.of("test1");
+		ConfigDataLocation location2 = ConfigDataLocation.of("test2");
+		TestResource resource1 = new TestResource("r1");
+		TestResource resource2 = new TestResource("r2");
 		ConfigData configData1 = new ConfigData(Collections.singleton(new MockPropertySource()));
 		ConfigData configData2 = new ConfigData(Collections.singleton(new MockPropertySource()));
-		given(this.resolvers.resolveAll(this.locationResolverContext, locations, this.profiles))
-				.willReturn(resolvedLocations);
-		given(this.loaders.load(this.loaderContext, resolvedLocation1)).willReturn(configData1);
-		given(this.loaders.load(this.loaderContext, resolvedLocation2)).willReturn(configData2);
-		ConfigDataImporter importer = new ConfigDataImporter(this.resolvers, this.loaders);
-		Collection<ConfigData> loaded = importer
-				.resolveAndLoad(this.activationContext, this.locationResolverContext, this.loaderContext, locations)
-				.values();
+		given(this.resolvers.resolve(this.locationResolverContext, location1, this.profiles))
+				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location1, resource1, false)));
+		given(this.resolvers.resolve(this.locationResolverContext, location2, this.profiles))
+				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location2, resource2, false)));
+		given(this.loaders.load(this.loaderContext, resource1)).willReturn(configData1);
+		given(this.loaders.load(this.loaderContext, resource2)).willReturn(configData2);
+		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, ConfigDataNotFoundAction.FAIL,
+				this.resolvers, this.loaders);
+		Collection<ConfigData> loaded = importer.resolveAndLoad(this.activationContext, this.locationResolverContext,
+				this.loaderContext, Arrays.asList(location1, location2)).values();
 		assertThat(loaded).containsExactly(configData2, configData1);
 	}
 
 	@Test
 	void loadImportsWhenAlreadyImportedLocationSkipsLoad() throws Exception {
-		List<String> locations1and2 = Arrays.asList("test1", "test2");
-		List<String> locations2and3 = Arrays.asList("test2", "test3");
-		TestLocation resolvedLocation1 = new TestLocation();
-		TestLocation resolvedLocation2 = new TestLocation();
-		TestLocation resolvedLocation3 = new TestLocation();
-		List<ConfigDataLocation> resolvedLocations1and2 = Arrays.asList(resolvedLocation1, resolvedLocation2);
-		List<ConfigDataLocation> resolvedLocations2and3 = Arrays.asList(resolvedLocation2, resolvedLocation3);
+		ConfigDataLocation location1 = ConfigDataLocation.of("test1");
+		ConfigDataLocation location2 = ConfigDataLocation.of("test2");
+		ConfigDataLocation location3 = ConfigDataLocation.of("test3");
+		List<ConfigDataLocation> locations1and2 = Arrays.asList(location1, location2);
+		List<ConfigDataLocation> locations2and3 = Arrays.asList(location2, location3);
+		TestResource resource1 = new TestResource("r1");
+		TestResource resource2 = new TestResource("r2");
+		TestResource resource3 = new TestResource("r3");
 		ConfigData configData1 = new ConfigData(Collections.singleton(new MockPropertySource()));
 		ConfigData configData2 = new ConfigData(Collections.singleton(new MockPropertySource()));
 		ConfigData configData3 = new ConfigData(Collections.singleton(new MockPropertySource()));
-		given(this.resolvers.resolveAll(this.locationResolverContext, locations1and2, this.profiles))
-				.willReturn(resolvedLocations1and2);
-		given(this.resolvers.resolveAll(this.locationResolverContext, locations2and3, this.profiles))
-				.willReturn(resolvedLocations2and3);
-		given(this.loaders.load(this.loaderContext, resolvedLocation1)).willReturn(configData1);
-		given(this.loaders.load(this.loaderContext, resolvedLocation2)).willReturn(configData2);
-		given(this.loaders.load(this.loaderContext, resolvedLocation3)).willReturn(configData3);
-		ConfigDataImporter importer = new ConfigDataImporter(this.resolvers, this.loaders);
+		given(this.resolvers.resolve(this.locationResolverContext, location1, this.profiles))
+				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location1, resource1, false)));
+		given(this.resolvers.resolve(this.locationResolverContext, location2, this.profiles))
+				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location2, resource2, false)));
+		given(this.resolvers.resolve(this.locationResolverContext, location3, this.profiles))
+				.willReturn(Collections.singletonList(new ConfigDataResolutionResult(location3, resource3, false)));
+		given(this.loaders.load(this.loaderContext, resource1)).willReturn(configData1);
+		given(this.loaders.load(this.loaderContext, resource2)).willReturn(configData2);
+		given(this.loaders.load(this.loaderContext, resource3)).willReturn(configData3);
+		ConfigDataImporter importer = new ConfigDataImporter(this.logFactory, ConfigDataNotFoundAction.FAIL,
+				this.resolvers, this.loaders);
 		Collection<ConfigData> loaded1and2 = importer.resolveAndLoad(this.activationContext,
 				this.locationResolverContext, this.loaderContext, locations1and2).values();
 		Collection<ConfigData> loaded2and3 = importer.resolveAndLoad(this.activationContext,
@@ -115,7 +125,18 @@ class ConfigDataImporterTests {
 		assertThat(loaded2and3).containsExactly(configData3);
 	}
 
-	static class TestLocation extends ConfigDataLocation {
+	static class TestResource extends ConfigDataResource {
+
+		private final String name;
+
+		TestResource(String name) {
+			this.name = name;
+		}
+
+		@Override
+		public String toString() {
+			return this.name;
+		}
 
 	}
 

@@ -54,6 +54,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
@@ -113,6 +114,12 @@ class DockerApiTests {
 		};
 	}
 
+	@Test
+	void createDockerApi() {
+		DockerApi api = new DockerApi();
+		assertThat(api).isNotNull();
+	}
+
 	@Nested
 	class ImageDockerApiTests {
 
@@ -120,6 +127,9 @@ class DockerApiTests {
 
 		@Mock
 		private UpdateListener<PullImageUpdateEvent> pullListener;
+
+		@Mock
+		private UpdateListener<PushImageUpdateEvent> pushListener;
 
 		@Mock
 		private UpdateListener<LoadImageUpdateEvent> loadListener;
@@ -150,7 +160,7 @@ class DockerApiTests {
 			URI createUri = new URI(IMAGES_URL + "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase");
 			String imageHash = "4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30";
 			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder@sha256:" + imageHash + "/json");
-			given(http().post(createUri)).willReturn(responseOf("pull-stream.json"));
+			given(http().post(eq(createUri), isNull())).willReturn(responseOf("pull-stream.json"));
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.pull(reference, this.pullListener);
 			assertThat(image.getLayers()).hasSize(46);
@@ -158,6 +168,57 @@ class DockerApiTests {
 			ordered.verify(this.pullListener).onStart();
 			ordered.verify(this.pullListener, times(595)).onUpdate(any());
 			ordered.verify(this.pullListener).onFinish();
+		}
+
+		@Test
+		void pullWithRegistryAuthPullsImageAndProducesEvents() throws Exception {
+			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			URI createUri = new URI(IMAGES_URL + "/create?fromImage=gcr.io%2Fpaketo-buildpacks%2Fbuilder%3Abase");
+			String imageHash = "4acb6bfd6c4f0cabaf7f3690e444afe51f1c7de54d51da7e63fac709c56f1c30";
+			URI imageUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder@sha256:" + imageHash + "/json");
+			given(http().post(eq(createUri), eq("auth token"))).willReturn(responseOf("pull-stream.json"));
+			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
+			Image image = this.api.pull(reference, this.pullListener, "auth token");
+			assertThat(image.getLayers()).hasSize(46);
+			InOrder ordered = inOrder(this.pullListener);
+			ordered.verify(this.pullListener).onStart();
+			ordered.verify(this.pullListener, times(595)).onUpdate(any());
+			ordered.verify(this.pullListener).onFinish();
+		}
+
+		@Test
+		void pushWhenReferenceIsNullThrowsException() {
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.push(null, this.pushListener, null))
+					.withMessage("Reference must not be null");
+		}
+
+		@Test
+		void pushWhenListenerIsNullThrowsException() {
+			assertThatIllegalArgumentException()
+					.isThrownBy(() -> this.api.push(ImageReference.of("ubuntu"), null, null))
+					.withMessage("Listener must not be null");
+		}
+
+		@Test
+		void pushPushesImageAndProducesEvents() throws Exception {
+			ImageReference reference = ImageReference.of("localhost:5000/ubuntu");
+			URI pushUri = new URI(IMAGES_URL + "/localhost:5000/ubuntu/push");
+			given(http().post(pushUri, "auth token")).willReturn(responseOf("push-stream.json"));
+			this.api.push(reference, this.pushListener, "auth token");
+			InOrder ordered = inOrder(this.pushListener);
+			ordered.verify(this.pushListener).onStart();
+			ordered.verify(this.pushListener, times(44)).onUpdate(any());
+			ordered.verify(this.pushListener).onFinish();
+		}
+
+		@Test
+		void pushWithErrorInStreamThrowsException() throws Exception {
+			ImageReference reference = ImageReference.of("localhost:5000/ubuntu");
+			URI pushUri = new URI(IMAGES_URL + "/localhost:5000/ubuntu/push");
+			given(http().post(pushUri, "auth token")).willReturn(responseOf("push-stream-with-error.json"));
+			assertThatIllegalStateException()
+					.isThrownBy(() -> this.api.push(reference, this.pushListener, "auth token"))
+					.withMessageContaining("test message");
 		}
 
 		@Test
@@ -276,10 +337,10 @@ class DockerApiTests {
 					.willReturn(responseOf("create-container-response.json"));
 			ContainerReference containerReference = this.api.create(config);
 			assertThat(containerReference.toString()).isEqualTo("e90e34656806");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			verify(http()).post(any(), any(), this.writer.capture());
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			this.writer.getValue().accept(out);
-			assertThat(out.toByteArray()).hasSizeGreaterThan(130);
+			assertThat(out.toByteArray().length).isEqualTo(config.toString().length());
 		}
 
 		@Test
@@ -298,10 +359,10 @@ class DockerApiTests {
 			given(http().put(eq(uploadUri), eq("application/x-tar"), any())).willReturn(emptyResponse());
 			ContainerReference containerReference = this.api.create(config, content);
 			assertThat(containerReference.toString()).isEqualTo("e90e34656806");
-			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			verify(http()).post(any(), any(), this.writer.capture());
+			ByteArrayOutputStream out = new ByteArrayOutputStream();
 			this.writer.getValue().accept(out);
-			assertThat(out.toByteArray()).hasSizeGreaterThan(130);
+			assertThat(out.toByteArray().length).isEqualTo(config.toString().length());
 			verify(http()).put(any(), any(), this.writer.capture());
 			this.writer.getValue().accept(out);
 			assertThat(out.toByteArray()).hasSizeGreaterThan(2000);

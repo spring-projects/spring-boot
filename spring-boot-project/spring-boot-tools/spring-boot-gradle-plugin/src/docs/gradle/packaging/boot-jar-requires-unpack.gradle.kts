@@ -14,7 +14,7 @@ dependencies {
 }
 
 tasks.getByName<BootJar>("bootJar") {
-	mainClassName = "com.example.ExampleApplication"
+	mainClass.set("com.example.ExampleApplication")
 }
 
 // tag::requires-unpack[]

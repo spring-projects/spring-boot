@@ -29,30 +29,33 @@ import reactor.test.StepVerifier;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
-import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
+import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
-import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
-import org.springframework.data.neo4j.repository.config.ReactiveNeo4jRepositoryConfigurationExtension;
+import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
 import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Integration tests for the reactive SDN/RX Neo4j test slice.
+ * Integration tests for {@link DataNeo4jTest @DataNeo4jTest} with reactive style.
  *
  * @author Michael J. Simons
  * @author Scott Frederick
  * @since 2.4.0
  */
 @DataNeo4jTest
+@Transactional(propagation = Propagation.NOT_SUPPORTED)
 @Testcontainers(disabledWithoutDocker = true)
 class DataNeo4jTestReactiveIntegrationTests {
 
 	@Container
-	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:4.0").withoutAuthentication()
+	static final Neo4jContainer<?> neo4j = new Neo4jContainer<>(DockerImageNames.neo4j()).withoutAuthentication()
 			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
@@ -82,18 +85,13 @@ class DataNeo4jTestReactiveIntegrationTests {
 				.isThrownBy(() -> this.applicationContext.getBean(ExampleService.class));
 	}
 
-	// Providing this bean fulfills a requirement that a @Transactional test has a
-	// PlatformTransactionManager in the app context (enforced by
-	// org.springframework.test.context.transaction.TransactionalTestExecutionListener).
-	// Providing a ReactiveNeo4jTransactionManager would be more appropriate, but won't
-	// allow the test to succeed.
 	@TestConfiguration(proxyBeanMethods = false)
 	static class ReactiveTransactionManagerConfiguration {
 
-		@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
-		Neo4jTransactionManager reactiveTransactionManager(Driver driver,
-				DatabaseSelectionProvider databaseNameProvider) {
-			return new Neo4jTransactionManager(driver, databaseNameProvider);
+		@Bean
+		ReactiveNeo4jTransactionManager reactiveTransactionManager(Driver driver,
+				ReactiveDatabaseSelectionProvider databaseNameProvider) {
+			return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
 		}
 
 	}

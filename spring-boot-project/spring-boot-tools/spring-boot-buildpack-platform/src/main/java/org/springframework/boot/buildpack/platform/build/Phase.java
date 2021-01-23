@@ -46,6 +46,8 @@ class Phase {
 
 	private final Map<VolumeName, String> binds = new LinkedHashMap<>();
 
+	private final Map<String, String> env = new LinkedHashMap<>();
+
 	/**
 	 * Create a new {@link Phase} instance.
 	 * @param name the name of the phase
@@ -92,6 +94,15 @@ class Phase {
 	}
 
 	/**
+	 * Update this phase with an additional environment variable.
+	 * @param name the variable name
+	 * @param value the variable value
+	 */
+	void withEnv(String name, String value) {
+		this.env.put(name, value);
+	}
+
+	/**
 	 * Return the name of the phase.
 	 * @return the phase name
 	 */
@@ -116,6 +127,7 @@ class Phase {
 		update.withCommand("/cnb/lifecycle/" + this.name, StringUtils.toStringArray(this.args));
 		update.withLabel("author", "spring-boot");
 		this.binds.forEach(update::withBind);
+		this.env.forEach(update::withEnv);
 	}
 
 }

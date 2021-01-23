@@ -17,9 +17,6 @@
 package org.springframework.boot.actuate.autoconfigure.health;
 
 import java.util.Collections;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
@@ -65,7 +62,6 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author Scott Frederick
  */
-@SuppressWarnings("deprecation")
 class HealthEndpointAutoConfigurationTests {
 
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
@@ -91,14 +87,6 @@ class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void runWhenHasHealthAggregatorAdaptsToStatusAggregator() {
-		this.contextRunner.withUserConfiguration(HealthAggregatorConfiguration.class).run((context) -> {
-			StatusAggregator aggregator = context.getBean(StatusAggregator.class);
-			assertThat(aggregator.getAggregateStatus(Status.UP, Status.DOWN)).isEqualTo(Status.UNKNOWN);
-		});
-	}
-
-	@Test
 	void runCreatesStatusAggregatorFromProperties() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.status.order=up,down").run((context) -> {
 			StatusAggregator aggregator = context.getBean(StatusAggregator.class);
@@ -107,17 +95,9 @@ class HealthEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	void runWhenUsingDeprecatedPropertyCreatesStatusAggregatorFromProperties() {
-		this.contextRunner.withPropertyValues("management.health.status.order=up,down").run((context) -> {
-			StatusAggregator aggregator = context.getBean(StatusAggregator.class);
-			assertThat(aggregator.getAggregateStatus(Status.UP, Status.DOWN)).isEqualTo(Status.UP);
-		});
-	}
-
-	@Test
 	void runWhenHasStatusAggregatorBeanIgnoresProperties() {
 		this.contextRunner.withUserConfiguration(StatusAggregatorConfiguration.class)
-				.withPropertyValues("management.health.status.order=up,down").run((context) -> {
+				.withPropertyValues("management.endpoint.health.status.order=up,down").run((context) -> {
 					StatusAggregator aggregator = context.getBean(StatusAggregator.class);
 					assertThat(aggregator.getAggregateStatus(Status.UP, Status.DOWN)).isEqualTo(Status.UNKNOWN);
 				});
@@ -130,14 +110,6 @@ class HealthEndpointAutoConfigurationTests {
 					HttpCodeStatusMapper mapper = context.getBean(HttpCodeStatusMapper.class);
 					assertThat(mapper.getStatusCode(Status.UP)).isEqualTo(123);
 				});
-	}
-
-	@Test
-	void runUsingDeprecatedPropertyCreatesHttpCodeStatusMapperFromProperties() {
-		this.contextRunner.withPropertyValues("management.health.status.http-mapping.up=123").run((context) -> {
-			HttpCodeStatusMapper mapper = context.getBean(HttpCodeStatusMapper.class);
-			assertThat(mapper.getStatusCode(Status.UP)).isEqualTo(123);
-		});
 	}
 
 	@Test
@@ -277,32 +249,6 @@ class HealthEndpointAutoConfigurationTests {
 				});
 	}
 
-	@Test // gh-18354
-	void runCreatesLegacyHealthAggregator() {
-		this.contextRunner.run((context) -> {
-			org.springframework.boot.actuate.health.HealthAggregator aggregator = context
-					.getBean(org.springframework.boot.actuate.health.HealthAggregator.class);
-			Map<String, Health> healths = new LinkedHashMap<>();
-			healths.put("one", Health.up().build());
-			healths.put("two", Health.down().build());
-			Health result = aggregator.aggregate(healths);
-			assertThat(result.getStatus()).isEqualTo(Status.DOWN);
-		});
-	}
-
-	@Test
-	void runWhenReactorAvailableCreatesReactiveHealthIndicatorRegistryBean() {
-		this.contextRunner.run((context) -> assertThat(context)
-				.hasSingleBean(org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry.class));
-	}
-
-	@Test // gh-18570
-	void runWhenReactorUnavailableDoesNotCreateReactiveHealthIndicatorRegistryBean() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(Mono.class.getPackage().getName()))
-				.run((context) -> assertThat(context).doesNotHaveBean(
-						org.springframework.boot.actuate.health.ReactiveHealthIndicatorRegistry.class));
-	}
-
 	@Test
 	void runWhenHasHealthEndpointGroupsPostProcessorPerformsProcessing() {
 		this.contextRunner.withPropertyValues("management.endpoint.health.group.ready.include=*").withUserConfiguration(
@@ -329,23 +275,6 @@ class HealthEndpointAutoConfigurationTests {
 		@Bean
 		ReactiveHealthIndicator reactiveHealthIndicator() {
 			return () -> Mono.just(Health.up().build());
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class HealthAggregatorConfiguration {
-
-		@Bean
-		org.springframework.boot.actuate.health.HealthAggregator healthAggregator() {
-			return new org.springframework.boot.actuate.health.AbstractHealthAggregator() {
-
-				@Override
-				protected Status aggregateStatus(List<Status> candidates) {
-					return Status.UNKNOWN;
-				}
-
-			};
 		}
 
 	}

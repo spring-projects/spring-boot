@@ -39,11 +39,11 @@ org.springframework.boot.actuate.autoconfigure.logging.LoggersEndpointAutoConfig
 org.springframework.boot.actuate.autoconfigure.mail.MailHealthContributorAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.management.HeapDumpWebEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.management.ThreadDumpEndpointAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.JvmMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.KafkaMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.Log4J2MetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MeterRegistryAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration,\
@@ -67,6 +67,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetri
 org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver.StackdriverMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.statsd.StatsdMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.WavefrontMetricsExportAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.integration.IntegrationMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration,\

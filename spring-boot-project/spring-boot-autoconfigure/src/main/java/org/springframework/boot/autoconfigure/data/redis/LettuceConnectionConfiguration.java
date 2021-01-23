@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.net.UnknownHostException;
 import java.time.Duration;
 
 import io.lettuce.core.ClientOptions;
@@ -74,7 +73,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	LettuceConnectionFactory redisConnectionFactory(
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
-			ClientResources clientResources) throws UnknownHostException {
+			ClientResources clientResources) {
 		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(builderCustomizers, clientResources,
 				getProperties().getLettuce().getPool());
 		return createLettuceConnectionFactory(clientConfig);

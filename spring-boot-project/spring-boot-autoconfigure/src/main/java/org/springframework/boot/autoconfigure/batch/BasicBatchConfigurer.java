@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.batch;
 
-import javax.annotation.PostConstruct;
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.configuration.annotation.BatchConfigurer;
@@ -26,6 +25,7 @@ import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.launch.support.SimpleJobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.repository.support.JobRepositoryFactoryBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.autoconfigure.transaction.TransactionManagerCustomizers;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
@@ -40,7 +40,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Stephane Nicoll
  * @since 1.0.0
  */
-public class BasicBatchConfigurer implements BatchConfigurer {
+public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 
 	private final BatchProperties properties;
 
@@ -90,7 +90,11 @@ public class BasicBatchConfigurer implements BatchConfigurer {
 		return this.jobExplorer;
 	}
 
-	@PostConstruct
+	@Override
+	public void afterPropertiesSet() {
+		initialize();
+	}
+
 	public void initialize() {
 		try {
 			this.transactionManager = buildTransactionManager();

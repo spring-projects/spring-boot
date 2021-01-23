@@ -54,7 +54,6 @@ org.springframework.boot.autoconfigure.data.neo4j.Neo4jDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jReactiveRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.neo4j.Neo4jRepositoriesAutoConfiguration,\
-org.springframework.boot.autoconfigure.data.solr.SolrRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcDataAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.r2dbc.R2dbcRepositoriesAutoConfiguration,\
 org.springframework.boot.autoconfigure.data.redis.RedisAutoConfiguration,\

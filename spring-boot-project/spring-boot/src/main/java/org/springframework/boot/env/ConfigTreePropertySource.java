@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,12 +19,14 @@ package org.springframework.boot.env;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.nio.file.FileVisitOption;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.EnumSet;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
@@ -144,7 +146,12 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		/**
 		 * Convert file and directory names to lowercase.
 		 */
-		USE_LOWERCASE_NAMES
+		USE_LOWERCASE_NAMES,
+
+		/**
+		 * Automatically attempt trim trailing new-line characters.
+		 */
+		AUTO_TRIM_TRAILING_NEW_LINE
 
 	}
 
@@ -172,17 +179,22 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private final PropertyFileContent cachedContent;
 
+		private final boolean autoTrimTrailingNewLine;
+
 		private PropertyFile(Path path, Set<Option> options) {
 			this.path = path;
 			this.resource = new PathResource(path);
 			this.origin = new TextResourceOrigin(this.resource, START_OF_FILE);
+			this.autoTrimTrailingNewLine = options.contains(Option.AUTO_TRIM_TRAILING_NEW_LINE);
 			this.cachedContent = options.contains(Option.ALWAYS_READ) ? null
-					: new PropertyFileContent(path, this.resource, this.origin, true);
+					: new PropertyFileContent(path, this.resource, this.origin, true, this.autoTrimTrailingNewLine);
 		}
 
 		PropertyFileContent getContent() {
-			return (this.cachedContent != null) ? this.cachedContent
-					: new PropertyFileContent(this.path, this.resource, this.origin, false);
+			if (this.cachedContent != null) {
+				return this.cachedContent;
+			}
+			return new PropertyFileContent(this.path, this.resource, this.origin, false, this.autoTrimTrailingNewLine);
 		}
 
 		Origin getOrigin() {
@@ -192,15 +204,16 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 		static Map<String, PropertyFile> findAll(Path sourceDirectory, Set<Option> options) {
 			try {
 				Map<String, PropertyFile> propertyFiles = new TreeMap<>();
-				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isRegularFile).forEach((path) -> {
-					String name = getName(sourceDirectory.relativize(path));
-					if (StringUtils.hasText(name)) {
-						if (options.contains(Option.USE_LOWERCASE_NAMES)) {
-							name = name.toLowerCase();
-						}
-						propertyFiles.put(name, new PropertyFile(path, options));
-					}
-				});
+				Files.find(sourceDirectory, MAX_DEPTH, PropertyFile::isPropertyFile, FileVisitOption.FOLLOW_LINKS)
+						.forEach((path) -> {
+							String name = getName(sourceDirectory.relativize(path));
+							if (StringUtils.hasText(name)) {
+								if (options.contains(Option.USE_LOWERCASE_NAMES)) {
+									name = name.toLowerCase();
+								}
+								propertyFiles.put(name, new PropertyFile(path, options));
+							}
+						});
 				return Collections.unmodifiableMap(propertyFiles);
 			}
 			catch (IOException ex) {
@@ -208,8 +221,18 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 			}
 		}
 
-		private static boolean isRegularFile(Path path, BasicFileAttributes attributes) {
-			return attributes.isRegularFile();
+		private static boolean isPropertyFile(Path path, BasicFileAttributes attributes) {
+			return !hasHiddenPathElement(path) && (attributes.isRegularFile() || attributes.isSymbolicLink());
+		}
+
+		private static boolean hasHiddenPathElement(Path path) {
+			Iterator<Path> iterator = path.iterator();
+			while (iterator.hasNext()) {
+				if (iterator.next().toString().startsWith("..")) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private static String getName(Path relativePath) {
@@ -236,17 +259,21 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		private final Resource resource;
 
+		private final Origin origin;
+
 		private final boolean cacheContent;
+
+		private final boolean autoTrimTrailingNewLine;
 
 		private volatile byte[] content;
 
-		private final Origin origin;
-
-		private PropertyFileContent(Path path, Resource resource, Origin origin, boolean cacheContent) {
+		private PropertyFileContent(Path path, Resource resource, Origin origin, boolean cacheContent,
+				boolean autoTrimTrailingNewLine) {
 			this.path = path;
 			this.resource = resource;
 			this.origin = origin;
 			this.cacheContent = cacheContent;
+			this.autoTrimTrailingNewLine = autoTrimTrailingNewLine;
 		}
 
 		@Override
@@ -271,7 +298,29 @@ public class ConfigTreePropertySource extends EnumerablePropertySource<Path> imp
 
 		@Override
 		public String toString() {
-			return new String(getBytes());
+			String string = new String(getBytes());
+			if (this.autoTrimTrailingNewLine) {
+				string = autoTrimTrailingNewLine(string);
+			}
+			return string;
+		}
+
+		private String autoTrimTrailingNewLine(String string) {
+			if (!string.endsWith("\n")) {
+				return string;
+			}
+			int numberOfLines = 0;
+			for (int i = 0; i < string.length(); i++) {
+				char ch = string.charAt(i);
+				if (ch == '\n') {
+					numberOfLines++;
+				}
+			}
+			if (numberOfLines > 1) {
+				return string;
+			}
+			return (string.endsWith("\r\n")) ? string.substring(0, string.length() - 2)
+					: string.substring(0, string.length() - 1);
 		}
 
 		@Override

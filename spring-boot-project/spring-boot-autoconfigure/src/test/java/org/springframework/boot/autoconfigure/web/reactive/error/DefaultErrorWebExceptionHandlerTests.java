@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
@@ -62,7 +62,7 @@ class DefaultErrorWebExceptionHandlerTests {
 	@Test
 	void nonStandardErrorStatusCodeShouldNotFail() {
 		ErrorAttributes errorAttributes = mock(ErrorAttributes.class);
-		ResourceProperties resourceProperties = new ResourceProperties();
+		Resources resourceProperties = new Resources();
 		ErrorProperties errorProperties = new ErrorProperties();
 		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
 		given(errorAttributes.getErrorAttributes(any(), any())).willReturn(getErrorAttributes());

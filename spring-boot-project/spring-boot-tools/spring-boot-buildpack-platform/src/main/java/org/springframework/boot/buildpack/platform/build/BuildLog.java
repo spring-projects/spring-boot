@@ -92,10 +92,23 @@ public interface BuildLog {
 
 	/**
 	 * Log that an image has been pulled.
-	 * @param image the builder image that was pulled
+	 * @param image the image that was pulled
 	 * @param imageType the image type that was pulled
 	 */
 	void pulledImage(Image image, ImageType imageType);
+
+	/**
+	 * Log that an image is being pushed.
+	 * @param imageReference the image reference
+	 * @return a consumer for progress update events
+	 */
+	Consumer<TotalProgressEvent> pushingImage(ImageReference imageReference);
+
+	/**
+	 * Log that an image has been pushed.
+	 * @param imageReference the image reference
+	 */
+	void pushedImage(ImageReference imageReference);
 
 	/**
 	 * Log that the lifecycle is executing.

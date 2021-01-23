@@ -18,6 +18,7 @@ package org.springframework.boot.env;
 
 import java.util.List;
 
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.logging.DeferredLogFactory;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 
@@ -34,11 +35,11 @@ public interface EnvironmentPostProcessorsFactory {
 	/**
 	 * Create all requested {@link EnvironmentPostProcessor} instances.
 	 * @param logFactory a deferred log factory
-	 * @param bootstrapRegistry a bootstrap registry
+	 * @param bootstrapContext a bootstrap context
 	 * @return the post processor instances
 	 */
 	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(DeferredLogFactory logFactory,
-			BootstrapRegistry bootstrapRegistry);
+			ConfigurableBootstrapContext bootstrapContext);
 
 	/**
 	 * Return a {@link EnvironmentPostProcessorsFactory} backed by

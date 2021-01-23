@@ -18,8 +18,10 @@ package org.springframework.boot.autoconfigure.kafka;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Cleanup;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.IsolationLevel;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties.Listener;
+import org.springframework.kafka.core.CleanupConfig;
 import org.springframework.kafka.listener.ContainerProperties;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -45,7 +47,16 @@ class KafkaPropertiesTests {
 	void listenerDefaultValuesAreConsistent() {
 		ContainerProperties container = new ContainerProperties("test");
 		Listener listenerProperties = new KafkaProperties().getListener();
+		assertThat(listenerProperties.isOnlyLogRecordMetadata()).isEqualTo(container.isOnlyLogRecordMetadata());
 		assertThat(listenerProperties.isMissingTopicsFatal()).isEqualTo(container.isMissingTopicsFatal());
+	}
+
+	@Test
+	void cleanupConfigDefaultValuesAreConsistent() {
+		CleanupConfig cleanupConfig = new CleanupConfig();
+		Cleanup cleanup = new KafkaProperties().getStreams().getCleanup();
+		assertThat(cleanup.isOnStartup()).isEqualTo(cleanupConfig.cleanupOnStart());
+		assertThat(cleanup.isOnShutdown()).isEqualTo(cleanupConfig.cleanupOnStop());
 	}
 
 }

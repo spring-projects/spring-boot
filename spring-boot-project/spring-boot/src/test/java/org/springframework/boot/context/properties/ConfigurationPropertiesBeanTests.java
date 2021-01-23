@@ -30,7 +30,6 @@ import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportSelector;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.core.ResolvableType;
-import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.annotation.Validated;
@@ -203,8 +202,8 @@ class ConfigurationPropertiesBeanTests {
 
 	@Test
 	void forValueObjectReturnsBean() {
-		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean.forValueObject(
-				ConstructorBindingOnConstructor.class, "valueObjectBean", MergedAnnotation.missing(), false);
+		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
+				.forValueObject(ConstructorBindingOnConstructor.class, "valueObjectBean");
 		assertThat(propertiesBean.getName()).isEqualTo("valueObjectBean");
 		assertThat(propertiesBean.getInstance()).isNull();
 		assertThat(propertiesBean.getType()).isEqualTo(ConstructorBindingOnConstructor.class);
@@ -214,34 +213,17 @@ class ConfigurationPropertiesBeanTests {
 		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(ConstructorBindingOnConstructor.class));
 		assertThat(target.getValue()).isNull();
 		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(ConstructorBindingOnConstructor.class, false, false)).isNotNull();
-	}
-
-	@Test
-	void forValueObjectWhenDeduceConstructorReturnsBean() {
-		ConfigurationPropertiesBean propertiesBean = ConfigurationPropertiesBean
-				.forValueObject(DeducedConstructorBinding.class, "valueObjectBean", MergedAnnotation.missing(), true);
-		assertThat(propertiesBean.getName()).isEqualTo("valueObjectBean");
-		assertThat(propertiesBean.getInstance()).isNull();
-		assertThat(propertiesBean.getType()).isEqualTo(DeducedConstructorBinding.class);
-		assertThat(propertiesBean.getBindMethod()).isEqualTo(BindMethod.VALUE_OBJECT);
-		assertThat(propertiesBean.getAnnotation()).isNotNull();
-		Bindable<?> target = propertiesBean.asBindTarget();
-		assertThat(target.getType()).isEqualTo(ResolvableType.forClass(DeducedConstructorBinding.class));
-		assertThat(target.getValue()).isNull();
-		assertThat(ConfigurationPropertiesBindConstructorProvider.INSTANCE
-				.getBindConstructor(ConstructorBindingOnConstructor.class, false, false)).isNotNull();
+				.getBindConstructor(ConstructorBindingOnConstructor.class, false)).isNotNull();
 	}
 
 	@Test
 	void forValueObjectWhenJavaBeanBindTypeThrowsException() {
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ConfigurationPropertiesBean.forValueObject(AnnotatedBean.class, "annotatedBean",
-						MergedAnnotation.missing(), false))
+				.isThrownBy(() -> ConfigurationPropertiesBean.forValueObject(AnnotatedBean.class, "annotatedBean"))
 				.withMessage("Bean 'annotatedBean' is not a @ConfigurationProperties value object");
 		assertThatIllegalStateException()
-				.isThrownBy(() -> ConfigurationPropertiesBean.forValueObject(NonAnnotatedBean.class, "nonAnnotatedBean",
-						MergedAnnotation.missing(), false))
+				.isThrownBy(
+						() -> ConfigurationPropertiesBean.forValueObject(NonAnnotatedBean.class, "nonAnnotatedBean"))
 				.withMessage("Bean 'nonAnnotatedBean' is not a @ConfigurationProperties value object");
 
 	}
@@ -259,7 +241,7 @@ class ConfigurationPropertiesBeanTests {
 	}
 
 	@Test
-	void bindTypeForTypeWhenConstructorBindingOnConstructorReturnsValueObject() {
+	void bindTypeForTypeWhenNoConstructorBindingOnConstructorReturnsValueObject() {
 		BindMethod bindType = BindMethod.forType(ConstructorBindingOnConstructor.class);
 		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
 	}
@@ -270,18 +252,6 @@ class ConfigurationPropertiesBeanTests {
 				.isThrownBy(() -> BindMethod.forType(ConstructorBindingOnMultipleConstructors.class))
 				.withMessage(ConstructorBindingOnMultipleConstructors.class.getName()
 						+ " has more than one @ConstructorBinding constructor");
-	}
-
-	@Test
-	void bindTypeForTypeWhenDeducedConstructorBindingOnValueObjectReturnsValueObject() {
-		BindMethod bindType = BindMethod.forType(DeducedConstructorBinding.class, true);
-		assertThat(bindType).isEqualTo(BindMethod.VALUE_OBJECT);
-	}
-
-	@Test
-	void bindTypeForTypeWhenDeducedConstructorBindingOnJavaBeanReturnsJavABean() {
-		BindMethod bindType = BindMethod.forType(NonAnnotatedBean.class, true);
-		assertThat(bindType).isEqualTo(BindMethod.JAVA_BEAN);
 	}
 
 	private void get(Class<?> configuration, String beanName, ThrowingConsumer<ConfigurationPropertiesBean> consumer)
@@ -500,14 +470,6 @@ class ConfigurationPropertiesBeanTests {
 
 		@ConstructorBinding
 		ConstructorBindingOnMultipleConstructors(String name, int age) {
-		}
-
-	}
-
-	@ConfigurationProperties
-	static class DeducedConstructorBinding {
-
-		DeducedConstructorBinding(String name) {
 		}
 
 	}

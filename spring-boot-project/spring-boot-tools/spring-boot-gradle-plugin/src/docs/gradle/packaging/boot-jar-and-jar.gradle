@@ -16,5 +16,5 @@ bootJar {
 // end::classifier[]
 
 bootJar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 }

@@ -75,13 +75,11 @@ public class ManagementErrorEndpoint {
 		return options;
 	}
 
-	@SuppressWarnings("deprecation")
 	private boolean includeStackTrace(ServletWebRequest request) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:
 			return true;
 		case ON_PARAM:
-		case ON_TRACE_PARAM:
 			return getBooleanParameter(request, "trace");
 		default:
 			return false;

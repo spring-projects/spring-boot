@@ -34,6 +34,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.kafka.annotation.KafkaStreamsDefaultConfiguration;
 import org.springframework.kafka.config.KafkaStreamsConfiguration;
 import org.springframework.kafka.config.StreamsBuilderFactoryBean;
+import org.springframework.kafka.core.CleanupConfig;
 
 /**
  * Configuration for Kafka Streams annotation-driven support.
@@ -91,6 +92,9 @@ class KafkaStreamsAnnotationDrivenConfiguration {
 		@Override
 		public void afterPropertiesSet() {
 			this.factoryBean.setAutoStartup(this.properties.getStreams().isAutoStartup());
+			KafkaProperties.Cleanup cleanup = this.properties.getStreams().getCleanup();
+			CleanupConfig cleanupConfig = new CleanupConfig(cleanup.isOnStartup(), cleanup.isOnShutdown());
+			this.factoryBean.setCleanupConfig(cleanupConfig);
 		}
 
 	}

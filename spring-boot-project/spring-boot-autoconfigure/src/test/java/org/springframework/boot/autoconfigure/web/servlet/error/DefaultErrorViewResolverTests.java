@@ -30,7 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProvider;
 import org.springframework.boot.autoconfigure.template.TemplateAvailabilityProviders;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.core.Ordered;
@@ -65,7 +65,7 @@ class DefaultErrorViewResolverTests {
 	@Mock
 	private TemplateAvailabilityProvider templateAvailabilityProvider;
 
-	private ResourceProperties resourceProperties;
+	private Resources resourcesProperties;
 
 	private Map<String, Object> model = new HashMap<>();
 
@@ -75,25 +75,24 @@ class DefaultErrorViewResolverTests {
 	void setup() {
 		AnnotationConfigApplicationContext applicationContext = new AnnotationConfigApplicationContext();
 		applicationContext.refresh();
-		this.resourceProperties = new ResourceProperties();
+		this.resourcesProperties = new Resources();
 		TemplateAvailabilityProviders templateAvailabilityProviders = new TestTemplateAvailabilityProviders(
 				this.templateAvailabilityProvider);
-		this.resolver = new DefaultErrorViewResolver(applicationContext, this.resourceProperties,
+		this.resolver = new DefaultErrorViewResolver(applicationContext, this.resourcesProperties,
 				templateAvailabilityProviders);
 	}
 
 	@Test
 	void createWhenApplicationContextIsNullShouldThrowException() {
-		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DefaultErrorViewResolver(null, new ResourceProperties()))
+		assertThatIllegalArgumentException().isThrownBy(() -> new DefaultErrorViewResolver(null, new Resources()))
 				.withMessageContaining("ApplicationContext must not be null");
 	}
 
 	@Test
 	void createWhenResourcePropertiesIsNullShouldThrowException() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), null))
-				.withMessageContaining("ResourceProperties must not be null");
+				.isThrownBy(() -> new DefaultErrorViewResolver(mock(ApplicationContext.class), (Resources) null))
+				.withMessageContaining("Resources must not be null");
 	}
 
 	@Test
@@ -197,7 +196,7 @@ class DefaultErrorViewResolverTests {
 
 	private void setResourceLocation(String path) {
 		String packageName = getClass().getPackage().getName();
-		this.resourceProperties
+		this.resourcesProperties
 				.setStaticLocations(new String[] { "classpath:" + packageName.replace('.', '/') + path + "/" });
 	}
 

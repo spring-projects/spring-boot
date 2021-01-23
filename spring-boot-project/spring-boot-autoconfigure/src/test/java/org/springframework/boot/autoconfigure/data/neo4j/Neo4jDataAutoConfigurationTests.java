@@ -19,6 +19,11 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNode;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNonAnnotated;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestPersistent;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestRelationshipProperties;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -29,6 +34,7 @@ import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.core.Neo4jOperations;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.core.convert.Neo4jConversions;
+import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
 import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.transaction.ReactiveTransactionManager;
@@ -137,6 +143,17 @@ class Neo4jDataAutoConfigurationTests {
 						.hasBean("myCustomTransactionManager"));
 	}
 
+	@Test
+	void shouldFilterInitialEntityScanWithKnownAnnotations() {
+		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
+			Neo4jMappingContext mappingContext = context.getBean(Neo4jMappingContext.class);
+			assertThat(mappingContext.hasPersistentEntityFor(TestNode.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestPersistent.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestRelationshipProperties.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestNonAnnotated.class)).isFalse();
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomDatabaseSelectionProviderConfiguration {
 
@@ -144,6 +161,12 @@ class Neo4jDataAutoConfigurationTests {
 		DatabaseSelectionProvider databaseSelectionProvider() {
 			return () -> DatabaseSelection.byName("custom");
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(TestPersistent.class)
+	static class EntityScanConfig {
 
 	}
 

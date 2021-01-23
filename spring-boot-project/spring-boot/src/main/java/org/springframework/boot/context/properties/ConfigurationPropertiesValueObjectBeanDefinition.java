@@ -18,7 +18,7 @@ package org.springframework.boot.context.properties;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.beans.factory.support.GenericBeanDefinition;
 
 /**
  * {@link BeanDefinition} that is used for registering
@@ -29,30 +29,21 @@ import org.springframework.core.annotation.MergedAnnotation;
  * @author Madhura Bhave
  * @author Phillip Webb
  */
-final class ConfigurationPropertiesValueObjectBeanDefinition extends ConfigurationPropertiesBeanDefinition {
+final class ConfigurationPropertiesValueObjectBeanDefinition extends GenericBeanDefinition {
 
 	private final BeanFactory beanFactory;
 
 	private final String beanName;
 
-	private final boolean deduceBindConstructor;
-
-	ConfigurationPropertiesValueObjectBeanDefinition(BeanFactory beanFactory, String beanName, Class<?> beanClass,
-			MergedAnnotation<ConfigurationProperties> annotation, boolean deduceBindConstructor) {
-		super(beanClass, annotation);
+	ConfigurationPropertiesValueObjectBeanDefinition(BeanFactory beanFactory, String beanName, Class<?> beanClass) {
 		this.beanFactory = beanFactory;
 		this.beanName = beanName;
-		this.deduceBindConstructor = deduceBindConstructor;
+		setBeanClass(beanClass);
 		setInstanceSupplier(this::createBean);
 	}
 
-	boolean isDeduceBindConstructor() {
-		return this.deduceBindConstructor;
-	}
-
 	private Object createBean() {
-		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.forValueObject(getBeanClass(), this.beanName,
-				getAnnotation(this), this.deduceBindConstructor);
+		ConfigurationPropertiesBean bean = ConfigurationPropertiesBean.forValueObject(getBeanClass(), this.beanName);
 		ConfigurationPropertiesBinder binder = ConfigurationPropertiesBinder.get(this.beanFactory);
 		try {
 			return binder.bindOrCreate(bean);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,16 +38,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class Saml2RelyingPartyPropertiesTests {
 
 	private final Saml2RelyingPartyProperties properties = new Saml2RelyingPartyProperties();
-
-	@Deprecated
-	@Test
-	void customizeSsoUrlDeprecated() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.sso-url",
-				"https://simplesaml-for-spring-saml/SSOService.php");
-		assertThat(
-				this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon().getUrl())
-						.isEqualTo("https://simplesaml-for-spring-saml/SSOService.php");
-	}
 
 	@Test
 	void customizeSsoUrl() {
@@ -90,16 +80,16 @@ class Saml2RelyingPartyPropertiesTests {
 
 	@Test
 	void customizeRelyingPartyEntityId() {
-		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.relying-party-entity-id",
+		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.entity-id",
 				"{baseUrl}/saml2/custom-entity-id");
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getRelyingPartyEntityId())
+		assertThat(this.properties.getRegistration().get("simplesamlphp").getEntityId())
 				.isEqualTo("{baseUrl}/saml2/custom-entity-id");
 	}
 
 	@Test
 	void customizeRelyingPartyEntityIdDefaultsToServiceProviderMetadata() {
 		assertThat(RelyingPartyRegistration.withRegistrationId("id")).extracting("entityId")
-				.isEqualTo(new Saml2RelyingPartyProperties.Registration().getRelyingPartyEntityId());
+				.isEqualTo(new Saml2RelyingPartyProperties.Registration().getEntityId());
 	}
 
 	@Test

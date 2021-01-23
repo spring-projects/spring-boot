@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.startup;
 
 import org.springframework.boot.SpringBootVersion;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
+import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.context.metrics.buffering.BufferingApplicationStartup;
 import org.springframework.boot.context.metrics.buffering.StartupTimeline;
@@ -28,6 +29,7 @@ import org.springframework.boot.context.metrics.buffering.StartupTimeline;
  * application startup}.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  * @since 2.4.0
  */
 @Endpoint(id = "startup")
@@ -42,6 +44,12 @@ public class StartupEndpoint {
 	 */
 	public StartupEndpoint(BufferingApplicationStartup applicationStartup) {
 		this.applicationStartup = applicationStartup;
+	}
+
+	@ReadOperation
+	public StartupResponse startupSnapshot() {
+		StartupTimeline startupTimeline = this.applicationStartup.getBufferedTimeline();
+		return new StartupResponse(startupTimeline);
 	}
 
 	@WriteOperation

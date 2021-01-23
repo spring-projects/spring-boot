@@ -18,6 +18,7 @@ package org.springframework.boot.env;
 
 import java.util.List;
 
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -44,8 +45,6 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 
 	private final DeferredLogs deferredLogs;
 
-	private final DefaultBootstrapRegisty bootstrapRegistry;
-
 	private int order = DEFAULT_ORDER;
 
 	private final EnvironmentPostProcessorsFactory postProcessorsFactory;
@@ -65,14 +64,13 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	 * @param postProcessorsFactory the post processors factory
 	 */
 	public EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory) {
-		this(postProcessorsFactory, new DeferredLogs(), new DefaultBootstrapRegisty());
+		this(postProcessorsFactory, new DeferredLogs());
 	}
 
 	EnvironmentPostProcessorApplicationListener(EnvironmentPostProcessorsFactory postProcessorsFactory,
-			DeferredLogs deferredLogs, DefaultBootstrapRegisty bootstrapRegistry) {
+			DeferredLogs deferredLogs) {
 		this.postProcessorsFactory = postProcessorsFactory;
 		this.deferredLogs = deferredLogs;
-		this.bootstrapRegistry = bootstrapRegistry;
 	}
 
 	@Override
@@ -98,13 +96,12 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	private void onApplicationEnvironmentPreparedEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
 		SpringApplication application = event.getSpringApplication();
-		for (EnvironmentPostProcessor postProcessor : getEnvironmentPostProcessors()) {
+		for (EnvironmentPostProcessor postProcessor : getEnvironmentPostProcessors(event.getBootstrapContext())) {
 			postProcessor.postProcessEnvironment(environment, application);
 		}
 	}
 
 	private void onApplicationPreparedEvent(ApplicationPreparedEvent event) {
-		this.bootstrapRegistry.applicationContextPrepared(event.getApplicationContext());
 		finish();
 	}
 
@@ -113,12 +110,11 @@ public class EnvironmentPostProcessorApplicationListener implements SmartApplica
 	}
 
 	private void finish() {
-		this.bootstrapRegistry.clear();
 		this.deferredLogs.switchOverAll();
 	}
 
-	List<EnvironmentPostProcessor> getEnvironmentPostProcessors() {
-		return this.postProcessorsFactory.getEnvironmentPostProcessors(this.deferredLogs, this.bootstrapRegistry);
+	List<EnvironmentPostProcessor> getEnvironmentPostProcessors(ConfigurableBootstrapContext bootstrapContext) {
+		return this.postProcessorsFactory.getEnvironmentPostProcessors(this.deferredLogs, bootstrapContext);
 	}
 
 	@Override

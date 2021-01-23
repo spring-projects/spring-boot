@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,15 +23,20 @@ import com.couchbase.client.core.env.IoConfig;
 import com.couchbase.client.core.env.SecurityConfig;
 import com.couchbase.client.core.env.TimeoutConfig;
 import com.couchbase.client.java.Cluster;
+import com.couchbase.client.java.codec.JacksonJsonSerializer;
+import com.couchbase.client.java.codec.JsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link CouchbaseAutoConfiguration}.
@@ -57,6 +62,32 @@ class CouchbaseAutoConfigurationTests {
 					assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 					assertThat(context.getBean(Cluster.class))
 							.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
+				});
+	}
+
+	@Test
+	void environmentUseObjectMapperByDefault() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
+					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+					JsonSerializer serializer = env.jsonSerializer();
+					assertThat(serializer).isInstanceOf(JacksonJsonSerializer.class)
+							.hasFieldOrPropertyWithValue("mapper", context.getBean(ObjectMapper.class));
+				});
+	}
+
+	@Test
+	void customizeJsonSerializer() {
+		JsonSerializer customJsonSerializer = mock(JsonSerializer.class);
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class))
+				.withBean(ClusterEnvironmentBuilderCustomizer.class,
+						() -> (builder) -> builder.jsonSerializer(customJsonSerializer))
+				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
+					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
+					JsonSerializer serializer = env.jsonSerializer();
+					assertThat(serializer).isSameAs(customJsonSerializer);
 				});
 	}
 

@@ -55,7 +55,8 @@ public class Library {
 		this.name = name;
 		this.version = version;
 		this.groups = groups;
-		this.versionProperty = name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
+		this.versionProperty = "Spring Boot".equals(name) ? null
+				: name.toLowerCase(Locale.ENGLISH).replace(' ', '-') + ".version";
 		this.prohibitedVersions = prohibitedVersions;
 	}
 

@@ -36,6 +36,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 class BuilderMetadata extends MappedObject {
 
@@ -184,27 +185,56 @@ class BuilderMetadata extends MappedObject {
 		String getVersion();
 
 		/**
-		 * Return the API versions.
+		 * Return the default API versions.
 		 * @return the API versions
 		 */
 		Api getApi();
 
 		/**
-		 * API versions.
+		 * Return the supported API versions.
+		 * @return the API versions
+		 */
+		Apis getApis();
+
+		/**
+		 * Default API versions.
 		 */
 		interface Api {
 
 			/**
-			 * Return the buildpack API version.
+			 * Return the default buildpack API version.
 			 * @return the buildpack version
 			 */
 			String getBuildpack();
 
 			/**
-			 * Return the platform API version.
+			 * Return the default platform API version.
 			 * @return the platform version
 			 */
 			String getPlatform();
+
+		}
+
+		/**
+		 * Supported API versions.
+		 */
+		interface Apis {
+
+			/**
+			 * Return the supported buildpack API versions.
+			 * @return the buildpack versions
+			 */
+			default String[] getBuildpack() {
+				return valueAt(this, "/buildpack/supported", String[].class);
+			}
+
+			/**
+			 * Return the supported platform API versions.
+			 * @return the platform versions
+			 */
+			default String[] getPlatform() {
+				return valueAt(this, "/platform/supported", String[].class);
+			}
 
 		}
 

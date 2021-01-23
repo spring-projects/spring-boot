@@ -16,11 +16,14 @@
 
 package org.springframework.boot.gradle.tasks.bundling;
 
+import org.springframework.boot.gradle.junit.GradleCompatibility;
+
 /**
  * Integration tests for {@link BootJar}.
  *
  * @author Andy Wilkinson
  */
+@GradleCompatibility(configurationCache = true)
 class BootWarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 
 	BootWarIntegrationTests() {

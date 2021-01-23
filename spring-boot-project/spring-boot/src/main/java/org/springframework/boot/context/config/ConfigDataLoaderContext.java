@@ -16,7 +16,7 @@
 
 package org.springframework.boot.context.config;
 
-import org.springframework.boot.env.BootstrapRegistry;
+import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.env.EnvironmentPostProcessor;
 
 /**
@@ -28,10 +28,10 @@ import org.springframework.boot.env.EnvironmentPostProcessor;
 public interface ConfigDataLoaderContext {
 
 	/**
-	 * Provides access to the {@link BootstrapRegistry} shared across all
+	 * Provides access to the {@link ConfigurableBootstrapContext} shared across all
 	 * {@link EnvironmentPostProcessor EnvironmentPostProcessors}.
-	 * @return the bootstrap registry
+	 * @return the bootstrap context
 	 */
-	BootstrapRegistry getBootstrapRegistry();
+	ConfigurableBootstrapContext getBootstrapContext();
 
 }

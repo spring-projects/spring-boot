@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.lang.annotation.RetentionPolicy;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.context.properties.bind.Bindable.BindRestriction;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.annotation.AnnotationUtils;
@@ -140,19 +141,6 @@ class BindableTests {
 	}
 
 	@Test
-	void withAttributeShouldSetAttribute() {
-		Bindable<String> bindable = Bindable.of(String.class);
-		Bindable<String> withOne = bindable.withAttribute("one", 1);
-		Bindable<String> withOneAndTwo = withOne.withAttribute("two", 2);
-		assertThat(bindable.getAttribute("one")).isNull();
-		assertThat(bindable.getAttribute("two")).isNull();
-		assertThat(withOne.getAttribute("one")).isEqualTo(1);
-		assertThat(withOne.getAttribute("two")).isNull();
-		assertThat(withOneAndTwo.getAttribute("one")).isEqualTo(1);
-		assertThat(withOneAndTwo.getAttribute("two")).isEqualTo(2);
-	}
-
-	@Test
 	void toStringShouldShowDetails() {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<String> bindable = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
@@ -167,10 +155,9 @@ class BindableTests {
 		Bindable<String> bindable1 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable2 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation);
 		Bindable<String> bindable3 = Bindable.of(String.class).withExistingValue("fof").withAnnotations(annotation);
-		Bindable<String> bindable4 = Bindable.of(String.class).withExistingValue("foo").withAnnotations(annotation)
-				.withAttribute("bar", "bar");
 		assertThat(bindable1.hashCode()).isEqualTo(bindable2.hashCode());
-		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2).isEqualTo(bindable3).isNotEqualTo(bindable4);
+		assertThat(bindable1).isEqualTo(bindable1).isEqualTo(bindable2);
+		assertThat(bindable1).isEqualTo(bindable3);
 	}
 
 	@Test // gh-18218
@@ -185,6 +172,22 @@ class BindableTests {
 		Annotation annotation = AnnotationUtils.synthesizeAnnotation(TestAnnotation.class);
 		Bindable<?> bindable = Bindable.of(String.class).withAnnotations(annotation).withSuppliedValue(() -> "");
 		assertThat(bindable.getAnnotations()).containsExactly(annotation);
+	}
+
+	@Test
+	void hasBindRestrictionWhenDefaultReturnsFalse() {
+		Bindable<String> bindable = Bindable.of(String.class);
+		for (BindRestriction bindRestriction : BindRestriction.values()) {
+			assertThat(bindable.hasBindRestriction(bindRestriction)).isFalse();
+		}
+	}
+
+	@Test
+	void withBindRestrictionAddsBindRestriction() {
+		Bindable<String> bindable = Bindable.of(String.class);
+		Bindable<String> restricted = bindable.withBindRestrictions(BindRestriction.NO_DIRECT_PROPERTY);
+		assertThat(bindable.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isFalse();
+		assertThat(restricted.hasBindRestriction(BindRestriction.NO_DIRECT_PROPERTY)).isTrue();
 	}
 
 	@Retention(RetentionPolicy.RUNTIME)

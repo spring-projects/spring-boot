@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -174,16 +174,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	 */
 	@Parameter(property = "spring-boot.run.main-class")
 	private String mainClass;
-
-	/**
-	 * Additional directories besides the classes directory that should be added to the
-	 * classpath.
-	 * @since 1.0.0
-	 * @deprecated since 2.3.0 in favor of {@code directories}
-	 */
-	@Deprecated
-	@Parameter(property = "spring-boot.run.folders")
-	private String[] folders;
 
 	/**
 	 * Additional directories besides the classes directory that should be added to the
@@ -462,11 +452,6 @@ public abstract class AbstractRunMojo extends AbstractDependencyFilterMojo {
 	}
 
 	private void addUserDefinedDirectories(List<URL> urls) throws MalformedURLException {
-		if (this.folders != null) {
-			for (String folder : this.folders) {
-				urls.add(new File(folder).toURI().toURL());
-			}
-		}
 		if (this.directories != null) {
 			for (String directory : this.directories) {
 				urls.add(new File(directory).toURI().toURL());

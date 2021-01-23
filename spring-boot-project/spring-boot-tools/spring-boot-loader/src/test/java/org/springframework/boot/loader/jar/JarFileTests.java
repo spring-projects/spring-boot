@@ -55,6 +55,7 @@ import org.springframework.boot.loader.TestJarCreator;
 import org.springframework.boot.loader.data.RandomAccessDataFile;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.StopWatch;
 import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -427,29 +428,36 @@ class JarFileTests {
 
 	@Test
 	void verifySignedJar() throws Exception {
-		String classpath = System.getProperty("java.class.path");
-		String[] entries = classpath.split(System.getProperty("path.separator"));
-		String signedJarFile = null;
+		File signedJarFile = getSignedJarFile();
+		assertThat(signedJarFile).exists();
+		try (java.util.jar.JarFile expected = new java.util.jar.JarFile(signedJarFile)) {
+			try (JarFile actual = new JarFile(signedJarFile)) {
+				StopWatch stopWatch = new StopWatch();
+				Enumeration<JarEntry> actualEntries = actual.entries();
+				while (actualEntries.hasMoreElements()) {
+					JarEntry actualEntry = actualEntries.nextElement();
+					java.util.jar.JarEntry expectedEntry = expected.getJarEntry(actualEntry.getName());
+					StreamUtils.drain(expected.getInputStream(expectedEntry));
+					if (!actualEntry.getName().equals("META-INF/MANIFEST.MF")) {
+						assertThat(actualEntry.getCertificates()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCertificates());
+						assertThat(actualEntry.getCodeSigners()).as(actualEntry.getName())
+								.isEqualTo(expectedEntry.getCodeSigners());
+					}
+				}
+				assertThat(stopWatch.getTotalTimeSeconds()).isLessThan(3.0);
+			}
+		}
+	}
+
+	private File getSignedJarFile() {
+		String[] entries = System.getProperty("java.class.path").split(System.getProperty("path.separator"));
 		for (String entry : entries) {
 			if (entry.contains("bcprov")) {
-				signedJarFile = entry;
+				return new File(entry);
 			}
 		}
-		assertThat(signedJarFile).isNotNull();
-		java.util.jar.JarFile jarFile = new JarFile(new File(signedJarFile));
-		jarFile.getManifest();
-		Enumeration<JarEntry> jarEntries = jarFile.entries();
-		while (jarEntries.hasMoreElements()) {
-			JarEntry jarEntry = jarEntries.nextElement();
-			InputStream inputStream = jarFile.getInputStream(jarEntry);
-			inputStream.skip(Long.MAX_VALUE);
-			inputStream.close();
-			if (!jarEntry.getName().startsWith("META-INF") && !jarEntry.isDirectory()
-					&& !jarEntry.getName().endsWith("TigerDigest.class")) {
-				assertThat(jarEntry.getCertificates()).isNotNull();
-			}
-		}
-		jarFile.close();
+		return null;
 	}
 
 	@Test
@@ -635,7 +643,7 @@ class JarFileTests {
 	@Test
 	void iterator() {
 		Iterator<JarEntry> iterator = this.jarFile.iterator();
-		List<String> names = new ArrayList<String>();
+		List<String> names = new ArrayList<>();
 		while (iterator.hasNext()) {
 			names.add(iterator.next().getName());
 		}

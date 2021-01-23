@@ -20,6 +20,7 @@ import java.net.InetAddress;
 
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.SslStoreProvider;
+import org.springframework.util.unit.DataSize;
 
 /**
  * A configurable {@link RSocketServerFactory}.
@@ -35,6 +36,14 @@ public interface ConfigurableRSocketServerFactory {
 	 * @param port the port to set
 	 */
 	void setPort(int port);
+
+	/**
+	 * Specify the maximum transmission unit. Frames larger than the specified
+	 * {@code fragmentSize} are fragmented.
+	 * @param fragmentSize the fragment size
+	 * @since 2.4.0
+	 */
+	void setFragmentSize(DataSize fragmentSize);
 
 	/**
 	 * Set the specific network address that the server should bind to.

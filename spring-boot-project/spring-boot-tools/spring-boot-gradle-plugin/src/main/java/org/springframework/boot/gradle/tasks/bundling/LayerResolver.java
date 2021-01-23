@@ -17,22 +17,13 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.util.HashSet;
-import java.util.LinkedHashMap;
-import java.util.Map;
-import java.util.Set;
 
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ModuleVersionIdentifier;
-import org.gradle.api.artifacts.ResolvedArtifact;
-import org.gradle.api.artifacts.ResolvedConfiguration;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.specs.Spec;
-import org.gradle.api.tasks.SourceSet;
 
+import org.springframework.boot.gradle.tasks.bundling.ResolvedDependencies.DependencyDescriptor;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.Library;
-import org.springframework.boot.loader.tools.LibraryCoordinates;
 
 /**
  * Resolver backed by a {@link LayeredSpec} that provides the destination {@link Layer}
@@ -52,9 +43,9 @@ class LayerResolver {
 
 	private final Spec<FileCopyDetails> librarySpec;
 
-	LayerResolver(Iterable<SourceSet> sourceSets, Iterable<Configuration> configurations,
-			LayeredSpec layeredConfiguration, Spec<FileCopyDetails> librarySpec) {
-		this.resolvedDependencies = new ResolvedDependencies(sourceSets, configurations);
+	LayerResolver(ResolvedDependencies resolvedDependencies, LayeredSpec layeredConfiguration,
+			Spec<FileCopyDetails> librarySpec) {
+		this.resolvedDependencies = resolvedDependencies;
 		this.layeredConfiguration = layeredConfiguration;
 		this.librarySpec = librarySpec;
 	}
@@ -85,119 +76,10 @@ class LayerResolver {
 
 	private Library asLibrary(FileCopyDetails details) {
 		File file = details.getFile();
-		LibraryCoordinates coordinates = this.resolvedDependencies.find(file);
-		return new Library(null, file, null, coordinates, false);
-	}
-
-	/**
-	 * Tracks and provides details of resolved dependencies in the project so we can find
-	 * {@link LibraryCoordinates}.
-	 */
-	private static class ResolvedDependencies {
-
-		private final Set<String> deprecatedForResolutionConfigurationNames;
-
-		private final Map<Configuration, ResolvedConfigurationDependencies> configurationDependencies = new LinkedHashMap<>();
-
-		ResolvedDependencies(Iterable<SourceSet> sourceSets, Iterable<Configuration> configurations) {
-			this.deprecatedForResolutionConfigurationNames = deprecatedForResolutionConfigurationNames(sourceSets);
-			configurations.forEach(this::processConfiguration);
-		}
-
-		@SuppressWarnings("deprecation")
-		private Set<String> deprecatedForResolutionConfigurationNames(Iterable<SourceSet> sourceSets) {
-			Set<String> configurationNames = new HashSet<>();
-			configurationNames.add("archives");
-			configurationNames.add("default");
-			for (SourceSet sourceSet : sourceSets) {
-				try {
-					configurationNames.add(sourceSet.getCompileConfigurationName());
-				}
-				catch (NoSuchMethodError ex) {
-					// Continue
-				}
-				configurationNames.add(sourceSet.getCompileOnlyConfigurationName());
-				try {
-					configurationNames.add(sourceSet.getRuntimeConfigurationName());
-				}
-				catch (NoSuchMethodError ex) {
-					// Continue
-				}
-			}
-			return configurationNames;
-		}
-
-		private void processConfiguration(Configuration configuration) {
-			if (configuration.isCanBeResolved()
-					&& !this.deprecatedForResolutionConfigurationNames.contains(configuration.getName())) {
-				this.configurationDependencies.put(configuration,
-						new ResolvedConfigurationDependencies(configuration.getResolvedConfiguration()));
-			}
-		}
-
-		LibraryCoordinates find(File file) {
-			for (ResolvedConfigurationDependencies dependencies : this.configurationDependencies.values()) {
-				LibraryCoordinates coordinates = dependencies.find(file);
-				if (coordinates != null) {
-					return coordinates;
-				}
-			}
-			return null;
-		}
-
-	}
-
-	/**
-	 * Stores details of resolved configuration dependencies.
-	 */
-	private static class ResolvedConfigurationDependencies {
-
-		private final Map<File, LibraryCoordinates> artifactCoordinates = new LinkedHashMap<>();
-
-		ResolvedConfigurationDependencies(ResolvedConfiguration resolvedConfiguration) {
-			for (ResolvedArtifact resolvedArtifact : resolvedConfiguration.getResolvedArtifacts()) {
-				this.artifactCoordinates.put(resolvedArtifact.getFile(),
-						new ModuleVersionIdentifierLibraryCoordinates(resolvedArtifact.getModuleVersion().getId()));
-			}
-		}
-
-		LibraryCoordinates find(File file) {
-			return this.artifactCoordinates.get(file);
-		}
-
-	}
-
-	/**
-	 * Adapts a {@link ModuleVersionIdentifier} to {@link LibraryCoordinates}.
-	 */
-	private static class ModuleVersionIdentifierLibraryCoordinates implements LibraryCoordinates {
-
-		private final ModuleVersionIdentifier identifier;
-
-		ModuleVersionIdentifierLibraryCoordinates(ModuleVersionIdentifier identifier) {
-			this.identifier = identifier;
-		}
-
-		@Override
-		public String getGroupId() {
-			return this.identifier.getGroup();
-		}
-
-		@Override
-		public String getArtifactId() {
-			return this.identifier.getName();
-		}
-
-		@Override
-		public String getVersion() {
-			return this.identifier.getVersion();
-		}
-
-		@Override
-		public String toString() {
-			return this.identifier.toString();
-		}
-
+		DependencyDescriptor dependency = this.resolvedDependencies.find(file);
+		return (dependency != null)
+				? new Library(null, file, null, dependency.getCoordinates(), false, dependency.isProjectDependency())
+				: new Library(file, null);
 	}
 
 }

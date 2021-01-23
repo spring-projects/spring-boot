@@ -586,7 +586,7 @@ public class RestTemplateBuilder {
 	 * @see #configure(RestTemplate)
 	 */
 	public RestTemplate build() {
-		return build(RestTemplate.class);
+		return configure(new RestTemplate());
 	}
 
 	/**

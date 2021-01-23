@@ -296,11 +296,11 @@ public final class ConditionMessage {
 		 * @return a built {@link ConditionMessage}
 		 */
 		public ConditionMessage because(String reason) {
-			if (StringUtils.isEmpty(reason)) {
-				return new ConditionMessage(ConditionMessage.this, this.condition);
+			if (StringUtils.hasLength(reason)) {
+				return new ConditionMessage(ConditionMessage.this,
+						StringUtils.hasLength(this.condition) ? this.condition + " " + reason : reason);
 			}
-			return new ConditionMessage(ConditionMessage.this,
-					StringUtils.isEmpty(this.condition) ? reason : this.condition + " " + reason);
+			return new ConditionMessage(ConditionMessage.this, this.condition);
 		}
 
 	}
@@ -401,23 +401,28 @@ public final class ConditionMessage {
 	 */
 	public enum Style {
 
+		/**
+		 * Render with normal styling.
+		 */
 		NORMAL {
+
 			@Override
 			protected Object applyToItem(Object item) {
 				return item;
 			}
 
-			@Override
-			public Collection<?> applyTo(Collection<?> items) {
-				return items;
-			}
 		},
 
+		/**
+		 * Render with the item surrounded by quotes.
+		 */
 		QUOTE {
+
 			@Override
 			protected String applyToItem(Object item) {
 				return (item != null) ? "'" + item + "'" : null;
 			}
+
 		};
 
 		public Collection<?> applyTo(Collection<?> items) {

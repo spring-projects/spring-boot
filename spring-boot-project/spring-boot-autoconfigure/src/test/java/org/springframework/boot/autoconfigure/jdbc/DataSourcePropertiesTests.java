@@ -99,12 +99,39 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	void determineUsernameWhenEmpty() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUsername("");
+		properties.afterPropertiesSet();
+		assertThat(properties.getUsername()).isEqualTo("");
+		assertThat(properties.determineUsername()).isEqualTo("sa");
+	}
+
+	@Test
+	void determineUsernameWhenNull() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUsername(null);
+		properties.afterPropertiesSet();
+		assertThat(properties.getUsername()).isNull();
+		assertThat(properties.determineUsername()).isEqualTo("sa");
+	}
+
+	@Test
 	void determineUsernameWithExplicitConfig() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUsername("foo");
 		properties.afterPropertiesSet();
 		assertThat(properties.getUsername()).isEqualTo("foo");
 		assertThat(properties.determineUsername()).isEqualTo("foo");
+	}
+
+	@Test
+	void determineUsernameWithNonEmbeddedUrl() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUrl("jdbc:h2:~/test");
+		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determineUsername()).isNull();
 	}
 
 	@Test
@@ -122,6 +149,15 @@ class DataSourcePropertiesTests {
 		properties.afterPropertiesSet();
 		assertThat(properties.getPassword()).isEqualTo("bar");
 		assertThat(properties.determinePassword()).isEqualTo("bar");
+	}
+
+	@Test
+	void determinePasswordWithNonEmbeddedUrl() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setUrl("jdbc:h2:~/test");
+		properties.afterPropertiesSet();
+		assertThat(properties.getPassword()).isNull();
+		assertThat(properties.determinePassword()).isNull();
 	}
 
 	@Test
