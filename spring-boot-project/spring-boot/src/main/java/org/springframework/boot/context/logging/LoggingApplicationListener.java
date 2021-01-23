@@ -115,6 +115,10 @@ public class LoggingApplicationListener implements GenericApplicationListener {
 	/**
 	 * The name of the Spring property that controls the registration of a shutdown hook
 	 * to shut down the logging system when the JVM exits.
+	 * This is set to {@code false} by default to avoid shutting down of the logging system on application stops
+	 * or during the closure of the application context.
+	 * Setting this property to {@code true} flushes the loggers and terminates the log appenders gracefully
+	 * once the application context stops.
 	 * @see LoggingSystem#getShutdownHandler
 	 */
 	public static final String REGISTER_SHUTDOWN_HOOK_PROPERTY = "logging.register-shutdown-hook";
