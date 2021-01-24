@@ -1,0 +1,26 @@
+plugins {
+    id 'java'
+}
+
+group 'org.springframework.boot'
+version '2.4.3-SNAPSHOT'
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+}
+
+dependencies {
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
+        exclude group: "org.hibernate.validator"
+    }
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+    implementation(enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent")))
+    implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+}
+
+test {
+    useJUnitPlatform()
+}
