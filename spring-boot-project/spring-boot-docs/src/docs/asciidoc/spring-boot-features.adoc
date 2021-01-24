@@ -150,6 +150,9 @@ You can also use the configprop:spring.main.banner-mode[] property to determine 
 
 The printed banner is registered as a singleton bean under the following name: `springBootBanner`.
 
+NOTE: If you are running with an unpacked jar (and not using the Spring Boot launcher), `application.*` properties are not available.
+As a workaround, you can use JarLauncher to start the app (for example, `java -cp . org.springframework.boot.loader.JarLauncher`).
+
 
 
 [[boot-features-customizing-spring-application]]
