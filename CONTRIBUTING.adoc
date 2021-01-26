@@ -22,7 +22,7 @@ Ideally, that would include a small sample project that reproduces the problem.
 
 == Reporting Security Vulnerabilities
 If you think you have found a security vulnerability in Spring Boot please *DO NOT* disclose it publicly until we've had a chance to fix it.
-Please don't report security vulnerabilities using GitHub issues, instead head over to https://tanzu.vmware.com/security and learn how to disclose them responsibly.
+Please don't report security vulnerabilities using GitHub issues, instead head over to https://spring.io/security-policy and learn how to disclose them responsibly.
 
 
 
