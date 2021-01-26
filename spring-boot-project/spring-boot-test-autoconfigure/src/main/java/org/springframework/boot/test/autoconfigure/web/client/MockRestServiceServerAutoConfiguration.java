@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.client;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -95,6 +96,11 @@ public class MockRestServiceServerAutoConfiguration {
 		@Override
 		public void verify() {
 			getDelegate().verify();
+		}
+
+		@Override
+		public void verify(Duration timeout) {
+			getDelegate().verify(timeout);
 		}
 
 		@Override
