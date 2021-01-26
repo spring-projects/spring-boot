@@ -5,7 +5,7 @@ submitting you pull request.
 Security Vulnerabilities
 
 STOP! If your contribution fixes a security vulnerability, please do not submit it.
-Instead, please head over to https://pivotal.io/security to learn how to disclose a
+Instead, please head over to https://spring.io/security-policy to learn how to disclose a
 vulnerability responsibly.
 
 Dependency Upgrades
