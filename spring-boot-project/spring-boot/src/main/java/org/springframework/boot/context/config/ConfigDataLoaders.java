@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,6 +68,7 @@ class ConfigDataLoaders {
 		Instantiator<ConfigDataLoader<?>> instantiator = new Instantiator<>(ConfigDataLoader.class,
 				(availableParameters) -> {
 					availableParameters.add(Log.class, logFactory::getLog);
+					availableParameters.add(DeferredLogFactory.class, logFactory);
 					availableParameters.add(ConfigurableBootstrapContext.class, bootstrapContext);
 					availableParameters.add(BootstrapContext.class, bootstrapContext);
 					availableParameters.add(BootstrapRegistry.class, bootstrapContext);
