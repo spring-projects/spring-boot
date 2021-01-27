@@ -680,6 +680,15 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(environment.getProperty("second.property")).isEqualTo("ball");
 	}
 
+	@Test // gh-24990
+	void runWhenHasProfileSpecificFileWithActiveOnProfileProperty() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.name=application-activate-on-profile-in-profile-specific-file");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.getProperty("test1")).isEqualTo("test1");
+		assertThat(environment.getProperty("test2")).isEqualTo("test2");
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
 		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
 

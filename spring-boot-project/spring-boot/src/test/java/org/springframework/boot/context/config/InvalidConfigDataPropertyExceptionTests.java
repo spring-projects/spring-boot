@@ -125,8 +125,6 @@ class InvalidConfigDataPropertyExceptionTests {
 		throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException("spring.profiles.include");
 		throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException("spring.profiles.active");
 		throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException("spring.profiles.default");
-		throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException("spring.config.activate.on-profile");
-		throwOrWarnWhenWhenHasInvalidProfileSpecificPropertyThrowsException("spring.profiles");
 	}
 
 	@Test
