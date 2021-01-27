@@ -43,6 +43,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Aaron Whiteside
  */
 class CouchbaseAutoConfigurationTests {
 
@@ -50,7 +51,7 @@ class CouchbaseAutoConfigurationTests {
 			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class));
 
 	@Test
-	void connectionStringIsRequired() {
+	void connectionStringOrSeedNodeIsRequired() {
 		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ClusterEnvironment.class)
 				.doesNotHaveBean(Cluster.class));
 	}
@@ -59,6 +60,16 @@ class CouchbaseAutoConfigurationTests {
 	void connectionStringCreateEnvironmentAndCluster() {
 		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
 				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
+					assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
+					assertThat(context.getBean(Cluster.class))
+							.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());
+				});
+	}
+
+	@Test
+	void seedNodeCreateEnvironmentAndCluster() {
+		this.contextRunner.withUserConfiguration(CouchbaseTestConfiguration.class)
+				.withPropertyValues("spring.couchbase.seed-nodes[0].address=localhost").run((context) -> {
 					assertThat(context).hasSingleBean(ClusterEnvironment.class).hasSingleBean(Cluster.class);
 					assertThat(context.getBean(Cluster.class))
 							.isSameAs(context.getBean(CouchbaseTestConfiguration.class).couchbaseCluster());

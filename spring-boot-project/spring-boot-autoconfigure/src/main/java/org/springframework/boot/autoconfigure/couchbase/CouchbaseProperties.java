@@ -17,6 +17,8 @@
 package org.springframework.boot.autoconfigure.couchbase;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.util.StringUtils;
@@ -29,10 +31,16 @@ import org.springframework.util.StringUtils;
  * @author Yulin Qin
  * @author Brian Clozel
  * @author Michael Nitschinger
+ * @author Aaron Whiteside
  * @since 1.4.0
  */
 @ConfigurationProperties(prefix = "spring.couchbase")
 public class CouchbaseProperties {
+
+	/**
+	 * Alternate list of SeedNodes used to locate the Couchbase cluster.
+	 */
+	private List<SeedNode> seedNodes = new ArrayList<>();
 
 	/**
 	 * Connection string used to locate the Couchbase cluster.
@@ -50,6 +58,14 @@ public class CouchbaseProperties {
 	private String password;
 
 	private final Env env = new Env();
+
+	public List<SeedNode> getSeedNodes() {
+		return this.seedNodes;
+	}
+
+	public void setSeedNodes(List<SeedNode> seedNodes) {
+		this.seedNodes = seedNodes;
+	}
 
 	public String getConnectionString() {
 		return this.connectionString;
@@ -306,6 +322,49 @@ public class CouchbaseProperties {
 
 		public void setManagement(Duration management) {
 			this.management = management;
+		}
+
+	}
+
+	public static class SeedNode {
+
+		/**
+		 * Alternate address to use when connecting to the Couchbase cluster.
+		 */
+		private String address;
+
+		/**
+		 * Alternate Key Value port to use when connecting to the Couchbase cluster.
+		 */
+		private Integer keyValuePort;
+
+		/**
+		 * Alternate Cluster Manager port to use when connecting to the Couchbase cluster.
+		 */
+		private Integer clusterManagerPort;
+
+		public String getAddress() {
+			return this.address;
+		}
+
+		public void setAddress(String address) {
+			this.address = address;
+		}
+
+		public Integer getKeyValuePort() {
+			return this.keyValuePort;
+		}
+
+		public void setKeyValuePort(Integer keyValuePort) {
+			this.keyValuePort = keyValuePort;
+		}
+
+		public Integer getClusterManagerPort() {
+			return this.clusterManagerPort;
+		}
+
+		public void setClusterManagerPort(Integer clusterManagerPort) {
+			this.clusterManagerPort = clusterManagerPort;
 		}
 
 	}

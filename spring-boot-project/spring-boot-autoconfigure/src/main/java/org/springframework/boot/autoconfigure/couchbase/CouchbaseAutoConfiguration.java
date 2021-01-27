@@ -18,12 +18,16 @@ package org.springframework.boot.autoconfigure.couchbase;
 
 import java.net.URL;
 import java.security.KeyStore;
+import java.util.Optional;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.TrustManagerFactory;
 
 import com.couchbase.client.core.env.IoConfig;
 import com.couchbase.client.core.env.SecurityConfig;
+import com.couchbase.client.core.env.SeedNode;
 import com.couchbase.client.core.env.TimeoutConfig;
 import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.ClusterOptions;
@@ -35,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -43,6 +48,7 @@ import org.springframework.boot.autoconfigure.couchbase.CouchbaseProperties.Time
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.util.ResourceUtils;
@@ -53,12 +59,13 @@ import org.springframework.util.ResourceUtils;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Yulin Qin
+ * @author Aaron Whiteside
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(JacksonAutoConfiguration.class)
 @ConditionalOnClass(Cluster.class)
-@ConditionalOnProperty("spring.couchbase.connection-string")
+@Conditional(CouchbaseAutoConfiguration.CouchbasePropertyCondition.class)
 @EnableConfigurationProperties(CouchbaseProperties.class)
 public class CouchbaseAutoConfiguration {
 
@@ -76,7 +83,17 @@ public class CouchbaseAutoConfiguration {
 	public Cluster couchbaseCluster(CouchbaseProperties properties, ClusterEnvironment couchbaseClusterEnvironment) {
 		ClusterOptions options = ClusterOptions.clusterOptions(properties.getUsername(), properties.getPassword())
 				.environment(couchbaseClusterEnvironment);
-		return Cluster.connect(properties.getConnectionString(), options);
+
+		if (properties.getSeedNodes().isEmpty()) {
+			return Cluster.connect(properties.getConnectionString(), options);
+		}
+		else {
+			Set<SeedNode> seedNodes = properties
+					.getSeedNodes().stream().map((s) -> SeedNode.create(s.getAddress(),
+							Optional.ofNullable(s.getKeyValuePort()), Optional.ofNullable(s.getClusterManagerPort())))
+					.collect(Collectors.toSet());
+			return Cluster.connect(seedNodes, options);
+		}
 	}
 
 	private ClusterEnvironment.Builder initializeEnvironmentBuilder(CouchbaseProperties properties) {
@@ -147,6 +164,24 @@ public class CouchbaseAutoConfiguration {
 		@Override
 		public int getOrder() {
 			return 0;
+		}
+
+	}
+
+	static final class CouchbasePropertyCondition extends AnyNestedCondition {
+
+		CouchbasePropertyCondition() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnProperty("spring.couchbase.connection-string")
+		static class OnConnectionString {
+
+		}
+
+		@ConditionalOnProperty("spring.couchbase.seed-nodes[0].address")
+		static class OnSeedNode {
+
 		}
 
 	}

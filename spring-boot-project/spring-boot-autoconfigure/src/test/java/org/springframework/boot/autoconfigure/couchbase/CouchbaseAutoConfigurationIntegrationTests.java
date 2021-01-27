@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Stephane Nicoll
  * @author Brian Clozel
+ * @author Aaron Whiteside
  */
 @Testcontainers(disabledWithoutDocker = true)
 class CouchbaseAutoConfigurationIntegrationTests {
@@ -51,15 +52,35 @@ class CouchbaseAutoConfigurationIntegrationTests {
 			.withCredentials("spring", "password").withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10))
 			.withBucket(new BucketDefinition(BUCKET_NAME).withPrimaryIndex(false));
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner connectionStringContextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
 			.withPropertyValues("spring.couchbase.connection-string: " + couchbase.getConnectionString(),
 					"spring.couchbase.username:spring", "spring.couchbase.password:password",
 					"spring.couchbase.bucket.name:" + BUCKET_NAME);
 
+	private final ApplicationContextRunner seedNodeContextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(CouchbaseAutoConfiguration.class))
+			.withPropertyValues("spring.couchbase.seed-nodes[0].address: " + couchbase.getHost(),
+					"spring.couchbase.seed-nodes[0].key-value-port: " + couchbase.getMappedPort(11210),
+					"spring.couchbase.seed-nodes[0].cluster-manager-port: " + couchbase.getMappedPort(8091),
+					"spring.couchbase.username:spring", "spring.couchbase.password:password",
+					"spring.couchbase.bucket.name:" + BUCKET_NAME);
+
 	@Test
 	void defaultConfiguration() {
-		this.contextRunner.run((context) -> {
+		this.connectionStringContextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Cluster.class).hasSingleBean(ClusterEnvironment.class);
+			Cluster cluster = context.getBean(Cluster.class);
+			Bucket bucket = cluster.bucket(BUCKET_NAME);
+			bucket.waitUntilReady(Duration.ofMinutes(5));
+			DiagnosticsResult diagnostics = cluster.diagnostics();
+			assertThat(diagnostics.state()).isEqualTo(ClusterState.ONLINE);
+		});
+	}
+
+	@Test
+	void seedNodeConfiguration() {
+		this.seedNodeContextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Cluster.class).hasSingleBean(ClusterEnvironment.class);
 			Cluster cluster = context.getBean(Cluster.class);
 			Bucket bucket = cluster.bucket(BUCKET_NAME);
