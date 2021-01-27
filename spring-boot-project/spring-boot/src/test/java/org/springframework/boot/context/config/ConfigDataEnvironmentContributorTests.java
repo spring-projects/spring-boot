@@ -26,6 +26,7 @@ import java.util.stream.Stream;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cloud.CloudPlatform;
+import org.springframework.boot.context.config.ConfigData.Option;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.ImportPhase;
 import org.springframework.boot.context.config.ConfigDataEnvironmentContributor.Kind;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -332,6 +333,17 @@ class ConfigDataEnvironmentContributorTests {
 		propertySource.setProperty("spring.config.use-legacy-processing", "true");
 		assertThatExceptionOfType(UseLegacyConfigProcessingException.class).isThrownBy(
 				() -> createBoundContributor(null, new ConfigData(Collections.singleton(propertySource)), 0));
+	}
+
+	@Test // gh-25029
+	void withBoundPropertiesWhenIgnoringImportsAndNothingBound() {
+		TestResource resource = new TestResource("a");
+		ConfigData configData = new ConfigData(Collections.singleton(new MockPropertySource()), Option.IGNORE_IMPORTS);
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofUnboundImport(TEST_LOCATION,
+				resource, false, configData, 0);
+		Binder binder = new Binder(contributor.getConfigurationPropertySource());
+		ConfigDataEnvironmentContributor bound = contributor.withBoundProperties(binder);
+		assertThat(bound).isNotNull();
 	}
 
 	private ConfigDataEnvironmentContributor createBoundContributor(String location) {
