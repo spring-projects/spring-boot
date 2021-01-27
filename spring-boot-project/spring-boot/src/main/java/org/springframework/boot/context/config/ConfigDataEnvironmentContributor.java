@@ -223,7 +223,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 	ConfigDataEnvironmentContributor withBoundProperties(Binder binder) {
 		UseLegacyConfigProcessingException.throwIfRequested(binder);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
-		if (this.configDataOptions.contains(ConfigData.Option.IGNORE_IMPORTS)) {
+		if (properties != null && this.configDataOptions.contains(ConfigData.Option.IGNORE_IMPORTS)) {
 			properties = properties.withoutImports();
 		}
 		return new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, this.location, this.resource,
