@@ -163,6 +163,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		return reactiveWebOperation;
 	}
 
+	@SuppressWarnings("deprecation")
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
 		PatternsRequestCondition patterns = new PatternsRequestCondition(
@@ -176,6 +177,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		return new RequestMappingInfo(null, patterns, methods, null, null, consumes, produces, null);
 	}
 
+	@SuppressWarnings("deprecation")
 	private void registerLinksMapping() {
 		PatternsRequestCondition patterns = new PatternsRequestCondition(
 				pathPatternParser.parse(this.endpointMapping.getPath()));

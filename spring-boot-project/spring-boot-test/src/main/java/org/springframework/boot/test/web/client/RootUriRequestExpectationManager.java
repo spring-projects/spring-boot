@@ -20,6 +20,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.time.Duration;
 
 import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.http.client.ClientHttpRequest;
@@ -109,6 +110,11 @@ public class RootUriRequestExpectationManager implements RequestExpectationManag
 	@Override
 	public void verify() {
 		this.expectationManager.verify();
+	}
+
+	@Override
+	public void verify(Duration timeout) {
+		this.expectationManager.verify(timeout);
 	}
 
 	@Override

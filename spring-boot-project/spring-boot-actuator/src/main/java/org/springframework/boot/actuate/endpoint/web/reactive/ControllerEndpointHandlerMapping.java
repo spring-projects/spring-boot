@@ -101,6 +101,7 @@ public class ControllerEndpointHandlerMapping extends RequestMappingHandlerMappi
 		return getPathPatternParser().parse(this.endpointMapping.createSubPath(endpoint.getRootPath() + pattern));
 	}
 
+	@SuppressWarnings("deprecation")
 	private RequestMappingInfo withNewPatterns(RequestMappingInfo mapping, PathPattern[] patterns) {
 		PatternsRequestCondition patternsCondition = new PatternsRequestCondition(patterns);
 		return new RequestMappingInfo(patternsCondition, mapping.getMethodsCondition(), mapping.getParamsCondition(),
