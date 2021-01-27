@@ -52,8 +52,6 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 		errors.add(Profiles.INCLUDE_PROFILES);
 		errors.add(ConfigurationPropertyName.of(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME));
 		errors.add(ConfigurationPropertyName.of(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME));
-		errors.add(ConfigurationPropertyName.of("spring.config.activate.on-profile"));
-		errors.add(ConfigurationPropertyName.of("spring.profiles"));
 		PROFILE_SPECIFIC_ERRORS = Collections.unmodifiableSet(errors);
 	}
 
