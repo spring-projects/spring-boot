@@ -51,6 +51,28 @@ public interface Layout {
 	String getClassesLocation();
 
 	/**
+	 * Returns the location of the classpath index file that should be written or
+	 * {@code null} if not index is required. The result should include the filename and
+	 * is relative to the root of the jar.
+	 * @return the classpath index file location
+	 * @since 2.5.0
+	 */
+	default String getClasspathIndexFileLocation() {
+		return null;
+	}
+
+	/**
+	 * Returns the location of the layer index file that should be written or {@code null}
+	 * if not index is required. The result should include the filename and is relative to
+	 * the root of the jar.
+	 * @return the layer index file location
+	 * @since 2.5.0
+	 */
+	default String getLayersIndexFileLocation() {
+		return null;
+	}
+
+	/**
 	 * Returns if loader classes should be included to make the archive executable.
 	 * @return if the layout is executable
 	 */

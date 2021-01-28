@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,9 +65,9 @@ class ExtractCommand extends Command {
 					mkDirs(new File(destination, layer));
 				}
 			}
-			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getJarFile()))) {
+			try (ZipInputStream zip = new ZipInputStream(new FileInputStream(this.context.getArchiveFile()))) {
 				ZipEntry entry = zip.getNextEntry();
-				Assert.state(entry != null, "File '" + this.context.getJarFile().toString()
+				Assert.state(entry != null, "File '" + this.context.getArchiveFile().toString()
 						+ "' is not compatible with layertools; ensure jar file is valid and launch script is not enabled");
 				while (entry != null) {
 					if (!entry.isDirectory()) {

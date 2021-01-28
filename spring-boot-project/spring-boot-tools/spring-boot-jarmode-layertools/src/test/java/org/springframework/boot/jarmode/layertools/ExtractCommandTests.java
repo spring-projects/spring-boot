@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ class ExtractCommandTests {
 
 	@Test
 	void runExtractsLayers() throws Exception {
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Collections.emptyList());
 		assertThat(this.extract.list()).containsOnly("a", "b", "c", "d");
@@ -81,7 +81,7 @@ class ExtractCommandTests {
 
 	@Test
 	void runWhenHasDestinationOptionExtractsLayers() {
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		File out = new File(this.extract, "out");
 		this.command.run(Collections.singletonMap(ExtractCommand.DESTINATION_OPTION, out.getAbsolutePath()),
 				Collections.emptyList());
@@ -93,7 +93,7 @@ class ExtractCommandTests {
 
 	@Test
 	void runWhenHasLayerParamsExtractsLimitedLayers() {
-		given(this.context.getJarFile()).willReturn(this.jarFile);
+		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Arrays.asList("a", "c"));
 		assertThat(this.extract.list()).containsOnly("a", "c");
@@ -107,7 +107,7 @@ class ExtractCommandTests {
 		try (FileWriter writer = new FileWriter(file)) {
 			writer.write("text");
 		}
-		given(this.context.getJarFile()).willReturn(file);
+		given(this.context.getArchiveFile()).willReturn(file);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		assertThatIllegalStateException()
 				.isThrownBy(() -> this.command.run(Collections.emptyMap(), Collections.emptyList()))

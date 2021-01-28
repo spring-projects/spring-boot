@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,7 +55,7 @@ class LayerToolsJarModeTests {
 	@BeforeEach
 	void setup() throws Exception {
 		Context context = mock(Context.class);
-		given(context.getJarFile()).willReturn(createJarFile("test.jar"));
+		given(context.getArchiveFile()).willReturn(createJarFile("test.jar"));
 		this.out = new TestPrintStream(this);
 		this.systemOut = System.out;
 		System.setOut(this.out);

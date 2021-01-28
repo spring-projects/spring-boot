@@ -172,7 +172,7 @@ public abstract class Packager {
 		}
 		writer.writeManifest(buildManifest(sourceJar));
 		writeLoaderClasses(writer);
-		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries);
+		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries, writeableLibraries::containsEntry);
 		writeableLibraries.write(writer);
 		if (isLayered()) {
 			writeLayerIndex(writer);
@@ -190,7 +190,7 @@ public abstract class Packager {
 	}
 
 	private void writeLayerIndex(AbstractJarWriter writer) throws IOException {
-		String name = ((RepackagingLayout) this.layout).getLayersIndexFileLocation();
+		String name = this.layout.getLayersIndexFileLocation();
 		if (StringUtils.hasLength(name)) {
 			Layer layer = this.layers.getLayer(name);
 			this.layersIndex.add(layer, name);
@@ -318,27 +318,22 @@ public abstract class Packager {
 
 	private void addBootAttributes(Attributes attributes) {
 		attributes.putValue(BOOT_VERSION_ATTRIBUTE, getClass().getPackage().getImplementationVersion());
-		Layout layout = getLayout();
-		if (layout instanceof RepackagingLayout) {
-			addBootBootAttributesForRepackagingLayout(attributes, (RepackagingLayout) layout);
-		}
-		else {
-			addBootBootAttributesForPlainLayout(attributes);
-		}
+		addBootAttributesForLayout(attributes);
 	}
 
-	private void addBootBootAttributesForRepackagingLayout(Attributes attributes, RepackagingLayout layout) {
-		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getRepackagedClassesLocation());
+	private void addBootAttributesForLayout(Attributes attributes) {
+		Layout layout = getLayout();
+		if (layout instanceof RepackagingLayout) {
+			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, ((RepackagingLayout) layout).getRepackagedClassesLocation());
+		}
+		else {
+			attributes.putValue(BOOT_CLASSES_ATTRIBUTE, layout.getClassesLocation());
+		}
 		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
 		putIfHasLength(attributes, BOOT_CLASSPATH_INDEX_ATTRIBUTE, layout.getClasspathIndexFileLocation());
 		if (isLayered()) {
 			putIfHasLength(attributes, BOOT_LAYERS_INDEX_ATTRIBUTE, layout.getLayersIndexFileLocation());
 		}
-	}
-
-	private void addBootBootAttributesForPlainLayout(Attributes attributes) {
-		attributes.putValue(BOOT_CLASSES_ATTRIBUTE, getLayout().getClassesLocation());
-		putIfHasLength(attributes, BOOT_LIB_ATTRIBUTE, getLayout().getLibraryLocation("", LibraryScope.COMPILE));
 	}
 
 	private void putIfHasLength(Attributes attributes, String name, String value) {
@@ -348,7 +343,7 @@ public abstract class Packager {
 	}
 
 	private boolean isLayered() {
-		return this.layers != null && getLayout() instanceof Layouts.Jar;
+		return this.layers != null;
 	}
 
 	/**
@@ -466,6 +461,10 @@ public abstract class Packager {
 			return Digest.sha1(library::openStream);
 		}
 
+		boolean containsEntry(String name) {
+			return this.libraries.containsKey(name);
+		}
+
 		private void write(AbstractJarWriter writer) throws IOException {
 			for (Entry<String, Library> entry : this.libraries.entrySet()) {
 				String path = entry.getKey();
@@ -473,12 +472,12 @@ public abstract class Packager {
 				String location = path.substring(0, path.lastIndexOf('/') + 1);
 				writer.writeNestedLibrary(location, library);
 			}
-			if (getLayout() instanceof RepackagingLayout) {
-				writeClasspathIndex((RepackagingLayout) getLayout(), writer);
+			if (Packager.this.layout instanceof RepackagingLayout) {
+				writeClasspathIndex(getLayout(), writer);
 			}
 		}
 
-		private void writeClasspathIndex(RepackagingLayout layout, AbstractJarWriter writer) throws IOException {
+		private void writeClasspathIndex(Layout layout, AbstractJarWriter writer) throws IOException {
 			List<String> names = this.libraries.keySet().stream().map((path) -> "- \"" + path + "\"")
 					.collect(Collectors.toList());
 			writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
