@@ -130,8 +130,8 @@ class Context {
 	}
 
 	/**
-	 * Return the directory relative to {@link #getWorkingDir()} that contains the archive or
-	 * {@code null} if none relative directory can be deduced.
+	 * Return the directory relative to {@link #getWorkingDir()} that contains the archive
+	 * or {@code null} if none relative directory can be deduced.
 	 * @return the relative dir ending in {@code /} or {@code null}
 	 */
 	String getRelativeArchiveDir() {
