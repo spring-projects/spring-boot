@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 
@@ -88,11 +90,20 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private String[] getConfigNames(Binder binder) {
-		String[] configNames = binder.bind(CONFIG_NAME_PROPERTY, String[].class).orElse(DEFAULT_CONFIG_NAMES);
+		String[] configNames = binder.bind(CONFIG_NAME_PROPERTY, String[].class).orElse(getConfigNames());
 		for (String configName : configNames) {
 			validateConfigName(configName);
 		}
 		return configNames;
+	}
+
+	private String[] getConfigNames() {
+		List<AdditionalConfigLoader> additionalConfigs = SpringFactoriesLoader
+				.loadFactories(AdditionalConfigLoader.class, null);
+		List<String> configNames = additionalConfigs.stream().map((c) -> c.useAdditionalConfig())
+				.collect(Collectors.toList());
+		configNames.addAll(0, Arrays.asList(DEFAULT_CONFIG_NAMES));
+		return configNames.toArray(new String[0]);
 	}
 
 	private void validateConfigName(String name) {

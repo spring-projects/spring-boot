@@ -69,6 +69,13 @@ public class StandardConfigDataLocationResolverTests {
 	}
 
 	@Test
+	void resolveWhenConfigNameIsSpecifiedByAdditionalConfigLoader() {
+		ConfigDataLocation location = ConfigDataLocation.of("classpath:/config/additional-configs/");
+		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);
+		assertThat(locations.size()).isEqualTo(1);
+	}
+
+	@Test
 	void resolveWhenLocationIsDirectoryResolvesAllMatchingFilesInDirectory() {
 		ConfigDataLocation location = ConfigDataLocation.of("classpath:/configdata/properties/");
 		List<StandardConfigDataResource> locations = this.resolver.resolve(this.context, location);

@@ -7,3 +7,6 @@ org.springframework.boot.context.config.TestConfigDataBootstrap.LocationResolver
 
 org.springframework.boot.context.config.ConfigDataLoader=\
 org.springframework.boot.context.config.TestConfigDataBootstrap.Loader
+
+org.springframework.boot.context.config.AdditionalConfigLoader=\
+org.springframework.boot.context.config.TestAdditionalConfigLoader
