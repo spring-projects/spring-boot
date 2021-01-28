@@ -18,7 +18,7 @@ package org.springframework.boot.jarmode.layertools;
 
 import java.io.File;
 import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.nio.charset.StandardCharsets;
@@ -30,6 +30,9 @@ import java.util.zip.ZipOutputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -70,9 +73,12 @@ class HelpCommandTests {
 		assertThat(this.out).hasSameContentAsResource("help-extract-output.txt");
 	}
 
-	private File createJarFile(String name) throws IOException {
+	private File createJarFile(String name) throws Exception {
 		File file = new File(this.temp, name);
 		try (ZipOutputStream jarOutputStream = new ZipOutputStream(new FileOutputStream(file))) {
+			jarOutputStream.putNextEntry(new JarEntry("META-INF/MANIFEST.MF"));
+			jarOutputStream.write(getFile("test-manifest.MF").getBytes());
+			jarOutputStream.closeEntry();
 			JarEntry indexEntry = new JarEntry("BOOT-INF/layers.idx");
 			jarOutputStream.putNextEntry(indexEntry);
 			Writer writer = new OutputStreamWriter(jarOutputStream, StandardCharsets.UTF_8);
@@ -86,6 +92,12 @@ class HelpCommandTests {
 			writer.flush();
 		}
 		return file;
+	}
+
+	private String getFile(String fileName) throws Exception {
+		ClassPathResource resource = new ClassPathResource(fileName, getClass());
+		InputStreamReader reader = new InputStreamReader(resource.getInputStream());
+		return FileCopyUtils.copyToString(reader);
 	}
 
 }

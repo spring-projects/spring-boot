@@ -20,9 +20,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Iterator;
+import java.util.jar.JarEntry;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipOutputStream;
 
@@ -32,6 +34,9 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+
+import org.springframework.core.io.ClassPathResource;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
@@ -114,7 +119,7 @@ class ExtractCommandTests {
 				.withMessageContaining("not compatible with layertools");
 	}
 
-	private File createJarFile(String name) throws IOException {
+	private File createJarFile(String name) throws Exception {
 		File file = new File(this.temp, name);
 		try (ZipOutputStream out = new ZipOutputStream(new FileOutputStream(file))) {
 			out.putNextEntry(new ZipEntry("a/"));
@@ -131,8 +136,17 @@ class ExtractCommandTests {
 			out.closeEntry();
 			out.putNextEntry(new ZipEntry("d/"));
 			out.closeEntry();
+			out.putNextEntry(new JarEntry("META-INF/MANIFEST.MF"));
+			out.write(getFile("test-manifest.MF").getBytes());
+			out.closeEntry();
 		}
 		return file;
+	}
+
+	private String getFile(String fileName) throws Exception {
+		ClassPathResource resource = new ClassPathResource(fileName, getClass());
+		InputStreamReader reader = new InputStreamReader(resource.getInputStream());
+		return FileCopyUtils.copyToString(reader);
 	}
 
 	private static class TestLayers implements Layers {

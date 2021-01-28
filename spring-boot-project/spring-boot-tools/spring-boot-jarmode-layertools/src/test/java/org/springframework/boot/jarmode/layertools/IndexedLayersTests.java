@@ -98,10 +98,10 @@ class IndexedLayersTests {
 	}
 
 	private String getIndex() throws Exception {
-		return getIndex("test-layers.idx");
+		return getFile("test-layers.idx");
 	}
 
-	private String getIndex(String fileName) throws Exception {
+	private String getFile(String fileName) throws Exception {
 		ClassPathResource resource = new ClassPathResource(fileName, getClass());
 		InputStreamReader reader = new InputStreamReader(resource.getInputStream());
 		return FileCopyUtils.copyToString(reader);
@@ -123,10 +123,10 @@ class IndexedLayersTests {
 			out.putNextEntry(new ZipEntry("WEB-INF/classes/Demo.class"));
 			out.closeEntry();
 			out.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
-			out.write(getIndex("test-manifest.MF").getBytes());
+			out.write(getFile("test-war-manifest.MF").getBytes());
 			out.closeEntry();
 			out.putNextEntry(new ZipEntry("WEB-INF/layers.idx"));
-			out.write(getIndex("test-war-layers.idx").getBytes());
+			out.write(getFile("test-war-layers.idx").getBytes());
 			out.closeEntry();
 		}
 		return file;
