@@ -112,7 +112,7 @@ Gradle allows project properties to be set in a variety of ways, including on th
 
 [source,bash,indent=0,subs="verbatim,attributes"]
 ----
-$ ./gradlew -Pexample=custom
+$ ./gradlew bootRun -Pexample=custom
 ----
 
 The preceding example sets the value of the `example` project property to `custom`.
