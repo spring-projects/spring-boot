@@ -2215,7 +2215,7 @@ Spring Boot includes the following pre-defined logging groups that can be used o
 
 
 
-[[boot-features-custom-log-configuration]]
+[[boot-features-log-shutdown-hook]]
 === Using a Log Shutdown Hook
 In order to release logging resources it is usually a good idea to stop the logging system when your application terminates.
 Unfortunately, there's no single way to do this that will work with all application types.
