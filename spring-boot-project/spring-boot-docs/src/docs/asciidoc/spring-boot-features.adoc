@@ -2216,6 +2216,26 @@ Spring Boot includes the following pre-defined logging groups that can be used o
 
 
 [[boot-features-custom-log-configuration]]
+=== Using a Log Shutdown Hook
+In order to release logging resources it is usually a good idea to stop the logging system when your application terminates.
+Unfortunately, there's no single way to do this that will work with all application types.
+If your application has complex context hierarchies or is deployed as a war file, you'll need to investigate the options provided directly by the underlying logging system.
+For example, Logback offers http://logback.qos.ch/manual/loggingSeparation.html[context selectors] which allow each Logger to be created in its own context.
+
+For simple "single jar" applications deployed in their own JVM, you can use the `logging.register-shutdown-hook` property.
+Setting `logging.register-shutdown-hook` to `true` will register a shutdown hook that will trigger log system cleanup when the JVM exits.
+
+You can set the property in your `application.properties` or `application.yaml` file:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	logging:
+	  register-shutdown-hook: true
+----
+
+
+
+[[boot-features-custom-log-configuration]]
 === Custom Log Configuration
 The various logging systems can be activated by including the appropriate libraries on the classpath and can be further customized by providing a suitable configuration file in the root of the classpath or in a location specified by the following Spring `Environment` property: configprop:logging.config[].
 
