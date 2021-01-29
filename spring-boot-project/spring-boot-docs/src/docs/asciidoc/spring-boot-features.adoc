@@ -496,6 +496,10 @@ On your application classpath (for example, inside your jar) you can have an `ap
 When running in a new environment, an `application.properties` file can be provided outside of your jar that overrides the `name`.
 For one-off testing, you can launch with a specific command line switch (for example, `java -jar app.jar --name="Spring"`).
 
+TIP: The `env` and `configprops` endpoints can be useful in determining why a property has a particular value.
+You can use these two endpoints to diagnose unexpected property values.
+See the "<<production-ready-features.adoc#production-ready-endpoints, Production ready features>>" section for details.
+
 Spring Boot also supports wildcard locations when loading configuration files.
 By default, a wildcard location of `config/*/` outside of your jar is supported.
 Wildcard locations are also supported when specifying `spring.config.additional-location` and `spring.config.location`.
