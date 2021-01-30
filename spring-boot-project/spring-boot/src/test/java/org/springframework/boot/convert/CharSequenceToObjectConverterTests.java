@@ -40,7 +40,6 @@ class CharSequenceToObjectConverterTests {
 	@ConversionServiceTest
 	void convertWhenCanConvertDirectlySkipsStringConversion(ConversionService conversionService) {
 		assertThat(conversionService.convert(new String("1"), Long.class)).isEqualTo(1);
-		System.out.println(conversionService.getClass());
 		if (!ConversionServiceArguments.isApplicationConversionService(conversionService)) {
 			assertThat(conversionService.convert(new StringBuilder("1"), Long.class)).isEqualTo(2);
 		}
