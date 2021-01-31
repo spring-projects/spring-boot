@@ -2566,6 +2566,16 @@ If you want to provide custom instances of `RequestMappingHandlerMapping`, `Requ
 
 If you want to take complete control of Spring MVC, you can add your own `@Configuration` annotated with `@EnableWebMvc`, or alternatively add your own `@Configuration`-annotated `DelegatingWebMvcConfiguration` as described in the Javadoc of `@EnableWebMvc`.
 
+[NOTE]
+====
+Spring MVC uses a different `ConversionService` to the one used to convert values from your `application.properties` or `application.yaml` file.
+The means that `Period`, `Duration` and `DataSize` converters are not available and that `@DurationUnit` and `@DataSizeUnit` annotations will be ignored.
+
+If you want to customize the `ConversionService` used by Spring MVC, you can provide a `WebMvcConfigurer` bean with an `addFormatters` method.
+From this method you can register any converter that you like, or you can delegate to the static methods available on `ApplicationConversionService`.
+====
+
+
 
 [[boot-features-spring-mvc-message-converters]]
 ==== HttpMessageConverters
