@@ -1278,23 +1278,29 @@ TIP: We recommend that, when possible, properties are stored in lower-case kebab
 
 [[boot-features-external-config-relaxed-binding-maps]]
 ===== Binding Maps
-When binding to `Map` properties, if the `key` contains anything other than lowercase alpha-numeric characters or `-`, you need to use the bracket notation so that the original value is preserved.
-If the key is not surrounded by `[]`, any characters that are not alpha-numeric or `-` are removed.
-For example, consider binding the following properties to a `Map`:
+When binding to `Map` properties you may need to use a special bracket notation so that the original `key` value is preserved.
+If the key is not surrounded by `[]`, any characters that are not alpha-numeric, `-` or `.` are removed.
+
+For example, consider binding the following properties to a `Map<String,String>`:
 
 [source,yaml,indent=0]
 ----
 	acme:
 	  map:
-	    "[/key1]": value1
-	    "[/key2]": value2
-	    /key3: value3
+	    "[/key1]": "value1"
+	    "[/key2]": "value2"
+	    "/key3": "value3"
 
 ----
 
-The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
-
 NOTE: For YAML files, the brackets need to be surrounded by quotes for the keys to be parsed properly.
+
+The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as the keys in the map.
+The slash has been removed from `key3` because it wasn't surrounded by square brackets.
+
+You may also occasionally need to use the bracket notation if your `key` contains a `.` and you are binding to non-scalar value.
+For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` where as `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`. 
+
 
 
 [[boot-features-external-config-relaxed-binding-from-environment-variables]]
