@@ -101,7 +101,7 @@ These files, however, are _not_ parsed internally as YAML and they must be writt
 [[executable-jar-war-index-files-classpath]]
 === Classpath Index
 The classpath index file can be provided in `BOOT-INF/classpath.idx`.
-It provides a list of jar names (not including the directory) in the order that they should be added to the classpath.
+It provides a list of jar names (including the directory) in the order that they should be added to the classpath.
 Each line must start with dash space (`"-&#183;"`) and names must be in double quotes.
 
 For example, given the following jar:
@@ -124,8 +124,8 @@ The index file would look like this:
 
 [indent=0]
 ----
-	- "dependency2.jar"
-	- "dependency1.jar"
+	- "BOOT-INF/lib/dependency2.jar"
+	- "BOOT-INF/lib/dependency1.jar"
 ----
 
 
