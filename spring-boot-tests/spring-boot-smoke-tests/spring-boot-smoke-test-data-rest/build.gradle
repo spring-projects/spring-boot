@@ -17,4 +17,5 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 
 	testRuntimeOnly("com.jayway.jsonpath:json-path")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

@@ -11,6 +11,8 @@ dependencies {
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test")) {
 		exclude group: "org.junit.vintage"
 	}
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 test {

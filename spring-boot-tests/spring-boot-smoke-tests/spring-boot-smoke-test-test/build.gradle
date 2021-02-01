@@ -15,4 +15,6 @@ dependencies {
 	testImplementation("org.seleniumhq.selenium:selenium-api")
 	testImplementation("org.seleniumhq.selenium:htmlunit-driver")
 	testImplementation("net.sourceforge.htmlunit:htmlunit")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

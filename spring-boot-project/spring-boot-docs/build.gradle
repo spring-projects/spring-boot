@@ -101,6 +101,7 @@ dependencies {
 
 	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
 	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.springframework:spring-jdbc")
 
 	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))

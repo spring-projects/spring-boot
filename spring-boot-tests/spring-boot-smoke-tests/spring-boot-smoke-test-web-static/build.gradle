@@ -20,4 +20,6 @@ dependencies {
 	runtimeOnly("org.webjars:jquery:2.0.3-1")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
