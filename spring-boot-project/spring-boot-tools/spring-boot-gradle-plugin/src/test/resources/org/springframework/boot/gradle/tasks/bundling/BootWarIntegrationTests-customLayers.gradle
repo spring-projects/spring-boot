@@ -1,10 +1,29 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '{version}'
+	id 'war'
 }
 
-bootJar {
+bootWar {
 	mainClass = 'com.example.Application'
+	layered {
+		application {
+			intoLayer("static") {
+				include "META-INF/resources/**", "resources/**", "static/**", "public/**"
+			}
+			intoLayer("app")
+		}
+		dependencies {
+			intoLayer("snapshot-dependencies") {
+				include "*:*:*SNAPSHOT"
+			}
+			intoLayer("commons-dependencies") {
+				include "org.apache.commons:*"
+			}
+			intoLayer("dependencies")
+		}
+		layerOrder = ["dependencies", "commons-dependencies", "snapshot-dependencies", "static", "app"]
+	}
 }
 
 repositories {
@@ -16,17 +35,16 @@ dependencies {
 	implementation("com.example:library:1.0-SNAPSHOT")
 	implementation("org.apache.commons:commons-lang3:3.9")
 	implementation("org.springframework:spring-core:5.2.5.RELEASE")
-	implementation("org.springframework.boot:spring-boot-starter-logging:2.2.0.RELEASE")
 }
 
 task listLayers(type: JavaExec) {
-	classpath = bootJar.outputs.files
+	classpath = bootWar.outputs.files
 	systemProperties = [ "jarmode": "layertools" ]
 	args "list"
 }
 
 task extractLayers(type: JavaExec) {
-	classpath = bootJar.outputs.files
+	classpath = bootWar.outputs.files
 	systemProperties = [ "jarmode": "layertools" ]
 	args "extract"
 }

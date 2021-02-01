@@ -19,3 +19,9 @@ dependencies {
 bootWar {
 	classpath configurations.developmentOnly
 }
+
+bootWar {
+	layered {
+		enabled = false
+	}
+}

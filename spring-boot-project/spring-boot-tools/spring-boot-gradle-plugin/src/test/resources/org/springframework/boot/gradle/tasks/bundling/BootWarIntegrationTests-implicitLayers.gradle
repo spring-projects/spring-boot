@@ -1,9 +1,10 @@
 plugins {
 	id 'java'
 	id 'org.springframework.boot' version '{version}'
+	id 'war'
 }
 
-bootJar {
+bootWar {
 	mainClass = 'com.example.Application'
 }
 
@@ -20,13 +21,13 @@ dependencies {
 }
 
 task listLayers(type: JavaExec) {
-	classpath = bootJar.outputs.files
+	classpath = bootWar.outputs.files
 	systemProperties = [ "jarmode": "layertools" ]
 	args "list"
 }
 
 task extractLayers(type: JavaExec) {
-	classpath = bootJar.outputs.files
+	classpath = bootWar.outputs.files
 	systemProperties = [ "jarmode": "layertools" ]
 	args "extract"
 }

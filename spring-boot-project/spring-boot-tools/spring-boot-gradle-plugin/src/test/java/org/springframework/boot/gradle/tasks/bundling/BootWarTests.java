@@ -20,6 +20,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.jar.JarFile;
 
+import org.gradle.api.Action;
+import org.gradle.api.artifacts.Configuration;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,7 +34,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	BootWarTests() {
-		super(BootWar.class, "org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/", "WEB-INF/classes/");
+		super(BootWar.class, "org.springframework.boot.loader.WarLauncher", "WEB-INF/lib/", "WEB-INF/classes/",
+				"WEB-INF/");
 	}
 
 	@Test
@@ -109,6 +112,21 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 	@Override
 	protected void executeTask() {
 		getTask().copy();
+	}
+
+	@Override
+	void populateResolvedDependencies(Configuration configuration) {
+		getTask().getResolvedDependencies().processConfiguration(configuration);
+	}
+
+	@Override
+	void applyLayered(Action<LayeredSpec> action) {
+		getTask().layered(action);
+	}
+
+	@Override
+	boolean archiveHasClasspathIndex() {
+		return false;
 	}
 
 }

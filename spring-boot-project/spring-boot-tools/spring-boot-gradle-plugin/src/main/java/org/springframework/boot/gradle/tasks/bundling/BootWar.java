@@ -22,6 +22,7 @@ import java.util.function.Function;
 
 import org.gradle.api.Action;
 import org.gradle.api.Project;
+import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
@@ -30,6 +31,8 @@ import org.gradle.api.internal.file.copy.CopyAction;
 import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
+import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.bundling.War;
 
@@ -50,11 +53,17 @@ public class BootWar extends War implements BootArchive {
 
 	private static final String LIB_DIRECTORY = "WEB-INF/lib/";
 
+	private static final String LAYERS_INDEX = "WEB-INF/layers.idx";
+
 	private final BootArchiveSupport support;
 
 	private final Property<String> mainClass;
 
 	private FileCollection providedClasspath;
+
+	private final ResolvedDependencies resolvedDependencies = new ResolvedDependencies();
+
+	private LayeredSpec layered = new LayeredSpec();
 
 	/**
 	 * Creates a new {@code BootWar} task.
@@ -65,6 +74,14 @@ public class BootWar extends War implements BootArchive {
 		getWebInf().into("lib-provided", fromCallTo(this::getProvidedLibFiles));
 		this.support.moveModuleInfoToRoot(getRootSpec());
 		getRootSpec().eachFile(this.support::excludeNonZipLibraryFiles);
+		getProject().getConfigurations().all((configuration) -> {
+			ResolvableDependencies incoming = configuration.getIncoming();
+			incoming.afterResolve((resolvableDependencies) -> {
+				if (resolvableDependencies == incoming) {
+					this.resolvedDependencies.processConfiguration(configuration);
+				}
+			});
+		});
 	}
 
 	private Object getProvidedLibFiles() {
@@ -74,12 +91,21 @@ public class BootWar extends War implements BootArchive {
 	@Override
 	public void copy() {
 		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY, null,
-				null);
+				(isLayeredDisabled()) ? null : LAYERS_INDEX);
 		super.copy();
+	}
+
+	private boolean isLayeredDisabled() {
+		return this.layered != null && !this.layered.isEnabled();
 	}
 
 	@Override
 	protected CopyAction createCopyAction() {
+		if (!isLayeredDisabled()) {
+			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
+			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
+			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
+		}
 		return this.support.createCopyAction(this);
 	}
 
@@ -182,6 +208,25 @@ public class BootWar extends War implements BootArchive {
 	}
 
 	/**
+	 * Returns the spec that describes the layers in a layered jar.
+	 * @return the spec for the layers
+	 * @since 2.5.0
+	 */
+	@Nested
+	public LayeredSpec getLayered() {
+		return this.layered;
+	}
+
+	/**
+	 * Configures the war's layering using the given {@code action}.
+	 * @param action the action to apply
+	 * @since 2.5.0
+	 */
+	public void layered(Action<LayeredSpec> action) {
+		action.execute(this.layered);
+	}
+
+	/**
 	 * Return if the {@link FileCopyDetails} are for a library. By default any file in
 	 * {@code WEB-INF/lib} or {@code WEB-INF/lib-provided} is considered to be a library.
 	 * @param details the file copy details
@@ -199,6 +244,11 @@ public class BootWar extends War implements BootArchive {
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;
+	}
+
+	@Internal
+	ResolvedDependencies getResolvedDependencies() {
+		return this.resolvedDependencies;
 	}
 
 	/**
