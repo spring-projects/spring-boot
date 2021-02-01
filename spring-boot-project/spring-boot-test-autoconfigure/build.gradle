@@ -84,6 +84,7 @@ dependencies {
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
+	testImplementation("org.thymeleaf:thymeleaf")
 
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
