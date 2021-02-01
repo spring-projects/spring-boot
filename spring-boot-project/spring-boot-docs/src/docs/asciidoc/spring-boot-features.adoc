@@ -8883,8 +8883,10 @@ This layering is designed to separate code based on how likely it is to change b
 Library code is less likely to change between builds, so it is placed in its own layers to allow tooling to re-use the layers from cache.
 Application code is more likely to change between builds so it is isolated in a separate layer.
 
-For Maven, refer to the {spring-boot-maven-plugin-docs}#repackage-layers[packaging layered jars section] for more details on adding a layer index to the jar.
-For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-jars[packaging layered jars section] of the Gradle plugin documentation.
+Spring Boot also supports layering for war files with the help of a `layers.idx`.
+
+For Maven, refer to the {spring-boot-maven-plugin-docs}#repackage-layers[packaging layered jar or war section] for more details on adding a layer index to the archive.
+For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-archives[packaging layered jar or war section] of the Gradle plugin documentation.
 
 === Building Container Images
 Spring Boot applications can be containerized <<boot-features-container-images-docker,using Dockerfiles>>, or by <<boot-features-container-images-buildpacks,using Cloud Native Buildpacks to create docker compatible container images that you can run anywhere>>.

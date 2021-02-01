@@ -73,16 +73,17 @@ The `layout` property defaults to a value determined by the archive type (`jar` 
 
 
 [[repackage-layers]]
-=== Layered Jars
+=== Layered Jar or War
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
-For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
+Similarly, an executable war contains the application's classes in `WEB-INF/classes` and dependencies in `WEB-INF/lib` and `WEB-INF/lib-provided`.
+For cases where a docker image needs to be built from the contents of a jar or war, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
-Layered jars use the same layout as regular repackaged jars, but include an additional meta-data file that describes each layer.
+Layered archives use the same layout as a regular repackaged jar or war, but include an additional meta-data file that describes each layer.
 
 By default, the following layers are defined:
 
 * `dependencies` for any dependency whose version does not contain `SNAPSHOT`.
-* `spring-boot-loader` for the jar loader classes.
+* `spring-boot-loader` for the loader classes.
 * `snapshot-dependencies` for any dependency whose version contains `SNAPSHOT`.
 * `application` for local module dependencies, application classes, and resources.
 
@@ -93,7 +94,7 @@ The layers order is important as it determines how likely previous layers can be
 The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
 Content that is least likely to change should be added first, followed by layers that are more likely to change.
 
-The repackaged jar includes the `layers.idx` file by default.
+The repackaged archive includes the `layers.idx` file by default.
 To disable this feature, you can do so in the following manner:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -142,7 +143,7 @@ This can be done using a separate configuration file that should be registered a
 	</project>
 ----
 
-The configuration file describes how the jar can be separated into layers, and the order of those layers.
+The configuration file describes how an archive can be separated into layers, and the order of those layers.
 The following example shows how the default ordering described above can be defined explicitly:
 
 [source,xml,indent=0,subs="verbatim,attributes"]
@@ -527,9 +528,9 @@ This example excludes any artifact belonging to the `com.foo` group:
 
 
 
-[[repackage-layered-jars-tools]]
-==== Layered Jar Tools
-When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+[[repackage-layered-archive-tools]]
+==== Layered Archive Tools
+When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 
@@ -554,7 +555,7 @@ If you wish to exclude this dependency, you can do so in the following manner:
 
 
 
-[[repackage-layered-jars-additional-layers]]
+[[repackage-layered-archive-additional-layers]]
 ==== Custom Layers Configuration
 The default setup splits dependencies into snapshot and non-snapshot, however, you may have more complex rules.
 For example, you may want to isolate company-specific dependencies of your project in a dedicated layer.

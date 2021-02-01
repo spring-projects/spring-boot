@@ -273,9 +273,10 @@ include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=proper
 
 
 
-[[packaging-layered-jars]]
-==== Packaging Layered Jars
+[[packaging-layered-archives]]
+==== Packaging Layered Jar or War
 By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
+Similarly, `bootWar` builds an archive that contains the application's classes in `WEB-INF/classes` and dependencies in `WEB-INF/lib` and `WEB-INF/lib-provided`.
 For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
 
 Layered jars use the same layout as regular boot packaged jars, but include an additional meta-data file that describes each layer.
@@ -305,7 +306,7 @@ include::../gradle/packaging/boot-jar-layered-disabled.gradle[tags=layered]
 include::../gradle/packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
 ----
 
-When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
 
@@ -327,7 +328,7 @@ include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=laye
 ===== Custom Layers Configuration
 Depending on your application, you may want to tune how layers are created and add new ones.
 
-This can be done using configuration that describes how the jar can be separated into layers, and the order of those layers.
+This can be done using configuration that describes how the jar or war can be separated into layers, and the order of those layers.
 The following example shows how the default ordering described above can be defined explicitly:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
