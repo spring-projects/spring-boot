@@ -89,6 +89,5 @@ dependencies {
 	testRuntimeOnly("javax.xml.bind:jaxb-api")
 	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
 	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 	testRuntimeOnly("org.hsqldb:hsqldb")
 }

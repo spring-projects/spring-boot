@@ -24,6 +24,4 @@ dependencies {
 	sessionStores[project.findProperty("sessionStore") ?: "mongodb"].each { runtimeOnly it }
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

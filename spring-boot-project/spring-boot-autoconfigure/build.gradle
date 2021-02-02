@@ -186,5 +186,4 @@ dependencies {
 	testImplementation("org.yaml:snakeyaml")
 
 	testRuntimeOnly("org.jetbrains.kotlin:kotlin-reflect")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

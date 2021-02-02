@@ -37,8 +37,6 @@ dependencies {
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.springframework:spring-core")
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 task syncTestRepository(type: Sync) {
