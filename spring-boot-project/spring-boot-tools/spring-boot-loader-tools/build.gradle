@@ -31,6 +31,8 @@ dependencies {
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.zeroturnaround:zt-zip:1.13")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 sourceSets {

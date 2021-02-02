@@ -7,4 +7,6 @@ description = "Spring Boot animated banner smoke test"
 
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

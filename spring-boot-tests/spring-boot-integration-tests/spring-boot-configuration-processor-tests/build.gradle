@@ -14,4 +14,6 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"))
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

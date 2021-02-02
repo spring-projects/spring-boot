@@ -39,6 +39,8 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.mockito:mockito-junit-jupiter")
 	testImplementation("org.springframework:spring-core")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 syncDocumentationSourceForAsciidoctor {
