@@ -14,8 +14,6 @@ dependencies {
 	testImplementation("org.assertj:assertj-core")
 	testImplementation("org.springframework:spring-test")
 	testImplementation("org.testng:testng:6.8.13")
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 test {

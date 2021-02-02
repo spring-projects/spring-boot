@@ -15,7 +15,5 @@ dependencies {
 	runtimeOnly("com.h2database:h2")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-
 	testRuntimeOnly("org.apache.httpcomponents:httpclient")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

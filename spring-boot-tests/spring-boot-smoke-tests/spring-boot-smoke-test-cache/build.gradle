@@ -39,8 +39,6 @@ dependencies {
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
 	if (project.hasProperty("cache")) {
 		caches[project.getProperty("cache")].each { runtimeOnly it }
 	}
