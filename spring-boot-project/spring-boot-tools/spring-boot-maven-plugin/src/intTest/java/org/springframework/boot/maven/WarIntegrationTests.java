@@ -19,6 +19,7 @@ package org.springframework.boot.maven;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.jar.JarFile;
@@ -111,9 +112,12 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 				Map<String, List<String>> layerIndex = readLayerIndex(jarFile);
 				assertThat(layerIndex.keySet()).containsExactly("dependencies", "spring-boot-loader",
 						"snapshot-dependencies", "application");
+				List<String> dependenciesAndSnapshotDependencies = new ArrayList<>();
+				dependenciesAndSnapshotDependencies.addAll(layerIndex.get("dependencies"));
+				dependenciesAndSnapshotDependencies.addAll(layerIndex.get("snapshot-dependencies"));
 				assertThat(layerIndex.get("application")).contains("WEB-INF/lib/jar-release-0.0.1.RELEASE.jar",
 						"WEB-INF/lib/jar-snapshot-0.0.1.BUILD-SNAPSHOT.jar");
-				assertThat(layerIndex.get("dependencies"))
+				assertThat(dependenciesAndSnapshotDependencies)
 						.anyMatch((dependency) -> dependency.startsWith("WEB-INF/lib/spring-context"));
 				assertThat(layerIndex.get("dependencies"))
 						.anyMatch((dependency) -> dependency.startsWith("WEB-INF/lib-provided/"));
