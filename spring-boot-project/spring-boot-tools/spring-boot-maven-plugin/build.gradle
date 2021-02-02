@@ -9,12 +9,15 @@ plugins {
 description = "Spring Boot Maven Plugin"
 
 configurations {
+	dependenciesBom
 	documentation
 }
 
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
+
+	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -43,9 +46,20 @@ dependencies {
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
+task syncSpringBootDependenciesBom(type: Sync) {
+	destinationDir = file("${buildDir}/generated/sources/dependencies-bom/org/springframework/boot/maven")
+	from configurations.dependenciesBom
+}
+
 syncDocumentationSourceForAsciidoctor {
 	from(documentPluginGoals) {
 		into "asciidoc/goals"
+	}
+}
+
+sourceSets {
+	main {
+		output.dir("${buildDir}/generated/sources/dependencies-bom", builtBy: "syncSpringBootDependenciesBom")
 	}
 }
 
