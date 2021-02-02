@@ -35,5 +35,4 @@ dependencies {
 	testImplementation("org.springframework:spring-context")
 
 	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

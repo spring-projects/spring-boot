@@ -11,6 +11,4 @@ dependencies {
 	runtimeOnly("de.flapdoodle.embed:de.flapdoodle.embed.mongo")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

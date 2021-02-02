@@ -13,6 +13,4 @@ dependencies {
 	runtimeOnly("io.r2dbc:r2dbc-h2")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

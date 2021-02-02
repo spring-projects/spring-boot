@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,6 +59,9 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied
  * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
+ * <li>A {@code testRuntimeOnly} dependency upon
+ * {@code org.junit.platform:junit-platform-launcher} is added to projects with the
+ * {@link JavaPlugin} applied
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
  * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
@@ -139,6 +142,8 @@ class JavaConventions {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
 		});
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
+				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
 		project.getPlugins().apply(TestRetryPlugin.class);
 		project.getTasks().withType(Test.class,
 				(test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {

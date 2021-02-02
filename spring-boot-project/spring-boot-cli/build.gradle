@@ -65,8 +65,6 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.springframework:spring-test")
 
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-amqp", configuration: "mavenRepository"))
 	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-aop", configuration: "mavenRepository"))

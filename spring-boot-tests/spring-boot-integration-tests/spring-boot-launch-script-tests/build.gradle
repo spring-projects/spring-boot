@@ -19,8 +19,6 @@ dependencies {
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 	intTestImplementation("org.testcontainers:testcontainers")
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 task syncMavenRepository(type: Sync) {
