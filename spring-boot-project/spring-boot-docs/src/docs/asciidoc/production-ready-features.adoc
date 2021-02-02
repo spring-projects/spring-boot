@@ -463,7 +463,7 @@ The following example exposes a read operation that returns a custom object:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/endpoint/CustomEndpointExample.java[tag=read]
+include::{include-productionreadyfeatures}/endpoints/CustomEndpointExample.java[tag=read]
 ----
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
@@ -500,7 +500,7 @@ This can be used to invoke a write operation that takes `String name` and `int c
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/endpoint/CustomEndpointExample.java[tag=write]
+include::{include-productionreadyfeatures}/endpoints/CustomEndpointExample.java[tag=write]
 ----
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
@@ -2379,14 +2379,14 @@ To register custom metrics, inject `MeterRegistry` into your component, as shown
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/metrics/MetricsMeterRegistryInjectionExample.java[tag=component]
+include::{include-productionreadyfeatures}/metrics/MetricsMeterRegistryInjectionExample.java[tag=*]
 ----
 
 If your metrics depend on other beans, it is recommended that you use a `MeterBinder` to register them, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/metrics/SampleMeterBinderConfiguration.java[tag=example]
+include::{include-productionreadyfeatures}/metrics/SampleMeterBinderConfiguration.java[tag=*]
 ----
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
@@ -2404,7 +2404,7 @@ For example, if you want to rename the `mytag.region` tag to `mytag.area` for al
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=configuration]
+include::{include-productionreadyfeatures}/metrics/MetricsFilterBeanExample.java[tag=*]
 ----
 
 
@@ -2622,7 +2622,7 @@ For Tomcat, the following configuration can be added:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[tag=configuration]
+include::{include-productionreadyfeatures}/cloudfoundry/CloudFoundryCustomContextPathExample.java[tag=*]
 ----
 
 

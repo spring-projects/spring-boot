@@ -195,7 +195,7 @@ The `SpringApplicationBuilder` lets you chain together multiple method calls and
 
 [source,java,indent=0]
 ----
-include::{code-examples}/builder/SpringApplicationBuilderExample.java[tag=hierarchy]
+include::{include-springbootfeatures}/springapplication/SpringApplicationBuilderExample.java[tag=*]
 ----
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
@@ -436,7 +436,7 @@ This exit code can then be passed to `System.exit()` to return it as a status co
 
 [source,java,indent=0]
 ----
-include::{code-examples}/ExitCodeApplication.java[tag=example]
+include::{include-springbootfeatures}/springapplication/ExitCodeExample.java[tag=*]
 ----
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
@@ -1673,7 +1673,7 @@ You may want to rename your custom `ConversionService` if it is not required for
 
 
 [[boot-features-external-config-conversion-duration]]
-===== Converting durations
+===== Converting Durations
 Spring Boot has dedicated support for expressing durations.
 If you expose a `java.time.Duration` property, the following formats in application properties are available:
 
@@ -1685,7 +1685,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/javabean/AppSystemProperties.java[tag=example]
+include::{include-springbootfeatures}/externalizedconfiguration/duration/javabeanbinding/AppSystemProperties.java[tag=*]
 ----
 
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
@@ -1708,7 +1708,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/constructor/AppSystemProperties.java[tag=example]
+include::{include-springbootfeatures}/externalizedconfiguration/duration/constructorbinding/AppSystemProperties.java[tag=*]
 ----
 
 
@@ -1749,7 +1749,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/javabean/AppIoProperties.java[tag=example]
+include::{include-springbootfeatures}/externalizedconfiguration/datasize/javabeanbinding/AppIoProperties.java[tag=*]
 ----
 
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
@@ -1770,7 +1770,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/properties/bind/constructor/AppIoProperties.java[tag=example]
+include::{include-springbootfeatures}/externalizedconfiguration/datasize/constructorbinding/AppIoProperties.java[tag=*]
 ----
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes.
@@ -3515,7 +3515,7 @@ The following example shows how to customize `TomcatServletWebServerFactory` tha
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{code-examples}/context/embedded/TomcatServerCustomizerExample.java[tag=configuration]
+include::{include-springbootfeatures}/webapplications/TomcatServerCustomizerExample.java[tag=*]
 ----
 
 
@@ -3769,7 +3769,7 @@ For example, you can customize your security configuration by adding something l
 
 [source,java,indent=0]
 ----
-include::{code-examples}/web/security/CustomWebFluxSecurityExample.java[tag=configuration]
+include::{include-springbootfeatures}/security/CustomWebFluxSecurityExample.java[tag=*]
 ----
 
 
@@ -4924,7 +4924,7 @@ To enable transaction management, the following bean must be defined in your con
 
 [source,java,indent=0]
 ----
-include::{code-examples}/neo4j/Neo4jReactiveTransactionManagerExample.java[tag=configuration]
+include::{include-springbootfeatures}/nosql/Neo4jReactiveTransactionManagerExample.java[tag=*]
 ----
 ====
 
@@ -5609,7 +5609,7 @@ The following example shows a customizer that configures a specific entry expira
 
 [source,java,indent=0]
 ----
-include::{code-examples}/cache/CouchbaseCacheManagerCustomizationExample.java[tag=configuration]
+include::{include-springbootfeatures}/nosql/CouchbaseCacheManagerCustomizationExample.java[tag=*]
 ----
 
 
@@ -5640,7 +5640,7 @@ The following example shows a customizer that configures a specific time to live
 
 [source,java,indent=0]
 ----
-include::{code-examples}/cache/RedisCacheManagerCustomizationExample.java[tag=configuration]
+include::{include-springbootfeatures}/nosql//RedisCacheManagerCustomizationExample.java[tag=*]
 ----
 
 
@@ -6208,7 +6208,7 @@ To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the
 
 [source,java,indent=0]
 ----
-include::{code-examples}/kafka/KafkaStreamsBeanExample.java[tag=configuration]
+include::{include-springbootfeatures}/messaging/KafkaStreamsBeanExample.java[tag=*]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
@@ -6363,7 +6363,7 @@ The following example shows a customizer that configures the use of a proxy for 
 
 [source,java,indent=0]
 ----
-include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
+include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizationExample.java[tag=*]
 ----
 
 Finally, you can also create your own `RestTemplateBuilder` bean.
@@ -6372,7 +6372,7 @@ The following example exposes a `RestTemplateBuilder` with what Spring Boot woul
 
 [source,java,indent=0]
 ----
-include::{code-examples}/web/client/RestTemplateBuilderCustomizationExample.java[tag=customizer]
+include::{include-springbootfeatures}/resttemplate/RestTemplateBuilderCustomizationExample.java[tag=*]
 ----
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
@@ -7025,7 +7025,7 @@ have `@SpringBootTest` inject them using the `args` attribute.
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/context/ApplicationArgumentsExampleTests.java[tag=example]
+include::{include-springbootfeatures}/testing/ApplicationArgumentsExampleTests.java[tag=*]
 ----
 
 
@@ -7037,7 +7037,7 @@ If you have web endpoints that you want to test against this mock environment, y
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/web/MockMvcExampleTests.java[tag=test-mock-mvc]
+include::{include-springbootfeatures}/testing/MockMvcExampleTests.java[tag=*]
 ----
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests,using `@WebMvcTest` instead>>.
@@ -7046,7 +7046,7 @@ Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestc
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/web/MockWebTestClientExampleTests.java[tag=test-mock-web-test-client]
+include::{include-springbootfeatures}/testing/MockWebTestClientExampleTests.java[tag=*]
 ----
 
 [TIP]
@@ -7071,7 +7071,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/web/RandomPortWebTestClientExampleTests.java[tag=test-random-port]
+include::{include-springbootfeatures}/testing/RandomPortWebTestClientExampleTests.java[tag=*]
 ----
 
 This setup requires `spring-webflux` on the classpath.
@@ -7079,7 +7079,7 @@ If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/web/RandomPortTestRestTemplateExampleTests.java[tag=test-random-port]
+include::{include-springbootfeatures}/testing/RandomPortTestRestTemplateExampleTests.java[tag=*]
 ----
 
 
@@ -7098,7 +7098,7 @@ If such test needs access to an `MBeanServer`, consider marking it dirty as well
 
 [source,java,indent=0]
 ----
-include::{test-examples}/jmx/SampleJmxTests.java[tag=test]
+include::{include-springbootfeatures}/testing/jmx/SampleJmxTests.java[tag=*]
 ----
 
 
@@ -7921,14 +7921,14 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/autoconfigure/restdocs/webclient/UsersDocumentationTests.java[tag=source]
+include::{include-springbootfeatures}/testing/restdocs/webclient/UsersDocumentationTests.java[tag=*]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsWebTestClientConfigurationCustomizer` bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/autoconfigure/restdocs/webclient/AdvancedConfigurationExample.java[tag=configuration]
+include::{include-springbootfeatures}/testing/restdocs/webclient/AdvancedConfigurationExample.java[tag=*]
 ----
 
 
@@ -7940,14 +7940,14 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/autoconfigure/restdocs/restassured/UserDocumentationTests.java[tag=source]
+include::{include-springbootfeatures}/testing/restdocs/restassured/UserDocumentationTests.java[tag=*]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer` bean can be used, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/test/autoconfigure/restdocs/restassured/AdvancedConfigurationExample.java[tag=configuration]
+include::{include-springbootfeatures}/testing/restdocs/restassured/AdvancedConfigurationExample.java[tag=*]
 ----
 
 
@@ -8141,7 +8141,7 @@ To use add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutpu
 
 [source,java,indent=0]
 ----
-include::{test-examples}/test/system/OutputCaptureTests.java[tag=test]
+include::{include-springbootfeatures}/testing/OutputCaptureTests.java[tag=*]
 ----
 
 
@@ -8186,7 +8186,7 @@ Any URLs that do not specify a host and port automatically connect to the embedd
 
 [source,java,indent=0]
 ----
-include::{test-examples}/web/client/SampleWebClientTests.java[tag=test]
+include::{include-springbootfeatures}/testing/webclient/SampleWebClientTests.java[tag=*]
 ----
 
 
@@ -8450,7 +8450,7 @@ The following example makes sure that `UserServiceAutoConfiguration` is always i
 
 [source,java,indent=0]
 ----
-include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=runner]
+include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=runner]
 ----
 
 TIP: If multiple auto-configurations have to be defined, there is no need to order their declarations as they are invoked in the exact same order as when running the application.
@@ -8461,14 +8461,14 @@ Invoking `run` provides a callback context that can be used with `AssertJ`.
 
 [source,java,indent=0]
 ----
-include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-user-config]
+include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=test-user-config]
 ----
 
 It is also possible to easily customize the `Environment`, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-env]
+include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=test-env]
 ----
 
 The runner can also be used to display the `ConditionEvaluationReport`.
@@ -8502,7 +8502,7 @@ In the following example, we assert that if `UserService` is not present, the au
 
 [source,java,indent=0]
 ----
-include::{test-examples}/autoconfigure/UserServiceAutoConfigurationTests.java[tag=test-classloader]
+include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=test-classloader]
 ----
 
 
