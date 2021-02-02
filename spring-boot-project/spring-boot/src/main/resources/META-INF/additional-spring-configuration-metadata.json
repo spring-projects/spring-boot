@@ -292,6 +292,12 @@
       "description": "Config file locations used in addition to the defaults."
     },
     {
+      "name": "spring.config.intergration-location",
+      "type": "java.lang.String",
+      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "description": "lowest config file locations ,when intergrate dynamic jars, the value can be such as 'classpath*:/sink/*/'"
+    },      
+    {
       "name": "spring.config.import",
       "type": "java.util.List<java.lang.String>",
       "description": "Import additional config data.",

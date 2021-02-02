@@ -29,7 +29,6 @@ import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 
-import org.springframework.boot.context.config.LocationResourceLoader.ResourceType;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.env.PropertySourceLoader;
 import org.springframework.core.Ordered;
@@ -37,6 +36,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
@@ -48,6 +48,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Scott Frederick
+ * @author Zhengsheng Xia
  * @since 2.4.0
  */
 public class StandardConfigDataLocationResolver
@@ -244,6 +245,9 @@ public class StandardConfigDataLocationResolver
 		Set<StandardConfigDataResource> empty = new LinkedHashSet<>();
 		for (StandardConfigDataReference reference : references) {
 			if (reference.isMandatoryDirectory()) {
+			    if (reference.getDirectory().startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) {
+			        continue;
+			    }
 				Resource resource = this.resourceLoader.getResource(reference.getDirectory());
 				if (resource instanceof ClassPathResource) {
 					continue;
@@ -274,7 +278,8 @@ public class StandardConfigDataLocationResolver
 
 	private List<StandardConfigDataResource> resolvePattern(StandardConfigDataReference reference) {
 		List<StandardConfigDataResource> resolved = new ArrayList<>();
-		for (Resource resource : this.resourceLoader.getResources(reference.getResourceLocation(), ResourceType.FILE)) {
+		for (Resource resource : this.resourceLoader.getResources(reference.getResourceLocation(),
+		        reference.getConfigDataLocation().isAllowClasspathAll())) {
 			if (!resource.exists() && reference.isSkippable()) {
 				logSkippingResource(reference);
 			}

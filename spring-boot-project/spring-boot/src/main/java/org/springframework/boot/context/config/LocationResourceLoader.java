@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import java.io.File;
 import java.io.FilenameFilter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
@@ -26,6 +27,7 @@ import java.util.List;
 import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
+import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.util.Assert;
 import org.springframework.util.ResourceUtils;
@@ -37,6 +39,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Zhengsheng Xia
  */
 class LocationResourceLoader {
 
@@ -88,12 +91,18 @@ class LocationResourceLoader {
 	 * Get a multiple resources from a location pattern.
 	 * @param location the location pattern
 	 * @param type the type of resource to return
+	 * @param allowClasspathAll the boolean value of allow param location contains 'classpath*:'
 	 * @return the resources
 	 * @see #isPattern(String)
 	 */
-	Resource[] getResources(String location, ResourceType type) {
-		validatePattern(location, type);
-		String directoryPath = location.substring(0, location.indexOf("*/"));
+	Resource[] getResources(String location, ResourceType type ,boolean allowClasspathAll) {
+	    boolean startsWithClasspathAll = validatePatternAndCheckClasspathAll(location, type, allowClasspathAll);
+	    int wildcardlastIdx = location.indexOf("*/");
+        String directoryPath = location.substring(0, wildcardlastIdx);
+        if (startsWithClasspathAll) {
+            return getResourcesFromClasspathAllPatternLocation(location, location.length()- wildcardlastIdx);
+        }
+		
 		String fileName = location.substring(location.lastIndexOf("/") + 1);
 		Resource directoryResource = getResource(directoryPath);
 		if (!directoryResource.exists()) {
@@ -119,17 +128,68 @@ class LocationResourceLoader {
 		}
 		return resources.toArray(EMPTY_RESOURCES);
 	}
+	
 
-	private void validatePattern(String location, ResourceType type) {
-		Assert.state(isPattern(location), () -> String.format("Location '%s' must be a pattern", location));
-		Assert.state(!location.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX),
-				() -> String.format("Location '%s' cannot use classpath wildcards", location));
-		Assert.state(StringUtils.countOccurrencesOf(location, "*") == 1,
-				() -> String.format("Location '%s' cannot contain multiple wildcards", location));
-		String directoryPath = (type != ResourceType.DIRECTORY) ? location.substring(0, location.lastIndexOf("/") + 1)
-				: location;
-		Assert.state(directoryPath.endsWith("*/"), () -> String.format("Location '%s' must end with '*/'", location));
+    /**
+     * Get a multiple resources from a location pattern.
+     * @param location the location pattern
+     * @param type the type of resource to return
+     * @return the resources
+     * @see #isPattern(String)
+     */
+	Resource[] getResources(String location, ResourceType type) {
+	    return getResources(location, type, false);
 	}
+	
+    /**
+     * Get a multiple resources from a location pattern.
+     * @param location the location pattern
+     * @param allowClasspathAll the boolean value of allow param location contains 'classpath*:'
+     * @return the resources
+     * @see #isPattern(String)
+     */	
+	Resource[] getResources(String location, boolean allowClasspathAll) {
+	    ResourceType resourceType =location.endsWith("/")? ResourceType.DIRECTORY : ResourceType.FILE;
+	    return  getResources(location,resourceType,allowClasspathAll);
+	}
+	
+    private Resource[] getResourcesFromClasspathAllPatternLocation(String location,int propNameLen) {
+        PathMatchingResourcePatternResolver pathMatchingResolver =new PathMatchingResourcePatternResolver();
+        Resource[] resources;
+        try {
+            resources = pathMatchingResolver.getResources(location);
+        } catch (IOException e) {
+            throw new IllegalStateException(String.format("get location: '%s' error",location),e);
+        }
+        if (resources != null) {
+            Arrays.sort(resources,  Comparator.comparing(resource -> {
+                String filename;
+                FileSystemResource fileResource =(FileSystemResource)resource;
+                filename=fileResource.getFile().getAbsolutePath();
+                int idx = filename.lastIndexOf(File.separator, filename.length() - propNameLen);
+                if (idx>-1) {
+                    filename= filename.substring(idx);
+                }
+                return filename;
+            }));
+        }
+        return resources;
+    }	
+
+	private boolean validatePatternAndCheckClasspathAll(String location, ResourceType type,boolean allowClasspathAll) {
+		Assert.state(isPattern(location), () -> String.format("Location '%s' must be a pattern", location));
+		boolean startsWithClasspathAll = location.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX);
+		Assert.state((allowClasspathAll || !startsWithClasspathAll),
+				() -> String.format("Location '%s' cannot use classpath wildcards", location));
+		int countOfWilldcard = StringUtils.countOccurrencesOf(location, "*");
+		Assert.state((startsWithClasspathAll? (countOfWilldcard ==2) : countOfWilldcard == 1),
+				() -> String.format("Location '%s' cannot contain multiple wildcards", location));
+		if (type == ResourceType.DIRECTORY) {
+		    Assert.state(location.endsWith("*/"), () -> String.format("Location '%s' must end with '*/'", location));
+		}
+		return startsWithClasspathAll;
+	}
+	
 
 	private File getDirectory(String patternLocation, Resource resource) {
 		try {

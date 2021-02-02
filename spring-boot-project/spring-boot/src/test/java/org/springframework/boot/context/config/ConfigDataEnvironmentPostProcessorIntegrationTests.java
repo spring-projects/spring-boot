@@ -72,6 +72,7 @@ import static org.assertj.core.api.Assertions.assertThatNoException;
  *
  * @author Madhura Bhave
  * @author Phillip Webb
+ * @author Zhengsheng Xia
  */
 class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
@@ -501,6 +502,24 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 				"--spring.config.additional-location=classpath:override.properties");
 		assertThat(context.getEnvironment().getProperty("foo")).isEqualTo("bar");
 		assertThat(context.getEnvironment().getProperty("value")).isNull();
+	}
+	
+	@Test
+	void runWhenIntergrationLocationAndLocationLoadsWithClasspathAllFileName() {
+	    ConfigurableApplicationContext context = this.application.run(
+	            "--"+ConfigDataEnvironment.INTERGRATION_LOCATION_PROPERTY+"=classpath*:/wildcardconfig/*/testproperties.properties");
+	    assertThat(context.getEnvironment().getProperty("first.property")).isEqualTo("apple");
+	    assertThat(context.getEnvironment().getProperty("second.property")).isEqualTo("ball");
+	    assertThat(context.getEnvironment().getProperty("value")).isEqualTo("1234");
+	}
+	
+	@Test
+	void runWhenIntergrationLocationAndLocationLoadsWithClasspathAllDirectory() {
+	    ConfigurableApplicationContext context = this.application.run(
+	            "--"+ConfigDataEnvironment.INTERGRATION_LOCATION_PROPERTY+"=classpath*:/wildcardconfig/*/");
+	    assertThat(context.getEnvironment().getProperty("first.property")).isEqualTo("green");
+	    assertThat(context.getEnvironment().getProperty("second.property")).isEqualTo("red");
+	    assertThat(context.getEnvironment().getProperty("value")).isEqualTo("1234");
 	}
 
 	@Test
