@@ -7,4 +7,6 @@ description = "Spring Boot AMQP smoke test"
 
 dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-amqp"))
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

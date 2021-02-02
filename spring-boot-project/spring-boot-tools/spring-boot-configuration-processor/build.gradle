@@ -26,4 +26,6 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.projectlombok:lombok")
 	testImplementation("org.springframework:spring-core")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

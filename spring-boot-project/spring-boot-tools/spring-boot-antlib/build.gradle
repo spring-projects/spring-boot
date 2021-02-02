@@ -24,6 +24,8 @@ dependencies {
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("org.springframework:spring-core")
+
+	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 task copyIntegrationTestSources(type: Copy) {
