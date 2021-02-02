@@ -45,7 +45,7 @@ dependencies {
 }
 
 task syncSpringBootDependenciesBom(type: Sync) {
-	destinationDir = file("${buildDir}/generated/sources/dependencies-bom/org/springframework/boot/maven")
+	destinationDir = file("${buildDir}/generated-resources/org/springframework/boot/maven")
 	from configurations.dependenciesBom
 }
 
@@ -56,8 +56,8 @@ syncDocumentationSourceForAsciidoctor {
 }
 
 sourceSets {
-	main {
-		output.dir("${buildDir}/generated/sources/dependencies-bom", builtBy: "syncSpringBootDependenciesBom")
+	intTest {
+		output.dir("${buildDir}/generated-resources", builtBy: "syncSpringBootDependenciesBom")
 	}
 }
 
