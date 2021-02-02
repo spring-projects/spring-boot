@@ -46,7 +46,7 @@ public final class ConfigDataLocation implements OriginProvider {
 	private final String value;
 
 	private final Origin origin;
-	
+
 	private boolean allowClasspathAll;
 
 	private ConfigDataLocation(boolean optional, String value, Origin origin) {
@@ -81,25 +81,22 @@ public final class ConfigDataLocation implements OriginProvider {
 	public boolean hasPrefix(String prefix) {
 		return this.value.startsWith(prefix);
 	}
-	
-    
-    /**
-     * Getter method for property <tt>allowClasspathAll</tt>.
-     * 
-     * @return property value of allowClasspathAll
-     */
-    public boolean isAllowClasspathAll() {
-        return allowClasspathAll;
-    }
-    
-    /**
-     * Setter method for property <tt>allowClasspathAll</tt>.
-     * 
-     * @param allowClasspathAll value to be assigned to property allowClasspathAll
-     */
-    public void setAllowClasspathAll(boolean allowClasspathAll) {
-        this.allowClasspathAll = allowClasspathAll;
-    }
+
+	/**
+	 * Getter method for property <tt>allowClasspathAll</tt>.
+	 * @return property value of allowClasspathAll
+	 */
+	public boolean isAllowClasspathAll() {
+		return allowClasspathAll;
+	}
+
+	/**
+	 * Setter method for property <tt>allowClasspathAll</tt>.
+	 * @param allowClasspathAll value to be assigned to property allowClasspathAll
+	 */
+	public void setAllowClasspathAll(boolean allowClasspathAll) {
+		this.allowClasspathAll = allowClasspathAll;
+	}
 
 	/**
 	 * Return {@link #getValue()} with the specified prefix removed. If the location does

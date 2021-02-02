@@ -245,9 +245,9 @@ public class StandardConfigDataLocationResolver
 		Set<StandardConfigDataResource> empty = new LinkedHashSet<>();
 		for (StandardConfigDataReference reference : references) {
 			if (reference.isMandatoryDirectory()) {
-			    if (reference.getDirectory().startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) {
-			        continue;
-			    }
+				if (reference.getDirectory().startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) {
+					continue;
+				}
 				Resource resource = this.resourceLoader.getResource(reference.getDirectory());
 				if (resource instanceof ClassPathResource) {
 					continue;
@@ -279,7 +279,7 @@ public class StandardConfigDataLocationResolver
 	private List<StandardConfigDataResource> resolvePattern(StandardConfigDataReference reference) {
 		List<StandardConfigDataResource> resolved = new ArrayList<>();
 		for (Resource resource : this.resourceLoader.getResources(reference.getResourceLocation(),
-		        reference.getConfigDataLocation().isAllowClasspathAll())) {
+				reference.getConfigDataLocation().isAllowClasspathAll())) {
 			if (!resource.exists() && reference.isSkippable()) {
 				logSkippingResource(reference);
 			}

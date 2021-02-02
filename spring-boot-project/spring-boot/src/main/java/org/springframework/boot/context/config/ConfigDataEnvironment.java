@@ -70,11 +70,11 @@ class ConfigDataEnvironment {
 	 * Property used to provide additional locations to import.
 	 */
 	static final String ADDITIONAL_LOCATION_PROPERTY = "spring.config.additional-location";
-	
-    /**
-     * The "config intergration location" property name.
-     */
-    public static final String INTERGRATION_LOCATION_PROPERTY = "spring.config.intergration-location";		
+
+	/**
+	 * The "config intergration location" property name.
+	 */
+	public static final String INTERGRATION_LOCATION_PROPERTY = "spring.config.intergration-location";
 
 	/**
 	 * Property used to provide additional locations to import.
@@ -208,22 +208,22 @@ class ConfigDataEnvironment {
 		addInitialImportContributors(initialContributors,
 				bindLocations(binder, LOCATION_PROPERTY, DEFAULT_SEARCH_LOCATIONS));
 		addInitialImportContributors(initialContributors,
-		        bindLocations(binder, INTERGRATION_LOCATION_PROPERTY, EMPTY_LOCATIONS, true));
+				bindLocations(binder, INTERGRATION_LOCATION_PROPERTY, EMPTY_LOCATIONS, true));
 		return initialContributors;
 	}
 
 	private ConfigDataLocation[] bindLocations(Binder binder, String propertyName, ConfigDataLocation[] other,
-	        boolean allowClasspathAll) {
-	    ConfigDataLocation[] result = binder.bind(propertyName, CONFIG_DATA_LOCATION_ARRAY).orElse(other);
-	    if (allowClasspathAll && other != result) {
-            Stream.of(result).forEach(configDataLocation -> configDataLocation.setAllowClasspathAll(allowClasspathAll));
-	    }
-	    return result;
+			boolean allowClasspathAll) {
+		ConfigDataLocation[] result = binder.bind(propertyName, CONFIG_DATA_LOCATION_ARRAY).orElse(other);
+		if (allowClasspathAll && other != result) {
+			Stream.of(result).forEach(configDataLocation -> configDataLocation.setAllowClasspathAll(allowClasspathAll));
+		}
+		return result;
 	}
-	
-    private ConfigDataLocation[] bindLocations(Binder binder, String propertyName, ConfigDataLocation[] other) {
-        return bindLocations(binder, propertyName, other, false);
-    }	
+
+	private ConfigDataLocation[] bindLocations(Binder binder, String propertyName, ConfigDataLocation[] other) {
+		return bindLocations(binder, propertyName, other, false);
+	}
 
 	private void addInitialImportContributors(List<ConfigDataEnvironmentContributor> initialContributors,
 			ConfigDataLocation[] locations) {

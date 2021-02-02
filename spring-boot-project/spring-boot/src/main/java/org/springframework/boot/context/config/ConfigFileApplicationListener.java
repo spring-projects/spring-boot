@@ -163,7 +163,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 	 * The "config additional location" property name.
 	 */
 	public static final String CONFIG_ADDITIONAL_LOCATION_PROPERTY = "spring.config.additional-location";
-	
+
 	/**
 	 * The "config intergration location" property name.
 	 */
@@ -595,10 +595,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		}
 
 		private Resource[] getResourcesFromPatternLocationReference(String locationReference) throws IOException {
-		    int wildcardlastIdx = locationReference.indexOf("*/");
-		    String directoryPath = locationReference.substring(0, wildcardlastIdx);
+			int wildcardlastIdx = locationReference.indexOf("*/");
+			String directoryPath = locationReference.substring(0, wildcardlastIdx);
 			if (locationReference.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX)) {
-			    return getResourcesFromClasspathAllPatternLocation(locationReference, locationReference.length()- wildcardlastIdx);
+				return getResourcesFromClasspathAllPatternLocation(locationReference,
+						locationReference.length() - wildcardlastIdx);
 			}
 			Resource resource = this.resourceLoader.getResource(directoryPath);
 			File[] files = resource.getFile().listFiles(File::isDirectory);
@@ -611,26 +612,28 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 			}
 			return EMPTY_RESOURCES;
 		}
-		
-		private Resource[] getResourcesFromClasspathAllPatternLocation(String location,int propNameLen) throws IOException {
-		    PathMatchingResourcePatternResolver pathMatchingResolver =new PathMatchingResourcePatternResolver();
-            Resource[] resources = pathMatchingResolver.getResources(location);
-            if (resources != null) {
-                Arrays.sort(resources,Comparator.comparing(resource -> {
-                    String filename;
-                    try {
-                        filename = resource.getFile().getAbsolutePath();
-                    } catch (IOException e) {
-                        filename = resource.getFilename();
-                    }
-                    int idx = filename.lastIndexOf(File.separator, filename.length() - propNameLen);
-                    if (idx>-1) {
-                        filename= filename.substring(idx);
-                    }
-                    return filename;
-                }));
-            }
-            return resources;
+
+		private Resource[] getResourcesFromClasspathAllPatternLocation(String location, int propNameLen)
+				throws IOException {
+			PathMatchingResourcePatternResolver pathMatchingResolver = new PathMatchingResourcePatternResolver();
+			Resource[] resources = pathMatchingResolver.getResources(location);
+			if (resources != null) {
+				Arrays.sort(resources, Comparator.comparing(resource -> {
+					String filename;
+					try {
+						filename = resource.getFile().getAbsolutePath();
+					}
+					catch (IOException e) {
+						filename = resource.getFilename();
+					}
+					int idx = filename.lastIndexOf(File.separator, filename.length() - propNameLen);
+					if (idx > -1) {
+						filename = filename.substring(idx);
+					}
+					return filename;
+				}));
+			}
+			return resources;
 		}
 
 		private void addIncludedProfiles(Set<Profile> includeProfiles) {
@@ -720,7 +723,7 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				locations.addAll(
 						asResolvedSet(ConfigFileApplicationListener.this.searchLocations, DEFAULT_SEARCH_LOCATIONS));
 			}
-			locations.addAll(getSearchLocations(CONFIG_INTERGRATION_LOCATION_PROPERTY,true));
+			locations.addAll(getSearchLocations(CONFIG_INTERGRATION_LOCATION_PROPERTY, true));
 			return locations;
 		}
 
@@ -730,11 +733,11 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 				for (String path : asResolvedSet(this.environment.getProperty(propertyName), null)) {
 					if (!path.contains("$")) {
 						path = StringUtils.cleanPath(path);
-						boolean hasClasspathAll=path.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX);
+						boolean hasClasspathAll = path.startsWith(ResourcePatternResolver.CLASSPATH_ALL_URL_PREFIX);
 						Assert.state(allowClasspathAll || !hasClasspathAll,
 								"Classpath wildcard patterns cannot be used as a search location");
 						validateWildcardLocation(path, allowClasspathAll);
-						if (!hasClasspathAll && !ResourceUtils.isUrl(path) ) {
+						if (!hasClasspathAll && !ResourceUtils.isUrl(path)) {
 							path = ResourceUtils.FILE_URL_PREFIX + path;
 						}
 					}
@@ -745,17 +748,16 @@ public class ConfigFileApplicationListener implements EnvironmentPostProcessor, 
 		}
 
 		private Set<String> getSearchLocations(String propertyName) {
-		    return getSearchLocations(propertyName, false);
+			return getSearchLocations(propertyName, false);
 		}
-		//xia
+		// xia
 
-        //xia
+		// xia
 		private void validateWildcardLocation(String path, boolean allowClasspathAll) {
 			if (path.contains("*")) {
-			    int wildCardCount = StringUtils.countOccurrencesOf(path, "*");
-			    boolean rightState =allowClasspathAll ? wildCardCount == 2: wildCardCount == 1;
-				Assert.state(rightState,
-						() -> "Search location '" + path + "' cannot contain multiple wildcards");
+				int wildCardCount = StringUtils.countOccurrencesOf(path, "*");
+				boolean rightState = allowClasspathAll ? wildCardCount == 2 : wildCardCount == 1;
+				Assert.state(rightState, () -> "Search location '" + path + "' cannot contain multiple wildcards");
 				String directoryPath = path.substring(0, path.lastIndexOf("/") + 1);
 				Assert.state(directoryPath.endsWith("*/"), () -> "Search location '" + path + "' must end with '*/'");
 			}
