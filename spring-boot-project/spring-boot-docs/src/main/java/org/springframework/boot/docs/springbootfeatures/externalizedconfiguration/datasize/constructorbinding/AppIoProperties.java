@@ -16,6 +16,7 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.datasize.constructorbinding;
 
+// tag::code[]
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -23,13 +24,6 @@ import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.util.unit.DataSize;
 import org.springframework.util.unit.DataUnit;
 
-/**
- * A {@link ConfigurationProperties @ConfigurationProperties} example that uses
- * {@link DataSize}.
- *
- * @author Stephane Nicoll
- */
-// tag::code[]
 @ConfigurationProperties("app.io")
 @ConstructorBinding
 public class AppIoProperties {

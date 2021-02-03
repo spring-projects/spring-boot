@@ -19,8 +19,6 @@ package org.springframework.boot.docs.springbootfeatures.testing;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.docs.springbootfeatures.creatingautoconfiguration.UserService;
-import org.springframework.boot.docs.springbootfeatures.creatingautoconfiguration.UserServiceAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -28,11 +26,6 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Tests for {@link UserServiceAutoConfiguration}.
- *
- * @author Stephane Nicoll
- */
 class UserServiceAutoConfigurationTests {
 
 	// tag::runner[]

@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.springbootfeatures.nosql;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.neo4j.driver.Driver;
 
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
+import org.springframework.data.neo4j.core.transaction.ReactiveNeo4jTransactionManager;
 
-public class SampleMeterBinderConfiguration {
+@Configuration(proxyBeanMethods = false)
+public class Neo4jReactiveTransactionManagerConfiguration {
 
 	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	public ReactiveNeo4jTransactionManager reactiveTransactionManager(Driver driver,
+			ReactiveDatabaseSelectionProvider databaseNameProvider) {
+		return new ReactiveNeo4jTransactionManager(driver, databaseNameProvider);
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

@@ -14,34 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.testing.jmx;
+package org.springframework.boot.docs.springbootfeatures.testing;
 
 // tag::code[]
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
-
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
-import org.springframework.test.context.junit.jupiter.SpringExtension;
+import org.springframework.test.web.servlet.MockMvc;
 
-import static org.assertj.core.api.Assertions.assertThat;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = "spring.jmx.enabled=true")
-@DirtiesContext
-class SampleJmxTests {
-
-	@Autowired
-	private MBeanServer mBeanServer;
+@SpringBootTest
+@AutoConfigureMockMvc
+class MockMvcTests {
 
 	@Test
-	void exampleTest() throws MalformedObjectNameException {
-		assertThat(this.mBeanServer.getDomains()).contains("java.lang");
-		// ...
+	void exampleTest(@Autowired MockMvc mvc) throws Exception {
+		mvc.perform(get("/")).andExpect(status().isOk()).andExpect(content().string("Hello World"));
 	}
 
 }

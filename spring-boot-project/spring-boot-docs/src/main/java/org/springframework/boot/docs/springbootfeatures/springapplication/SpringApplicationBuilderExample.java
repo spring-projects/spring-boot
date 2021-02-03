@@ -19,11 +19,6 @@ package org.springframework.boot.docs.springbootfeatures.springapplication;
 import org.springframework.boot.Banner;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
-/**
- * Examples of using {@link SpringApplicationBuilder}.
- *
- * @author Andy Wilkinson
- */
 public class SpringApplicationBuilderExample {
 
 	public void hierarchyWithDisabledBanner(String[] args) {
@@ -38,16 +33,10 @@ public class SpringApplicationBuilderExample {
 		// @formatter:on
 	}
 
-	/**
-	 * Parent application configuration.
-	 */
 	static class Parent {
 
 	}
 
-	/**
-	 * Application configuration.
-	 */
 	static class Application {
 
 	}

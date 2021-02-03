@@ -14,24 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.springapplication;
+package org.springframework.boot.docs.howto.embeddedwebservers;
 
-// tag::code[]
-import org.springframework.boot.ExitCodeGenerator;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
+import io.undertow.Undertow.Builder;
+
+//tag::code[]
+import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@SpringBootApplication
-public class ExitCodeExample {
+@Configuration(proxyBeanMethods = false)
+public class UndertowMultipleListenersConfiguration {
 
 	@Bean
-	public ExitCodeGenerator exitCodeGenerator() {
-		return () -> 42;
+	public WebServerFactoryCustomizer<UndertowServletWebServerFactory> undertowListenerCustomizer() {
+		return (factory) -> factory.addBuilderCustomizers(this::addHttpListener);
 	}
 
-	public static void main(String[] args) {
-		System.exit(SpringApplication.exit(SpringApplication.run(ExitCodeExample.class, args)));
+	private Builder addHttpListener(Builder builder) {
+		return builder.addHttpListener(8080, "0.0.0.0");
 	}
 
 }

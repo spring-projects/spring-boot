@@ -14,28 +14,20 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.springbootfeatures.testing.restdocs.webclient;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.springframework.boot.test.autoconfigure.restdocs.RestDocsWebTestClientConfigurationCustomizer;
+import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
 
-import org.springframework.context.annotation.Bean;
+@TestConfiguration(proxyBeanMethods = false)
+public class AdvancedRestDocsConfiguration implements RestDocsWebTestClientConfigurationCustomizer {
 
-public class SampleMeterBinderConfiguration {
-
-	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	@Override
+	public void customize(WebTestClientRestDocumentationConfigurer configurer) {
+		configurer.snippets().withEncoding("UTF-8");
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

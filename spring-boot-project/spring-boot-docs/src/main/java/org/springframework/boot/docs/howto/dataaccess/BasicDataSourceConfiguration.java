@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.testing.jmx;
+package org.springframework.boot.docs.howto.dataaccess;
 
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+// tag::code[]
+import javax.sql.DataSource;
 
-@SpringBootConfiguration
-@ImportAutoConfiguration(JmxAutoConfiguration.class)
-public class SampleApp {
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration(proxyBeanMethods = false)
+public class BasicDataSourceConfiguration {
+
+	@Bean
+	@ConfigurationProperties("app.datasource")
+	public DataSource dataSource() {
+		return DataSourceBuilder.create().build();
+	}
 
 }
+// end::code[]

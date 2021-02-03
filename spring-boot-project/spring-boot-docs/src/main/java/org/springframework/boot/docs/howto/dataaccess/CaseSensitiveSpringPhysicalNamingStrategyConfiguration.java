@@ -14,28 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.howto.dataaccess;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
+import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class SampleMeterBinderConfiguration {
+@Configuration
+class CaseSensitiveSpringPhysicalNamingStrategyConfiguration {
 
 	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	SpringPhysicalNamingStrategy caseSensitivePhysicalNamingStrategy() {
+		return new SpringPhysicalNamingStrategy() {
+
+			@Override
+			protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
+				return false;
+			}
+
+		};
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

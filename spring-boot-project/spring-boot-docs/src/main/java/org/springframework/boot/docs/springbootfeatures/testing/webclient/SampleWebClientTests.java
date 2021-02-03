@@ -16,6 +16,7 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing.webclient;
 
+// tag::code[]
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
@@ -31,12 +32,6 @@ import org.springframework.http.HttpHeaders;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
-/**
- * Example integration test that uses {@link TestRestTemplate}.
- *
- * @author Stephane Nicoll
- */
-// tag::code[]
 @SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
 class SampleWebClientTests {
 
@@ -50,7 +45,7 @@ class SampleWebClientTests {
 	}
 
 	@TestConfiguration(proxyBeanMethods = false)
-	static class Config {
+	static class RestTemplateBuilderConfiguration {
 
 		@Bean
 		RestTemplateBuilder restTemplateBuilder() {

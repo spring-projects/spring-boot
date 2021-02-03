@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.testing.jmx;
+package org.springframework.boot.docs.productionreadyfeatures.metrics;
 
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+// tag::code[]
+import io.micrometer.core.instrument.config.MeterFilter;
 
-@SpringBootConfiguration
-@ImportAutoConfiguration(JmxAutoConfiguration.class)
-public class SampleApp {
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+
+@Configuration(proxyBeanMethods = false)
+public class MetricsFilterConfiguration {
+
+	@Bean
+	public MeterFilter renameRegionTagMeterFilter() {
+		return MeterFilter.renameTag("com.example", "mytag.region", "mytag.area");
+	}
 
 }
+// end::code[]

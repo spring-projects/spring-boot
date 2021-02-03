@@ -28,12 +28,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-/**
- * A sample {@link SpringBootConfiguration @ConfigurationProperties} with an example
- * controller.
- *
- * @author Stephane Nicoll
- */
 @SpringBootConfiguration
 @ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })

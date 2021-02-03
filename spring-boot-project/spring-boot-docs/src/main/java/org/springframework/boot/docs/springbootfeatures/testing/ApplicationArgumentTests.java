@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.springbootfeatures.testing;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.test.context.SpringBootTest;
 
-public class SampleMeterBinderConfiguration {
+import static org.assertj.core.api.Assertions.assertThat;
 
-	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+@SpringBootTest(args = "--app.test=one")
+class ApplicationArgumentTests {
+
+	@Test
+	void applicationArgumentsPopulated(@Autowired ApplicationArguments args) {
+		assertThat(args.getOptionNames()).containsOnly("app.test");
+		assertThat(args.getOptionValues("app.test")).containsOnly("one");
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

@@ -14,28 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.howto.dataaccess;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.hibernate.cache.jcache.ConfigSettings;
 
+import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
+import org.springframework.cache.jcache.JCacheCacheManager;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class SampleMeterBinderConfiguration {
+@Configuration(proxyBeanMethods = false)
+public class HibernateSecondLevelCacheConfiguration {
 
 	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	public HibernatePropertiesCustomizer hibernateSecondLevelCacheCustomizer(JCacheCacheManager cacheManager) {
+		return (properties) -> properties.put(ConfigSettings.CACHE_MANAGER, cacheManager.getCacheManager());
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

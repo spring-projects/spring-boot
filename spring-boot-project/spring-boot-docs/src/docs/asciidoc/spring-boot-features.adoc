@@ -597,7 +597,7 @@ This means that the JSON cannot override properties from lower order property so
 
 
 [[boot-features-external-config-files]]
-=== External Application Properties [[boot-features-external-config-application-property-files]] 
+=== External Application Properties [[boot-features-external-config-application-property-files]]
 Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
 
 . The classpath root
@@ -1519,7 +1519,7 @@ The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as th
 The slash has been removed from `key3` because it wasn't surrounded by square brackets.
 
 You may also occasionally need to use the bracket notation if your `key` contains a `.` and you are binding to non-scalar value.
-For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` where as `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`. 
+For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` where as `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`.
 
 
 
@@ -3515,7 +3515,7 @@ The following example shows how to customize `TomcatServletWebServerFactory` tha
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-springbootfeatures}/webapplications/TomcatServerCustomizerExample.java[tag=*]
+include::{include-springbootfeatures}/webapplications/TomcatServerCustomizer.java[tag=*]
 ----
 
 
@@ -3769,7 +3769,7 @@ For example, you can customize your security configuration by adding something l
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/security/CustomWebFluxSecurityExample.java[tag=*]
+include::{include-springbootfeatures}/security/CustomWebFluxSecurityConfiguration.java[tag=*]
 ----
 
 
@@ -4924,7 +4924,7 @@ To enable transaction management, the following bean must be defined in your con
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/Neo4jReactiveTransactionManagerExample.java[tag=*]
+include::{include-springbootfeatures}/nosql/Neo4jReactiveTransactionManagerConfiguration.java[tag=*]
 ----
 ====
 
@@ -5609,7 +5609,7 @@ The following example shows a customizer that configures a specific entry expira
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/CouchbaseCacheManagerCustomizationExample.java[tag=*]
+include::{include-springbootfeatures}/nosql/CouchbaseCacheManagerConfiguration.java[tag=*]
 ----
 
 
@@ -5640,7 +5640,7 @@ The following example shows a customizer that configures a specific time to live
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql//RedisCacheManagerCustomizationExample.java[tag=*]
+include::{include-springbootfeatures}/nosql/RedisCacheManagerConfiguration.java[tag=*]
 ----
 
 
@@ -6208,7 +6208,7 @@ To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/KafkaStreamsBeanExample.java[tag=*]
+include::{include-springbootfeatures}/messaging/KafkaStreamsConfiguration.java[tag=*]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
@@ -6363,7 +6363,7 @@ The following example shows a customizer that configures the use of a proxy for 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizationExample.java[tag=*]
+include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[tag=*]
 ----
 
 Finally, you can also create your own `RestTemplateBuilder` bean.
@@ -6372,7 +6372,7 @@ The following example exposes a `RestTemplateBuilder` with what Spring Boot woul
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/RestTemplateBuilderCustomizationExample.java[tag=*]
+include::{include-springbootfeatures}/resttemplate/RestTemplateBuilderConfiguration.java[tag=*]
 ----
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
@@ -7025,7 +7025,7 @@ have `@SpringBootTest` inject them using the `args` attribute.
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/ApplicationArgumentsExampleTests.java[tag=*]
+include::{include-springbootfeatures}/testing/ApplicationArgumentTests.java[tag=*]
 ----
 
 
@@ -7037,7 +7037,7 @@ If you have web endpoints that you want to test against this mock environment, y
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/MockMvcExampleTests.java[tag=*]
+include::{include-springbootfeatures}/testing/MockMvcTests.java[tag=*]
 ----
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests,using `@WebMvcTest` instead>>.
@@ -7046,7 +7046,7 @@ Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestc
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/MockWebTestClientExampleTests.java[tag=*]
+include::{include-springbootfeatures}/testing/MockWebTestClientTests.java[tag=*]
 ----
 
 [TIP]
@@ -7071,7 +7071,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/RandomPortWebTestClientExampleTests.java[tag=*]
+include::{include-springbootfeatures}/testing/RandomPortWebTestClientTests.java[tag=*]
 ----
 
 This setup requires `spring-webflux` on the classpath.
@@ -7079,7 +7079,7 @@ If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/RandomPortTestRestTemplateExampleTests.java[tag=*]
+include::{include-springbootfeatures}/testing/RandomPortTestRestTemplateTests.java[tag=*]
 ----
 
 
@@ -7928,7 +7928,7 @@ If you require more control over Spring REST Docs configuration than offered by 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/restdocs/webclient/AdvancedConfigurationExample.java[tag=*]
+include::{include-springbootfeatures}/testing/restdocs/webclient/AdvancedRestDocsConfiguration.java[tag=*]
 ----
 
 
@@ -7947,7 +7947,7 @@ If you require more control over Spring REST Docs configuration than offered by 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/restdocs/restassured/AdvancedConfigurationExample.java[tag=*]
+include::{include-springbootfeatures}/testing/restdocs/restassured/AdvancedRestDocsConfiguration.java[tag=*]
 ----
 
 

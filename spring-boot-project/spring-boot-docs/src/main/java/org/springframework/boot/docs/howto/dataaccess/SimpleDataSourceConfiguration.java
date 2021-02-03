@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.howto.dataaccess;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import com.zaxxer.hikari.HikariDataSource;
 
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class SampleMeterBinderConfiguration {
+@Configuration(proxyBeanMethods = false)
+public class SimpleDataSourceConfiguration {
 
 	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	@ConfigurationProperties("app.datasource")
+	public HikariDataSource dataSource() {
+		return DataSourceBuilder.create().type(HikariDataSource.class).build();
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

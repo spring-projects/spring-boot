@@ -95,7 +95,7 @@ For instance, the following example loads a YAML configuration file from the cla
 
 [source,java,indent=0]
 ----
-include::{include-howto}/springbootapplication/EnvironmentPostProcessorExample.java[tag=*]
+include::{include-howto}/springbootapplication/ExampleEnvironmentPostProcessor.java[tag=*]
 ----
 
 TIP: The `Environment` has already been prepared with all the usual property sources that Spring Boot loads by default.
@@ -931,7 +931,7 @@ You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWe
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/embeddedwebservers/TomcatMultipleConnectorsExample.java[tag=*]
+include::{include-howto}/embeddedwebservers/TomcatMultipleConnectorsConfiguration.java[tag=*]
 ----
 
 
@@ -951,7 +951,7 @@ To switch to the `LegacyCookieProcessor`, use an `WebServerFactoryCustomizer` be
 
 [source,java,indent=0]
 ----
-include::{include-howto}/embeddedwebservers/TomcatLegacyCookieProcessorExample.java[tag=*]
+include::{include-howto}/embeddedwebservers/LegacyCookieProcessorConfiguration.java[tag=*]
 ----
 
 
@@ -978,7 +978,7 @@ Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/embeddedwebservers/UndertowMultipleListenersExample.java[tag=*]
+include::{include-howto}/embeddedwebservers/UndertowMultipleListenersConfiguration.java[tag=*]
 ----
 
 
@@ -1283,7 +1283,7 @@ The `jersey.config.server.response.setStatusOverSendError` property must be set 
 
 [source,java,indent=0]
 ----
-include::{include-howto}/jersey/JerseySetStatusOverSendErrorExample.java[tag=*]
+include::{include-howto}/jersey/JerseySetStatusOverSendErrorConfig.java[tag=*]
 ----
 
 
@@ -1326,7 +1326,7 @@ The following example configures `HttpComponentsClientRequestFactory` with an `H
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizationExample.java[tag=*]
+include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[tag=*]
 ----
 
 [[howto-webclient-reactor-netty-customization]]
@@ -1337,7 +1337,7 @@ The following example configures a 60 second connect timeout and adds a `ReadTim
 
 [source,java,indent=0]
 ----
-include::{include-howto}/httpclients/ReactorNettyClientCustomizationExample.java[tag=*]
+include::{include-howto}/httpclients/CustomizeReactorNettyClientConfiguration.java[tag=*]
 ----
 
 TIP: Note the use of `ReactorResourceFactory` for the connection provider and event loop resources.
@@ -1582,7 +1582,7 @@ The following example shows how to create a data source by using a `DataSourceBu
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/dataaccess/BasicDataSourceExample.java[tag=*]
+include::{include-howto}/dataaccess/BasicDataSourceConfiguration.java[tag=*]
 ----
 
 To run an app with that `DataSource`, all you need is the connection information.
@@ -1623,7 +1623,7 @@ The following example shows how create a `HikariDataSource` with `DataSourceBuil
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/dataaccess/SimpleDataSourceExample.java[tag=*]
+include::{include-howto}/dataaccess/SimpleDataSourceConfiguration.java[tag=*]
 ----
 
 You can even go further by leveraging what `DataSourceProperties` does for you -- that is, by providing a default embedded database with a sensible username and password if no URL is provided.
@@ -1633,7 +1633,7 @@ To avoid that, you can redefine a custom `DataSourceProperties` on your custom n
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/dataaccess/ConfigurableDataSourceExample.java[tag=*]
+include::{include-howto}/dataaccess/ConfigurableDataSourceConfiguration.java[tag=*]
 ----
 
 This setup puts you _in sync_ with what Spring Boot does for you by default, except that a dedicated connection pool is chosen (in code) and its settings are exposed in the `app.datasource.configuration` sub namespace.
@@ -1670,7 +1670,7 @@ In the following example, we provide the _exact_ same feature set as the auto-co
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/dataaccess/SimpleTwoDataSourcesExample.java[tag=*]
+include::{include-howto}/dataaccess/SimpleDataSourcesConfiguration.java[tag=*]
 ----
 
 TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database initializer feature uses your copy (if you use the initializer).
@@ -1700,7 +1700,7 @@ You can apply the same concept to the secondary `DataSource` as well, as shown i
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/dataaccess/CompleteTwoDataSourcesExample.java[tag=*]
+include::{include-howto}/dataaccess/CompleteDataSourcesConfiguration.java[tag=*]
 ----
 
 The preceding example configures two data sources on custom namespaces with the same logic as Spring Boot would use in auto-configuration.
@@ -1794,7 +1794,7 @@ This implementation provides the same table structure as Hibernate 4: all dots a
 
 [source,java,indent=0]
 ----
-include::{include-howto}/dataaccess/CaseSensitiveSpringPhysicalNamingStrategyExample.java[tag=*]
+include::{include-howto}/dataaccess/CaseSensitiveSpringPhysicalNamingStrategyConfiguration.java[tag=*]
 ----
 
 If you prefer to use Hibernate 5's default instead, set the following property:
@@ -1828,7 +1828,7 @@ Then, add a `HibernatePropertiesCustomizer` bean as shown in the following examp
 
 [source,java,indent=0]
 ----
-include::{include-howto}/dataaccess/HibernateSecondLevelCacheExample.java[tag=*]
+include::{include-howto}/dataaccess/HibernateSecondLevelCacheConfiguration.java[tag=*]
 ----
 
 This customizer will configure Hibernate to use the same `CacheManager` as the one that the application uses.
@@ -1969,7 +1969,7 @@ For example, if you use Hibernate Search with Elasticsearch as its index manager
 
 [source,java,indent=0]
 ----
-include::{include-howto}/dataaccess/HibernateSearchElasticsearchExample.java[tag=*]
+include::{include-howto}/dataaccess/ElasticsearchEntityManagerFactoryDependsOnPostProcessor.java[tag=*]
 ----
 
 
@@ -2066,7 +2066,7 @@ You can initialize the database on startup using SQL scripts as shown in the fol
 
 [source,java,indent=0]
 ----
-include::{include-howto}/dataaccess/R2dbcDatabaseInitializationExample.java[tag=*]
+include::{include-howto}/dataaccess/R2dbcDatabaseInitializationConfiguration.java[tag=*]
 ----
 
 Alternatively, you can configure either <<howto-execute-flyway-database-migrations-on-startup,Flyway>> or <<howto-execute-liquibase-database-migrations-on-startup,Liquibase>> to configure a `DataSource` for you for the duration of the migration.
@@ -2351,7 +2351,7 @@ The following example shows one way to write such an exporter:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-howto}/actuator/MetricsHealthMicrometerExportExample.java[tag=*]
+include::{include-howto}/actuator/MetricsHealthMicrometerExport.java[tag=*]
 ----
 
 

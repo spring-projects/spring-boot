@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.springbootfeatures.testing;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.web.reactive.server.WebTestClient;
 
-public class SampleMeterBinderConfiguration {
+@SpringBootTest
+@AutoConfigureWebTestClient
+class MockWebTestClientTests {
 
-	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	@Test
+	void exampleTest(@Autowired WebTestClient webClient) {
+		webClient.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("Hello World");
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

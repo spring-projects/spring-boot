@@ -16,19 +16,13 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.duration.javabeanbinding;
 
+// tag::code[]
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 
-/**
- * A {@link ConfigurationProperties @ConfigurationProperties} example that uses
- * {@link Duration}.
- *
- * @author Stephane Nicoll
- */
-// tag::code[]
 @ConfigurationProperties("app.system")
 public class AppSystemProperties {
 

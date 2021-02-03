@@ -2379,7 +2379,7 @@ To register custom metrics, inject `MeterRegistry` into your component, as shown
 
 [source,java,indent=0]
 ----
-include::{include-productionreadyfeatures}/metrics/MetricsMeterRegistryInjectionExample.java[tag=*]
+include::{include-productionreadyfeatures}/metrics/MetricsMeterRegistryInjection.java[tag=*]
 ----
 
 If your metrics depend on other beans, it is recommended that you use a `MeterBinder` to register them, as shown in the following example:
@@ -2404,7 +2404,7 @@ For example, if you want to rename the `mytag.region` tag to `mytag.area` for al
 
 [source,java,indent=0]
 ----
-include::{include-productionreadyfeatures}/metrics/MetricsFilterBeanExample.java[tag=*]
+include::{include-productionreadyfeatures}/metrics/MetricsFilterConfiguration.java[tag=*]
 ----
 
 
@@ -2622,7 +2622,7 @@ For Tomcat, the following configuration can be added:
 
 [source,java,indent=0]
 ----
-include::{include-productionreadyfeatures}/cloudfoundry/CloudFoundryCustomContextPathExample.java[tag=*]
+include::{include-productionreadyfeatures}/cloudfoundry/CloudFoundryCustomContextPathConfiguration.java[tag=*]
 ----
 
 

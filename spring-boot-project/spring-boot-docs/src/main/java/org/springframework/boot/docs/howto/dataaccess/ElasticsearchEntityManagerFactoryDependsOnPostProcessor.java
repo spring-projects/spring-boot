@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.howto.dataaccess;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import javax.persistence.EntityManagerFactory;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.stereotype.Component;
 
-public class SampleMeterBinderConfiguration {
+/**
+ * {@link EntityManagerFactoryDependsOnPostProcessor} that ensures that
+ * {@link EntityManagerFactory} beans depend on the {@code elasticsearchClient} bean.
+ */
+@Component
+public class ElasticsearchEntityManagerFactoryDependsOnPostProcessor
+		extends EntityManagerFactoryDependsOnPostProcessor {
 
-	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	ElasticsearchEntityManagerFactoryDependsOnPostProcessor() {
+		super("elasticsearchClient");
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

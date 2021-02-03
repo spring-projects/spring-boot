@@ -16,26 +16,36 @@
 
 package org.springframework.boot.docs.productionreadyfeatures.metrics;
 
-// tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+//tag::code[]
+import java.util.Collections;
+import java.util.List;
 
-import org.springframework.context.annotation.Bean;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tags;
 
-public class SampleMeterBinderConfiguration {
+import org.springframework.stereotype.Component;
 
-	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+@Component
+public class MetricsMeterRegistryInjection {
+
+	private final Dictionary dictionary;
+
+	MetricsMeterRegistryInjection(MeterRegistry registry) {
+		this.dictionary = Dictionary.load();
+		registry.gauge("dictionary.size", Tags.empty(), this.dictionary.getWords().size());
 	}
 
 }
 // end::code[]
 
-class Queue {
+class Dictionary {
 
-	int size() {
-		return 5;
+	static Dictionary load() {
+		return new Dictionary();
+	}
+
+	List<String> getWords() {
+		return Collections.emptyList();
 	}
 
 }

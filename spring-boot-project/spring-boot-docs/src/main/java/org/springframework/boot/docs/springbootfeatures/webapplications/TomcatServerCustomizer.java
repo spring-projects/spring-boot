@@ -14,28 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.springbootfeatures.webapplications;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import java.time.Duration;
 
-import org.springframework.context.annotation.Bean;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
+import org.springframework.stereotype.Component;
 
-public class SampleMeterBinderConfiguration {
+@Component
+public class TomcatServerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
 
-	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	@Override
+	public void customize(TomcatServletWebServerFactory server) {
+		server.addConnectorCustomizers((connector) -> connector.setAsyncTimeout(Duration.ofSeconds(20).toMillis()));
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

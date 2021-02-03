@@ -14,35 +14,41 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.testing.jmx;
+package org.springframework.boot.docs.howto.dataaccess;
 
-// tag::code[]
-import javax.management.MBeanServer;
-import javax.management.MalformedObjectNameException;
+import java.sql.SQLException;
+
+import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.annotation.DirtiesContext;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.Import;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
+/**
+ * Test for {@link BasicDataSourceConfiguration}.
+ *
+ * @author Stephane Nicoll
+ */
 @ExtendWith(SpringExtension.class)
-@SpringBootTest(properties = "spring.jmx.enabled=true")
-@DirtiesContext
-class SampleJmxTests {
+@SpringBootTest(properties = "app.datasource.jdbcUrl=jdbc:h2:mem:basic;DB_CLOSE_DELAY=-1")
+@Import(BasicDataSourceConfiguration.class)
+class BasicDataSourceConfigurationTests {
 
 	@Autowired
-	private MBeanServer mBeanServer;
+	private ApplicationContext context;
 
 	@Test
-	void exampleTest() throws MalformedObjectNameException {
-		assertThat(this.mBeanServer.getDomains()).contains("java.lang");
-		// ...
+	void validateConfiguration() throws SQLException {
+		assertThat(this.context.getBeansOfType(DataSource.class)).hasSize(1);
+		DataSource dataSource = this.context.getBean(DataSource.class);
+		assertThat(dataSource.getConnection().getMetaData().getURL()).isEqualTo("jdbc:h2:mem:basic");
 	}
 
 }
-// end::code[]

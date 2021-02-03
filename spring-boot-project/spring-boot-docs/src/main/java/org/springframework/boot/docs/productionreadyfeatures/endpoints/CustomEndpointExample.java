@@ -20,11 +20,6 @@ import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 
-/**
- * An example of a custom actuator endpoint.
- *
- * @author Stephane Nicoll
- */
 @Endpoint(id = "custom")
 public class CustomEndpointExample {
 

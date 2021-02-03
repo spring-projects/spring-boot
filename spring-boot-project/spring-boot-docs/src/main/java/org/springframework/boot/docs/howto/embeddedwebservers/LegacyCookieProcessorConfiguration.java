@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.howto.embeddedwebservers;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import org.apache.tomcat.util.http.LegacyCookieProcessor;
 
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class SampleMeterBinderConfiguration {
+@Configuration(proxyBeanMethods = false)
+public class LegacyCookieProcessorConfiguration {
 
 	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	public WebServerFactoryCustomizer<TomcatServletWebServerFactory> cookieProcessorCustomizer() {
+		return (factory) -> factory
+				.addContextCustomizers((context) -> context.setCookieProcessor(new LegacyCookieProcessor()));
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}

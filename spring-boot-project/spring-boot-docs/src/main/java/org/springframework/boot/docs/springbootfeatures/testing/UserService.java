@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.testing.jmx;
+package org.springframework.boot.docs.springbootfeatures.testing;
 
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+public class UserService {
 
-@SpringBootConfiguration
-@ImportAutoConfiguration(JmxAutoConfiguration.class)
-public class SampleApp {
+	private final String name;
+
+	public UserService(String name) {
+		this.name = name;
+	}
+
+	public String getName() {
+		return this.name;
+	}
 
 }

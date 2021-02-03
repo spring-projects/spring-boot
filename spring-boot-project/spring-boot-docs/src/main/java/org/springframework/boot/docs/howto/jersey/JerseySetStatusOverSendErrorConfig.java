@@ -14,14 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.testing.jmx;
+package org.springframework.boot.docs.howto.jersey;
 
-import org.springframework.boot.SpringBootConfiguration;
-import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
-import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
+// tag::code[]
+import java.util.Collections;
 
-@SpringBootConfiguration
-@ImportAutoConfiguration(JmxAutoConfiguration.class)
-public class SampleApp {
+import org.glassfish.jersey.server.ResourceConfig;
+
+import org.springframework.stereotype.Component;
+
+@Component
+public class JerseySetStatusOverSendErrorConfig extends ResourceConfig {
+
+	public JerseySetStatusOverSendErrorConfig() {
+		register(Endpoint.class);
+		setProperties(Collections.singletonMap("jersey.config.server.response.setStatusOverSendError", true));
+	}
+
+}
+// end::code[]
+
+class Endpoint {
 
 }

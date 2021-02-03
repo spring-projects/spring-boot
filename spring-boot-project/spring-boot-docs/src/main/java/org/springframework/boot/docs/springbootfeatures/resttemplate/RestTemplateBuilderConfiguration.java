@@ -14,28 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.productionreadyfeatures.metrics;
+package org.springframework.boot.docs.springbootfeatures.resttemplate;
 
 // tag::code[]
-import io.micrometer.core.instrument.Gauge;
-import io.micrometer.core.instrument.binder.MeterBinder;
+import java.time.Duration;
 
+import org.springframework.boot.autoconfigure.web.client.RestTemplateBuilderConfigurer;
+import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-public class SampleMeterBinderConfiguration {
+@Configuration(proxyBeanMethods = false)
+public class RestTemplateBuilderConfiguration {
 
 	@Bean
-	MeterBinder queueSize(Queue queue) {
-		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
+	public RestTemplateBuilder restTemplateBuilder(RestTemplateBuilderConfigurer configurer) {
+		return configurer.configure(new RestTemplateBuilder()).setConnectTimeout(Duration.ofSeconds(5))
+				.setReadTimeout(Duration.ofSeconds(2));
 	}
 
 }
 // end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
-	}
-
-}
