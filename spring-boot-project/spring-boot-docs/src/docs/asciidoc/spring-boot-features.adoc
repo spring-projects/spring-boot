@@ -1118,12 +1118,9 @@ Sometimes, classes annotated with `@ConfigurationProperties` might not be suitab
 In these cases, specify the list of types to process using the `@EnableConfigurationProperties` annotation.
 This can be done on any `@Configuration` class, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	@EnableConfigurationProperties(AcmeProperties.class)
-	public class MyConfiguration {
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/enable/MyConfiguration.java[tag=*]
 ----
 
 To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
@@ -1131,12 +1128,9 @@ Typically, it is added to the main application class that is annotated with `@Sp
 By default, scanning will occur from the package of the class that declares the annotation.
 If you want to define specific packages to scan, you can do so as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@SpringBootApplication
-	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
-	public class MyApplication {
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/enable/MyApplication.java[tag=*]
 ----
 
 [NOTE]
@@ -1170,27 +1164,9 @@ This style of configuration works particularly well with the `SpringApplication`
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Service
-	public class MyService {
-
-		private final AcmeProperties properties;
-
-		@Autowired
-		public MyService(AcmeProperties properties) {
-			this.properties = properties;
-		}
-
-	 	//...
-
-		@PostConstruct
-		public void openConnection() {
-			Server server = new Server(this.properties.getRemoteAddress());
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/use/MyService.java[tag=*]
 ----
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
@@ -1205,13 +1181,9 @@ Doing so can be particularly useful when you want to bind properties to third-pa
 
 To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to its bean registration, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix = "another")
-	@Bean
-	public AnotherComponent anotherComponent() {
-		...
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/ThirdPartyConfiguration.java[tag=*]
 ----
 
 Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `AcmeProperties` example.
@@ -1225,22 +1197,9 @@ Common examples where this is useful include dash-separated environment properti
 
 As an example, consider the following `@ConfigurationProperties` class:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix="acme.my-project.person")
-	public class OwnerProperties {
-
-		private String firstName;
-
-		public String getFirstName() {
-			return this.firstName;
-		}
-
-		public void setFirstName(String firstName) {
-			this.firstName = firstName;
-		}
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/relaxed/OwnerProperties.java[tag=*]
 ----
 
 With the preceding code, the following properties names can all be used:
@@ -1357,18 +1316,9 @@ When lists are configured in more than one place, overriding works by replacing 
 For example, assume a `MyPojo` object with `name` and `description` attributes that are `null` by default.
 The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		private final List<MyPojo> list = new ArrayList<>();
-
-		public List<MyPojo> getList() {
-			return this.list;
-		}
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/merge/list/AcmeProperties.java[tag=*]
 ----
 
 Consider the following configuration:
@@ -1421,18 +1371,9 @@ For `Map` properties, you can bind with property values drawn from multiple sour
 However, for the same property in multiple sources, the one with the highest priority is used.
 The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		private final Map<String, MyPojo> map = new HashMap<>();
-
-		public Map<String, MyPojo> getMap() {
-			return this.map;
-		}
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/merge/map/AcmeProperties.java[tag=*]
 ----
 
 Consider the following configuration:
@@ -1588,18 +1529,9 @@ Spring Boot attempts to validate `@ConfigurationProperties` classes whenever the
 You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix="acme")
-	@Validated
-	public class AcmeProperties {
-
-		@NotNull
-		private InetAddress remoteAddress;
-
-		// ... getters and setters
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/validate/AcmeProperties.java[tag=*]
 ----
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
@@ -1607,30 +1539,9 @@ TIP: You can also trigger validation by annotating the `@Bean` method that creat
 To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with `@Valid`.
 The following example builds on the preceding `AcmeProperties` example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties(prefix="acme")
-	@Validated
-	public class AcmeProperties {
-
-		@NotNull
-		private InetAddress remoteAddress;
-
-		@Valid
-		private final Security security = new Security();
-
-		// ... getters and setters
-
-		public static class Security {
-
-			@NotEmpty
-			public String username;
-
-			// ... getters and setters
-
-		}
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/validate/nested/AcmeProperties.java[tag=*]
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.
@@ -1685,15 +1596,9 @@ If the value of a property from an application property file is a `SpEL` express
 Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
 Any `@Component`, `@Configuration` or `@ConfigurationProperties` can be marked with `@Profile` to limit when it is loaded, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	@Profile("production")
-	public class ProductionConfiguration {
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/profiles/ProductionConfiguration.java[tag=*]
 ----
 
 NOTE: If `@ConfigurationProperties` beans are registered via `@EnableConfigurationProperties` instead of automatic scanning, the `@Profile` annotation needs to be specified on the `@Configuration` class that has the `@EnableConfigurationProperties` annotation.
@@ -2326,28 +2231,9 @@ Methods in your controller are mapped to HTTP by using `@RequestMapping` annotat
 
 The following code shows a typical `@RestController` that serves JSON data:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@RestController
-	@RequestMapping(value="/users")
-	public class MyRestController {
-
-		@RequestMapping(value="/{user}", method=RequestMethod.GET)
-		public User getUser(@PathVariable Long user) {
-			// ...
-		}
-
-		@RequestMapping(value="/{user}/customers", method=RequestMethod.GET)
-		List<Customer> getUserCustomers(@PathVariable Long user) {
-			// ...
-		}
-
-		@RequestMapping(value="/{user}", method=RequestMethod.DELETE)
-		public User deleteUser(@PathVariable Long user) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/servlet/MyRestController.java[tag=*]
 ----
 
 Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web.html#mvc[reference documentation].
@@ -2395,23 +2281,9 @@ By default, strings are encoded in `UTF-8`.
 
 If you need to add or customize converters, you can use Spring Boot's `HttpMessageConverters` class, as shown in the following listing:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
-	import org.springframework.context.annotation.*;
-	import org.springframework.http.converter.*;
-
-	@Configuration(proxyBeanMethods = false)
-	public class MyConfiguration {
-
-		@Bean
-		public HttpMessageConverters customConverters() {
-			HttpMessageConverter<?> additional = ...
-			HttpMessageConverter<?> another = ...
-			return new HttpMessageConverters(additional, another);
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/HttpMessageConvertersConfiguration.java[tag=*]
 ----
 
 Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
@@ -2427,25 +2299,9 @@ Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/Ja
 You can use the `@JsonComponent` annotation directly on `JsonSerializer`, `JsonDeserializer` or `KeyDeserializer` implementations.
 You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import java.io.*;
-	import com.fasterxml.jackson.core.*;
-	import com.fasterxml.jackson.databind.*;
-	import org.springframework.boot.jackson.*;
-
-	@JsonComponent
-	public class Example {
-
-		public static class Serializer extends JsonSerializer<SomeObject> {
-			// ...
-		}
-
-		public static class Deserializer extends JsonDeserializer<SomeObject> {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/json/MyJsonComponent.java[tag=*]
 ----
 
 All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with Jackson.
@@ -2453,6 +2309,13 @@ Because `@JsonComponent` is meta-annotated with `@Component`, the usual componen
 
 Spring Boot also provides {spring-boot-module-code}/jackson/JsonObjectSerializer.java[`JsonObjectSerializer`] and {spring-boot-module-code}/jackson/JsonObjectDeserializer.java[`JsonObjectDeserializer`] base classes that provide useful alternatives to the standard Jackson versions when serializing objects.
 See {spring-boot-module-api}/jackson/JsonObjectSerializer.html[`JsonObjectSerializer`] and {spring-boot-module-api}/jackson/JsonObjectDeserializer.html[`JsonObjectDeserializer`] in the Javadoc for details.
+
+The example above can be rewritten to use `JsonObjectSerializer`/`JsonObjectDeserializer` as follows:
+
+[source,java,indent=0]
+----
+include::{include-springbootfeatures}/webapplications/json/object/MyJsonComponent.java[tag=*]
+----
 
 
 
@@ -2692,27 +2555,9 @@ To do so, extend `BasicErrorController`, add a public method with a `@RequestMap
 
 You can also define a class annotated with `@ControllerAdvice` to customize the JSON document to return for a particular controller and/or exception type, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@ControllerAdvice(basePackageClasses = AcmeController.class)
-	public class AcmeControllerAdvice extends ResponseEntityExceptionHandler {
-
-		@ExceptionHandler(YourException.class)
-		@ResponseBody
-		ResponseEntity<?> handleControllerException(HttpServletRequest request, Throwable ex) {
-			HttpStatus status = getStatus(request);
-			return new ResponseEntity<>(new CustomErrorType(status.value(), ex.getMessage()), status);
-		}
-
-		private HttpStatus getStatus(HttpServletRequest request) {
-			Integer statusCode = (Integer) request.getAttribute("javax.servlet.error.status_code");
-			if (statusCode == null) {
-				return HttpStatus.INTERNAL_SERVER_ERROR;
-			}
-			return HttpStatus.valueOf(statusCode);
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/servlet/MyControllerAdvice.java[tag=*]
 ----
 
 In the preceding example, if `YourException` is thrown by a controller defined in the same package as `AcmeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
@@ -2757,20 +2602,10 @@ To map all `5xx` errors by using a FreeMarker template, your directory structure
 
 For more complex mappings, you can also add beans that implement the `ErrorViewResolver` interface, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	public class MyErrorViewResolver implements ErrorViewResolver {
-
-		@Override
-		public ModelAndView resolveErrorView(HttpServletRequest request,
-				HttpStatus status, Map<String, Object> model) {
-			// Use the request or status to optionally return a ModelAndView
-			return ...
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/servlet/MyErrorViewResolver.java[tag=*]
 ----
-
 
 You can also use regular Spring MVC features such as {spring-framework-docs}/web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and {spring-framework-docs}/web.html#mvc-ann-controller-advice[`@ControllerAdvice`].
 The `ErrorController` then picks up any unhandled exceptions.
@@ -2782,37 +2617,16 @@ The `ErrorController` then picks up any unhandled exceptions.
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public ErrorPageRegistrar errorPageRegistrar(){
-		return new MyErrorPageRegistrar();
-	}
-
-	// ...
-
-	private static class MyErrorPageRegistrar implements ErrorPageRegistrar {
-
-		@Override
-		public void registerErrorPages(ErrorPageRegistry registry) {
-			registry.addErrorPages(new ErrorPage(HttpStatus.BAD_REQUEST, "/400"));
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/servlet/ErrorPageConfiguration.java[tag=*]
 ----
 
 NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public FilterRegistrationBean myFilter() {
-		FilterRegistrationBean registration = new FilterRegistrationBean();
-		registration.setFilter(new MyFilter());
-		...
-		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
-		return registration;
-	}
+include::{include-springbootfeatures}/webapplications/servlet/ServletFilterConfiguration.java[tag=*]
 ----
 
 Note that the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type.
@@ -2854,21 +2668,9 @@ As of version 4.2, Spring MVC {spring-framework-docs}/web.html#mvc-cors[supports
 Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
 {spring-framework-docs}/web.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class MyConfiguration {
-
-		@Bean
-		public WebMvcConfigurer corsConfigurer() {
-			return new WebMvcConfigurer() {
-				@Override
-				public void addCorsMappings(CorsRegistry registry) {
-					registry.addMapping("/api/**");
-				}
-			};
-		}
-	}
+include::{include-springbootfeatures}/webapplications/servlet/CorsConfiguration.java[tag=*]
 ----
 
 
@@ -2881,61 +2683,21 @@ Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous an
 Spring WebFlux comes in two flavors: functional and annotation-based.
 The annotation-based one is quite close to the Spring MVC model, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@RestController
-	@RequestMapping("/users")
-	public class MyRestController {
-
-		@GetMapping("/{user}")
-		public Mono<User> getUser(@PathVariable Long user) {
-			// ...
-		}
-
-		@GetMapping("/{user}/customers")
-		public Flux<Customer> getUserCustomers(@PathVariable Long user) {
-			// ...
-		}
-
-		@DeleteMapping("/{user}")
-		public Mono<User> deleteUser(@PathVariable Long user) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/webflux/MyRestController.java[tag=*]
 ----
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class RoutingConfiguration {
+include::{include-springbootfeatures}/webapplications/webflux/fn/RoutingConfiguration.java[tag=*]
+----
 
-		@Bean
-		public RouterFunction<ServerResponse> monoRouterFunction(UserHandler userHandler) {
-			return route(GET("/{user}").and(accept(APPLICATION_JSON)), userHandler::getUser)
-					.andRoute(GET("/{user}/customers").and(accept(APPLICATION_JSON)), userHandler::getUserCustomers)
-					.andRoute(DELETE("/{user}").and(accept(APPLICATION_JSON)), userHandler::deleteUser);
-		}
-
-	}
-
-	@Component
-	public class UserHandler {
-
-		public Mono<ServerResponse> getUser(ServerRequest request) {
-			// ...
-		}
-
-		public Mono<ServerResponse> getUserCustomers(ServerRequest request) {
-			// ...
-		}
-
-		public Mono<ServerResponse> deleteUser(ServerRequest request) {
-			// ...
-		}
-	}
+[source,java,indent=0]
+----
+include::{include-springbootfeatures}/webapplications/webflux/fn/UserHandler.java[tag=*]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -2977,21 +2739,9 @@ For example, `+spring.jackson.*+` configuration keys are applied to the Jackson 
 
 If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.web.codec.CodecCustomizer;
-
-	@Configuration(proxyBeanMethods = false)
-	public class MyConfiguration {
-
-		@Bean
-		public CodecCustomizer myCodecCustomizer() {
-			return codecConfigurer -> {
-				// ...
-			};
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/webflux/CodecConfiguration.java[tag=*]
 ----
 
 You can also leverage <<boot-features-json-components,Boot's custom JSON serializers and deserializers>>.
@@ -3062,21 +2812,9 @@ For that, you can add a bean of type `ErrorAttributes`.
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
 Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	public class CustomErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
-
-		// Define constructor here
-
-		@Override
-		protected RouterFunction<ServerResponse> getRoutingFunction(ErrorAttributes errorAttributes) {
-
-			return RouterFunctions
-					.route(aPredicate, aHandler)
-					.andRoute(anotherPredicate, anotherHandler);
-		}
-
-	}
+include::{include-springbootfeatures}/webapplications/webflux/CustomErrorWebExceptionHandler.java[tag=*]
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
