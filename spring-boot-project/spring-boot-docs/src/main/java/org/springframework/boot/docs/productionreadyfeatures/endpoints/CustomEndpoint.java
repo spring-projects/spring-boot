@@ -21,7 +21,7 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 
 @Endpoint(id = "custom")
-public class CustomEndpointExample {
+public class CustomEndpoint {
 
 	// tag::read[]
 	@ReadOperation

@@ -436,7 +436,7 @@ This exit code can then be passed to `System.exit()` to return it as a status co
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/ExitCodeExample.java[tag=*]
+include::{include-springbootfeatures}/springapplication/exitcode/MyApplication.java[tag=*]
 ----
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.

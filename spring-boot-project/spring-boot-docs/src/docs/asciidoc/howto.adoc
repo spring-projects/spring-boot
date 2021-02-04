@@ -95,7 +95,7 @@ For instance, the following example loads a YAML configuration file from the cla
 
 [source,java,indent=0]
 ----
-include::{include-howto}/springbootapplication/ExampleEnvironmentPostProcessor.java[tag=*]
+include::{include-howto}/springbootapplication/MyEnvironmentPostProcessor.java[tag=*]
 ----
 
 TIP: The `Environment` has already been prepared with all the usual property sources that Spring Boot loads by default.

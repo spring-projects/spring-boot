@@ -28,7 +28,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.util.Assert;
 
-public class ExampleEnvironmentPostProcessor implements EnvironmentPostProcessor {
+public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 
 	private final YamlPropertySourceLoader loader = new YamlPropertySourceLoader();
 

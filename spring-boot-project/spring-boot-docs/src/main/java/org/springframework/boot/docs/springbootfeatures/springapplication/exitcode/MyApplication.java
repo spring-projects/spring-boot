@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.springapplication;
+package org.springframework.boot.docs.springbootfeatures.springapplication.exitcode;
 
 // tag::code[]
 import org.springframework.boot.ExitCodeGenerator;
@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 @SpringBootApplication
-public class ExitCodeExample {
+public class MyApplication {
 
 	@Bean
 	public ExitCodeGenerator exitCodeGenerator() {
@@ -31,7 +31,7 @@ public class ExitCodeExample {
 	}
 
 	public static void main(String[] args) {
-		System.exit(SpringApplication.exit(SpringApplication.run(ExitCodeExample.class, args)));
+		System.exit(SpringApplication.exit(SpringApplication.run(MyApplication.class, args)));
 	}
 
 }

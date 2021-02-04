@@ -24,18 +24,18 @@ import org.springframework.core.env.StandardEnvironment;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link ExampleEnvironmentPostProcessor}.
+ * Tests for {@link MyEnvironmentPostProcessor}.
  *
  * @author Stephane Nicoll
  */
-class ExampleEnvironmentPostProcessorTests {
+class MyEnvironmentPostProcessorTests {
 
 	private final StandardEnvironment environment = new StandardEnvironment();
 
 	@Test
 	void applyEnvironmentPostProcessor() {
 		assertThat(this.environment.containsProperty("test.foo.bar")).isFalse();
-		new ExampleEnvironmentPostProcessor().postProcessEnvironment(this.environment, new SpringApplication());
+		new MyEnvironmentPostProcessor().postProcessEnvironment(this.environment, new SpringApplication());
 		assertThat(this.environment.containsProperty("test.foo.bar")).isTrue();
 		assertThat(this.environment.getProperty("test.foo.bar")).isEqualTo("value");
 	}
