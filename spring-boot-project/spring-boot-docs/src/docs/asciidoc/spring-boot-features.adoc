@@ -6278,6 +6278,10 @@ Spring Boot offers several conveniences for working with {spring-integration}[Sp
 Spring Integration provides abstractions over messaging and also other transports such as HTTP, TCP, and others.
 If Spring Integration is available on your classpath, it is initialized through the `@EnableIntegration` annotation.
 
+Spring Integration polling logic is based on the `TaskScheduler`.
+So, it relies on the auto-configured one (see the previous section), or exposes a `taskScheduler` bean according provided `spring.task.scheduling` configuration properties.
+If only Spring Integration is used, the `@EnableScheduling` annotation is optional and can be omitted on the target configuration classes.
+
 Spring Boot also configures some features that are triggered by the presence of additional Spring Integration modules.
 If `spring-integration-jmx` is also on the classpath, message processing statistics are published over JMX.
 If `spring-integration-jdbc` is available, the default database schema can be created on startup, as shown in the following line:
