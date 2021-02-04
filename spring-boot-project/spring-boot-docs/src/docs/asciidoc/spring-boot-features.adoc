@@ -13,11 +13,9 @@ If you have not already done so, you might want to read the "<<getting-started.a
 The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
 In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	public static void main(String[] args) {
-		SpringApplication.run(MySpringConfiguration.class, args);
-	}
+include::{include-springbootfeatures}/springapplication/main/run/MyApplication.java[tag=*]
 ----
 
 When your application starts, you should see something similar to the following output:
@@ -176,13 +174,9 @@ This will initialize the `application.*` banner variables before building the cl
 If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
-		app.setBannerMode(Banner.Mode.OFF);
-		app.run(args);
-	}
+include::{include-springbootfeatures}/springapplication/main/custom/MyApplication.java[tag=*]
 ----
 
 NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
@@ -255,49 +249,16 @@ More often, applications will want to listen to state updates or update the stat
 
 For example, we can export the "Readiness" state of the application to a file so that a Kubernetes "exec Probe" can look at this file:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-    @Component
-	public class ReadinessStateExporter {
-
-		@EventListener
-	    public void onStateChange(AvailabilityChangeEvent<ReadinessState> event) {
-			switch (event.getState()) {
-		    case ACCEPTING_TRAFFIC:
-			    // create file /tmp/healthy
-			break;
-		    case REFUSING_TRAFFIC:
-		    	// remove file /tmp/healthy
-			break;
-		    }
-	    }
-
-	}
+include::{include-springbootfeatures}/springapplication/availability/ReadinessStateExporter.java[tag=*]
 ----
 
 We can also update the state of the application, when the application breaks and cannot recover:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-    @Component
-	public class LocalCacheVerifier {
-
-	    private final ApplicationEventPublisher eventPublisher;
-
-	    public LocalCacheVerifier(ApplicationEventPublisher eventPublisher) {
-            this.eventPublisher = eventPublisher;
-	    }
-
-	    public void checkLocalCache() {
-	    	try {
-	    		//...
-	    	}
-	    	catch (CacheCompletelyBrokenException ex) {
-	    		AvailabilityChangeEvent.publish(this.eventPublisher, ex, LivenessState.BROKEN);
-	    	}
-	    }
-
-	}
+include::{include-springbootfeatures}/springapplication/availability/LocalCacheVerifier.java[tag=*]
 ----
 
 Spring Boot provides <<production-ready-features.adoc#production-ready-kubernetes-probes,Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints>>.
@@ -380,23 +341,9 @@ TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NON
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
 The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.*;
-	import org.springframework.beans.factory.annotation.*;
-	import org.springframework.stereotype.*;
-
-	@Component
-	public class MyBean {
-
-		@Autowired
-		public MyBean(ApplicationArguments args) {
-			boolean debug = args.containsOption("debug");
-			List<String> files = args.getNonOptionArgs();
-			// if run with "--debug logfile.txt" debug=true, files=["logfile.txt"]
-		}
-
-	}
+include::{include-springbootfeatures}/springapplication/ApplicationArgumentsExample.java[tag=*]
 ----
 
 TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
@@ -415,19 +362,9 @@ NOTE: This contract is well suited for tasks that should run after application s
 The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.*;
-	import org.springframework.stereotype.*;
-
-	@Component
-	public class MyBean implements CommandLineRunner {
-
-		public void run(String... args) {
-			// Do something...
-		}
-
-	}
+include::{include-springbootfeatures}/springapplication/CommandLineRunnerExample.java[tag=*]
 ----
 
 If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
@@ -473,13 +410,9 @@ This data can be collected for profiling purposes, or just to have a better unde
 You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.
 For example, to use the `BufferingApplicationStartup`, you could write:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	public static void main(String[] args) {
-		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
-		app.setApplicationStartup(new BufferingApplicationStartup(2048));
-		app.run(args);
-	}
+include::{include-springbootfeatures}/springapplication/startup/MyApplication.java[tag=*]
 ----
 
 The first available implementation, `FlightRecorderApplicationStartup` is provided by Spring Framework.
@@ -532,20 +465,9 @@ Config data files are considered in the following order:
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.stereotype.*;
-	import org.springframework.beans.factory.annotation.*;
-
-	@Component
-	public class MyBean {
-
-		@Value("${name}")
-		private String name;
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/valueinjection/MyBean.java[tag=*]
 ----
 
 On your application classpath (for example, inside your jar) you can have an `application.properties` file that provides a sensible default property value for `name`.
@@ -1115,58 +1037,9 @@ TIP: See also the <<boot-features-external-config-vs-value,differences between `
 ==== JavaBean properties binding
 It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	package com.example;
-
-	import java.net.InetAddress;
-	import java.util.ArrayList;
-	import java.util.Collections;
-	import java.util.List;
-
-	import org.springframework.boot.context.properties.ConfigurationProperties;
-
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		private boolean enabled;
-
-		private InetAddress remoteAddress;
-
-		private final Security security = new Security();
-
-		public boolean isEnabled() { ... }
-
-		public void setEnabled(boolean enabled) { ... }
-
-		public InetAddress getRemoteAddress() { ... }
-
-		public void setRemoteAddress(InetAddress remoteAddress) { ... }
-
-		public Security getSecurity() { ... }
-
-		public static class Security {
-
-			private String username;
-
-			private String password;
-
-			private List<String> roles = new ArrayList<>(Collections.singleton("USER"));
-
-			public String getUsername() { ... }
-
-			public void setUsername(String username) { ... }
-
-			public String getPassword() { ... }
-
-			public void setPassword(String password) { ... }
-
-			public List<String> getRoles() { ... }
-
-			public void setRoles(List<String> roles) { ... }
-
-		}
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/javabeanbinding/AcmeProperties.java[tag=*]
 ----
 
 The preceding POJO defines the following properties:
@@ -1205,63 +1078,9 @@ Finally, only standard Java Bean properties are considered and binding on static
 ==== Constructor binding
 The example in the previous section can be rewritten in an immutable fashion as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	package com.example;
-
-	import java.net.InetAddress;
-	import java.util.List;
-
-	import org.springframework.boot.context.properties.ConfigurationProperties;
-	import org.springframework.boot.context.properties.ConstructorBinding;
-	import org.springframework.boot.context.properties.bind.DefaultValue;
-
-	@ConstructorBinding
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		private final boolean enabled;
-
-		private final InetAddress remoteAddress;
-
-		private final Security security;
-
-		public AcmeProperties(boolean enabled, InetAddress remoteAddress, Security security) {
-			this.enabled = enabled;
-			this.remoteAddress = remoteAddress;
-			this.security = security;
-		}
-
-		public boolean isEnabled() { ... }
-
-		public InetAddress getRemoteAddress() { ... }
-
-		public Security getSecurity() { ... }
-
-		public static class Security {
-
-			private final String username;
-
-			private final String password;
-
-			private final List<String> roles;
-
-			public Security(String username, String password,
-					@DefaultValue("USER") List<String> roles) {
-				this.username = username;
-				this.password = password;
-				this.roles = roles;
-			}
-
-			public String getUsername() { ... }
-
-			public String getPassword() { ... }
-
-			public List<String> getRoles() { ... }
-
-		}
-
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/constructorbinding/AcmeProperties.java[tag=*]
 ----
 
 In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
@@ -1273,32 +1092,9 @@ Default values can be specified using `@DefaultValue` and the same conversion se
 By default, if no properties are bound to `Security`, the `AcmeProperties` instance will contain a `null` value for `security`.
 If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	package com.example;
-	import java.net.InetAddress;
-	import java.util.List;
-
-	import org.springframework.boot.context.properties.ConfigurationProperties;
-	import org.springframework.boot.context.properties.ConstructorBinding;
-	import org.springframework.boot.context.properties.bind.DefaultValue;
-
-	@ConstructorBinding
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		private final boolean enabled;
-
-		private final InetAddress remoteAddress;
-
-		private final Security security;
-
-		public AcmeProperties(boolean enabled, InetAddress remoteAddress, @DefaultValue Security security) {
-			this.enabled = enabled;
-			this.remoteAddress = remoteAddress;
-			this.security = security;
-		}
-	}
+include::{include-springbootfeatures}/externalizedconfiguration/constructorbinding/nonnull/AcmeProperties.java[tag=*]
 ----
 
 
