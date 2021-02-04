@@ -842,7 +842,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void noCompressionForUserAgent() throws Exception {
+	protected void noCompressionForUserAgent() throws Exception {
 		assertThat(doTestCompression(10000, null, new String[] { "testUserAgent" })).isFalse();
 	}
 

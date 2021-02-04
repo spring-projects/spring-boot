@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,12 @@ final class JettyHandlerWrappers {
 			handler.addIncludedMethods(httpMethod.name());
 		}
 		if (compression.getExcludedUserAgents() != null) {
-			handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
+			try {
+				handler.setExcludedAgentPatterns(compression.getExcludedUserAgents());
+			}
+			catch (NoSuchMethodError ex) {
+				// Jetty 10 does not support User-Agent-based exclusions
+			}
 		}
 		return handler;
 	}

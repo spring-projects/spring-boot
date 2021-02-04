@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -106,8 +106,22 @@ class SslServerCustomizer implements JettyServerCustomizer {
 	private ServerConnector createHttp11ServerConnector(Server server, HttpConfiguration config,
 			SslContextFactory.Server sslContextFactory) {
 		HttpConnectionFactory connectionFactory = new HttpConnectionFactory(config);
-		SslConnectionFactory sslConnectionFactory = new SslConnectionFactory(sslContextFactory,
-				HttpVersion.HTTP_1_1.asString());
+		SslConnectionFactory sslConnectionFactory;
+		try {
+			sslConnectionFactory = new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+		}
+		catch (NoSuchMethodError ex) {
+			// Jetty 10
+			try {
+				sslConnectionFactory = SslConnectionFactory.class
+						.getConstructor(SslContextFactory.Server.class, String.class)
+						.newInstance(sslContextFactory, HttpVersion.HTTP_1_1.asString());
+			}
+			catch (Exception ex2) {
+				throw new RuntimeException(ex2);
+			}
+		}
+
 		return new SslValidatingServerConnector(server, sslContextFactory, this.ssl.getKeyAlias(), sslConnectionFactory,
 				connectionFactory);
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.web.embedded.jetty;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.Method;
 import java.net.InetSocketAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -70,6 +71,7 @@ import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -306,7 +308,16 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		holder.setInitParameter("dirAllowed", "false");
 		holder.setInitOrder(1);
 		context.getServletHandler().addServletWithMapping(holder, "/");
-		context.getServletHandler().getServletMapping("/").setDefault(true);
+		ServletMapping servletMapping = context.getServletHandler().getServletMapping("/");
+		try {
+			servletMapping.setDefault(true);
+		}
+		catch (NoSuchMethodError ex) {
+			// Jetty 10
+			Method setFromDefaultDescriptor = ReflectionUtils.findMethod(servletMapping.getClass(),
+					"setFromDefaultDescriptor", boolean.class);
+			ReflectionUtils.invokeMethod(setFromDefaultDescriptor, servletMapping, true);
+		}
 	}
 
 	/**

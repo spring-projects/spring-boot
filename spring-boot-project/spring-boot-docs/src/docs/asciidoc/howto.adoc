@@ -451,7 +451,8 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 	</dependency>
 ----
 
-NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2.0, Jetty 9.4 does not support Servlet 4.0.
+NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2, Jetty 9.4 does not support Servlet 4.0.
+If you wish to use Jetty 10, which does support Servlet 4.0, override the `jetty.version` property rather than the `servlet-api.version` property.
 
 The following Gradle example shows how to use Undertow in place of Reactor Netty for Spring WebFlux:
 
