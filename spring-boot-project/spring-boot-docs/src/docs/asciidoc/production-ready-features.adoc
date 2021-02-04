@@ -357,7 +357,7 @@ If you wish to configure custom security for HTTP endpoints, for example, only a
 
 A typical Spring Security configuration might look something like the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -386,7 +386,7 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -776,7 +776,7 @@ You need to provide an implementation of the `health()` method and return a `Hea
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.actuate.health.Health;
 	import org.springframework.boot.actuate.health.HealthIndicator;
@@ -870,7 +870,7 @@ If you need to register a regular `HealthContributor`, you should wrap it using 
 To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyReactiveHealthIndicator implements ReactiveHealthIndicator {
@@ -1226,7 +1226,7 @@ To provide custom application information, you can register Spring beans that im
 
 The following example contributes an `example` entry with a single value:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import java.util.Collections;
 
@@ -1612,7 +1612,7 @@ Spring Boot will also add any auto-configured registries to the global static co
 
 You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
@@ -1622,7 +1622,7 @@ You can register any number of `MeterRegistryCustomizer` beans to further config
 
 You can apply customizations to particular registry implementations by being more specific about the generic type:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	MeterRegistryCustomizer<GraphiteMeterRegistry> graphiteMetricsNamingConvention() {
@@ -1780,12 +1780,12 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
 
-[source,java]
+[source,java,pending-extract=true,indent=0]
 ----
-@Bean
-public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
-	return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
-}
+	@Bean
+	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
+		return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+	}
 ----
 
 
@@ -1855,12 +1855,12 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
 
-[source,java]
+[source,java,pending-extract=true,indent=0]
 ----
-@Bean
-public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
-	return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
-}
+	@Bean
+	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
+		return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+	}
 ----
 
 
@@ -2128,7 +2128,7 @@ Auto-configuration enables the instrumentation of requests handled by Spring MVC
 When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
 Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@RestController
 	@Timed <1>
@@ -2217,7 +2217,7 @@ When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configur
 When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
 Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	@Path("/api/people")

@@ -223,7 +223,7 @@ An exception is thrown if more than one candidate is found.
 === Example Repackage Implementation
 The following example shows a typical repackage implementation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	Repackager repackager = new Repackager(sourceJarFile);
 	repackager.setBackupSource(false);

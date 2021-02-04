@@ -13,7 +13,7 @@ If you have not already done so, you might want to read the "<<getting-started.a
 The `SpringApplication` class provides a convenient way to bootstrap a Spring application that is started from a `main()` method.
 In many situations, you can delegate to the static `SpringApplication.run` method, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	public static void main(String[] args) {
 		SpringApplication.run(MySpringConfiguration.class, args);
@@ -168,7 +168,7 @@ This will initialize the `application.*` banner variables before building the cl
 If the `SpringApplication` defaults are not to your taste, you can instead create a local instance and customize it.
 For example, to turn off the banner, you could write:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
@@ -247,7 +247,7 @@ More often, applications will want to listen to state updates or update the stat
 
 For example, we can export the "Readiness" state of the application to a file so that a Kubernetes "exec Probe" can look at this file:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
     @Component
 	public class ReadinessStateExporter {
@@ -269,7 +269,7 @@ For example, we can export the "Readiness" state of the application to a file so
 
 We can also update the state of the application, when the application breaks and cannot recover:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
     @Component
 	public class LocalCacheVerifier {
@@ -372,7 +372,7 @@ TIP: It is often desirable to call `setWebApplicationType(WebApplicationType.NON
 If you need to access the application arguments that were passed to `SpringApplication.run(...)`, you can inject a `org.springframework.boot.ApplicationArguments` bean.
 The `ApplicationArguments` interface provides access to both the raw `String[]` arguments as well as parsed `option` and `non-option` arguments, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.*;
 	import org.springframework.beans.factory.annotation.*;
@@ -407,7 +407,7 @@ NOTE: This contract is well suited for tasks that should run after application s
 The `CommandLineRunner` interfaces provides access to application arguments as a string array, whereas the `ApplicationRunner` uses the `ApplicationArguments` interface discussed earlier.
 The following example shows a `CommandLineRunner` with a `run` method:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.*;
 	import org.springframework.stereotype.*;
@@ -465,7 +465,7 @@ This data can be collected for profiling purposes, or just to have a better unde
 You can choose an `ApplicationStartup` implementation when setting up the `SpringApplication` instance.
 For example, to use the `BufferingApplicationStartup`, you could write:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	public static void main(String[] args) {
 		SpringApplication app = new SpringApplication(MySpringConfiguration.class);
@@ -524,7 +524,7 @@ Config data files are considered in the following order:
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.stereotype.*;
 	import org.springframework.beans.factory.annotation.*;
@@ -1107,7 +1107,7 @@ TIP: See also the <<boot-features-external-config-vs-value,differences between `
 ==== JavaBean properties binding
 It is possible to bind a bean declaring standard JavaBean properties as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example;
 
@@ -1197,7 +1197,7 @@ Finally, only standard Java Bean properties are considered and binding on static
 ==== Constructor binding
 The example in the previous section can be rewritten in an immutable fashion as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example;
 
@@ -1265,7 +1265,7 @@ Default values can be specified using `@DefaultValue` and the same conversion se
 By default, if no properties are bound to `Security`, the `AcmeProperties` instance will contain a `null` value for `security`.
 If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example;
 	import java.net.InetAddress;
@@ -1314,7 +1314,7 @@ Sometimes, classes annotated with `@ConfigurationProperties` might not be suitab
 In these cases, specify the list of types to process using the `@EnableConfigurationProperties` annotation.
 This can be done on any `@Configuration` class, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(AcmeProperties.class)
@@ -1327,7 +1327,7 @@ Typically, it is added to the main application class that is annotated with `@Sp
 By default, scanning will occur from the package of the class that declares the annotation.
 If you want to define specific packages to scan, you can do so as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@SpringBootApplication
 	@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
@@ -1366,7 +1366,7 @@ This style of configuration works particularly well with the `SpringApplication`
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Service
 	public class MyService {
@@ -1401,7 +1401,7 @@ Doing so can be particularly useful when you want to bind properties to third-pa
 
 To configure a bean from the `Environment` properties, add `@ConfigurationProperties` to its bean registration, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties(prefix = "another")
 	@Bean
@@ -1421,7 +1421,7 @@ Common examples where this is useful include dash-separated environment properti
 
 As an example, consider the following `@ConfigurationProperties` class:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties(prefix="acme.my-project.person")
 	public class OwnerProperties {
@@ -1553,7 +1553,7 @@ When lists are configured in more than one place, overriding works by replacing 
 For example, assume a `MyPojo` object with `name` and `description` attributes that are `null` by default.
 The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties("acme")
 	public class AcmeProperties {
@@ -1617,7 +1617,7 @@ For `Map` properties, you can bind with property values drawn from multiple sour
 However, for the same property in multiple sources, the one with the highest priority is used.
 The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties("acme")
 	public class AcmeProperties {
@@ -1784,7 +1784,7 @@ Spring Boot attempts to validate `@ConfigurationProperties` classes whenever the
 You can use JSR-303 `javax.validation` constraint annotations directly on your configuration class.
 To do so, ensure that a compliant JSR-303 implementation is on your classpath and then add constraint annotations to your fields, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties(prefix="acme")
 	@Validated
@@ -1803,7 +1803,7 @@ TIP: You can also trigger validation by annotating the `@Bean` method that creat
 To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with `@Valid`.
 The following example builds on the preceding `AcmeProperties` example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties(prefix="acme")
 	@Validated
@@ -1881,7 +1881,7 @@ If the value of a property from an application property file is a `SpEL` express
 Spring Profiles provide a way to segregate parts of your application configuration and make it be available only in certain environments.
 Any `@Component`, `@Configuration` or `@ConfigurationProperties` can be marked with `@Profile` to limit when it is loaded, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@Profile("production")
@@ -2522,7 +2522,7 @@ Methods in your controller are mapped to HTTP by using `@RequestMapping` annotat
 
 The following code shows a typical `@RestController` that serves JSON data:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@RestController
 	@RequestMapping(value="/users")
@@ -2591,7 +2591,7 @@ By default, strings are encoded in `UTF-8`.
 
 If you need to add or customize converters, you can use Spring Boot's `HttpMessageConverters` class, as shown in the following listing:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 	import org.springframework.context.annotation.*;
@@ -2623,7 +2623,7 @@ Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/Ja
 You can use the `@JsonComponent` annotation directly on `JsonSerializer`, `JsonDeserializer` or `KeyDeserializer` implementations.
 You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import java.io.*;
 	import com.fasterxml.jackson.core.*;
@@ -2888,7 +2888,7 @@ To do so, extend `BasicErrorController`, add a public method with a `@RequestMap
 
 You can also define a class annotated with `@ControllerAdvice` to customize the JSON document to return for a particular controller and/or exception type, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@ControllerAdvice(basePackageClasses = AcmeController.class)
 	public class AcmeControllerAdvice extends ResponseEntityExceptionHandler {
@@ -2953,7 +2953,7 @@ To map all `5xx` errors by using a FreeMarker template, your directory structure
 
 For more complex mappings, you can also add beans that implement the `ErrorViewResolver` interface, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	public class MyErrorViewResolver implements ErrorViewResolver {
 
@@ -2978,7 +2978,7 @@ The `ErrorController` then picks up any unhandled exceptions.
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public ErrorPageRegistrar errorPageRegistrar(){
@@ -2999,7 +2999,7 @@ This abstraction works directly with the underlying embedded servlet container a
 
 NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public FilterRegistrationBean myFilter() {
@@ -3050,7 +3050,7 @@ As of version 4.2, Spring MVC {spring-framework-docs}/web.html#mvc-cors[supports
 Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
 {spring-framework-docs}/web.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	public class MyConfiguration {
@@ -3077,7 +3077,7 @@ Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous an
 Spring WebFlux comes in two flavors: functional and annotation-based.
 The annotation-based one is quite close to the Spring MVC model, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@RestController
 	@RequestMapping("/users")
@@ -3103,7 +3103,7 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	public class RoutingConfiguration {
@@ -3173,7 +3173,7 @@ For example, `+spring.jackson.*+` configuration keys are applied to the Jackson 
 
 If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.web.codec.CodecCustomizer;
 
@@ -3258,7 +3258,7 @@ For that, you can add a bean of type `ErrorAttributes`.
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
 Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	public class CustomErrorWebExceptionHandler extends AbstractErrorWebExceptionHandler {
 
@@ -3350,7 +3350,7 @@ Jersey has some native Spring support, so we also provide auto-configuration sup
 
 To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency and then you need one `@Bean` of type `ResourceConfig` in which you register all the endpoints, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Component
 	public class JerseyConfig extends ResourceConfig {
@@ -3370,7 +3370,7 @@ For more advanced customizations, you can also register an arbitrary number of b
 
 All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` and others), as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Component
 	@Path("/hello")
@@ -3493,7 +3493,7 @@ If you need to programmatically configure your embedded servlet container, you c
 `WebServerFactoryCustomizer` provides access to the `ConfigurableServletWebServerFactory`, which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 	import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
@@ -3683,7 +3683,7 @@ This is done on purpose since this builder is stateful and you shouldn't create 
 
 The following code shows a typical example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Service
 	public class MyService {
@@ -3767,7 +3767,7 @@ Spring Boot provides convenience methods that can be used to override access rul
 
 For example, you can customize your security configuration by adding something like:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 include::{include-springbootfeatures}/security/CustomWebFluxSecurityConfiguration.java[tag=*]
 ----
@@ -3846,7 +3846,7 @@ By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes U
 If you want to customize the `redirect-uri` to use a different pattern, you need to provide configuration to process that custom pattern.
 For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -4170,7 +4170,7 @@ For example, the following section in `application.properties` shows how you can
 === Using JdbcTemplate
 Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured, and you can `@Autowire` them directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.jdbc.core.JdbcTemplate;
@@ -4230,7 +4230,7 @@ By default, all packages below your main configuration class (the one annotated 
 Any classes annotated with `@Entity`, `@Embeddable`, or `@MappedSuperclass` are considered.
 A typical entity class resembles the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapp.domain;
 
@@ -4293,7 +4293,7 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapp.domain;
 
@@ -4438,7 +4438,7 @@ The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` in
 Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
 To use the `DSLContext`, you can `@Autowire` it, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class JooqExample implements CommandLineRunner {
@@ -4457,7 +4457,7 @@ TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLCont
 
 You can then use the `DSLContext` to construct your queries, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	public List<GregorianCalendar> authorsBornAfter1980() {
 		return this.create.selectFrom(AUTHOR)
@@ -4512,7 +4512,7 @@ TIP: The "`How-to`" section includes a <<howto.adoc#howto-initialize-a-database-
 To customize the connections created by a `ConnectionFactory`, i.e., set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public ConnectionFactoryOptionsBuilderCustomizer connectionFactoryPortCustomizer() {
@@ -4522,7 +4522,7 @@ The following example shows how to manually override the database port while the
 
 The following examples show how to set some PostgreSQL connection options:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public ConnectionFactoryOptionsBuilderCustomizer postgresCustomizer() {
@@ -4565,7 +4565,7 @@ If you want to make sure that each context has a separate embedded database, you
 ==== Using DatabaseClient
 A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.data.r2dbc.function.DatabaseClient;
@@ -4601,7 +4601,7 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapp.domain;
 
@@ -4658,7 +4658,7 @@ You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate
 By default, the instance tries to connect to a Redis server at `localhost:6379`.
 The following listing shows an example of such a bean:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -4696,7 +4696,7 @@ To access MongoDB databases, you can inject an auto-configured `org.springframew
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.data.mongodb.MongoDatabaseFactory;
 	import com.mongodb.client.MongoDatabase;
@@ -4767,7 +4767,7 @@ The auto-configuration configures this factory automatically if Netty is availab
 {spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.data.mongodb.core.MongoTemplate;
 	import org.springframework.stereotype.Component;
@@ -4799,7 +4799,7 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapp.domain;
 
@@ -4852,7 +4852,7 @@ To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Dr
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
 The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -4896,7 +4896,7 @@ For complete details of Spring Data Neo4j, refer to the {spring-data-neo4j-docs}
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
 You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapp.domain;
 
@@ -4943,7 +4943,7 @@ You can inject an auto-configured `SolrClient` instance as you would any other S
 By default, the instance tries to connect to a server at `http://localhost:8983/solr`.
 The following example shows how to inject a Solr bean:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -5053,7 +5053,7 @@ With this configuration in place, an
 `ElasticsearchRestTemplate` can be injected like any other Spring bean,
 as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -5154,7 +5154,7 @@ NOTE: If you're using `CqlSessionBuilder` to create multiple `CqlSession` beans,
 
 The following code listing shows how to inject a Cassandra bean:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -5244,7 +5244,7 @@ This happens when a `Cluster` is available, as described above, and a bucket nam
 
 The following examples shows how to inject a `CouchbaseTemplate` bean:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -5270,7 +5270,7 @@ There are a few beans that you can define in your own configuration to override 
 To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	public class SomeConfiguration {
@@ -5327,7 +5327,7 @@ For complete details of Spring Data LDAP, refer to the https://docs.spring.io/sp
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -5420,7 +5420,7 @@ NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section]
 
 In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.cache.annotation.Cacheable;
 	import org.springframework.stereotype.Component;
@@ -5481,7 +5481,7 @@ If you add dependencies manually, you must include `spring-context-support` in o
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
 The following example sets a flag to say that `null` values should be passed down to the underlying map:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
@@ -5844,7 +5844,7 @@ You can use the configprop:spring.jms.jndi-name[] property if you need to specif
 ==== Sending a Message
 Spring's `JmsTemplate` is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.jms.core.JmsTemplate;
@@ -5885,7 +5885,7 @@ This also includes sending response messages that have been performed on the sam
 
 The following component creates a listener endpoint on the `someQueue` destination:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -5904,7 +5904,7 @@ If you need to create more `JmsListenerContainerFactory` instances or if you wan
 
 For instance, the following example exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	static class JmsConfiguration {
@@ -5924,8 +5924,7 @@ For instance, the following example exposes another factory that uses a specific
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
 
-[source,java,indent=0]
-[subs="verbatim,quotes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes"]
 ----
 	@Component
 	public class MyBean {
@@ -5989,7 +5988,7 @@ TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-
 ==== Sending a Message
 Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.amqp.core.AmqpAdmin;
 	import org.springframework.amqp.core.AmqpTemplate;
@@ -6045,7 +6044,7 @@ If a `MessageConverter` or a `MessageRecoverer` bean is defined, it is automatic
 
 The following sample component creates a listener endpoint on the `someQueue` queue:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -6067,7 +6066,7 @@ Those two beans are exposed by the auto-configuration.
 
 For instance, the following configuration class exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	static class RabbitConfiguration {
@@ -6087,7 +6086,7 @@ For instance, the following configuration class exposes another factory that use
 
 Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 [subs="verbatim,quotes"]
 ----
 	@Component
@@ -6140,7 +6139,7 @@ See {spring-boot-autoconfigure-module-code}/kafka/KafkaProperties.java[`KafkaPro
 ==== Sending a Message
 Spring's `KafkaTemplate` is auto-configured, and you can autowire it directly in your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 @Component
 public class MyBean {
@@ -6169,7 +6168,7 @@ If no `KafkaListenerContainerFactory` has been defined, a default one is automat
 
 The following component creates a listener endpoint on the `someTopic` topic:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyBean {
@@ -6291,7 +6290,7 @@ There are several ways to do that:
 
 * Provide a system property to map embedded broker addresses into configprop:spring.kafka.bootstrap-servers[] in the test class:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	static {
 	    System.setProperty(EmbeddedKafkaBroker.BROKER_LIST_PROPERTY, "spring.kafka.bootstrap-servers");
@@ -6300,7 +6299,7 @@ There are several ways to do that:
 
 * Configure a property name on the `@EmbeddedKafka` annotation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@EmbeddedKafka(topics = "someTopic",
 	        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
@@ -6326,7 +6325,7 @@ The auto-configured `RestTemplateBuilder` ensures that sensible `HttpMessageConv
 
 The following code shows a typical example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Service
 	public class MyService {
@@ -6391,7 +6390,7 @@ Spring Boot is configuring that builder to share HTTP resources, reflect codecs 
 
 The following code shows a typical example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Service
 	public class MyService {
@@ -6452,7 +6451,7 @@ Target classes with such annotated methods need to be annotated with the `@Valid
 
 For instance, the following service triggers the validation of the first argument, making sure its size is between 8 and 10:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Service
 	@Validated
@@ -6552,7 +6551,7 @@ For consistency, the `jmsConnectionFactory` bean is also provided by using the b
 
 The following example shows how to inject `ConnectionFactory` instances:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	// Inject the primary (XA aware) ConnectionFactory
 	@Autowired
@@ -6670,7 +6669,7 @@ If you need to customize the task executor, consider implementing `SchedulerFact
 Jobs can define setters to inject data map properties.
 Regular beans can also be injected in a similar manner, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	public class SampleJob extends QuartzJobBean {
 
@@ -6954,7 +6953,7 @@ If you have only Spring WebFlux, we'll detect that and configure a WebFlux-based
 If both are present, Spring MVC takes precedence.
 If you want to test a reactive web application in this scenario, you must set the configprop:spring.main.web-application-type[] property:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@SpringBootTest(properties = "spring.main.web-application-type=reactive")
 	class MyWebFluxTests { ... }
@@ -6998,7 +6997,7 @@ As we <<boot-features-testing-spring-boot-applications-detecting-config,have see
 When placed on a top-level class, `@TestConfiguration` indicates that classes in `src/test/java` should not be picked up by scanning.
 You can then import that class explicitly where it is required, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@SpringBootTest
 	@Import(MyTestsConfiguration.class)
@@ -7128,7 +7127,7 @@ Mock beans are automatically reset after each test method.
 If your test uses one of Spring Boot's test annotations (such as `@SpringBootTest`), this feature is automatically enabled.
 To use this feature with a different arrangement, a listener must be explicitly added, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@TestExecutionListeners(MockitoTestExecutionListener.class)
 ----
@@ -7137,7 +7136,7 @@ To use this feature with a different arrangement, a listener must be explicitly 
 
 The following example replaces an existing `RemoteService` bean with a mock implementation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
 	import org.springframework.beans.factory.annotation.*;
@@ -7228,7 +7227,7 @@ The `JacksonTester`, `GsonTester`, `JsonbTester`, and `BasicJsonTester` classes 
 Any helper fields on the test class can be `@Autowired` when using `@JsonTest`.
 The following example shows a test class for Jackson:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
 	import org.springframework.beans.factory.annotation.*;
@@ -7273,11 +7272,11 @@ If you're using Spring Boot's AssertJ-based helpers to assert on a number value 
 Instead, you can use AssertJ's `satisfies` to assert that the value matches the given condition.
 For instance, the following example asserts that the actual number is a float value close to `0.15` within an offset of `0.01`.
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
-assertThat(json.write(message))
-    .extractingJsonPathNumberValue("@.test.numberValue")
-    .satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
+	assertThat(json.write(message))
+		.extractingJsonPathNumberValue("@.test.numberValue")
+		.satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
 ----
 
 
@@ -7301,7 +7300,7 @@ Mock MVC offers a powerful way to quickly test MVC controllers without needing t
 TIP: You can also auto-configure `MockMvc` in a non-`@WebMvcTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureMockMvc`.
 The following example uses `MockMvc`:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.*;
 	import org.springframework.beans.factory.annotation.*;
@@ -7338,7 +7337,7 @@ TIP: If you need to configure elements of the auto-configuration (for example, w
 If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import com.gargoylesoftware.htmlunit.*;
 	import org.junit.jupiter.api.*;
@@ -7401,7 +7400,7 @@ Often, `@WebFluxTest` is limited to a single controller and used in combination 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`.
 The following example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
 
@@ -7456,7 +7455,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataCassand
 
 The following example shows a typical setup for using Cassandra tests in Spring Boot:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
@@ -7487,7 +7486,7 @@ By default, data JPA tests are transactional and roll back at the end of each te
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
 	import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
@@ -7506,7 +7505,7 @@ If you want to use `TestEntityManager` outside of `@DataJpaTest` instances, you 
 A `JdbcTemplate` is also available if you need that.
 The following example shows the `@DataJpaTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
 	import org.springframework.boot.test.autoconfigure.orm.jpa.*;
@@ -7536,7 +7535,7 @@ The following example shows the `@DataJpaTest` annotation in use:
 In-memory embedded databases generally work well for tests, since they are fast and do not require any installation.
 If, however, you prefer to run tests against a real database you can use the `@AutoConfigureTestDatabase` annotation, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@DataJpaTest
 	@AutoConfigureTestDatabase(replace=Replace.NONE)
@@ -7562,7 +7561,7 @@ By default, JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
 	import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
@@ -7613,7 +7612,7 @@ TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<
 `@JooqTest` configures a `DSLContext`.
 The following example shows the `@JooqTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.jooq.DSLContext;
 	import org.junit.jupiter.api.Test;
@@ -7644,7 +7643,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTe
 
 The following class shows the `@DataMongoTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -7663,7 +7662,7 @@ The following class shows the `@DataMongoTest` annotation in use:
 In-memory embedded MongoDB generally works well for tests, since it is fast and does not require any developer installation.
 If, however, you prefer to run tests against a real MongoDB server, you should exclude the embedded MongoDB auto-configuration, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
 	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
@@ -7688,7 +7687,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTe
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
@@ -7707,7 +7706,7 @@ By default, Data Neo4j tests are transactional and roll back at the end of each 
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
 	import org.springframework.transaction.annotation.Propagation;
@@ -7737,7 +7736,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTe
 
 The following example shows the `@DataRedisTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
@@ -7766,7 +7765,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTes
 
 The following example shows the `@DataLdapTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.beans.factory.annotation.Autowired;
 	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
@@ -7785,7 +7784,7 @@ The following example shows the `@DataLdapTest` annotation in use:
 In-memory embedded LDAP generally works well for tests, since it is fast and does not require any developer installation.
 If, however, you prefer to run tests against a real LDAP server, you should exclude the embedded LDAP auto-configuration, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
 	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
@@ -7809,7 +7808,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@RestClientT
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@RestClientTest(RemoteVehicleDetailsService.class)
 	class ExampleRestClientTest {
@@ -7849,7 +7848,7 @@ It can also be used to configure the host, scheme, and port that appears in any 
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.junit.jupiter.api.Test;
 
@@ -7881,7 +7880,7 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsMockMvcConfigurationCustomizer` bean, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@TestConfiguration
 	static class CustomizationConfiguration
@@ -7899,7 +7898,7 @@ If you want to make use of Spring REST Docs support for a parameterized output d
 The auto-configuration calls `alwaysDo` with this result handler, thereby causing each `MockMvc` call to automatically generate the default snippets.
 The following example shows a `RestDocumentationResultHandler` being defined:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@TestConfiguration(proxyBeanMethods = false)
 	static class ResultHandlerConfiguration {
@@ -7963,7 +7962,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@WebServiceC
 
 The following example shows the `@WebServiceClientTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@WebServiceClientTest(ExampleWebServiceClient.class)
 	class WebServiceClientIntegrationTests {
@@ -7991,7 +7990,7 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
 Additional auto-configurations can be added on a test-by-test basis by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@JdbcTest
 	@ImportAutoConfiguration(IntegrationAutoConfiguration.class)
@@ -8022,7 +8021,7 @@ It then becomes important not to litter the application's main class with config
 Assume that you are using Spring Batch and you rely on the auto-configuration for it.
 You could define your `@SpringBootApplication` as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@SpringBootApplication
 	@EnableBatchProcessing
@@ -8032,7 +8031,7 @@ You could define your `@SpringBootApplication` as follows:
 Because this class is the source configuration for the test, any slice test actually tries to start Spring Batch, which is definitely not what you want to do.
 A recommended approach is to move that area-specific configuration to a separate `@Configuration` class at the same level as your application, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableBatchProcessing
@@ -8045,7 +8044,7 @@ The latter approach lets you enable it in one of your tests, if necessary, with 
 Test slices exclude `@Configuration` classes from scanning.
 For example, for a `@WebMvcTest`, the following configuration will not include the given `WebMvcConfigurer` bean in the application context loaded by the test slice:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration
 	public class WebConfiguration {
@@ -8060,7 +8059,7 @@ For example, for a `@WebMvcTest`, the following configuration will not include t
 
 The configuration below will, however, cause the custom `WebMvcConfigurer` to be loaded by the test slice.
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class TestWebMvcConfigurer implements WebMvcConfigurer {
@@ -8072,7 +8071,7 @@ Another source of confusion is classpath scanning.
 Assume that, while you structured your code in a sensible way, you need to scan an additional package.
 Your application may resemble the following code:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@SpringBootApplication
 	@ComponentScan({ "com.example.app", "org.acme.another" })
@@ -8110,7 +8109,7 @@ A few test utility classes that are generally useful when testing your applicati
 `ConfigFileApplicationContextInitializer` is an `ApplicationContextInitializer` that you can apply to your tests to load Spring Boot `application.properties` files.
 You can use it when you do not need the full set of features provided by `@SpringBootTest`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ContextConfiguration(classes = Config.class,
 		initializers = ConfigFileApplicationContextInitializer.class)
@@ -8127,7 +8126,7 @@ For `@Value` support, you need to either additionally configure a `PropertySourc
 `TestPropertyValues` lets you quickly add properties to a `ConfigurableEnvironment` or `ConfigurableApplicationContext`.
 You can call it with `key=value` strings, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	TestPropertyValues.of("org=Spring", "name=Boot").applyTo(env);
 ----
@@ -8164,7 +8163,7 @@ If you do use Apache's HTTP client, some additional test-friendly features are e
 
 `TestRestTemplate` can be instantiated directly in your integration tests, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	public class MyTest {
 
@@ -8237,7 +8236,7 @@ It does, however, auto-configure a `WebServiceTemplateBuilder`, which can be use
 
 The following code shows a typical example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Service
 	public class MyService {
@@ -8258,7 +8257,7 @@ The following code shows a typical example:
 By default, `WebServiceTemplateBuilder` detects a suitable HTTP-based `WebServiceMessageSender` using the available HTTP client libraries on the classpath.
 You can also customize read and connection timeouts as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
@@ -8347,7 +8346,7 @@ This mechanism does not apply the same way to `@Bean` methods where typically th
 
 To handle this scenario, a separate `@Configuration` class can be used to isolate the condition, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	// Some conditions
@@ -8380,7 +8379,7 @@ The `search` attribute lets you limit the `ApplicationContext` hierarchy that sh
 
 When placed on a `@Bean` method, the target type defaults to the return type of the method, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Configuration(proxyBeanMethods = false)
 	public class MyAutoConfiguration {
@@ -8475,7 +8474,7 @@ The runner can also be used to display the `ConditionEvaluationReport`.
 The report can be printed at `INFO` or `DEBUG` level.
 The following example shows how to use the `ConditionEvaluationReportLoggingListener` to print the report in auto-configuration tests.
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Test
 	void autoConfigTest() {
@@ -8549,7 +8548,7 @@ As a rule of thumb, prefix all your keys with a namespace that you own (e.g. `ac
 
 Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties("acme")
 	public class AcmeProperties {

@@ -239,7 +239,7 @@ Then the Spring Boot banner is not printed on startup, and the application is no
 Properties defined in external configuration override the values specified with the Java API, with the notable exception of the sources used to create the `ApplicationContext`.
 Consider the following application:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	new SpringApplicationBuilder()
 		.bannerMode(Banner.Mode.OFF)
@@ -513,7 +513,7 @@ The best way to get that and be sure it has been initialized is to add a `@Bean`
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
@@ -658,7 +658,7 @@ and instead apply a customizer specific to your choice of server:
 
 For Tomcat, we need to add an upgrade protocol:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public TomcatConnectorCustomizer connectorCustomizer() {
@@ -668,7 +668,7 @@ For Tomcat, we need to add an upgrade protocol:
 
 For Jetty, we need to add a connection factory to the existing connector:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public JettyServerCustomizer serverCustomizer() {
@@ -687,7 +687,7 @@ For Jetty, we need to add a connection factory to the existing connector:
 
 For Netty, we need to add `h2c` as a supported protocol:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public NettyServerCustomizer serverCustomizer() {
@@ -697,7 +697,7 @@ For Netty, we need to add `h2c` as a supported protocol:
 
 For Undertow, we need to enable the HTTP2 option:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public UndertowBuilderCustomizer builderCustomizer() {
@@ -721,7 +721,7 @@ You can declare such a component and get access to the server factory relevant t
 
 The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Component
 	public class MyTomcatWebServerCustomizer
@@ -802,7 +802,7 @@ Like any other Spring bean, you can define the order of Servlet filter beans; pl
 As <<howto-add-a-servlet-filter-or-listener-as-spring-bean,described earlier>>, any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public FilterRegistrationBean registration(MyFilter filter) {
@@ -987,7 +987,7 @@ include::{include-howto}/embeddedwebservers/UndertowMultipleListenersConfigurati
 === Create WebSocket Endpoints Using @ServerEndpoint
 If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
@@ -1012,7 +1012,7 @@ This section answers common questions about Spring MVC and Spring Boot.
 === Write a JSON REST Service
 Any Spring `@RestController` in a Spring Boot application should render JSON response by default as long as Jackson2 is on the classpath, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RestController
 	public class MyController {
@@ -1046,7 +1046,7 @@ To use the Jackson XML renderer, add the following dependency to your project:
 
 If Jackson's XML extension is not available and JAXB is available, XML can be rendered with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@XmlRootElement
 	public class MyThing {
@@ -1251,7 +1251,7 @@ For more detail, see the following sections:
 Spring Security provides support for running tests as a specific user.
 For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Test
 	@WithMockUser(roles="ADMIN")
@@ -1294,7 +1294,7 @@ To use Jersey alongside another web framework, such as Spring MVC, it should be 
 First, configure Jersey to use a Filter rather than a Servlet by configuring the configprop:spring.jersey.type[] application property with a value of `filter`.
 Second, configure your `ResourceConfig` to forward requests that would have resulted in a 404, as shown in the following example.
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Component
 	public class JerseyConfig extends ResourceConfig {
@@ -1551,7 +1551,7 @@ If you need to externalize some settings, you can bind your `DataSource` to the 
 
 The following example shows how to define a data source in a bean:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	@ConfigurationProperties(prefix="app.datasource")
@@ -1729,7 +1729,7 @@ For more about Spring Data, see the {spring-data}[Spring Data project page].
 Spring Boot tries to guess the location of your `@Entity` definitions, based on the `@EnableAutoConfiguration` it finds.
 To get more control, you can use the `@EntityScan` annotation, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
@@ -1806,7 +1806,7 @@ If you prefer to use Hibernate 5's default instead, set the following property:
 
 Alternatively, you can configure the following bean:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public PhysicalNamingStrategy physicalNamingStrategy() {
@@ -1858,7 +1858,7 @@ Even if the default `EntityManagerFactory` works fine, you need to define a new 
 You can use the `EntityManagerBuilder` provided by Spring Boot to help you to create one.
 Alternatively, you can use the `LocalContainerEntityManagerFactoryBean` directly from Spring ORM, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	// add two data sources configured as above
 
@@ -1896,7 +1896,7 @@ Alternatively, you might be able to use a JTA transaction manager that spans bot
 
 If you use Spring Data, you need to configure `@EnableJpaRepositories` accordingly, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = Customer.class,
@@ -2206,7 +2206,7 @@ If your JMS broker does not support transacted sessions, you have to disable the
 If you create your own `JmsListenerContainerFactory`, there is nothing to do, since, by default it cannot be transacted.
 If you want to use the `DefaultJmsListenerContainerFactoryConfigurer` to reuse Spring Boot's default, you can disable transacted sessions, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
@@ -2399,7 +2399,7 @@ Alternatively, you can add the `RemoteIpValve` by customizing the `TomcatServlet
 
 To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `SecurityFilterChain` bean that adds the following `HttpSecurity` configuration:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -2798,7 +2798,7 @@ The first step in producing a deployable war file is to provide a `SpringBootSer
 Doing so makes use of Spring Framework's Servlet 3.0 support and lets you configure your application when it is launched by the servlet container.
 Typically, you should update your application's main class to extend `SpringBootServletInitializer`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
@@ -2875,7 +2875,7 @@ See the https://spring.io/guides/gs/convert-jar-to-war/[Getting Started Guide on
 
 To create a deployable war by extending `SpringBootServletInitializer` (for example, in a class called `Application`) and adding the Spring Boot `@SpringBootApplication` annotation, use code similar to that shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
@@ -2908,7 +2908,7 @@ If you have other features in your application (for instance, using other servle
 
 Once the war file is working, you can make it executable by adding a `main` method to your `Application`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -2919,7 +2919,7 @@ Once the war file is working, you can make it executable by adding a `main` meth
 ====
 If you intend to start your application as a war or as an executable application, you need to share the customizations of the builder in a method that is both available to the `SpringBootServletInitializer` callback and in the `main` method in a class similar to the following:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
@@ -2969,7 +2969,7 @@ To deploy a Spring Boot application to WebLogic, you must ensure that your servl
 
 A typical initializer for WebLogic should resemble the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
 	import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -3052,7 +3052,7 @@ It integrates with JUnit, allowing you to write a test class that can start up a
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
 Testcontainers can be used in a Spring Boot test as follows:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 @SpringBootTest
 @Testcontainers
@@ -3069,7 +3069,7 @@ In most cases, you will need to configure the application using details from the
 
 This can be done with a static `@DynamicPropertySource` method that allows adding dynamic property values to the Spring Environment.
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 @SpringBootTest
 @Testcontainers
