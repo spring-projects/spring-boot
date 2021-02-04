@@ -8901,14 +8901,12 @@ Disable launch script configuration when building a jar file that is intended to
 
 Here’s how you can launch your jar with a `layertools` jar mode:
 
-[source]
 ----
 $ java -Djarmode=layertools -jar my-app.jar
 ----
 
 This will provide the following output:
 
-[source]
 ----
 Usage:
   java -Djarmode=layertools -jar my-app.jar
@@ -8922,7 +8920,6 @@ Available commands:
 The `extract` command can be used to easily split the application into layers to be added to the dockerfile.
 Here's an example of a Dockerfile using `jarmode`.
 
-[source]
 ----
 FROM adoptopenjdk:11-jre-hotspot as builder
 WORKDIR application
