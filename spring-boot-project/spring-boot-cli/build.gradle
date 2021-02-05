@@ -117,6 +117,7 @@ task fullJar(type: Jar) {
 			"Start-Class": "org.springframework.boot.cli.SpringCli"
 		)
 	}
+	duplicatesStrategy = DuplicatesStrategy.WARN
 }
 
 def configureArchive(archive) {

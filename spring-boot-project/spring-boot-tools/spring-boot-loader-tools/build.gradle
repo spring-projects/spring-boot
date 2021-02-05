@@ -46,6 +46,7 @@ task reproducibleLoaderJar(type: Jar) {
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
+	duplicatesStrategy = DuplicatesStrategy.WARN
 	archiveFileName = "spring-boot-loader.jar"
 	destinationDirectory = file("${generatedResources}/META-INF/loader")
 }
@@ -57,6 +58,7 @@ task reproducibleJarModeLayerToolsJar(type: Jar) {
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
+	duplicatesStrategy = DuplicatesStrategy.WARN
 	archiveFileName = "spring-boot-jarmode-layertools.jar"
 	destinationDirectory = file("${generatedResources}/META-INF/jarmode")
 }
