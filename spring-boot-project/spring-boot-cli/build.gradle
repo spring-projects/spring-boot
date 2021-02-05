@@ -108,7 +108,10 @@ task fullJar(type: Jar) {
 		into "BOOT-INF/classes"
 	}
 	into("") {
-		from zipTree(configurations.loader.singleFile)
+		from(zipTree(configurations.loader.singleFile)) {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+		}
 	}
 	manifest {
 		attributes(
