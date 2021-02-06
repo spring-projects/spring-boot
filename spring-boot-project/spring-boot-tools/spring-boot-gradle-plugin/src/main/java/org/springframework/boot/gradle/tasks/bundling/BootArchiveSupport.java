@@ -17,9 +17,6 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.Map;
@@ -42,6 +39,8 @@ import org.gradle.api.tasks.WorkResult;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.util.PatternSet;
 
+import org.springframework.boot.loader.tools.ZipFileDetector;
+
 /**
  * Support class for implementations of {@link BootArchive}.
  *
@@ -51,8 +50,6 @@ import org.gradle.api.tasks.util.PatternSet;
  * @see BootWar
  */
 class BootArchiveSupport {
-
-	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
 
 	private static final Set<String> DEFAULT_LAUNCHER_CLASSES;
 
@@ -73,6 +70,8 @@ class BootArchiveSupport {
 	private final Spec<FileCopyDetails> librarySpec;
 
 	private final Function<FileCopyDetails, ZipCompression> compressionResolver;
+
+	private final ZipFileDetector zipFileDetector = new ZipFileDetector();
 
 	private LaunchScriptConfiguration launchScript;
 
@@ -153,29 +152,9 @@ class BootArchiveSupport {
 	}
 
 	void excludeNonZipFiles(FileCopyDetails details) {
-		if (!isZip(details.getFile())) {
+		if (!this.zipFileDetector.isZip(details.getFile())) {
 			details.exclude();
 		}
-	}
-
-	private boolean isZip(File file) {
-		try {
-			try (FileInputStream fileInputStream = new FileInputStream(file)) {
-				return isZip(fileInputStream);
-			}
-		}
-		catch (IOException ex) {
-			return false;
-		}
-	}
-
-	private boolean isZip(InputStream inputStream) throws IOException {
-		for (byte headerByte : ZIP_FILE_HEADER) {
-			if (inputStream.read() != headerByte) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	void moveModuleInfoToRoot(CopySpec spec) {

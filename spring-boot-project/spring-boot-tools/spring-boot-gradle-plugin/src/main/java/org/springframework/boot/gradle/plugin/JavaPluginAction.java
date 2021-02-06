@@ -49,7 +49,9 @@ import org.gradle.util.GradleVersion;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootJar;
+import org.springframework.boot.gradle.tasks.bundling.BundledLibraries;
 import org.springframework.boot.gradle.tasks.run.BootRun;
+import org.springframework.boot.loader.tools.BundledLibrariesWriter;
 import org.springframework.util.StringUtils;
 
 /**
@@ -61,6 +63,8 @@ import org.springframework.util.StringUtils;
 final class JavaPluginAction implements PluginApplicationAction {
 
 	private static final String PARAMETERS_COMPILER_ARG = "-parameters";
+
+	private static final String BUNDLED_LIBRARIES_TASK_NAME = "bootJarBundledLibraries";
 
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
@@ -88,7 +92,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void disableJarTask(Project project) {
-		project.getTasks().named(JavaPlugin.JAR_TASK_NAME).configure((task) -> task.setEnabled(false));
+		project.getTasks().named(JavaPlugin.JAR_TASK_NAME).configure((task) -> {
+			task.setEnabled(false);
+			task.mustRunAfter(BUNDLED_LIBRARIES_TASK_NAME);
+		});
 	}
 
 	private void configureBuildTask(Project project) {
@@ -107,6 +114,21 @@ final class JavaPluginAction implements PluginApplicationAction {
 				.minus((developmentOnly.minus(productionRuntimeClasspath))).filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
 				.registerForTask(SpringBootPlugin.BOOT_JAR_TASK_NAME, project, classpath);
+
+		TaskProvider<BundledLibraries> bundledLibrariesTaskProvider = project.getTasks()
+				.register(BUNDLED_LIBRARIES_TASK_NAME, BundledLibraries.class, (bundledLibraries) -> {
+					bundledLibraries.setDescription(
+							"Generates a META-INF/" + BundledLibrariesWriter.BUNDLED_LIBRARIES_FILE_NAME + " file.");
+					bundledLibraries.setGroup(BasePlugin.BUILD_GROUP);
+					bundledLibraries.setClasspath(classpath);
+					bundledLibraries.getOutputFile()
+							.set(new File(
+									project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+											.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir(),
+									"META-INF/" + BundledLibrariesWriter.BUNDLED_LIBRARIES_FILE_NAME));
+					bundledLibraries.mustRunAfter(resolveMainClassName);
+				});
+
 		return project.getTasks().register(SpringBootPlugin.BOOT_JAR_TASK_NAME, BootJar.class, (bootJar) -> {
 			bootJar.setDescription(
 					"Assembles an executable jar archive containing the main classes and their dependencies.");
@@ -116,6 +138,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 					.provider(() -> (String) bootJar.getManifest().getAttributes().get("Start-Class"));
 			bootJar.getMainClass().convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
 					? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+			bootJar.dependsOn(bundledLibrariesTaskProvider);
 		});
 	}
 

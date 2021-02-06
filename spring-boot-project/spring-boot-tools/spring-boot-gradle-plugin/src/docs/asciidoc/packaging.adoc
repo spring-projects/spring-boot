@@ -2,6 +2,9 @@
 == Packaging Executable Archives
 The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
 
+The plugin adds a `META-INF/bundled-libraries.yaml` file to the packaged jar/war archive.
+The file contains details about each library bundled within the archive.
+Spring Boot Actuator reads this file at runtime to populate the `libraries` endpoint with details about the bundled libraries.
 
 
 [[packaging-executable-jars]]

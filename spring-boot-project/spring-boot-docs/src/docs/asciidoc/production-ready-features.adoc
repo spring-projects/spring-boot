@@ -97,6 +97,9 @@ The following technology-agnostic endpoints are available:
 | Shows the Spring Integration graph.
   Requires a dependency on `spring-integration-core`.
 
+| `libraries`
+| Displays details about the libraries used by the application.
+
 | `loggers`
 | Shows and modifies the configuration of loggers in the application.
 
@@ -246,6 +249,10 @@ The following table shows the default exposure for the built-in endpoints:
 
 | `jolokia`
 | N/A
+| No
+
+| `libraries`
+| Yes
 | No
 
 | `logfile`
@@ -1267,6 +1274,103 @@ If you reach the `info` endpoint, you should see a response that contains the fo
 		}
 	}
 ----
+
+
+[[production-ready-library-details]]
+=== Library Details
+The `libraries` endpoint exposes details about the libraries contributed by {spring-boot-actuator-module-code}/libraries/LibrariesContributor.java[`LibrariesContributor`] beans defined in your `ApplicationContext`.
+Spring Boot includes one auto-configured `LibrariesContributor` bean, and you can write your own.
+
+Libraries are grouped by category.  Categories can be any string value.  Consider the following examples, but you can define your own categories:
+
+* `bundled` - libraries bundled with the application at build-time
+* `runtime` - libraries dynamically added to the application at runtime
+
+Each Library is described as a simple set of key/value pairs.
+For example, Java libraries with coordinates in a Maven repository typically contain entries for `groupId`, `artifactId`, and `version`.
+
+
+[[production-ready-library-details-autoconfigure]]
+==== Auto-configured LibrariesContributor
+Spring Boot auto-configures a `LibrariesContributor` bean that contributes details about the libraries <<production-ready-library-details-bundled,bundled in the application jar/war>> if a `META-INF/bundled-libraries.yaml` file is available on the classpath.
+
+
+[[production-ready-library-details-bundled]]
+==== Bundled Library Details
+If `META-INF/bundled-libraries.yaml` file is available on the classpath, the `libraries` endpoint can expose library details from that file.
+
+TIP: The Maven and Gradle plugins both generate that file when they create the application's jar/war archive.
+See "<<build-tool-plugins.adoc#build-tool-plugins,Build Tool Plugins>>" for more information.
+
+The `libraries` endpoint will show the library details from this file in the `bundled` category.
+
+To disable the bundled library details from the `libraries` endpoint completely, set the configprop:management.libraries.bundled.enabled[] property to `false`, as follows:
+
+[source,properties,indent=0,configprops]
+----
+	management.libraries.bundled.enabled=false
+----
+
+
+[[production-ready-library-details-custom]]
+==== Writing Custom LibrariesContributors
+To provide custom details for libraries used by your application, you can register Spring beans that implement the {spring-boot-actuator-module-code}/libraries/LibrariesContributor.java[`LibrariesContributor`] interface.  For example, you might want to include details about frontend libraries or other libraries added at runtime.
+
+Each library is defined using a `java.util.Map<String, Object>`, which contains entries that describe the library.
+For example, Java libraries with coordinates in a Maven repository typically contain entries for `groupId`, `artifactId`, and `version`.
+
+The following example contributes a single library to the `runtime` category:
+
+[source,java,indent=0]
+----
+	import java.util.HashMap;
+	import java.util.Map;
+
+	import org.springframework.boot.actuate.libraries.Libraries;
+	import org.springframework.boot.actuate.libraries.LibrariesContributor;
+	import org.springframework.stereotype.Component;
+
+	@Component
+	public class RuntimeLibrariesContributor implements LibrariesContributor {
+
+		@Override
+		public void contribute(Libraries.Builder builder) {
+			Map<String, Object> exampleLibrary = new HashMap<>();
+			exampleLibrary.put("groupId", "com.example");
+			exampleLibrary.put("artifactId", "example");
+			exampleLibrary.put("version", "1.0.0");
+			builder.addLibrary("runtime", exampleLibrary);
+		}
+
+	}
+----
+
+If you reach the `libraries` endpoint, you should see a response that contains the following additional entry:
+
+[source,json,indent=0]
+----
+	{
+		"runtime": [
+            {
+			    "groupId" : "com.example",
+			    "artifactId" : "example",
+			    "version" : "1.0.0",
+		    }
+		]
+	}
+----
+
+[[production-ready-library-details-filtering]]
+==== Filtering Library Details
+The `libraries` endpoint will dynamically filter the libraries returned when you provide include filters as input to the endpoint.
+Include filters are simple key:value pairs that are used to match library details.
+When include filters are provided, the `libraries` endpoint will only return libraries with key:value pairs that exactly match the include filter key:value pairs.
+
+For example, hitting the `libraries` web endpoint with the path and query string `/actuator/libraries?include=groupId:com.example` will only return the libraries with details containing a `groupId` of `com.example`.
+
+Multiple include filters can be provided.
+For example, `/actuator/libraries?include=groupId:com.example,artifactId:example`.
+If multiple include filters are provided, the returned libraries will match all filters.
 
 
 

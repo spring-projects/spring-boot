@@ -21,6 +21,8 @@ dependencies {
 	api("org.apache.commons:commons-compress")
 	api("org.springframework:spring-core")
 
+	implementation("org.yaml:snakeyaml")
+
 	compileOnly("ch.qos.logback:logback-classic")
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))

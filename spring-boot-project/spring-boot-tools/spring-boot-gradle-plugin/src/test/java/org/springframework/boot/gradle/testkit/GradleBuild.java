@@ -51,6 +51,7 @@ import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
 import org.tomlj.Toml;
+import org.yaml.snakeyaml.Yaml;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
@@ -119,7 +120,8 @@ public class GradleBuild {
 				new File(pathOfJarContaining(Versioned.class)),
 				new File(pathOfJarContaining(ParameterNamesModule.class)),
 				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),
-				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)));
+				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)),
+				new File(pathOfJarContaining(Yaml.class)));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {

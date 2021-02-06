@@ -63,11 +63,11 @@ public abstract class Packager {
 
 	private static final String BOOT_LAYERS_INDEX_ATTRIBUTE = "Spring-Boot-Layers-Index";
 
-	private static final byte[] ZIP_FILE_HEADER = new byte[] { 'P', 'K', 3, 4 };
-
 	private static final long FIND_WARNING_TIMEOUT = TimeUnit.SECONDS.toMillis(10);
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
+
+	private final ZipFileDetector zipFileDetector = new ZipFileDetector();
 
 	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
@@ -203,26 +203,6 @@ public abstract class Packager {
 			return new RepackagingEntryTransformer((RepackagingLayout) getLayout());
 		}
 		return EntryTransformer.NONE;
-	}
-
-	private boolean isZip(InputStreamSupplier supplier) {
-		try {
-			try (InputStream inputStream = supplier.openStream()) {
-				return isZip(inputStream);
-			}
-		}
-		catch (IOException ex) {
-			return false;
-		}
-	}
-
-	private boolean isZip(InputStream inputStream) throws IOException {
-		for (byte magicByte : ZIP_FILE_HEADER) {
-			if (inputStream.read() != magicByte) {
-				return false;
-			}
-		}
-		return true;
 	}
 
 	private Manifest buildManifest(JarFile source) throws IOException {
@@ -430,8 +410,10 @@ public abstract class Packager {
 
 		WritableLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
-				if (isZip(library::openStream)) {
-					addLibrary(library);
+				try (InputStream inputStream = library.openStream()) {
+					if (Packager.this.zipFileDetector.isZip(inputStream)) {
+						addLibrary(library);
+					}
 				}
 			});
 			if (isLayered() && Packager.this.includeRelevantJarModeJars) {
@@ -475,12 +457,21 @@ public abstract class Packager {
 			if (Packager.this.layout instanceof RepackagingLayout) {
 				writeClasspathIndex(getLayout(), writer);
 			}
+			writeBundledLibrariesYaml(Packager.this.layout, writer);
 		}
 
 		private void writeClasspathIndex(Layout layout, AbstractJarWriter writer) throws IOException {
 			List<String> names = this.libraries.keySet().stream().map((path) -> "- \"" + path + "\"")
 					.collect(Collectors.toList());
 			writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
+		}
+
+		private void writeBundledLibrariesYaml(Layout layout, AbstractJarWriter writer) throws IOException {
+			if (layout.getBundledLibrariesYamlFileLocation() != null) {
+				writer.writeEntry(layout.getBundledLibrariesYamlFileLocation(),
+						(outputStream) -> new BundledLibrariesWriter().writeBundledLibraries(this.libraries.values(),
+								outputStream));
+			}
 		}
 
 	}

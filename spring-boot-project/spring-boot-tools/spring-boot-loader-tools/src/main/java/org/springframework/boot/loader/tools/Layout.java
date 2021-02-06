@@ -73,6 +73,19 @@ public interface Layout {
 	}
 
 	/**
+	 * Returns the location of the
+	 * {@value BundledLibrariesWriter#BUNDLED_LIBRARIES_FILE_NAME} file that should be
+	 * written or {@code null} if it should not be written. The result should include the
+	 * filename and is relative to the root of the jar.
+	 * @return the location of the
+	 * {@value BundledLibrariesWriter#BUNDLED_LIBRARIES_FILE_NAME} file
+	 * @since 2.5.0
+	 */
+	default String getBundledLibrariesYamlFileLocation() {
+		return null;
+	}
+
+	/**
 	 * Returns if loader classes should be included to make the archive executable.
 	 * @return if the layout is executable
 	 */

@@ -184,7 +184,8 @@ abstract class AbstractBootArchiveIntegrationTests {
 					.map(JarEntry::getName).filter((name) -> name.startsWith(this.libPath));
 			assertThat(libEntryNames).containsExactly(this.libPath + "commons-io-2.6.jar");
 			Stream<String> classesEntryNames = jarFile.stream().filter((entry) -> !entry.isDirectory())
-					.map(JarEntry::getName).filter((name) -> name.startsWith(this.classesPath));
+					.map(JarEntry::getName).filter((name) -> name.startsWith(this.classesPath))
+					.filter((name) -> !name.contains("META-INF/bundled-libraries.yaml"));
 			assertThat(classesEntryNames).containsExactly(this.classesPath + "resource");
 		}
 	}
@@ -393,10 +394,11 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("static")).containsExactly(this.classesPath + "static/");
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
-		String[] appLayerContents = getExpectedApplicationLayerContents(this.classesPath + "example/");
+		String[] appLayerContents = getExpectedApplicationLayerContents(this.classesPath + "example/",
+				this.classesPath + "META-INF/");
 		assertThat(appLayer).containsSubsequence(appLayerContents);
 		appLayer.removeAll(Arrays.asList(appLayerContents));
-		assertThat(appLayer).containsExactly("org/");
+		assertThat(appLayer).contains("org/");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String listLayersOutput = listLayers.getOutput();
@@ -449,7 +451,8 @@ abstract class AbstractBootArchiveIntegrationTests {
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("static")).containsExactly(this.classesPath + "static/");
 		List<String> appLayer = new ArrayList<>(indexedLayers.get("app"));
-		String[] appLayerContents = getExpectedApplicationLayerContents(this.classesPath + "example/");
+		String[] appLayerContents = getExpectedApplicationLayerContents(this.classesPath + "example/",
+				this.classesPath + "META-INF/");
 		assertThat(appLayer).containsSubsequence(appLayerContents);
 		appLayer.removeAll(Arrays.asList(appLayerContents));
 		assertThat(appLayer).containsExactly("org/");

@@ -28,20 +28,25 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
 import org.apache.commons.compress.archivers.zip.ZipFile;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import org.yaml.snakeyaml.Yaml;
 
 import org.springframework.boot.loader.tools.sample.ClassWithMainMethod;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
 
+import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link Repackager}.
@@ -80,6 +85,29 @@ class RepackagerTests extends AbstractPackagerTests<Repackager> {
 				.isEqualTo("org.springframework.boot.loader.JarLauncher");
 		assertThat(actualManifest.getMainAttributes().getValue("Start-Class")).isEqualTo("a.b.C");
 		assertThat(hasPackagedLauncherClasses()).isTrue();
+	}
+
+	@Test
+	void bundledLibrariesYamlIsEmptyWhenNoLibrariesExist() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), false);
+		repackager.repackage(NO_LIBRARIES);
+
+		List<Map<String, String>> load = new Yaml().load(getPackagedEntryContent("META-INF/bundled-libraries.yaml"));
+		assertThat(load).isEmpty();
+	}
+
+	@Test
+	void bundledLibrariesYamlIsPopulatedWhenLibrariesExist() throws Exception {
+		this.testJarFile.addClass("a/b/C.class", ClassWithMainMethod.class);
+		Repackager repackager = createRepackager(this.testJarFile.getFile(), false);
+		repackager.repackage((callback) -> callback.library(new Library("my-artifact", this.testJarFile.getFile(), null,
+				LibraryCoordinates.of("my.group", "my-artifact", "1.0.0"), false)));
+
+		List<Map<String, String>> load = new Yaml().load(getPackagedEntryContent("META-INF/bundled-libraries.yaml"));
+
+		assertThat(load).singleElement(as(InstanceOfAssertFactories.MAP)).containsExactly(entry("groupId", "my.group"),
+				entry("artifactId", "my-artifact"), entry("version", "1.0.0"));
 	}
 
 	@Test

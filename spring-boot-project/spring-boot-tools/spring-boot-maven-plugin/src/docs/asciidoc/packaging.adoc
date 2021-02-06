@@ -63,6 +63,10 @@ The `Main-Class` in the manifest is controlled by the `layout` property of the S
 	</build>
 ----
 
+The `repackage` goal adds a `META-INF/bundled-libraries.yaml` file to the repackaged archive.
+The file contains details about each library bundled within the archive.
+Spring Boot Actuator reads this file at runtime to populate the `libraries` endpoint with details about the bundled libraries.
+
 The `layout` property defaults to a value determined by the archive type (`jar` or `war`). The following layouts are available:
 
 * `JAR`: regular executable JAR layout.

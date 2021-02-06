@@ -16,6 +16,8 @@
 
 package org.springframework.boot.gradle.plugin;
 
+import java.io.File;
+
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
@@ -24,6 +26,7 @@ import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.plugins.BasePlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.WarPlugin;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
@@ -32,6 +35,8 @@ import org.gradle.api.tasks.TaskProvider;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
+import org.springframework.boot.gradle.tasks.bundling.BundledLibraries;
+import org.springframework.boot.loader.tools.BundledLibrariesWriter;
 
 /**
  * {@link Action} that is executed in response to the {@link WarPlugin} being applied.
@@ -40,6 +45,8 @@ import org.springframework.boot.gradle.tasks.bundling.BootWar;
  * @author Scott Frederick
  */
 class WarPluginAction implements PluginApplicationAction {
+
+	private static final String BUNDLED_LIBRARIES_TASK_NAME = "bootWarBundledLibraries";
 
 	private final SinglePublishedArtifact singlePublishedArtifact;
 
@@ -61,7 +68,10 @@ class WarPluginAction implements PluginApplicationAction {
 	}
 
 	private void disableWarTask(Project project) {
-		project.getTasks().named(WarPlugin.WAR_TASK_NAME).configure((war) -> war.setEnabled(false));
+		project.getTasks().named(WarPlugin.WAR_TASK_NAME).configure((war) -> {
+			war.setEnabled(false);
+			war.mustRunAfter(BUNDLED_LIBRARIES_TASK_NAME);
+		});
 	}
 
 	private TaskProvider<BootWar> configureBootWarTask(Project project) {
@@ -69,24 +79,41 @@ class WarPluginAction implements PluginApplicationAction {
 				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
 				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+		FileCollection providedRuntimeClasspath = providedRuntimeConfiguration(project);
 		FileCollection classpath = project.getConvention().getByType(SourceSetContainer.class)
-				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath()
-				.minus(providedRuntimeConfiguration(project)).minus((developmentOnly.minus(productionRuntimeClasspath)))
-				.filter(new JarTypeFileSpec());
+				.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getRuntimeClasspath().minus(providedRuntimeClasspath)
+				.minus(developmentOnly.minus(productionRuntimeClasspath)).filter(new JarTypeFileSpec());
+
 		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
 				.registerForTask(SpringBootPlugin.BOOT_WAR_TASK_NAME, project, classpath);
+
+		TaskProvider<BundledLibraries> bundledLibrariesTaskProvider = project.getTasks()
+				.register(BUNDLED_LIBRARIES_TASK_NAME, BundledLibraries.class, (bundledLibraries) -> {
+					bundledLibraries.setDescription(
+							"Generates a META-INF/" + BundledLibrariesWriter.BUNDLED_LIBRARIES_FILE_NAME + " file.");
+					bundledLibraries.setGroup(BasePlugin.BUILD_GROUP);
+					bundledLibraries.setClasspath(classpath.plus(providedRuntimeClasspath));
+					bundledLibraries.getOutputFile()
+							.set(new File(
+									project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+											.getByName(SourceSet.MAIN_SOURCE_SET_NAME).getOutput().getResourcesDir(),
+									"META-INF/" + BundledLibrariesWriter.BUNDLED_LIBRARIES_FILE_NAME));
+					bundledLibraries.mustRunAfter(resolveMainClassName);
+				});
+
 		TaskProvider<BootWar> bootWarProvider = project.getTasks().register(SpringBootPlugin.BOOT_WAR_TASK_NAME,
 				BootWar.class, (bootWar) -> {
 					bootWar.setGroup(BasePlugin.BUILD_GROUP);
 					bootWar.setDescription("Assembles an executable war archive containing webapp"
 							+ " content, and the main classes and their dependencies.");
-					bootWar.providedClasspath(providedRuntimeConfiguration(project));
+					bootWar.providedClasspath(providedRuntimeClasspath);
 					bootWar.setClasspath(classpath);
 					Provider<String> manifestStartClass = project
 							.provider(() -> (String) bootWar.getManifest().getAttributes().get("Start-Class"));
 					bootWar.getMainClass()
 							.convention(resolveMainClassName.flatMap((resolver) -> manifestStartClass.isPresent()
 									? manifestStartClass : resolveMainClassName.get().readMainClassName()));
+					bootWar.dependsOn(bundledLibrariesTaskProvider);
 				});
 		bootWarProvider.map((bootWar) -> bootWar.getClasspath());
 		return bootWarProvider;

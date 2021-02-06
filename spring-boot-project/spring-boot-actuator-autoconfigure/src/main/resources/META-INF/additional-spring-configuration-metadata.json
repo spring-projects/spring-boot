@@ -274,6 +274,12 @@
       "defaultValue": "simple"
     },
     {
+      "name": "management.libraries.bundled.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether the libraries endpoint should show the libraries bundled in the application archive.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.binders.files.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable files metrics.",

@@ -94,6 +94,11 @@ public final class Layouts {
 		}
 
 		@Override
+		public String getBundledLibrariesYamlFileLocation() {
+			return "META-INF/" + BundledLibrariesWriter.BUNDLED_LIBRARIES_FILE_NAME;
+		}
+
+		@Override
 		public boolean isExecutable() {
 			return true;
 		}
@@ -168,6 +173,11 @@ public final class Layouts {
 		@Override
 		public String getLayersIndexFileLocation() {
 			return "WEB-INF/layers.idx";
+		}
+
+		@Override
+		public String getBundledLibrariesYamlFileLocation() {
+			return "META-INF/" + BundledLibrariesWriter.BUNDLED_LIBRARIES_FILE_NAME;
 		}
 
 		@Override
