@@ -38,6 +38,7 @@ import org.springframework.web.servlet.view.freemarker.FreeMarkerViewResolver;
 /**
  * Configuration for FreeMarker when used in a servlet web context.
  *
+ * @author Zhengsheng Xia
  * @author Brian Clozel
  * @author Andy Wilkinson
  */
@@ -53,15 +54,21 @@ class FreeMarkerServletWebConfiguration extends AbstractFreeMarkerConfiguration 
 
 	@Bean
 	@ConditionalOnMissingBean(FreeMarkerConfig.class)
-	FreeMarkerConfigurer freeMarkerConfigurer() {
+	FreeMarkerConfigurer freeMarkerConfigurer(freemarker.template.Configuration configuration) {
 		FreeMarkerConfigurer configurer = new FreeMarkerConfigurer();
+		configurer.setConfiguration(configuration);
 		applyProperties(configurer);
 		return configurer;
 	}
 
 	@Bean
-	freemarker.template.Configuration freeMarkerConfiguration(FreeMarkerConfig configurer) {
-		return configurer.getConfiguration();
+	@ConditionalOnMissingBean(freemarker.template.Configuration.class)
+	freemarker.template.Configuration freeMarkerConfiguration() {
+		// Avoid the configurer(created by xml) itself call the createConfiguration,there
+		// is an error of checking template path by afterPropertiesSet in fatjar
+		freemarker.template.Configuration fmConfiguration = new freemarker.template.Configuration(
+				freemarker.template.Configuration.DEFAULT_INCOMPATIBLE_IMPROVEMENTS);
+		return fmConfiguration;
 	}
 
 	@Bean
