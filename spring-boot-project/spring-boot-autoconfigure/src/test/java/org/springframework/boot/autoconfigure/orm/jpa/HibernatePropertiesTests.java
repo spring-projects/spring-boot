@@ -44,6 +44,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
+ * @author Chris Bono
  */
 class HibernatePropertiesTests {
 
@@ -132,6 +133,13 @@ class HibernatePropertiesTests {
 	@Test
 	void defaultDdlAutoIsNotInvokedIfHibernateSpecificPropertyIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
+				.run(assertDefaultDdlAutoNotInvoked("create"));
+	}
+
+	@Test
+	void defaultDdlAutoIsNotInvokedIfJpaDatabaseActionPropertyIsSet() {
+		this.contextRunner
+				.withPropertyValues("spring.jpa.properties.javax.persistence.schema-generation.database.action=create")
 				.run(assertDefaultDdlAutoNotInvoked("create"));
 	}
 
