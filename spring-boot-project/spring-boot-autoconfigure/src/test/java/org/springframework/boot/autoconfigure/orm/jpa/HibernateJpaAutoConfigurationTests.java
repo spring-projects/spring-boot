@@ -91,6 +91,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
@@ -369,6 +370,50 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void hibernatePropertiesCustomizerCanDisableBeanContainer() {
 		contextRunner().withUserConfiguration(DisableBeanContainerConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(City.class));
+	}
+
+	@Test
+	void dataSourceSchemaCreatedEventFiredWhenDdlAutoPropertyIsSet() {
+		dataSourceSchemaCreatedEventFired("spring.jpa.hibernate.ddl-auto:create-drop", true);
+	}
+
+	@Test
+	void dataSourceSchemaCreatedEventNotFiredWhenDdlAutoPropertyIsSetToNone() {
+		dataSourceSchemaCreatedEventFired("spring.jpa.hibernate.ddl-auto:none", false);
+	}
+
+	@Test
+	void dataSourceSchemaCreatedEventFiredWhenHibernateSpecificDdlAutoPropertyIsSet() {
+		dataSourceSchemaCreatedEventFired("spring.jpa.properties.hibernate.hbm2ddl.auto=create", true);
+	}
+
+	@Test
+	void dataSourceSchemaCreatedEventNotFiredWhenHibernateSpecificDdlAutoPropertyIsSetToNone() {
+		dataSourceSchemaCreatedEventFired("spring.jpa.properties.hibernate.hbm2ddl.auto=none", false);
+	}
+
+	@Test
+	void dataSourceSchemaCreatedEventFiredWhenJpaDbActionPropertyIsSet() {
+		dataSourceSchemaCreatedEventFired(
+				"spring.jpa.properties.javax.persistence.schema-generation.database.action=drop-and-create", true);
+	}
+
+	@Test
+	void dataSourceSchemaCreatedEventNotFiredWhenJpaDbActionPropertyIsSetToNone() {
+		dataSourceSchemaCreatedEventFired(
+				"spring.jpa.properties.javax.persistence.schema-generation.database.action=none", false);
+	}
+
+	private void dataSourceSchemaCreatedEventFired(String schemaGenerationPropertyWithValue,
+			boolean expectEventToBeFired) {
+		contextRunner().withUserConfiguration(JpaUsingApplicationListenerConfiguration.class)
+				.withPropertyValues("spring.datasource.initialization-mode=never", schemaGenerationPropertyWithValue)
+				.run((context) -> {
+					assertThat(context).hasNotFailed();
+					assertThat(context.getBean(EventCapturingApplicationListener.class).events.stream()
+							.filter(DataSourceSchemaCreatedEvent.class::isInstance))
+									.hasSize(expectEventToBeFired ? 1 : 0);
+				});
 	}
 
 	@Test

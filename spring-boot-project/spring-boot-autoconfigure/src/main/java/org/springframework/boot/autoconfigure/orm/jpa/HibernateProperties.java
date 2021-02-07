@@ -35,6 +35,7 @@ import org.springframework.util.StringUtils;
  * Configuration properties for Hibernate.
  *
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 2.1.0
  * @see JpaProperties
  */
@@ -129,6 +130,9 @@ public class HibernateProperties {
 	}
 
 	private String determineDdlAuto(Map<String, String> existing, Supplier<String> defaultDdlAuto) {
+		if (existing.get(AvailableSettings.HBM2DDL_DATABASE_ACTION) != null) {
+			return null;
+		}
 		String ddlAuto = existing.get(AvailableSettings.HBM2DDL_AUTO);
 		if (ddlAuto != null) {
 			return ddlAuto;
