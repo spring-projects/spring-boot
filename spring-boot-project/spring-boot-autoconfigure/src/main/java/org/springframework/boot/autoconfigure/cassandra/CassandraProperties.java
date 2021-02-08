@@ -34,7 +34,6 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Phillip Webb
  * @author Mark Paluch
  * @author Stephane Nicoll
- * @author Chris Bono
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
