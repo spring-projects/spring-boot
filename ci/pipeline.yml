@@ -21,14 +21,11 @@ anchors:
     GITHUB_PASSWORD: ((github-ci-release-token))
     GITHUB_USERNAME: ((github-username))
     MILESTONE: ((milestone))
-  bintray-task-params: &bintray-task-params
-    BINTRAY_SUBJECT: ((bintray-subject))
-    BINTRAY_REPO: ((bintray-repo))
-    BINTRAY_USERNAME: ((bintray-username))
-    BINTRAY_API_KEY: ((bintray-api-key))
   sontatype-task-params: &sonatype-task-params
     SONATYPE_USER_TOKEN: ((sonatype-user-token))
     SONATYPE_PASSWORD_TOKEN: ((sonatype-user-token-password))
+    SONATYPE_URL: ((sonatype-url))
+    SONATYPE_STAGING_PROFILE_ID: ((sonatype-staging-profile-id))
   artifactory-task-params: &artifactory-task-params
     ARTIFACTORY_SERVER: ((artifactory-server))
     ARTIFACTORY_USERNAME: ((artifactory-username))
@@ -571,7 +568,7 @@ jobs:
     trigger: false
     passed: [stage-release]
     params:
-      download_artifacts: false
+      download_artifacts: true
       save_build_info: true
   - task: promote
     image: ci-image
@@ -579,8 +576,8 @@ jobs:
     params:
       RELEASE_TYPE: RELEASE
       <<: *artifactory-task-params
-      <<: *bintray-task-params
-- name: sync-to-maven-central
+      <<: *sonatype-task-params
+- name: create-github-release
   serial: true
   plan:
   - get: ci-image
@@ -591,12 +588,6 @@ jobs:
     params:
       download_artifacts: false
       save_build_info: true
-  - task: sync-to-maven-central
-    image: ci-image
-    file: git-repo/ci/tasks/sync-to-maven-central.yml
-    params:
-      <<: *bintray-task-params
-      <<: *sonatype-task-params
   - task: generate-changelog
     file: git-repo/ci/tasks/generate-changelog.yml
     params:
@@ -614,7 +605,7 @@ jobs:
     - get: ci-image
     - get: git-repo
     - get: artifactory-repo
-      passed: [sync-to-maven-central]
+      passed: [create-github-release]
       params:
         download_artifacts: false
         save_build_info: true
@@ -633,7 +624,7 @@ jobs:
     - get: git-repo
       resource: homebrew-tap-repo
     - get: artifactory-repo
-      passed: [sync-to-maven-central]
+      passed: [create-github-release]
       params:
         download_artifacts: false
         save_build_info: true
@@ -650,7 +641,7 @@ groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk15-build", "windows-build"]
 - name: "releases"
-  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "sync-to-maven-central", "publish-to-sdkman", "update-homebrew-tap"]
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-to-sdkman", "update-homebrew-tap"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
