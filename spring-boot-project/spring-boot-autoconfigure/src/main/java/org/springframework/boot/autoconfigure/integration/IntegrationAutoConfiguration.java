@@ -86,6 +86,7 @@ public class IntegrationAutoConfiguration {
 	 * The {@link TaskScheduler} configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(TaskSchedulerBuilder.class)
 	protected static class IntegrationTaskSchedulerConfiguration {
 
 		@Bean
