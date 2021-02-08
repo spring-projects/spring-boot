@@ -15,27 +15,24 @@ class CassandraPropertiesTest {
 
 	@Test
 	void defaultValuesAreConsistent() {
-		String failMsg = "the default value has diverged from the driver's built-in default";
-
 		CassandraProperties properties = new CassandraProperties();
 		OptionsMap optionsMap = OptionsMap.driverDefaults();
 
-		assertThat(properties.getConnection().getConnectTimeout()).describedAs(failMsg)
+		assertThat(properties.getConnection().getConnectTimeout())
 				.isEqualTo(optionsMap.get(TypedDriverOption.CONNECTION_CONNECT_TIMEOUT));
 
-		assertThat(properties.getConnection().getInitQueryTimeout()).describedAs(failMsg)
+		assertThat(properties.getConnection().getInitQueryTimeout())
 				.isEqualTo(optionsMap.get(TypedDriverOption.CONNECTION_INIT_QUERY_TIMEOUT));
 
-		assertThat(properties.getRequest().getTimeout()).describedAs(failMsg)
-				.isEqualTo(optionsMap.get(TypedDriverOption.REQUEST_TIMEOUT));
+		assertThat(properties.getRequest().getTimeout()).isEqualTo(optionsMap.get(TypedDriverOption.REQUEST_TIMEOUT));
 
-		assertThat(properties.getRequest().getPageSize()).describedAs(failMsg)
+		assertThat(properties.getRequest().getPageSize())
 				.isEqualTo(optionsMap.get(TypedDriverOption.REQUEST_PAGE_SIZE));
 
-		assertThat(properties.getRequest().getThrottler().getType().type()).describedAs(failMsg)
+		assertThat(properties.getRequest().getThrottler().getType().type())
 				.isEqualTo(optionsMap.get(TypedDriverOption.REQUEST_THROTTLER_CLASS));
 
-		assertThat(properties.getPool().getHeartbeatInterval()).describedAs(failMsg)
+		assertThat(properties.getPool().getHeartbeatInterval())
 				.isEqualTo(optionsMap.get(TypedDriverOption.HEARTBEAT_INTERVAL));
 	}
 
