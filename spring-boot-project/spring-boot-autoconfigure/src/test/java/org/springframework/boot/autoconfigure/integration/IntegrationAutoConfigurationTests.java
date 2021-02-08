@@ -74,9 +74,7 @@ import static org.mockito.Mockito.mock;
 class IntegrationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(
-					JmxAutoConfiguration.class,
-					IntegrationAutoConfiguration.class,
+			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class,
 					TaskSchedulingAutoConfiguration.class));
 
 	@Test
@@ -232,12 +230,10 @@ class IntegrationAutoConfigurationTests {
 		this.contextRunner
 				.withPropertyValues("spring.task.scheduling.thread-name-prefix=integration-scheduling-",
 						"spring.task.scheduling.pool.size=3")
-				.run((context) ->
-			assertThat(context)
-					.getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
-					.hasFieldOrPropertyWithValue("threadNamePrefix", "integration-scheduling-")
-					.hasFieldOrPropertyWithValue("scheduledExecutor.corePoolSize", 3)
-		);
+				.run((context) -> assertThat(context)
+						.getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
+						.hasFieldOrPropertyWithValue("threadNamePrefix", "integration-scheduling-")
+						.hasFieldOrPropertyWithValue("scheduledExecutor.corePoolSize", 3));
 	}
 
 	@Configuration(proxyBeanMethods = false)

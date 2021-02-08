@@ -76,9 +76,7 @@ import org.springframework.util.StringUtils;
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(EnableIntegration.class)
 @EnableConfigurationProperties(IntegrationProperties.class)
-@AutoConfigureAfter({
-		DataSourceAutoConfiguration.class,
-		JmxAutoConfiguration.class,
+@AutoConfigureAfter({ DataSourceAutoConfiguration.class, JmxAutoConfiguration.class,
 		TaskSchedulingAutoConfiguration.class })
 public class IntegrationAutoConfiguration {
 
