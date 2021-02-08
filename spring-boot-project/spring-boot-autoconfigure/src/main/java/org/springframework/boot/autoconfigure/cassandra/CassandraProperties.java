@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.List;
 
 import com.datastax.oss.driver.api.core.DefaultConsistencyLevel;
+import com.datastax.oss.driver.api.core.config.OptionsMap;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -29,14 +30,23 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
 /**
  * Configuration properties for Cassandra.
  *
+ * <p>
+ * <strong>NOTE:</strong> default property values generally align with the Cassandra
+ * driver's {@link OptionsMap built-in defaults}.
+ *
  * @author Julien Dubois
  * @author Phillip Webb
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 1.3.0
  */
 @ConfigurationProperties(prefix = "spring.data.cassandra")
 public class CassandraProperties {
+
+	// NOTE: If you specify a default value for one of the driver properties be sure to
+	// add a test to CassandraPropertiesTest that verifies it is the same as the built-in
+	// driver's default value - unless the variance in value is intentional.
 
 	/**
 	 * Keyspace name to use.
