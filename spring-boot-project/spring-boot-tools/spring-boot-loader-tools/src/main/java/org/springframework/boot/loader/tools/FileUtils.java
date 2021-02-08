@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,7 @@
 package org.springframework.boot.loader.tools;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.security.DigestInputStream;
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 
 /**
  * Utilities for manipulating files and directories in Spring Boot tooling.
@@ -62,27 +58,7 @@ public abstract class FileUtils {
 	 * @throws IOException if the file cannot be read
 	 */
 	public static String sha1Hash(File file) throws IOException {
-		try {
-			try (DigestInputStream inputStream = new DigestInputStream(new FileInputStream(file),
-					MessageDigest.getInstance("SHA-1"))) {
-				byte[] buffer = new byte[4098];
-				while (inputStream.read(buffer) != -1) {
-					// Read the entire stream
-				}
-				return bytesToHex(inputStream.getMessageDigest().digest());
-			}
-		}
-		catch (NoSuchAlgorithmException ex) {
-			throw new IllegalStateException(ex);
-		}
-	}
-
-	private static String bytesToHex(byte[] bytes) {
-		StringBuilder hex = new StringBuilder();
-		for (byte b : bytes) {
-			hex.append(String.format("%02x", b));
-		}
-		return hex.toString();
+		return Digest.sha1(InputStreamSupplier.forFile(file));
 	}
 
 }

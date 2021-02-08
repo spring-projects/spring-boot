@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,12 @@ import javax.servlet.ServletRegistration.Dynamic;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.actuate.endpoint.EndpointId;
 
@@ -49,6 +49,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Stephane Nicoll
  */
+@ExtendWith(MockitoExtension.class)
 class ServletEndpointRegistrarTests {
 
 	@Mock
@@ -59,12 +60,6 @@ class ServletEndpointRegistrarTests {
 
 	@Captor
 	private ArgumentCaptor<Servlet> servlet;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
-	}
 
 	@Test
 	void createWhenServletEndpointsIsNullShouldThrowException() {
@@ -93,6 +88,7 @@ class ServletEndpointRegistrarTests {
 	}
 
 	private void assertBasePath(String basePath, String expectedMapping) throws ServletException {
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
 		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar(basePath, Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
@@ -103,6 +99,7 @@ class ServletEndpointRegistrarTests {
 
 	@Test
 	void onStartupWhenHasInitParametersShouldRegisterInitParameters() throws Exception {
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(
 				new EndpointServlet(TestServlet.class).withInitParameter("a", "b"));
 		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
@@ -112,6 +109,7 @@ class ServletEndpointRegistrarTests {
 
 	@Test
 	void onStartupWhenHasLoadOnStartupShouldRegisterLoadOnStartup() throws Exception {
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class).withLoadOnStartup(7));
 		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);
@@ -120,6 +118,7 @@ class ServletEndpointRegistrarTests {
 
 	@Test
 	void onStartupWhenHasNotLoadOnStartupShouldRegisterDefaultValue() throws Exception {
+		given(this.servletContext.addServlet(any(String.class), any(Servlet.class))).willReturn(this.dynamic);
 		ExposableServletEndpoint endpoint = mockEndpoint(new EndpointServlet(TestServlet.class));
 		ServletEndpointRegistrar registrar = new ServletEndpointRegistrar("/actuator", Collections.singleton(endpoint));
 		registrar.onStartup(this.servletContext);

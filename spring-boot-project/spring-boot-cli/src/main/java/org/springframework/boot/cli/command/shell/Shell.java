@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -142,7 +142,7 @@ public class Shell {
 		String version = getClass().getPackage().getImplementationVersion();
 		version = (version != null) ? " (v" + version + ")" : "";
 		System.out.println(ansi("Spring Boot", Code.BOLD).append(version, Code.FAINT));
-		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit " + "RETURN for help, and 'exit' to quit."));
+		System.out.println(ansi("Hit TAB to complete. Type 'help' and hit RETURN for help, and 'exit' to quit."));
 	}
 
 	private void runInputLoop() throws Exception {
@@ -221,7 +221,7 @@ public class Shell {
 
 		boolean handleSigInt() {
 			Command command = this.lastCommand;
-			if (command != null && command instanceof RunProcessCommand) {
+			if (command instanceof RunProcessCommand) {
 				return ((RunProcessCommand) command).handleSigInt();
 			}
 			return false;

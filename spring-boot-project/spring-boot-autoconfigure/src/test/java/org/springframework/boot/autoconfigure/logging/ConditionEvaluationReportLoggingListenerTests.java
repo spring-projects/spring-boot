@@ -59,47 +59,46 @@ class ConditionEvaluationReportLoggingListenerTests {
 	private ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener();
 
 	@Test
-	void logsDebugOnContextRefresh(CapturedOutput capturedOutput) {
+	void logsDebugOnContextRefresh(CapturedOutput output) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
 		context.refresh();
 		withDebugLogging(() -> this.initializer.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(capturedOutput).contains("CONDITIONS EVALUATION REPORT");
+		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
-	void logsDebugOnError(CapturedOutput capturedOutput) {
+	void logsDebugOnError(CapturedOutput output) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
 		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh)
 				.satisfies((ex) -> withDebugLogging(() -> this.initializer.onApplicationEvent(
 						new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex))));
-		assertThat(capturedOutput).contains("CONDITIONS EVALUATION REPORT");
+		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
-	void logsInfoOnErrorIfDebugDisabled(CapturedOutput capturedOutput) {
+	void logsInfoOnErrorIfDebugDisabled(CapturedOutput output) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(ErrorConfig.class);
 		assertThatExceptionOfType(Exception.class).isThrownBy(context::refresh).satisfies((ex) -> this.initializer
 				.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], context, ex)));
-		assertThat(capturedOutput)
-				.contains("Error starting" + " ApplicationContext. To display the conditions report re-run"
-						+ " your application with 'debug' enabled.");
+		assertThat(output).contains("Error starting ApplicationContext. To display the conditions report re-run"
+				+ " your application with 'debug' enabled.");
 	}
 
 	@Test
-	void logsOutput(CapturedOutput capturedOutput) {
+	void logsOutput(CapturedOutput output) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		this.initializer.initialize(context);
 		context.register(Config.class);
 		ConditionEvaluationReport.get(context.getBeanFactory()).recordExclusions(Arrays.asList("com.foo.Bar"));
 		context.refresh();
 		withDebugLogging(() -> this.initializer.onApplicationEvent(new ContextRefreshedEvent(context)));
-		assertThat(capturedOutput).contains("not a servlet web application (OnWebApplicationCondition)");
+		assertThat(output).contains("not a servlet web application (OnWebApplicationCondition)");
 	}
 
 	@Test
@@ -122,7 +121,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	void listenerWithInfoLevelShouldLogAtInfo(CapturedOutput capturedOutput) {
+	void listenerWithInfoLevelShouldLogAtInfo(CapturedOutput output) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
 				LogLevel.INFO);
@@ -130,7 +129,7 @@ class ConditionEvaluationReportLoggingListenerTests {
 		context.register(Config.class);
 		context.refresh();
 		initializer.onApplicationEvent(new ContextRefreshedEvent(context));
-		assertThat(capturedOutput).contains("CONDITIONS EVALUATION REPORT");
+		assertThat(output).contains("CONDITIONS EVALUATION REPORT");
 	}
 
 	@Test
@@ -141,10 +140,10 @@ class ConditionEvaluationReportLoggingListenerTests {
 	}
 
 	@Test
-	void noErrorIfNotInitialized(CapturedOutput capturedOutput) {
+	void noErrorIfNotInitialized(CapturedOutput output) {
 		this.initializer.onApplicationEvent(new ApplicationFailedEvent(new SpringApplication(), new String[0], null,
 				new RuntimeException("Planned")));
-		assertThat(capturedOutput).contains("Unable to provide the conditions report");
+		assertThat(output).contains("Unable to provide the conditions report");
 	}
 
 	private void withDebugLogging(Runnable runnable) {

@@ -165,16 +165,16 @@ class ThymeleafServletAutoConfigurationTests {
 	}
 
 	@Test
-	void templateLocationDoesNotExist(CapturedOutput capturedOutput) {
+	void templateLocationDoesNotExist(CapturedOutput output) {
 		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:classpath:/no-such-directory/")
-				.run((context) -> assertThat(capturedOutput).contains("Cannot find template location"));
+				.run((context) -> assertThat(output).contains("Cannot find template location"));
 	}
 
 	@Test
-	void templateLocationEmpty(CapturedOutput capturedOutput) {
+	void templateLocationEmpty(CapturedOutput output) {
 		new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory").mkdirs();
 		this.contextRunner.withPropertyValues("spring.thymeleaf.prefix:classpath:/empty-templates/empty-directory/")
-				.run((context) -> assertThat(capturedOutput).doesNotContain("Cannot find template location"));
+				.run((context) -> assertThat(output).doesNotContain("Cannot find template location"));
 	}
 
 	@Test

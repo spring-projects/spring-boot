@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link WebOperationRequestPredicate}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class WebOperationRequestPredicateTests {
 
@@ -55,9 +56,34 @@ class WebOperationRequestPredicateTests {
 	}
 
 	@Test
+	void predicatesWithSingleWildcardPathVariablesInTheSamplePlaceAreEqual() {
+		assertThat(predicateWithPath("/path/{*foo1}")).isEqualTo(predicateWithPath("/path/{*foo2}"));
+	}
+
+	@Test
+	void predicatesWithSingleWildcardPathVariableAndRegularVariableInTheSamplePlaceAreNotEqual() {
+		assertThat(predicateWithPath("/path/{*foo1}")).isNotEqualTo(predicateWithPath("/path/{foo2}"));
+	}
+
+	@Test
 	void predicatesWithMultiplePathVariablesInTheSamplePlaceAreEqual() {
 		assertThat(predicateWithPath("/path/{foo1}/more/{bar1}"))
 				.isEqualTo(predicateWithPath("/path/{foo2}/more/{bar2}"));
+	}
+
+	@Test
+	void predicateWithWildcardPathVariableReturnsMatchAllRemainingPathSegmentsVariable() {
+		assertThat(predicateWithPath("/path/{*foo1}").getMatchAllRemainingPathSegmentsVariable()).isEqualTo("foo1");
+	}
+
+	@Test
+	void predicateWithRegularPathVariableDoesNotReturnMatchAllRemainingPathSegmentsVariable() {
+		assertThat(predicateWithPath("/path/{foo1}").getMatchAllRemainingPathSegmentsVariable()).isNull();
+	}
+
+	@Test
+	void predicateWithNoPathVariableDoesNotReturnMatchAllRemainingPathSegmentsVariable() {
+		assertThat(predicateWithPath("/path/foo1").getMatchAllRemainingPathSegmentsVariable()).isNull();
 	}
 
 	private WebOperationRequestPredicate predicateWithPath(String path) {

@@ -86,7 +86,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 
 	private void appendReason(StringBuilder message, InvalidConfigurationPropertyValueException cause) {
 		if (StringUtils.hasText(cause.getReason())) {
-			message.append(String.format(" Validation failed for the following " + "reason:%n%n"));
+			message.append(String.format(" Validation failed for the following reason:%n%n"));
 			message.append(cause.getReason());
 		}
 		else {
@@ -98,7 +98,7 @@ class InvalidConfigurationPropertyValueFailureAnalyzer
 		List<Descriptor> others = descriptors.subList(1, descriptors.size());
 		if (!others.isEmpty()) {
 			message.append(
-					String.format("%n%nAdditionally, this property is also set in the following " + "property %s:%n%n",
+					String.format("%n%nAdditionally, this property is also set in the following property %s:%n%n",
 							(others.size() > 1) ? "sources" : "source"));
 			for (Descriptor other : others) {
 				message.append("\t- In '").append(other.getPropertySource()).append("'");

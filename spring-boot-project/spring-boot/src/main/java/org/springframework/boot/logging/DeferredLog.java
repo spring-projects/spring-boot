@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,14 @@
 package org.springframework.boot.logging;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.springframework.util.Assert;
 
 /**
  * Deferred {@link Log} that can be used to store messages that shouldn't be written until
@@ -33,47 +37,69 @@ public class DeferredLog implements Log {
 
 	private volatile Log destination;
 
-	private final List<Line> lines = new ArrayList<>();
+	private final Supplier<Log> destinationSupplier;
+
+	private final Lines lines;
+
+	/**
+	 * Create a new {@link DeferredLog} instance.
+	 */
+	public DeferredLog() {
+		this.destinationSupplier = null;
+		this.lines = new Lines();
+	}
+
+	/**
+	 * Create a new {@link DeferredLog} instance managed by a {@link DeferredLogFactory}.
+	 * @param destination the switch-over destination
+	 * @param lines the lines backing all related deferred logs
+	 * @since 2.4.0
+	 */
+	DeferredLog(Supplier<Log> destination, Lines lines) {
+		Assert.notNull(destination, "Destination must not be null");
+		this.destinationSupplier = destination;
+		this.lines = lines;
+	}
 
 	@Override
 	public boolean isTraceEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isTraceEnabled() : true;
+			return (this.destination == null) || this.destination.isTraceEnabled();
 		}
 	}
 
 	@Override
 	public boolean isDebugEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isDebugEnabled() : true;
+			return (this.destination == null) || this.destination.isDebugEnabled();
 		}
 	}
 
 	@Override
 	public boolean isInfoEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isInfoEnabled() : true;
+			return (this.destination == null) || this.destination.isInfoEnabled();
 		}
 	}
 
 	@Override
 	public boolean isWarnEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isWarnEnabled() : true;
+			return (this.destination == null) || this.destination.isWarnEnabled();
 		}
 	}
 
 	@Override
 	public boolean isErrorEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isErrorEnabled() : true;
+			return (this.destination == null) || this.destination.isErrorEnabled();
 		}
 	}
 
 	@Override
 	public boolean isFatalEnabled() {
 		synchronized (this.lines) {
-			return (this.destination != null) ? this.destination.isFatalEnabled() : true;
+			return (this.destination == null) || this.destination.isFatalEnabled();
 		}
 	}
 
@@ -143,9 +169,13 @@ public class DeferredLog implements Log {
 				logTo(this.destination, level, message, t);
 			}
 			else {
-				this.lines.add(new Line(level, message, t));
+				this.lines.add(this.destinationSupplier, level, message, t);
 			}
 		}
+	}
+
+	void switchOver() {
+		this.destination = this.destinationSupplier.get();
 	}
 
 	/**
@@ -213,7 +243,7 @@ public class DeferredLog implements Log {
 		return destination;
 	}
 
-	private static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
+	static void logTo(Log log, LogLevel level, Object message, Throwable throwable) {
 		switch (level) {
 		case TRACE:
 			log.trace(message, throwable);
@@ -232,11 +262,31 @@ public class DeferredLog implements Log {
 			return;
 		case FATAL:
 			log.fatal(message, throwable);
-			return;
 		}
 	}
 
-	private static class Line {
+	static class Lines implements Iterable<Line> {
+
+		private final List<Line> lines = new ArrayList<>();
+
+		void add(Supplier<Log> destinationSupplier, LogLevel level, Object message, Throwable throwable) {
+			this.lines.add(new Line(destinationSupplier, level, message, throwable));
+		}
+
+		void clear() {
+			this.lines.clear();
+		}
+
+		@Override
+		public Iterator<Line> iterator() {
+			return this.lines.iterator();
+		}
+
+	}
+
+	static class Line {
+
+		private final Supplier<Log> destinationSupplier;
 
 		private final LogLevel level;
 
@@ -244,10 +294,15 @@ public class DeferredLog implements Log {
 
 		private final Throwable throwable;
 
-		Line(LogLevel level, Object message, Throwable throwable) {
+		Line(Supplier<Log> destinationSupplier, LogLevel level, Object message, Throwable throwable) {
+			this.destinationSupplier = destinationSupplier;
 			this.level = level;
 			this.message = message;
 			this.throwable = throwable;
+		}
+
+		Log getDestination() {
+			return this.destinationSupplier.get();
 		}
 
 		LogLevel getLevel() {

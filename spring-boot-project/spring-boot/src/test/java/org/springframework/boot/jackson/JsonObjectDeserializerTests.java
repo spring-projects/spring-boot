@@ -176,9 +176,8 @@ class JsonObjectDeserializerTests {
 	@Test
 	void getRequiredNodeWhenNodeIsFoundShouldReturnNode() {
 		JsonNode node = mock(JsonNode.class);
-		JsonNode tree = node;
-		given(tree.get("test")).willReturn(node);
-		assertThat(this.testDeserializer.testGetRequiredNode(tree, "test")).isEqualTo(node);
+		given(node.get("test")).willReturn(node);
+		assertThat(this.testDeserializer.testGetRequiredNode(node, "test")).isEqualTo(node);
 	}
 
 	static class TestJsonObjectDeserializer<T> extends JsonObjectDeserializer<T> {

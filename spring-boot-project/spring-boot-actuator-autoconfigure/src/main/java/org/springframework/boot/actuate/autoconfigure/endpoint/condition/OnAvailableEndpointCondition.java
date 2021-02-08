@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,18 @@
 
 package org.springframework.boot.actuate.autoconfigure.endpoint.condition;
 
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
-import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter;
+import org.springframework.boot.actuate.autoconfigure.endpoint.expose.IncludeExcludeEndpointFilter.DefaultIncludes;
 import org.springframework.boot.actuate.endpoint.EndpointId;
+import org.springframework.boot.actuate.endpoint.ExposableEndpoint;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage;
 import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.cloud.CloudPlatform;
-import org.springframework.boot.context.properties.bind.Bindable;
-import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.context.annotation.ConditionContext;
-import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.env.Environment;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ConcurrentReferenceHashMap;
@@ -39,13 +37,14 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
+ * @author Phillip Webb
  * @see ConditionalOnAvailableEndpoint
  */
 class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 
 	private static final String JMX_ENABLED_KEY = "spring.jmx.enabled";
 
-	private static final ConcurrentReferenceHashMap<Environment, Set<ExposureInformation>> endpointExposureCache = new ConcurrentReferenceHashMap<>();
+	private static final Map<Environment, Set<Exposure>> exposuresCache = new ConcurrentReferenceHashMap<>();
 
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
@@ -60,79 +59,51 @@ class OnAvailableEndpointCondition extends AbstractEndpointCondition {
 			return new ConditionOutcome(true, message.andCondition(ConditionalOnAvailableEndpoint.class)
 					.because("application is running on Cloud Foundry"));
 		}
-		AnnotationAttributes attributes = getEndpointAttributes(ConditionalOnAvailableEndpoint.class, context,
-				metadata);
-		EndpointId id = EndpointId.of(attributes.getString("id"));
-		Set<ExposureInformation> exposureInformations = getExposureInformation(environment);
-		for (ExposureInformation exposureInformation : exposureInformations) {
-			if (exposureInformation.isExposed(id)) {
+		EndpointId id = EndpointId.of(environment,
+				getEndpointAttributes(ConditionalOnAvailableEndpoint.class, context, metadata).getString("id"));
+		Set<Exposure> exposures = getExposures(environment);
+		for (Exposure exposure : exposures) {
+			if (exposure.isExposed(id)) {
 				return new ConditionOutcome(true,
 						message.andCondition(ConditionalOnAvailableEndpoint.class)
-								.because("marked as exposed by a 'management.endpoints."
-										+ exposureInformation.getPrefix() + ".exposure' property"));
+								.because("marked as exposed by a 'management.endpoints." + exposure.getPrefix()
+										+ ".exposure' property"));
 			}
 		}
 		return new ConditionOutcome(false, message.andCondition(ConditionalOnAvailableEndpoint.class)
 				.because("no 'management.endpoints' property marked it as exposed"));
 	}
 
-	private Set<ExposureInformation> getExposureInformation(Environment environment) {
-		Set<ExposureInformation> exposureInformations = endpointExposureCache.get(environment);
-		if (exposureInformations == null) {
-			exposureInformations = new HashSet<>(2);
-			Binder binder = Binder.get(environment);
+	private Set<Exposure> getExposures(Environment environment) {
+		Set<Exposure> exposures = exposuresCache.get(environment);
+		if (exposures == null) {
+			exposures = new HashSet<>(2);
 			if (environment.getProperty(JMX_ENABLED_KEY, Boolean.class, false)) {
-				exposureInformations.add(new ExposureInformation(binder, "jmx", "*"));
+				exposures.add(new Exposure(environment, "jmx", DefaultIncludes.JMX));
 			}
-			exposureInformations.add(new ExposureInformation(binder, "web", "info", "health"));
-			endpointExposureCache.put(environment, exposureInformations);
+			exposures.add(new Exposure(environment, "web", DefaultIncludes.WEB));
+			exposuresCache.put(environment, exposures);
 		}
-		return exposureInformations;
+		return exposures;
 	}
 
-	static class ExposureInformation {
+	static class Exposure extends IncludeExcludeEndpointFilter<ExposableEndpoint<?>> {
 
 		private final String prefix;
 
-		private final Set<String> include;
-
-		private final Set<String> exclude;
-
-		private final Set<String> exposeDefaults;
-
-		ExposureInformation(Binder binder, String prefix, String... exposeDefaults) {
+		@SuppressWarnings({ "rawtypes", "unchecked" })
+		Exposure(Environment environment, String prefix, DefaultIncludes defaultIncludes) {
+			super((Class) ExposableEndpoint.class, environment, "management.endpoints." + prefix + ".exposure",
+					defaultIncludes);
 			this.prefix = prefix;
-			this.include = bind(binder, "management.endpoints." + prefix + ".exposure.include");
-			this.exclude = bind(binder, "management.endpoints." + prefix + ".exposure.exclude");
-			this.exposeDefaults = new HashSet<>(Arrays.asList(exposeDefaults));
-		}
-
-		private Set<String> bind(Binder binder, String name) {
-			List<String> values = binder.bind(name, Bindable.listOf(String.class)).orElse(Collections.emptyList());
-			Set<String> result = new HashSet<>(values.size());
-			for (String value : values) {
-				result.add("*".equals(value) ? "*" : EndpointId.fromPropertyValue(value).toLowerCaseString());
-			}
-			return result;
 		}
 
 		String getPrefix() {
 			return this.prefix;
 		}
 
-		boolean isExposed(EndpointId endpointId) {
-			String id = endpointId.toLowerCaseString();
-			if (!this.exclude.isEmpty()) {
-				if (this.exclude.contains("*") || this.exclude.contains(id)) {
-					return false;
-				}
-			}
-			if (this.include.isEmpty()) {
-				if (this.exposeDefaults.contains("*") || this.exposeDefaults.contains(id)) {
-					return true;
-				}
-			}
-			return this.include.contains("*") || this.include.contains(id);
+		boolean isExposed(EndpointId id) {
+			return super.match(id);
 		}
 
 	}

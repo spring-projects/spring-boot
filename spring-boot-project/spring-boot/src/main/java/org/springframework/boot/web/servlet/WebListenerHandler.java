@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,9 +20,9 @@ import java.util.Map;
 
 import javax.servlet.annotation.WebListener;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 
 /**
  * Handler for {@link WebListener @WebListener}-annotated classes.
@@ -36,11 +36,27 @@ class WebListenerHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	protected void doHandle(Map<String, Object> attributes, ScannedGenericBeanDefinition beanDefinition,
+	protected void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
-		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServletListenerRegistrationBean.class);
-		builder.addPropertyValue("listener", beanDefinition);
-		registry.registerBeanDefinition(beanDefinition.getBeanClassName(), builder.getBeanDefinition());
+		BeanDefinitionBuilder builder = BeanDefinitionBuilder
+				.rootBeanDefinition(ServletComponentWebListenerRegistrar.class);
+		builder.addConstructorArgValue(beanDefinition.getBeanClassName());
+		registry.registerBeanDefinition(beanDefinition.getBeanClassName() + "Registrar", builder.getBeanDefinition());
+	}
+
+	static class ServletComponentWebListenerRegistrar implements WebListenerRegistrar {
+
+		private final String listenerClassName;
+
+		ServletComponentWebListenerRegistrar(String listenerClassName) {
+			this.listenerClassName = listenerClassName;
+		}
+
+		@Override
+		public void register(WebListenerRegistry registry) {
+			registry.addWebListeners(this.listenerClassName);
+		}
+
 	}
 
 }

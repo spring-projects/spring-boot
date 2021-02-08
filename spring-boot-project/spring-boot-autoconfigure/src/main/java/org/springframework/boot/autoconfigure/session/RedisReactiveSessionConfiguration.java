@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.ReactiveRedisConnectionFactory;
 import org.springframework.session.ReactiveSessionRepository;
-import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 import org.springframework.session.data.redis.config.annotation.web.server.RedisWebSessionConfiguration;
 
 /**
@@ -36,14 +36,14 @@ import org.springframework.session.data.redis.config.annotation.web.server.Redis
  * @author Andy Wilkinson
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisOperationsSessionRepository.class })
+@ConditionalOnClass({ ReactiveRedisConnectionFactory.class, ReactiveRedisSessionRepository.class })
 @ConditionalOnMissingBean(ReactiveSessionRepository.class)
 @ConditionalOnBean(ReactiveRedisConnectionFactory.class)
 @Conditional(ReactiveSessionCondition.class)
 @EnableConfigurationProperties(RedisSessionProperties.class)
 class RedisReactiveSessionConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	static class SpringBootRedisWebSessionConfiguration extends RedisWebSessionConfiguration {
 
 		@Autowired
@@ -53,6 +53,7 @@ class RedisReactiveSessionConfiguration {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setRedisNamespace(redisSessionProperties.getNamespace());
+			setSaveMode(redisSessionProperties.getSaveMode());
 		}
 
 	}

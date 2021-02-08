@@ -33,6 +33,11 @@ import org.springframework.http.server.reactive.ServerHttpRequest;
 import org.springframework.http.server.reactive.ServerHttpResponse;
 import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.test.web.reactive.server.WebTestClient.Builder;
+
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verify;
 
 /**
  * Integration test for {@link WebTestClientContextCustomizer}.
@@ -46,8 +51,12 @@ class WebTestClientContextCustomizerIntegrationTests {
 	@Autowired
 	private WebTestClient webTestClient;
 
+	@Autowired
+	private WebTestClientBuilderCustomizer clientBuilderCustomizer;
+
 	@Test
 	void test() {
+		verify(this.clientBuilderCustomizer).customize(any(Builder.class));
 		this.webTestClient.get().uri("/").exchange().expectBody(String.class).isEqualTo("hello");
 	}
 
@@ -58,6 +67,11 @@ class WebTestClientContextCustomizerIntegrationTests {
 		@Bean
 		TomcatReactiveWebServerFactory webServerFactory() {
 			return new TomcatReactiveWebServerFactory(0);
+		}
+
+		@Bean
+		WebTestClientBuilderCustomizer clientBuilderCustomizer() {
+			return mock(WebTestClientBuilderCustomizer.class);
 		}
 
 	}

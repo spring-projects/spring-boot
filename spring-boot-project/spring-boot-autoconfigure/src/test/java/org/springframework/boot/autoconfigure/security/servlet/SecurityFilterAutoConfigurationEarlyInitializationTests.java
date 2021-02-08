@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.security.servlet;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.databind.DeserializationContext;
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer;
@@ -45,6 +48,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 /**
  * Integration test to ensure {@link SecurityFilterAutoConfiguration} doesn't cause early
  * initialization.
@@ -54,18 +59,20 @@ import org.springframework.web.bind.annotation.RestController;
 @ExtendWith(OutputCaptureExtension.class)
 class SecurityFilterAutoConfigurationEarlyInitializationTests {
 
+	private static final Pattern PASSWORD_PATTERN = Pattern.compile("^Using generated security password: (.*)$",
+			Pattern.MULTILINE);
+
 	@Test
-	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput capturedOutput) {
+	void testSecurityFilterDoesNotCauseEarlyInitialization(CapturedOutput output) {
 		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
 			TestPropertyValues.of("server.port:0").applyTo(context);
 			context.register(Config.class);
 			context.refresh();
 			int port = context.getWebServer().getPort();
-			String password = capturedOutput.toString().split("Using generated security password: ")[1].split("\n")[0]
-					.trim();
-			new TestRestTemplate("user", password).getForEntity("http://localhost:" + port, Object.class);
+			Matcher password = PASSWORD_PATTERN.matcher(output);
+			assertThat(password.find()).isTrue();
+			new TestRestTemplate("user", password.group(1)).getForEntity("http://localhost:" + port, Object.class);
 			// If early initialization occurred a ConverterNotFoundException is thrown
-
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import java.util.Map;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 import javax.persistence.EntityManager;
@@ -29,12 +30,16 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanPostProcessor;
+import org.springframework.beans.factory.support.AbstractBeanDefinition;
+import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.beans.factory.support.GenericBeanDefinition;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceSchemaCreatedEvent;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.context.event.ContextRefreshedEvent;
+import org.springframework.core.Ordered;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.orm.jpa.JpaDialect;
@@ -58,11 +63,22 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	private HibernateProperties hibernateProperties;
 
+	private DataSourceSchemaCreatedPublisher schemaCreatedPublisher;
+
+	private DataSourceInitializationCompletionListener initializationCompletionListener;
+
+	DataSourceInitializedPublisher(DataSourceInitializationCompletionListener completionListener) {
+		this.initializationCompletionListener = completionListener;
+	}
+
 	@Override
 	public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
 		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
 			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
-			factory.setJpaVendorAdapter(new DataSourceSchemaCreatedPublisher(factory));
+			if (factory.getBootstrapExecutor() != null && factory.getJpaVendorAdapter() != null) {
+				this.schemaCreatedPublisher = new DataSourceSchemaCreatedPublisher(factory);
+				factory.setJpaVendorAdapter(this.schemaCreatedPublisher);
+			}
 		}
 		return bean;
 	}
@@ -79,24 +95,28 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		if (bean instanceof HibernateProperties) {
 			this.hibernateProperties = (HibernateProperties) bean;
 		}
-		if (bean instanceof LocalContainerEntityManagerFactoryBean) {
-			LocalContainerEntityManagerFactoryBean factory = (LocalContainerEntityManagerFactoryBean) bean;
-			if (factory.getBootstrapExecutor() == null) {
-				publishEventIfRequired(factory.getNativeEntityManagerFactory());
-			}
+		if (bean instanceof LocalContainerEntityManagerFactoryBean && this.schemaCreatedPublisher == null) {
+			LocalContainerEntityManagerFactoryBean factoryBean = (LocalContainerEntityManagerFactoryBean) bean;
+			EntityManagerFactory entityManagerFactory = factoryBean.getNativeEntityManagerFactory();
+			publishEventIfRequired(factoryBean, entityManagerFactory);
 		}
 		return bean;
 	}
 
-	private void publishEventIfRequired(EntityManagerFactory entityManagerFactory) {
-		DataSource dataSource = findDataSource(entityManagerFactory);
+	private void publishEventIfRequired(LocalContainerEntityManagerFactoryBean factoryBean,
+			EntityManagerFactory entityManagerFactory) {
+		DataSource dataSource = findDataSource(factoryBean, entityManagerFactory);
 		if (dataSource != null && isInitializingDatabase(dataSource)) {
 			this.applicationContext.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
 		}
 	}
 
-	private DataSource findDataSource(EntityManagerFactory entityManagerFactory) {
+	private DataSource findDataSource(LocalContainerEntityManagerFactoryBean factoryBean,
+			EntityManagerFactory entityManagerFactory) {
 		Object dataSource = entityManagerFactory.getProperties().get("javax.persistence.nonJtaDataSource");
+		if (dataSource == null) {
+			dataSource = factoryBean.getPersistenceUnitInfo().getNonJtaDataSource();
+		}
 		return (dataSource instanceof DataSource) ? (DataSource) dataSource : this.dataSource;
 	}
 
@@ -108,10 +128,36 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 				: "none");
 		Map<String, Object> hibernate = this.hibernateProperties.determineHibernateProperties(
 				this.jpaProperties.getProperties(), new HibernateSettings().ddlAuto(defaultDdlAuto));
-		if (hibernate.containsKey("hibernate.hbm2ddl.auto")) {
-			return true;
+		return hibernate.containsKey("hibernate.hbm2ddl.auto");
+	}
+
+	/**
+	 * {@link ApplicationListener} that, upon receiving {@link ContextRefreshedEvent},
+	 * blocks until any asynchronous DataSource initialization has completed.
+	 */
+	static class DataSourceInitializationCompletionListener
+			implements ApplicationListener<ContextRefreshedEvent>, Ordered {
+
+		private volatile Future<?> dataSourceInitialization;
+
+		@Override
+		public void onApplicationEvent(ContextRefreshedEvent event) {
+			Future<?> dataSourceInitialization = this.dataSourceInitialization;
+			if (dataSourceInitialization != null) {
+				try {
+					dataSourceInitialization.get();
+				}
+				catch (Exception ex) {
+					throw new RuntimeException(ex);
+				}
+			}
 		}
-		return false;
+
+		@Override
+		public int getOrder() {
+			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
 	}
 
 	/**
@@ -121,19 +167,32 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	 */
 	static class Registrar implements ImportBeanDefinitionRegistrar {
 
-		private static final String BEAN_NAME = "dataSourceInitializedPublisher";
+		private static final String PUBLISHER_BEAN_NAME = "dataSourceInitializedPublisher";
+
+		private static final String COMPLETION_LISTENER_BEAN_BEAN = DataSourceInitializationCompletionListener.class
+				.getName();
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
 				BeanDefinitionRegistry registry) {
-			if (!registry.containsBeanDefinition(BEAN_NAME)) {
-				GenericBeanDefinition beanDefinition = new GenericBeanDefinition();
-				beanDefinition.setBeanClass(DataSourceInitializedPublisher.class);
-				beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+			if (!registry.containsBeanDefinition(PUBLISHER_BEAN_NAME)) {
+				DataSourceInitializationCompletionListener completionListener = new DataSourceInitializationCompletionListener();
+				DataSourceInitializedPublisher publisher = new DataSourceInitializedPublisher(completionListener);
+				AbstractBeanDefinition publisherDefinition = BeanDefinitionBuilder
+						.genericBeanDefinition(DataSourceInitializedPublisher.class, () -> publisher)
+						.getBeanDefinition();
+				publisherDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
 				// We don't need this one to be post processed otherwise it can cause a
 				// cascade of bean instantiation that we would rather avoid.
-				beanDefinition.setSynthetic(true);
-				registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
+				publisherDefinition.setSynthetic(true);
+				registry.registerBeanDefinition(PUBLISHER_BEAN_NAME, publisherDefinition);
+				AbstractBeanDefinition listenerDefinition = BeanDefinitionBuilder.genericBeanDefinition(
+						DataSourceInitializationCompletionListener.class, () -> completionListener).getBeanDefinition();
+				listenerDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
+				// We don't need this one to be post processed otherwise it can cause a
+				// cascade of bean instantiation that we would rather avoid.
+				listenerDefinition.setSynthetic(true);
+				registry.registerBeanDefinition(COMPLETION_LISTENER_BEAN_BEAN, listenerDefinition);
 			}
 		}
 
@@ -141,13 +200,13 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 
 	final class DataSourceSchemaCreatedPublisher implements JpaVendorAdapter {
 
+		private final LocalContainerEntityManagerFactoryBean factoryBean;
+
 		private final JpaVendorAdapter delegate;
 
-		private final LocalContainerEntityManagerFactoryBean factory;
-
-		private DataSourceSchemaCreatedPublisher(LocalContainerEntityManagerFactoryBean factory) {
-			this.delegate = factory.getJpaVendorAdapter();
-			this.factory = factory;
+		private DataSourceSchemaCreatedPublisher(LocalContainerEntityManagerFactoryBean factoryBean) {
+			this.factoryBean = factoryBean;
+			this.delegate = factoryBean.getJpaVendorAdapter();
 		}
 
 		@Override
@@ -186,11 +245,13 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		}
 
 		@Override
-		public void postProcessEntityManagerFactory(EntityManagerFactory emf) {
-			this.delegate.postProcessEntityManagerFactory(emf);
-			AsyncTaskExecutor bootstrapExecutor = this.factory.getBootstrapExecutor();
+		public void postProcessEntityManagerFactory(EntityManagerFactory entityManagerFactory) {
+			this.delegate.postProcessEntityManagerFactory(entityManagerFactory);
+			AsyncTaskExecutor bootstrapExecutor = this.factoryBean.getBootstrapExecutor();
 			if (bootstrapExecutor != null) {
-				bootstrapExecutor.execute(() -> DataSourceInitializedPublisher.this.publishEventIfRequired(emf));
+				DataSourceInitializedPublisher.this.initializationCompletionListener.dataSourceInitialization = bootstrapExecutor
+						.submit(() -> DataSourceInitializedPublisher.this.publishEventIfRequired(this.factoryBean,
+								entityManagerFactory));
 			}
 		}
 

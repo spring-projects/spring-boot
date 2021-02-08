@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,7 +30,6 @@ import org.apache.kafka.clients.CommonClientConfigs;
 import org.apache.kafka.clients.consumer.ConsumerConfig;
 import org.apache.kafka.clients.producer.ProducerConfig;
 import org.apache.kafka.common.config.SslConfigs;
-import org.apache.kafka.common.requests.IsolationLevel;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.apache.kafka.common.serialization.StringSerializer;
 
@@ -91,6 +90,8 @@ public class KafkaProperties {
 
 	private final Template template = new Template();
 
+	private final Security security = new Security();
+
 	public List<String> getBootstrapServers() {
 		return this.bootstrapServers;
 	}
@@ -143,6 +144,10 @@ public class KafkaProperties {
 		return this.template;
 	}
 
+	public Security getSecurity() {
+		return this.security;
+	}
+
 	private Map<String, Object> buildCommonProperties() {
 		Map<String, Object> properties = new HashMap<>();
 		if (this.bootstrapServers != null) {
@@ -152,6 +157,7 @@ public class KafkaProperties {
 			properties.put(CommonClientConfigs.CLIENT_ID_CONFIG, this.clientId);
 		}
 		properties.putAll(this.ssl.buildProperties());
+		properties.putAll(this.security.buildProperties());
 		if (!CollectionUtils.isEmpty(this.properties)) {
 			properties.putAll(this.properties);
 		}
@@ -216,6 +222,8 @@ public class KafkaProperties {
 	public static class Consumer {
 
 		private final Ssl ssl = new Ssl();
+
+		private final Security security = new Security();
 
 		/**
 		 * Frequency with which the consumer offsets are auto-committed to Kafka if
@@ -295,6 +303,10 @@ public class KafkaProperties {
 
 		public Ssl getSsl() {
 			return this.ssl;
+		}
+
+		public Security getSecurity() {
+			return this.security;
 		}
 
 		public Duration getAutoCommitInterval() {
@@ -426,7 +438,7 @@ public class KafkaProperties {
 			map.from(this::getKeyDeserializer).to(properties.in(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getValueDeserializer).to(properties.in(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG));
 			map.from(this::getMaxPollRecords).to(properties.in(ConsumerConfig.MAX_POLL_RECORDS_CONFIG));
-			return properties.with(this.ssl, this.properties);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -434,6 +446,8 @@ public class KafkaProperties {
 	public static class Producer {
 
 		private final Ssl ssl = new Ssl();
+
+		private final Security security = new Security();
 
 		/**
 		 * Number of acknowledgments the producer requires the leader to have received
@@ -496,6 +510,10 @@ public class KafkaProperties {
 
 		public Ssl getSsl() {
 			return this.ssl;
+		}
+
+		public Security getSecurity() {
+			return this.security;
 		}
 
 		public String getAcks() {
@@ -595,7 +613,7 @@ public class KafkaProperties {
 			map.from(this::getKeySerializer).to(properties.in(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG));
 			map.from(this::getRetries).to(properties.in(ProducerConfig.RETRIES_CONFIG));
 			map.from(this::getValueSerializer).to(properties.in(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG));
-			return properties.with(this.ssl, this.properties);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -603,6 +621,8 @@ public class KafkaProperties {
 	public static class Admin {
 
 		private final Ssl ssl = new Ssl();
+
+		private final Security security = new Security();
 
 		/**
 		 * ID to pass to the server when making requests. Used for server-side logging.
@@ -621,6 +641,10 @@ public class KafkaProperties {
 
 		public Ssl getSsl() {
 			return this.ssl;
+		}
+
+		public Security getSecurity() {
+			return this.security;
 		}
 
 		public String getClientId() {
@@ -647,7 +671,7 @@ public class KafkaProperties {
 			Properties properties = new Properties();
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			map.from(this::getClientId).to(properties.in(ProducerConfig.CLIENT_ID_CONFIG));
-			return properties.with(this.ssl, this.properties);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -658,6 +682,10 @@ public class KafkaProperties {
 	public static class Streams {
 
 		private final Ssl ssl = new Ssl();
+
+		private final Security security = new Security();
+
+		private final Cleanup cleanup = new Cleanup();
 
 		/**
 		 * Kafka streams application.id property; default spring.application.name.
@@ -703,6 +731,14 @@ public class KafkaProperties {
 
 		public Ssl getSsl() {
 			return this.ssl;
+		}
+
+		public Security getSecurity() {
+			return this.security;
+		}
+
+		public Cleanup getCleanup() {
+			return this.cleanup;
 		}
 
 		public String getApplicationId() {
@@ -775,7 +811,7 @@ public class KafkaProperties {
 			map.from(this::getClientId).to(properties.in(CommonClientConfigs.CLIENT_ID_CONFIG));
 			map.from(this::getReplicationFactor).to(properties.in("replication.factor"));
 			map.from(this::getStateDir).to(properties.in("state.dir"));
-			return properties.with(this.ssl, this.properties);
+			return properties.with(this.ssl, this.security, this.properties);
 		}
 
 	}
@@ -856,6 +892,11 @@ public class KafkaProperties {
 		private Duration ackTime;
 
 		/**
+		 * Sleep interval between Consumer.poll(Duration) calls.
+		 */
+		private Duration idleBetweenPolls = Duration.ZERO;
+
+		/**
 		 * Time between publishing idle consumer events (no data received).
 		 */
 		private Duration idleEventInterval;
@@ -873,10 +914,16 @@ public class KafkaProperties {
 		private Boolean logContainerConfig;
 
 		/**
+		 * Whether to suppress the entire record from being written to the log when
+		 * retries are being attempted.
+		 */
+		private boolean onlyLogRecordMetadata = true;
+
+		/**
 		 * Whether the container should fail to start if at least one of the configured
 		 * topics are not present on the broker.
 		 */
-		private boolean missingTopicsFatal = true;
+		private boolean missingTopicsFatal = false;
 
 		public Type getType() {
 			return this.type;
@@ -942,6 +989,14 @@ public class KafkaProperties {
 			this.ackTime = ackTime;
 		}
 
+		public Duration getIdleBetweenPolls() {
+			return this.idleBetweenPolls;
+		}
+
+		public void setIdleBetweenPolls(Duration idleBetweenPolls) {
+			this.idleBetweenPolls = idleBetweenPolls;
+		}
+
 		public Duration getIdleEventInterval() {
 			return this.idleEventInterval;
 		}
@@ -964,6 +1019,14 @@ public class KafkaProperties {
 
 		public void setLogContainerConfig(Boolean logContainerConfig) {
 			this.logContainerConfig = logContainerConfig;
+		}
+
+		public boolean isOnlyLogRecordMetadata() {
+			return this.onlyLogRecordMetadata;
+		}
+
+		public void setOnlyLogRecordMetadata(boolean onlyLogRecordMetadata) {
+			this.onlyLogRecordMetadata = onlyLogRecordMetadata;
 		}
 
 		public boolean isMissingTopicsFatal() {
@@ -1167,6 +1230,85 @@ public class KafkaProperties {
 
 	}
 
+	public static class Security {
+
+		/**
+		 * Security protocol used to communicate with brokers.
+		 */
+		private String protocol;
+
+		public String getProtocol() {
+			return this.protocol;
+		}
+
+		public void setProtocol(String protocol) {
+			this.protocol = protocol;
+		}
+
+		public Map<String, Object> buildProperties() {
+			Properties properties = new Properties();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(this::getProtocol).to(properties.in(CommonClientConfigs.SECURITY_PROTOCOL_CONFIG));
+			return properties;
+		}
+
+	}
+
+	public static class Cleanup {
+
+		/**
+		 * Cleanup the application’s local state directory on startup.
+		 */
+		private boolean onStartup = false;
+
+		/**
+		 * Cleanup the application’s local state directory on shutdown.
+		 */
+		private boolean onShutdown = true;
+
+		public boolean isOnStartup() {
+			return this.onStartup;
+		}
+
+		public void setOnStartup(boolean onStartup) {
+			this.onStartup = onStartup;
+		}
+
+		public boolean isOnShutdown() {
+			return this.onShutdown;
+		}
+
+		public void setOnShutdown(boolean onShutdown) {
+			this.onShutdown = onShutdown;
+		}
+
+	}
+
+	public enum IsolationLevel {
+
+		/**
+		 * Read everything including aborted transactions.
+		 */
+		READ_UNCOMMITTED((byte) 0),
+
+		/**
+		 * Read records from committed transactions, in addition to records not part of
+		 * transactions.
+		 */
+		READ_COMMITTED((byte) 1);
+
+		private final byte id;
+
+		IsolationLevel(byte id) {
+			this.id = id;
+		}
+
+		public byte id() {
+			return this.id;
+		}
+
+	}
+
 	@SuppressWarnings("serial")
 	private static class Properties extends HashMap<String, Object> {
 
@@ -1174,8 +1316,9 @@ public class KafkaProperties {
 			return (value) -> put(key, value);
 		}
 
-		Properties with(Ssl ssl, Map<String, String> properties) {
+		Properties with(Ssl ssl, Security security, Map<String, String> properties) {
 			putAll(ssl.buildProperties());
+			putAll(security.buildProperties());
 			putAll(properties);
 			return this;
 		}

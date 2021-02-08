@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,7 @@
 
 package org.springframework.boot.context.properties.source;
 
-import java.util.Arrays;
-import java.util.Iterator;
+import java.util.List;
 
 /**
  * Abstract base class for {@link PropertyMapper} tests.
@@ -30,14 +29,12 @@ public abstract class AbstractPropertyMapperTests {
 
 	protected abstract PropertyMapper getMapper();
 
-	protected final Iterator<String> namesFromString(String name) {
-		return Arrays.stream(getMapper().map(name)).map((mapping) -> mapping.getConfigurationPropertyName().toString())
-				.iterator();
+	protected final List<String> mapConfigurationPropertyName(String configurationPropertyName) {
+		return getMapper().map(ConfigurationPropertyName.of(configurationPropertyName));
 	}
 
-	protected final Iterator<String> namesFromConfiguration(String name) {
-		return Arrays.stream(getMapper().map(ConfigurationPropertyName.of(name)))
-				.map(PropertyMapping::getPropertySourceName).iterator();
+	protected final String mapPropertySourceName(String propertySourceName) {
+		return getMapper().map(propertySourceName).toString();
 	}
 
 }

@@ -92,7 +92,7 @@ public @interface JsonComponent {
 	Scope scope() default Scope.VALUES;
 
 	/**
-	 * The various scopes under which a serializer/deserialzier can be registered.
+	 * The various scopes under which a serializer/deserializer can be registered.
 	 */
 	enum Scope {
 

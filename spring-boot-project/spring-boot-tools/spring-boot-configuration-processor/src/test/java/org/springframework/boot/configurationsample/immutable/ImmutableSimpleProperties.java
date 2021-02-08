@@ -19,6 +19,7 @@ package org.springframework.boot.configurationsample.immutable;
 import java.util.Comparator;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.ConstructorBinding;
 import org.springframework.boot.configurationsample.DefaultValue;
 
 /**
@@ -47,6 +48,7 @@ public class ImmutableSimpleProperties {
 	@SuppressWarnings("unused")
 	private final Long counter;
 
+	@ConstructorBinding
 	public ImmutableSimpleProperties(@DefaultValue("boot") String theName, boolean flag, Comparator<?> comparator,
 			Long counter) {
 		this.theName = theName;

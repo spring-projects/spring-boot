@@ -47,9 +47,9 @@ class WebMvcTestPrintDefaultOverrideIntegrationTests {
 	private MockMvc mvc;
 
 	@Test
-	void shouldFindController1(CapturedOutput capturedOutput) throws Exception {
+	void shouldFindController1(CapturedOutput output) throws Exception {
 		this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
-		assertThat(capturedOutput).doesNotContain("Request URI = /one");
+		assertThat(output).doesNotContain("Request URI = /one");
 	}
 
 }

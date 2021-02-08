@@ -1,0 +1,10 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Spring Data JDBC"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
+	api("org.springframework.data:spring-data-jdbc")
+}

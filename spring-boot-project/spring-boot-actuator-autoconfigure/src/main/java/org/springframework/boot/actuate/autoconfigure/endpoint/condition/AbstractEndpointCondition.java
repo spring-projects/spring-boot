@@ -62,7 +62,7 @@ abstract class AbstractEndpointCondition extends SpringBootCondition {
 			Class<? extends Annotation> annotationClass) {
 		Environment environment = context.getEnvironment();
 		AnnotationAttributes attributes = getEndpointAttributes(annotationClass, context, metadata);
-		EndpointId id = EndpointId.of(attributes.getString("id"));
+		EndpointId id = EndpointId.of(environment, attributes.getString("id"));
 		String key = "management.endpoint." + id.toLowerCaseString() + ".enabled";
 		Boolean userDefinedEnabled = environment.getProperty(key, Boolean.class);
 		if (userDefinedEnabled != null) {
@@ -101,7 +101,7 @@ abstract class AbstractEndpointCondition extends SpringBootCondition {
 	}
 
 	protected AnnotationAttributes getEndpointAttributes(Class<?> type) {
-		MergedAnnotations annotations = MergedAnnotations.from(type, SearchStrategy.EXHAUSTIVE);
+		MergedAnnotations annotations = MergedAnnotations.from(type, SearchStrategy.TYPE_HIERARCHY);
 		MergedAnnotation<Endpoint> endpoint = annotations.get(Endpoint.class);
 		if (endpoint.isPresent()) {
 			return endpoint.asAnnotationAttributes();

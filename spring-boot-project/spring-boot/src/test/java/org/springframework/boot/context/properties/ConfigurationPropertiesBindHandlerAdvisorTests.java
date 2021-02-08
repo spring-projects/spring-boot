@@ -133,7 +133,6 @@ class ConfigurationPropertiesBindHandlerAdvisorTests {
 				}
 			}
 			return super.onStart(name, target, context);
-
 		}
 
 		private ConfigurationPropertyName getDefaultName(ConfigurationPropertyName name) {

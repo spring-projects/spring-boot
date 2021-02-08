@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -27,12 +25,13 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.logging.LogFile;
 import org.springframework.core.io.Resource;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Tests for {@link LogFileWebEndpoint}.
@@ -45,8 +44,6 @@ class LogFileWebEndpointTests {
 
 	private final MockEnvironment environment = new MockEnvironment();
 
-	private final LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment);
-
 	private File logFile;
 
 	@BeforeEach
@@ -57,44 +54,32 @@ class LogFileWebEndpointTests {
 
 	@Test
 	void nullResponseWithoutLogFile() {
-		assertThat(this.endpoint.logFile()).isNull();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(null, null);
+		assertThat(endpoint.logFile()).isNull();
 	}
 
 	@Test
 	void nullResponseWithMissingLogFile() {
 		this.environment.setProperty("logging.file.name", "no_test.log");
-		assertThat(this.endpoint.logFile()).isNull();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
+		assertThat(endpoint.logFile()).isNull();
 	}
 
 	@Test
 	void resourceResponseWithLogFile() throws Exception {
 		this.environment.setProperty("logging.file.name", this.logFile.getAbsolutePath());
-		Resource resource = this.endpoint.logFile();
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(LogFile.get(this.environment), null);
+		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(contentOf(resource)).isEqualTo("--TEST--");
-	}
-
-	@Test
-	@Deprecated
-	void resourceResponseWithLogFileAndDeprecatedProperty() throws Exception {
-		this.environment.setProperty("logging.file", this.logFile.getAbsolutePath());
-		Resource resource = this.endpoint.logFile();
-		assertThat(resource).isNotNull();
-		assertThat(contentOf(resource)).isEqualTo("--TEST--");
+		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 	}
 
 	@Test
 	void resourceResponseWithExternalLogFile() throws Exception {
-		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(this.environment, this.logFile);
+		LogFileWebEndpoint endpoint = new LogFileWebEndpoint(null, this.logFile);
 		Resource resource = endpoint.logFile();
 		assertThat(resource).isNotNull();
-		assertThat(contentOf(resource)).isEqualTo("--TEST--");
-	}
-
-	private String contentOf(Resource resource) throws IOException {
-		try (InputStream input = resource.getInputStream()) {
-			return StreamUtils.copyToString(input, StandardCharsets.UTF_8);
-		}
+		assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 	}
 
 }

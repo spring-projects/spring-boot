@@ -22,6 +22,7 @@ import org.springframework.boot.configurationprocessor.metadata.ConfigurationMet
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
 import org.springframework.boot.configurationsample.generic.AbstractGenericProperties;
 import org.springframework.boot.configurationsample.generic.ComplexGenericProperties;
+import org.springframework.boot.configurationsample.generic.ConcreteBuilderProperties;
 import org.springframework.boot.configurationsample.generic.GenericConfig;
 import org.springframework.boot.configurationsample.generic.SimpleGenericProperties;
 import org.springframework.boot.configurationsample.generic.UnresolvedGenericProperties;
@@ -107,6 +108,17 @@ class GenericsMetadataGenerationTests extends AbstractMetadataGenerationTests {
 				.ofType("java.util.Map<java.lang.String,? extends java.lang.Number>").fromSource(WildcardConfig.class));
 		assertThat(metadata).has(Metadata.withProperty("wildcard.integers")
 				.ofType("java.util.List<? super java.lang.Integer>").fromSource(WildcardConfig.class));
+		assertThat(metadata.getItems()).hasSize(3);
+	}
+
+	@Test
+	void builderPatternWithGenericReturnType() {
+		ConfigurationMetadata metadata = compile(ConcreteBuilderProperties.class);
+		assertThat(metadata).has(Metadata.withGroup("builder").fromSource(ConcreteBuilderProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("builder.number", Integer.class).fromSource(ConcreteBuilderProperties.class));
+		assertThat(metadata).has(
+				Metadata.withProperty("builder.description", String.class).fromSource(ConcreteBuilderProperties.class));
 		assertThat(metadata.getItems()).hasSize(3);
 	}
 

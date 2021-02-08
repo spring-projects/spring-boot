@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.apache.catalina.LifecycleState;
 import org.apache.catalina.connector.Connector;
 import org.apache.catalina.startup.Tomcat;
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.apache.coyote.http11.Http11NioProtocol;
 import org.apache.tomcat.util.net.SSLHostConfig;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
@@ -152,7 +153,9 @@ class SslConnectorCustomizerTests {
 		customizer.customize(connector);
 		this.tomcat.start();
 		SSLHostConfig sslHostConfig = connector.getProtocolHandler().findSslHostConfigs()[0];
+		sslHostConfig.getCertificates(true);
 		SSLHostConfig sslHostConfigWithDefaults = new SSLHostConfig();
+		sslHostConfigWithDefaults.getCertificates(true);
 		assertThat(sslHostConfig.getTruststoreFile())
 				.isEqualTo(SslStoreProviderUrlStreamHandlerFactory.TRUST_STORE_URL);
 		assertThat(sslHostConfig.getCertificateKeystoreFile())
@@ -160,8 +163,7 @@ class SslConnectorCustomizerTests {
 	}
 
 	@Test
-	void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl(CapturedOutput capturedOutput)
-			throws Exception {
+	void customizeWhenSslStoreProviderPresentShouldIgnorePasswordFromSsl(CapturedOutput output) throws Exception {
 		System.setProperty("javax.net.ssl.trustStorePassword", "trustStoreSecret");
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
@@ -174,7 +176,7 @@ class SslConnectorCustomizerTests {
 		customizer.customize(connector);
 		this.tomcat.start();
 		assertThat(connector.getState()).isEqualTo(LifecycleState.STARTED);
-		assertThat(capturedOutput).doesNotContain("Password verification failed");
+		assertThat(output).doesNotContain("Password verification failed");
 	}
 
 	@Test
@@ -182,6 +184,37 @@ class SslConnectorCustomizerTests {
 		assertThatExceptionOfType(WebServerException.class)
 				.isThrownBy(() -> new SslConnectorCustomizer(new Ssl(), null).customize(this.tomcat.getConnector()))
 				.withMessageContaining("Could not load key store 'null'");
+	}
+
+	@Test
+	void keyStorePasswordIsNotSetWhenNull() {
+		Http11NioProtocol protocol = (Http11NioProtocol) this.tomcat.getConnector().getProtocolHandler();
+		protocol.setKeystorePass("password");
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		new SslConnectorCustomizer(ssl, null).customize(this.tomcat.getConnector());
+		assertThat(protocol.getKeystorePass()).isEqualTo("password");
+	}
+
+	@Test
+	void keyPasswordIsNotSetWhenNull() {
+		Http11NioProtocol protocol = (Http11NioProtocol) this.tomcat.getConnector().getProtocolHandler();
+		protocol.setKeyPass("password");
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		new SslConnectorCustomizer(ssl, null).customize(this.tomcat.getConnector());
+		assertThat(protocol.getKeyPass()).isEqualTo("password");
+	}
+
+	@Test
+	void trustStorePasswordIsNotSetWhenNull() {
+		Http11NioProtocol protocol = (Http11NioProtocol) this.tomcat.getConnector().getProtocolHandler();
+		protocol.setTruststorePass("password");
+		Ssl ssl = new Ssl();
+		ssl.setKeyStore("src/test/resources/test.jks");
+		ssl.setTrustStore("src/test/resources/test.jks");
+		new SslConnectorCustomizer(ssl, null).customize(this.tomcat.getConnector());
+		assertThat(protocol.getTruststorePass()).isEqualTo("password");
 	}
 
 	private KeyStore loadStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {

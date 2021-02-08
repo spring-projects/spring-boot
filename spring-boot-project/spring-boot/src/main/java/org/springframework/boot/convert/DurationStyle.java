@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ public enum DurationStyle {
 	/**
 	 * Simple formatting, for example '1s'.
 	 */
-	SIMPLE("^([\\+\\-]?\\d+)([a-zA-Z]{0,2})$") {
+	SIMPLE("^([+-]?\\d+)([a-zA-Z]{0,2})$") {
 
 		@Override
 		public Duration parse(String value, ChronoUnit unit) {
@@ -62,7 +62,7 @@ public enum DurationStyle {
 	/**
 	 * ISO-8601 formatting.
 	 */
-	ISO8601("^[\\+\\-]?P.*$") {
+	ISO8601("^[+-]?P.*$") {
 
 		@Override
 		public Duration parse(String value, ChronoUnit unit) {
@@ -134,7 +134,8 @@ public enum DurationStyle {
 	 * Detect the style then parse the value to return a duration.
 	 * @param value the value to parse
 	 * @return the parsed duration
-	 * @throws IllegalStateException if the value is not a known style or cannot be parsed
+	 * @throws IllegalArgumentException if the value is not a known style or cannot be
+	 * parsed
 	 */
 	public static Duration detectAndParse(String value) {
 		return detectAndParse(value, null);
@@ -146,7 +147,8 @@ public enum DurationStyle {
 	 * @param unit the duration unit to use if the value doesn't specify one ({@code null}
 	 * will default to ms)
 	 * @return the parsed duration
-	 * @throws IllegalStateException if the value is not a known style or cannot be parsed
+	 * @throws IllegalArgumentException if the value is not a known style or cannot be
+	 * parsed
 	 */
 	public static Duration detectAndParse(String value, ChronoUnit unit) {
 		return detect(value).parse(value, unit);
@@ -156,7 +158,7 @@ public enum DurationStyle {
 	 * Detect the style from the given source value.
 	 * @param value the source value
 	 * @return the duration style
-	 * @throws IllegalStateException if the value is not a known style
+	 * @throws IllegalArgumentException if the value is not a known style
 	 */
 	public static DurationStyle detect(String value) {
 		Assert.notNull(value, "Value must not be null");
@@ -221,7 +223,7 @@ public enum DurationStyle {
 		}
 
 		public Duration parse(String value) {
-			return Duration.of(Long.valueOf(value), this.chronoUnit);
+			return Duration.of(Long.parseLong(value), this.chronoUnit);
 		}
 
 		public String print(Duration value) {

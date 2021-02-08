@@ -375,8 +375,8 @@ public class JSONTokener {
 					throw syntaxError("Names cannot be null");
 				}
 				else {
-					throw syntaxError("Names must be strings, but " + name
-							+ " is of type " + name.getClass().getName());
+					throw syntaxError(
+							"Names must be strings, but " + name + " is of type " + name.getClass().getName());
 				}
 			}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,14 +80,14 @@ class ConditionalOnJavaTests {
 	void equalOrNewerMessage() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.EQUAL_OR_NEWER, JavaVersion.NINE,
 				JavaVersion.EIGHT);
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (1.8 or newer) found 1.9");
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (1.8 or newer) found 9");
 	}
 
 	@Test
 	void olderThanMessage() {
 		ConditionOutcome outcome = this.condition.getMatchOutcome(Range.OLDER_THAN, JavaVersion.NINE,
 				JavaVersion.EIGHT);
-		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 1.8) found 1.9");
+		assertThat(outcome.getMessage()).isEqualTo("@ConditionalOnJava (older than 1.8) found 9");
 	}
 
 	@Test
@@ -104,7 +104,7 @@ class ConditionalOnJavaTests {
 
 	private String getJavaVersion(Class<?>... hiddenClasses) throws Exception {
 		FilteredClassLoader classLoader = new FilteredClassLoader(hiddenClasses);
-		Class<?> javaVersionClass = classLoader.loadClass(JavaVersion.class.getName());
+		Class<?> javaVersionClass = Class.forName(JavaVersion.class.getName(), false, classLoader);
 		Method getJavaVersionMethod = ReflectionUtils.findMethod(javaVersionClass, "getJavaVersion");
 		Object javaVersion = ReflectionUtils.invokeMethod(getJavaVersionMethod, null);
 		classLoader.close();

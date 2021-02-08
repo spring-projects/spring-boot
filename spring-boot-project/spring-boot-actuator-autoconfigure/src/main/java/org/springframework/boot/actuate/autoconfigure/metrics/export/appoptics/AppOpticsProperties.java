@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,6 +47,12 @@ public class AppOpticsProperties extends StepRegistryProperties {
 	private String hostTag = "instance";
 
 	/**
+	 * Whether to ship a floored time, useful when sending measurements from multiple
+	 * hosts to align them on a given time boundary.
+	 */
+	private boolean floorTimes;
+
+	/**
 	 * Number of measurements per request to use for this backend. If more measurements
 	 * are found, then multiple requests will be made.
 	 */
@@ -79,6 +85,14 @@ public class AppOpticsProperties extends StepRegistryProperties {
 
 	public void setHostTag(String hostTag) {
 		this.hostTag = hostTag;
+	}
+
+	public boolean isFloorTimes() {
+		return this.floorTimes;
+	}
+
+	public void setFloorTimes(boolean floorTimes) {
+		this.floorTimes = floorTimes;
 	}
 
 	@Override

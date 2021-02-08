@@ -41,8 +41,8 @@ class ReproIntegrationTests {
 	@RegisterExtension
 	CliTester cli;
 
-	ReproIntegrationTests(CapturedOutput capturedOutput) {
-		this.cli = new CliTester("src/test/resources/repro-samples/", capturedOutput);
+	ReproIntegrationTests(CapturedOutput output) {
+		this.cli = new CliTester("src/test/resources/repro-samples/", output);
 	}
 
 	@Test

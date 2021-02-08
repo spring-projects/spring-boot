@@ -49,27 +49,27 @@ class SimpleMainTests {
 	}
 
 	@Test
-	void basePackageScan(CapturedOutput capturedOutput) throws Exception {
+	void basePackageScan(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs(ClassUtils.getPackageName(getClass()) + ".sampleconfig"));
-		assertThat(capturedOutput).contains(SPRING_STARTUP);
+		assertThat(output).contains(SPRING_STARTUP);
 	}
 
 	@Test
-	void configClassContext(CapturedOutput capturedOutput) throws Exception {
+	void configClassContext(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs(getClass().getName()));
-		assertThat(capturedOutput).contains(SPRING_STARTUP);
+		assertThat(output).contains(SPRING_STARTUP);
 	}
 
 	@Test
-	void xmlContext(CapturedOutput capturedOutput) throws Exception {
+	void xmlContext(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs("org/springframework/boot/sample-beans.xml"));
-		assertThat(capturedOutput).contains(SPRING_STARTUP);
+		assertThat(output).contains(SPRING_STARTUP);
 	}
 
 	@Test
-	void mixedContext(CapturedOutput capturedOutput) throws Exception {
+	void mixedContext(CapturedOutput output) throws Exception {
 		SpringApplication.main(getArgs(getClass().getName(), "org/springframework/boot/sample-beans.xml"));
-		assertThat(capturedOutput).contains(SPRING_STARTUP);
+		assertThat(output).contains(SPRING_STARTUP);
 	}
 
 	private String[] getArgs(String... args) {

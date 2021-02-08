@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,18 +16,17 @@
 
 package org.springframework.boot.logging;
 
-import java.util.List;
-
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.logging.DeferredLog.Lines;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.verifyNoInteractions;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
-import static org.mockito.Mockito.verifyZeroInteractions;
 
 /**
  * Tests for {@link DeferredLog}.
@@ -168,24 +167,19 @@ class DeferredLogTests {
 		verify(this.log).info("1", null);
 		verify(this.log).fatal("2", null);
 		verifyNoMoreInteractions(this.log);
-		verifyZeroInteractions(log2);
+		verifyNoInteractions(log2);
 	}
 
-	@SuppressWarnings("unchecked")
 	@Test
 	void switchTo() {
-		List<String> lines = (List<String>) ReflectionTestUtils.getField(this.deferredLog, "lines");
+		Lines lines = (Lines) ReflectionTestUtils.getField(this.deferredLog, "lines");
 		assertThat(lines).isEmpty();
-
 		this.deferredLog.error(this.message, this.throwable);
 		assertThat(lines).hasSize(1);
-
 		this.deferredLog.switchTo(this.log);
 		assertThat(lines).isEmpty();
-
 		this.deferredLog.info("Message2");
 		assertThat(lines).isEmpty();
-
 		verify(this.log).error(this.message, this.throwable);
 		verify(this.log).info("Message2", null);
 	}

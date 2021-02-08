@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,12 @@ package org.springframework.boot.loader.archive;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+import java.util.Spliterator;
+import java.util.Spliterators;
+import java.util.function.Consumer;
 import java.util.jar.Manifest;
 
 import org.springframework.boot.loader.Launcher;
@@ -48,12 +53,85 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	Manifest getManifest() throws IOException;
 
 	/**
+	 * Returns nested {@link Archive}s for entries that match the specified filters.
+	 * @param searchFilter filter used to limit when additional sub-entry searching is
+	 * required or {@code null} if all entries should be considered.
+	 * @param includeFilter filter used to determine which entries should be included in
+	 * the result or {@code null} if all entries should be included
+	 * @return the nested archives
+	 * @throws IOException on IO error
+	 * @since 2.3.0
+	 */
+	default Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter)
+			throws IOException {
+		EntryFilter combinedFilter = (entry) -> (searchFilter == null || searchFilter.matches(entry))
+				&& (includeFilter == null || includeFilter.matches(entry));
+		List<Archive> nestedArchives = getNestedArchives(combinedFilter);
+		return nestedArchives.iterator();
+	}
+
+	/**
 	 * Returns nested {@link Archive}s for entries that match the specified filter.
 	 * @param filter the filter used to limit entries
 	 * @return nested archives
 	 * @throws IOException if nested archives cannot be read
+	 * @deprecated since 2.3.0 in favor of
+	 * {@link #getNestedArchives(EntryFilter, EntryFilter)}
 	 */
-	List<Archive> getNestedArchives(EntryFilter filter) throws IOException;
+	@Deprecated
+	default List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
+		throw new IllegalStateException("Unexpected call to getNestedArchives(filter)");
+	}
+
+	/**
+	 * Return a new iterator for the archive entries.
+	 * @see java.lang.Iterable#iterator()
+	 * @deprecated since 2.3.0 in favor of using
+	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
+	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+	 */
+	@Deprecated
+	@Override
+	Iterator<Entry> iterator();
+
+	/**
+	 * Performs the given action for each element of the {@code Iterable} until all
+	 * elements have been processed or the action throws an exception.
+	 * @see Iterable#forEach
+	 * @deprecated since 2.3.0 in favor of using
+	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
+	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+	 */
+	@Deprecated
+	@Override
+	default void forEach(Consumer<? super Entry> action) {
+		Objects.requireNonNull(action);
+		for (Entry entry : this) {
+			action.accept(entry);
+		}
+	}
+
+	/**
+	 * Creates a {@link Spliterator} over the elements described by this {@code Iterable}.
+	 * @see Iterable#spliterator
+	 * @deprecated since 2.3.0 in favor of using
+	 * {@link org.springframework.boot.loader.jar.JarFile} to access entries and
+	 * {@link #getNestedArchives(EntryFilter, EntryFilter)} for accessing nested archives.
+	 */
+	@Deprecated
+	@Override
+	default Spliterator<Entry> spliterator() {
+		return Spliterators.spliteratorUnknownSize(iterator(), 0);
+	}
+
+	/**
+	 * Return if the archive is exploded (already unpacked).
+	 * @return if the archive is exploded
+	 * @since 2.3.0
+	 */
+	default boolean isExploded() {
+		return false;
+	}
 
 	/**
 	 * Closes the {@code Archive}, releasing any open resources.
@@ -87,6 +165,7 @@ public interface Archive extends Iterable<Archive.Entry>, AutoCloseable {
 	/**
 	 * Strategy interface to filter {@link Entry Entries}.
 	 */
+	@FunctionalInterface
 	interface EntryFilter {
 
 		/**

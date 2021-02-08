@@ -94,9 +94,9 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		assertThat(lines.get(0))
 				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
 		assertThat(lines.get(1)).isEqualTo("");
-		assertThat(lines.get(2)).contains("refererOne " + "(field " + RefererTwo.class.getName());
+		assertThat(lines.get(2)).contains("refererOne (field " + RefererTwo.class.getName());
 		assertThat(lines.get(3)).isEqualTo("      ↓");
-		assertThat(lines.get(4)).contains("refererTwo " + "(field " + BeanOne.class.getName());
+		assertThat(lines.get(4)).contains("refererTwo (field " + BeanOne.class.getName());
 		assertThat(lines.get(5)).isEqualTo("┌─────┐");
 		assertThat(lines.get(6))
 				.startsWith("|  one defined in " + CycleReferencedViaOtherBeansConfiguration.class.getName());

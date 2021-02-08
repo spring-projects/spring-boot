@@ -5,6 +5,6 @@ plugins {
 
 compileJava {
 	doLast {
-		println "$name compiler args: ${options.compilerArgs}"
+		println "${name} compiler args: ${options.compilerArgs}"
 	}
 }

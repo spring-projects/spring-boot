@@ -6,7 +6,7 @@ plugins {
 task('javaCompileTasksCompilerArgs') {
 	doFirst {
 		tasks.withType(JavaCompile) {
-			println "$name compiler args: ${options.compilerArgs}"
+			println "${name} compiler args: ${options.compilerArgs}"
 		}
 	}
 }

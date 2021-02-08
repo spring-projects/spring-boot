@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package smoketest.data.couchbase;
 
-import java.net.ConnectException;
-
+import com.couchbase.client.core.error.FeatureNotAvailableException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -31,7 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleCouchbaseApplicationTests {
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) {
+	void testDefaultSettings(CapturedOutput output) {
 		try {
 			new SpringApplicationBuilder(SampleCouchbaseApplication.class).run("--server.port=0");
 		}
@@ -40,16 +40,17 @@ class SampleCouchbaseApplicationTests {
 				return;
 			}
 		}
-		assertThat(capturedOutput).contains("firstName='Alice', lastName='Smith'");
+		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean serverNotRunning(RuntimeException ex) {
 		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
-		if (nested.contains(ConnectException.class)) {
+		if (nested.contains(FeatureNotAvailableException.class)) {
 			Throwable root = nested.getRootCause();
-			if (root.getMessage().contains("Connection refused")) {
+			// This is not ideal, we should have a better way to know what is going on
+			if (root.getMessage().contains("The cluster does not support cluster-level queries")) {
 				return true;
 			}
 		}

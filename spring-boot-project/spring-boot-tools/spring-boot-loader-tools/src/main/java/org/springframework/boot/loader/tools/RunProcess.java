@@ -113,11 +113,31 @@ public class RunProcess {
 	 * @return {@code true} if stopped
 	 */
 	public boolean handleSigInt() {
-		// if the process has just ended, probably due to this SIGINT, consider handled.
-		if (hasJustEnded()) {
+		if (allowChildToHandleSigInt()) {
 			return true;
 		}
 		return doKill();
+	}
+
+	private boolean allowChildToHandleSigInt() {
+		Process process = this.process;
+		if (process == null) {
+			return true;
+		}
+		long end = System.currentTimeMillis() + 5000;
+		while (System.currentTimeMillis() < end) {
+			if (!process.isAlive()) {
+				return true;
+			}
+			try {
+				Thread.sleep(500);
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+				return false;
+			}
+		}
+		return false;
 	}
 
 	/**

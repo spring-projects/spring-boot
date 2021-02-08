@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,6 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +46,9 @@ import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.convert.ApplicationConversionService;
+import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ApplicationListener;
@@ -66,7 +67,6 @@ import org.springframework.core.env.CommandLinePropertySource;
 import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
-import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.SimpleCommandLinePropertySource;
@@ -74,6 +74,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
+import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.CollectionUtils;
@@ -163,21 +164,27 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for non-web
 	 * environments.
+	 * @deprecated since 2.4.0 in favour of using a {@link ApplicationContextFactory}
 	 */
+	@Deprecated
 	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
 			+ "annotation.AnnotationConfigApplicationContext";
 
 	/**
 	 * The class name of application context that will be used by default for web
 	 * environments.
+	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
 	 */
+	@Deprecated
 	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
 			+ "web.servlet.context.AnnotationConfigServletWebServerApplicationContext";
 
 	/**
 	 * The class name of application context that will be used by default for reactive web
 	 * environments.
+	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
 	 */
+	@Deprecated
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
 			+ "boot.web.reactive.context.AnnotationConfigReactiveWebServerApplicationContext";
 
@@ -217,8 +224,6 @@ public class SpringApplication {
 
 	private ConfigurableEnvironment environment;
 
-	private Class<? extends ConfigurableApplicationContext> applicationContextClass;
-
 	private WebApplicationType webApplicationType;
 
 	private boolean headless = true;
@@ -231,13 +236,19 @@ public class SpringApplication {
 
 	private Map<String, Object> defaultProperties;
 
-	private Set<String> additionalProfiles = new HashSet<>();
+	private List<Bootstrapper> bootstrappers;
+
+	private Set<String> additionalProfiles = Collections.emptySet();
 
 	private boolean allowBeanDefinitionOverriding;
 
 	private boolean isCustomEnvironment = false;
 
 	private boolean lazyInitialization = false;
+
+	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
+
+	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
 
 	/**
 	 * Create a new {@link SpringApplication} instance. The application context will load
@@ -269,6 +280,7 @@ public class SpringApplication {
 		Assert.notNull(primarySources, "PrimarySources must not be null");
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		this.bootstrappers = new ArrayList<>(getSpringFactoriesInstances(Bootstrapper.class));
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
 		this.mainApplicationClass = deduceMainApplicationClass();
@@ -298,20 +310,19 @@ public class SpringApplication {
 	public ConfigurableApplicationContext run(String... args) {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
+		DefaultBootstrapContext bootstrapContext = createBootstrapContext();
 		ConfigurableApplicationContext context = null;
-		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
 		SpringApplicationRunListeners listeners = getRunListeners(args);
-		listeners.starting();
+		listeners.starting(bootstrapContext, this.mainApplicationClass);
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);
-			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
+			ConfigurableEnvironment environment = prepareEnvironment(listeners, bootstrapContext, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
 			context = createApplicationContext();
-			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
-					new Class[] { ConfigurableApplicationContext.class }, context);
-			prepareContext(context, environment, listeners, applicationArguments, printedBanner);
+			context.setApplicationStartup(this.applicationStartup);
+			prepareContext(bootstrapContext, context, environment, listeners, applicationArguments, printedBanner);
 			refreshContext(context);
 			afterRefresh(context, applicationArguments);
 			stopWatch.stop();
@@ -322,7 +333,7 @@ public class SpringApplication {
 			callRunners(context, applicationArguments);
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, ex, exceptionReporters, listeners);
+			handleRunFailure(context, ex, listeners);
 			throw new IllegalStateException(ex);
 		}
 
@@ -330,18 +341,27 @@ public class SpringApplication {
 			listeners.running(context);
 		}
 		catch (Throwable ex) {
-			handleRunFailure(context, ex, exceptionReporters, null);
+			handleRunFailure(context, ex, null);
 			throw new IllegalStateException(ex);
 		}
 		return context;
 	}
 
+	private DefaultBootstrapContext createBootstrapContext() {
+		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
+		this.bootstrappers.forEach((initializer) -> initializer.intitialize(bootstrapContext));
+		return bootstrapContext;
+	}
+
 	private ConfigurableEnvironment prepareEnvironment(SpringApplicationRunListeners listeners,
-			ApplicationArguments applicationArguments) {
+			DefaultBootstrapContext bootstrapContext, ApplicationArguments applicationArguments) {
 		// Create and configure the environment
 		ConfigurableEnvironment environment = getOrCreateEnvironment();
 		configureEnvironment(environment, applicationArguments.getSourceArgs());
-		listeners.environmentPrepared(environment);
+		ConfigurationPropertySources.attach(environment);
+		listeners.environmentPrepared(bootstrapContext, environment);
+		DefaultPropertiesPropertySource.moveToEnd(environment);
+		configureAdditionalProfiles(environment);
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
@@ -362,12 +382,14 @@ public class SpringApplication {
 		}
 	}
 
-	private void prepareContext(ConfigurableApplicationContext context, ConfigurableEnvironment environment,
-			SpringApplicationRunListeners listeners, ApplicationArguments applicationArguments, Banner printedBanner) {
+	private void prepareContext(DefaultBootstrapContext bootstrapContext, ConfigurableApplicationContext context,
+			ConfigurableEnvironment environment, SpringApplicationRunListeners listeners,
+			ApplicationArguments applicationArguments, Banner printedBanner) {
 		context.setEnvironment(environment);
 		postProcessApplicationContext(context);
 		applyInitializers(context);
 		listeners.contextPrepared(context);
+		bootstrapContext.close(context);
 		if (this.logStartupInfo) {
 			logStartupInfo(context.getParent() == null);
 			logStartupProfileInfo(context);
@@ -393,7 +415,6 @@ public class SpringApplication {
 	}
 
 	private void refreshContext(ConfigurableApplicationContext context) {
-		refresh(context);
 		if (this.registerShutdownHook) {
 			try {
 				context.registerShutdownHook();
@@ -402,6 +423,7 @@ public class SpringApplication {
 				// Not allowed in some environments.
 			}
 		}
+		refresh(context);
 	}
 
 	private void configureHeadlessProperty() {
@@ -412,7 +434,8 @@ public class SpringApplication {
 	private SpringApplicationRunListeners getRunListeners(String[] args) {
 		Class<?>[] types = new Class<?>[] { SpringApplication.class, String[].class };
 		return new SpringApplicationRunListeners(logger,
-				getSpringFactoriesInstances(SpringApplicationRunListener.class, types, this, args));
+				getSpringFactoriesInstances(SpringApplicationRunListener.class, types, this, args),
+				this.applicationStartup);
 	}
 
 	private <T> Collection<T> getSpringFactoriesInstances(Class<T> type) {
@@ -490,9 +513,7 @@ public class SpringApplication {
 	 */
 	protected void configurePropertySources(ConfigurableEnvironment environment, String[] args) {
 		MutablePropertySources sources = environment.getPropertySources();
-		if (this.defaultProperties != null && !this.defaultProperties.isEmpty()) {
-			sources.addLast(new MapPropertySource("defaultProperties", this.defaultProperties));
-		}
+		DefaultPropertiesPropertySource.ifNotEmpty(this.defaultProperties, sources::addLast);
 		if (this.addCommandLineProperties && args.length > 0) {
 			String name = CommandLinePropertySource.COMMAND_LINE_PROPERTY_SOURCE_NAME;
 			if (sources.contains(name)) {
@@ -519,9 +540,16 @@ public class SpringApplication {
 	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
-		Set<String> profiles = new LinkedHashSet<>(this.additionalProfiles);
-		profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
-		environment.setActiveProfiles(StringUtils.toStringArray(profiles));
+	}
+
+	private void configureAdditionalProfiles(ConfigurableEnvironment environment) {
+		if (!CollectionUtils.isEmpty(this.additionalProfiles)) {
+			Set<String> profiles = new LinkedHashSet<>(Arrays.asList(environment.getActiveProfiles()));
+			if (!profiles.containsAll(this.additionalProfiles)) {
+				profiles.addAll(this.additionalProfiles);
+				environment.setActiveProfiles(StringUtils.toStringArray(profiles));
+			}
+		}
 	}
 
 	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {
@@ -549,7 +577,7 @@ public class SpringApplication {
 			return null;
 		}
 		ResourceLoader resourceLoader = (this.resourceLoader != null) ? this.resourceLoader
-				: new DefaultResourceLoader(getClassLoader());
+				: new DefaultResourceLoader(null);
 		SpringApplicationBannerPrinter bannerPrinter = new SpringApplicationBannerPrinter(resourceLoader, this.banner);
 		if (this.bannerMode == Mode.LOG) {
 			return bannerPrinter.print(environment, this.mainApplicationClass, logger);
@@ -559,33 +587,14 @@ public class SpringApplication {
 
 	/**
 	 * Strategy method used to create the {@link ApplicationContext}. By default this
-	 * method will respect any explicitly set application context or application context
-	 * class before falling back to a suitable default.
+	 * method will respect any explicitly set application context class or factory before
+	 * falling back to a suitable default.
 	 * @return the application context (not yet refreshed)
 	 * @see #setApplicationContextClass(Class)
+	 * @see #setApplicationContextFactory(ApplicationContextFactory)
 	 */
 	protected ConfigurableApplicationContext createApplicationContext() {
-		Class<?> contextClass = this.applicationContextClass;
-		if (contextClass == null) {
-			try {
-				switch (this.webApplicationType) {
-				case SERVLET:
-					contextClass = Class.forName(DEFAULT_SERVLET_WEB_CONTEXT_CLASS);
-					break;
-				case REACTIVE:
-					contextClass = Class.forName(DEFAULT_REACTIVE_WEB_CONTEXT_CLASS);
-					break;
-				default:
-					contextClass = Class.forName(DEFAULT_CONTEXT_CLASS);
-				}
-			}
-			catch (ClassNotFoundException ex) {
-				throw new IllegalStateException(
-						"Unable create a default ApplicationContext, " + "please specify an ApplicationContextClass",
-						ex);
-			}
-		}
-		return (ConfigurableApplicationContext) BeanUtils.instantiateClass(contextClass);
+		return this.applicationContextFactory.create(this.webApplicationType);
 	}
 
 	/**
@@ -742,9 +751,8 @@ public class SpringApplication {
 	 * Refresh the underlying {@link ApplicationContext}.
 	 * @param applicationContext the application context to refresh
 	 */
-	protected void refresh(ApplicationContext applicationContext) {
-		Assert.isInstanceOf(AbstractApplicationContext.class, applicationContext);
-		((AbstractApplicationContext) applicationContext).refresh();
+	protected void refresh(ConfigurableApplicationContext applicationContext) {
+		applicationContext.refresh();
 	}
 
 	/**
@@ -789,7 +797,7 @@ public class SpringApplication {
 	}
 
 	private void handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
-			Collection<SpringBootExceptionReporter> exceptionReporters, SpringApplicationRunListeners listeners) {
+			SpringApplicationRunListeners listeners) {
 		try {
 			try {
 				handleExitCode(context, exception);
@@ -798,7 +806,7 @@ public class SpringApplication {
 				}
 			}
 			finally {
-				reportFailure(exceptionReporters, exception);
+				reportFailure(getExceptionReporters(context), exception);
 				if (context != null) {
 					context.close();
 				}
@@ -808,6 +816,16 @@ public class SpringApplication {
 			logger.warn("Unable to close ApplicationContext", ex);
 		}
 		ReflectionUtils.rethrowRuntimeException(exception);
+	}
+
+	private Collection<SpringBootExceptionReporter> getExceptionReporters(ConfigurableApplicationContext context) {
+		try {
+			return getSpringFactoriesInstances(SpringBootExceptionReporter.class,
+					new Class<?>[] { ConfigurableApplicationContext.class }, context);
+		}
+		catch (Throwable ex) {
+			return Collections.emptyList();
+		}
 	}
 
 	private void reportFailure(Collection<SpringBootExceptionReporter> exceptionReporters, Throwable failure) {
@@ -1018,6 +1036,17 @@ public class SpringApplication {
 	}
 
 	/**
+	 * Adds a {@link Bootstrapper} that can be used to initialize the
+	 * {@link BootstrapRegistry}.
+	 * @param bootstrapper the bootstraper
+	 * @since 2.4.0
+	 */
+	public void addBootstrapper(Bootstrapper bootstrapper) {
+		Assert.notNull(bootstrapper, "Bootstrapper must not be null");
+		this.bootstrappers.add(bootstrapper);
+	}
+
+	/**
 	 * Set default environment properties which will be used in addition to those in the
 	 * existing {@link Environment}.
 	 * @param defaultProperties the additional properties to set
@@ -1043,7 +1072,15 @@ public class SpringApplication {
 	 * @param profiles the additional profiles to set
 	 */
 	public void setAdditionalProfiles(String... profiles) {
-		this.additionalProfiles = new LinkedHashSet<>(Arrays.asList(profiles));
+		this.additionalProfiles = Collections.unmodifiableSet(new LinkedHashSet<>(Arrays.asList(profiles)));
+	}
+
+	/**
+	 * Return an immutable set of any additional profiles in use.
+	 * @return the additional profiles
+	 */
+	public Set<String> getAdditionalProfiles() {
+		return this.additionalProfiles;
 	}
 
 	/**
@@ -1143,10 +1180,28 @@ public class SpringApplication {
 	 * applications or {@link AnnotationConfigApplicationContext} for non web based
 	 * applications.
 	 * @param applicationContextClass the context class to set
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #setApplicationContextFactory(ApplicationContextFactory)}
 	 */
+	@Deprecated
 	public void setApplicationContextClass(Class<? extends ConfigurableApplicationContext> applicationContextClass) {
-		this.applicationContextClass = applicationContextClass;
 		this.webApplicationType = WebApplicationType.deduceFromApplicationContext(applicationContextClass);
+		this.applicationContextFactory = ApplicationContextFactory.ofContextClass(applicationContextClass);
+	}
+
+	/**
+	 * Sets the factory that will be called to create the application context. If not set,
+	 * defaults to a factory that will create
+	 * {@link AnnotationConfigServletWebServerApplicationContext} for servlet web
+	 * applications, {@link AnnotationConfigReactiveWebServerApplicationContext} for
+	 * reactive web applications, and {@link AnnotationConfigApplicationContext} for
+	 * non-web applications.
+	 * @param applicationContextFactory the factory for the context
+	 * @since 2.4.0
+	 */
+	public void setApplicationContextFactory(ApplicationContextFactory applicationContextFactory) {
+		this.applicationContextFactory = (applicationContextFactory != null) ? applicationContextFactory
+				: ApplicationContextFactory.DEFAULT;
 	}
 
 	/**
@@ -1202,6 +1257,24 @@ public class SpringApplication {
 	 */
 	public Set<ApplicationListener<?>> getListeners() {
 		return asUnmodifiableOrderedSet(this.listeners);
+	}
+
+	/**
+	 * Set the {@link ApplicationStartup} to use for collecting startup metrics.
+	 * @param applicationStartup the application startup to use
+	 * @since 2.4.0
+	 */
+	public void setApplicationStartup(ApplicationStartup applicationStartup) {
+		this.applicationStartup = (applicationStartup != null) ? applicationStartup : ApplicationStartup.DEFAULT;
+	}
+
+	/**
+	 * Returns the {@link ApplicationStartup} used for collecting startup metrics.
+	 * @return the application startup
+	 * @since 2.4.0
+	 */
+	public ApplicationStartup getApplicationStartup() {
+		return this.applicationStartup;
 	}
 
 	/**

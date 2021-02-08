@@ -46,7 +46,7 @@ public class NameAndAgeJsonKeyComponent {
 		@Override
 		public NameAndAge deserializeKey(String key, DeserializationContext ctxt) throws IOException {
 			String[] keys = key.split("is");
-			return new NameAndAge(keys[0].trim(), Integer.valueOf(keys[1].trim()));
+			return new NameAndAge(keys[0].trim(), Integer.parseInt(keys[1].trim()));
 		}
 
 	}

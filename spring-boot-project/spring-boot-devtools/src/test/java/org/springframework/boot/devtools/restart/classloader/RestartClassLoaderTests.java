@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -125,13 +125,13 @@ class RestartClassLoaderTests {
 
 	@Test
 	void loadClassFromReloadableUrl() throws Exception {
-		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".Sample");
+		Class<?> loaded = Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader);
 		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 
 	@Test
 	void loadClassFromParent() throws Exception {
-		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
+		Class<?> loaded = Class.forName(PACKAGE + ".SampleParent", false, this.reloadClassLoader);
 		assertThat(loaded.getClassLoader()).isEqualTo(getClass().getClassLoader());
 	}
 
@@ -180,7 +180,7 @@ class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		assertThatExceptionOfType(ClassNotFoundException.class)
-				.isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+				.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
 	}
 
 	@Test
@@ -188,7 +188,7 @@ class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
 		assertThatExceptionOfType(ClassFormatError.class)
-				.isThrownBy(() -> this.reloadClassLoader.loadClass(PACKAGE + ".Sample"));
+				.isThrownBy(() -> Class.forName(PACKAGE + ".Sample", false, this.reloadClassLoader));
 	}
 
 	@Test
@@ -196,7 +196,7 @@ class RestartClassLoaderTests {
 		String name = PACKAGE_PATH + "/SampleParent.class";
 		byte[] bytes = FileCopyUtils.copyToByteArray(getClass().getResourceAsStream("SampleParent.class"));
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
-		Class<?> loaded = this.reloadClassLoader.loadClass(PACKAGE + ".SampleParent");
+		Class<?> loaded = Class.forName(PACKAGE + ".SampleParent", false, this.reloadClassLoader);
 		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 

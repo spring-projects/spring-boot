@@ -49,7 +49,7 @@ class InvalidConfigurationPropertyNameFailureAnalyzer
 			description.append(String.format("%n    Bean: %s", exception.getBeanName()));
 		}
 		description.append(String.format("%n    Reason: Canonical names should be "
-				+ "kebab-case ('-' separated), lowercase alpha-numeric characters" + " and must start with a letter"));
+				+ "kebab-case ('-' separated), lowercase alpha-numeric characters and must start with a letter"));
 		return description.toString();
 	}
 

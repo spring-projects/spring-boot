@@ -93,7 +93,7 @@ public interface BindHandler {
 
 	/**
 	 * Called when binding finishes with either bound or unbound result. This method will
-	 * not be called when binding failed, even if a handler rurns a result from
+	 * not be called when binding failed, even if a handler returns a result from
 	 * {@link #onFailure}.
 	 * @param name the name of the element being bound
 	 * @param target the item being bound

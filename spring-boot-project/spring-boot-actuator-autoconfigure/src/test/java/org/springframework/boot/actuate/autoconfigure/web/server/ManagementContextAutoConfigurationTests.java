@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,10 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.web.server;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -25,11 +25,13 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfi
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.servlet.ServletManagementContextAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,7 +45,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class ManagementContextAutoConfigurationTests {
 
 	@Test
-	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput capturedOutput) {
+	void childManagementContextShouldStartForEmbeddedServer(CapturedOutput output) {
 		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
 				AnnotationConfigServletWebServerApplicationContext::new)
 						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
@@ -51,16 +53,27 @@ class ManagementContextAutoConfigurationTests {
 								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
 								EndpointAutoConfiguration.class));
 		contextRunner.withPropertyValues("server.port=0", "management.server.port=0")
-				.run((context) -> assertThat(tomcatStartedOccurencesIn(capturedOutput)).isEqualTo(2));
+				.run((context) -> assertThat(output).satisfies(numberOfOccurrences("Tomcat started on port", 2)));
 	}
 
-	private int tomcatStartedOccurencesIn(CharSequence output) {
-		int matches = 0;
-		Matcher matcher = Pattern.compile("Tomcat started on port").matcher(output);
-		while (matcher.find()) {
-			matches++;
-		}
-		return matches;
+	@Test
+	void givenSamePortManagementServerWhenManagementServerAddressIsConfiguredThenContextRefreshFails() {
+		WebApplicationContextRunner contextRunner = new WebApplicationContextRunner(
+				AnnotationConfigServletWebServerApplicationContext::new)
+						.withConfiguration(AutoConfigurations.of(ManagementContextAutoConfiguration.class,
+								ServletWebServerFactoryAutoConfiguration.class,
+								ServletManagementContextAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+								EndpointAutoConfiguration.class, DispatcherServletAutoConfiguration.class));
+		contextRunner.withPropertyValues("server.port=0", "management.server.address=127.0.0.1")
+				.run((context) -> assertThat(context).getFailure()
+						.hasMessageStartingWith("Management-specific server address cannot be configured"));
+	}
+
+	private <T extends CharSequence> Consumer<T> numberOfOccurrences(String substring, int expectedCount) {
+		return (charSequence) -> {
+			int count = StringUtils.countOccurrencesOf(charSequence.toString(), substring);
+			assertThat(count).isEqualTo(expectedCount);
+		};
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  * @author Dave Syer
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class BasicErrorControllerIntegrationTests {
 
@@ -83,60 +84,87 @@ class BasicErrorControllerIntegrationTests {
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
-	void testErrorForMachineClient() {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	void testErrorForMachineClientDefault() {
 		load();
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, "Expected!", "/");
-		assertThat(entity.getBody().containsKey("trace")).isFalse();
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, null, "/");
+		assertThat(entity.getBody()).doesNotContainKey("exception");
+		assertThat(entity.getBody()).doesNotContainKey("trace");
 	}
 
 	@Test
-	void testErrorForMachineClientTraceParamTrue() {
-		errorForMachineClientOnTraceParam("?trace=true", true);
+	void testErrorForMachineClientWithParamsTrue() {
+		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-param",
+				"--server.error.include-message=on-param");
+		exceptionWithStackTraceAndMessage("?trace=true&message=true");
 	}
 
 	@Test
-	void testErrorForMachineClientTraceParamFalse() {
-		errorForMachineClientOnTraceParam("?trace=false", false);
+	void testErrorForMachineClientWithParamsFalse() {
+		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-param",
+				"--server.error.include-message=on-param");
+		exceptionWithoutStackTraceAndMessage("?trace=false&message=false");
 	}
 
 	@Test
-	void testErrorForMachineClientTraceParamAbsent() {
-		errorForMachineClientOnTraceParam("", false);
+	void testErrorForMachineClientWithParamsAbsent() {
+		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-param",
+				"--server.error.include-message=on-param");
+		exceptionWithoutStackTraceAndMessage("");
 	}
 
+	@Test
+	void testErrorForMachineClientNeverParams() {
+		load("--server.error.include-exception=true", "--server.error.include-stacktrace=never",
+				"--server.error.include-message=never");
+		exceptionWithoutStackTraceAndMessage("?trace=true&message=true");
+	}
+
+	@Test
+	void testErrorForMachineClientAlwaysParams() {
+		load("--server.error.include-exception=true", "--server.error.include-stacktrace=always",
+				"--server.error.include-message=always");
+		exceptionWithStackTraceAndMessage("?trace=false&message=false");
+	}
+
+	@Test
 	@SuppressWarnings("rawtypes")
-	private void errorForMachineClientOnTraceParam(String path, boolean expectedTrace) {
-		load("--server.error.include-exception=true", "--server.error.include-stacktrace=on-trace-param");
+	void testErrorForMachineClientAlwaysParamsWithoutMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/noMessage"), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
+				"No message available", "/noMessage");
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void exceptionWithStackTraceAndMessage(String path) {
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl(path), Map.class);
 		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class,
 				"Expected!", "/");
-		assertThat(entity.getBody().containsKey("trace")).isEqualTo(expectedTrace);
+		assertThat(entity.getBody()).containsKey("trace");
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void exceptionWithoutStackTraceAndMessage(String path) {
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl(path), Map.class);
+		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", IllegalStateException.class, null, "/");
+		assertThat(entity.getBody()).doesNotContainKey("trace");
 	}
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	void testErrorForMachineClientNoStacktrace() {
-		load("--server.error.include-stacktrace=never");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=true"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, "Expected!", "/");
-		assertThat(entity.getBody().containsKey("trace")).isFalse();
-	}
-
-	@Test
-	@SuppressWarnings("rawtypes")
-	void testErrorForMachineClientAlwaysStacktrace() {
-		load("--server.error.include-stacktrace=always");
-		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("?trace=false"), Map.class);
-		assertErrorAttributes(entity.getBody(), "500", "Internal Server Error", null, "Expected!", "/");
-		assertThat(entity.getBody().containsKey("trace")).isTrue();
-	}
-
-	@Test
-	@SuppressWarnings("rawtypes")
-	void testErrorForAnnotatedException() {
+	void testErrorForAnnotatedExceptionWithoutMessage() {
 		load("--server.error.include-exception=true");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
+				null, "/annotated");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void testErrorForAnnotatedExceptionWithMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotated"), Map.class);
 		assertErrorAttributes(entity.getBody(), "400", "Bad Request", TestConfiguration.Errors.ExpectedException.class,
 				"Expected!", "/annotated");
@@ -144,8 +172,17 @@ class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	void testErrorForAnnotatedNoReasonException() {
+	void testErrorForAnnotatedNoReasonExceptionWithoutMessage() {
 		load("--server.error.include-exception=true");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
+		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
+				TestConfiguration.Errors.NoReasonExpectedException.class, null, "/annotatedNoReason");
+	}
+
+	@Test
+	@SuppressWarnings("rawtypes")
+	void testErrorForAnnotatedNoReasonExceptionWithMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=always");
 		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoReason"), Map.class);
 		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
 				TestConfiguration.Errors.NoReasonExpectedException.class, "Expected message", "/annotatedNoReason");
@@ -153,41 +190,125 @@ class BasicErrorControllerIntegrationTests {
 
 	@Test
 	@SuppressWarnings("rawtypes")
-	void testBindingExceptionForMachineClient() {
-		load("--server.error.include-exception=true");
-		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind"))).accept(MediaType.APPLICATION_JSON)
-				.build();
-		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
-		String resp = entity.getBody().toString();
-		assertThat(resp).contains("Error count: 1");
-		assertThat(resp).contains("errors=[{");
-		assertThat(resp).contains("codes=[");
-		assertThat(resp).contains("org.springframework.validation.BindException");
+	void testErrorForAnnotatedNoMessageExceptionWithMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/annotatedNoMessage"), Map.class);
+		assertErrorAttributes(entity.getBody(), "406", "Not Acceptable",
+				TestConfiguration.Errors.NoReasonExpectedException.class, "No message available",
+				"/annotatedNoMessage");
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
+	void testBindingExceptionForMachineClientWithErrorsParamTrue() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		bindingExceptionWithErrors("?errors=true");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithErrorsParamFalse() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		bindingExceptionWithoutErrors("?errors=false");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithErrorsParamAbsent() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=on-param");
+		bindingExceptionWithoutErrors("");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientAlwaysErrors() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=always");
+		bindingExceptionWithErrors("?errors=false");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientNeverErrors() {
+		load("--server.error.include-exception=true", "--server.error.include-binding-errors=never");
+		bindingExceptionWithoutErrors("?errors=true");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithMessageParamTrue() {
+		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		bindingExceptionWithMessage("?message=true");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithMessageParamFalse() {
+		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		bindingExceptionWithoutMessage("?message=false");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientWithMessageParamAbsent() {
+		load("--server.error.include-exception=true", "--server.error.include-message=on-param");
+		bindingExceptionWithoutMessage("");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientAlwaysMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=always");
+		bindingExceptionWithMessage("?message=false");
+	}
+
+	@Test
+	void testBindingExceptionForMachineClientNeverMessage() {
+		load("--server.error.include-exception=true", "--server.error.include-message=never");
+		bindingExceptionWithoutMessage("?message=true");
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void bindingExceptionWithErrors(String param) {
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
+		assertThat(entity.getBody()).containsKey("errors");
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void bindingExceptionWithoutErrors(String param) {
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
+		assertThat(entity.getBody()).doesNotContainKey("errors");
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void bindingExceptionWithMessage(String param) {
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class,
+				"Validation failed for object='test'. Error count: 1", "/bind");
+		assertThat(entity.getBody()).doesNotContainKey("errors");
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	private void bindingExceptionWithoutMessage(String param) {
+		ResponseEntity<Map> entity = new TestRestTemplate().getForEntity(createUrl("/bind" + param), Map.class);
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", BindException.class, null, "/bind");
+		assertThat(entity.getBody()).doesNotContainKey("errors");
+	}
+
+	@Test
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	void testRequestBodyValidationForMachineClient() {
 		load("--server.error.include-exception=true");
 		RequestEntity request = RequestEntity.post(URI.create(createUrl("/bodyValidation")))
 				.accept(MediaType.APPLICATION_JSON).contentType(MediaType.APPLICATION_JSON).body("{}");
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
-		String resp = entity.getBody().toString();
-		assertThat(resp).contains("Error count: 1");
-		assertThat(resp).contains("errors=[{");
-		assertThat(resp).contains("codes=[");
-		assertThat(resp).contains(MethodArgumentNotValidException.class.getName());
+		assertErrorAttributes(entity.getBody(), "400", "Bad Request", MethodArgumentNotValidException.class, null,
+				"/bodyValidation");
+		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
 
 	@Test
-	@SuppressWarnings("rawtypes")
-	void testNoExceptionByDefaultForMachineClient() {
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	void testBindingExceptionForMachineClientDefault() {
 		load();
-		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind"))).accept(MediaType.APPLICATION_JSON)
-				.build();
+		RequestEntity request = RequestEntity.get(URI.create(createUrl("/bind?trace=true,message=true")))
+				.accept(MediaType.APPLICATION_JSON).build();
 		ResponseEntity<Map> entity = new TestRestTemplate().exchange(request, Map.class);
-		String resp = entity.getBody().toString();
-		assertThat(resp).doesNotContain("org.springframework.validation.BindException");
+		assertThat(entity.getBody()).doesNotContainKey("exception");
+		assertThat(entity.getBody()).doesNotContainKey("trace");
+		assertThat(entity.getBody()).doesNotContainKey("errors");
 	}
 
 	@Test
@@ -200,9 +321,20 @@ class BasicErrorControllerIntegrationTests {
 		assertThat(resp).contains("We are out of storage");
 	}
 
+	@Test
+	void testIncompatibleMediaType() {
+		load();
+		RequestEntity<?> request = RequestEntity.get(URI.create(createUrl("/incompatibleType")))
+				.accept(MediaType.TEXT_PLAIN).build();
+		ResponseEntity<String> entity = new TestRestTemplate().exchange(request, String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.BAD_REQUEST);
+		assertThat(entity.getHeaders().getContentType()).isNull();
+		assertThat(entity.getBody()).isNull();
+	}
+
 	private void assertErrorAttributes(Map<?, ?> content, String status, String error, Class<?> exception,
 			String message, String path) {
-		assertThat(content.get("status")).as("Wrong status").isEqualTo(status);
+		assertThat(content.get("status").toString()).as("Wrong status").isEqualTo(status);
 		assertThat(content.get("error")).as("Wrong error").isEqualTo(error);
 		if (exception != null) {
 			assertThat(content.get("exception")).as("Wrong exception").isEqualTo(exception.getName());
@@ -271,6 +403,11 @@ class BasicErrorControllerIntegrationTests {
 				throw new IllegalStateException("Expected!");
 			}
 
+			@RequestMapping("/noMessage")
+			String noMessage() {
+				throw new IllegalStateException();
+			}
+
 			@RequestMapping("/annotated")
 			String annotated() {
 				throw new ExpectedException();
@@ -279,6 +416,11 @@ class BasicErrorControllerIntegrationTests {
 			@RequestMapping("/annotatedNoReason")
 			String annotatedNoReason() {
 				throw new NoReasonExpectedException("Expected message");
+			}
+
+			@RequestMapping("/annotatedNoMessage")
+			String annotatedNoMessage() {
+				throw new NoReasonExpectedException("");
 			}
 
 			@RequestMapping("/bind")
@@ -296,6 +438,11 @@ class BasicErrorControllerIntegrationTests {
 			@RequestMapping(path = "/noStorage")
 			String noStorage() {
 				throw new InsufficientStorageException();
+			}
+
+			@RequestMapping(path = "/incompatibleType", produces = "text/plain")
+			String incompatibleType() {
+				throw new ExpectedException();
 			}
 
 			@ResponseStatus(value = HttpStatus.BAD_REQUEST, reason = "Expected!")

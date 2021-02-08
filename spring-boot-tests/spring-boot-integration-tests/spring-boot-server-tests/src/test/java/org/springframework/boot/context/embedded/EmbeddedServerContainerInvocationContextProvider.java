@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Stream;
 
+import org.apache.http.impl.client.HttpClients;
+import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.junit.jupiter.api.extension.AfterAllCallback;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -39,6 +41,7 @@ import org.junit.platform.commons.util.ReflectionUtils;
 
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import org.springframework.util.FileSystemUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.client.ResponseErrorHandler;
@@ -154,7 +157,8 @@ class EmbeddedServerContainerInvocationContextProvider
 		@Override
 		public Object resolveParameter(ParameterContext parameterContext, ExtensionContext extensionContext)
 				throws ParameterResolutionException {
-			RestTemplate rest = new RestTemplate();
+			RestTemplate rest = new RestTemplate(new HttpComponentsClientHttpRequestFactory(
+					HttpClients.custom().setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build()));
 			rest.setErrorHandler(new ResponseErrorHandler() {
 
 				@Override

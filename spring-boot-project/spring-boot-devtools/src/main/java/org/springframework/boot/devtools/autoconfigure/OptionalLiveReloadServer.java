@@ -21,6 +21,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.devtools.livereload.LiveReloadServer;
+import org.springframework.core.log.LogMessage;
 
 /**
  * Manages an optional {@link LiveReloadServer}. The {@link LiveReloadServer} may
@@ -54,7 +55,7 @@ public class OptionalLiveReloadServer implements InitializingBean {
 				if (!this.server.isStarted()) {
 					this.server.start();
 				}
-				logger.info("LiveReload server is running on port " + this.server.getPort());
+				logger.info(LogMessage.format("LiveReload server is running on port %s", this.server.getPort()));
 			}
 			catch (Exception ex) {
 				logger.warn("Unable to start LiveReload server");

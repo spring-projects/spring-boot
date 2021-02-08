@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import javax.servlet.ServletContextListener;
 import javax.servlet.ServletRequestAttributeListener;
 import javax.servlet.ServletRequestListener;
 import javax.servlet.http.HttpSessionAttributeListener;
+import javax.servlet.http.HttpSessionIdListener;
 import javax.servlet.http.HttpSessionListener;
 
 import org.springframework.util.Assert;
@@ -44,6 +45,7 @@ import org.springframework.util.ClassUtils;
  * <li>{@link ServletRequestListener}</li>
  * <li>{@link ServletRequestAttributeListener}</li>
  * <li>{@link HttpSessionAttributeListener}</li>
+ * <li>{@link HttpSessionIdListener}</li>
  * <li>{@link HttpSessionListener}</li>
  * <li>{@link ServletContextListener}</li>
  * </ul>
@@ -63,6 +65,7 @@ public class ServletListenerRegistrationBean<T extends EventListener> extends Re
 		types.add(ServletRequestListener.class);
 		types.add(ServletRequestAttributeListener.class);
 		types.add(HttpSessionAttributeListener.class);
+		types.add(HttpSessionIdListener.class);
 		types.add(HttpSessionListener.class);
 		types.add(ServletContextListener.class);
 		SUPPORTED_TYPES = Collections.unmodifiableSet(types);

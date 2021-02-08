@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,10 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.cassandra;
 
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
@@ -30,8 +31,13 @@ import org.springframework.util.Assert;
  *
  * @author Artsiom Yudovin
  * @since 2.1.0
+ * @deprecated since 2.4.0 in favor of {@link CassandraDriverHealthIndicator}
  */
+@Deprecated
 public class CassandraReactiveHealthIndicator extends AbstractReactiveHealthIndicator {
+
+	private static final SimpleStatement SELECT = SimpleStatement
+			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private final ReactiveCassandraOperations reactiveCassandraOperations;
 
@@ -40,14 +46,14 @@ public class CassandraReactiveHealthIndicator extends AbstractReactiveHealthIndi
 	 * @param reactiveCassandraOperations the Cassandra operations
 	 */
 	public CassandraReactiveHealthIndicator(ReactiveCassandraOperations reactiveCassandraOperations) {
+		super("Cassandra health check failed");
 		Assert.notNull(reactiveCassandraOperations, "ReactiveCassandraOperations must not be null");
 		this.reactiveCassandraOperations = reactiveCassandraOperations;
 	}
 
 	@Override
 	protected Mono<Health> doHealthCheck(Health.Builder builder) {
-		Select select = QueryBuilder.select("release_version").from("system", "local");
-		return this.reactiveCassandraOperations.getReactiveCqlOperations().queryForObject(select, String.class)
+		return this.reactiveCassandraOperations.getReactiveCqlOperations().queryForObject(SELECT, String.class)
 				.map((version) -> builder.up().withDetail("version", version).build()).single();
 	}
 

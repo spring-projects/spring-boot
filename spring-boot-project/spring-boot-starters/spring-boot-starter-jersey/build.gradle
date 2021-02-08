@@ -1,0 +1,26 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for building RESTful web applications using JAX-RS and Jersey. An alternative to spring-boot-starter-web"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-json"))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-validation"))
+	api("org.springframework:spring-web")
+	api("org.glassfish.jersey.core:jersey-server")
+	api("org.glassfish.jersey.containers:jersey-container-servlet-core")
+	api("org.glassfish.jersey.containers:jersey-container-servlet")
+	api("org.glassfish.jersey.ext:jersey-bean-validation") {
+		exclude group: "jakarta.el", module: "jakarta.el-api"
+		exclude group: "org.glassfish", module: "jakarta.el"
+	}
+	api("org.glassfish.jersey.ext:jersey-spring5")
+	api("org.glassfish.jersey.media:jersey-media-json-jackson")
+}
+
+checkRuntimeClasspathForConflicts {
+	ignore { name -> name.startsWith("org/aopalliance/intercept/") }
+	ignore { name -> name.startsWith("org/aopalliance/aop/") }
+}

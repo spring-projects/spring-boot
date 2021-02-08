@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.session.SessionRepository;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
+import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
 import org.springframework.session.hazelcast.config.annotation.web.http.HazelcastHttpSessionConfiguration;
 
 /**
@@ -40,25 +41,27 @@ import org.springframework.session.hazelcast.config.annotation.web.http.Hazelcas
  * @author Vedran Pavic
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(HazelcastSessionRepository.class)
+@ConditionalOnClass(HazelcastIndexedSessionRepository.class)
 @ConditionalOnMissingBean(SessionRepository.class)
 @ConditionalOnBean(HazelcastInstance.class)
 @Conditional(ServletSessionCondition.class)
 @EnableConfigurationProperties(HazelcastSessionProperties.class)
 class HazelcastSessionConfiguration {
 
-	@Configuration
+	@Configuration(proxyBeanMethods = false)
 	public static class SpringBootHazelcastHttpSessionConfiguration extends HazelcastHttpSessionConfiguration {
 
 		@Autowired
 		public void customize(SessionProperties sessionProperties,
-				HazelcastSessionProperties hazelcastSessionProperties) {
-			Duration timeout = sessionProperties.getTimeout();
+				HazelcastSessionProperties hazelcastSessionProperties, ServerProperties serverProperties) {
+			Duration timeout = sessionProperties
+					.determineTimeout(() -> serverProperties.getServlet().getSession().getTimeout());
 			if (timeout != null) {
 				setMaxInactiveIntervalInSeconds((int) timeout.getSeconds());
 			}
 			setSessionMapName(hazelcastSessionProperties.getMapName());
 			setFlushMode(hazelcastSessionProperties.getFlushMode());
+			setSaveMode(hazelcastSessionProperties.getSaveMode());
 		}
 
 	}

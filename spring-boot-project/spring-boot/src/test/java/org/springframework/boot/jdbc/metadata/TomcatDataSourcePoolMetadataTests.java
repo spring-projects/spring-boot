@@ -54,6 +54,7 @@ public class TomcatDataSourcePoolMetadataTests
 		DataSource dataSource = initializeBuilder().type(DataSource.class).build();
 		dataSource.setMinIdle(minSize);
 		dataSource.setMaxActive(maxSize);
+		dataSource.setMinEvictableIdleTimeMillis(5000);
 
 		// Avoid warnings
 		dataSource.setInitialSize(minSize);

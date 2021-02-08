@@ -20,7 +20,9 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Path;
+import java.time.Duration;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 import smoketest.parent.SampleParentContextApplication;
@@ -33,7 +35,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.ResourcePatternUtils;
 import org.springframework.util.StreamUtils;
 
-import static org.junit.jupiter.api.Assertions.fail;
+import static org.hamcrest.Matchers.containsString;
 
 /**
  * Basic integration tests for service demo application.
@@ -65,26 +67,16 @@ class SampleIntegrationParentApplicationTests {
 	}
 
 	private void awaitOutputContaining(File outputDir, String requiredContents) throws Exception {
-		long endTime = System.currentTimeMillis() + 30000;
-		String output = null;
-		while (System.currentTimeMillis() < endTime) {
-			Resource[] resources = findResources(outputDir);
-			if (resources.length == 0) {
-				Thread.sleep(200);
-				resources = findResources(outputDir);
-			}
-			else {
-				output = readResources(resources);
-				if (output != null && output.contains(requiredContents)) {
-					return;
-				}
-				else {
-					Thread.sleep(200);
-					output = readResources(resources);
-				}
-			}
+		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(() -> outputIn(outputDir),
+				containsString(requiredContents));
+	}
+
+	private String outputIn(File outputDir) throws IOException {
+		Resource[] resources = findResources(outputDir);
+		if (resources.length == 0) {
+			return null;
 		}
-		fail("Timed out awaiting output containing '" + requiredContents + "'. Output was '" + output + "'");
+		return readResources(resources);
 	}
 
 	private Resource[] findResources(File outputDir) throws IOException {

@@ -67,7 +67,7 @@ public class TaskExecutionAutoConfiguration {
 		builder = builder.awaitTermination(shutdown.isAwaitTermination());
 		builder = builder.awaitTerminationPeriod(shutdown.getAwaitTerminationPeriod());
 		builder = builder.threadNamePrefix(properties.getThreadNamePrefix());
-		builder = builder.customizers(taskExecutorCustomizers);
+		builder = builder.customizers(taskExecutorCustomizers.orderedStream()::iterator);
 		builder = builder.taskDecorator(taskDecorator.getIfUnique());
 		return builder;
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.websocket.reactive;
 
-import org.apache.tomcat.websocket.server.WsContextListener;
+import org.apache.tomcat.websocket.server.WsSci;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatReactiveWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -33,7 +33,7 @@ public class TomcatWebSocketReactiveWebServerCustomizer
 
 	@Override
 	public void customize(TomcatReactiveWebServerFactory factory) {
-		factory.addContextCustomizers((context) -> context.addApplicationListener(WsContextListener.class.getName()));
+		factory.addContextCustomizers((context) -> context.addServletContainerInitializer(new WsSci(), null));
 	}
 
 	@Override

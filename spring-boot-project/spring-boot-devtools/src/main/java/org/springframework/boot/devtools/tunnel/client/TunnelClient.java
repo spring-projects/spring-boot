@@ -30,6 +30,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -88,7 +89,7 @@ public class TunnelClient implements SmartInitializingSingleton {
 			ServerSocketChannel serverSocketChannel = ServerSocketChannel.open();
 			serverSocketChannel.socket().bind(new InetSocketAddress(this.listenPort));
 			int port = serverSocketChannel.socket().getLocalPort();
-			logger.trace("Listening for TCP traffic to tunnel on port " + port);
+			logger.trace(LogMessage.format("Listening for TCP traffic to tunnel on port %s", port));
 			this.serverThread = new ServerThread(serverSocketChannel);
 			this.serverThread.start();
 			return port;
@@ -144,7 +145,8 @@ public class TunnelClient implements SmartInitializingSingleton {
 		}
 
 		public void close() throws IOException {
-			logger.trace("Closing tunnel client on port " + this.serverSocketChannel.socket().getLocalPort());
+			logger.trace(LogMessage.format("Closing tunnel client on port %s",
+					this.serverSocketChannel.socket().getLocalPort()));
 			this.serverSocketChannel.close();
 			this.acceptConnections = false;
 			interrupt();

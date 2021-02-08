@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.thymeleaf;
 
 import java.util.LinkedHashMap;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
 
 import com.github.mxab.thymeleaf.extras.dataattribute.dialect.DataAttributeDialect;
@@ -28,6 +27,7 @@ import org.apache.commons.logging.LogFactory;
 import org.thymeleaf.dialect.IDialect;
 import org.thymeleaf.extras.java8time.dialect.Java8TimeDialect;
 import org.thymeleaf.extras.springsecurity5.dialect.SpringSecurityDialect;
+import org.thymeleaf.spring5.ISpringTemplateEngine;
 import org.thymeleaf.spring5.ISpringWebFluxTemplateEngine;
 import org.thymeleaf.spring5.SpringTemplateEngine;
 import org.thymeleaf.spring5.SpringWebFluxTemplateEngine;
@@ -94,10 +94,10 @@ public class ThymeleafAutoConfiguration {
 		DefaultTemplateResolverConfiguration(ThymeleafProperties properties, ApplicationContext applicationContext) {
 			this.properties = properties;
 			this.applicationContext = applicationContext;
+			checkTemplateLocationExists();
 		}
 
-		@PostConstruct
-		void checkTemplateLocationExists() {
+		private void checkTemplateLocationExists() {
 			boolean checkTemplateLocation = this.properties.isCheckTemplateLocation();
 			if (checkTemplateLocation) {
 				TemplateLocation location = new TemplateLocation(this.properties.getPrefix());
@@ -133,7 +133,7 @@ public class ThymeleafAutoConfiguration {
 	protected static class ThymeleafDefaultConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(ISpringTemplateEngine.class)
 		SpringTemplateEngine templateEngine(ThymeleafProperties properties,
 				ObjectProvider<ITemplateResolver> templateResolvers, ObjectProvider<IDialect> dialects) {
 			SpringTemplateEngine engine = new SpringTemplateEngine();

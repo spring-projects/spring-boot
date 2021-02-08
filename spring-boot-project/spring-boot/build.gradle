@@ -1,0 +1,122 @@
+plugins {
+	id "java-library"
+	id "org.jetbrains.kotlin.jvm"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot"
+
+dependencies {
+	annotationProcessor("org.apache.logging.log4j:log4j-core")
+
+	api("org.springframework:spring-core")
+	api("org.springframework:spring-context")
+
+	optional("ch.qos.logback:logback-classic")
+	optional("com.atomikos:transactions-jdbc")
+	optional("com.atomikos:transactions-jms")
+	optional("com.atomikos:transactions-jta")
+	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("com.google.code.gson:gson")
+	optional("com.oracle.database.jdbc:ucp")
+	optional("com.samskivert:jmustache")
+	optional("com.zaxxer:HikariCP")
+	optional("io.netty:netty-tcnative-boringssl-static")
+	optional("io.projectreactor:reactor-tools")
+	optional("io.projectreactor.netty:reactor-netty-http")
+	optional("io.rsocket:rsocket-core")
+	optional("io.rsocket:rsocket-transport-netty")
+	optional("io.undertow:undertow-servlet") {
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
+		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
+	}
+	optional("javax.jms:javax.jms-api")
+	optional("javax.servlet:javax.servlet-api")
+	optional("junit:junit")
+	optional("org.apache.commons:commons-dbcp2")
+	optional("org.apache.httpcomponents:httpclient")
+	optional("org.apache.logging.log4j:log4j-api")
+	optional("org.apache.logging.log4j:log4j-core")
+	optional("org.apache.tomcat.embed:tomcat-embed-core")
+	optional("org.apache.tomcat.embed:tomcat-embed-jasper")
+	optional("org.apache.tomcat:tomcat-jdbc")
+	optional("org.assertj:assertj-core")
+	optional("org.codehaus.groovy:groovy")
+	optional("org.codehaus.groovy:groovy-xml")
+	optional("org.eclipse.jetty:jetty-servlets")
+	optional("org.eclipse.jetty:jetty-util")
+	optional("org.eclipse.jetty:jetty-webapp")
+	optional("org.eclipse.jetty:jetty-alpn-conscrypt-server")
+	optional("org.eclipse.jetty.http2:http2-server")
+	optional("org.hamcrest:hamcrest-library")
+	optional("org.hibernate:hibernate-core")
+	optional("org.hibernate.validator:hibernate-validator")
+	optional("org.jboss:jboss-transaction-spi")
+	optional("org.liquibase:liquibase-core")
+	optional("org.slf4j:jul-to-slf4j")
+	optional("org.slf4j:slf4j-api")
+	optional("org.springframework:spring-messaging")
+	optional("org.springframework:spring-orm")
+	optional("org.springframework:spring-oxm")
+	optional("org.springframework:spring-test")
+	optional("org.springframework:spring-web")
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework:spring-webmvc")
+	optional("org.springframework.security:spring-security-web")
+	optional("org.springframework.ws:spring-ws-core")
+	optional("org.yaml:snakeyaml")
+	optional("org.jetbrains.kotlin:kotlin-reflect")
+	optional("org.jetbrains.kotlin:kotlin-stdlib")
+
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.google.appengine:appengine-api-1.0-sdk")
+	testImplementation("com.h2database:h2")
+	testImplementation("com.ibm.db2:jcc")
+	testImplementation("com.jayway.jsonpath:json-path")
+	testImplementation("com.microsoft.sqlserver:mssql-jdbc")
+	testImplementation("com.oracle.database.jdbc:ojdbc8")
+	testImplementation("com.squareup.okhttp3:okhttp")
+	testImplementation("com.sun.xml.messaging.saaj:saaj-impl")
+	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("javax.xml.ws:jaxws-api")
+	testImplementation("mysql:mysql-connector-java")
+	testImplementation("net.sourceforge.jtds:jtds")
+	testImplementation("org.apache.derby:derby")
+	testImplementation("org.apache.httpcomponents:httpasyncclient")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.firebirdsql.jdbc:jaybird-jdk18")
+	testImplementation("org.hsqldb:hsqldb")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mariadb.jdbc:mariadb-java-client")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.postgresql:postgresql")
+	testImplementation("org.springframework:spring-context-support")
+	testImplementation("org.springframework.data:spring-data-redis")
+	testImplementation("org.springframework.data:spring-data-r2dbc")
+	testImplementation("org.xerial:sqlite-jdbc")
+
+	testRuntimeOnly("org.testcontainers:jdbc") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+}
+
+compileKotlin {
+	kotlinOptions {
+		jvmTarget = 1.8
+	}
+}
+
+compileTestKotlin {
+	kotlinOptions {
+		jvmTarget = 1.8
+	}
+}
+
+compileJava {
+	doLast new org.springframework.boot.build.log4j2.ReproducibleLog4j2PluginsDatAction()
+}

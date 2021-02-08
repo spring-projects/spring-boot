@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,14 +22,16 @@ import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.http.HttpStatus;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.ObjectError;
 import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.support.WebExchangeBindException;
 import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
@@ -42,16 +44,18 @@ import org.springframework.web.server.ServerWebExchange;
  * <li>status - The status code</li>
  * <li>error - The error reason</li>
  * <li>exception - The class name of the root exception (if configured)</li>
- * <li>message - The exception message</li>
- * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception
- * <li>trace - The exception stack trace</li>
+ * <li>message - The exception message (if configured)</li>
+ * <li>errors - Any {@link ObjectError}s from a {@link BindingResult} exception (if
+ * configured)</li>
+ * <li>trace - The exception stack trace (if configured)</li>
  * <li>path - The URL path when the exception was raised</li>
- * <li>requestId - Unique Id associated with the current request</li>
+ * <li>requestId - Unique ID associated with the current request</li>
  * </ul>
  *
  * @author Brian Clozel
  * @author Stephane Nicoll
  * @author Michele Mancioppi
+ * @author Scott Frederick
  * @since 2.0.0
  * @see ErrorAttributes
  */
@@ -59,32 +63,31 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
-	private final boolean includeException;
-
-	/**
-	 * Create a new {@link DefaultErrorAttributes} instance that does not include the
-	 * "exception" attribute.
-	 */
-	public DefaultErrorAttributes() {
-		this(false);
-	}
-
-	/**
-	 * Create a new {@link DefaultErrorAttributes} instance.
-	 * @param includeException whether to include the "exception" attribute
-	 */
-	public DefaultErrorAttributes(boolean includeException) {
-		this.includeException = includeException;
-	}
-
 	@Override
-	public Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
+	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
+		Map<String, Object> errorAttributes = getErrorAttributes(request, options.isIncluded(Include.STACK_TRACE));
+		if (!options.isIncluded(Include.EXCEPTION)) {
+			errorAttributes.remove("exception");
+		}
+		if (!options.isIncluded(Include.STACK_TRACE)) {
+			errorAttributes.remove("trace");
+		}
+		if (!options.isIncluded(Include.MESSAGE) && errorAttributes.get("message") != null) {
+			errorAttributes.remove("message");
+		}
+		if (!options.isIncluded(Include.BINDING_ERRORS)) {
+			errorAttributes.remove("errors");
+		}
+		return errorAttributes;
+	}
+
+	private Map<String, Object> getErrorAttributes(ServerRequest request, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		errorAttributes.put("path", request.path());
 		Throwable error = getError(request);
 		MergedAnnotation<ResponseStatus> responseStatusAnnotation = MergedAnnotations
-				.from(error.getClass(), SearchStrategy.EXHAUSTIVE).get(ResponseStatus.class);
+				.from(error.getClass(), SearchStrategy.TYPE_HIERARCHY).get(ResponseStatus.class);
 		HttpStatus errorStatus = determineHttpStatus(error, responseStatusAnnotation);
 		errorAttributes.put("status", errorStatus.value());
 		errorAttributes.put("error", errorStatus.getReasonPhrase());
@@ -102,13 +105,17 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	private String determineMessage(Throwable error, MergedAnnotation<ResponseStatus> responseStatusAnnotation) {
-		if (error instanceof WebExchangeBindException) {
+		if (error instanceof BindingResult) {
 			return error.getMessage();
 		}
 		if (error instanceof ResponseStatusException) {
 			return ((ResponseStatusException) error).getReason();
 		}
-		return responseStatusAnnotation.getValue("reason", String.class).orElseGet(error::getMessage);
+		String reason = responseStatusAnnotation.getValue("reason", String.class).orElse("");
+		if (StringUtils.hasText(reason)) {
+			return reason;
+		}
+		return (error.getMessage() != null) ? error.getMessage() : "";
 	}
 
 	private Throwable determineException(Throwable error) {
@@ -126,9 +133,7 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 	}
 
 	private void handleException(Map<String, Object> errorAttributes, Throwable error, boolean includeStackTrace) {
-		if (this.includeException) {
-			errorAttributes.put("exception", error.getClass().getName());
-		}
+		errorAttributes.put("exception", error.getClass().getName());
 		if (includeStackTrace) {
 			addStackTrace(errorAttributes, error);
 		}

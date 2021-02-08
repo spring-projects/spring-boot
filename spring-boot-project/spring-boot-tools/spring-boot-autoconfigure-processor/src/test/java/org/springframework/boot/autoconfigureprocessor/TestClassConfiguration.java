@@ -23,7 +23,6 @@ import org.springframework.boot.autoconfigureprocessor.TestConditionalOnWebAppli
  *
  * @author Madhura Bhave
  */
-@TestConfiguration
 @TestConditionalOnClass(name = { "org.springframework.foo", "java.io.InputStream" },
 		value = TestClassConfiguration.Nested.class)
 @TestConditionalOnBean(type = "java.io.OutputStream")

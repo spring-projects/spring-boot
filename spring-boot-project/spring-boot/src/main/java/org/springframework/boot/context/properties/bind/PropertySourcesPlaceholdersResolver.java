@@ -53,7 +53,7 @@ public class PropertySourcesPlaceholdersResolver implements PlaceholdersResolver
 
 	@Override
 	public Object resolvePlaceholders(Object value) {
-		if (value != null && value instanceof String) {
+		if (value instanceof String) {
 			return this.helper.replacePlaceholders((String) value, this::resolvePlaceholder);
 		}
 		return value;

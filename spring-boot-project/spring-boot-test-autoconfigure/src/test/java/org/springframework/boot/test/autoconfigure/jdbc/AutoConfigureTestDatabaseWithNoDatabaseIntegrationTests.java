@@ -48,7 +48,7 @@ class AutoConfigureTestDatabaseWithNoDatabaseIntegrationTests {
 		assertThat(this.context.getBeanNamesForType(DataSource.class)).isNotEmpty();
 	}
 
-	@TestConfiguration
+	@TestConfiguration(proxyBeanMethods = false)
 	static class Config {
 
 	}

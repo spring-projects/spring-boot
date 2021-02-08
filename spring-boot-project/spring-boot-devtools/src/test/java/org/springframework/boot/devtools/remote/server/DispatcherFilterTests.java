@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,11 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.server.ServerHttpRequest;
 import org.springframework.http.server.ServerHttpResponse;
@@ -42,13 +43,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.willReturn;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link DispatcherFilter}.
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class DispatcherFilterTests {
 
 	@Mock
@@ -67,7 +69,6 @@ class DispatcherFilterTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.filter = new DispatcherFilter(this.dispatcher);
 	}
 
@@ -82,7 +83,7 @@ class DispatcherFilterTests {
 		ServletRequest request = mock(ServletRequest.class);
 		ServletResponse response = mock(ServletResponse.class);
 		this.filter.doFilter(request, response, this.chain);
-		verifyZeroInteractions(this.dispatcher);
+		verifyNoInteractions(this.dispatcher);
 		verify(this.chain).doFilter(request, response);
 	}
 
@@ -100,7 +101,7 @@ class DispatcherFilterTests {
 		HttpServletResponse response = new MockHttpServletResponse();
 		willReturn(true).given(this.dispatcher).handle(any(ServerHttpRequest.class), any(ServerHttpResponse.class));
 		this.filter.doFilter(request, response, this.chain);
-		verifyZeroInteractions(this.chain);
+		verifyNoInteractions(this.chain);
 		verify(this.dispatcher).handle(this.serverRequestCaptor.capture(), this.serverResponseCaptor.capture());
 		ServerHttpRequest dispatcherRequest = this.serverRequestCaptor.getValue();
 		ServletServerHttpRequest actualRequest = (ServletServerHttpRequest) dispatcherRequest;

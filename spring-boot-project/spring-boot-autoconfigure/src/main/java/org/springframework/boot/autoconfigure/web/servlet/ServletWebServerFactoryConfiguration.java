@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.embedded.jetty.JettyServerCustomizer;
 import org.springframework.boot.web.embedded.jetty.JettyServletWebServerFactory;
 import org.springframework.boot.web.embedded.tomcat.TomcatConnectorCustomizer;
@@ -65,10 +66,10 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Tomcat.class, UpgradeProtocol.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedTomcat {
+	static class EmbeddedTomcat {
 
 		@Bean
-		public TomcatServletWebServerFactory tomcatServletWebServerFactory(
+		TomcatServletWebServerFactory tomcatServletWebServerFactory(
 				ObjectProvider<TomcatConnectorCustomizer> connectorCustomizers,
 				ObjectProvider<TomcatContextCustomizer> contextCustomizers,
 				ObjectProvider<TomcatProtocolHandlerCustomizer<?>> protocolHandlerCustomizers) {
@@ -90,10 +91,10 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Server.class, Loader.class, WebAppContext.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedJetty {
+	static class EmbeddedJetty {
 
 		@Bean
-		public JettyServletWebServerFactory JettyServletWebServerFactory(
+		JettyServletWebServerFactory JettyServletWebServerFactory(
 				ObjectProvider<JettyServerCustomizer> serverCustomizers) {
 			JettyServletWebServerFactory factory = new JettyServletWebServerFactory();
 			factory.getServerCustomizers().addAll(serverCustomizers.orderedStream().collect(Collectors.toList()));
@@ -108,10 +109,10 @@ class ServletWebServerFactoryConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass({ Servlet.class, Undertow.class, SslClientAuthMode.class })
 	@ConditionalOnMissingBean(value = ServletWebServerFactory.class, search = SearchStrategy.CURRENT)
-	public static class EmbeddedUndertow {
+	static class EmbeddedUndertow {
 
 		@Bean
-		public UndertowServletWebServerFactory undertowServletWebServerFactory(
+		UndertowServletWebServerFactory undertowServletWebServerFactory(
 				ObjectProvider<UndertowDeploymentInfoCustomizer> deploymentInfoCustomizers,
 				ObjectProvider<UndertowBuilderCustomizer> builderCustomizers) {
 			UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
@@ -119,6 +120,12 @@ class ServletWebServerFactoryConfiguration {
 					.addAll(deploymentInfoCustomizers.orderedStream().collect(Collectors.toList()));
 			factory.getBuilderCustomizers().addAll(builderCustomizers.orderedStream().collect(Collectors.toList()));
 			return factory;
+		}
+
+		@Bean
+		UndertowServletWebServerFactoryCustomizer undertowServletWebServerFactoryCustomizer(
+				ServerProperties serverProperties) {
+			return new UndertowServletWebServerFactoryCustomizer(serverProperties);
 		}
 
 	}

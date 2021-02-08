@@ -36,7 +36,7 @@ class AuditEventTests {
 
 	@Test
 	void nowEvent() {
-		AuditEvent event = new AuditEvent("phil", "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
+		AuditEvent event = new AuditEvent("phil", "UNKNOWN", Collections.singletonMap("a", "b"));
 		assertThat(event.getData().get("a")).isEqualTo("b");
 		assertThat(event.getType()).isEqualTo("UNKNOWN");
 		assertThat(event.getPrincipal()).isEqualTo("phil");
@@ -52,21 +52,21 @@ class AuditEventTests {
 
 	@Test
 	void nullPrincipalIsMappedToEmptyString() {
-		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", (Object) "b"));
+		AuditEvent auditEvent = new AuditEvent(null, "UNKNOWN", Collections.singletonMap("a", "b"));
 		assertThat(auditEvent.getPrincipal()).isEmpty();
 	}
 
 	@Test
 	void nullTimestamp() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN", Collections.singletonMap("a", (Object) "b")))
+				.isThrownBy(() -> new AuditEvent(null, "phil", "UNKNOWN", Collections.singletonMap("a", "b")))
 				.withMessageContaining("Timestamp must not be null");
 	}
 
 	@Test
 	void nullType() {
 		assertThatIllegalArgumentException()
-				.isThrownBy(() -> new AuditEvent("phil", null, Collections.singletonMap("a", (Object) "b")))
+				.isThrownBy(() -> new AuditEvent("phil", null, Collections.singletonMap("a", "b")))
 				.withMessageContaining("Type must not be null");
 	}
 

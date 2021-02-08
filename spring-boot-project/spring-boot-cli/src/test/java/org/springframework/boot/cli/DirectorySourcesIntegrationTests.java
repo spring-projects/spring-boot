@@ -36,8 +36,8 @@ class DirectorySourcesIntegrationTests {
 	@RegisterExtension
 	CliTester cli;
 
-	DirectorySourcesIntegrationTests(CapturedOutput capturedOutput) {
-		this.cli = new CliTester("src/test/resources/dir-sample/", capturedOutput);
+	DirectorySourcesIntegrationTests(CapturedOutput output) {
+		this.cli = new CliTester("src/test/resources/dir-sample/", output);
 	}
 
 	@Test

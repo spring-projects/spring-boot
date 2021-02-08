@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.JarURLConnection;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.security.CodeSource;
@@ -95,11 +96,10 @@ public class ApplicationHome {
 			if (source != null && source.exists() && !isUnitTest()) {
 				return source.getAbsoluteFile();
 			}
-			return null;
 		}
 		catch (Exception ex) {
-			return null;
 		}
+		return null;
 	}
 
 	private boolean isUnitTest() {
@@ -116,12 +116,12 @@ public class ApplicationHome {
 		return false;
 	}
 
-	private File findSource(URL location) throws IOException {
+	private File findSource(URL location) throws IOException, URISyntaxException {
 		URLConnection connection = location.openConnection();
 		if (connection instanceof JarURLConnection) {
 			return getRootJarFile(((JarURLConnection) connection).getJarFile());
 		}
-		return new File(location.getPath());
+		return new File(location.toURI());
 	}
 
 	private File getRootJarFile(JarFile jarFile) {

@@ -69,7 +69,8 @@ public abstract class OnEndpointElementCondition extends SpringBootCondition {
 	}
 
 	protected ConditionOutcome getDefaultEndpointsOutcome(ConditionContext context) {
-		boolean match = Boolean.valueOf(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
+		boolean match = Boolean
+				.parseBoolean(context.getEnvironment().getProperty(this.prefix + "defaults.enabled", "true"));
 		return new ConditionOutcome(match, ConditionMessage.forCondition(this.annotationType)
 				.because(this.prefix + "defaults.enabled is considered " + match));
 	}

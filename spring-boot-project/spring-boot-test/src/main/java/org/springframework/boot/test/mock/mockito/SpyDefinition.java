@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,8 @@ import org.springframework.test.util.AopTestUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * A complete definition that can be used to create a Mockito spy.
@@ -95,10 +97,10 @@ class SpyDefinition extends Definition {
 		}
 		settings.spiedInstance(instance);
 		settings.defaultAnswer(Mockito.CALLS_REAL_METHODS);
-		if (this.isProxyTargetAware()) {
+		if (isProxyTargetAware()) {
 			settings.verificationStartedListeners(new SpringAopBypassingVerificationStartedListener());
 		}
-		return (T) Mockito.mock(instance.getClass(), settings);
+		return (T) mock(instance.getClass(), settings);
 	}
 
 	/**

@@ -33,7 +33,7 @@ class SentenceExtractorTests {
 
 	@Test
 	void extractFirstSentence() {
-		String sentence = this.extractor.getFirstSentence("My short " + "description. More stuff.");
+		String sentence = this.extractor.getFirstSentence("My short description. More stuff.");
 		assertThat(sentence).isEqualTo("My short description.");
 	}
 

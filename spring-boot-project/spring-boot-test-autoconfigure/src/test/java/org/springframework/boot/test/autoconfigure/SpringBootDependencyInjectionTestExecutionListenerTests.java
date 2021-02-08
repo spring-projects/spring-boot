@@ -53,7 +53,7 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 	}
 
 	@Test
-	void prepareFailingTestInstanceShouldPrintReport(CapturedOutput capturedOutput) throws Exception {
+	void prepareFailingTestInstanceShouldPrintReport(CapturedOutput output) throws Exception {
 		TestContext testContext = mock(TestContext.class);
 		given(testContext.getTestInstance()).willThrow(new IllegalStateException());
 		SpringApplication application = new SpringApplication(Config.class);
@@ -66,7 +66,7 @@ class SpringBootDependencyInjectionTestExecutionListenerTests {
 		catch (IllegalStateException ex) {
 			// Expected
 		}
-		assertThat(capturedOutput).contains("CONDITIONS EVALUATION REPORT").contains("Positive matches")
+		assertThat(output).contains("CONDITIONS EVALUATION REPORT").contains("Positive matches")
 				.contains("Negative matches");
 	}
 

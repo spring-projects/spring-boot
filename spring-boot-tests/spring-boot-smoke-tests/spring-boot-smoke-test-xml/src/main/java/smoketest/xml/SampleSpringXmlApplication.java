@@ -23,7 +23,9 @@ import smoketest.xml.service.HelloWorldService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+@SpringBootApplication
 public class SampleSpringXmlApplication implements CommandLineRunner {
 
 	private static final String CONTEXT_XML = "classpath:/META-INF/application-context.xml";

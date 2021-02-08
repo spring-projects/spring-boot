@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.test.context;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
@@ -40,10 +41,12 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.ContextConfigurationAttributes;
+import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.ContextHierarchy;
 import org.springframework.test.context.ContextLoader;
 import org.springframework.test.context.MergedContextConfiguration;
 import org.springframework.test.context.TestContext;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.test.context.TestContextBootstrapper;
 import org.springframework.test.context.TestExecutionListener;
 import org.springframework.test.context.support.DefaultTestContextBootstrapper;
@@ -85,7 +88,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	private static final String REACTIVE_WEB_ENVIRONMENT_CLASS = "org.springframework."
 			+ "web.reactive.DispatcherHandler";
 
-	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework." + "web.servlet.DispatcherServlet";
+	private static final String MVC_WEB_ENVIRONMENT_CLASS = "org.springframework.web.servlet.DispatcherServlet";
 
 	private static final String JERSEY_WEB_ENVIRONMENT_CLASS = "org.glassfish.jersey.server.ResourceConfig";
 
@@ -132,8 +135,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	private void addConfigAttributesClasses(ContextConfigurationAttributes configAttributes, Class<?>[] classes) {
-		List<Class<?>> combined = new ArrayList<>();
-		combined.addAll(Arrays.asList(classes));
+		Set<Class<?>> combined = new LinkedHashSet<>(Arrays.asList(classes));
 		if (configAttributes.getClasses() != null) {
 			combined.addAll(Arrays.asList(configAttributes.getClasses()));
 		}
@@ -191,12 +193,12 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 * Determines the resource base path for web applications using the value of
 	 * {@link WebAppConfiguration @WebAppConfiguration}, if any, on the test class of the
 	 * given {@code configuration}. Defaults to {@code src/main/webapp} in its absence.
-	 * @param configuration the configure to examine
+	 * @param configuration the configuration to examine
 	 * @return the resource base path
 	 * @since 2.1.6
 	 */
 	protected String determineResourceBasePath(MergedContextConfiguration configuration) {
-		return MergedAnnotations.from(configuration.getTestClass(), SearchStrategy.EXHAUSTIVE)
+		return MergedAnnotations.from(configuration.getTestClass(), SearchStrategy.TYPE_HIERARCHY)
 				.get(WebAppConfiguration.class).getValue(MergedAnnotation.VALUE, String.class)
 				.orElse("src/main/webapp");
 	}
@@ -232,7 +234,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 		Class<?> found = new AnnotatedClassFinder(SpringBootConfiguration.class)
 				.findFromClass(mergedConfig.getTestClass());
 		Assert.state(found != null, "Unable to find a @SpringBootConfiguration, you need to use "
-				+ "@ContextConfiguration or @SpringBootTest(classes=...) " + "with your test");
+				+ "@ContextConfiguration or @SpringBootTest(classes=...) with your test");
 		logger.info("Found @SpringBootConfiguration " + found.getName() + " for test " + mergedConfig.getTestClass());
 		return merge(found, classes);
 	}
@@ -317,8 +319,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	}
 
 	protected SpringBootTest getAnnotation(Class<?> testClass) {
-		return MergedAnnotations.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).get(SpringBootTest.class)
-				.synthesize(MergedAnnotation::isPresent).orElse(null);
+		return TestContextAnnotationUtils.findMergedAnnotation(testClass, SpringBootTest.class);
 	}
 
 	protected void verifyConfiguration(Class<?> testClass) {
@@ -327,7 +328,7 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 				.from(testClass, SearchStrategy.INHERITED_ANNOTATIONS).isPresent(WebAppConfiguration.class)) {
 			throw new IllegalStateException("@WebAppConfiguration should only be used "
 					+ "with @SpringBootTest when @SpringBootTest is configured with a "
-					+ "mock web environment. Please remove @WebAppConfiguration or " + "reconfigure @SpringBootTest.");
+					+ "mock web environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");
 		}
 	}
 
@@ -356,11 +357,13 @@ public class SpringBootTestContextBootstrapper extends DefaultTestContextBootstr
 	 */
 	protected final MergedContextConfiguration createModifiedConfig(MergedContextConfiguration mergedConfig,
 			Class<?>[] classes, String[] propertySourceProperties) {
+		Set<ContextCustomizer> contextCustomizers = new LinkedHashSet<>(mergedConfig.getContextCustomizers());
+		contextCustomizers.add(new SpringBootTestArgs(mergedConfig.getTestClass()));
+		contextCustomizers.add(new SpringBootTestWebEnvironment(mergedConfig.getTestClass()));
 		return new MergedContextConfiguration(mergedConfig.getTestClass(), mergedConfig.getLocations(), classes,
 				mergedConfig.getContextInitializerClasses(), mergedConfig.getActiveProfiles(),
-				mergedConfig.getPropertySourceLocations(), propertySourceProperties,
-				mergedConfig.getContextCustomizers(), mergedConfig.getContextLoader(),
-				getCacheAwareContextLoaderDelegate(), mergedConfig.getParent());
+				mergedConfig.getPropertySourceLocations(), propertySourceProperties, contextCustomizers,
+				mergedConfig.getContextLoader(), getCacheAwareContextLoaderDelegate(), mergedConfig.getParent());
 	}
 
 }

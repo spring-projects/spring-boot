@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,27 +35,27 @@ class ExtendedGroovyClassLoaderTests {
 
 	@Test
 	void loadsGroovyFromSameClassLoader() throws Exception {
-		Class<?> c1 = this.contextClassLoader.loadClass("groovy.lang.Script");
-		Class<?> c2 = this.defaultScopeGroovyClassLoader.loadClass("groovy.lang.Script");
+		Class<?> c1 = Class.forName("groovy.lang.Script", false, this.contextClassLoader);
+		Class<?> c2 = Class.forName("groovy.lang.Script", false, this.defaultScopeGroovyClassLoader);
 		assertThat(c1.getClassLoader()).isSameAs(c2.getClassLoader());
 	}
 
 	@Test
 	void filtersNonGroovy() throws Exception {
-		this.contextClassLoader.loadClass("org.springframework.util.StringUtils");
-		assertThatExceptionOfType(ClassNotFoundException.class)
-				.isThrownBy(() -> this.defaultScopeGroovyClassLoader.loadClass("org.springframework.util.StringUtils"));
+		Class.forName("org.springframework.util.StringUtils", false, this.contextClassLoader);
+		assertThatExceptionOfType(ClassNotFoundException.class).isThrownBy(
+				() -> Class.forName("org.springframework.util.StringUtils", false, this.defaultScopeGroovyClassLoader));
 	}
 
 	@Test
 	void loadsJavaTypes() throws Exception {
-		this.defaultScopeGroovyClassLoader.loadClass("java.lang.Boolean");
+		Class.forName("java.lang.Boolean", false, this.defaultScopeGroovyClassLoader);
 	}
 
 	@Test
 	void loadsSqlTypes() throws Exception {
-		this.contextClassLoader.loadClass("java.sql.SQLException");
-		this.defaultScopeGroovyClassLoader.loadClass("java.sql.SQLException");
+		Class.forName("java.sql.SQLException", false, this.contextClassLoader);
+		Class.forName("java.sql.SQLException", false, this.defaultScopeGroovyClassLoader);
 	}
 
 }

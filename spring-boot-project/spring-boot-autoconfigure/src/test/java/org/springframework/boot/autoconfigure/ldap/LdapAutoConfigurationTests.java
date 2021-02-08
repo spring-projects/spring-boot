@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.DirContextAuthenticationStrategy;
 import org.springframework.ldap.core.support.LdapContextSource;
+import org.springframework.ldap.core.support.SimpleDirContextAuthenticationStrategy;
 import org.springframework.ldap.pool2.factory.PoolConfig;
 import org.springframework.ldap.pool2.factory.PooledContextSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link LdapAutoConfiguration}.
@@ -39,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class LdapAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(LdapAutoConfiguration.class));
 
 	@Test
@@ -47,7 +50,7 @@ class LdapAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
-			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
 		});
 	}
 
@@ -71,6 +74,15 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
+	void contextSourceWithUserDoesNotEnableAnonymousReadOnly() {
+		this.contextRunner.withPropertyValues("spring.ldap.username:root").run((context) -> {
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource.getUserDn()).isEqualTo("root");
+			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+		});
+	}
+
+	@Test
 	void contextSourceWithExtraCustomization() {
 		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:123", "spring.ldap.username:root",
 				"spring.ldap.password:secret", "spring.ldap.anonymous-read-only:true",
@@ -88,9 +100,39 @@ class LdapAutoConfigurationTests {
 	}
 
 	@Test
+	void contextSourceWithNoCustomization() {
+		this.contextRunner.run((context) -> {
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource.getUserDn()).isEqualTo("");
+			assertThat(contextSource.getPassword()).isEqualTo("");
+			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
+			assertThat(contextSource.getBaseLdapPathAsString()).isEqualTo("");
+		});
+	}
+
+	@Test
 	void templateExists() {
-		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389")
-				.run((context) -> assertThat(context).hasSingleBean(LdapTemplate.class));
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389").run((context) -> {
+			assertThat(context).hasSingleBean(LdapTemplate.class);
+			LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
+			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignorePartialResultException", false);
+			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreNameNotFoundException", false);
+			assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException", true);
+		});
+	}
+
+	@Test
+	void templateConfigurationCanBeCustomized() {
+		this.contextRunner.withPropertyValues("spring.ldap.urls:ldap://localhost:389",
+				"spring.ldap.template.ignorePartialResultException=true",
+				"spring.ldap.template.ignoreNameNotFoundException=true",
+				"spring.ldap.template.ignoreSizeLimitExceededException=false").run((context) -> {
+					assertThat(context).hasSingleBean(LdapTemplate.class);
+					LdapTemplate ldapTemplate = context.getBean(LdapTemplate.class);
+					assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignorePartialResultException", true);
+					assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreNameNotFoundException", true);
+					assertThat(ldapTemplate).hasFieldOrPropertyWithValue("ignoreSizeLimitExceededException", false);
+				});
 	}
 
 	@Test
@@ -98,8 +140,32 @@ class LdapAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(PooledContextSourceConfig.class).run((context) -> {
 			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
 			assertThat(contextSource.getUrls()).containsExactly("ldap://localhost:389");
-			assertThat(contextSource.isAnonymousReadOnly()).isFalse();
+			assertThat(contextSource.isAnonymousReadOnly()).isTrue();
 		});
+	}
+
+	@Test
+	void contextSourceWithCustomUniqueDirContextAuthenticationStrategy() {
+		this.contextRunner.withUserConfiguration(CustomDirContextAuthenticationStrategy.class).run((context) -> {
+			assertThat(context).hasSingleBean(DirContextAuthenticationStrategy.class);
+			LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+			assertThat(contextSource).extracting("authenticationStrategy")
+					.isSameAs(context.getBean("customDirContextAuthenticationStrategy"));
+		});
+	}
+
+	@Test
+	void contextSourceWithCustomNonUniqueDirContextAuthenticationStrategy() {
+		this.contextRunner.withUserConfiguration(CustomDirContextAuthenticationStrategy.class,
+				AnotherCustomDirContextAuthenticationStrategy.class).run((context) -> {
+					assertThat(context).hasBean("customDirContextAuthenticationStrategy")
+							.hasBean("anotherCustomDirContextAuthenticationStrategy");
+					LdapContextSource contextSource = context.getBean(LdapContextSource.class);
+					assertThat(contextSource).extracting("authenticationStrategy")
+							.isNotSameAs(context.getBean("customDirContextAuthenticationStrategy"))
+							.isNotSameAs(context.getBean("anotherCustomDirContextAuthenticationStrategy"))
+							.isInstanceOf(SimpleDirContextAuthenticationStrategy.class);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -111,6 +177,26 @@ class LdapAutoConfigurationTests {
 			PooledContextSource pooledContextSource = new PooledContextSource(new PoolConfig());
 			pooledContextSource.setContextSource(ldapContextSource);
 			return pooledContextSource;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDirContextAuthenticationStrategy {
+
+		@Bean
+		DirContextAuthenticationStrategy customDirContextAuthenticationStrategy() {
+			return mock(DirContextAuthenticationStrategy.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class AnotherCustomDirContextAuthenticationStrategy {
+
+		@Bean
+		DirContextAuthenticationStrategy anotherCustomDirContextAuthenticationStrategy() {
+			return mock(DirContextAuthenticationStrategy.class);
 		}
 
 	}

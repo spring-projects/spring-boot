@@ -23,7 +23,6 @@ import java.util.Set;
 
 import org.mockito.Answers;
 import org.mockito.MockSettings;
-import org.mockito.Mockito;
 
 import org.springframework.core.ResolvableType;
 import org.springframework.core.style.ToStringCreator;
@@ -31,6 +30,8 @@ import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import static org.mockito.Mockito.mock;
 
 /**
  * A complete definition that can be used to create a Mockito mock.
@@ -150,7 +151,7 @@ class MockDefinition extends Definition {
 		if (this.serializable) {
 			settings.serializable();
 		}
-		return (T) Mockito.mock(this.typeToMock.resolve(), settings);
+		return (T) mock(this.typeToMock.resolve(), settings);
 	}
 
 }

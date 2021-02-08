@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,10 +27,12 @@ import java.util.Set;
 import org.apache.maven.artifact.Artifact;
 import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.logging.Log;
+import org.apache.maven.project.MavenProject;
 
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.boot.loader.tools.Library;
 import org.springframework.boot.loader.tools.LibraryCallback;
+import org.springframework.boot.loader.tools.LibraryCoordinates;
 import org.springframework.boot.loader.tools.LibraryScope;
 
 /**
@@ -39,6 +41,7 @@ import org.springframework.boot.loader.tools.LibraryScope;
  * @author Phillip Webb
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public class ArtifactsLibraries implements Libraries {
@@ -56,12 +59,38 @@ public class ArtifactsLibraries implements Libraries {
 
 	private final Set<Artifact> artifacts;
 
+	private final Collection<MavenProject> localProjects;
+
 	private final Collection<Dependency> unpacks;
 
 	private final Log log;
 
+	/**
+	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
+	 * @param artifacts the artifacts to represent as libraries
+	 * @param unpacks artifacts that should be unpacked on launch
+	 * @param log the log
+	 * @deprecated since 2.4.0 in favour of
+	 * {@link #ArtifactsLibraries(Set, Collection, Collection, Log)}
+	 */
+	@Deprecated
 	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<Dependency> unpacks, Log log) {
+		this(artifacts, Collections.emptyList(), unpacks, log);
+	}
+
+	/**
+	 * Creates a new {@code ArtifactsLibraries} from the given {@code artifacts}.
+	 * @param artifacts the artifacts to represent as libraries
+	 * @param localProjects projects for which {@link Library#isLocal() local} libraries
+	 * should be created
+	 * @param unpacks artifacts that should be unpacked on launch
+	 * @param log the log
+	 * @since 2.4.0
+	 */
+	public ArtifactsLibraries(Set<Artifact> artifacts, Collection<MavenProject> localProjects,
+			Collection<Dependency> unpacks, Log log) {
 		this.artifacts = artifacts;
+		this.localProjects = localProjects;
 		this.unpacks = unpacks;
 		this.log = log;
 	}
@@ -78,7 +107,9 @@ public class ArtifactsLibraries implements Libraries {
 					name = artifact.getGroupId() + "-" + name;
 					this.log.debug("Renamed to: " + name);
 				}
-				callback.library(new Library(name, artifact.getFile(), scope, isUnpackRequired(artifact)));
+				LibraryCoordinates coordinates = new ArtifactLibraryCoordinates(artifact);
+				callback.library(new Library(name, artifact.getFile(), scope, coordinates, isUnpackRequired(artifact),
+						isLocal(artifact)));
 			}
 		}
 	}
@@ -107,6 +138,20 @@ public class ArtifactsLibraries implements Libraries {
 		return false;
 	}
 
+	private boolean isLocal(Artifact artifact) {
+		for (MavenProject localProject : this.localProjects) {
+			if (localProject.getArtifact().equals(artifact)) {
+				return true;
+			}
+			for (Artifact attachedArtifact : localProject.getAttachedArtifacts()) {
+				if (attachedArtifact.equals(artifact)) {
+					return true;
+				}
+			}
+		}
+		return false;
+	}
+
 	private String getFileName(Artifact artifact) {
 		StringBuilder sb = new StringBuilder();
 		sb.append(artifact.getArtifactId()).append("-").append(artifact.getBaseVersion());
@@ -116,6 +161,39 @@ public class ArtifactsLibraries implements Libraries {
 		}
 		sb.append(".").append(artifact.getArtifactHandler().getExtension());
 		return sb.toString();
+	}
+
+	/**
+	 * {@link LibraryCoordinates} backed by a Maven {@link Artifact}.
+	 */
+	private static class ArtifactLibraryCoordinates implements LibraryCoordinates {
+
+		private final Artifact artifact;
+
+		ArtifactLibraryCoordinates(Artifact artifact) {
+			this.artifact = artifact;
+		}
+
+		@Override
+		public String getGroupId() {
+			return this.artifact.getGroupId();
+		}
+
+		@Override
+		public String getArtifactId() {
+			return this.artifact.getArtifactId();
+		}
+
+		@Override
+		public String getVersion() {
+			return this.artifact.getBaseVersion();
+		}
+
+		@Override
+		public String toString() {
+			return this.artifact.toString();
+		}
+
 	}
 
 }

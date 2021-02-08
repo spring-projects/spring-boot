@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,18 @@
 
 package org.springframework.boot.gradle.tasks.buildinfo;
 
+import java.io.IOException;
+import java.io.ObjectInputStream;
 import java.io.Serializable;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
 import org.gradle.api.Project;
+import org.gradle.api.provider.Property;
+import org.gradle.api.provider.Provider;
+import org.gradle.api.tasks.Input;
+import org.gradle.api.tasks.Optional;
 
 /**
  * The properties that are written into the {@code build-info.properties} file.
@@ -32,23 +38,43 @@ import org.gradle.api.Project;
 @SuppressWarnings("serial")
 public class BuildInfoProperties implements Serializable {
 
-	private final transient Project project;
+	private transient Instant creationTime = Instant.now();
 
-	private String group;
+	private final Property<String> group;
 
-	private String artifact;
+	private final Property<String> artifact;
 
-	private String version;
+	private final Property<String> version;
 
-	private String name;
+	private final Property<String> name;
 
-	private Instant time;
+	private final Property<Long> time;
+
+	private boolean timeConfigured = false;
 
 	private Map<String, Object> additionalProperties = new HashMap<>();
 
 	BuildInfoProperties(Project project) {
-		this.project = project;
-		this.time = Instant.now();
+		this.time = project.getObjects().property(Long.class);
+		this.group = project.getObjects().property(String.class);
+		this.group.set(project.provider(() -> project.getGroup().toString()));
+		this.artifact = project.getObjects().property(String.class);
+		this.version = project.getObjects().property(String.class);
+		this.version.set(projectVersion(project));
+		this.name = project.getObjects().property(String.class);
+		this.name.set(project.provider(project::getName));
+	}
+
+	private Provider<String> projectVersion(Project project) {
+		try {
+			Provider<String> externalVersionProperty = project.getProviders().gradleProperty("version")
+					.forUseAtConfigurationTime();
+			externalVersionProperty.getOrNull();
+		}
+		catch (NoSuchMethodError ex) {
+			// Gradle < 6.5
+		}
+		return project.provider(() -> project.getVersion().toString());
 	}
 
 	/**
@@ -56,11 +82,10 @@ public class BuildInfoProperties implements Serializable {
 	 * {@link Project#getGroup() Project's group}.
 	 * @return the group
 	 */
+	@Input
+	@Optional
 	public String getGroup() {
-		if (this.group == null) {
-			this.group = this.project.getGroup().toString();
-		}
-		return this.group;
+		return this.group.getOrNull();
 	}
 
 	/**
@@ -68,15 +93,17 @@ public class BuildInfoProperties implements Serializable {
 	 * @param group the group name
 	 */
 	public void setGroup(String group) {
-		this.group = group;
+		this.group.set(group);
 	}
 
 	/**
 	 * Returns the value used for the {@code build.artifact} property.
 	 * @return the artifact
 	 */
+	@Input
+	@Optional
 	public String getArtifact() {
-		return this.artifact;
+		return this.artifact.getOrNull();
 	}
 
 	/**
@@ -84,7 +111,7 @@ public class BuildInfoProperties implements Serializable {
 	 * @param artifact the artifact
 	 */
 	public void setArtifact(String artifact) {
-		this.artifact = artifact;
+		this.artifact.set(artifact);
 	}
 
 	/**
@@ -92,11 +119,10 @@ public class BuildInfoProperties implements Serializable {
 	 * {@link Project#getVersion() Project's version}.
 	 * @return the version
 	 */
+	@Input
+	@Optional
 	public String getVersion() {
-		if (this.version == null) {
-			this.version = this.project.getVersion().toString();
-		}
-		return this.version;
+		return this.version.getOrNull();
 	}
 
 	/**
@@ -104,7 +130,7 @@ public class BuildInfoProperties implements Serializable {
 	 * @param version the version
 	 */
 	public void setVersion(String version) {
-		this.version = version;
+		this.version.set(version);
 	}
 
 	/**
@@ -112,11 +138,10 @@ public class BuildInfoProperties implements Serializable {
 	 * {@link Project#getDisplayName() Project's display name}.
 	 * @return the name
 	 */
+	@Input
+	@Optional
 	public String getName() {
-		if (this.name == null) {
-			this.name = this.project.getName();
-		}
-		return this.name;
+		return this.name.getOrNull();
 	}
 
 	/**
@@ -124,7 +149,7 @@ public class BuildInfoProperties implements Serializable {
 	 * @param name the name
 	 */
 	public void setName(String name) {
-		this.name = name;
+		this.name.set(name);
 	}
 
 	/**
@@ -132,8 +157,17 @@ public class BuildInfoProperties implements Serializable {
 	 * {@link Instant#now} when the {@code BuildInfoProperties} instance was created.
 	 * @return the time
 	 */
+	@Input
+	@Optional
 	public Instant getTime() {
-		return this.time;
+		Long epochMillis = this.time.getOrNull();
+		if (epochMillis != null) {
+			return Instant.ofEpochMilli(epochMillis);
+		}
+		if (this.timeConfigured) {
+			return null;
+		}
+		return this.creationTime;
 	}
 
 	/**
@@ -141,7 +175,8 @@ public class BuildInfoProperties implements Serializable {
 	 * @param time the build time
 	 */
 	public void setTime(Instant time) {
-		this.time = time;
+		this.timeConfigured = true;
+		this.time.set((time != null) ? time.toEpochMilli() : null);
 	}
 
 	/**
@@ -149,6 +184,8 @@ public class BuildInfoProperties implements Serializable {
 	 * each additional property is prefixed with {@code build.}.
 	 * @return the additional properties
 	 */
+	@Input
+	@Optional
 	public Map<String, Object> getAdditional() {
 		return this.additionalProperties;
 	}
@@ -162,46 +199,9 @@ public class BuildInfoProperties implements Serializable {
 		this.additionalProperties = additionalProperties;
 	}
 
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (obj == null || getClass() != obj.getClass()) {
-			return false;
-		}
-		BuildInfoProperties other = (BuildInfoProperties) obj;
-		boolean result = true;
-		result = result && nullSafeEquals(this.additionalProperties, other.additionalProperties);
-		result = result && nullSafeEquals(this.artifact, other.artifact);
-		result = result && nullSafeEquals(this.group, other.group);
-		result = result && nullSafeEquals(this.name, other.name);
-		result = result && nullSafeEquals(this.version, other.version);
-		result = result && nullSafeEquals(this.time, other.time);
-		return result;
-	}
-
-	private boolean nullSafeEquals(Object o1, Object o2) {
-		if (o1 == o2) {
-			return true;
-		}
-		if (o1 == null || o2 == null) {
-			return false;
-		}
-		return (o1.equals(o2));
-	}
-
-	@Override
-	public int hashCode() {
-		final int prime = 31;
-		int result = 1;
-		result = prime * result + ((this.additionalProperties == null) ? 0 : this.additionalProperties.hashCode());
-		result = prime * result + ((this.artifact == null) ? 0 : this.artifact.hashCode());
-		result = prime * result + ((this.group == null) ? 0 : this.group.hashCode());
-		result = prime * result + ((this.name == null) ? 0 : this.name.hashCode());
-		result = prime * result + ((this.version == null) ? 0 : this.version.hashCode());
-		result = prime * result + ((this.time == null) ? 0 : this.time.hashCode());
-		return result;
+	private void readObject(ObjectInputStream input) throws ClassNotFoundException, IOException {
+		input.defaultReadObject();
+		this.creationTime = Instant.now();
 	}
 
 }

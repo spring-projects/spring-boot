@@ -90,7 +90,7 @@ public class Deprecation implements Serializable {
 
 	@Override
 	public String toString() {
-		return "Deprecation{" + "level='" + this.level + '\'' + ", reason='" + this.reason + '\'' + ", replacement='"
+		return "Deprecation{level='" + this.level + '\'' + ", reason='" + this.reason + '\'' + ", replacement='"
 				+ this.replacement + '\'' + '}';
 	}
 

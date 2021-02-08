@@ -33,8 +33,12 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.ReactiveTransactionManager;
+import org.springframework.transaction.TransactionManager;
 import org.springframework.transaction.annotation.AbstractTransactionManagementConfiguration;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.reactive.TransactionalOperator;
+import org.springframework.transaction.support.TransactionOperations;
 import org.springframework.transaction.support.TransactionTemplate;
 
 /**
@@ -58,12 +62,19 @@ public class TransactionAutoConfiguration {
 		return new TransactionManagerCustomizers(customizers.orderedStream().collect(Collectors.toList()));
 	}
 
+	@Bean
+	@ConditionalOnMissingBean
+	@ConditionalOnSingleCandidate(ReactiveTransactionManager.class)
+	public TransactionalOperator transactionalOperator(ReactiveTransactionManager transactionManager) {
+		return TransactionalOperator.create(transactionManager);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnSingleCandidate(PlatformTransactionManager.class)
 	public static class TransactionTemplateConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(TransactionOperations.class)
 		public TransactionTemplate transactionTemplate(PlatformTransactionManager transactionManager) {
 			return new TransactionTemplate(transactionManager);
 		}
@@ -71,7 +82,7 @@ public class TransactionAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(PlatformTransactionManager.class)
+	@ConditionalOnBean(TransactionManager.class)
 	@ConditionalOnMissingBean(AbstractTransactionManagementConfiguration.class)
 	public static class EnableTransactionManagementConfiguration {
 

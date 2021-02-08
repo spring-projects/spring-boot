@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.system.SystemProperties;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StringUtils;
@@ -86,12 +87,12 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		File portFile = getPortFile(event.getApplicationContext());
 		try {
 			String port = String.valueOf(event.getWebServer().getPort());
-			createParentFolder(portFile);
+			createParentDirectory(portFile);
 			FileCopyUtils.copy(port.getBytes(), portFile);
 			portFile.deleteOnExit();
 		}
 		catch (Exception ex) {
-			logger.warn(String.format("Cannot create port file %s", this.file));
+			logger.warn(LogMessage.format("Cannot create port file %s", this.file));
 		}
 	}
 
@@ -104,7 +105,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 	 */
 	protected File getPortFile(ApplicationContext applicationContext) {
 		String namespace = getServerNamespace(applicationContext);
-		if (StringUtils.isEmpty(namespace)) {
+		if (!StringUtils.hasLength(namespace)) {
 			return this.file;
 		}
 		String name = this.file.getName();
@@ -138,7 +139,7 @@ public class WebServerPortFileWriter implements ApplicationListener<WebServerIni
 		return true;
 	}
 
-	private void createParentFolder(File file) {
+	private void createParentDirectory(File file) {
 		File parent = file.getParentFile();
 		if (parent != null) {
 			parent.mkdirs();

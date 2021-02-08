@@ -38,6 +38,7 @@ import org.springframework.util.ClassUtils;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Sam Brannen
  * @see OutputCaptureExtension
  * @see OutputCaptureRule
  */
@@ -91,7 +92,7 @@ class OutputCapture implements CapturedOutput {
 
 	/**
 	 * Return all content (both {@link System#out System.out} and {@link System#err
-	 * System.err}) in the order that it was was captured.
+	 * System.err}) in the order that it was captured.
 	 * @return all captured output
 	 */
 	@Override
@@ -100,7 +101,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * Return {@link System#out System.out} content in the order that it was was captured.
+	 * Return {@link System#out System.out} content in the order that it was captured.
 	 * @return {@link System#out System.out} captured output
 	 */
 	@Override
@@ -109,7 +110,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * Return {@link System#err System.err} content in the order that it was was captured.
+	 * Return {@link System#err System.err} content in the order that it was captured.
 	 * @return {@link System#err System.err} captured output
 	 */
 	@Override
@@ -125,7 +126,8 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	private String get(Predicate<Type> filter) {
-		Assert.state(!this.systemCaptures.isEmpty(), "No system captures found. Check that you have used @ExtendWith.");
+		Assert.state(!this.systemCaptures.isEmpty(),
+				"No system captures found. Please check your output capture registration.");
 		StringBuilder builder = new StringBuilder();
 		for (SystemCapture systemCapture : this.systemCaptures) {
 			systemCapture.append(builder, filter);
@@ -207,7 +209,7 @@ class OutputCapture implements CapturedOutput {
 
 		private static PrintStream getSystemStream(PrintStream printStream) {
 			while (printStream instanceof PrintStreamCapture) {
-				return ((PrintStreamCapture) printStream).getParent();
+				printStream = ((PrintStreamCapture) printStream).getParent();
 			}
 			return printStream;
 		}

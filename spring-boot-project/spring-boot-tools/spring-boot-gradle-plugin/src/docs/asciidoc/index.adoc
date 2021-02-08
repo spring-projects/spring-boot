@@ -1,0 +1,57 @@
+= Spring Boot Gradle Plugin Reference Guide
+Andy Wilkinson, Scott Frederick
+:doctype: book
+:toc: left
+:toclevels: 4
+:numbered:
+:sectanchors:
+:icons: font
+:hide-uri-scheme:
+:docinfo: shared,private
+
+:dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
+:dependency-management-plugin-documentation: {dependency-management-plugin}/blob/master/README.md
+:gradle-userguide: https://docs.gradle.org/current/userguide
+:gradle-dsl: https://docs.gradle.org/current/dsl
+:gradle-api: https://docs.gradle.org/current/javadoc
+:application-plugin: {gradle-userguide}/application_plugin.html
+:groovy-plugin: {gradle-userguide}/groovy_plugin.html
+:java-plugin: {gradle-userguide}/java_plugin.html
+:war-plugin: {gradle-userguide}/war_plugin.html
+:maven-plugin: {gradle-userguide}/maven_plugin.html
+:maven-publish-plugin: {gradle-userguide}/maven_publish_plugin.html
+:software-component: {gradle-userguide}/software_model_extend.html
+:kotlin-plugin: https://kotlinlang.org/docs/reference/using-gradle.html
+:spring-boot-docs: https://docs.spring.io/spring-boot/docs/{gradle-project-version}
+:api-documentation: {spring-boot-docs}/gradle-plugin/api
+:spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
+:spring-boot-api: {spring-boot-docs}/api/org/springframework/boot
+:version-properties-appendix: {spring-boot-reference}/#dependency-versions-properties
+:build-info-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/buildinfo/BuildInfo.html
+:boot-build-image-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootBuildImage.html
+:boot-jar-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootJar.html
+:boot-war-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/bundling/BootWar.html
+:boot-run-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html
+:github-code: https://github.com/spring-projects/spring-boot/tree/{github-tag}
+:buildpacks-reference: https://buildpacks.io/docs
+:paketo-java-reference: https://paketo.io/docs/buildpacks/language-family-buildpacks/java
+
+
+[[introduction]]
+== Introduction
+The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle].
+It allows you to package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
+Spring Boot's Gradle plugin requires Gradle 6 (6.3 or later).
+Gradle 5.6 is also supported but this support is deprecated and will be removed in a future release.
+Gradle's {gradle-userguide}/configuration_cache.html[configuration cache] is supported when using Gradle 6.7 or later.
+
+In addition to this user guide, {api-documentation}[API documentation] is also available.
+
+include::getting-started.adoc[]
+include::managing-dependencies.adoc[]
+include::packaging.adoc[]
+include::packaging-oci-image.adoc[]
+include::publishing.adoc[]
+include::running.adoc[]
+include::integrating-with-actuator.adoc[]
+include::reacting.adoc[]

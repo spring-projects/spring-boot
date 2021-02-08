@@ -1,0 +1,109 @@
+:numbered!:
+[appendix]
+[[common-application-properties]]
+= Common Application properties
+include::attributes.adoc[]
+
+Various properties can be specified inside your `application.properties` file, inside your `application.yml` file, or as command line switches.
+This appendix provides a list of common Spring Boot properties and references to the underlying classes that consume them.
+
+TIP: Spring Boot provides various conversion mechanism with advanced value formatting, make sure to review <<spring-boot-features.adoc#boot-features-external-config-conversion, the properties conversion section>>.
+
+NOTE: Property contributions can come from additional jar files on your classpath, so you should not consider this an exhaustive list.
+Also, you can define your own properties.
+
+
+
+[[common-application-properties-core]]
+== Core Properties [[core-properties]]
+include::config-docs/core.adoc[]
+
+
+
+[[common-application-properties-cache]]
+== Cache Properties [[cache-properties]]
+include::config-docs/cache.adoc[]
+
+
+
+[[common-application-properties-mail]]
+== Mail Properties [[mail-properties]]
+include::config-docs/mail.adoc[]
+
+
+
+[[common-application-properties-json]]
+== JSON Properties [[json-properties]]
+include::config-docs/json.adoc[]
+
+
+
+[[common-application-properties-data]]
+== Data Properties [[data-properties]]
+include::config-docs/data.adoc[]
+
+
+
+[[common-application-properties-transaction]]
+== Transaction Properties [[transaction-properties]]
+include::config-docs/transaction.adoc[]
+
+
+
+[[common-application-properties-data-migration]]
+== Data Migration Properties [[data-migration-properties]]
+include::config-docs/data-migration.adoc[]
+
+
+
+[[common-application-properties-integration]]
+== Integration Properties [[integration-properties]]
+include::config-docs/integration.adoc[]
+
+
+
+[[common-application-properties-web]]
+== Web Properties [[web-properties]]
+include::config-docs/web.adoc[]
+
+
+
+[[common-application-properties-templating]]
+== Templating Properties [[templating-properties]]
+include::config-docs/templating.adoc[]
+
+
+
+[[common-application-properties-server]]
+== Server Properties [[server-properties]]
+include::config-docs/server.adoc[]
+
+
+
+[[common-application-properties-security]]
+== Security Properties [[security-properties]]
+include::config-docs/security.adoc[]
+
+
+
+[[common-application-properties-rsocket]]
+== RSocket Properties [[rsocket-properties]]
+include::config-docs/rsocket.adoc[]
+
+
+
+[[common-application-properties-actuator]]
+== Actuator Properties [[actuator-properties]]
+include::config-docs/actuator.adoc[]
+
+
+
+[[common-application-properties-devtools]]
+== Devtools Properties [[devtools-properties]]
+include::config-docs/devtools.adoc[]
+
+
+
+[[common-application-properties-testing]]
+== Testing Properties [[testing-properties]]
+include::config-docs/testing.adoc[]

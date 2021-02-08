@@ -16,12 +16,14 @@
 
 package smoketest.atomikos;
 
-import org.assertj.core.api.Condition;
+import java.util.function.Consumer;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -34,26 +36,18 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleAtomikosApplicationTests {
 
 	@Test
-	void testTransactionRollback(CapturedOutput capturedOutput) throws Exception {
+	void testTransactionRollback(CapturedOutput output) throws Exception {
 		SampleAtomikosApplication.main(new String[] {});
-		assertThat(capturedOutput.toString()).has(substring(1, "---->")).has(substring(1, "----> josh"))
-				.has(substring(2, "Count is 1")).has(substring(1, "Simulated error"));
+		assertThat(output).satisfies(numberOfOccurrences("---->", 1));
+		assertThat(output).satisfies(numberOfOccurrences("----> josh", 1));
+		assertThat(output).satisfies(numberOfOccurrences("Count is 1", 2));
+		assertThat(output).satisfies(numberOfOccurrences("Simulated error", 1));
 	}
 
-	private Condition<String> substring(int times, String substring) {
-		return new Condition<String>("containing '" + substring + "' " + times + " times") {
-
-			@Override
-			public boolean matches(String value) {
-				int i = 0;
-				while (value.contains(substring)) {
-					int beginIndex = value.indexOf(substring) + substring.length();
-					value = value.substring(beginIndex);
-					i++;
-				}
-				return i == times;
-			}
-
+	private <T extends CharSequence> Consumer<T> numberOfOccurrences(String substring, int expectedCount) {
+		return (charSequence) -> {
+			int count = StringUtils.countOccurrencesOf(charSequence.toString(), substring);
+			assertThat(count).isEqualTo(expectedCount);
 		};
 	}
 

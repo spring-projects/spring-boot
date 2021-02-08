@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,8 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileTreeElement;
+import org.gradle.api.model.ReplacedBy;
+import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Input;
@@ -35,16 +37,29 @@ import org.gradle.api.tasks.Optional;
 public interface BootArchive extends Task {
 
 	/**
-	 * Returns the name of the main class of the application.
-	 * @return the main class name
+	 * Returns the fully-qualified name of the application's main class.
+	 * @return the fully-qualified name of the application's main class
+	 * @since 2.4.0
 	 */
 	@Input
+	Property<String> getMainClass();
+
+	/**
+	 * Returns the fully-qualified main class name of the application.
+	 * @return the fully-qualified name of the application's main class
+	 * @deprecated since 2.4.0 in favor of {@link #getMainClass()}.
+	 */
+	@Deprecated
+	@ReplacedBy("mainClass")
 	String getMainClassName();
 
 	/**
-	 * Sets the name of the main class of the application.
-	 * @param mainClassName the name of the main class of the application
+	 * Sets the fully-qualified main class name of the application.
+	 * @param mainClassName the fully-qualified name of the application's main class
+	 * @deprecated since 2.4.0 in favour of {@link #getMainClass} and
+	 * {@link Property#set(Object)}
 	 */
+	@Deprecated
 	void setMainClassName(String mainClassName);
 
 	/**
@@ -112,21 +127,5 @@ public interface BootArchive extends Task {
 	 * @since 2.0.7
 	 */
 	void setClasspath(FileCollection classpath);
-
-	/**
-	 * Returns {@code true} if the Devtools jar should be excluded, otherwise
-	 * {@code false}.
-	 * @return {@code true} if the Devtools jar should be excluded, or {@code false} if
-	 * not
-	 */
-	@Input
-	boolean isExcludeDevtools();
-
-	/**
-	 * Sets whether or not the Devtools jar should be excluded.
-	 * @param excludeDevtools {@code true} if the Devtools jar should be excluded, or
-	 * {@code false} if not
-	 */
-	void setExcludeDevtools(boolean excludeDevtools);
 
 }

@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.jms;
 
+import java.time.Duration;
+
 import javax.jms.ConnectionFactory;
 
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
@@ -106,6 +108,10 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		String concurrency = listener.formatConcurrency();
 		if (concurrency != null) {
 			factory.setConcurrency(concurrency);
+		}
+		Duration receiveTimeout = listener.getReceiveTimeout();
+		if (receiveTimeout != null) {
+			factory.setReceiveTimeout(receiveTimeout.toMillis());
 		}
 	}
 

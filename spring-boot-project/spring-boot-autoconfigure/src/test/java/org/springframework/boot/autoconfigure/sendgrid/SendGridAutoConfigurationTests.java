@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class SendGridAutoConfigurationTests {
 	void expectedSendGridBeanCreatedApiKey() {
 		loadContext("spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("apiKey").containsExactly("SG.SECRET-API-KEY");
+		assertThat(sendGrid.getRequestHeaders().get("Authorization")).isEqualTo("Bearer SG.SECRET-API-KEY");
 	}
 
 	@Test
@@ -66,7 +66,7 @@ class SendGridAutoConfigurationTests {
 	void autoConfigurationNotFiredWhenBeanAlreadyCreated() {
 		loadContext(ManualSendGridConfiguration.class, "spring.sendgrid.api-key:SG.SECRET-API-KEY");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
-		assertThat(sendGrid).extracting("apiKey").containsExactly("SG.CUSTOM_API_KEY");
+		assertThat(sendGrid.getRequestHeaders().get("Authorization")).isEqualTo("Bearer SG.CUSTOM_API_KEY");
 	}
 
 	@Test
@@ -75,11 +75,11 @@ class SendGridAutoConfigurationTests {
 				"spring.sendgrid.proxy.port:5678");
 		SendGrid sendGrid = this.context.getBean(SendGrid.class);
 		assertThat(sendGrid).extracting("client").extracting("httpClient").extracting("routePlanner")
-				.hasOnlyElementsOfType(DefaultProxyRoutePlanner.class);
+				.isInstanceOf(DefaultProxyRoutePlanner.class);
 	}
 
 	private void loadContext(String... environment) {
-		this.loadContext(null, environment);
+		loadContext(null, environment);
 	}
 
 	private void loadContext(Class<?> additionalConfiguration, String... environment) {

@@ -1,0 +1,344 @@
+plugins {
+	id "java"
+	id "org.asciidoctor.jvm.convert"
+	id "org.asciidoctor.jvm.pdf"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Docs"
+
+configurations {
+	actuatorApiDocumentation
+	asciidoctorExtensions {
+		extendsFrom dependencyManagement
+	}
+	autoConfiguration
+	configurationProperties
+	gradlePluginDocumentation
+	mavenPluginDocumentation
+	testSlices
+}
+
+repositories {
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+		}
+	}
+}
+
+jar {
+	enabled = false
+}
+
+javadoc {
+	enabled = false
+}
+
+plugins.withType(EclipsePlugin) {
+	extensions.getByType(org.gradle.plugins.ide.eclipse.model.EclipseModel).classpath { classpath ->
+		classpath.plusConfigurations.add(configurations.getByName(sourceSets.main.runtimeClasspathConfigurationName))
+	}
+}
+
+dependencies {
+	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
+
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-devtools"))
+
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "autoConfigurationMetadata"))
+	autoConfiguration(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "autoConfigurationMetadata"))
+
+	configurationProperties(project(path: ":spring-boot-project:spring-boot", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-autoconfigure", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-devtools", configuration: "configurationPropertiesMetadata"))
+	configurationProperties(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "configurationPropertiesMetadata"))
+
+	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
+
+	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
+	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-test"))
+	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
+	implementation("ch.qos.logback:logback-classic")
+	implementation("com.zaxxer:HikariCP")
+	implementation("io.micrometer:micrometer-core")
+	implementation("io.projectreactor.netty:reactor-netty-http")
+	implementation("io.undertow:undertow-core")
+	implementation("jakarta.annotation:jakarta.annotation-api")
+	implementation("jakarta.servlet:jakarta.servlet-api")
+	implementation("org.apache.commons:commons-dbcp2")
+	implementation("org.apache.kafka:kafka-streams")
+	implementation("org.apache.logging.log4j:log4j-to-slf4j")
+	implementation("org.apache.tomcat.embed:tomcat-embed-core")
+	implementation("org.assertj:assertj-core")
+	implementation("org.glassfish.jersey.core:jersey-server")
+	implementation("org.hibernate:hibernate-jcache")
+	implementation("org.slf4j:jul-to-slf4j")
+	implementation("org.springframework:spring-test")
+	implementation("org.springframework:spring-web")
+	implementation("org.springframework:spring-webmvc")
+	implementation("org.springframework:spring-webflux")
+	implementation("org.springframework.data:spring-data-couchbase")
+	implementation("org.springframework.data:spring-data-neo4j")
+	implementation("org.springframework.data:spring-data-redis")
+	implementation("org.springframework.data:spring-data-r2dbc")
+	implementation("org.springframework.kafka:spring-kafka")
+	implementation("org.springframework.restdocs:spring-restdocs-restassured")
+	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
+	implementation("org.springframework.security:spring-security-config")
+	implementation("org.springframework.security:spring-security-web")
+	implementation("org.junit.jupiter:junit-jupiter")
+	implementation("org.yaml:snakeyaml")
+
+	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
+
+	testImplementation(project(":spring-boot-project:spring-boot-actuator-autoconfigure"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	testRuntimeOnly("com.h2database:h2")
+	testRuntimeOnly("org.springframework:spring-jdbc")
+
+	testSlices(project(path: ":spring-boot-project:spring-boot-test-autoconfigure", configuration: "testSliceMetadata"))
+}
+
+task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
+	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
+}
+
+task aggregatedJavadoc(type: Javadoc) {
+	dependsOn dependencyVersions
+	project.rootProject.gradle.projectsEvaluated {
+		Set<String> excludedProjects = ['spring-boot-antlib', 'spring-boot-configuration-metadata', 'spring-boot-configuration-processor',
+				'spring-boot-gradle-plugin', 'spring-boot-jarmode-layertools', 'spring-boot-maven-plugin']
+		Set<Project> publishedProjects = rootProject.subprojects.findAll { it != project}
+			.findAll { it.plugins.hasPlugin(JavaPlugin) && it.plugins.hasPlugin(MavenPublishPlugin) }
+			.findAll { !excludedProjects.contains(it.name) }
+			.findAll { !it.name.startsWith('spring-boot-starter') }
+		dependsOn publishedProjects.javadoc
+		source publishedProjects.javadoc.source
+		classpath = project.files(publishedProjects.javadoc.classpath)
+		destinationDir = project.file "${buildDir}/docs/javadoc"
+		options {
+			author = true
+			docTitle = "Spring Boot ${project.version} API"
+			encoding = "UTF-8"
+			memberLevel = "protected"
+			outputLevel = "quiet"
+			source = "1.8"
+			splitIndex = true
+			stylesheetFile = file("src/main/javadoc/spring-javadoc.css")
+			use = true
+			windowTitle = "Spring Boot ${project.version} API"
+		}
+		doFirst {
+			def versionConstraints = dependencyVersions.versionConstraints
+			def tomcatVersion = "${versionConstraints["org.apache.tomcat:tomcat-annotations-api"]}"
+			def tomcatDocsVersion = tomcatVersion.substring(0, tomcatVersion.lastIndexOf("."));
+			options.links = [
+				"https://docs.oracle.com/javase/8/docs/api/",
+				"https://docs.oracle.com/javaee/7/api/",
+				"https://docs.spring.io/spring-framework/docs/${versionConstraints["org.springframework:spring-core"]}/javadoc-api/",
+				"https://docs.spring.io/spring-security/site/docs/${versionConstraints["org.springframework.security:spring-security-core"]}/api/",
+				"https://tomcat.apache.org/tomcat-${tomcatDocsVersion}-doc/api/",
+				"https://www.thymeleaf.org/apidocs/thymeleaf/${versionConstraints["org.thymeleaf:thymeleaf"]}/"
+			] as String[]
+		}
+	}
+}
+
+task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
+	testSlices = configurations.testSlices
+	outputFile = file("${buildDir}/docs/generated/test-slice-auto-configuration.adoc")
+}
+
+task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
+	outputDir = file("${buildDir}/docs/generated/starters/")
+}
+
+task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
+	autoConfiguration = configurations.autoConfiguration
+	outputDir = file("${buildDir}/docs/generated/auto-configuration-classes/")
+}
+
+task documentDependencyVersions(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
+	dependsOn dependencyVersions
+	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
+	outputFile = file("${buildDir}/docs/generated/dependency-versions.adoc")
+}
+
+task documentVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
+	dependsOn dependencyVersions
+	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
+	outputFile = file("${buildDir}/docs/generated/version-properties.adoc")
+}
+
+task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
+	configurationPropertyMetadata = configurations.configurationProperties
+	outputDir = file("${buildDir}/docs/generated/config-docs/")
+}
+
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	dependsOn dependencyVersions
+	configurations "asciidoctorExtensions"
+	baseDirFollowsSourceDir()
+	asciidoctorj {
+		fatalWarnings = ['^((?!successfully validated).)*$']
+	}
+	doFirst {
+		def versionConstraints = dependencyVersions.versionConstraints
+		attributes	"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+					"jooq-version": versionConstraints["org.jooq:jooq"],
+					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
+					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],
+					"spring-boot-version": project.version,
+					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
+					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
+					"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
+					"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
+					"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],
+					"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
+					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
+					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
+					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
+					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
+					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
+					"spring-security-version": versionConstraints["org.springframework.security:spring-security-core"],
+					"spring-webservices-version": versionConstraints["org.springframework.ws:spring-ws-core"]
+	}
+}
+
+asciidoctor {
+	sources {
+		include "*.singleadoc"
+	}
+}
+
+asciidoctorPdf {
+	sources {
+		include "*.singleadoc"
+	}
+}
+
+task asciidoctorMultipage(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+	sources {
+		include "*.adoc"
+	}
+}
+
+syncDocumentationSourceForAsciidoctor {
+	dependsOn documentTestSlices
+	dependsOn documentStarters
+	dependsOn documentAutoConfigurationClasses
+	dependsOn documentDependencyVersions
+	dependsOn documentVersionProperties
+	dependsOn documentConfigurationProperties
+	from("${buildDir}/docs/generated") {
+		into "asciidoc"
+	}
+	from("src/main/java") {
+		into "main/java"
+	}
+	from("src/test/java") {
+		into "test/java"
+	}
+}
+
+syncDocumentationSourceForAsciidoctorMultipage {
+	dependsOn documentTestSlices
+	dependsOn documentStarters
+	dependsOn documentAutoConfigurationClasses
+	dependsOn documentDependencyVersions
+	dependsOn documentVersionProperties
+	dependsOn documentConfigurationProperties
+	from("${buildDir}/docs/generated") {
+		into "asciidoc"
+	}
+	from("src/main/java") {
+		into "main/java"
+	}
+	from("src/test/java") {
+		into "test/java"
+	}
+}
+
+syncDocumentationSourceForAsciidoctorPdf {
+	dependsOn documentTestSlices
+	dependsOn documentStarters
+	dependsOn documentAutoConfigurationClasses
+	dependsOn documentDependencyVersions
+	dependsOn documentVersionProperties
+	dependsOn documentConfigurationProperties
+	from("${buildDir}/docs/generated") {
+		into "asciidoc"
+	}
+	from("src/main/java") {
+		into "main/java"
+	}
+	from("src/test/java") {
+		into "test/java"
+	}
+}
+
+task zip(type: Zip) {
+	dependsOn asciidoctor,
+			asciidoctorMultipage,
+			asciidoctorPdf,
+			configurations.gradlePluginDocumentation,
+			configurations.actuatorApiDocumentation,
+			configurations.mavenPluginDocumentation
+	duplicatesStrategy "fail"
+	from(asciidoctor.outputDir) {
+		into "reference/htmlsingle"
+	}
+	from(asciidoctorPdf.outputDir) {
+		into "reference/pdf"
+		include "index.pdf"
+		rename { "spring-boot-reference.pdf" }
+	}
+	from(asciidoctorMultipage.outputDir) {
+		into "reference/html"
+	}
+	from(aggregatedJavadoc) {
+		into "api"
+	}
+	into("gradle-plugin") {
+		from {
+			zipTree(configurations.gradlePluginDocumentation.singleFile)
+		}
+	}
+	into("actuator-api") {
+		from {
+			zipTree(configurations.actuatorApiDocumentation.singleFile)
+		}
+	}
+	into("maven-plugin") {
+		from {
+			zipTree(configurations.mavenPluginDocumentation.singleFile)
+		}
+	}
+}
+
+artifacts {
+	archives zip
+}
+
+publishing {
+	publications {
+		deployment(MavenPublication) {
+			artifact zip
+		}
+	}
+}

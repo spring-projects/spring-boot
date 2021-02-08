@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,11 +101,11 @@ abstract class AbstractDevToolsDataSourceAutoConfigurationTests {
 	}
 
 	protected final ConfigurableApplicationContext createContext(Class<?>... classes) {
-		return this.createContext(null, classes);
+		return createContext(null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, Class<?>... classes) {
-		return this.createContext(driverClassName, null, classes);
+		return createContext(driverClassName, null, classes);
 	}
 
 	protected final ConfigurableApplicationContext createContext(String driverClassName, String url,

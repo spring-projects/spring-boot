@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,25 @@
 
 package org.springframework.boot.web.embedded.netty;
 
+import java.net.Socket;
 import java.net.URL;
+import java.security.InvalidAlgorithmParameterException;
 import java.security.KeyStore;
+import java.security.KeyStoreException;
+import java.security.NoSuchAlgorithmException;
+import java.security.Principal;
+import java.security.PrivateKey;
+import java.security.UnrecoverableKeyException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 
+import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
+import javax.net.ssl.KeyManagerFactorySpi;
+import javax.net.ssl.ManagerFactoryParameters;
+import javax.net.ssl.SSLEngine;
 import javax.net.ssl.TrustManagerFactory;
+import javax.net.ssl.X509ExtendedKeyManager;
 
 import io.netty.handler.ssl.ClientAuth;
 import io.netty.handler.ssl.SslContextBuilder;
@@ -30,6 +43,7 @@ import reactor.netty.tcp.SslProvider;
 
 import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Ssl;
+import org.springframework.boot.web.server.SslConfigurationValidator;
 import org.springframework.boot.web.server.SslStoreProvider;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.ResourceUtils;
@@ -40,6 +54,7 @@ import org.springframework.util.ResourceUtils;
  *
  * @author Brian Clozel
  * @author Raheela Aslam
+ * @author Chris Bono
  * @since 2.0.0
  */
 public class SslServerCustomizer implements NettyServerCustomizer {
@@ -92,8 +107,11 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 	protected KeyManagerFactory getKeyManagerFactory(Ssl ssl, SslStoreProvider sslStoreProvider) {
 		try {
 			KeyStore keyStore = getKeyStore(ssl, sslStoreProvider);
-			KeyManagerFactory keyManagerFactory = KeyManagerFactory
-					.getInstance(KeyManagerFactory.getDefaultAlgorithm());
+			SslConfigurationValidator.validateKeyAlias(keyStore, ssl.getKeyAlias());
+			KeyManagerFactory keyManagerFactory = (ssl.getKeyAlias() == null)
+					? KeyManagerFactory.getInstance(KeyManagerFactory.getDefaultAlgorithm())
+					: new ConfigurableAliasKeyManagerFactory(ssl.getKeyAlias(),
+							KeyManagerFactory.getDefaultAlgorithm());
 			char[] keyPassword = (ssl.getKeyPassword() != null) ? ssl.getKeyPassword().toCharArray() : null;
 			if (keyPassword == null && ssl.getKeyStorePassword() != null) {
 				keyPassword = ssl.getKeyStorePassword().toCharArray();
@@ -157,6 +175,113 @@ public class SslServerCustomizer implements NettyServerCustomizer {
 		}
 		catch (Exception ex) {
 			throw new WebServerException("Could not load key store '" + resource + "'", ex);
+		}
+
+	}
+
+	/**
+	 * A {@link KeyManagerFactory} that allows a configurable key alias to be used. Due to
+	 * the fact that the actual calls to retrieve the key by alias are done at request
+	 * time the approach is to wrap the actual key managers with a
+	 * {@link ConfigurableAliasKeyManager}. The actual SPI has to be wrapped as well due
+	 * to the fact that {@link KeyManagerFactory#getKeyManagers()} is final.
+	 */
+	private static final class ConfigurableAliasKeyManagerFactory extends KeyManagerFactory {
+
+		private ConfigurableAliasKeyManagerFactory(String alias, String algorithm) throws NoSuchAlgorithmException {
+			this(KeyManagerFactory.getInstance(algorithm), alias, algorithm);
+		}
+
+		private ConfigurableAliasKeyManagerFactory(KeyManagerFactory delegate, String alias, String algorithm) {
+			super(new ConfigurableAliasKeyManagerFactorySpi(delegate, alias), delegate.getProvider(), algorithm);
+		}
+
+	}
+
+	private static final class ConfigurableAliasKeyManagerFactorySpi extends KeyManagerFactorySpi {
+
+		private final KeyManagerFactory delegate;
+
+		private final String alias;
+
+		private ConfigurableAliasKeyManagerFactorySpi(KeyManagerFactory delegate, String alias) {
+			this.delegate = delegate;
+			this.alias = alias;
+		}
+
+		@Override
+		protected void engineInit(KeyStore keyStore, char[] chars)
+				throws KeyStoreException, NoSuchAlgorithmException, UnrecoverableKeyException {
+			this.delegate.init(keyStore, chars);
+		}
+
+		@Override
+		protected void engineInit(ManagerFactoryParameters managerFactoryParameters)
+				throws InvalidAlgorithmParameterException {
+			throw new InvalidAlgorithmParameterException("Unsupported ManagerFactoryParameters");
+		}
+
+		@Override
+		protected KeyManager[] engineGetKeyManagers() {
+			return Arrays.stream(this.delegate.getKeyManagers()).filter(X509ExtendedKeyManager.class::isInstance)
+					.map(X509ExtendedKeyManager.class::cast).map(this::wrap).toArray(KeyManager[]::new);
+		}
+
+		private ConfigurableAliasKeyManager wrap(X509ExtendedKeyManager keyManager) {
+			return new ConfigurableAliasKeyManager(keyManager, this.alias);
+		}
+
+	}
+
+	private static final class ConfigurableAliasKeyManager extends X509ExtendedKeyManager {
+
+		private final X509ExtendedKeyManager delegate;
+
+		private final String alias;
+
+		private ConfigurableAliasKeyManager(X509ExtendedKeyManager keyManager, String alias) {
+			this.delegate = keyManager;
+			this.alias = alias;
+		}
+
+		@Override
+		public String chooseEngineClientAlias(String[] strings, Principal[] principals, SSLEngine sslEngine) {
+			return this.delegate.chooseEngineClientAlias(strings, principals, sslEngine);
+		}
+
+		@Override
+		public String chooseEngineServerAlias(String s, Principal[] principals, SSLEngine sslEngine) {
+			return (this.alias != null) ? this.alias : this.delegate.chooseEngineServerAlias(s, principals, sslEngine);
+		}
+
+		@Override
+		public String chooseClientAlias(String[] keyType, Principal[] issuers, Socket socket) {
+			return this.delegate.chooseClientAlias(keyType, issuers, socket);
+		}
+
+		@Override
+		public String chooseServerAlias(String keyType, Principal[] issuers, Socket socket) {
+			return this.delegate.chooseServerAlias(keyType, issuers, socket);
+		}
+
+		@Override
+		public X509Certificate[] getCertificateChain(String alias) {
+			return this.delegate.getCertificateChain(alias);
+		}
+
+		@Override
+		public String[] getClientAliases(String keyType, Principal[] issuers) {
+			return this.delegate.getClientAliases(keyType, issuers);
+		}
+
+		@Override
+		public PrivateKey getPrivateKey(String alias) {
+			return this.delegate.getPrivateKey(alias);
+		}
+
+		@Override
+		public String[] getServerAliases(String keyType, Principal[] issuers) {
+			return this.delegate.getServerAliases(keyType, issuers);
 		}
 
 	}

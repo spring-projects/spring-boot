@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 
 import javax.annotation.processing.Processor;
 import javax.tools.JavaCompiler;
@@ -40,9 +41,9 @@ import javax.tools.ToolProvider;
 public class TestCompiler {
 
 	/**
-	 * The default source folder.
+	 * The default source directory.
 	 */
-	public static final File SOURCE_FOLDER = new File("src/test/java");
+	public static final File SOURCE_DIRECTORY = new File("src/test/java");
 
 	private final JavaCompiler compiler;
 
@@ -59,7 +60,7 @@ public class TestCompiler {
 		this.fileManager = compiler.getStandardFileManager(null, null, null);
 		this.outputLocation = outputLocation;
 		this.outputLocation.mkdirs();
-		Iterable<? extends File> temp = Arrays.asList(this.outputLocation);
+		Iterable<? extends File> temp = Collections.singletonList(this.outputLocation);
 		this.fileManager.setLocation(StandardLocation.CLASS_OUTPUT, temp);
 		this.fileManager.setLocation(StandardLocation.SOURCE_OUTPUT, temp);
 	}
@@ -92,15 +93,15 @@ public class TestCompiler {
 	}
 
 	protected File getFile(Class<?> type) {
-		return new File(getSourceFolder(), sourcePathFor(type));
+		return new File(getSourceDirectory(), sourcePathFor(type));
 	}
 
 	public static String sourcePathFor(Class<?> type) {
 		return type.getName().replace('.', '/') + ".java";
 	}
 
-	protected File getSourceFolder() {
-		return SOURCE_FOLDER;
+	protected File getSourceDirectory() {
+		return SOURCE_DIRECTORY;
 	}
 
 	/**

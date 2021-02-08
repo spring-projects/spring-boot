@@ -59,7 +59,7 @@ class ArtemisEmbeddedConfigurationFactoryTests {
 	void generatedClusterPassword() {
 		ArtemisProperties properties = new ArtemisProperties();
 		Configuration configuration = new ArtemisEmbeddedConfigurationFactory(properties).createConfiguration();
-		assertThat(configuration.getClusterPassword().length()).isEqualTo(36);
+		assertThat(configuration.getClusterPassword()).hasSize(36);
 	}
 
 	@Test

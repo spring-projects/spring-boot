@@ -113,7 +113,7 @@ public class JmxEndpointExporter implements InitializingBean, DisposableBean, Be
 	private void unregister(ObjectName objectName) {
 		try {
 			if (logger.isDebugEnabled()) {
-				logger.debug("Unregister endpoint with ObjectName '" + objectName + "' " + "from the JMX domain");
+				logger.debug("Unregister endpoint with ObjectName '" + objectName + "' from the JMX domain");
 			}
 			this.mBeanServer.unregisterMBean(objectName);
 		}

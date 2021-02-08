@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.stream.Collectors;
 
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataProperty;
 import org.springframework.boot.configurationmetadata.ConfigurationMetadataRepository;
-import org.springframework.boot.configurationmetadata.Deprecation;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
@@ -62,7 +61,8 @@ class PropertiesMigrationReporter {
 	 */
 	PropertiesMigrationReport getReport() {
 		PropertiesMigrationReport report = new PropertiesMigrationReport();
-		Map<String, List<PropertyMigration>> properties = getMatchingProperties(deprecatedFilter());
+		Map<String, List<PropertyMigration>> properties = getMatchingProperties(
+				ConfigurationMetadataProperty::isDeprecated);
 		if (properties.isEmpty()) {
 			return report;
 		}
@@ -98,16 +98,14 @@ class PropertiesMigrationReporter {
 		MultiValueMap<String, PropertyMigration> result = new LinkedMultiValueMap<>();
 		List<ConfigurationMetadataProperty> candidates = this.allProperties.values().stream().filter(filter)
 				.collect(Collectors.toList());
-		getPropertySourcesAsMap().forEach((name, source) -> {
-			candidates.forEach((metadata) -> {
-				ConfigurationProperty configurationProperty = source
-						.getConfigurationProperty(ConfigurationPropertyName.of(metadata.getId()));
-				if (configurationProperty != null) {
-					result.add(name, new PropertyMigration(configurationProperty, metadata,
-							determineReplacementMetadata(metadata)));
-				}
-			});
-		});
+		getPropertySourcesAsMap().forEach((name, source) -> candidates.forEach((metadata) -> {
+			ConfigurationProperty configurationProperty = source
+					.getConfigurationProperty(ConfigurationPropertyName.of(metadata.getId()));
+			if (configurationProperty != null) {
+				result.add(name,
+						new PropertyMigration(configurationProperty, metadata, determineReplacementMetadata(metadata)));
+			}
+		}));
 		return result;
 	}
 
@@ -129,11 +127,6 @@ class PropertiesMigrationReporter {
 			return this.allProperties.get(fullId.substring(0, lastDot));
 		}
 		return null;
-	}
-
-	private Predicate<ConfigurationMetadataProperty> deprecatedFilter() {
-		return (property) -> property.getDeprecation() != null
-				&& property.getDeprecation().getLevel() == Deprecation.Level.ERROR;
 	}
 
 	private Map<String, ConfigurationPropertySource> getPropertySourcesAsMap() {

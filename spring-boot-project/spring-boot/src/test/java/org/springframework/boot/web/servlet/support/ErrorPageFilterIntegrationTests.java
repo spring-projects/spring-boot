@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,7 +26,6 @@ import javax.servlet.http.HttpServletResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.xnio.channels.UnsupportedOptionException;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -49,11 +48,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.HandlerInterceptor;
 import org.springframework.web.servlet.ModelAndView;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
-import org.springframework.web.servlet.handler.HandlerInterceptorAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -151,7 +150,7 @@ class ErrorPageFilterIntegrationTests {
 
 		@Override
 		public void addInterceptors(InterceptorRegistry registry) {
-			registry.addInterceptor(new HandlerInterceptorAdapter() {
+			registry.addInterceptor(new HandlerInterceptor() {
 				@Override
 				public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler,
 						ModelAndView modelAndView) {
@@ -190,7 +189,7 @@ class ErrorPageFilterIntegrationTests {
 
 		@Override
 		public ApplicationContext loadContext(String... locations) {
-			throw new UnsupportedOptionException();
+			throw new UnsupportedOperationException();
 		}
 
 		@Override
@@ -200,7 +199,7 @@ class ErrorPageFilterIntegrationTests {
 
 		@Override
 		protected String getResourceSuffix() {
-			throw new UnsupportedOptionException();
+			throw new UnsupportedOperationException();
 		}
 
 	}

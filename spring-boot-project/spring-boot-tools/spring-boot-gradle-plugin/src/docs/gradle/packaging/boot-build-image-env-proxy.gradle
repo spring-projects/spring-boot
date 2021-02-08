@@ -1,0 +1,19 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+// tag::env[]
+bootBuildImage {
+	environment = [
+			"HTTP_PROXY" : "http://proxy.example.com",
+			"HTTPS_PROXY": "https://proxy.example.com"
+	]
+}
+// end::env[]
+
+task bootBuildImageEnvironment {
+	doFirst {
+		bootBuildImage.environment.each { name, value -> println "$name=$value" } 		
+	}
+}

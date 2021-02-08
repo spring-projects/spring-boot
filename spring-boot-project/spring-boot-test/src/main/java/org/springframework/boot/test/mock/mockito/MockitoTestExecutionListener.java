@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.util.ReflectionUtils;
 import org.springframework.util.ReflectionUtils.FieldCallback;
 
 /**
- * {@link TestExecutionListener} to trigger {@link MockitoAnnotations#initMocks(Object)}
+ * {@link TestExecutionListener} to trigger {@link MockitoAnnotations#openMocks(Object)}
  * when {@link MockBean @MockBean} annotations are used. Primarily to allow
  * {@link Captor @Captor} annotations.
  *
@@ -42,6 +42,8 @@ import org.springframework.util.ReflectionUtils.FieldCallback;
  * @since 1.4.2
  */
 public class MockitoTestExecutionListener extends AbstractTestExecutionListener {
+
+	private static final String MOCKS_ATTRIBUTE_NAME = MockitoTestExecutionListener.class.getName() + ".mocks";
 
 	@Override
 	public final int getOrder() {
@@ -63,9 +65,17 @@ public class MockitoTestExecutionListener extends AbstractTestExecutionListener 
 		}
 	}
 
+	@Override
+	public void afterTestMethod(TestContext testContext) throws Exception {
+		Object mocks = testContext.getAttribute(MOCKS_ATTRIBUTE_NAME);
+		if (mocks instanceof AutoCloseable) {
+			((AutoCloseable) mocks).close();
+		}
+	}
+
 	private void initMocks(TestContext testContext) {
 		if (hasMockitoAnnotations(testContext)) {
-			MockitoAnnotations.initMocks(testContext.getTestInstance());
+			testContext.setAttribute(MOCKS_ATTRIBUTE_NAME, MockitoAnnotations.openMocks(testContext.getTestInstance()));
 		}
 	}
 

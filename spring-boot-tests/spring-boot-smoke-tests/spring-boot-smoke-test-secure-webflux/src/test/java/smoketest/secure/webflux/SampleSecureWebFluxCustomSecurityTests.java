@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.core.userdetails.MapReactiveUserDetailsService;
 import org.springframework.security.core.userdetails.User;
@@ -54,28 +55,27 @@ class SampleSecureWebFluxCustomSecurityTests {
 	}
 
 	@Test
-	void healthAndInfoDoNotRequireAuthentication() {
+	void healthDoesNotRequireAuthentication() {
 		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 				.isOk();
-		this.webClient.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
 	}
 
 	@Test
 	void actuatorsSecuredByRole() {
 		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange().expectStatus().isForbidden();
+				.header("Authorization", getBasicAuth()).exchange().expectStatus().isForbidden();
 	}
 
 	@Test
 	void actuatorsAccessibleOnCorrectLogin() {
 		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuthForAdmin()).exchange().expectStatus().isOk();
+				.header("Authorization", getBasicAuthForAdmin()).exchange().expectStatus().isOk();
 	}
 
 	@Test
 	void actuatorExcludedFromEndpointRequestMatcher() {
 		this.webClient.get().uri("/actuator/mappings").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange().expectStatus().isOk();
+				.header("Authorization", getBasicAuth()).exchange().expectStatus().isOk();
 	}
 
 	@Test
@@ -89,15 +89,15 @@ class SampleSecureWebFluxCustomSecurityTests {
 		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 				.isUnauthorized();
 		this.webClient.get().uri("/actuator").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuthForAdmin()).exchange().expectStatus().isOk();
+				.header("Authorization", getBasicAuthForAdmin()).exchange().expectStatus().isOk();
 	}
 
 	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
+		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
 	private String getBasicAuthForAdmin() {
-		return new String(Base64.getEncoder().encode(("admin:admin").getBytes()));
+		return "Basic " + Base64.getEncoder().encodeToString("admin:admin".getBytes());
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -114,11 +114,17 @@ class SampleSecureWebFluxCustomSecurityTests {
 		}
 
 		@Bean
-		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			return http.authorizeExchange().matchers(EndpointRequest.to("health", "info")).permitAll()
-					.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class)).hasRole("ACTUATOR")
-					.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll().pathMatchers("/login")
-					.permitAll().anyExchange().authenticated().and().httpBasic().and().build();
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+			http.authorizeExchange((exchanges) -> {
+				exchanges.matchers(EndpointRequest.to("health")).permitAll();
+				exchanges.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))
+						.hasRole("ACTUATOR");
+				exchanges.matchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
+				exchanges.pathMatchers("/login").permitAll();
+				exchanges.anyExchange().authenticated();
+			});
+			http.httpBasic(Customizer.withDefaults());
+			return http.build();
 		}
 
 	}

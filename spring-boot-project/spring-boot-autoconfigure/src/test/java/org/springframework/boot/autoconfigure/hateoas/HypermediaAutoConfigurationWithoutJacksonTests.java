@@ -16,14 +16,12 @@
 
 package org.springframework.boot.autoconfigure.hateoas;
 
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.ImportAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.HttpMessageConvertersAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebApplicationContext;
 import org.springframework.mock.web.MockServletContext;
 
@@ -32,14 +30,13 @@ import org.springframework.mock.web.MockServletContext;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("jackson-*.jar")
-public class HypermediaAutoConfigurationWithoutJacksonTests {
+class HypermediaAutoConfigurationWithoutJacksonTests {
 
 	private AnnotationConfigServletWebApplicationContext context;
 
 	@Test
-	public void jacksonRelatedConfigurationBacksOff() {
+	void jacksonRelatedConfigurationBacksOff() {
 		this.context = new AnnotationConfigServletWebApplicationContext();
 		this.context.register(BaseConfig.class);
 		this.context.setServletContext(new MockServletContext());

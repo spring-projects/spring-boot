@@ -35,6 +35,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySourcesPropertyResolver;
 import org.springframework.core.io.Resource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 import org.springframework.util.StreamUtils;
 
@@ -43,6 +44,7 @@ import org.springframework.util.StreamUtils;
  *
  * @author Phillip Webb
  * @author Vedran Pavic
+ * @author Toshiaki Maki
  * @since 1.2.0
  */
 public class ResourceBanner implements Banner {
@@ -69,9 +71,8 @@ public class ResourceBanner implements Banner {
 			out.println(banner);
 		}
 		catch (Exception ex) {
-			logger.warn(
-					"Banner not printable: " + this.resource + " (" + ex.getClass() + ": '" + ex.getMessage() + "')",
-					ex);
+			logger.warn(LogMessage.format("Banner not printable: %s (%s: '%s')", this.resource, ex.getClass(),
+					ex.getMessage()), ex);
 		}
 	}
 

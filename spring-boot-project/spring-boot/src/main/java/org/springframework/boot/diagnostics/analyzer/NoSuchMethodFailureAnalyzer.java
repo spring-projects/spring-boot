@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.diagnostics.analyzer;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
@@ -31,12 +32,26 @@ import org.springframework.util.ClassUtils;
  * NoSuchMethodErrors}.
  *
  * @author Andy Wilkinson
+ * @author Stephane Nicoll
  */
 class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodError> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchMethodError cause) {
-		String className = extractClassName(cause);
+		NoSuchMethodDescriptor descriptor = getNoSuchMethodDescriptor(cause.getMessage());
+		if (descriptor == null) {
+			return null;
+		}
+		String description = getDescription(cause, descriptor);
+		return new FailureAnalysis(description,
+				"Correct the classpath of your application so that it contains a single, compatible version of "
+						+ descriptor.getClassName(),
+				cause);
+	}
+
+	protected NoSuchMethodDescriptor getNoSuchMethodDescriptor(String cause) {
+		String message = cleanMessage(cause);
+		String className = extractClassName(message);
 		if (className == null) {
 			return null;
 		}
@@ -44,28 +59,44 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		if (candidates == null) {
 			return null;
 		}
-		URL actual = getActual(className);
-		if (actual == null) {
+		Class<?> type = load(className);
+		if (type == null) {
 			return null;
 		}
-		String description = getDescription(cause, className, candidates, actual);
-		return new FailureAnalysis(description,
-				"Correct the classpath of your application so that it contains a single," + " compatible version of "
-						+ className,
-				cause);
+		List<ClassDescriptor> typeHierarchy = getTypeHierarchy(type);
+		if (typeHierarchy == null) {
+			return null;
+		}
+		return new NoSuchMethodDescriptor(message, className, candidates, typeHierarchy);
 	}
 
-	private String extractClassName(NoSuchMethodError cause) {
-		int descriptorIndex = cause.getMessage().indexOf('(');
+	private String cleanMessage(String message) {
+		int loadedFromIndex = message.indexOf(" (loaded from");
+		if (loadedFromIndex == -1) {
+			return message;
+		}
+		return message.substring(0, loadedFromIndex);
+	}
+
+	private String extractClassName(String message) {
+		if (message.startsWith("'") && message.endsWith("'")) {
+			int splitIndex = message.indexOf(' ');
+			if (splitIndex == -1) {
+				return null;
+			}
+			message = message.substring(splitIndex + 1);
+		}
+		int descriptorIndex = message.indexOf('(');
 		if (descriptorIndex == -1) {
 			return null;
 		}
-		String classAndMethodName = cause.getMessage().substring(0, descriptorIndex);
+		String classAndMethodName = message.substring(0, descriptorIndex);
 		int methodNameIndex = classAndMethodName.lastIndexOf('.');
 		if (methodNameIndex == -1) {
 			return null;
 		}
-		return classAndMethodName.substring(0, methodNameIndex);
+		String className = classAndMethodName.substring(0, methodNameIndex);
+		return className.replace('/', '.');
 	}
 
 	private List<URL> findCandidates(String className) {
@@ -78,16 +109,31 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 	}
 
-	private URL getActual(String className) {
+	private Class<?> load(String className) {
 		try {
-			return getClass().getClassLoader().loadClass(className).getProtectionDomain().getCodeSource().getLocation();
+			return Class.forName(className, false, getClass().getClassLoader());
 		}
 		catch (Throwable ex) {
 			return null;
 		}
 	}
 
-	private String getDescription(NoSuchMethodError cause, String className, List<URL> candidates, URL actual) {
+	private List<ClassDescriptor> getTypeHierarchy(Class<?> type) {
+		try {
+			List<ClassDescriptor> typeHierarchy = new ArrayList<>();
+			while (type != null && !type.equals(Object.class)) {
+				typeHierarchy.add(new ClassDescriptor(type.getCanonicalName(),
+						type.getProtectionDomain().getCodeSource().getLocation()));
+				type = type.getSuperclass();
+			}
+			return typeHierarchy;
+		}
+		catch (Throwable ex) {
+			return null;
+		}
+	}
+
+	private String getDescription(NoSuchMethodError cause, NoSuchMethodDescriptor descriptor) {
 		StringWriter description = new StringWriter();
 		PrintWriter writer = new PrintWriter(description);
 		writer.println("An attempt was made to call a method that does not"
@@ -99,20 +145,83 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		writer.println("The following method did not exist:");
 		writer.println();
 		writer.print("    ");
-		writer.println(cause.getMessage());
+		writer.println(descriptor.getErrorMessage());
 		writer.println();
-		writer.println("The method's class, " + className + ", is available from the following locations:");
+		writer.println(
+				"The method's class, " + descriptor.getClassName() + ", is available from the following locations:");
 		writer.println();
-		for (URL candidate : candidates) {
+		for (URL candidate : descriptor.getCandidateLocations()) {
 			writer.print("    ");
 			writer.println(candidate);
 		}
 		writer.println();
-		writer.println("It was loaded from the following location:");
+		writer.println("The class hierarchy was loaded from the following locations:");
 		writer.println();
-		writer.print("    ");
-		writer.println(actual);
+		for (ClassDescriptor type : descriptor.getTypeHierarchy()) {
+			writer.print("    ");
+			writer.print(type.getName());
+			writer.print(": ");
+			writer.println(type.getLocation());
+		}
+
 		return description.toString();
+	}
+
+	protected static class NoSuchMethodDescriptor {
+
+		private final String errorMessage;
+
+		private final String className;
+
+		private final List<URL> candidateLocations;
+
+		private final List<ClassDescriptor> typeHierarchy;
+
+		public NoSuchMethodDescriptor(String errorMessage, String className, List<URL> candidateLocations,
+				List<ClassDescriptor> typeHierarchy) {
+			this.errorMessage = errorMessage;
+			this.className = className;
+			this.candidateLocations = candidateLocations;
+			this.typeHierarchy = typeHierarchy;
+		}
+
+		public String getErrorMessage() {
+			return this.errorMessage;
+		}
+
+		public String getClassName() {
+			return this.className;
+		}
+
+		public List<URL> getCandidateLocations() {
+			return this.candidateLocations;
+		}
+
+		public List<ClassDescriptor> getTypeHierarchy() {
+			return this.typeHierarchy;
+		}
+
+	}
+
+	protected static class ClassDescriptor {
+
+		private final String name;
+
+		private final URL location;
+
+		public ClassDescriptor(String name, URL location) {
+			this.name = name;
+			this.location = location;
+		}
+
+		public String getName() {
+			return this.name;
+		}
+
+		public URL getLocation() {
+			return this.location;
+		}
+
 	}
 
 }

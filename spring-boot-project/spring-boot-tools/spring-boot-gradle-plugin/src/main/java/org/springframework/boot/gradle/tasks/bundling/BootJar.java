@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,82 +19,128 @@ package org.springframework.boot.gradle.tasks.bundling;
 import java.io.File;
 import java.util.Collections;
 import java.util.concurrent.Callable;
+import java.util.function.Function;
 
 import org.gradle.api.Action;
+import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.file.FileCopyDetails;
 import org.gradle.api.file.FileTreeElement;
 import org.gradle.api.internal.file.copy.CopyAction;
+import org.gradle.api.provider.Property;
 import org.gradle.api.specs.Spec;
 import org.gradle.api.tasks.Internal;
+import org.gradle.api.tasks.Nested;
 import org.gradle.api.tasks.bundling.Jar;
 
 /**
  * A custom {@link Jar} task that produces a Spring Boot executable jar.
  *
  * @author Andy Wilkinson
+ * @author Madhura Bhave
+ * @author Scott Frederick
+ * @author Phillip Webb
  * @since 2.0.0
  */
 public class BootJar extends Jar implements BootArchive {
 
-	private final BootArchiveSupport support = new BootArchiveSupport("org.springframework.boot.loader.JarLauncher",
-			this::resolveZipCompression);
+	private static final String LAUNCHER = "org.springframework.boot.loader.JarLauncher";
 
-	private final CopySpec bootInf;
+	private static final String CLASSES_DIRECTORY = "BOOT-INF/classes/";
 
-	private String mainClassName;
+	private static final String LIB_DIRECTORY = "BOOT-INF/lib/";
+
+	private static final String LAYERS_INDEX = "BOOT-INF/layers.idx";
+
+	private static final String CLASSPATH_INDEX = "BOOT-INF/classpath.idx";
+
+	private final ResolvedDependencies resolvedDependencies = new ResolvedDependencies();
+
+	private final BootArchiveSupport support;
+
+	private final CopySpec bootInfSpec;
+
+	private final Property<String> mainClass;
 
 	private FileCollection classpath;
+
+	private LayeredSpec layered = new LayeredSpec();
 
 	/**
 	 * Creates a new {@code BootJar} task.
 	 */
 	public BootJar() {
-		this.bootInf = getProject().copySpec().into("BOOT-INF");
-		getMainSpec().with(this.bootInf);
-		this.bootInf.into("classes", classpathFiles(File::isDirectory));
-		this.bootInf.into("lib", classpathFiles(File::isFile));
-		this.bootInf.filesMatching("module-info.class",
-				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
-		getRootSpec().eachFile((details) -> {
-			String pathString = details.getRelativePath().getPathString();
-			if (pathString.startsWith("BOOT-INF/lib/") && !this.support.isZip(details.getFile())) {
-				details.exclude();
-			}
+		this.support = new BootArchiveSupport(LAUNCHER, new LibrarySpec(), new ZipCompressionResolver());
+		this.bootInfSpec = getProject().copySpec().into("BOOT-INF");
+		this.mainClass = getProject().getObjects().property(String.class);
+		configureBootInfSpec(this.bootInfSpec);
+		getMainSpec().with(this.bootInfSpec);
+		getProject().getConfigurations().all((configuration) -> {
+			ResolvableDependencies incoming = configuration.getIncoming();
+			incoming.afterResolve((resolvableDependencies) -> {
+				if (resolvableDependencies == incoming) {
+					this.resolvedDependencies.processConfiguration(configuration);
+				}
+			});
 		});
 	}
 
-	private Action<CopySpec> classpathFiles(Spec<File> filter) {
-		return (copySpec) -> copySpec.from((Callable<Iterable<File>>) () -> (this.classpath != null)
-				? this.classpath.filter(filter) : Collections.emptyList());
+	private void configureBootInfSpec(CopySpec bootInfSpec) {
+		bootInfSpec.into("classes", fromCallTo(this::classpathDirectories));
+		bootInfSpec.into("lib", fromCallTo(this::classpathFiles)).eachFile(this.support::excludeNonZipFiles);
+		bootInfSpec.filesMatching("module-info.class",
+				(details) -> details.setRelativePath(details.getRelativeSourcePath()));
+	}
+
+	private Iterable<File> classpathDirectories() {
+		return classpathEntries(File::isDirectory);
+	}
+
+	private Iterable<File> classpathFiles() {
+		return classpathEntries(File::isFile);
+	}
+
+	private Iterable<File> classpathEntries(Spec<File> filter) {
+		return (this.classpath != null) ? this.classpath.filter(filter) : Collections.emptyList();
 	}
 
 	@Override
 	public void copy() {
-		this.support.configureManifest(this, getMainClassName(), "BOOT-INF/classes/", "BOOT-INF/lib/");
+		this.support.configureManifest(getManifest(), getMainClass().get(), CLASSES_DIRECTORY, LIB_DIRECTORY,
+				CLASSPATH_INDEX, (isLayeredDisabled()) ? null : LAYERS_INDEX);
 		super.copy();
+	}
+
+	private boolean isLayeredDisabled() {
+		return this.layered != null && !this.layered.isEnabled();
 	}
 
 	@Override
 	protected CopyAction createCopyAction() {
+		if (!isLayeredDisabled()) {
+			LayerResolver layerResolver = new LayerResolver(this.resolvedDependencies, this.layered, this::isLibrary);
+			String layerToolsLocation = this.layered.isIncludeLayerTools() ? LIB_DIRECTORY : null;
+			return this.support.createCopyAction(this, layerResolver, layerToolsLocation);
+		}
 		return this.support.createCopyAction(this);
 	}
 
 	@Override
-	public String getMainClassName() {
-		if (this.mainClassName == null) {
-			String manifestStartClass = (String) getManifest().getAttributes().get("Start-Class");
-			if (manifestStartClass != null) {
-				setMainClassName(manifestStartClass);
-			}
-		}
-		return this.mainClassName;
+	public Property<String> getMainClass() {
+		return this.mainClass;
 	}
 
 	@Override
+	@Deprecated
+	public String getMainClassName() {
+		return this.mainClass.getOrNull();
+	}
+
+	@Override
+	@Deprecated
 	public void setMainClassName(String mainClassName) {
-		this.mainClassName = mainClassName;
+		this.mainClass.set(mainClassName);
 	}
 
 	@Override
@@ -122,6 +168,34 @@ public class BootJar extends Jar implements BootArchive {
 		action.execute(enableLaunchScriptIfNecessary());
 	}
 
+	/**
+	 * Returns the spec that describes the layers in a layered jar.
+	 * @return the spec for the layers
+	 * @since 2.3.0
+	 */
+	@Nested
+	public LayeredSpec getLayered() {
+		return this.layered;
+	}
+
+	/**
+	 * Configures the jar to be layered using the default layering.
+	 * @since 2.3.0
+	 * @deprecated since 2.4.0 as layering as now enabled by default.
+	 */
+	@Deprecated
+	public void layered() {
+	}
+
+	/**
+	 * Configures the jar's layering using the given {@code action}.
+	 * @param action the action to apply
+	 * @since 2.3.0
+	 */
+	public void layered(Action<LayeredSpec> action) {
+		action.execute(this.layered);
+	}
+
 	@Override
 	public FileCollection getClasspath() {
 		return this.classpath;
@@ -134,22 +208,14 @@ public class BootJar extends Jar implements BootArchive {
 				classpath);
 	}
 
+	@Override
 	public void setClasspath(Object classpath) {
 		this.classpath = getProject().files(classpath);
 	}
 
+	@Override
 	public void setClasspath(FileCollection classpath) {
 		this.classpath = getProject().files(classpath);
-	}
-
-	@Override
-	public boolean isExcludeDevtools() {
-		return this.support.isExcludeDevtools();
-	}
-
-	@Override
-	public void setExcludeDevtools(boolean excludeDevtools) {
-		this.support.setExcludeDevtools(excludeDevtools);
 	}
 
 	/**
@@ -161,7 +227,7 @@ public class BootJar extends Jar implements BootArchive {
 	@Internal
 	public CopySpec getBootInf() {
 		CopySpec child = getProject().copySpec();
-		this.bootInf.with(child);
+		this.bootInfSpec.with(child);
 		return child;
 	}
 
@@ -180,19 +246,27 @@ public class BootJar extends Jar implements BootArchive {
 	}
 
 	/**
-	 * Returns the {@link ZipCompression} that should be used when adding the file
-	 * represented by the given {@code details} to the jar.
-	 * <p>
-	 * By default, any file in {@code BOOT-INF/lib/} is stored and all other files are
-	 * deflated.
-	 * @param details the details
+	 * Return the {@link ZipCompression} that should be used when adding the file
+	 * represented by the given {@code details} to the jar. By default, any
+	 * {@link #isLibrary(FileCopyDetails) library} is {@link ZipCompression#STORED stored}
+	 * and all other files are {@link ZipCompression#DEFLATED deflated}.
+	 * @param details the file copy details
 	 * @return the compression to use
 	 */
 	protected ZipCompression resolveZipCompression(FileCopyDetails details) {
-		if (details.getRelativePath().getPathString().startsWith("BOOT-INF/lib/")) {
-			return ZipCompression.STORED;
-		}
-		return ZipCompression.DEFLATED;
+		return isLibrary(details) ? ZipCompression.STORED : ZipCompression.DEFLATED;
+	}
+
+	/**
+	 * Return if the {@link FileCopyDetails} are for a library. By default any file in
+	 * {@code BOOT-INF/lib} is considered to be a library.
+	 * @param details the file copy details
+	 * @return {@code true} if the details are for a library
+	 * @since 2.3.0
+	 */
+	protected boolean isLibrary(FileCopyDetails details) {
+		String path = details.getRelativePath().getPathString();
+		return path.startsWith(LIB_DIRECTORY);
 	}
 
 	private LaunchScriptConfiguration enableLaunchScriptIfNecessary() {
@@ -202,6 +276,49 @@ public class BootJar extends Jar implements BootArchive {
 			this.support.setLaunchScript(launchScript);
 		}
 		return launchScript;
+	}
+
+	/**
+	 * Syntactic sugar that makes {@link CopySpec#into} calls a little easier to read.
+	 * @param <T> the result type
+	 * @param callable the callable
+	 * @return an action to add the callable to the spec
+	 */
+	private static <T> Action<CopySpec> fromCallTo(Callable<T> callable) {
+		return (spec) -> spec.from(callTo(callable));
+	}
+
+	/**
+	 * Syntactic sugar that makes {@link CopySpec#from} calls a little easier to read.
+	 * @param <T> the result type
+	 * @param callable the callable
+	 * @return the callable
+	 */
+	private static <T> Callable<T> callTo(Callable<T> callable) {
+		return callable;
+	}
+
+	@Internal
+	ResolvedDependencies getResolvedDependencies() {
+		return this.resolvedDependencies;
+	}
+
+	private final class LibrarySpec implements Spec<FileCopyDetails> {
+
+		@Override
+		public boolean isSatisfiedBy(FileCopyDetails details) {
+			return isLibrary(details);
+		}
+
+	}
+
+	private final class ZipCompressionResolver implements Function<FileCopyDetails, ZipCompression> {
+
+		@Override
+		public ZipCompression apply(FileCopyDetails details) {
+			return resolveZipCompression(details);
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,12 @@ import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.boot.test.context.SpringBootTestContextBootstrapper;
 import org.springframework.test.context.BootstrapContext;
 import org.springframework.test.context.CacheAwareContextLoaderDelegate;
+import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.TestContext;
 import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.util.ReflectionTestUtils;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -42,7 +46,7 @@ class SpringBootTestContextBootstrapperTests {
 				.isThrownBy(() -> buildTestContext(SpringBootTestNonMockWebEnvironmentAndWebAppConfiguration.class))
 				.withMessageContaining("@WebAppConfiguration should only be used with "
 						+ "@SpringBootTest when @SpringBootTest is configured with a mock web "
-						+ "environment. Please remove @WebAppConfiguration or reconfigure " + "@SpringBootTest.");
+						+ "environment. Please remove @WebAppConfiguration or reconfigure @SpringBootTest.");
 	}
 
 	@Test
@@ -50,15 +54,63 @@ class SpringBootTestContextBootstrapperTests {
 		buildTestContext(SpringBootTestMockWebEnvironmentAndWebAppConfiguration.class);
 	}
 
+	@Test
+	void mergedContextConfigurationWhenArgsDifferentShouldNotBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestArgsConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		TestContext otherContext2 = buildTestContext(SpringBootTestOtherArgsConfiguration.class);
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext2);
+		assertThat(contextConfiguration).isNotEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationWhenArgsSameShouldBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestArgsConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		TestContext otherContext2 = buildTestContext(SpringBootTestSameArgsConfiguration.class);
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext2);
+		assertThat(contextConfiguration).isEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationWhenWebEnvironmentsDifferentShouldNotBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestMockWebEnvironmentConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		TestContext otherContext = buildTestContext(SpringBootTestDefinedPortWebEnvironmentConfiguration.class);
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext);
+		assertThat(contextConfiguration).isNotEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationWhenWebEnvironmentsSameShouldBeConsideredEqual() {
+		TestContext context = buildTestContext(SpringBootTestMockWebEnvironmentConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		TestContext otherContext = buildTestContext(SpringBootTestAnotherMockWebEnvironmentConfiguration.class);
+		MergedContextConfiguration otherContextConfiguration = getMergedContextConfiguration(otherContext);
+		assertThat(contextConfiguration).isEqualTo(otherContextConfiguration);
+	}
+
+	@Test
+	void mergedContextConfigurationClassesShouldNotContainDuplicates() {
+		TestContext context = buildTestContext(SpringBootTestClassesConfiguration.class);
+		MergedContextConfiguration contextConfiguration = getMergedContextConfiguration(context);
+		Class<?>[] classes = contextConfiguration.getClasses();
+		assertThat(classes).containsExactly(SpringBootTestContextBootstrapperExampleConfig.class);
+	}
+
 	@SuppressWarnings("rawtypes")
-	private void buildTestContext(Class<?> testClass) {
+	private TestContext buildTestContext(Class<?> testClass) {
 		SpringBootTestContextBootstrapper bootstrapper = new SpringBootTestContextBootstrapper();
 		BootstrapContext bootstrapContext = mock(BootstrapContext.class);
 		bootstrapper.setBootstrapContext(bootstrapContext);
 		given((Class) bootstrapContext.getTestClass()).willReturn(testClass);
 		CacheAwareContextLoaderDelegate contextLoaderDelegate = mock(CacheAwareContextLoaderDelegate.class);
 		given(bootstrapContext.getCacheAwareContextLoaderDelegate()).willReturn(contextLoaderDelegate);
-		bootstrapper.buildTestContext();
+		return bootstrapper.buildTestContext();
+	}
+
+	private MergedContextConfiguration getMergedContextConfiguration(TestContext context) {
+		return (MergedContextConfiguration) ReflectionTestUtils.getField(context, "mergedContextConfiguration");
 	}
 
 	@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
@@ -70,6 +122,41 @@ class SpringBootTestContextBootstrapperTests {
 	@SpringBootTest
 	@WebAppConfiguration
 	static class SpringBootTestMockWebEnvironmentAndWebAppConfiguration {
+
+	}
+
+	@SpringBootTest(args = "--app.test=same")
+	static class SpringBootTestArgsConfiguration {
+
+	}
+
+	@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+	static class SpringBootTestMockWebEnvironmentConfiguration {
+
+	}
+
+	@SpringBootTest(webEnvironment = WebEnvironment.MOCK)
+	static class SpringBootTestAnotherMockWebEnvironmentConfiguration {
+
+	}
+
+	@SpringBootTest(webEnvironment = WebEnvironment.DEFINED_PORT)
+	static class SpringBootTestDefinedPortWebEnvironmentConfiguration {
+
+	}
+
+	@SpringBootTest(args = "--app.test=same")
+	static class SpringBootTestSameArgsConfiguration {
+
+	}
+
+	@SpringBootTest(args = "--app.test=different")
+	static class SpringBootTestOtherArgsConfiguration {
+
+	}
+
+	@SpringBootTest(classes = SpringBootTestContextBootstrapperExampleConfig.class)
+	static class SpringBootTestClassesConfiguration {
 
 	}
 

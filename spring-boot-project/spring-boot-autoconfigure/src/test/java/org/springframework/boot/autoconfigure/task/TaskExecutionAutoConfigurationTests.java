@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import org.springframework.scheduling.annotation.AsyncResult;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -73,7 +72,7 @@ class TaskExecutionAutoConfigurationTests {
 					assertThat(taskExecutor).hasFieldOrPropertyWithValue("allowCoreThreadTimeOut", true);
 					assertThat(taskExecutor.getKeepAliveSeconds()).isEqualTo(5);
 					assertThat(taskExecutor).hasFieldOrPropertyWithValue("waitForTasksToCompleteOnShutdown", true);
-					assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationSeconds", 30);
+					assertThat(taskExecutor).hasFieldOrPropertyWithValue("awaitTerminationMillis", 30000L);
 					assertThat(taskExecutor.getThreadNamePrefix()).isEqualTo("mytest-");
 				}));
 	}
@@ -92,19 +91,18 @@ class TaskExecutionAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(TaskDecoratorConfig.class).run((context) -> {
 			assertThat(context).hasSingleBean(TaskExecutorBuilder.class);
 			ThreadPoolTaskExecutor executor = context.getBean(TaskExecutorBuilder.class).build();
-			assertThat(ReflectionTestUtils.getField(executor, "taskDecorator"))
-					.isSameAs(context.getBean(TaskDecorator.class));
+			assertThat(executor).extracting("taskDecorator").isSameAs(context.getBean(TaskDecorator.class));
 		});
 	}
 
 	@Test
-	void taskExecutorAutoConfigured(CapturedOutput capturedOutput) {
+	void taskExecutorAutoConfigured(CapturedOutput output) {
 		this.contextRunner.run((context) -> {
-			assertThat(capturedOutput).doesNotContain("Initializing ExecutorService");
+			assertThat(output).doesNotContain("Initializing ExecutorService");
 			assertThat(context).hasSingleBean(Executor.class);
 			assertThat(context).hasBean("applicationTaskExecutor");
 			assertThat(context).getBean("applicationTaskExecutor").isInstanceOf(ThreadPoolTaskExecutor.class);
-			assertThat(capturedOutput).contains("Initializing ExecutorService");
+			assertThat(output).contains("Initializing ExecutorService");
 		});
 	}
 

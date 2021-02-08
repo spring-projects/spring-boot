@@ -19,6 +19,8 @@ package org.springframework.boot.autoconfigure;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -28,43 +30,77 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.Ordered;
 import org.springframework.util.StringUtils;
 
 /**
  * Abstract base class for a {@link BeanFactoryPostProcessor} that can be used to
- * dynamically declare that all beans of a specific type should depend on one or more
- * specific beans.
+ * dynamically declare that all beans of a specific type should depend on specific other
+ * beans identified by name or type.
  *
  * @author Marcel Overdijk
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Dmytro Nosan
  * @since 1.3.0
  * @see BeanDefinition#setDependsOn(String[])
  */
-public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor {
+public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 	private final Class<?> beanClass;
 
 	private final Class<? extends FactoryBean<?>> factoryBeanClass;
 
-	private final String[] dependsOn;
+	private final Function<ListableBeanFactory, Set<String>> dependsOn;
 
+	/**
+	 * Create an instance with target bean, factory bean classes, and dependency names.
+	 * @param beanClass target bean class
+	 * @param factoryBeanClass target factory bean class
+	 * @param dependsOn dependency names
+	 */
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
 			Class<? extends FactoryBean<?>> factoryBeanClass, String... dependsOn) {
 		this.beanClass = beanClass;
 		this.factoryBeanClass = factoryBeanClass;
-		this.dependsOn = dependsOn;
+		this.dependsOn = (beanFactory) -> new HashSet<>(Arrays.asList(dependsOn));
 	}
 
 	/**
-	 * Create an instance with target bean class and dependencies.
+	 * Create an instance with target bean, factory bean classes, and dependency types.
 	 * @param beanClass target bean class
-	 * @param dependsOn dependencies
+	 * @param factoryBeanClass target factory bean class
+	 * @param dependencyTypes dependency types
+	 * @since 2.1.7
+	 */
+	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass,
+			Class<? extends FactoryBean<?>> factoryBeanClass, Class<?>... dependencyTypes) {
+		this.beanClass = beanClass;
+		this.factoryBeanClass = factoryBeanClass;
+		this.dependsOn = (beanFactory) -> Arrays.stream(dependencyTypes)
+				.flatMap((dependencyType) -> getBeanNames(beanFactory, dependencyType).stream())
+				.collect(Collectors.toSet());
+	}
+
+	/**
+	 * Create an instance with target bean class and dependency names.
+	 * @param beanClass target bean class
+	 * @param dependsOn dependency names
 	 * @since 2.0.4
 	 */
 	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass, String... dependsOn) {
 		this(beanClass, null, dependsOn);
+	}
+
+	/**
+	 * Create an instance with target bean class and dependency types.
+	 * @param beanClass target bean class
+	 * @param dependencyTypes dependency types
+	 * @since 2.1.7
+	 */
+	protected AbstractDependsOnBeanFactoryPostProcessor(Class<?> beanClass, Class<?>... dependencyTypes) {
+		this(beanClass, null, dependencyTypes);
 	}
 
 	@Override
@@ -72,24 +108,29 @@ public abstract class AbstractDependsOnBeanFactoryPostProcessor implements BeanF
 		for (String beanName : getBeanNames(beanFactory)) {
 			BeanDefinition definition = getBeanDefinition(beanName, beanFactory);
 			String[] dependencies = definition.getDependsOn();
-			for (String bean : this.dependsOn) {
-				dependencies = StringUtils.addStringToArray(dependencies, bean);
+			for (String dependencyName : this.dependsOn.apply(beanFactory)) {
+				dependencies = StringUtils.addStringToArray(dependencies, dependencyName);
 			}
 			definition.setDependsOn(dependencies);
 		}
 	}
 
-	private Iterable<String> getBeanNames(ListableBeanFactory beanFactory) {
-		Set<String> names = new HashSet<>();
-		names.addAll(Arrays
-				.asList(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, this.beanClass, true, false)));
+	@Override
+	public int getOrder() {
+		return 0;
+	}
+
+	private Set<String> getBeanNames(ListableBeanFactory beanFactory) {
+		Set<String> names = getBeanNames(beanFactory, this.beanClass);
 		if (this.factoryBeanClass != null) {
-			for (String factoryBeanName : BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory,
-					this.factoryBeanClass, true, false)) {
-				names.add(BeanFactoryUtils.transformedBeanName(factoryBeanName));
-			}
+			names.addAll(getBeanNames(beanFactory, this.factoryBeanClass));
 		}
 		return names;
+	}
+
+	private static Set<String> getBeanNames(ListableBeanFactory beanFactory, Class<?> beanClass) {
+		String[] names = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(beanFactory, beanClass, true, false);
+		return Arrays.stream(names).map(BeanFactoryUtils::transformedBeanName).collect(Collectors.toSet());
 	}
 
 	private static BeanDefinition getBeanDefinition(String beanName, ConfigurableListableBeanFactory beanFactory) {

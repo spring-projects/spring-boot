@@ -16,14 +16,11 @@
 
 package org.springframework.boot.autoconfigure.condition;
 
-import org.junit.After;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.cache.caffeine.CaffeineCacheManager;
-import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -36,22 +33,15 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("spring-context-support-*.jar")
-public class ConditionalOnMissingBeanWithFilteredClasspathTests {
+class ConditionalOnMissingBeanWithFilteredClasspathTests {
 
-	private final AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-
-	@After
-	public void closeContext() {
-		this.context.close();
-	}
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withUserConfiguration(OnBeanTypeConfiguration.class);
 
 	@Test
-	public void testNameOnMissingBeanTypeWithMissingImport() {
-		this.context.register(OnBeanTypeConfiguration.class);
-		this.context.refresh();
-		assertThat(this.context.containsBean("foo")).isTrue();
+	void testNameOnMissingBeanTypeWithMissingImport() {
+		this.contextRunner.run((context) -> assertThat(context).hasBean("foo"));
 	}
 
 	@Configuration(proxyBeanMethods = false)

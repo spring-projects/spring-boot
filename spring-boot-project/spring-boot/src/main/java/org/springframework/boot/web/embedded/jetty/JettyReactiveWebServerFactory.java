@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,10 +17,10 @@
 package org.springframework.boot.web.embedded.jetty;
 
 import java.net.InetSocketAddress;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,12 +32,14 @@ import org.eclipse.jetty.server.HttpConnectionFactory;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.HandlerWrapper;
+import org.eclipse.jetty.server.handler.StatisticsHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.thread.ThreadPool;
 
 import org.springframework.boot.web.reactive.server.AbstractReactiveWebServerFactory;
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.http.server.reactive.HttpHandler;
@@ -68,7 +70,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 
 	private boolean useForwardHeaders;
 
-	private List<JettyServerCustomizer> jettyServerCustomizers = new ArrayList<>();
+	private Set<JettyServerCustomizer> jettyServerCustomizers = new LinkedHashSet<>();
 
 	private JettyResourceFactory resourceFactory;
 
@@ -119,7 +121,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	 */
 	public void setServerCustomizers(Collection<? extends JettyServerCustomizer> customizers) {
 		Assert.notNull(customizers, "Customizers must not be null");
-		this.jettyServerCustomizers = new ArrayList<>(customizers);
+		this.jettyServerCustomizers = new LinkedHashSet<>(customizers);
 	}
 
 	/**
@@ -139,11 +141,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		return this.threadPool;
 	}
 
-	/**
-	 * Set a Jetty {@link ThreadPool} that should be used by the {@link Server}. If set to
-	 * {@code null} (default), the {@link Server} creates a {@link ThreadPool} implicitly.
-	 * @param threadPool a Jetty ThreadPool to be used
-	 */
+	@Override
 	public void setThreadPool(ThreadPool threadPool) {
 		this.threadPool = threadPool;
 	}
@@ -167,7 +165,7 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	protected Server createJettyServer(JettyHttpHandlerAdapter servlet) {
-		int port = (getPort() >= 0) ? getPort() : 0;
+		int port = Math.max(getPort(), 0);
 		InetSocketAddress address = new InetSocketAddress(getAddress(), port);
 		Server server = new Server(getThreadPool());
 		server.addConnector(createConnector(address, server));
@@ -185,6 +183,11 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		}
 		if (this.useForwardHeaders) {
 			new ForwardHeadersCustomizer().customize(server);
+		}
+		if (getShutdown() == Shutdown.GRACEFUL) {
+			StatisticsHandler statisticsHandler = new StatisticsHandler();
+			statisticsHandler.setHandler(server.getHandler());
+			server.setHandler(statisticsHandler);
 		}
 		return server;
 	}

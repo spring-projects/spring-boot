@@ -21,6 +21,7 @@ import java.util.function.Function;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.OperationType;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvokerAdvisor;
 import org.springframework.boot.actuate.endpoint.invoke.OperationParameter;
@@ -54,7 +55,8 @@ public class CachingOperationInvokerAdvisor implements OperationInvokerAdvisor {
 
 	private boolean hasMandatoryParameter(OperationParameters parameters) {
 		for (OperationParameter parameter : parameters) {
-			if (parameter.isMandatory() && !SecurityContext.class.isAssignableFrom(parameter.getType())) {
+			if (parameter.isMandatory() && !ApiVersion.class.isAssignableFrom(parameter.getType())
+					&& !SecurityContext.class.isAssignableFrom(parameter.getType())) {
 				return true;
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -81,19 +81,25 @@ public class KafkaAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(ConsumerFactory.class)
-	public ConsumerFactory<?, ?> kafkaConsumerFactory() {
-		return new DefaultKafkaConsumerFactory<>(this.properties.buildConsumerProperties());
+	public ConsumerFactory<?, ?> kafkaConsumerFactory(
+			ObjectProvider<DefaultKafkaConsumerFactoryCustomizer> customizers) {
+		DefaultKafkaConsumerFactory<Object, Object> factory = new DefaultKafkaConsumerFactory<>(
+				this.properties.buildConsumerProperties());
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
+		return factory;
 	}
 
 	@Bean
 	@ConditionalOnMissingBean(ProducerFactory.class)
-	public ProducerFactory<?, ?> kafkaProducerFactory() {
+	public ProducerFactory<?, ?> kafkaProducerFactory(
+			ObjectProvider<DefaultKafkaProducerFactoryCustomizer> customizers) {
 		DefaultKafkaProducerFactory<?, ?> factory = new DefaultKafkaProducerFactory<>(
 				this.properties.buildProducerProperties());
 		String transactionIdPrefix = this.properties.getProducer().getTransactionIdPrefix();
 		if (transactionIdPrefix != null) {
 			factory.setTransactionIdPrefix(transactionIdPrefix);
 		}
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(factory));
 		return factory;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.HealthIndicator;
-import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.actuate.health.Status;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.IncorrectResultSetColumnCountException;
 import org.springframework.jdbc.core.ConnectionCallback;
@@ -50,8 +50,6 @@ import org.springframework.util.StringUtils;
  * @since 2.0.0
  */
 public class DataSourceHealthIndicator extends AbstractHealthIndicator implements InitializingBean {
-
-	private static final String DEFAULT_QUERY = "SELECT 1";
 
 	private DataSource dataSource;
 
@@ -104,19 +102,19 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 	}
 
 	private void doDataSourceHealthCheck(Health.Builder builder) throws Exception {
-		String product = getProduct();
-		builder.up().withDetail("database", product);
-		String validationQuery = getValidationQuery(product);
+		builder.up().withDetail("database", getProduct());
+		String validationQuery = this.query;
 		if (StringUtils.hasText(validationQuery)) {
-			try {
-				// Avoid calling getObject as it breaks MySQL on Java 7
-				List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
-				Object result = DataAccessUtils.requiredSingleResult(results);
-				builder.withDetail("result", result);
-			}
-			finally {
-				builder.withDetail("validationQuery", validationQuery);
-			}
+			builder.withDetail("validationQuery", validationQuery);
+			// Avoid calling getObject as it breaks MySQL on Java 7 and later
+			List<Object> results = this.jdbcTemplate.query(validationQuery, new SingleColumnRowMapper());
+			Object result = DataAccessUtils.requiredSingleResult(results);
+			builder.withDetail("result", result);
+		}
+		else {
+			builder.withDetail("validationQuery", "isValid()");
+			boolean valid = isConnectionValid();
+			builder.status((valid) ? Status.UP : Status.DOWN);
 		}
 	}
 
@@ -128,16 +126,12 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 		return connection.getMetaData().getDatabaseProductName();
 	}
 
-	protected String getValidationQuery(String product) {
-		String query = this.query;
-		if (!StringUtils.hasText(query)) {
-			DatabaseDriver specific = DatabaseDriver.fromProductName(product);
-			query = specific.getValidationQuery();
-		}
-		if (!StringUtils.hasText(query)) {
-			query = DEFAULT_QUERY;
-		}
-		return query;
+	private Boolean isConnectionValid() {
+		return this.jdbcTemplate.execute((ConnectionCallback<Boolean>) this::isConnectionValid);
+	}
+
+	private Boolean isConnectionValid(Connection connection) throws SQLException {
+		return connection.isValid(0);
 	}
 
 	/**
@@ -151,8 +145,8 @@ public class DataSourceHealthIndicator extends AbstractHealthIndicator implement
 
 	/**
 	 * Set a specific validation query to use to validate a connection. If none is set, a
-	 * default validation query is used.
-	 * @param query the query
+	 * validation based on {@link Connection#isValid(int)} is used.
+	 * @param query the validation query to use
 	 */
 	public void setQuery(String query) {
 		this.query = query;

@@ -52,7 +52,7 @@ public class InstallCommand extends OptionParsingCommand {
 		protected ExitStatus run(OptionSet options) throws Exception {
 			List<String> args = (List<String>) options.nonOptionArguments();
 			Assert.notEmpty(args,
-					"Please specify at least one " + "dependency, in the form group:artifact:version, to install");
+					"Please specify at least one dependency, in the form group:artifact:version, to install");
 			try {
 				new Installer(options, this).install(args);
 			}

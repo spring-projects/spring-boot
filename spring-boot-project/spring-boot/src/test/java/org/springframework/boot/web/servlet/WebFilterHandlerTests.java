@@ -33,13 +33,15 @@ import javax.servlet.annotation.WebInitParam;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.MutablePropertyValues;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.SimpleBeanDefinitionRegistry;
-import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.type.classreading.SimpleMetadataReaderFactory;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link WebFilterHandler}
@@ -55,9 +57,8 @@ class WebFilterHandlerTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	void defaultFilterConfiguration() throws IOException {
-		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory().getMetadataReader(DefaultConfigurationFilter.class.getName()));
-		this.handler.handle(scanned, this.registry);
+		AnnotatedBeanDefinition definition = createBeanDefinition(DefaultConfigurationFilter.class);
+		this.handler.handle(definition, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry
 				.getBeanDefinition(DefaultConfigurationFilter.class.getName());
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
@@ -68,14 +69,13 @@ class WebFilterHandlerTests {
 		assertThat((String[]) propertyValues.get("servletNames")).isEmpty();
 		assertThat((String[]) propertyValues.get("urlPatterns")).isEmpty();
 		assertThat(propertyValues.get("name")).isEqualTo(DefaultConfigurationFilter.class.getName());
-		assertThat(propertyValues.get("filter")).isEqualTo(scanned);
+		assertThat(propertyValues.get("filter")).isEqualTo(definition);
 	}
 
 	@Test
 	void filterWithCustomName() throws IOException {
-		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory().getMetadataReader(CustomNameFilter.class.getName()));
-		this.handler.handle(scanned, this.registry);
+		AnnotatedBeanDefinition definition = createBeanDefinition(CustomNameFilter.class);
+		this.handler.handle(definition, this.registry);
 		BeanDefinition filterRegistrationBean = this.registry.getBeanDefinition("custom");
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("name")).isEqualTo("custom");
@@ -83,7 +83,7 @@ class WebFilterHandlerTests {
 
 	@Test
 	void asyncSupported() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(AsyncSupportedFilter.class);
+		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(AsyncSupportedFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat(propertyValues.get("asyncSupported")).isEqualTo(true);
 	}
@@ -91,7 +91,7 @@ class WebFilterHandlerTests {
 	@Test
 	@SuppressWarnings("unchecked")
 	void dispatcherTypes() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(DispatcherTypesFilter.class);
+		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(DispatcherTypesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Set<DispatcherType>) propertyValues.get("dispatcherTypes")).containsExactly(DispatcherType.FORWARD,
 				DispatcherType.INCLUDE, DispatcherType.REQUEST);
@@ -100,7 +100,7 @@ class WebFilterHandlerTests {
 	@SuppressWarnings("unchecked")
 	@Test
 	void initParameters() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(InitParametersFilter.class);
+		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(InitParametersFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((Map<String, String>) propertyValues.get("initParameters")).containsEntry("a", "alpha")
 				.containsEntry("b", "bravo");
@@ -108,35 +108,42 @@ class WebFilterHandlerTests {
 
 	@Test
 	void servletNames() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(ServletNamesFilter.class);
+		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(ServletNamesFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("servletNames")).contains("alpha", "bravo");
 	}
 
 	@Test
 	void urlPatterns() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(UrlPatternsFilter.class);
+		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(UrlPatternsFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
 	void urlPatternsFromValue() throws IOException {
-		BeanDefinition filterRegistrationBean = getBeanDefinition(UrlPatternsFromValueFilter.class);
+		BeanDefinition filterRegistrationBean = handleBeanDefinitionForClass(UrlPatternsFromValueFilter.class);
 		MutablePropertyValues propertyValues = filterRegistrationBean.getPropertyValues();
 		assertThat((String[]) propertyValues.get("urlPatterns")).contains("alpha", "bravo");
 	}
 
 	@Test
 	void urlPatternsDeclaredTwice() throws IOException {
-		assertThatIllegalStateException().isThrownBy(() -> getBeanDefinition(UrlPatternsDeclaredTwiceFilter.class))
+		assertThatIllegalStateException()
+				.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
 				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");
 	}
 
-	BeanDefinition getBeanDefinition(Class<?> filterClass) throws IOException {
-		ScannedGenericBeanDefinition scanned = new ScannedGenericBeanDefinition(
-				new SimpleMetadataReaderFactory().getMetadataReader(filterClass.getName()));
-		this.handler.handle(scanned, this.registry);
+	private AnnotatedBeanDefinition createBeanDefinition(Class<?> filterClass) throws IOException {
+		AnnotatedBeanDefinition definition = mock(AnnotatedBeanDefinition.class);
+		given(definition.getBeanClassName()).willReturn(filterClass.getName());
+		given(definition.getMetadata()).willReturn(
+				new SimpleMetadataReaderFactory().getMetadataReader(filterClass.getName()).getAnnotationMetadata());
+		return definition;
+	}
+
+	private BeanDefinition handleBeanDefinitionForClass(Class<?> filterClass) throws IOException {
+		this.handler.handle(createBeanDefinition(filterClass), this.registry);
 		return this.registry.getBeanDefinition(filterClass.getName());
 	}
 

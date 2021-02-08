@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
+import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
@@ -29,12 +29,14 @@ import org.springframework.context.annotation.Import;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
-@EnableConfigurationProperties({ HealthEndpointProperties.class, HealthIndicatorProperties.class })
-@AutoConfigureAfter(HealthIndicatorAutoConfiguration.class)
-@Import({ HealthEndpointConfiguration.class, HealthEndpointWebExtensionConfiguration.class })
+@ConditionalOnAvailableEndpoint(endpoint = HealthEndpoint.class)
+@EnableConfigurationProperties(HealthEndpointProperties.class)
+@Import({ HealthEndpointConfiguration.class, ReactiveHealthEndpointConfiguration.class,
+		HealthEndpointWebExtensionConfiguration.class, HealthEndpointReactiveWebExtensionConfiguration.class })
 public class HealthEndpointAutoConfiguration {
 
 }

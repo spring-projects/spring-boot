@@ -36,7 +36,7 @@ public class CacheManagerCheck implements CommandLineRunner {
 
 	@Override
 	public void run(String... strings) throws Exception {
-		logger.info("\n\n" + "=========================================================\n" + "Using cache manager: "
+		logger.info("\n\n=========================================================\nUsing cache manager: "
 				+ this.cacheManager.getClass().getName() + "\n"
 				+ "=========================================================\n\n");
 	}

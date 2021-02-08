@@ -17,12 +17,10 @@
 package org.springframework.boot.autoconfigure.condition;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.condition.OnBeanCondition.BeanTypeDeductionException;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathExclusions;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -38,12 +36,11 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
 @ClassPathExclusions("jackson-core-*.jar")
-public class OnBeanConditionTypeDeductionFailureTests {
+class OnBeanConditionTypeDeductionFailureTests {
 
 	@Test
-	public void conditionalOnMissingBeanWithDeducedTypeThatIsPartiallyMissingFromClassPath() {
+	void conditionalOnMissingBeanWithDeducedTypeThatIsPartiallyMissingFromClassPath() {
 		assertThatExceptionOfType(Exception.class)
 				.isThrownBy(() -> new AnnotationConfigApplicationContext(ImportingConfiguration.class).close())
 				.satisfies((ex) -> {

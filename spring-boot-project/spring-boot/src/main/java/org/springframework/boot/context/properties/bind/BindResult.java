@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import org.springframework.beans.BeanUtils;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -111,19 +110,6 @@ public final class BindResult<T> {
 	 */
 	public T orElseGet(Supplier<? extends T> other) {
 		return (this.value != null) ? this.value : other.get();
-	}
-
-	/**
-	 * Return the object that was bound, or a new instance of the specified class if no
-	 * value has been bound.
-	 * @param type the type to create if no value was bound
-	 * @return the value, if bound, otherwise a new instance of {@code type}
-	 * @deprecated since 2.2.0 in favor of {@link Binder#bindOrCreate}
-	 */
-	@Deprecated
-	public T orElseCreate(Class<? extends T> type) {
-		Assert.notNull(type, "Type must not be null");
-		return (this.value != null) ? this.value : BeanUtils.instantiateClass(type);
 	}
 
 	/**

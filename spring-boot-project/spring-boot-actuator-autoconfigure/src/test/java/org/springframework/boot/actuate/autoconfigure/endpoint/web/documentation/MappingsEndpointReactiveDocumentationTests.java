@@ -100,23 +100,23 @@ class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumen
 				requestMappingConditionField(".produces.[].negated").description("Whether the media type is negated."));
 		List<FieldDescriptor> handlerMethod = Arrays.asList(
 				fieldWithPath("*.[].details.handlerMethod").optional().type(JsonFieldType.OBJECT)
-						.description("Details of the method, if any, " + "that will handle requests to this mapping."),
+						.description("Details of the method, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerMethod.className").type(JsonFieldType.STRING)
 						.description("Fully qualified name of the class of the method."),
 				fieldWithPath("*.[].details.handlerMethod.name").type(JsonFieldType.STRING)
 						.description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor").type(JsonFieldType.STRING)
-						.description("Descriptor of the method as specified in the Java " + "Language Specification."));
+						.description("Descriptor of the method as specified in the Java Language Specification."));
 		List<FieldDescriptor> handlerFunction = Arrays.asList(
-				fieldWithPath("*.[].details.handlerFunction").optional().type(JsonFieldType.OBJECT).description(
-						"Details of the function, if any, that will handle " + "requests to this mapping."),
+				fieldWithPath("*.[].details.handlerFunction").optional().type(JsonFieldType.OBJECT)
+						.description("Details of the function, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerFunction.className").type(JsonFieldType.STRING)
 						.description("Fully qualified name of the class of the function."));
 		List<FieldDescriptor> dispatcherHandlerFields = new ArrayList<>(Arrays.asList(
-				fieldWithPath("*").description(
-						"Dispatcher handler mappings, if any, keyed by " + "dispatcher handler bean name."),
+				fieldWithPath("*")
+						.description("Dispatcher handler mappings, if any, keyed by dispatcher handler bean name."),
 				fieldWithPath("*.[].details").optional().type(JsonFieldType.OBJECT)
-						.description("Additional implementation-specific " + "details about the mapping. Optional."),
+						.description("Additional implementation-specific details about the mapping. Optional."),
 				fieldWithPath("*.[].handler").description("Handler for the mapping."),
 				fieldWithPath("*.[].predicate").description("Predicate for the mapping.")));
 		dispatcherHandlerFields.addAll(requestMappingConditions);

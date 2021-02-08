@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,8 @@
 
 package org.springframework.boot.actuate.cassandra;
 
-import com.datastax.driver.core.ResultSet;
-import com.datastax.driver.core.querybuilder.QueryBuilder;
-import com.datastax.driver.core.querybuilder.Select;
+import com.datastax.oss.driver.api.core.ConsistencyLevel;
+import com.datastax.oss.driver.api.core.cql.SimpleStatement;
 
 import org.springframework.boot.actuate.health.AbstractHealthIndicator;
 import org.springframework.boot.actuate.health.Health;
@@ -31,9 +30,15 @@ import org.springframework.util.Assert;
  * Cassandra data stores.
  *
  * @author Julien Dubois
+ * @author Alexandre Dutra
  * @since 2.0.0
+ * @deprecated since 2.4.0 in favor of {@link CassandraDriverHealthIndicator}
  */
+@Deprecated
 public class CassandraHealthIndicator extends AbstractHealthIndicator {
+
+	private static final SimpleStatement SELECT = SimpleStatement
+			.newInstance("SELECT release_version FROM system.local").setConsistencyLevel(ConsistencyLevel.LOCAL_ONE);
 
 	private CassandraOperations cassandraOperations;
 
@@ -53,13 +58,7 @@ public class CassandraHealthIndicator extends AbstractHealthIndicator {
 
 	@Override
 	protected void doHealthCheck(Health.Builder builder) throws Exception {
-		Select select = QueryBuilder.select("release_version").from("system", "local");
-		ResultSet results = this.cassandraOperations.getCqlOperations().queryForResultSet(select);
-		if (results.isExhausted()) {
-			builder.up();
-			return;
-		}
-		String version = results.one().getString(0);
+		String version = this.cassandraOperations.getCqlOperations().queryForObject(SELECT, String.class);
 		builder.up().withDetail("version", version);
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,14 +34,7 @@ import com.fasterxml.jackson.databind.Module;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.PropertyNamingStrategy;
 import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.databind.module.SimpleModule;
-import com.fasterxml.jackson.datatype.joda.cfg.JacksonJodaDateFormat;
-import com.fasterxml.jackson.datatype.joda.ser.DateTimeSerializer;
 import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
 
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.BeanFactoryUtils;
@@ -54,6 +47,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.core.Ordered;
 import org.springframework.http.converter.json.Jackson2ObjectMapperBuilder;
 import org.springframework.util.Assert;
@@ -87,6 +81,7 @@ public class JacksonAutoConfiguration {
 	static {
 		Map<Object, Boolean> featureDefaults = new HashMap<>();
 		featureDefaults.put(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false);
+		featureDefaults.put(SerializationFeature.WRITE_DURATIONS_AS_TIMESTAMPS, false);
 		FEATURE_DEFAULTS = Collections.unmodifiableMap(featureDefaults);
 	}
 
@@ -109,46 +104,6 @@ public class JacksonAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass({ Jackson2ObjectMapperBuilder.class, DateTime.class, DateTimeSerializer.class,
-			JacksonJodaDateFormat.class })
-	static class JodaDateTimeJacksonConfiguration {
-
-		private static final Log logger = LogFactory.getLog(JodaDateTimeJacksonConfiguration.class);
-
-		@Bean
-		SimpleModule jodaDateTimeSerializationModule(JacksonProperties jacksonProperties) {
-			SimpleModule module = new SimpleModule();
-			JacksonJodaDateFormat jacksonJodaFormat = getJacksonJodaDateFormat(jacksonProperties);
-			if (jacksonJodaFormat != null) {
-				module.addSerializer(DateTime.class, new DateTimeSerializer(jacksonJodaFormat, 0));
-			}
-			return module;
-		}
-
-		private JacksonJodaDateFormat getJacksonJodaDateFormat(JacksonProperties jacksonProperties) {
-			if (jacksonProperties.getJodaDateTimeFormat() != null) {
-				return new JacksonJodaDateFormat(
-						DateTimeFormat.forPattern(jacksonProperties.getJodaDateTimeFormat()).withZoneUTC());
-			}
-			if (jacksonProperties.getDateFormat() != null) {
-				try {
-					return new JacksonJodaDateFormat(
-							DateTimeFormat.forPattern(jacksonProperties.getDateFormat()).withZoneUTC());
-				}
-				catch (IllegalArgumentException ex) {
-					if (logger.isWarnEnabled()) {
-						logger.warn("spring.jackson.date-format could not be used to "
-								+ "configure formatting of Joda's DateTime. You may want "
-								+ "to configure spring.jackson.joda-date-time-format as " + "well.");
-					}
-				}
-			}
-			return null;
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(ParameterNamesModule.class)
 	static class ParameterNamesModuleConfiguration {
 
@@ -165,6 +120,7 @@ public class JacksonAutoConfiguration {
 	static class JacksonObjectMapperBuilderConfiguration {
 
 		@Bean
+		@Scope("prototype")
 		@ConditionalOnMissingBean
 		Jackson2ObjectMapperBuilder jacksonObjectMapperBuilder(ApplicationContext applicationContext,
 				List<Jackson2ObjectMapperBuilderCustomizer> customizers) {
@@ -301,15 +257,24 @@ public class JacksonAutoConfiguration {
 			private void configurePropertyNamingStrategyField(Jackson2ObjectMapperBuilder builder, String fieldName) {
 				// Find the field (this way we automatically support new constants
 				// that may be added by Jackson in the future)
-				Field field = ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
-						PropertyNamingStrategy.class);
-				Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found on "
-						+ PropertyNamingStrategy.class.getName());
+				Field field = findPropertyNamingStrategyField(fieldName);
+				Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found");
 				try {
 					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);
+				}
+			}
+
+			private Field findPropertyNamingStrategyField(String fieldName) {
+				try {
+					return ReflectionUtils.findField(com.fasterxml.jackson.databind.PropertyNamingStrategies.class,
+							fieldName, PropertyNamingStrategy.class);
+				}
+				catch (NoClassDefFoundError ex) { // Fallback pre Jackson 2.12
+					return ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
+							PropertyNamingStrategy.class);
 				}
 			}
 

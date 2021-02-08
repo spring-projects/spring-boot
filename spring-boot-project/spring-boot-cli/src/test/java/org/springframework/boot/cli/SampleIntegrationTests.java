@@ -43,8 +43,8 @@ class SampleIntegrationTests {
 	@RegisterExtension
 	CliTester cli;
 
-	SampleIntegrationTests(CapturedOutput capturedOutput) {
-		this.cli = new CliTester("samples/", capturedOutput);
+	SampleIntegrationTests(CapturedOutput output) {
+		this.cli = new CliTester("samples/", output);
 	}
 
 	@Test

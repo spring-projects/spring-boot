@@ -38,6 +38,11 @@ public class CommonsDbcp2DataSourcePoolMetadata extends AbstractDataSourcePoolMe
 	}
 
 	@Override
+	public Integer getIdle() {
+		return getDataSource().getNumIdle();
+	}
+
+	@Override
 	public Integer getMax() {
 		return getDataSource().getMaxTotal();
 	}

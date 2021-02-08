@@ -1,0 +1,23 @@
+plugins {
+	id "war"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot traditional deployment smoke test"
+
+configurations {
+	providedRuntime {
+		extendsFrom dependencyManagement
+	}
+}
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	implementation("org.springframework:spring-webmvc")
+
+	providedRuntime(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+	providedRuntime("org.apache.tomcat.embed:tomcat-embed-jasper")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.apache.httpcomponents:httpclient")
+}

@@ -53,18 +53,17 @@ class FlywayEndpointTests {
 	}
 
 	@Test
-	@SuppressWarnings("deprecation")
 	void whenFlywayHasBeenBaselinedFlywayReportIsProduced() {
-		this.contextRunner.withBean(FlywayMigrationStrategy.class, () -> (flyway) -> {
-			flyway.setBaselineVersionAsString("2");
-			flyway.baseline();
-			flyway.migrate();
-		}).run((context) -> {
-			Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class).flywayBeans()
-					.getContexts().get(context.getId()).getFlywayBeans();
-			assertThat(flywayBeans).hasSize(1);
-			assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
-		});
+		this.contextRunner.withPropertyValues("spring.flyway.baseline-version=2")
+				.withBean(FlywayMigrationStrategy.class, () -> (flyway) -> {
+					flyway.baseline();
+					flyway.migrate();
+				}).run((context) -> {
+					Map<String, FlywayDescriptor> flywayBeans = context.getBean(FlywayEndpoint.class).flywayBeans()
+							.getContexts().get(context.getId()).getFlywayBeans();
+					assertThat(flywayBeans).hasSize(1);
+					assertThat(flywayBeans.values().iterator().next().getMigrations()).hasSize(3);
+				});
 	}
 
 }

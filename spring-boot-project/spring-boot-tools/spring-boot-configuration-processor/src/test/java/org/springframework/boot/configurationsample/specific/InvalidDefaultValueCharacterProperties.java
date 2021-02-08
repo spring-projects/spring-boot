@@ -17,6 +17,7 @@
 package org.springframework.boot.configurationsample.specific;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
+import org.springframework.boot.configurationsample.ConstructorBinding;
 import org.springframework.boot.configurationsample.DefaultValue;
 
 /**
@@ -29,6 +30,7 @@ public class InvalidDefaultValueCharacterProperties {
 
 	private final char letter;
 
+	@ConstructorBinding
 	public InvalidDefaultValueCharacterProperties(@DefaultValue("bad") char letter) {
 		this.letter = letter;
 	}

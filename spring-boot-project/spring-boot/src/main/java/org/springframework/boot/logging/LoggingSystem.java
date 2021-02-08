@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,11 +19,11 @@ package org.springframework.boot.logging;
 import java.lang.reflect.Constructor;
 import java.util.Collections;
 import java.util.EnumSet;
-import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -56,15 +56,16 @@ public abstract class LoggingSystem {
 	 */
 	public static final String ROOT_LOGGER_NAME = "ROOT";
 
-	private static final Map<String, String> SYSTEMS;
+	private static final LoggingSystemFactory SYSTEM_FACTORY = LoggingSystemFactory.fromSpringFactories();
 
-	static {
-		Map<String, String> systems = new LinkedHashMap<>();
-		systems.put("ch.qos.logback.core.Appender", "org.springframework.boot.logging.logback.LogbackLoggingSystem");
-		systems.put("org.apache.logging.log4j.core.impl.Log4jContextFactory",
-				"org.springframework.boot.logging.log4j2.Log4J2LoggingSystem");
-		systems.put("java.util.logging.LogManager", "org.springframework.boot.logging.java.JavaLoggingSystem");
-		SYSTEMS = Collections.unmodifiableMap(systems);
+	/**
+	 * Return the {@link LoggingSystemProperties} that should be applied.
+	 * @param environment the {@link ConfigurableEnvironment} used to obtain value
+	 * @return the {@link LoggingSystemProperties} to apply
+	 * @since 2.4.0
+	 */
+	public LoggingSystemProperties getSystemProperties(ConfigurableEnvironment environment) {
+		return new LoggingSystemProperties(environment);
 	}
 
 	/**
@@ -148,21 +149,21 @@ public abstract class LoggingSystem {
 	 * @return the logging system
 	 */
 	public static LoggingSystem get(ClassLoader classLoader) {
-		String loggingSystem = System.getProperty(SYSTEM_PROPERTY);
-		if (StringUtils.hasLength(loggingSystem)) {
-			if (NONE.equals(loggingSystem)) {
+		String loggingSystemClassName = System.getProperty(SYSTEM_PROPERTY);
+		if (StringUtils.hasLength(loggingSystemClassName)) {
+			if (NONE.equals(loggingSystemClassName)) {
 				return new NoOpLoggingSystem();
 			}
-			return get(classLoader, loggingSystem);
+			return get(classLoader, loggingSystemClassName);
 		}
-		return SYSTEMS.entrySet().stream().filter((entry) -> ClassUtils.isPresent(entry.getKey(), classLoader))
-				.map((entry) -> get(classLoader, entry.getValue())).findFirst()
-				.orElseThrow(() -> new IllegalStateException("No suitable logging system located"));
+		LoggingSystem loggingSystem = SYSTEM_FACTORY.getLoggingSystem(classLoader);
+		Assert.state(loggingSystem != null, "No suitable logging system located");
+		return loggingSystem;
 	}
 
-	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClass) {
+	private static LoggingSystem get(ClassLoader classLoader, String loggingSystemClassName) {
 		try {
-			Class<?> systemClass = ClassUtils.forName(loggingSystemClass, classLoader);
+			Class<?> systemClass = ClassUtils.forName(loggingSystemClassName, classLoader);
 			Constructor<?> constructor = systemClass.getDeclaredConstructor(ClassLoader.class);
 			constructor.setAccessible(true);
 			return (LoggingSystem) constructor.newInstance(classLoader);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,13 @@
 
 package org.springframework.boot.env;
 
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.LinkedHashMap;
+import java.util.LinkedHashSet;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.json.JsonParser;
@@ -35,6 +38,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
@@ -64,6 +68,11 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 
 	private static final String SERVLET_ENVIRONMENT_CLASS = "org.springframework.web."
 			+ "context.support.StandardServletEnvironment";
+
+	private static final Set<String> SERVLET_ENVIRONMENT_PROPERTY_SOURCES = new LinkedHashSet<>(
+			Arrays.asList(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME,
+					StandardServletEnvironment.SERVLET_CONTEXT_PROPERTY_SOURCE_NAME,
+					StandardServletEnvironment.SERVLET_CONFIG_PROPERTY_SOURCE_NAME));
 
 	/**
 	 * The default order for the processor.
@@ -115,9 +124,17 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	@SuppressWarnings("unchecked")
 	private void extract(String name, Map<String, Object> result, Object value) {
 		if (value instanceof Map) {
+			if (CollectionUtils.isEmpty((Map<?, ?>) value)) {
+				result.put(name, value);
+				return;
+			}
 			flatten(name, result, (Map<String, Object>) value);
 		}
 		else if (value instanceof Collection) {
+			if (CollectionUtils.isEmpty((Collection<?>) value)) {
+				result.put(name, value);
+				return;
+			}
 			int index = 0;
 			for (Object object : (Collection<Object>) value) {
 				extract(name + "[" + index + "]", result, object);
@@ -141,10 +158,13 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 	}
 
 	private String findPropertySource(MutablePropertySources sources) {
-		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)
-				&& sources.contains(StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME)) {
-			return StandardServletEnvironment.JNDI_PROPERTY_SOURCE_NAME;
-
+		if (ClassUtils.isPresent(SERVLET_ENVIRONMENT_CLASS, null)) {
+			PropertySource<?> servletPropertySource = sources.stream()
+					.filter((source) -> SERVLET_ENVIRONMENT_PROPERTY_SOURCES.contains(source.getName())).findFirst()
+					.orElse(null);
+			if (servletPropertySource != null) {
+				return servletPropertySource.getName();
+			}
 		}
 		return StandardEnvironment.SYSTEM_PROPERTIES_PROPERTY_SOURCE_NAME;
 	}
@@ -193,7 +213,7 @@ public class SpringApplicationJsonEnvironmentPostProcessor implements Environmen
 		static JsonPropertyValue get(PropertySource<?> propertySource) {
 			for (String candidate : CANDIDATES) {
 				Object value = propertySource.getProperty(candidate);
-				if (value != null && value instanceof String && StringUtils.hasLength((String) value)) {
+				if (value instanceof String && StringUtils.hasLength((String) value)) {
 					return new JsonPropertyValue(propertySource, candidate, (String) value);
 				}
 			}

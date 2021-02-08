@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.autoconfigure.web.servlet.error;
 
+import java.time.Clock;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -24,6 +27,8 @@ import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoC
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
@@ -37,21 +42,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link ErrorMvcAutoConfiguration}.
  *
  * @author Brian Clozel
+ * @author Scott Frederick
  */
 @ExtendWith(OutputCaptureExtension.class)
 class ErrorMvcAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner().withConfiguration(
 			AutoConfigurations.of(DispatcherServletAutoConfiguration.class, ErrorMvcAutoConfiguration.class));
 
 	@Test
-	void renderContainsViewWithExceptionDetails() throws Exception {
+	void renderContainsViewWithExceptionDetails() {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					false);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, withAllOptions()), webRequest.getRequest(),
 					webRequest.getResponse());
 			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
 			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
@@ -63,17 +69,33 @@ class ErrorMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void renderWhenAlreadyCommittedLogsMessage(CapturedOutput capturedOutput) {
+	void renderCanUseJavaTimeTypeAsTimestamp() throws Exception { // gh-23256
+		this.contextRunner.run((context) -> {
+			View errorView = context.getBean("error", View.class);
+			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
+			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
+					false);
+			Map<String, Object> attributes = errorAttributes.getErrorAttributes(webRequest, withAllOptions());
+			attributes.put("timestamp", Clock.systemUTC().instant());
+			errorView.render(attributes, webRequest.getRequest(), webRequest.getResponse());
+			assertThat(webRequest.getResponse().getContentType()).isEqualTo("text/html;charset=UTF-8");
+			String responseString = ((MockHttpServletResponse) webRequest.getResponse()).getContentAsString();
+			assertThat(responseString).contains("This application has no explicit mapping for /error");
+		});
+	}
+
+	@Test
+	void renderWhenAlreadyCommittedLogsMessage(CapturedOutput output) {
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);
 			DispatcherServletWebRequest webRequest = createWebRequest(new IllegalStateException("Exception message"),
 					true);
-			errorView.render(errorAttributes.getErrorAttributes(webRequest, true), webRequest.getRequest(),
+			errorView.render(errorAttributes.getErrorAttributes(webRequest, withAllOptions()), webRequest.getRequest(),
 					webRequest.getResponse());
-			assertThat(capturedOutput).contains("Cannot render error page for request [/path] "
+			assertThat(output).contains("Cannot render error page for request [/path] "
 					+ "and exception [Exception message] as the response has "
-					+ "already been committed. As a result, the response may " + "have the wrong status code.");
+					+ "already been committed. As a result, the response may have the wrong status code.");
 		});
 	}
 
@@ -87,6 +109,11 @@ class ErrorMvcAutoConfigurationTests {
 		response.setOutputStreamAccessAllowed(!committed);
 		response.setWriterAccessAllowed(!committed);
 		return webRequest;
+	}
+
+	private ErrorAttributeOptions withAllOptions() {
+		return ErrorAttributeOptions.of(Include.EXCEPTION, Include.STACK_TRACE, Include.MESSAGE,
+				Include.BINDING_ERRORS);
 	}
 
 }

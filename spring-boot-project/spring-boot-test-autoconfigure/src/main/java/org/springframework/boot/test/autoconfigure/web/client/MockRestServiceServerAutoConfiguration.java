@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.test.autoconfigure.web.client;
 
 import java.io.IOException;
 import java.lang.reflect.Constructor;
+import java.time.Duration;
 import java.util.Map;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -98,6 +99,11 @@ public class MockRestServiceServerAutoConfiguration {
 		}
 
 		@Override
+		public void verify(Duration timeout) {
+			getDelegate().verify(timeout);
+		}
+
+		@Override
 		public void reset() {
 			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer.getExpectationManagers();
 			if (expectationManagers.size() == 1) {
@@ -108,9 +114,9 @@ public class MockRestServiceServerAutoConfiguration {
 		private RequestExpectationManager getDelegate() {
 			Map<RestTemplate, RequestExpectationManager> expectationManagers = this.customizer.getExpectationManagers();
 			Assert.state(!expectationManagers.isEmpty(), "Unable to use auto-configured MockRestServiceServer since "
-					+ "MockServerRestTemplateCustomizer has not been bound to " + "a RestTemplate");
+					+ "MockServerRestTemplateCustomizer has not been bound to a RestTemplate");
 			Assert.state(expectationManagers.size() == 1, "Unable to use auto-configured MockRestServiceServer since "
-					+ "MockServerRestTemplateCustomizer has been bound to " + "more than one RestTemplate");
+					+ "MockServerRestTemplateCustomizer has been bound to more than one RestTemplate");
 			return expectationManagers.values().iterator().next();
 		}
 

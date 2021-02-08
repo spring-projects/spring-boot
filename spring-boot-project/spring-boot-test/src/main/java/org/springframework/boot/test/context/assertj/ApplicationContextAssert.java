@@ -175,7 +175,7 @@ public class ApplicationContextAssert<C extends ApplicationContext>
 		String[] names = scope.getBeanNamesForType(getApplicationContext(), type);
 		if (names.length > 0) {
 			throwAssertionError(new BasicErrorMessageFactory(
-					"%nExpecting:%n <%s>%nnot to have a beans of type:%n <%s>%nbut found:%n <%s>",
+					"%nExpecting:%n <%s>%nnot to have any beans of type:%n <%s>%nbut found:%n <%s>",
 					getApplicationContext(), type, names));
 		}
 		return this;

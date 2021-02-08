@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,6 @@ import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
 import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.util.ClassUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.util.NestedServletException;
@@ -62,8 +61,7 @@ import org.springframework.web.util.NestedServletException;
  * @author Andy Wilkinson
  * @since 2.0.0
  */
-@Order(Ordered.HIGHEST_PRECEDENCE + 1)
-public class ErrorPageFilter implements Filter, ErrorPageRegistry {
+public class ErrorPageFilter implements Filter, ErrorPageRegistry, Ordered {
 
 	private static final Log logger = LogFactory.getLog(ErrorPageFilter.class);
 
@@ -137,7 +135,10 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		catch (Throwable ex) {
 			Throwable exceptionToHandle = ex;
 			if (ex instanceof NestedServletException) {
-				exceptionToHandle = ((NestedServletException) ex).getRootCause();
+				Throwable rootCause = ((NestedServletException) ex).getRootCause();
+				if (rootCause != null) {
+					exceptionToHandle = rootCause;
+				}
 			}
 			handleException(request, response, wrapped, exceptionToHandle);
 			response.flushBuffer();
@@ -295,6 +296,11 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 	public void destroy() {
 	}
 
+	@Override
+	public int getOrder() {
+		return Ordered.HIGHEST_PRECEDENCE + 1;
+	}
+
 	private static void addClassIfPresent(Collection<Class<?>> collection, String className) {
 		try {
 			collection.add(ClassUtils.forName(className, null));
@@ -362,7 +368,6 @@ public class ErrorPageFilter implements Filter, ErrorPageRegistry {
 		public PrintWriter getWriter() throws IOException {
 			sendErrorIfNecessary();
 			return super.getWriter();
-
 		}
 
 		@Override

@@ -7,5 +7,5 @@ plugins {
 applicationName = 'custom'
 
 bootJar {
-	mainClassName = 'com.example.ExampleApplication'
+	mainClass = 'com.example.ExampleApplication'
 }

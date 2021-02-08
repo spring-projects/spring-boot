@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.actuate.health;
+
+import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
 import reactor.test.StepVerifier;
@@ -43,7 +45,7 @@ class HealthIndicatorReactiveAdapterTests {
 		HealthIndicator delegate = mock(HealthIndicator.class);
 		HealthIndicatorReactiveAdapter adapter = new HealthIndicatorReactiveAdapter(delegate);
 		given(delegate.health()).willThrow(new IllegalStateException("Expected"));
-		StepVerifier.create(adapter.health()).expectError(IllegalStateException.class);
+		StepVerifier.create(adapter.health()).expectError(IllegalStateException.class).verify(Duration.ofSeconds(10));
 	}
 
 	@Test

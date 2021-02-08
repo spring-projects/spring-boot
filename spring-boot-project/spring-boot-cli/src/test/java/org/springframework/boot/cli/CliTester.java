@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 
 	private final BuildOutput buildOutput = new BuildOutput(getClass());
 
-	private final CapturedOutput capturedOutput;
+	private final CapturedOutput output;
 
 	private String previousOutput = "";
 
@@ -75,7 +75,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 
 	private File serverPortFile;
 
-	public CliTester(String prefix, CapturedOutput capturedOutput) {
+	public CliTester(String prefix, CapturedOutput output) {
 		this.prefix = prefix;
 		try {
 			this.temp = Files.createTempDirectory("cli-tester").toFile();
@@ -83,7 +83,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to create temp directory");
 		}
-		this.capturedOutput = capturedOutput;
+		this.output = output;
 	}
 
 	public void setTimeout(long timeout) {
@@ -96,12 +96,14 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 		for (String arg : args) {
 			if (arg.startsWith("--classpath=")) {
 				arg = arg + ":" + this.buildOutput.getTestClassesLocation().getAbsolutePath();
+				arg = arg + ":" + this.buildOutput.getTestResourcesLocation().getAbsolutePath();
 				classpathUpdated = true;
 			}
 			updatedArgs.add(arg);
 		}
 		if (!classpathUpdated) {
-			updatedArgs.add("--classpath=.:" + this.buildOutput.getTestClassesLocation().getAbsolutePath());
+			updatedArgs.add("--classpath=.:" + this.buildOutput.getTestClassesLocation().getAbsolutePath() + ":"
+					+ this.buildOutput.getTestResourcesLocation().getAbsolutePath());
 		}
 		Future<RunCommand> future = submitCommand(new RunCommand(), StringUtils.toStringArray(updatedArgs));
 		this.commands.add(future.get(this.timeout, TimeUnit.MILLISECONDS));
@@ -134,6 +136,8 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 					"org.springframework.boot.cli.CliTesterSpringApplication");
 			this.serverPortFile = new File(this.temp, "server.port");
 			System.setProperty("portfile", this.serverPortFile.getAbsolutePath());
+			String userHome = System.getProperty("user.home");
+			System.setProperty("user.home", "src/test/resources/cli-tester");
 			try {
 				command.run(sources);
 				return command;
@@ -142,6 +146,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 				System.clearProperty("server.port");
 				System.clearProperty("spring.application.class.name");
 				System.clearProperty("portfile");
+				System.setProperty("user.home", userHome);
 				Thread.currentThread().setContextClassLoader(loader);
 			}
 		});
@@ -182,7 +187,7 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 	}
 
 	private String getOutput() {
-		String output = this.capturedOutput.toString().substring(this.previousOutput.length());
+		String output = this.output.toString().substring(this.previousOutput.length());
 		this.previousOutput = output;
 		return output;
 	}

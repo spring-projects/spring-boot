@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,20 +16,26 @@
 
 package org.springframework.boot.autoconfigure.session;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
+import org.testcontainers.containers.MongoDBContainer;
+import org.testcontainers.junit.jupiter.Container;
+import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.data.mongo.MongoDataAutoConfiguration;
 import org.springframework.boot.autoconfigure.mongo.MongoAutoConfiguration;
-import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
-import org.springframework.session.data.mongo.MongoOperationsSessionRepository;
-import org.springframework.session.data.redis.RedisOperationsSessionRepository;
-import org.springframework.session.hazelcast.HazelcastSessionRepository;
-import org.springframework.session.jdbc.JdbcOperationsSessionRepository;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
+import org.springframework.session.data.mongo.MongoIndexedSessionRepository;
+import org.springframework.session.data.redis.RedisIndexedSessionRepository;
+import org.springframework.session.hazelcast.HazelcastIndexedSessionRepository;
+import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,43 +44,58 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
+@Testcontainers(disabledWithoutDocker = true)
 class SessionAutoConfigurationMongoTests extends AbstractSessionAutoConfigurationTests {
 
+	@Container
+	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
+			.withStartupTimeout(Duration.ofMinutes(5));
+
 	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(SessionAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+					SessionAutoConfiguration.class))
+			.withPropertyValues("spring.data.mongodb.uri=" + mongoDB.getReplicaSetUrl());
 
 	@Test
 	void defaultConfig() {
 		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb")
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
 	}
 
 	@Test
 	void defaultConfigWithUniqueStoreImplementation() {
 		this.contextRunner
-				.withClassLoader(new FilteredClassLoader(HazelcastSessionRepository.class,
-						JdbcOperationsSessionRepository.class, RedisOperationsSessionRepository.class))
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader(HazelcastIndexedSessionRepository.class,
+						JdbcIndexedSessionRepository.class, RedisIndexedSessionRepository.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
+	}
+
+	@Test
+	void defaultConfigWithCustomTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "spring.session.timeout=1m")
+				.run(validateSpringSessionUsesMongo("sessions", Duration.ofMinutes(1)));
 	}
 
 	@Test
 	void mongoSessionStoreWithCustomizations() {
 		this.contextRunner
-				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
-						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class))
 				.withPropertyValues("spring.session.store-type=mongodb", "spring.session.mongodb.collection-name=foo")
 				.run(validateSpringSessionUsesMongo("foo"));
 	}
 
 	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(String collectionName) {
+		return validateSpringSessionUsesMongo(collectionName,
+				new ServerProperties().getServlet().getSession().getTimeout());
+	}
+
+	private ContextConsumer<AssertableWebApplicationContext> validateSpringSessionUsesMongo(String collectionName,
+			Duration timeout) {
 		return (context) -> {
-			MongoOperationsSessionRepository repository = validateSessionRepository(context,
-					MongoOperationsSessionRepository.class);
+			MongoIndexedSessionRepository repository = validateSessionRepository(context,
+					MongoIndexedSessionRepository.class);
 			assertThat(repository).hasFieldOrPropertyWithValue("collectionName", collectionName);
+			assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds",
+					(int) timeout.getSeconds());
 		};
 	}
 

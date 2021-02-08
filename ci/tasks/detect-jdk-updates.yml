@@ -8,5 +8,6 @@ params:
   GITHUB_PASSWORD:
   GITHUB_USERNAME:
   JDK_VERSION:
+  MILESTONE:
 run:
   path: git-repo/ci/scripts/detect-jdk-updates.sh

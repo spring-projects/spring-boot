@@ -40,9 +40,7 @@ import org.springframework.test.context.BootstrapWith;
 import org.springframework.test.context.junit.jupiter.SpringExtension;
 
 /**
- * Annotation that can be used in combination with {@code @RunWith(SpringRunner.class)}
- * for a typical JSON test. Can be used when a test focuses <strong>only</strong> on JSON
- * serialization.
+ * Annotation for a JSON test that focuses <strong>only</strong> on JSON serialization.
  * <p>
  * Using this annotation will disable full auto-configuration and instead apply only
  * configuration relevant to JSON tests (i.e. {@code @JsonComponent}, Jackson
@@ -52,6 +50,9 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
  * {@link JacksonTester}, {@link JsonbTester} and {@link GsonTester} fields. More
  * fine-grained control can be provided via the
  * {@link AutoConfigureJsonTesters @AutoConfigureJsonTesters} annotation.
+ * <p>
+ * When using JUnit 4, this annotation should be used in combination with
+ * {@code @RunWith(SpringRunner.class)}.
  *
  * @author Phillip Webb
  * @author Artsiom Yudovin
@@ -67,7 +68,7 @@ import org.springframework.test.context.junit.jupiter.SpringExtension;
 @BootstrapWith(JsonTestContextBootstrapper.class)
 @ExtendWith(SpringExtension.class)
 @OverrideAutoConfiguration(enabled = false)
-@TypeExcludeFilters(JsonExcludeFilter.class)
+@TypeExcludeFilters(JsonTypeExcludeFilter.class)
 @AutoConfigureCache
 @AutoConfigureJson
 @AutoConfigureJsonTesters

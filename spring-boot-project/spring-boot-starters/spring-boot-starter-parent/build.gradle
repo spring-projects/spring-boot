@@ -1,0 +1,222 @@
+plugins {
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+	id "org.springframework.boot.maven-repository"
+}
+
+description = "Parent pom providing dependency and plugin management for applications built with Maven"
+
+publishing.publications.withType(MavenPublication) {
+	pom.withXml { xml ->
+		def root = xml.asNode()
+		root.groupId.replaceNode {
+			parent {
+				delegate.groupId("${project.group}")
+				delegate.artifactId("spring-boot-dependencies")
+				delegate.version("${project.version}")
+			}
+		}
+		root.remove(root.version)
+		root.description.plus {
+			properties {
+				delegate."java.version"('1.8')
+				delegate."resource.delimiter"('@')
+				delegate."maven.compiler.source"('${java.version}')
+				delegate."maven.compiler.target"('${java.version}')
+				delegate."project.build.sourceEncoding"('UTF-8')
+				delegate."project.reporting.outputEncoding"('UTF-8')
+			}
+		}
+		root.scm.plus {
+			build {
+				resources {
+					resource {
+						delegate.directory('${basedir}/src/main/resources')
+						delegate.filtering('true')
+						includes {
+							delegate.include('**/application*.yml')
+							delegate.include('**/application*.yaml')
+							delegate.include('**/application*.properties')
+						}
+					}
+					resource {
+						delegate.directory('${basedir}/src/main/resources')
+						excludes {
+							delegate.exclude('**/application*.yml')
+							delegate.exclude('**/application*.yaml')
+							delegate.exclude('**/application*.properties')
+						}
+					}
+				}
+				pluginManagement {
+					plugins {
+						plugin {
+							delegate.groupId('org.jetbrains.kotlin')
+							delegate.artifactId('kotlin-maven-plugin')
+							delegate.version('${kotlin.version}')
+							configuration {
+								delegate.jvmTarget('${java.version}')
+								delegate.javaParameters('true')
+							}
+							executions {
+								execution {
+									delegate.id('compile')
+									delegate.phase('compile')
+									goals {
+										delegate.goal('compile')
+									}
+								}
+								execution {
+									delegate.id('test-compile')
+									delegate.phase('test-compile')
+									goals {
+										delegate.goal('test-compile')
+									}
+								}
+							}
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-compiler-plugin')
+							configuration {
+								delegate.parameters('true')
+							}
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-failsafe-plugin')
+							executions {
+								execution {
+									goals {
+										delegate.goal('integration-test')
+										delegate.goal('verify')
+									}
+								}
+							}
+							configuration {
+								delegate.classesDirectory('${project.build.outputDirectory}')
+							}
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-jar-plugin')
+							configuration {
+								archive {
+									manifest {
+										delegate.mainClass('${start-class}')
+										delegate.addDefaultImplementationEntries('true')
+									}
+								}
+							}
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-war-plugin')
+							configuration {
+								archive {
+									manifest {
+										delegate.mainClass('${start-class}')
+										delegate.addDefaultImplementationEntries('true')
+									}
+								}
+							}
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-resources-plugin')
+							configuration {
+								delegate.propertiesEncoding('${project.build.sourceEncoding}')
+								delimiters {
+									delegate.delimiter('${resource.delimiter}')
+								}
+								delegate.useDefaultDelimiters('false')
+							}
+						}
+						plugin {
+							delegate.groupId('pl.project13.maven')
+							delegate.artifactId('git-commit-id-plugin')
+							executions {
+								execution {
+									goals {
+										delegate.goal('revision')
+									}
+								}
+							}
+							configuration {
+								delegate.verbose('true')
+								delegate.dateFormat("yyyy-MM-dd'T'HH:mm:ssZ")
+								delegate.generateGitPropertiesFile('true')
+								delegate.generateGitPropertiesFilename('${project.build.outputDirectory}/git.properties')
+							}
+						}
+						plugin {
+							delegate.groupId('org.springframework.boot')
+							delegate.artifactId('spring-boot-maven-plugin')
+							executions {
+								execution {
+									delegate.id('repackage')
+									goals {
+										delegate.goal('repackage')
+									}
+								}
+							}
+							configuration {
+								delegate.mainClass('${start-class}')
+							}
+						}
+						plugin {
+							delegate.groupId('org.apache.maven.plugins')
+							delegate.artifactId('maven-shade-plugin')
+							configuration {
+								delegate.keepDependenciesWithProvidedScope('true')
+								delegate.createDependencyReducedPom('true')
+								filters {
+									filter {
+										delegate.artifact('*:*')
+										excludes {
+											delegate.exclude('META-INF/*.SF')
+											delegate.exclude('META-INF/*.DSA')
+											delegate.exclude('META-INF/*.RSA')
+										}
+									}
+								}
+							}
+							delegate.dependencies {
+								dependency {
+									delegate.groupId('org.springframework.boot')
+									delegate.artifactId('spring-boot-maven-plugin')
+									delegate.version("${project.version}")
+								}
+							}
+							executions {
+								execution {
+									delegate.phase('package')
+									goals {
+										delegate.goal('shade')
+									}
+									configuration {
+										transformers {
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
+												delegate.resource('META-INF/spring.handlers')
+											}
+											transformer(implementation: 'org.springframework.boot.maven.PropertiesMergingResourceTransformer') {
+												delegate.resource('META-INF/spring.factories')
+											}
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.AppendingTransformer') {
+												delegate.resource('META-INF/spring.schemas')
+											}
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ServicesResourceTransformer')
+											transformer(implementation: 'org.apache.maven.plugins.shade.resource.ManifestResourceTransformer') {
+												delegate.mainClass('${start-class}')
+											}
+										}
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+}

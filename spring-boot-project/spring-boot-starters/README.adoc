@@ -4,7 +4,7 @@ Spring Boot Starters are a set of convenient dependency descriptors that you can
 in your application. You get a one-stop-shop for all the Spring and related technology
 that you need without having to hunt through sample code and copy paste loads of
 dependency descriptors. For example, if you want to get started using Spring and
-JPA for database access just include the `spring-boot-starter-data-jpa` dependency in
+JPA for database access include the `spring-boot-starter-data-jpa` dependency in
 your project, and you are good to go.
 
 For complete details see the
@@ -12,7 +12,7 @@ https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot
 
 == Community Contributions
 If you create a starter for a technology that is not already in the standard list we can
-list it here. Just send a pull request for this page.
+list it here. To ask us to do so, please open a pull request that updates this page.
 
 WARNING: While the
 https://docs.spring.io/spring-boot/docs/current/reference/htmlsingle/#using-boot-starter[reference documentation]
@@ -22,8 +22,11 @@ do as they were designed before this was clarified.
 |===
 | Name | Location
 
-| https://camel.apache.org/spring-boot.html[Apache Camel]
-| https://github.com/apache/camel/tree/master/components/camel-spring-boot
+| AOProfiling (Aspect-oriented profiling)
+| https://github.com/rechnerherz/aoprofiling-spring-boot-starter
+
+| https://camel.apache.org/camel-spring-boot/latest/spring-boot.html[Apache Camel]
+| https://github.com/apache/camel-spring-boot
 
 | https://cxf.apache.org/docs/springboot.html[Apache CXF]
 | https://github.com/apache/cxf
@@ -31,11 +34,17 @@ do as they were designed before this was clarified.
 | https://qpid.apache.org/components/jms/[Apache Qpid]
 | https://github.com/amqphub/amqp-10-jms-spring-boot
 
+| https://rocketmq.apache.org/[Apache RocketMQ]
+| https://github.com/ThierrySquirrel/rocketmq-spring-boot-starter
+
 | https://wicket.apache.org/[Apache Wicket]
 | https://github.com/MarcGiffing/wicket-spring-boot
 
 | https://arangodb.com/[ArangoDB]
 | https://github.com/arangodb/spring-boot-starter
+
+| https://line.github.io/armeria/[Armeria]
+| https://github.com/line/armeria/
 
 | https://axoniq.io[Axon Framework]
 | https://github.com/AxonFramework/AxonFramework
@@ -64,6 +73,9 @@ do as they were designed before this was clarified.
 | DataSource decorating (https://github.com/p6spy/p6spy[P6Spy], https://github.com/ttddyy/datasource-proxy[datasource-proxy], https://github.com/vladmihalcea/flexy-pool[FlexyPool])
 | https://github.com/gavlyukovskiy/spring-boot-data-source-decorator
 
+| https://github.com/Allurx/desensitization[desensitization]
+| https://github.com/Allurx/desensitization-spring-boot
+
 | https://github.com/docker-java/docker-java/[Docker Java] and https://github.com/spotify/docker-client/[Docker Client]
 | https://github.com/jliu666/docker-api-spring-boot
 
@@ -72,6 +84,9 @@ do as they were designed before this was clarified.
 
 | Elegant Error Handling for Spring Boot
 | https://github.com/alimate/errors-spring-boot-starter
+
+| https://elide.io/[Elide]
+| https://github.com/yahoo/elide/tree/master/elide-spring/elide-spring-boot-starter
 
 | ErroREST exception handler
 | https://github.com/mkopylec/errorest-spring-boot-starter
@@ -85,8 +100,11 @@ do as they were designed before this was clarified.
 | https://graphql.org/[GraphQL] and https://github.com/graphql/graphiql[GraphiQL] with https://github.com/graphql-java/[GraphQL Java]
 | https://github.com/graphql-java/graphql-spring-boot
 
+| https://javaee.github.io/grizzly/[Grizzly]
+| https://github.com/dabla/grizzly-spring-boot-starter
+
 | https://www.grpc.io/[gRPC]
-| https://github.com/LogNet/grpc-spring-boot-starter
+| https://github.com/LogNet/grpc-spring-boot-starter & https://github.com/yidongnan/grpc-spring-boot-starter
 
 | https://ha-jdbc.github.io/[HA JDBC]
 | https://github.com/lievendoclo/hajdbc-spring-boot
@@ -100,6 +118,9 @@ do as they were designed before this was clarified.
 | Hiatus for Spring Boot
 | https://github.com/jihor/hiatus-spring-boot
 
+| https://www.hyperledger.org/use/fabric[Hyperledger Fabric]
+| https://github.com/bxforce/hyperledger-fabric-spring-boot
+
 | https://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
@@ -111,6 +132,9 @@ do as they were designed before this was clarified.
 
 | https://javers.org[JaVers]
 | https://github.com/javers/javers
+
+| https://www.jobrunr.io[JobRunr]
+| https://github.com/jobrunr/jobrunr
 
 | https://github.com/sbraconnier/jodconverter[JODConverter]
 | https://github.com/sbraconnier/jodconverter
@@ -124,6 +148,9 @@ do as they were designed before this was clarified.
 | https://logback.qos.ch/access.html[Logback-access]
 | https://github.com/akihyro/logback-access-spring-boot-starter
 
+| https://github.com/mulesoft/mule[Mule 4]
+| https://github.com/hawkore/mule4-spring-boot-starter
+
 | https://github.com/mybatis/mybatis-3[MyBatis]
 | https://github.com/mybatis/mybatis-spring-boot
 
@@ -133,8 +160,14 @@ do as they were designed before this was clarified.
 | https://developer.nexmo.com/[Nexmo]
 | https://github.com/nexmo/nexmo-spring-boot-starter
 
+| https://funthomas424242.github.io/nitrite-spring-boot-starter/[Nitrite Database]
+| https://github.com/FunThomas424242/nitrite-spring-boot-starter
+
 | https://github.com/nutzam/nutz[Nutz]
 | https://github.com/nutzam/nutzmore
+
+| https://groupe-sii.github.io/ogham/[Ogham]
+| https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-all, https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-email, and https://github.com/groupe-sii/ogham/tree/master/ogham-spring-boot-starter-sms
 
 | https://square.github.io/okhttp/[OkHttp]
 | https://github.com/freefair/okhttp-spring-boot
@@ -142,11 +175,26 @@ do as they were designed before this was clarified.
 | https://developer.okta.com/[Okta]
 | https://github.com/okta/okta-spring-boot
 
+| https://www.optaplanner.org/[OptaPlanner]
+| https://github.com/kiegroup/optaplanner/tree/master/optaplanner-integration/optaplanner-spring-boot-starter
+
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
 
+| https://pebbletemplates.io/[Pebble Templates]
+| https://github.com/PebbleTemplates/pebble
+
+| https://picocli.info/[picocli]
+| https://github.com/remkop/picocli/tree/master/picocli-spring-boot-starter
+
+| https://www.quickfixj.org/[quickfixj]
+| https://github.com/gevoulga/spring-boot-quickfixj
+
 | https://www.rabbitmq.com/[RabbitMQ] (Advanced usage)
 | https://github.com/societe-generale/rabbitmq-advanced-spring-boot-starter
+
+| https://www.rabbitmq.com/[RabbitMQ] (Declarative configuration)
+| https://github.com/EugeneMsv/amqp-rabbit-spring-boot-autoconfigure
 
 | https://resteasy.jboss.org/[RESTEasy]
 | https://github.com/resteasy/resteasy-spring-boot
@@ -182,7 +230,7 @@ do as they were designed before this was clarified.
 | https://github.com/Catalysts/structurizr-extensions
 
 | https://vaadin.com/[Vaadin]
-| https://github.com/vaadin/spring/tree/master/vaadin-spring-boot-starter
+| https://github.com/vaadin/platform/tree/master/vaadin-spring-boot-starter
 
 | https://github.com/valiktor/valiktor[Valiktor]
 | https://github.com/valiktor/valiktor/tree/master/valiktor-spring/valiktor-spring-boot-starter
@@ -192,5 +240,8 @@ do as they were designed before this was clarified.
 
 | https://alexo.github.io/wro4j/[Wro4j]
 | https://github.com/michael-simons/wro4j-spring-boot-starter
+
+| https://github.com/knowm/XChange[XChange]
+| https://github.com/cassandre-tech/cassandre-trading-bot
 
 |===

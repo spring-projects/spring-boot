@@ -164,7 +164,6 @@ class JCacheCacheConfiguration implements BeanClassLoaderAware {
 			providers.next();
 			if (providers.hasNext()) {
 				return ConditionOutcome.noMatch(message.foundExactly("multiple JSR-107 providers"));
-
 			}
 			return ConditionOutcome.match(message.foundExactly("single JSR-107 provider"));
 		}

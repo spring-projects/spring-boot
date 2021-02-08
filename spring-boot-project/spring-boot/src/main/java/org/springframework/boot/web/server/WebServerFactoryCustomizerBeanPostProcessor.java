@@ -48,7 +48,7 @@ public class WebServerFactoryCustomizerBeanPostProcessor implements BeanPostProc
 	@Override
 	public void setBeanFactory(BeanFactory beanFactory) {
 		Assert.isInstanceOf(ListableBeanFactory.class, beanFactory,
-				"WebServerCustomizerBeanPostProcessor can only be used " + "with a ListableBeanFactory");
+				"WebServerCustomizerBeanPostProcessor can only be used with a ListableBeanFactory");
 		this.beanFactory = (ListableBeanFactory) beanFactory;
 	}
 

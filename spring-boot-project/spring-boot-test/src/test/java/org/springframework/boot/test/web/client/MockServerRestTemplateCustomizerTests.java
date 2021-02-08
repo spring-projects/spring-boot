@@ -50,7 +50,7 @@ class MockServerRestTemplateCustomizerTests {
 		MockServerRestTemplateCustomizer customizer = new MockServerRestTemplateCustomizer();
 		customizer.customize(new RestTemplate());
 		assertThat(customizer.getServer()).extracting("expectationManager")
-				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
+				.isInstanceOf(SimpleRequestExpectationManager.class);
 	}
 
 	@Test
@@ -65,7 +65,7 @@ class MockServerRestTemplateCustomizerTests {
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(new RestTemplate());
 		assertThat(customizer.getServer()).extracting("expectationManager")
-				.hasAtLeastOneElementOfType(UnorderedRequestExpectationManager.class);
+				.isInstanceOf(UnorderedRequestExpectationManager.class);
 	}
 
 	@Test
@@ -74,7 +74,7 @@ class MockServerRestTemplateCustomizerTests {
 				UnorderedRequestExpectationManager.class);
 		customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(customizer.getServer()).extracting("expectationManager")
-				.hasAtLeastOneElementOfType(RootUriRequestExpectationManager.class);
+				.isInstanceOf(RootUriRequestExpectationManager.class);
 	}
 
 	@Test
@@ -82,7 +82,7 @@ class MockServerRestTemplateCustomizerTests {
 		this.customizer.setDetectRootUri(false);
 		this.customizer.customize(new RestTemplateBuilder().rootUri("https://example.com").build());
 		assertThat(this.customizer.getServer()).extracting("expectationManager")
-				.hasAtLeastOneElementOfType(SimpleRequestExpectationManager.class);
+				.isInstanceOf(SimpleRequestExpectationManager.class);
 
 	}
 
@@ -153,8 +153,8 @@ class MockServerRestTemplateCustomizerTests {
 		this.customizer.customize(template2);
 		RequestExpectationManager manager1 = this.customizer.getExpectationManagers().get(template1);
 		RequestExpectationManager manager2 = this.customizer.getExpectationManagers().get(template2);
-		assertThat(this.customizer.getServer(template1)).extracting("expectationManager").containsOnly(manager1);
-		assertThat(this.customizer.getServer(template2)).extracting("expectationManager").containsOnly(manager2);
+		assertThat(this.customizer.getServer(template1)).extracting("expectationManager").isEqualTo(manager1);
+		assertThat(this.customizer.getServer(template2)).extracting("expectationManager").isEqualTo(manager2);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,15 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
-import java.net.UnknownHostException;
+import java.time.Duration;
 
+import io.lettuce.core.ClientOptions;
 import io.lettuce.core.RedisClient;
+import io.lettuce.core.SocketOptions;
+import io.lettuce.core.TimeoutOptions;
+import io.lettuce.core.cluster.ClusterClientOptions;
+import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
+import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.Builder;
 import io.lettuce.core.resource.ClientResources;
 import io.lettuce.core.resource.DefaultClientResources;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
@@ -26,6 +32,8 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Lettuce.Cluster.Refresh;
 import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -46,6 +54,7 @@ import org.springframework.util.StringUtils;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
+@ConditionalOnProperty(name = "spring.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	LettuceConnectionConfiguration(RedisProperties properties,
@@ -64,7 +73,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	@ConditionalOnMissingBean(RedisConnectionFactory.class)
 	LettuceConnectionFactory redisConnectionFactory(
 			ObjectProvider<LettuceClientConfigurationBuilderCustomizer> builderCustomizers,
-			ClientResources clientResources) throws UnknownHostException {
+			ClientResources clientResources) {
 		LettuceClientConfiguration clientConfig = getLettuceClientConfiguration(builderCustomizers, clientResources,
 				getProperties().getLettuce().getPool());
 		return createLettuceConnectionFactory(clientConfig);
@@ -88,6 +97,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
+		builder.clientOptions(createClientOptions());
 		builder.clientResources(clientResources);
 		builderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return builder.build();
@@ -118,6 +128,32 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			builder.clientName(getProperties().getClientName());
 		}
 		return builder;
+	}
+
+	private ClientOptions createClientOptions() {
+		ClientOptions.Builder builder = initializeClientOptionsBuilder();
+		Duration connectTimeout = getProperties().getConnectTimeout();
+		if (connectTimeout != null) {
+			builder.socketOptions(SocketOptions.builder().connectTimeout(connectTimeout).build());
+		}
+		return builder.timeoutOptions(TimeoutOptions.enabled()).build();
+	}
+
+	private ClientOptions.Builder initializeClientOptionsBuilder() {
+		if (getProperties().getCluster() != null) {
+			ClusterClientOptions.Builder builder = ClusterClientOptions.builder();
+			Refresh refreshProperties = getProperties().getLettuce().getCluster().getRefresh();
+			Builder refreshBuilder = ClusterTopologyRefreshOptions.builder()
+					.dynamicRefreshSources(refreshProperties.isDynamicRefreshSources());
+			if (refreshProperties.getPeriod() != null) {
+				refreshBuilder.enablePeriodicRefresh(refreshProperties.getPeriod());
+			}
+			if (refreshProperties.isAdaptive()) {
+				refreshBuilder.enableAllAdaptiveRefreshTriggers();
+			}
+			return builder.topologyRefreshOptions(refreshBuilder.build());
+		}
+		return ClientOptions.builder();
 	}
 
 	private void customizeConfigurationFromUrl(LettuceClientConfiguration.LettuceClientConfigurationBuilder builder) {

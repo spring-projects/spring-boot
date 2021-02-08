@@ -103,7 +103,7 @@ class Installer {
 		if (countString == null) {
 			return 0;
 		}
-		return Integer.valueOf(countString);
+		return Integer.parseInt(countString);
 	}
 
 	private void setInstallCount(File file, int count) {

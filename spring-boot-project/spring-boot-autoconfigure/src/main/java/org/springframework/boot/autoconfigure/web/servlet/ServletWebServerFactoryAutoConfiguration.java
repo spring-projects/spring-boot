@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.web.servlet;
 
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletRequest;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.beans.factory.support.RootBeanDefinition;
@@ -36,6 +40,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.web.server.ErrorPageRegistrarBeanPostProcessor;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
+import org.springframework.boot.web.servlet.WebListenerRegistrar;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -67,8 +72,10 @@ import org.springframework.web.filter.ForwardedHeaderFilter;
 public class ServletWebServerFactoryAutoConfiguration {
 
 	@Bean
-	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties) {
-		return new ServletWebServerFactoryCustomizer(serverProperties);
+	public ServletWebServerFactoryCustomizer servletWebServerFactoryCustomizer(ServerProperties serverProperties,
+			ObjectProvider<WebListenerRegistrar> webListenerRegistrars) {
+		return new ServletWebServerFactoryCustomizer(serverProperties,
+				webListenerRegistrars.orderedStream().collect(Collectors.toList()));
 	}
 
 	@Bean
@@ -111,14 +118,16 @@ public class ServletWebServerFactoryAutoConfiguration {
 				return;
 			}
 			registerSyntheticBeanIfMissing(registry, "webServerFactoryCustomizerBeanPostProcessor",
-					WebServerFactoryCustomizerBeanPostProcessor.class);
+					WebServerFactoryCustomizerBeanPostProcessor.class,
+					WebServerFactoryCustomizerBeanPostProcessor::new);
 			registerSyntheticBeanIfMissing(registry, "errorPageRegistrarBeanPostProcessor",
-					ErrorPageRegistrarBeanPostProcessor.class);
+					ErrorPageRegistrarBeanPostProcessor.class, ErrorPageRegistrarBeanPostProcessor::new);
 		}
 
-		private void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name, Class<?> beanClass) {
+		private <T> void registerSyntheticBeanIfMissing(BeanDefinitionRegistry registry, String name,
+				Class<T> beanClass, Supplier<T> instanceSupplier) {
 			if (ObjectUtils.isEmpty(this.beanFactory.getBeanNamesForType(beanClass, true, false))) {
-				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass);
+				RootBeanDefinition beanDefinition = new RootBeanDefinition(beanClass, instanceSupplier);
 				beanDefinition.setSynthetic(true);
 				registry.registerBeanDefinition(name, beanDefinition);
 			}

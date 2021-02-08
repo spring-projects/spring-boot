@@ -13,12 +13,14 @@
 	<suppress files="[\\/]src[\\/]main[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]sample[\\/]" checks="ImportControl" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="Javadoc*" />
+	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" id="mainCodeIllegalImportCheck" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]" checks="NonEmptyAtclauseDescription" />
-	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocType" />
-	<suppress files="[\\/]autoconfigure[\\/]" checks="JavadocVariable" />
-	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType" />
+	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocType" />
+	<suppress files="[\\/]autoconfigure[\\/].*Properties\.java" checks="JavadocVariable" />
+	<suppress files="[\\/]spring-boot-docs[\\/]" checks="JavadocType|OneTopLevelClass" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="ImportControl" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" id="mainCodeIllegalImportCheck" />
 	<suppress files="[\\/]spring-boot-deployment-tests[\\/]" checks="JavadocType" />
 	<suppress files="[\\/]spring-boot-integration-tests[\\/]" checks="JavadocType" />
 	<suppress files="Ansi.*\.java" checks="JavadocVariable" />
@@ -37,12 +39,14 @@
 	<suppress files="RemoteUrlPropertyExtractorTests\.java" checks="IllegalImport" />
 	<suppress files="SampleLogbackApplication\.java" checks="IllegalImport" />
 	<suppress files="FlywayAutoConfigurationTests\.java" checks="IllegalImport" />
-	<suppress files="ModifiedClassPathRunnerOverridesTests" checks="SpringJUnit5" />
-	<suppress files="ModifiedClassPathRunnerExclusionsTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]src[\\/]test[\\/]java[\\/]org[\\/]springframework[\\/]boot[\\/]test[\\/]rule[\\/]" checks="SpringJUnit5" />
 	<suppress files="OutputCaptureRuleTests" checks="SpringJUnit5" />
-	<suppress files="RestClientTestWithComponentIntegrationTests" checks="SpringJUnit5" />
 	<suppress files="SampleJUnitVintageApplicationTests" checks="SpringJUnit5" />
 	<suppress files="[\\/]spring-boot-docs[\\/]" checks="SpringJavadoc" message="\@since" />
 	<suppress files="[\\/]spring-boot-smoke-tests[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="[\\/]spring-boot-smoke-tests[\\/]spring-boot-smoke-test-testng[\\/]" checks="SpringJUnit5" />
+	<suppress files="[\\/]src[\\/]intTest[\\/]java[\\/]" checks="SpringJavadoc" message="\@since" />
+	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />
+	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
+	<suppress files="StringSequence" checks="SpringMethodVisibility" message="isEmpty"/>
 </suppressions>

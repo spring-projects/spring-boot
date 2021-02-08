@@ -115,8 +115,7 @@ public class DevToolsSettings {
 			return settings;
 		}
 		catch (Exception ex) {
-			throw new IllegalStateException("Unable to load devtools settings from " + "location [" + location + "]",
-					ex);
+			throw new IllegalStateException("Unable to load devtools settings from location [" + location + "]", ex);
 		}
 	}
 

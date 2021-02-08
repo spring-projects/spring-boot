@@ -127,7 +127,6 @@ public class JSONArray {
 
 	/**
 	 * Appends {@code value} to the end of this array.
-	 *
 	 * @param value the value
 	 * @return this array.
 	 */
@@ -138,7 +137,6 @@ public class JSONArray {
 
 	/**
 	 * Appends {@code value} to the end of this array.
-	 *
 	 * @param value a finite value. May not be {@link Double#isNaN() NaNs} or
 	 * {@link Double#isInfinite() infinities}.
 	 * @return this array.
@@ -171,7 +169,6 @@ public class JSONArray {
 
 	/**
 	 * Appends {@code value} to the end of this array.
-	 *
 	 * @param value a {@link JSONObject}, {@link JSONArray}, String, Boolean, Integer,
 	 * Long, Double, {@link JSONObject#NULL}, or {@code null}. May not be
 	 * {@link Double#isNaN() NaNs} or {@link Double#isInfinite() infinities}. Unsupported
@@ -288,8 +285,7 @@ public class JSONArray {
 			return value;
 		}
 		catch (IndexOutOfBoundsException e) {
-			throw new JSONException(
-					"Index " + index + " out of range [0.." + this.values.size() + ")");
+			throw new JSONException("Index " + index + " out of range [0.." + this.values.size() + ")");
 		}
 	}
 
@@ -444,7 +440,6 @@ public class JSONArray {
 	 * a long.
 	 * @param index the index to get the value from
 	 * @return the {@code value}
-	 *
 	 * @throws JSONException if the value at {@code index} doesn't exist or cannot be
 	 * coerced to a long.
 	 */
@@ -642,7 +637,6 @@ public class JSONArray {
 	 *     94043,
 	 *     90210
 	 * ]</pre>
-	 *
 	 * @param indentSpaces the number of spaces to indent for each level of nesting.
 	 * @return a human readable JSON string of this array
 	 * @throws JSONException if processing of json failed

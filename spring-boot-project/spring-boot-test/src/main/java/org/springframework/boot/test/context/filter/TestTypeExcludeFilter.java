@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,8 @@ import org.springframework.core.type.classreading.MetadataReaderFactory;
 class TestTypeExcludeFilter extends TypeExcludeFilter {
 
 	private static final String[] CLASS_ANNOTATIONS = { "org.junit.runner.RunWith",
-			"org.junit.jupiter.api.extension.ExtendWith", "org.testng.annotations.Test" };
+			"org.junit.jupiter.api.extension.ExtendWith", "org.junit.platform.commons.annotation.Testable",
+			"org.testng.annotations.Test" };
 
 	private static final String[] METHOD_ANNOTATIONS = { "org.junit.Test",
 			"org.junit.platform.commons.annotation.Testable", "org.testng.annotations.Test" };
@@ -59,6 +60,16 @@ class TestTypeExcludeFilter extends TypeExcludeFilter {
 			}
 		}
 		return false;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		return (obj != null) && (getClass() == obj.getClass());
+	}
+
+	@Override
+	public int hashCode() {
+		return getClass().hashCode();
 	}
 
 	private boolean isTestConfiguration(MetadataReader metadataReader) {

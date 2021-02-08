@@ -69,14 +69,14 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 								.document("threaddump/json", preprocessResponse(limit("threads")),
 										responseFields(fieldWithPath("threads").description("JVM's threads."),
 												fieldWithPath("threads.[].blockedCount").description(
-														"Total number of times that the thread has been " + "blocked."),
+														"Total number of times that the thread has been blocked."),
 												fieldWithPath("threads.[].blockedTime").description(
 														"Time in milliseconds that the thread has spent "
 																+ "blocked. -1 if thread contention "
 																+ "monitoring is disabled."),
 												fieldWithPath("threads.[].daemon")
 														.description("Whether the thread is a daemon "
-																+ "thread. Only available on Java 9 or " + "later.")
+																+ "thread. Only available on Java 9 or later.")
 														.optional().type(JsonFieldType.BOOLEAN),
 												fieldWithPath("threads.[].inNative")
 														.description("Whether the thread is executing native code."),
@@ -85,12 +85,10 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 																+ "thread is blocked, if any.")
 														.optional().type(JsonFieldType.STRING),
 												fieldWithPath("threads.[].lockInfo")
-														.description(
-																"Object for which the thread is blocked " + "waiting.")
+														.description("Object for which the thread is blocked waiting.")
 														.optional().type(JsonFieldType.OBJECT),
 												fieldWithPath("threads.[].lockInfo.className")
-														.description(
-																"Fully qualified class name of the lock" + " object.")
+														.description("Fully qualified class name of the lock object.")
 														.optional().type(JsonFieldType.STRING),
 												fieldWithPath("threads.[].lockInfo.identityHashCode")
 														.description("Identity hash code of the lock object.")
@@ -101,22 +99,21 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 														.description("Class name of the lock object.").optional()
 														.type(JsonFieldType.STRING),
 												fieldWithPath("threads.[].lockedMonitors.[].identityHashCode")
-														.description("Identity hash code of the lock " + "object.")
+														.description("Identity hash code of the lock object.")
 														.optional().type(JsonFieldType.NUMBER),
 												fieldWithPath("threads.[].lockedMonitors.[].lockedStackDepth")
-														.description("Stack depth where the monitor " + "was locked.")
+														.description("Stack depth where the monitor was locked.")
 														.optional().type(JsonFieldType.NUMBER),
 												subsectionWithPath("threads.[].lockedMonitors.[].lockedStackFrame")
-														.description("Stack frame that locked the " + "monitor.")
-														.optional().type(JsonFieldType.OBJECT),
+														.description("Stack frame that locked the monitor.").optional()
+														.type(JsonFieldType.OBJECT),
 												fieldWithPath("threads.[].lockedSynchronizers")
 														.description("Synchronizers locked by this thread."),
 												fieldWithPath("threads.[].lockedSynchronizers.[].className")
-														.description("Class name of the locked " + "synchronizer.")
+														.description("Class name of the locked synchronizer.")
 														.optional().type(JsonFieldType.STRING),
 												fieldWithPath("threads.[].lockedSynchronizers.[].identityHashCode")
-														.description(
-																"Identity hash code of the locked " + "synchronizer.")
+														.description("Identity hash code of the locked synchronizer.")
 														.optional().type(JsonFieldType.NUMBER),
 												fieldWithPath("threads.[].lockOwnerId")
 														.description("ID of the thread that owns the object on which "
@@ -124,7 +121,7 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 																+ "thread is not blocked."),
 												fieldWithPath("threads.[].lockOwnerName")
 														.description("Name of the thread that owns the "
-																+ "object on which the thread is " + "blocked, if any.")
+																+ "object on which the thread is blocked, if any.")
 														.optional().type(JsonFieldType.STRING),
 												fieldWithPath("threads.[].priority")
 														.description("Priority of the thread. Only "
@@ -136,11 +133,11 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 														.description("Name of the class loader of the "
 																+ "class that contains the execution "
 																+ "point identified by this entry, if "
-																+ "any. Only available on Java 9 or " + "later.")
+																+ "any. Only available on Java 9 or later.")
 														.optional().type(JsonFieldType.STRING),
 												fieldWithPath("threads.[].stackTrace.[].className")
 														.description("Name of the class that contains the "
-																+ "execution point identified " + "by this entry."),
+																+ "execution point identified by this entry."),
 												fieldWithPath("threads.[].stackTrace.[].fileName")
 														.description("Name of the source file that "
 																+ "contains the execution point "
@@ -164,8 +161,8 @@ class ThreadDumpEndpointDocumentationTests extends MockMvcEndpointDocumentationT
 																+ "identified by this entry, if any. "
 																+ "Only available on Java 9 or later.")
 														.optional().type(JsonFieldType.STRING),
-												fieldWithPath("threads.[].stackTrace.[].nativeMethod").description(
-														"Whether the execution point is a native " + "method."),
+												fieldWithPath("threads.[].stackTrace.[].nativeMethod")
+														.description("Whether the execution point is a native method."),
 												fieldWithPath("threads.[].suspended")
 														.description("Whether the thread is suspended."),
 												fieldWithPath("threads.[].threadId").description("ID of the thread."),

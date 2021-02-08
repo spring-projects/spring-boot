@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,21 +17,29 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.Closeable;
+import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.BindException;
 import java.net.InetSocketAddress;
 import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicReference;
 
 import io.undertow.Undertow;
+import io.undertow.server.HttpHandler;
+import io.undertow.server.HttpServerExchange;
+import io.undertow.server.handlers.GracefulShutdownHandler;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.xnio.channels.BoundChannel;
 
+import org.springframework.boot.web.server.GracefulShutdownCallback;
+import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
+import org.springframework.util.Assert;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -51,17 +59,23 @@ public class UndertowWebServer implements WebServer {
 
 	private static final Log logger = LogFactory.getLog(UndertowWebServer.class);
 
+	private final AtomicReference<GracefulShutdownCallback> gracefulShutdownCallback = new AtomicReference<>();
+
 	private final Object monitor = new Object();
 
 	private final Undertow.Builder builder;
 
-	private final boolean autoStart;
+	private final Iterable<HttpHandlerFactory> httpHandlerFactories;
 
-	private final Closeable closeable;
+	private final boolean autoStart;
 
 	private Undertow undertow;
 
 	private volatile boolean started = false;
+
+	private volatile GracefulShutdownHandler gracefulShutdown;
+
+	private volatile List<Closeable> closeables;
 
 	/**
 	 * Create a new {@link UndertowWebServer} instance.
@@ -69,20 +83,21 @@ public class UndertowWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart) {
-		this(builder, autoStart, null);
+		this(builder, Collections.singleton(new CloseableHttpHandlerFactory(null)), autoStart);
 	}
 
 	/**
 	 * Create a new {@link UndertowWebServer} instance.
 	 * @param builder the builder
+	 * @param httpHandlerFactories the handler factories
 	 * @param autoStart if the server should be started
-	 * @param closeable called when the server is stopped
-	 * @since 2.0.4
+	 * @since 2.3.0
 	 */
-	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
+	public UndertowWebServer(Undertow.Builder builder, Iterable<HttpHandlerFactory> httpHandlerFactories,
+			boolean autoStart) {
 		this.builder = builder;
+		this.httpHandlerFactories = httpHandlerFactories;
 		this.autoStart = autoStart;
-		this.closeable = closeable;
 	}
 
 	@Override
@@ -96,22 +111,22 @@ public class UndertowWebServer implements WebServer {
 					return;
 				}
 				if (this.undertow == null) {
-					this.undertow = this.builder.build();
+					this.undertow = createUndertowServer();
 				}
 				this.undertow.start();
 				this.started = true;
-				logger.info("Undertow started on port(s) " + getPortsDescription());
+				String message = getStartLogMessage();
+				logger.info(message);
 			}
 			catch (Exception ex) {
 				try {
-					if (findBindException(ex) != null) {
-						List<UndertowWebServer.Port> failedPorts = getConfiguredPorts();
-						List<UndertowWebServer.Port> actualPorts = getActualPorts();
-						failedPorts.removeAll(actualPorts);
+					PortInUseException.ifPortBindingException(ex, (bindException) -> {
+						List<Port> failedPorts = getConfiguredPorts();
+						failedPorts.removeAll(getActualPorts());
 						if (failedPorts.size() == 1) {
-							throw new PortInUseException(failedPorts.iterator().next().getNumber());
+							throw new PortInUseException(failedPorts.get(0).getNumber());
 						}
-					}
+					});
 					throw new WebServerException("Unable to start embedded Undertow", ex);
 				}
 				finally {
@@ -125,7 +140,7 @@ public class UndertowWebServer implements WebServer {
 		try {
 			if (this.undertow != null) {
 				this.undertow.stop();
-				this.closeable.close();
+				this.closeables.forEach(this::closeSilently);
 			}
 		}
 		catch (Exception ex) {
@@ -133,15 +148,35 @@ public class UndertowWebServer implements WebServer {
 		}
 	}
 
-	private BindException findBindException(Exception ex) {
-		Throwable candidate = ex;
-		while (candidate != null) {
-			if (candidate instanceof BindException) {
-				return (BindException) candidate;
-			}
-			candidate = candidate.getCause();
+	private void closeSilently(Closeable closeable) {
+		try {
+			closeable.close();
 		}
-		return null;
+		catch (Exception ex) {
+		}
+	}
+
+	private Undertow createUndertowServer() {
+		this.closeables = new ArrayList<>();
+		this.gracefulShutdown = null;
+		HttpHandler handler = createHttpHandler();
+		this.builder.setHandler(handler);
+		return this.builder.build();
+	}
+
+	protected HttpHandler createHttpHandler() {
+		HttpHandler handler = null;
+		for (HttpHandlerFactory factory : this.httpHandlerFactories) {
+			handler = factory.getHandler(handler);
+			if (handler instanceof Closeable) {
+				this.closeables.add((Closeable) handler);
+			}
+			if (handler instanceof GracefulShutdownHandler) {
+				Assert.isNull(this.gracefulShutdown, "Only a single GracefulShutdownHandler can be defined");
+				this.gracefulShutdown = (GracefulShutdownHandler) handler;
+			}
+		}
+		return handler;
 	}
 
 	private String getPortsDescription() {
@@ -152,11 +187,11 @@ public class UndertowWebServer implements WebServer {
 		return "unknown";
 	}
 
-	private List<UndertowWebServer.Port> getActualPorts() {
-		List<UndertowWebServer.Port> ports = new ArrayList<>();
+	private List<Port> getActualPorts() {
+		List<Port> ports = new ArrayList<>();
 		try {
 			if (!this.autoStart) {
-				ports.add(new UndertowWebServer.Port(-1, "unknown"));
+				ports.add(new Port(-1, "unknown"));
 			}
 			else {
 				for (BoundChannel channel : extractChannels()) {
@@ -188,10 +223,13 @@ public class UndertowWebServer implements WebServer {
 	}
 
 	private List<UndertowWebServer.Port> getConfiguredPorts() {
-		List<UndertowWebServer.Port> ports = new ArrayList<>();
+		List<Port> ports = new ArrayList<>();
 		for (Object listener : extractListeners()) {
 			try {
-				ports.add(getPortFromListener(listener));
+				Port port = getPortFromListener(listener);
+				if (port.getNumber() != 0) {
+					ports.add(port);
+				}
 			}
 			catch (Exception ex) {
 				// Continue
@@ -224,10 +262,13 @@ public class UndertowWebServer implements WebServer {
 				return;
 			}
 			this.started = false;
+			if (this.gracefulShutdown != null) {
+				notifyGracefulCallback(false);
+			}
 			try {
 				this.undertow.stop();
-				if (this.closeable != null) {
-					this.closeable.close();
+				for (Closeable closeable : this.closeables) {
+					closeable.close();
 				}
 			}
 			catch (Exception ex) {
@@ -238,11 +279,41 @@ public class UndertowWebServer implements WebServer {
 
 	@Override
 	public int getPort() {
-		List<UndertowWebServer.Port> ports = getActualPorts();
+		List<Port> ports = getActualPorts();
 		if (ports.isEmpty()) {
-			return 0;
+			return -1;
 		}
 		return ports.get(0).getNumber();
+	}
+
+	@Override
+	public void shutDownGracefully(GracefulShutdownCallback callback) {
+		if (this.gracefulShutdown == null) {
+			callback.shutdownComplete(GracefulShutdownResult.IMMEDIATE);
+			return;
+		}
+		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
+		this.gracefulShutdownCallback.set(callback);
+		this.gracefulShutdown.shutdown();
+		this.gracefulShutdown.addShutdownListener((success) -> notifyGracefulCallback(success));
+	}
+
+	private void notifyGracefulCallback(boolean success) {
+		GracefulShutdownCallback callback = this.gracefulShutdownCallback.getAndSet(null);
+		if (callback != null) {
+			if (success) {
+				logger.info("Graceful shutdown complete");
+				callback.shutdownComplete(GracefulShutdownResult.IDLE);
+			}
+			else {
+				logger.info("Graceful shutdown aborted with one or more requests still active");
+				callback.shutdownComplete(GracefulShutdownResult.REQUESTS_ACTIVE);
+			}
+		}
+	}
+
+	protected String getStartLogMessage() {
+		return "Undertow started on port(s) " + getPortsDescription();
 	}
 
 	/**
@@ -275,10 +346,7 @@ public class UndertowWebServer implements WebServer {
 				return false;
 			}
 			UndertowWebServer.Port other = (UndertowWebServer.Port) obj;
-			if (this.number != other.number) {
-				return false;
-			}
-			return true;
+			return this.number == other.number;
 		}
 
 		@Override
@@ -290,6 +358,46 @@ public class UndertowWebServer implements WebServer {
 		public String toString() {
 			return this.number + " (" + this.protocol + ")";
 		}
+
+	}
+
+	/**
+	 * {@link HttpHandlerFactory} to wrap a closable.
+	 */
+	private static final class CloseableHttpHandlerFactory implements HttpHandlerFactory {
+
+		private final Closeable closeable;
+
+		private CloseableHttpHandlerFactory(Closeable closeable) {
+			this.closeable = closeable;
+		}
+
+		@Override
+		public HttpHandler getHandler(HttpHandler next) {
+			if (this.closeable == null) {
+				return next;
+			}
+			return new CloseableHttpHandler() {
+
+				@Override
+				public void handleRequest(HttpServerExchange exchange) throws Exception {
+					next.handleRequest(exchange);
+				}
+
+				@Override
+				public void close() throws IOException {
+					CloseableHttpHandlerFactory.this.closeable.close();
+				}
+
+			};
+		}
+
+	}
+
+	/**
+	 * {@link Closeable} {@link HttpHandler}.
+	 */
+	private interface CloseableHttpHandler extends HttpHandler, Closeable {
 
 	}
 

@@ -22,7 +22,6 @@ import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.origin.OriginTrackedValue;
 import org.springframework.core.env.MapPropertySource;
-import org.springframework.core.env.PropertySource;
 
 /**
  * {@link OriginLookup} backed by a {@link Map} containing {@link OriginTrackedValue
@@ -52,6 +51,7 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 	 * @param name the property source name
 	 * @param source the underlying map source
 	 * @param immutable if the underlying source is immutable and guaranteed not to change
+	 * @since 2.2.0
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public OriginTrackedMapPropertySource(String name, Map source, boolean immutable) {
@@ -77,11 +77,7 @@ public final class OriginTrackedMapPropertySource extends MapPropertySource impl
 		return null;
 	}
 
-	/**
-	 * Return {@code true} if this {@link PropertySource} is immutable and has contents
-	 * that will never change.
-	 * @return if the property source is read only
-	 */
+	@Override
 	public boolean isImmutable() {
 		return this.immutable;
 	}

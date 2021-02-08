@@ -22,10 +22,10 @@ import javax.servlet.MultipartConfigElement;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.util.StringUtils;
 
 /**
@@ -40,7 +40,7 @@ class WebServletHandler extends ServletComponentHandler {
 	}
 
 	@Override
-	public void doHandle(Map<String, Object> attributes, ScannedGenericBeanDefinition beanDefinition,
+	public void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry) {
 		BeanDefinitionBuilder builder = BeanDefinitionBuilder.rootBeanDefinition(ServletRegistrationBean.class);
 		builder.addPropertyValue("asyncSupported", attributes.get("asyncSupported"));
@@ -59,7 +59,7 @@ class WebServletHandler extends ServletComponentHandler {
 				: beanDefinition.getBeanClassName());
 	}
 
-	private MultipartConfigElement determineMultipartConfig(ScannedGenericBeanDefinition beanDefinition) {
+	private MultipartConfigElement determineMultipartConfig(AnnotatedBeanDefinition beanDefinition) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 				.getAnnotationAttributes(MultipartConfig.class.getName());
 		if (attributes == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ class ConditionalOnAvailableEndpointTests {
 
 	@Test
 	void outcomeShouldMatchDefaults() {
-		this.contextRunner.run((context) -> assertThat(context).hasBean("info").hasBean("health")
-				.doesNotHaveBean("spring").doesNotHaveBean("test").doesNotHaveBean("shutdown"));
+		this.contextRunner.run((context) -> assertThat(context).hasBean("health").doesNotHaveBean("spring")
+				.doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
 	@Test
@@ -79,7 +79,7 @@ class ConditionalOnAvailableEndpointTests {
 	@Test
 	void outcomeWhenIncludeAllJmxButJmxDisabledShouldMatchDefaults() {
 		this.contextRunner.withPropertyValues("management.endpoints.jmx.exposure.include=*")
-				.run((context) -> assertThat(context).hasBean("info").hasBean("health").doesNotHaveBean("spring")
+				.run((context) -> assertThat(context).hasBean("health").doesNotHaveBean("spring")
 						.doesNotHaveBean("test").doesNotHaveBean("shutdown"));
 	}
 
@@ -95,8 +95,8 @@ class ConditionalOnAvailableEndpointTests {
 		this.contextRunner
 				.withPropertyValues("management.endpoints.jmx.exposure.include=*", "spring.jmx.enabled=true",
 						"management.endpoint.shutdown.enabled=true")
-				.run((context) -> assertThat(context).hasBean("info").hasBean("health").hasBean("test")
-						.hasBean("spring").hasBean("shutdown"));
+				.run((context) -> assertThat(context).hasBean("health").hasBean("test").hasBean("spring")
+						.hasBean("shutdown"));
 	}
 
 	@Test
@@ -182,6 +182,20 @@ class ConditionalOnAvailableEndpointTests {
 				(context) -> assertThat(context).hasBean("info").hasBean("health").hasBean("spring").hasBean("test"));
 	}
 
+	@Test // gh-21044
+	void outcomeWhenIncludeAllShouldMatchDashedEndpoint() throws Exception {
+		this.contextRunner.withUserConfiguration(DashedEndpointConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include=*")
+				.run((context) -> assertThat(context).hasSingleBean(DashedEndpoint.class));
+	}
+
+	@Test // gh-21044
+	void outcomeWhenIncludeDashedShouldMatchDashedEndpoint() throws Exception {
+		this.contextRunner.withUserConfiguration(DashedEndpointConfiguration.class)
+				.withPropertyValues("management.endpoints.web.exposure.include=test-dashed")
+				.run((context) -> assertThat(context).hasSingleBean(DashedEndpoint.class));
+	}
+
 	@Endpoint(id = "health")
 	static class HealthEndpoint {
 
@@ -204,6 +218,11 @@ class ConditionalOnAvailableEndpointTests {
 
 	@Endpoint(id = "shutdown", enableByDefault = false)
 	static class ShutdownEndpoint {
+
+	}
+
+	@Endpoint(id = "test-dashed")
+	static class DashedEndpoint {
 
 	}
 
@@ -280,6 +299,17 @@ class ConditionalOnAvailableEndpointTests {
 		@ConditionalOnAvailableEndpoint
 		String springcomp() {
 			return "springcomp";
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DashedEndpointConfiguration {
+
+		@Bean
+		@ConditionalOnAvailableEndpoint
+		DashedEndpoint dashedEndpoint() {
+			return new DashedEndpoint();
 		}
 
 	}

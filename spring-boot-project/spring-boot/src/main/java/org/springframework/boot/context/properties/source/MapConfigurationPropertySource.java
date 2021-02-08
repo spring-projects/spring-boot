@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ import org.springframework.util.Assert;
  */
 public class MapConfigurationPropertySource implements IterableConfigurationPropertySource {
 
+	private static final PropertyMapper[] DEFAULT_MAPPERS = { DefaultPropertyMapper.INSTANCE };
+
 	private final Map<String, Object> source;
 
 	private final IterableConfigurationPropertySource delegate;
@@ -53,8 +55,8 @@ public class MapConfigurationPropertySource implements IterableConfigurationProp
 	 */
 	public MapConfigurationPropertySource(Map<?, ?> map) {
 		this.source = new LinkedHashMap<>();
-		this.delegate = new SpringIterableConfigurationPropertySource(new MapPropertySource("source", this.source),
-				DefaultPropertyMapper.INSTANCE);
+		MapPropertySource mapPropertySource = new MapPropertySource("source", this.source);
+		this.delegate = new SpringIterableConfigurationPropertySource(mapPropertySource, DEFAULT_MAPPERS);
 		putAll(map);
 	}
 
