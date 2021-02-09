@@ -168,8 +168,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 	private void registerLinksMapping() {
 		String path = this.endpointMapping.getPath();
 		String[] produces = StringUtils.toStringArray(this.endpointMediaTypes.getProduced());
-		RequestMethod method = RequestMethod.GET;
-		RequestMappingInfo mapping = RequestMappingInfo.paths(path).methods(method).produces(produces).build();
+		RequestMappingInfo mapping = RequestMappingInfo.paths(path).methods(RequestMethod.GET).produces(produces)
+				.build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler,
 				ReflectionUtils.findMethod(linksHandler.getClass(), "links", ServerWebExchange.class));
