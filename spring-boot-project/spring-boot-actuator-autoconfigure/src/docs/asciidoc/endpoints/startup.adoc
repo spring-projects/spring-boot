@@ -4,11 +4,10 @@
 The `startup` endpoint provides information about the application's startup sequence.
 
 
-
 [[startup-retrieving]]
 == Retrieving the Application Startup steps
 
-To retrieve the steps recorded so far during the application startup phase , make a `POST` request to `/actuator/startup`, as shown in the following curl-based example:
+To drain and return the steps recorded so far during the application startup phase, make a `POST` request to `/actuator/startup`, as shown in the following curl-based example:
 
 include::{snippets}/startup/curl-request.adoc[]
 
@@ -16,12 +15,12 @@ The resulting response is similar to the following:
 
 include::{snippets}/startup/http-response.adoc[]
 
-
+NOTE: Each such call removes the returned steps from the buffer.
 
 [[startup-retrieving-response-structure]]
 === Response Structure
 
-The response contains details of the application startup steps recorded so far by the application.
+The response contains details of the application startup steps.
 The following table describes the structure of the response:
 
 [cols="2,1,3"]
