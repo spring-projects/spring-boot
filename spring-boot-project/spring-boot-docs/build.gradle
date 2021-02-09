@@ -330,7 +330,7 @@ artifacts {
 
 publishing {
 	publications {
-		deployment(MavenPublication) {
+		maven(MavenPublication) {
 			artifact zip
 		}
 	}
