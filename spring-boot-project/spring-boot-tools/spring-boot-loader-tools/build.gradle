@@ -41,8 +41,9 @@ sourceSets {
 
 task reproducibleLoaderJar(type: Jar) {
 	dependsOn configurations.loader
-	from {
-		zipTree(configurations.loader.incoming.files.filter {it.name.startsWith "spring-boot-loader" }.singleFile)
+	from(zipTree(configurations.loader.incoming.files.filter {it.name.startsWith "spring-boot-loader" }.singleFile)) {
+		exclude "META-INF/LICENSE.txt"
+		exclude "META-INF/NOTICE.txt"
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
@@ -52,8 +53,9 @@ task reproducibleLoaderJar(type: Jar) {
 
 task reproducibleJarModeLayerToolsJar(type: Jar) {
 	dependsOn configurations.jarmode
-	from {
-		zipTree(configurations.jarmode.incoming.files.filter {it.name.startsWith "spring-boot-jarmode-layertools" }.singleFile)
+	from(zipTree(configurations.jarmode.incoming.files.filter {it.name.startsWith "spring-boot-jarmode-layertools" }.singleFile)) {
+		exclude "META-INF/LICENSE.txt"
+		exclude "META-INF/NOTICE.txt"
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
