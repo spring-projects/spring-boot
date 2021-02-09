@@ -6249,7 +6249,7 @@ The auto-configured `TaskExecutorBuilder` allows you to easily create instances 
 ====
 
 The thread pool uses 8 core threads that can grow and shrink according to the load.
-Those default settings can be fine-tuned using the `spring.task.execution` namespace as shown in the following example:
+Those default settings can be fine-tuned using the `spring.task.execution` namespace, as shown in the following example:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----
@@ -6265,8 +6265,18 @@ Those default settings can be fine-tuned using the `spring.task.execution` names
 This changes the thread pool to use a bounded queue so that when the queue is full (100 tasks), the thread pool increases to maximum 16 threads.
 Shrinking of the pool is more aggressive as threads are reclaimed when they are idle for 10 seconds (rather than 60 seconds by default).
 
-A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated to scheduled task execution (`@EnableScheduling`).
-The thread pool uses one thread by default and those settings can be fine-tuned using the `spring.task.scheduling` namespace.
+A `ThreadPoolTaskScheduler` can also be auto-configured if need to be associated to scheduled task execution (e.g. `@EnableScheduling`).
+The thread pool uses one thread by default and its settings can be fine-tuned using the `spring.task.scheduling` namespace, as shown in the following example:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  task:
+	    scheduling:
+          thread-name-prefix: "scheduling-"
+	      pool:
+	        size: 2
+----
 
 Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made available in the context if a custom executor or scheduler needs to be created.
 
@@ -6277,6 +6287,8 @@ Both a `TaskExecutorBuilder` bean and a `TaskSchedulerBuilder` bean are made ava
 Spring Boot offers several conveniences for working with {spring-integration}[Spring Integration], including the `spring-boot-starter-integration` "`Starter`".
 Spring Integration provides abstractions over messaging and also other transports such as HTTP, TCP, and others.
 If Spring Integration is available on your classpath, it is initialized through the `@EnableIntegration` annotation.
+
+Spring Integration polling logic relies <<boot-features-task-execution-scheduling,on the auto-configured `TaskScheduler`>>.
 
 Spring Boot also configures some features that are triggered by the presence of additional Spring Integration modules.
 If `spring-integration-jmx` is also on the classpath, message processing statistics are published over JMX.

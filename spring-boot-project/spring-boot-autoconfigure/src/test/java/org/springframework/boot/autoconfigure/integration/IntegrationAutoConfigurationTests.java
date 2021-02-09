@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfig
 import org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
+import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -42,6 +43,7 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
+import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.integration.core.MessageSource;
 import org.springframework.integration.endpoint.MessageProcessorMessageSource;
 import org.springframework.integration.gateway.RequestReplyExchanger;
@@ -56,6 +58,7 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jmx.export.MBeanExporter;
 import org.springframework.messaging.Message;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
+import org.springframework.scheduling.TaskScheduler;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -218,6 +221,32 @@ class IntegrationAutoConfigurationTests {
 							.getPropertyValue("clientTransport");
 
 					assertThat(clientTransport).isInstanceOf(TcpClientTransport.class);
+				});
+	}
+
+	@Test
+	void taskSchedulerIsNotOverridden() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+				.withPropertyValues("spring.task.scheduling.thread-name-prefix=integration-scheduling-",
+						"spring.task.scheduling.pool.size=3")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(TaskScheduler.class);
+					assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
+							.hasFieldOrPropertyWithValue("threadNamePrefix", "integration-scheduling-")
+							.hasFieldOrPropertyWithValue("scheduledExecutor.corePoolSize", 3);
+				});
+	}
+
+	@Test
+	void taskSchedulerCanBeCustomized() {
+		TaskScheduler customTaskScheduler = mock(TaskScheduler.class);
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+				.withBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class,
+						() -> customTaskScheduler)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(TaskScheduler.class);
+					assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
+							.isSameAs(customTaskScheduler);
 				});
 	}
 
