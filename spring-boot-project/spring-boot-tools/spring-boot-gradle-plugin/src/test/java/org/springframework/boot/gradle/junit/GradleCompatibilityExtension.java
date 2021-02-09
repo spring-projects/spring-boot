@@ -32,6 +32,7 @@ import org.junit.platform.commons.util.AnnotationUtils;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
 import org.springframework.boot.gradle.testkit.GradleBuildExtension;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link Extension} that runs {@link TestTemplate templated tests} against multiple
@@ -48,24 +49,33 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 		JavaVersion javaVersion = JavaVersion.current();
 		if (javaVersion.isCompatibleWith(JavaVersion.VERSION_14)
 				|| javaVersion.isCompatibleWith(JavaVersion.VERSION_13)) {
-			GRADLE_VERSIONS = Arrays.asList("6.3", "6.4.1", "6.5.1", "6.6.1", "6.7.1", "current");
+			GRADLE_VERSIONS = Arrays.asList("6.3", "6.4.1", "6.5.1", "6.6.1", "6.7.1", "current", "7.0-milestone-1");
 		}
 		else {
-			GRADLE_VERSIONS = Arrays.asList("5.6.4", "6.3", "6.4.1", "6.5.1", "6.6.1", "6.7.1", "current");
+			GRADLE_VERSIONS = Arrays.asList("5.6.4", "6.3", "6.4.1", "6.5.1", "6.6.1", "6.7.1", "current",
+					"7.0-milestone-1");
 		}
 	}
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
-		return GRADLE_VERSIONS.stream().flatMap((version) -> {
+		Stream<String> gradleVersions = GRADLE_VERSIONS.stream().map((version) -> {
 			if (version.equals("current")) {
-				version = GradleVersion.current().getVersion();
+				return GradleVersion.current().getVersion();
 			}
+			return version;
+		});
+		GradleCompatibility gradleCompatibility = AnnotationUtils
+				.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class).get();
+		if (StringUtils.hasText(gradleCompatibility.versionsLessThan())) {
+			GradleVersion upperExclusive = GradleVersion.version(gradleCompatibility.versionsLessThan());
+			gradleVersions = gradleVersions
+					.filter((version) -> GradleVersion.version(version).compareTo(upperExclusive) < 0);
+		}
+		return gradleVersions.flatMap((version) -> {
 			List<TestTemplateInvocationContext> invocationContexts = new ArrayList<>();
 			invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, false));
-			boolean configurationCache = AnnotationUtils
-					.findAnnotation(context.getRequiredTestClass(), GradleCompatibility.class).get()
-					.configurationCache();
+			boolean configurationCache = gradleCompatibility.configurationCache();
 			if (configurationCache && GradleVersion.version(version).compareTo(GradleVersion.version("6.7")) >= 0) {
 				invocationContexts.add(new GradleVersionTestTemplateInvocationContext(version, true));
 			}

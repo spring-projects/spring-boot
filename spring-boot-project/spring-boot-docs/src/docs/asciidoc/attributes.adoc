@@ -20,8 +20,10 @@
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
 
-:code-examples: ../main/java/org/springframework/boot/docs
-:test-examples: ../test/java/org/springframework/boot/docs
+:include: ../main/java/org/springframework/boot/docs
+:include-springbootfeatures: {include}/springbootfeatures
+:include-productionreadyfeatures: {include}/productionreadyfeatures
+:include-howto: {include}/howto
 
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
@@ -93,9 +95,6 @@
 :spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-session: https://spring.io/projects/spring-session
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/
-
-
-
 
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin

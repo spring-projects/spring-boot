@@ -220,7 +220,7 @@ Deprecation can also be specified declaratively in code by adding the `@Deprecat
 For instance, assume that the `app.acme.target` property was confusing and was renamed to `app.acme.name`.
 The following example shows how to handle that situation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties("app.acme")
 	public class AcmeProperties {
@@ -343,7 +343,7 @@ The special `.keys` and `.values` suffixes must refer to the keys and the values
 
 Assume a `sample.contexts` maps magic `String` values to an integer, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@ConfigurationProperties("sample")
 	public class SampleProperties {
@@ -762,7 +762,7 @@ The annotation processor also supports the use of the `@Data`, `@Getter`, and `@
 
 Consider the following example:
 
-[source,java,indent=0,subs="verbatim,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,attributes"]
 ----
 	@ConfigurationProperties(prefix="server")
 	public class ServerProperties {
@@ -799,7 +799,7 @@ Also, the annotation processor cannot auto-detect default values for ``Enum``s a
 For cases where the default value could not be detected, <<configuration-metadata-additional-metadata,manual metadata>> should be provided.
 Consider the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@ConfigurationProperties(prefix = "acme.messaging")
 	public class MessagingProperties {
@@ -845,7 +845,7 @@ The annotation processor automatically considers inner classes as nested propert
 Rather than documenting the `ip` and `port` at the root of the namespace, we could create a sub-namespace for it.
 Consider the updated example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@ConfigurationProperties(prefix="server")
 	public class ServerProperties {
