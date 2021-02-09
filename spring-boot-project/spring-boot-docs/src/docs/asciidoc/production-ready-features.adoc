@@ -122,7 +122,7 @@ The following technology-agnostic endpoints are available:
   Disabled by default.
 
 | `startup`
-| Shows the startup steps data collected by the `ApplicationStartup`.
+| Shows the <<spring-boot-features.adoc#boot-features-application-startup-tracking,startup steps data>> collected by the `ApplicationStartup`.
   Requires the `SpringApplication` to be configured with a `BufferingApplicationStartup`.
 
 | `threaddump`
