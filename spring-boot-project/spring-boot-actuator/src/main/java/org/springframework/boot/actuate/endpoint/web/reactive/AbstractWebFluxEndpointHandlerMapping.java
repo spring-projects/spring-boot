@@ -59,15 +59,10 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.HandlerMapping;
-import org.springframework.web.reactive.result.condition.ConsumesRequestCondition;
-import org.springframework.web.reactive.result.condition.PatternsRequestCondition;
-import org.springframework.web.reactive.result.condition.ProducesRequestCondition;
-import org.springframework.web.reactive.result.condition.RequestMethodsRequestCondition;
 import org.springframework.web.reactive.result.method.RequestMappingInfo;
 import org.springframework.web.reactive.result.method.RequestMappingInfoHandlerMapping;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.server.ServerWebExchange;
-import org.springframework.web.util.pattern.PathPatternParser;
 
 /**
  * A custom {@link HandlerMapping} that makes web endpoints available over HTTP using
@@ -80,8 +75,6 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * @since 2.0.0
  */
 public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappingInfoHandlerMapping {
-
-	private static final PathPatternParser pathPatternParser = new PathPatternParser();
 
 	private final EndpointMapping endpointMapping;
 
@@ -163,28 +156,20 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 		return reactiveWebOperation;
 	}
 
-	@SuppressWarnings("deprecation")
 	private RequestMappingInfo createRequestMappingInfo(WebOperation operation) {
 		WebOperationRequestPredicate predicate = operation.getRequestPredicate();
-		PatternsRequestCondition patterns = new PatternsRequestCondition(
-				pathPatternParser.parse(this.endpointMapping.createSubPath(predicate.getPath())));
-		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(
-				RequestMethod.valueOf(predicate.getHttpMethod().name()));
-		ConsumesRequestCondition consumes = new ConsumesRequestCondition(
-				StringUtils.toStringArray(predicate.getConsumes()));
-		ProducesRequestCondition produces = new ProducesRequestCondition(
-				StringUtils.toStringArray(predicate.getProduces()));
-		return new RequestMappingInfo(null, patterns, methods, null, null, consumes, produces, null);
+		String path = this.endpointMapping.createSubPath(predicate.getPath());
+		RequestMethod method = RequestMethod.valueOf(predicate.getHttpMethod().name());
+		String[] consumes = StringUtils.toStringArray(predicate.getConsumes());
+		String[] produces = StringUtils.toStringArray(predicate.getProduces());
+		return RequestMappingInfo.paths(path).methods(method).consumes(consumes).produces(produces).build();
 	}
 
-	@SuppressWarnings("deprecation")
 	private void registerLinksMapping() {
-		PatternsRequestCondition patterns = new PatternsRequestCondition(
-				pathPatternParser.parse(this.endpointMapping.getPath()));
-		RequestMethodsRequestCondition methods = new RequestMethodsRequestCondition(RequestMethod.GET);
-		ProducesRequestCondition produces = new ProducesRequestCondition(
-				StringUtils.toStringArray(this.endpointMediaTypes.getProduced()));
-		RequestMappingInfo mapping = new RequestMappingInfo(patterns, methods, null, null, null, produces, null);
+		String path = this.endpointMapping.getPath();
+		String[] produces = StringUtils.toStringArray(this.endpointMediaTypes.getProduced());
+		RequestMappingInfo mapping = RequestMappingInfo.paths(path).methods(RequestMethod.GET).produces(produces)
+				.build();
 		LinksHandler linksHandler = getLinksHandler();
 		registerMapping(mapping, linksHandler,
 				ReflectionUtils.findMethod(linksHandler.getClass(), "links", ServerWebExchange.class));
