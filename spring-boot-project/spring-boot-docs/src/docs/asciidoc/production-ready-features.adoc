@@ -425,6 +425,17 @@ NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the e
 A "`discovery page`" is added with links to all the endpoints.
 The "`discovery page`" is available on `/actuator` by default.
 
+To disable the "`discovery page`", add the following property to your application properties:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	management:
+	  endpoints:
+	    web:
+	      discovery:
+	        enabled: false
+----
+
 When a custom management context path is configured, the "`discovery page`" automatically moves from `/actuator` to the root of the management context.
 For example, if the management context path is `/management`, then the discovery page is available from `/management`.
 When the management context path is set to `/`, the discovery page is disabled to prevent the possibility of a clash with other mappings.

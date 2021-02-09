@@ -119,6 +119,15 @@ class WebMvcEndpointIntegrationTests {
 				both(hasKey("beans")).and(hasKey("servlet")).and(hasKey("restcontroller")).and(hasKey("controller"))));
 	}
 
+	@Test
+	void linksPageIsNotAvailableWhenDisabled() throws Exception {
+		this.context = new AnnotationConfigServletWebApplicationContext();
+		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
+		TestPropertyValues.of("management.endpoints.web.discovery.enabled=false").applyTo(this.context);
+		MockMvc mockMvc = doCreateMockMvc();
+		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isNotFound());
+	}
+
 	private MockMvc createSecureMockMvc() {
 		return doCreateMockMvc(springSecurity());
 	}

@@ -43,21 +43,29 @@ import org.springframework.test.web.reactive.server.WebTestClient;
  */
 class WebFluxEndpointIntegrationTests {
 
+	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
+					WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class, EndpointAutoConfiguration.class,
+					WebEndpointAutoConfiguration.class, ManagementContextAutoConfiguration.class,
+					ReactiveManagementContextAutoConfiguration.class, BeansEndpointAutoConfiguration.class))
+			.withUserConfiguration(EndpointsConfiguration.class);
+
 	@Test
 	void linksAreProvidedToAllEndpointTypes() throws Exception {
-		new ReactiveWebApplicationContextRunner()
-				.withConfiguration(AutoConfigurations.of(JacksonAutoConfiguration.class, CodecsAutoConfiguration.class,
-						WebFluxAutoConfiguration.class, HttpHandlerAutoConfiguration.class,
-						EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
-						ManagementContextAutoConfiguration.class, ReactiveManagementContextAutoConfiguration.class,
-						BeansEndpointAutoConfiguration.class))
-				.withUserConfiguration(EndpointsConfiguration.class)
-				.withPropertyValues("management.endpoints.web.exposure.include:*").run((context) -> {
-					WebTestClient client = createWebTestClient(context);
-					client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
-							.isNotEmpty().jsonPath("_links.restcontroller").isNotEmpty().jsonPath("_links.controller")
-							.isNotEmpty();
-				});
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include:*").run((context) -> {
+			WebTestClient client = createWebTestClient(context);
+			client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
+					.isNotEmpty().jsonPath("_links.restcontroller").isNotEmpty().jsonPath("_links.controller")
+					.isNotEmpty();
+		});
+	}
+
+	@Test
+	void linksPageIsNotAvailableWhenDisabled() throws Exception {
+		this.contextRunner.withPropertyValues("management.endpoints.web.discovery.enabled=false").run((context) -> {
+			WebTestClient client = createWebTestClient(context);
+			client.get().uri("/actuator").exchange().expectStatus().isNotFound();
+		});
 	}
 
 	private WebTestClient createWebTestClient(ApplicationContext context) {

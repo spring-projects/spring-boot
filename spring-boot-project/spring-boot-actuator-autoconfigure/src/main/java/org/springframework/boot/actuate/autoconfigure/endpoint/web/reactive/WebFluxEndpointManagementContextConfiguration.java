@@ -75,12 +75,13 @@ public class WebFluxEndpointManagementContextConfiguration {
 		allEndpoints.addAll(controllerEndpointsSupplier.getEndpoints());
 		return new WebFluxEndpointHandlerMapping(endpointMapping, endpoints, endpointMediaTypes,
 				corsProperties.toCorsConfiguration(), new EndpointLinksResolver(allEndpoints, basePath),
-				shouldRegisterLinksMapping(environment, basePath));
+				shouldRegisterLinksMapping(webEndpointProperties, environment, basePath));
 	}
 
-	private boolean shouldRegisterLinksMapping(Environment environment, String basePath) {
-		return StringUtils.hasText(basePath)
-				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT);
+	private boolean shouldRegisterLinksMapping(WebEndpointProperties properties, Environment environment,
+			String basePath) {
+		return properties.getDiscovery().isEnabled() && (StringUtils.hasText(basePath)
+				|| ManagementPortType.get(environment).equals(ManagementPortType.DIFFERENT));
 	}
 
 	@Bean
