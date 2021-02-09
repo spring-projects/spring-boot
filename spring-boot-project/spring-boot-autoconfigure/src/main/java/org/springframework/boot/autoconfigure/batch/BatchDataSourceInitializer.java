@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.batch;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.core.io.ResourceLoader;
@@ -28,27 +29,27 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @author Mukul Kumar Chaundhyan
  * @since 1.0.0
  */
 public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 
-	private final BatchProperties properties;
+	private final Jdbc jdbcProperties;
 
-	public BatchDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-			BatchProperties properties) {
+	public BatchDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader, Jdbc jdbcProperties) {
 		super(dataSource, resourceLoader);
-		Assert.notNull(properties, "BatchProperties must not be null");
-		this.properties = properties;
+		Assert.notNull(jdbcProperties, "Jdbc Batch Properties must not be null");
+		this.jdbcProperties = jdbcProperties;
 	}
 
 	@Override
 	protected DataSourceInitializationMode getMode() {
-		return this.properties.getInitializeSchema();
+		return this.jdbcProperties.getInitializeSchema();
 	}
 
 	@Override
 	protected String getSchemaLocation() {
-		return this.properties.getSchema();
+		return this.jdbcProperties.getSchema();
 	}
 
 	@Override

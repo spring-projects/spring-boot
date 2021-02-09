@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 
 /**
@@ -25,57 +26,49 @@ import org.springframework.boot.jdbc.DataSourceInitializationMode;
  * @author Stephane Nicoll
  * @author Eddú Meléndez
  * @author Vedran Pavic
+ * @author Mukul Kumar Chaundhyan
  * @since 1.2.0
  */
 @ConfigurationProperties(prefix = "spring.batch")
 public class BatchProperties {
 
-	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
-			+ "batch/core/schema-@@platform@@.sql";
-
-	/**
-	 * Path to the SQL file to use to initialize the database schema.
-	 */
-	private String schema = DEFAULT_SCHEMA_LOCATION;
-
-	/**
-	 * Table prefix for all the batch meta-data tables.
-	 */
-	private String tablePrefix;
-
-	/**
-	 * Database schema initialization mode.
-	 */
-	private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
-
 	private final Job job = new Job();
 
+	private final Jdbc jdbc = new Jdbc();
+
+	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
 	public String getSchema() {
-		return this.schema;
+		return this.jdbc.getSchema();
 	}
 
 	public void setSchema(String schema) {
-		this.schema = schema;
+		this.jdbc.setSchema(schema);
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
 	public String getTablePrefix() {
-		return this.tablePrefix;
+		return this.jdbc.getTablePrefix();
 	}
 
 	public void setTablePrefix(String tablePrefix) {
-		this.tablePrefix = tablePrefix;
+		this.jdbc.setTablePrefix(tablePrefix);
 	}
 
+	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
 	public DataSourceInitializationMode getInitializeSchema() {
-		return this.initializeSchema;
+		return this.jdbc.getInitializeSchema();
 	}
 
 	public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
-		this.initializeSchema = initializeSchema;
+		this.jdbc.setInitializeSchema(initializeSchema);
 	}
 
 	public Job getJob() {
 		return this.job;
+	}
+
+	public Jdbc getJdbc() {
+		return this.jdbc;
 	}
 
 	public static class Job {
@@ -92,6 +85,58 @@ public class BatchProperties {
 
 		public void setNames(String names) {
 			this.names = names;
+		}
+
+	}
+
+	/**
+	 * JDBC configuration properties for Spring Batch.
+	 *
+	 * @author Mukul Kumar Chaundhyan
+	 * @since 2.5.0
+	 */
+	public static class Jdbc {
+
+		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
+				+ "batch/core/schema-@@platform@@.sql";
+
+		/**
+		 * Path to the SQL file to use to initialize the database schema.
+		 */
+		private String schema = DEFAULT_SCHEMA_LOCATION;
+
+		/**
+		 * Table prefix for all the batch meta-data tables.
+		 */
+		private String tablePrefix;
+
+		/**
+		 * Database schema initialization mode.
+		 */
+		private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
+
+		public String getSchema() {
+			return this.schema;
+		}
+
+		public void setSchema(String schema) {
+			this.schema = schema;
+		}
+
+		public String getTablePrefix() {
+			return this.tablePrefix;
+		}
+
+		public void setTablePrefix(String tablePrefix) {
+			this.tablePrefix = tablePrefix;
+		}
+
+		public DataSourceInitializationMode getInitializeSchema() {
+			return this.initializeSchema;
+		}
+
+		public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
+			this.initializeSchema = initializeSchema;
 		}
 
 	}
