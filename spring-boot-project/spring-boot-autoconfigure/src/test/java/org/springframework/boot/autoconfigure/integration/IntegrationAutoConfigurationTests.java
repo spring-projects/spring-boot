@@ -74,8 +74,7 @@ import static org.mockito.Mockito.mock;
 class IntegrationAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class,
-					TaskSchedulingAutoConfiguration.class));
+			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class));
 
 	@Test
 	void integrationIsAvailable() {
@@ -226,14 +225,29 @@ class IntegrationAutoConfigurationTests {
 	}
 
 	@Test
-	void taskSchedulerAutoConfigured() {
-		this.contextRunner
+	void taskSchedulerIsNotOverridden() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
 				.withPropertyValues("spring.task.scheduling.thread-name-prefix=integration-scheduling-",
 						"spring.task.scheduling.pool.size=3")
-				.run((context) -> assertThat(context)
-						.getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
-						.hasFieldOrPropertyWithValue("threadNamePrefix", "integration-scheduling-")
-						.hasFieldOrPropertyWithValue("scheduledExecutor.corePoolSize", 3));
+				.run((context) -> {
+					assertThat(context).hasSingleBean(TaskScheduler.class);
+					assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class)
+							.hasFieldOrPropertyWithValue("threadNamePrefix", "integration-scheduling-")
+							.hasFieldOrPropertyWithValue("scheduledExecutor.corePoolSize", 3);
+				});
+	}
+
+	@Test
+	void taskSchedulerCanBeCustomized() {
+		TaskScheduler customTaskScheduler = mock(TaskScheduler.class);
+		this.contextRunner.withConfiguration(AutoConfigurations.of(TaskSchedulingAutoConfiguration.class))
+				.withBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME, TaskScheduler.class,
+						() -> customTaskScheduler)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(TaskScheduler.class);
+					assertThat(context).getBean(IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
+							.isSameAs(customTaskScheduler);
+				});
 	}
 
 	@Configuration(proxyBeanMethods = false)

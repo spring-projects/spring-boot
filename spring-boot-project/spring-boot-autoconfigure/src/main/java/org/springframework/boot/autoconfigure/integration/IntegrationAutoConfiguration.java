@@ -46,6 +46,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.config.EnableIntegration;
 import org.springframework.integration.config.EnableIntegrationManagement;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
+import org.springframework.integration.context.IntegrationContextUtils;
 import org.springframework.integration.gateway.GatewayProxyFactoryBean;
 import org.springframework.integration.jdbc.store.JdbcMessageStore;
 import org.springframework.integration.jmx.config.EnableIntegrationMBeanExport;
@@ -58,7 +59,6 @@ import org.springframework.integration.rsocket.outbound.RSocketOutboundGateway;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
-import org.springframework.scheduling.TaskScheduler;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 import org.springframework.util.StringUtils;
 
@@ -81,26 +81,27 @@ import org.springframework.util.StringUtils;
 public class IntegrationAutoConfiguration {
 
 	/**
-	 * The {@link TaskScheduler} configuration.
-	 */
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(TaskSchedulerBuilder.class)
-	protected static class IntegrationTaskSchedulerConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
-			return builder.build();
-		}
-
-	}
-
-	/**
 	 * Basic Spring Integration configuration.
 	 */
 	@Configuration(proxyBeanMethods = false)
 	@EnableIntegration
 	protected static class IntegrationConfiguration {
+
+	}
+
+	/**
+	 * Expose a standard {@link ThreadPoolTaskScheduler} if the user has not enabled task
+	 * scheduling explicitly.
+	 */
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnBean(TaskSchedulerBuilder.class)
+	@ConditionalOnMissingBean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
+	protected static class IntegrationTaskSchedulerConfiguration {
+
+		@Bean(name = IntegrationContextUtils.TASK_SCHEDULER_BEAN_NAME)
+		public ThreadPoolTaskScheduler taskScheduler(TaskSchedulerBuilder builder) {
+			return builder.build();
+		}
 
 	}
 
