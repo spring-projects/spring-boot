@@ -52,7 +52,7 @@ class JerseyEndpointIntegrationTests {
 
 	@Test
 	void linksPageIsNotAvailableWhenDisabled() {
-		getContextRunner(new Class[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class })
+		getContextRunner(new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class })
 				.withPropertyValues("management.endpoints.web.discovery.enabled:false").run((context) -> {
 					int port = context
 							.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
