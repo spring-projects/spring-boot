@@ -33,6 +33,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * Provide a {@link BatchConfigurer} according to the current environment.
  *
  * @author Stephane Nicoll
+ * @author Mukul Kumar Chaundhyan
  */
 @ConditionalOnClass(PlatformTransactionManager.class)
 @ConditionalOnBean(DataSource.class)
@@ -45,11 +46,11 @@ class BatchConfigurerConfiguration {
 	static class JdbcBatchConfiguration {
 
 		@Bean
-		BasicBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
-				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
+		BasicBatchConfigurer batchConfigurer(BatchProperties properties, BatchJdbcProperties batchJdbcProperties,
+				DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers) {
-			return new BasicBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
-					transactionManagerCustomizers.getIfAvailable());
+			return new BasicBatchConfigurer(properties, batchJdbcProperties,
+					batchDataSource.getIfAvailable(() -> dataSource), transactionManagerCustomizers.getIfAvailable());
 		}
 
 	}
@@ -60,12 +61,13 @@ class BatchConfigurerConfiguration {
 	static class JpaBatchConfiguration {
 
 		@Bean
-		JpaBatchConfigurer batchConfigurer(BatchProperties properties, DataSource dataSource,
-				@BatchDataSource ObjectProvider<DataSource> batchDataSource,
+		JpaBatchConfigurer batchConfigurer(BatchProperties properties, BatchJdbcProperties batchJdbcProperties,
+				DataSource dataSource, @BatchDataSource ObjectProvider<DataSource> batchDataSource,
 				ObjectProvider<TransactionManagerCustomizers> transactionManagerCustomizers,
 				EntityManagerFactory entityManagerFactory) {
-			return new JpaBatchConfigurer(properties, batchDataSource.getIfAvailable(() -> dataSource),
-					transactionManagerCustomizers.getIfAvailable(), entityManagerFactory);
+			return new JpaBatchConfigurer(properties, batchJdbcProperties,
+					batchDataSource.getIfAvailable(() -> dataSource), transactionManagerCustomizers.getIfAvailable(),
+					entityManagerFactory);
 		}
 
 	}

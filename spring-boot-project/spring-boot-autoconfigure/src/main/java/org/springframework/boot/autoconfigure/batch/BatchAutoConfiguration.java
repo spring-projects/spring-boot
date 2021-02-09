@@ -57,13 +57,14 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
+ * @author Mukul Kumar Chaundhyan
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ JobLauncher.class, DataSource.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
-@EnableConfigurationProperties(BatchProperties.class)
+@EnableConfigurationProperties({ BatchProperties.class, BatchJdbcProperties.class })
 @Import(BatchConfigurerConfiguration.class)
 public class BatchAutoConfiguration {
 
@@ -109,7 +110,7 @@ public class BatchAutoConfiguration {
 		@ConditionalOnMissingBean
 		BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, ResourceLoader resourceLoader,
-				BatchProperties properties) {
+				BatchJdbcProperties properties) {
 			return new BatchDataSourceInitializer(batchDataSource.getIfAvailable(() -> dataSource), resourceLoader,
 					properties);
 		}

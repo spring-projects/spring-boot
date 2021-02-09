@@ -28,14 +28,15 @@ import org.springframework.util.Assert;
  *
  * @author Dave Syer
  * @author Vedran Pavic
+ * @author Mukul Kumar Chaundhyan
  * @since 1.0.0
  */
 public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 
-	private final BatchProperties properties;
+	private final BatchJdbcProperties properties;
 
 	public BatchDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
-			BatchProperties properties) {
+			BatchJdbcProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "BatchProperties must not be null");
 		this.properties = properties;

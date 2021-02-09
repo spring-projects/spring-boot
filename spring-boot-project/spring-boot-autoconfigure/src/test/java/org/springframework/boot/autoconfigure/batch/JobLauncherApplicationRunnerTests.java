@@ -222,13 +222,14 @@ class JobLauncherApplicationRunnerTests {
 		private final DataSource dataSource;
 
 		protected BatchConfiguration(DataSource dataSource) {
-			super(new BatchProperties(), dataSource, new TransactionManagerCustomizers(null));
+			super(new BatchProperties(), new BatchJdbcProperties(), dataSource,
+					new TransactionManagerCustomizers(null));
 			this.dataSource = dataSource;
 		}
 
 		@Bean
 		BatchDataSourceInitializer batchDataSourceInitializer(ResourceLoader resourceLoader) {
-			return new BatchDataSourceInitializer(this.dataSource, resourceLoader, new BatchProperties());
+			return new BatchDataSourceInitializer(this.dataSource, resourceLoader, new BatchJdbcProperties());
 		}
 
 	}

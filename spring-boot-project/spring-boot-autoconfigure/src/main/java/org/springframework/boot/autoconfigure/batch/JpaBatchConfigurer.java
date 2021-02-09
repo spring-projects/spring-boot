@@ -30,6 +30,7 @@ import org.springframework.transaction.PlatformTransactionManager;
  * A {@link BasicBatchConfigurer} tailored for JPA.
  *
  * @author Stephane Nicoll
+ * @author Mukul Kumar Chaundhyan
  * @since 2.0.0
  */
 public class JpaBatchConfigurer extends BasicBatchConfigurer {
@@ -41,14 +42,16 @@ public class JpaBatchConfigurer extends BasicBatchConfigurer {
 	/**
 	 * Create a new {@link BasicBatchConfigurer} instance.
 	 * @param properties the batch properties
+	 * @param batchJdbcProperties the batch jdbc properties
 	 * @param dataSource the underlying data source
 	 * @param transactionManagerCustomizers transaction manager customizers (or
 	 * {@code null})
 	 * @param entityManagerFactory the entity manager factory (or {@code null})
 	 */
-	protected JpaBatchConfigurer(BatchProperties properties, DataSource dataSource,
-			TransactionManagerCustomizers transactionManagerCustomizers, EntityManagerFactory entityManagerFactory) {
-		super(properties, dataSource, transactionManagerCustomizers);
+	protected JpaBatchConfigurer(BatchProperties properties, BatchJdbcProperties batchJdbcProperties,
+			DataSource dataSource, TransactionManagerCustomizers transactionManagerCustomizers,
+			EntityManagerFactory entityManagerFactory) {
+		super(properties, batchJdbcProperties, dataSource, transactionManagerCustomizers);
 		this.entityManagerFactory = entityManagerFactory;
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,20 +17,16 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 
 /**
- * Configuration properties for Spring Batch.
+ * JDBC configuration properties for Spring Batch.
  *
- * @author Stephane Nicoll
- * @author Eddú Meléndez
- * @author Vedran Pavic
  * @author Mukul Kumar Chaundhyan
- * @since 1.2.0
+ * @since 2.5.0
  */
-@ConfigurationProperties(prefix = "spring.batch")
-public class BatchProperties {
+@ConfigurationProperties(prefix = "spring.batch.jdbc")
+public class BatchJdbcProperties {
 
 	private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"
 			+ "batch/core/schema-@@platform@@.sql";
@@ -50,9 +46,6 @@ public class BatchProperties {
 	 */
 	private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
 
-	private final Job job = new Job();
-
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
 	public String getSchema() {
 		return this.schema;
 	}
@@ -61,7 +54,6 @@ public class BatchProperties {
 		this.schema = schema;
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
 	public String getTablePrefix() {
 		return this.tablePrefix;
 	}
@@ -70,35 +62,12 @@ public class BatchProperties {
 		this.tablePrefix = tablePrefix;
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
 	public DataSourceInitializationMode getInitializeSchema() {
 		return this.initializeSchema;
 	}
 
 	public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
 		this.initializeSchema = initializeSchema;
-	}
-
-	public Job getJob() {
-		return this.job;
-	}
-
-	public static class Job {
-
-		/**
-		 * Comma-separated list of job names to execute on startup (for instance,
-		 * `job1,job2`). By default, all Jobs found in the context are executed.
-		 */
-		private String names = "";
-
-		public String getNames() {
-			return this.names;
-		}
-
-		public void setNames(String names) {
-			this.names = names;
-		}
-
 	}
 
 }

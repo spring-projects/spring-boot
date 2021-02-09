@@ -38,11 +38,14 @@ import org.springframework.transaction.PlatformTransactionManager;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
+ * @author Mukul Kumar Chaundhyan
  * @since 1.0.0
  */
 public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 
 	private final BatchProperties properties;
+
+	private final BatchJdbcProperties batchJdbcProperties;
 
 	private final DataSource dataSource;
 
@@ -63,9 +66,24 @@ public class BasicBatchConfigurer implements BatchConfigurer, InitializingBean {
 	 * @param transactionManagerCustomizers transaction manager customizers (or
 	 * {@code null})
 	 */
+	@Deprecated
 	protected BasicBatchConfigurer(BatchProperties properties, DataSource dataSource,
 			TransactionManagerCustomizers transactionManagerCustomizers) {
+		this(properties, null, dataSource, transactionManagerCustomizers);
+	}
+
+	/**
+	 * Create a new {@link BasicBatchConfigurer} instance with segregated JDBC properties.
+	 * @param properties the batch properties
+	 * @param batchJdbcProperties the jdbc batch properties
+	 * @param dataSource the underlying data source
+	 * @param transactionManagerCustomizers transaction manager customizers (or
+	 * {@code null})
+	 */
+	protected BasicBatchConfigurer(BatchProperties properties, BatchJdbcProperties batchJdbcProperties,
+			DataSource dataSource, TransactionManagerCustomizers transactionManagerCustomizers) {
 		this.properties = properties;
+		this.batchJdbcProperties = batchJdbcProperties;
 		this.dataSource = dataSource;
 		this.transactionManagerCustomizers = transactionManagerCustomizers;
 	}
