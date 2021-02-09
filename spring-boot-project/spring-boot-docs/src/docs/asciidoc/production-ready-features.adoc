@@ -1055,7 +1055,7 @@ Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run
 [[production-ready-kubernetes-probes-lifecycle]]
 ==== Application lifecycle and Probes states
 An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
-There is a significant different between the `AvailabilityState` which is the in-memory, internal state of the application -
+There is a significant difference between the `AvailabilityState` which is the in-memory, internal state of the application
 and the actual Probe which exposes that state: depending on the phase of application lifecycle, the Probe might not be available.
 
 Spring Boot publishes <<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events during startup and shutdown>>,
@@ -1078,7 +1078,7 @@ When a Spring Boot application starts:
 |Started
 |`CORRECT`
 |`REFUSING_TRAFFIC`
-|Accepts requests
+|Refuses requests
 |The application context is refreshed. The application performs startup tasks and does not receive traffic yet.
 
 |Ready

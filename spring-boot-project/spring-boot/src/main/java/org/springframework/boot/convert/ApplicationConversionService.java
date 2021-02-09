@@ -69,7 +69,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 	 * type.
 	 * @param sourceType the source type to test
 	 * @param targetType the target type to test
-	 * @return is conversion happens via an {@code ObjectTo...} converter
+	 * @return if conversion happens via an {@code ObjectTo...} converter
 	 * @since 2.4.3
 	 */
 	public boolean isConvertViaObjectSourceType(TypeDescriptor sourceType, TypeDescriptor targetType) {
