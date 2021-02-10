@@ -121,7 +121,7 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	}
 
 	@ReadOperation
-	public ApplicationConfigurationProperties configurationProperties(@Selector String prefix) {
+	public ApplicationConfigurationProperties configurationPropertiesWithPrefix(@Selector String prefix) {
 		return extract(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix));
 	}
 
@@ -181,11 +181,9 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context,
 			Predicate<ConfigurationPropertiesBean> beanFilterPredicate) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
-
 		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values().stream()
-				.filter(beanFilterPredicate::test)
-				.collect(Collectors.toMap((bean) -> bean.getName(), (bean) -> describeBean(mapper, bean)));
-
+				.filter(beanFilterPredicate)
+				.collect(Collectors.toMap(ConfigurationPropertiesBean::getName, (bean) -> describeBean(mapper, bean)));
 		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
