@@ -22,6 +22,8 @@ import javax.json.bind.Jsonb;
 import javax.json.bind.JsonbBuilder;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 
 import org.springframework.core.ResolvableType;
 
@@ -58,6 +60,12 @@ class JsonbTesterTests extends AbstractJsonMarshalTesterTests {
 		assertThat(test.base).isNotNull();
 		assertThat(test.test.getType().resolve()).isEqualTo(List.class);
 		assertThat(test.test.getType().resolveGeneric()).isEqualTo(ExampleObject.class);
+	}
+
+	@DisabledForJreRange(min = JRE.JAVA_16)
+	@Test
+	void writeArrayShouldReturnJsonContent() throws Exception {
+		// Remove after https://issues.apache.org/jira/browse/JOHNZON-331 is released
 	}
 
 	@Override
