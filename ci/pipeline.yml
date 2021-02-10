@@ -45,6 +45,8 @@ anchors:
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
   artifactory-repo-put-params: &artifactory-repo-put-params
+    signing_key: ((signing-key))
+    signing_passphrase: ((signing-passphrase))
     repo: libs-snapshot-local
     folder: distribution-repository
     build_uri: "https://ci.spring.io/teams/${BUILD_TEAM_NAME}/pipelines/${BUILD_PIPELINE_NAME}/jobs/${BUILD_JOB_NAME}/builds/${BUILD_NAME}"
@@ -83,7 +85,7 @@ resource_types:
   type: registry-image
   source:
     repository: springio/artifactory-resource
-    tag: 0.0.12
+    tag: 0.0.13
 - name: pull-request
   type: registry-image
   source:
