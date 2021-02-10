@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -270,7 +270,7 @@ public class CassandraProperties {
 		 * Timeout to use for internal queries that run as part of the initialization
 		 * process, just after a connection is opened.
 		 */
-		private Duration initQueryTimeout = Duration.ofMillis(500);
+		private Duration initQueryTimeout = Duration.ofSeconds(5);
 
 		public Duration getConnectTimeout() {
 			return this.connectTimeout;
@@ -360,7 +360,7 @@ public class CassandraProperties {
 		/**
 		 * Idle timeout before an idle connection is removed.
 		 */
-		private Duration idleTimeout = Duration.ofSeconds(120);
+		private Duration idleTimeout = Duration.ofSeconds(5);
 
 		/**
 		 * Heartbeat interval after which a message is sent on an idle connection to make
