@@ -116,7 +116,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 
 	@Override
 	void populateResolvedDependencies(Configuration configuration) {
-		getTask().getResolvedDependencies().processConfiguration(configuration);
+		getTask().getResolvedDependencies().processConfiguration(getTask().getProject(), configuration);
 	}
 
 	@Override

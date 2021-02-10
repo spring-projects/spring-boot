@@ -22,6 +22,7 @@ import java.util.concurrent.Callable;
 import java.util.function.Function;
 
 import org.gradle.api.Action;
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.ResolvableDependencies;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.file.FileCollection;
@@ -72,15 +73,16 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	public BootJar() {
 		this.support = new BootArchiveSupport(LAUNCHER, new LibrarySpec(), new ZipCompressionResolver());
-		this.bootInfSpec = getProject().copySpec().into("BOOT-INF");
-		this.mainClass = getProject().getObjects().property(String.class);
+		Project project = getProject();
+		this.bootInfSpec = project.copySpec().into("BOOT-INF");
+		this.mainClass = project.getObjects().property(String.class);
 		configureBootInfSpec(this.bootInfSpec);
 		getMainSpec().with(this.bootInfSpec);
-		getProject().getConfigurations().all((configuration) -> {
+		project.getConfigurations().all((configuration) -> {
 			ResolvableDependencies incoming = configuration.getIncoming();
 			incoming.afterResolve((resolvableDependencies) -> {
 				if (resolvableDependencies == incoming) {
-					this.resolvedDependencies.processConfiguration(configuration);
+					this.resolvedDependencies.processConfiguration(project, configuration);
 				}
 			});
 		});

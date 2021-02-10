@@ -70,15 +70,16 @@ public class BootWar extends War implements BootArchive {
 	 */
 	public BootWar() {
 		this.support = new BootArchiveSupport(LAUNCHER, new LibrarySpec(), new ZipCompressionResolver());
-		this.mainClass = getProject().getObjects().property(String.class);
+		Project project = getProject();
+		this.mainClass = project.getObjects().property(String.class);
 		getWebInf().into("lib-provided", fromCallTo(this::getProvidedLibFiles));
 		this.support.moveModuleInfoToRoot(getRootSpec());
 		getRootSpec().eachFile(this.support::excludeNonZipLibraryFiles);
-		getProject().getConfigurations().all((configuration) -> {
+		project.getConfigurations().all((configuration) -> {
 			ResolvableDependencies incoming = configuration.getIncoming();
 			incoming.afterResolve((resolvableDependencies) -> {
 				if (resolvableDependencies == incoming) {
-					this.resolvedDependencies.processConfiguration(configuration);
+					this.resolvedDependencies.processConfiguration(project, configuration);
 				}
 			});
 		});

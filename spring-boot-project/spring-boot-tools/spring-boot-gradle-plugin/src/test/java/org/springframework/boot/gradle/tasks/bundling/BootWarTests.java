@@ -116,7 +116,7 @@ class BootWarTests extends AbstractBootArchiveTests<BootWar> {
 
 	@Override
 	void populateResolvedDependencies(Configuration configuration) {
-		getTask().getResolvedDependencies().processConfiguration(configuration);
+		getTask().getResolvedDependencies().processConfiguration(getTask().getProject(), configuration);
 	}
 
 	@Override
