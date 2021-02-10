@@ -36,6 +36,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceSchemaCreatedEvent;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -136,12 +137,17 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 	 * blocks until any asynchronous DataSource initialization has completed.
 	 */
 	static class DataSourceInitializationCompletionListener
-			implements ApplicationListener<ContextRefreshedEvent>, Ordered {
+			implements ApplicationListener<ContextRefreshedEvent>, Ordered, ApplicationContextAware {
+
+		private volatile ApplicationContext applicationContext;
 
 		private volatile Future<?> dataSourceInitialization;
 
 		@Override
 		public void onApplicationEvent(ContextRefreshedEvent event) {
+			if (!event.getApplicationContext().equals(this.applicationContext)) {
+				return;
+			}
 			Future<?> dataSourceInitialization = this.dataSourceInitialization;
 			if (dataSourceInitialization != null) {
 				try {
@@ -156,6 +162,11 @@ class DataSourceInitializedPublisher implements BeanPostProcessor {
 		@Override
 		public int getOrder() {
 			return Ordered.HIGHEST_PRECEDENCE;
+		}
+
+		@Override
+		public void setApplicationContext(ApplicationContext applicationContext) {
+			this.applicationContext = applicationContext;
 		}
 
 	}
