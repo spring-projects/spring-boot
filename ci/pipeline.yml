@@ -83,7 +83,7 @@ resource_types:
   type: registry-image
   source:
     repository: teliaoss/github-pr-resource
-    tag: v0.21.0
+    tag: v0.23.0
 - name: github-status-resource
   type: registry-image
   source:
