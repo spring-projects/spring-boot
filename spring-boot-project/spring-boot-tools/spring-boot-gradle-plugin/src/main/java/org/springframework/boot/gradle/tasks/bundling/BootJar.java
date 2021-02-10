@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,15 +74,16 @@ public class BootJar extends Jar implements BootArchive {
 	 */
 	public BootJar() {
 		this.support = new BootArchiveSupport(LAUNCHER, new LibrarySpec(), new ZipCompressionResolver());
-		this.bootInfSpec = getProject().copySpec().into("BOOT-INF");
-		this.mainClass = getProject().getObjects().property(String.class);
+		Project project = getProject();
+		this.bootInfSpec = project.copySpec().into("BOOT-INF");
+		this.mainClass = project.getObjects().property(String.class);
 		configureBootInfSpec(this.bootInfSpec);
 		getMainSpec().with(this.bootInfSpec);
-		getProject().getConfigurations().all((configuration) -> {
+		project.getConfigurations().all((configuration) -> {
 			ResolvableDependencies incoming = configuration.getIncoming();
 			incoming.afterResolve((resolvableDependencies) -> {
 				if (resolvableDependencies == incoming) {
-					this.resolvedDependencies.processConfiguration(configuration);
+					this.resolvedDependencies.processConfiguration(project, configuration);
 				}
 			});
 		});

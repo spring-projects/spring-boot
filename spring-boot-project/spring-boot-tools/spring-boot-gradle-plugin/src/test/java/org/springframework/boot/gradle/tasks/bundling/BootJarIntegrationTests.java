@@ -149,6 +149,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/alpha-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/bravo-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/charlie-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
@@ -171,7 +172,8 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		assertThat(indexedLayers.get("spring-boot-loader")).containsExactly("org/");
 		assertThat(indexedLayers.get("snapshot-dependencies")).containsExactlyElementsOf(expectedSnapshotDependencies);
 		assertThat(indexedLayers.get("application")).containsExactly("BOOT-INF/classes/", "BOOT-INF/classpath.idx",
-				"BOOT-INF/layers.idx", "BOOT-INF/lib/alpha-1.2.3.jar", "BOOT-INF/lib/bravo-1.2.3.jar", "META-INF/");
+				"BOOT-INF/layers.idx", "BOOT-INF/lib/alpha-1.2.3.jar", "BOOT-INF/lib/bravo-1.2.3.jar",
+				"BOOT-INF/lib/charlie-1.2.3.jar", "META-INF/");
 		BuildResult listLayers = this.gradleBuild.build("listLayers");
 		assertThat(listLayers.task(":listLayers").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		String listLayersOutput = listLayers.getOutput();
@@ -244,6 +246,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 			assertThat(jarFile.getEntry(layerToolsJar)).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/alpha-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/bravo-1.2.3.jar")).isNotNull();
+			assertThat(jarFile.getEntry("BOOT-INF/lib/charlie-1.2.3.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/commons-lang3-3.9.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar")).isNotNull();
 			assertThat(jarFile.getEntry("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar")).isNotNull();
@@ -259,6 +262,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 		Set<String> expectedSubprojectDependencies = new TreeSet<>();
 		expectedSubprojectDependencies.add("BOOT-INF/lib/alpha-1.2.3.jar");
 		expectedSubprojectDependencies.add("BOOT-INF/lib/bravo-1.2.3.jar");
+		expectedSubprojectDependencies.add("BOOT-INF/lib/charlie-1.2.3.jar");
 		Set<String> expectedDependencies = new TreeSet<>();
 		expectedDependencies.add("BOOT-INF/lib/spring-core-5.2.5.RELEASE.jar");
 		expectedDependencies.add("BOOT-INF/lib/spring-jcl-5.2.5.RELEASE.jar");
@@ -348,7 +352,7 @@ class BootJarIntegrationTests extends AbstractBootArchiveIntegrationTests {
 	private void writeSettingsGradle() {
 		try (PrintWriter writer = new PrintWriter(
 				new FileWriter(new File(this.gradleBuild.getProjectDir(), "settings.gradle")))) {
-			writer.println("include 'alpha', 'bravo'");
+			writer.println("include 'alpha', 'bravo', 'charlie'");
 		}
 		catch (IOException ex) {
 			throw new RuntimeException(ex);

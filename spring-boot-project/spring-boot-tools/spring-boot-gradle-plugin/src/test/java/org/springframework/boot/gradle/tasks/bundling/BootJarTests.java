@@ -323,7 +323,7 @@ class BootJarTests extends AbstractBootArchiveTests<BootJar> {
 			return null;
 		}).given(resolvableDependencies).afterResolve(any(Action.class));
 		given(configuration.getIncoming()).willReturn(resolvableDependencies);
-		bootJar.getResolvedDependencies().processConfiguration(configuration);
+		bootJar.getResolvedDependencies().processConfiguration(bootJar.getProject(), configuration);
 	}
 
 	private ResolvedArtifact mockLibraryArtifact(String fileName, String group, String module, String version) {
