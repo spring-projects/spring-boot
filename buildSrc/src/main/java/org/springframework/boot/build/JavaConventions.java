@@ -16,14 +16,12 @@
 
 package org.springframework.boot.build;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import io.spring.javaformat.gradle.FormatTask;
@@ -49,6 +47,7 @@ import org.gradle.testretry.TestRetryTaskExtension;
 
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
+import org.springframework.boot.build.toolchain.ToolchainPlugin;
 
 /**
  * Conventions that are applied in the presence of the {@link JavaBasePlugin}. When the
@@ -103,6 +102,7 @@ class JavaConventions {
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
 			configureDependencyManagement(project);
+			configureToolchain(project);
 		});
 	}
 
@@ -145,7 +145,6 @@ class JavaConventions {
 
 	private void configureTestConventions(Project project) {
 		project.getTasks().withType(Test.class, (test) -> {
-			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
 		});
@@ -165,36 +164,23 @@ class JavaConventions {
 	}
 
 	private void configureJavadocConventions(Project project) {
-		project.getTasks().withType(Javadoc.class, (javadoc) -> {
-			javadoc.getOptions().source("1.8").encoding("UTF-8");
-			withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
-		});
+		project.getTasks().withType(Javadoc.class, (javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
 	}
 
 	private void configureJavaCompileConventions(Project project) {
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
-			withOptionalBuildJavaHome(project, (javaHome) -> {
-				compile.getOptions().setFork(true);
-				compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
-				compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
-			});
+			compile.setSourceCompatibility("1.8");
+			compile.setTargetCompatibility("1.8");
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
 			}
-			if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+			if (!project.hasProperty("toolchainVersion") && JavaVersion.current() == JavaVersion.VERSION_1_8) {
 				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
 						"-Xlint:varargs"));
 			}
 		});
-	}
-
-	private void withOptionalBuildJavaHome(Project project, Consumer<String> consumer) {
-		String buildJavaHome = (String) project.findProperty("buildJavaHome");
-		if (buildJavaHome != null && !buildJavaHome.isEmpty()) {
-			consumer.accept(buildJavaHome);
-		}
 	}
 
 	private void configureSpringJavaFormat(Project project) {
@@ -226,6 +212,10 @@ class JavaConventions {
 		dependencyManagement.getDependencies().add(springBootParent);
 		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
 				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
+	}
+
+	private void configureToolchain(Project project) {
+		project.getPlugins().apply(ToolchainPlugin.class);
 	}
 
 }

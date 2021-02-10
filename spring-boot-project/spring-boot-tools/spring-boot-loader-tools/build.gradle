@@ -69,7 +69,7 @@ processResources {
 }
 
 compileJava {
-	if ((!project.hasProperty("buildJavaHome")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
+	if ((!project.hasProperty("toolchainVersion")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
 		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']	
 	}	
 }
