@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,17 +20,13 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Reader;
-import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import org.gradle.api.file.FileCollection;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 /**
  * Configuration properties read from one or more
@@ -40,20 +36,18 @@ import org.gradle.api.file.FileCollection;
  */
 final class ConfigurationProperties {
 
-	private static final Type MAP_TYPE = new MapTypeToken().getType();
-
 	private ConfigurationProperties() {
 
 	}
 
 	@SuppressWarnings("unchecked")
-	static Map<String, ConfigurationProperty> fromFiles(FileCollection files) {
+	static Map<String, ConfigurationProperty> fromFiles(Iterable<File> files) {
 		List<ConfigurationProperty> configurationProperties = new ArrayList<>();
 		try {
-			Gson gson = new GsonBuilder().create();
+			ObjectMapper objectMapper = new ObjectMapper();
 			for (File file : files) {
 				try (Reader reader = new FileReader(file)) {
-					Map<String, Object> json = gson.fromJson(reader, MAP_TYPE);
+					Map<String, Object> json = objectMapper.readValue(file, Map.class);
 					List<Map<String, Object>> properties = (List<Map<String, Object>>) json.get("properties");
 					for (Map<String, Object> property : properties) {
 						String name = (String) property.get("name");
@@ -72,10 +66,6 @@ final class ConfigurationProperties {
 		catch (IOException ex) {
 			throw new RuntimeException("Failed to load configuration metadata", ex);
 		}
-	}
-
-	private static final class MapTypeToken extends TypeToken<Map<String, Object>> {
-
 	}
 
 }
