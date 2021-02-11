@@ -31,6 +31,10 @@ rootProject.name="spring-boot-build"
 settings.gradle.projectsLoaded {
 	gradleEnterprise {
 		buildScan {
+			if (settings.gradle.rootProject.hasProperty('toolchainVersion')) {
+				value('Toolchain Version', settings.gradle.rootProject.getProperty('toolchainVersion'))
+			}
+
 			settings.gradle.rootProject.getBuildDir().mkdirs()
 			new File(settings.gradle.rootProject.getBuildDir(), "build-scan-uri.txt").text = "build scan not generated"
 
