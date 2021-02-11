@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,7 @@ public enum DatabaseDriver {
 	 * Maria DB.
 	 */
 	MARIADB("MariaDB", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1") {
+
 		@Override
 		public String getId() {
 			return "mysql";
@@ -121,6 +122,7 @@ public enum DatabaseDriver {
 	 */
 	SQLSERVER("Microsoft SQL Server", "com.microsoft.sqlserver.jdbc.SQLServerDriver",
 			"com.microsoft.sqlserver.jdbc.SQLServerXADataSource", "SELECT 1") {
+
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || "SQL SERVER".equalsIgnoreCase(productName);
@@ -133,6 +135,7 @@ public enum DatabaseDriver {
 	 */
 	FIREBIRD("Firebird", "org.firebirdsql.jdbc.FBDriver", "org.firebirdsql.ds.FBXADataSource",
 			"SELECT 1 FROM RDB$DATABASE") {
+
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("firebirdsql", "firebird");
@@ -149,6 +152,7 @@ public enum DatabaseDriver {
 	 * DB2 Server.
 	 */
 	DB2("DB2", "com.ibm.db2.jcc.DB2Driver", "com.ibm.db2.jcc.DB2XADataSource", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+
 		@Override
 		protected boolean matchProductName(String productName) {
 			return super.matchProductName(productName) || productName.toLowerCase(Locale.ENGLISH).startsWith("db2/");
@@ -160,6 +164,7 @@ public enum DatabaseDriver {
 	 */
 	DB2_AS400("DB2 UDB for AS/400", "com.ibm.as400.access.AS400JDBCDriver",
 			"com.ibm.as400.access.AS400JDBCXADataSource", "SELECT 1 FROM SYSIBM.SYSDUMMY1") {
+
 		@Override
 		public String getId() {
 			return "db2";
@@ -185,6 +190,7 @@ public enum DatabaseDriver {
 	 * Informix.
 	 */
 	INFORMIX("Informix Dynamic Server", "com.informix.jdbc.IfxDriver", null, "select count(*) from systables") {
+
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Arrays.asList("informix-sqli", "informix-direct");
@@ -202,6 +208,7 @@ public enum DatabaseDriver {
 	 * Testcontainers.
 	 */
 	TESTCONTAINERS(null, "org.testcontainers.jdbc.ContainerDatabaseDriver") {
+
 		@Override
 		protected Collection<String> getUrlPrefixes() {
 			return Collections.singleton("tc");
