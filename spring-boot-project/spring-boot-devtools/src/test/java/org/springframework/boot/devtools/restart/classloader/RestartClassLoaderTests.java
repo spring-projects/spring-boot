@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -34,6 +35,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.aop.framework.ProxyFactory;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
@@ -198,6 +200,14 @@ class RestartClassLoaderTests {
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.ADDED, bytes));
 		Class<?> loaded = Class.forName(PACKAGE + ".SampleParent", false, this.reloadClassLoader);
 		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
+	}
+
+	@Test
+	void proxyOnClassFromSystemClassLoaderDoesNotYieldWarning() {
+		ProxyFactory pf = new ProxyFactory(new HashMap<>());
+		pf.setProxyTargetClass(true);
+		pf.getProxy(this.reloadClassLoader);
+		// Warning would happen outside the boundary of the test
 	}
 
 	private String readString(InputStream in) throws IOException {
