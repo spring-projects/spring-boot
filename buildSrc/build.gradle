@@ -15,7 +15,6 @@ targetCompatibility = 1.8
 
 dependencies {
 	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
-	implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
 	implementation("commons-codec:commons-codec:1.13")
 	implementation("org.apache.maven:maven-embedder:3.6.2")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.0.0")
