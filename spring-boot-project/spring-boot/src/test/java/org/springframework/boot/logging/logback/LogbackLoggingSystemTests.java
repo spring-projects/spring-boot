@@ -17,11 +17,15 @@
 package org.springframework.boot.logging.logback;
 
 import java.io.File;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
+import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.logging.Handler;
 import java.util.logging.LogManager;
@@ -57,6 +61,7 @@ import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -499,6 +504,30 @@ class LogbackLoggingSystemTests extends AbstractLoggingSystemTests {
 		LogFile logFile = getLogFile(tmpDir() + "/example.log", null, false);
 		initialize(this.initializationContext, "classpath:logback-nondefault.xml", logFile);
 		assertThat(System.getProperty(LoggingSystemProperties.LOG_FILE)).endsWith("example.log");
+	}
+
+	@Test
+	void initializeShouldApplyLogbackSystemPropertiesToTheContext() {
+		this.environment.setProperty("logging.logback.rollingpolicy.file-name-pattern", "file-name-pattern");
+		this.environment.setProperty("logging.logback.rollingpolicy.clean-history-on-start", "true");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-file-size", "10MB");
+		this.environment.setProperty("logging.logback.rollingpolicy.total-size-cap", "100MB");
+		this.environment.setProperty("logging.logback.rollingpolicy.max-history", "20");
+		this.loggingSystem.beforeInitialize();
+		initialize(this.initializationContext, null, null);
+		LoggerContext loggerContext = (LoggerContext) StaticLoggerBinder.getSingleton().getLoggerFactory();
+		Map<String, String> properties = loggerContext.getCopyOfPropertyMap();
+		Set<String> expectedProperties = new HashSet<String>();
+		ReflectionUtils.doWithFields(LogbackLoggingSystemProperties.class,
+				(field) -> expectedProperties.add((String) field.get(null)), this::isPublicStaticFinal);
+		expectedProperties.removeAll(Arrays.asList("LOG_FILE", "LOG_PATH"));
+		assertThat(properties).containsOnlyKeys(expectedProperties);
+		assertThat(properties).containsEntry("CONSOLE_LOG_CHARSET", Charset.defaultCharset().name());
+	}
+
+	private boolean isPublicStaticFinal(Field field) {
+		int modifiers = field.getModifiers();
+		return Modifier.isPublic(modifiers) && Modifier.isStatic(modifiers) && Modifier.isFinal(modifiers);
 	}
 
 	@Test
