@@ -1216,7 +1216,7 @@ bom {
 			]
 		}
 	}
-	library("MSSQL JDBC", "8.4.1.jre8") {
+	library("MSSQL JDBC", "9.2.0.jre8") {
 		group("com.microsoft.sqlserver") {
 			modules = [
 				"mssql-jdbc"
