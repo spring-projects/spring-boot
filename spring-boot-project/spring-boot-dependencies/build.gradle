@@ -1581,13 +1581,12 @@ bom {
 			]
 		}
 	}
-	library("Solr", "8.7.0") {
+	library("Solr", "8.8.0") {
 		group("org.apache.solr") {
 			modules = [
 				"solr-analysis-extras",
 				"solr-analytics",
 				"solr-cell",
-				"solr-clustering",
 				"solr-core",
 				"solr-dataimporthandler",
 				"solr-dataimporthandler-extras",
