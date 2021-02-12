@@ -1764,7 +1764,7 @@ bom {
 			]
 		}
 	}
-	library("Tomcat", "9.0.41") {
+	library("Tomcat", "9.0.43") {
 		prohibit("[10.0.0-M1,)") {
 			because "it uses the jakarta.* namespace"
 		}
