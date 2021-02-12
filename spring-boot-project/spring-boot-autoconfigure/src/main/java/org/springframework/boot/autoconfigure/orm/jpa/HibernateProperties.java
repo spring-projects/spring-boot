@@ -136,7 +136,18 @@ public class HibernateProperties {
 		}
 		String ddlDatabaseAction = existing.get(AvailableSettings.HBM2DDL_DATABASE_ACTION);
 		if (ddlDatabaseAction != null) {
-			return ddlDatabaseAction;
+			if (ddlDatabaseAction.equals("none")) {
+				return "none";
+			}
+			if (ddlDatabaseAction.equals("create")) {
+				return "create-only";
+			}
+			if (ddlDatabaseAction.equals("drop")) {
+				return "drop";
+			}
+			if (ddlDatabaseAction.equals("drop-and-create")) {
+				return "create";
+			}
 		}
 		return (this.ddlAuto != null) ? this.ddlAuto : defaultDdlAuto.get();
 	}
