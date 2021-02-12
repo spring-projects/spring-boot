@@ -123,8 +123,7 @@ class ReactiveOAuth2ResourceServerAutoConfigurationTests {
 				"spring.security.oauth2.resourceserver.jwt.public-key-location=classpath:public-key-location",
 				"spring.security.oauth2.resourceserver.jwt.jws-algorithm=RS384").run((context) -> {
 					NimbusReactiveJwtDecoder nimbusReactiveJwtDecoder = context.getBean(NimbusReactiveJwtDecoder.class);
-					assertThat(nimbusReactiveJwtDecoder)
-							.extracting("jwtProcessor.arg$1.jwsKeySelector.expectedJwsAlgorithm")
+					assertThat(nimbusReactiveJwtDecoder).extracting("jwtProcessor.arg$1.jwsKeySelector.expectedJWSAlg")
 							.isEqualTo(JWSAlgorithm.RS384);
 				});
 	}

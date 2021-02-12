@@ -1268,7 +1268,7 @@ bom {
 			]
 		}
 	}
-	library("Nimbus JOSE JWT", "9.1.3") {
+	library("Nimbus JOSE JWT", "9.5") {
 		group("com.nimbusds") {
 			modules = [
 				"nimbus-jose-jwt"
