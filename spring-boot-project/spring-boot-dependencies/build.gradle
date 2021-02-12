@@ -1335,7 +1335,7 @@ bom {
 			]
 		}
 	}
-	library("Prometheus PushGateway", "0.9.0") {
+	library("Prometheus PushGateway", "0.10.0") {
 		group("io.prometheus") {
 			modules = [
 				"simpleclient_pushgateway"
