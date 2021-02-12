@@ -1,5 +1,5 @@
 /*
- * Copyright 2020-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link UpgradeApplicator}.
@@ -47,13 +48,14 @@ class UpgradeApplicatorTests {
 	void whenUpgradeIsAppliedToLibraryWithVersionThenBomIsUpdated() throws IOException {
 		File bom = new File(this.temp, "bom.gradle");
 		FileCopyUtils.copy(new File("src/test/resources/bom.gradle"), bom);
+		String originalContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
 		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath())
 				.apply(new Upgrade(new Library("ActiveMQ", DependencyVersion.parse("5.15.11"), null, null),
 						DependencyVersion.parse("5.16")));
 		String bomContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
-		assertThat(bomContents).contains("library(\"ActiveMQ\", \"5.16\")");
+		assertThat(bomContents.length()).isEqualTo(originalContents.length() - 3);
 	}
 
 	@Test
@@ -62,14 +64,14 @@ class UpgradeApplicatorTests {
 		FileCopyUtils.copy(new File("src/test/resources/bom.gradle"), bom);
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
-		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath())
-				.apply(new Upgrade(new Library("Kotlin", DependencyVersion.parse("1.3.70"), null, null),
-						DependencyVersion.parse("1.3.71")));
+		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath()).apply(new Upgrade(
+				new Library("Kotlin", DependencyVersion.parse("1.3.70"), null, null), DependencyVersion.parse("1.4")));
 		Properties properties = new Properties();
 		try (InputStream in = new FileInputStream(gradleProperties)) {
 			properties.load(in);
 		}
-		assertThat(properties).containsEntry("kotlinVersion", "1.3.71");
+		assertThat(properties).containsOnly(entry("a", "alpha"), entry("b", "bravo"), entry("kotlinVersion", "1.4"),
+				entry("t", "tango"));
 	}
 
 }
