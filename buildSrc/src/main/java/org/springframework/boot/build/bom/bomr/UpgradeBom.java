@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Task;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
 import org.gradle.api.tasks.TaskExecutionException;
 import org.gradle.api.tasks.options.Option;
@@ -62,6 +63,11 @@ public class UpgradeBom extends DefaultTask {
 	@Option(option = "milestone", description = "Milestone to which dependency upgrade issues should be assigned")
 	public void setMilestone(String milestone) {
 		this.milestone = milestone;
+	}
+
+	@Input
+	public String getMilestone() {
+		return this.milestone;
 	}
 
 	@TaskAction
