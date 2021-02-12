@@ -148,7 +148,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		}
 		Environment environment = initializationContext.getEnvironment();
 		// Apply system properties directly in case the same JVM runs multiple apps
-		new LoggingSystemProperties(environment, context::putProperty).apply(logFile);
+		new LogbackLoggingSystemProperties(environment, context::putProperty).apply(logFile);
 		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
 				: new LogbackConfigurator(context);
 		new DefaultLogbackConfiguration(initializationContext, logFile).apply(configurator);
