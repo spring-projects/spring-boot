@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,14 +65,19 @@ class UpgradeApplicator {
 		String gradlePropertiesContents = new String(Files.readAllBytes(this.gradleProperties), StandardCharsets.UTF_8);
 		String modified = gradlePropertiesContents.replace(property + "=" + upgrade.getLibrary().getVersion(),
 				property + "=" + upgrade.getVersion());
-		Files.write(this.gradleProperties, modified.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+		overwrite(this.gradleProperties, modified);
 	}
 
 	private void updateBuildFile(Upgrade upgrade, String buildFileContents) throws IOException {
 		String modified = buildFileContents.replace(
 				"library(\"" + upgrade.getLibrary().getName() + "\", \"" + upgrade.getLibrary().getVersion() + "\")",
 				"library(\"" + upgrade.getLibrary().getName() + "\", \"" + upgrade.getVersion() + "\")");
-		Files.write(this.buildFile, modified.getBytes(StandardCharsets.UTF_8), StandardOpenOption.CREATE);
+		overwrite(this.buildFile, modified);
+	}
+
+	private void overwrite(Path target, String content) throws IOException {
+		Files.write(target, content.getBytes(StandardCharsets.UTF_8), StandardOpenOption.WRITE,
+				StandardOpenOption.TRUNCATE_EXISTING);
 	}
 
 }
