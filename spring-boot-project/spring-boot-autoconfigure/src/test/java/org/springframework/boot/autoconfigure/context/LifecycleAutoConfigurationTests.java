@@ -47,7 +47,7 @@ public class LifecycleAutoConfigurationTests {
 	}
 
 	@Test
-	void lifecycleProcessorIsConfiguredWithCustomDefaultTimeout() {
+	void lifecycleProcessorIsConfiguredWithCustomTimeout() {
 		this.contextRunner.withPropertyValues("spring.lifecycle.timeout-per-shutdown-phase=15s").run((context) -> {
 			assertThat(context).hasBean(AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME);
 			Object processor = context.getBean(AbstractApplicationContext.LIFECYCLE_PROCESSOR_BEAN_NAME);
@@ -56,7 +56,7 @@ public class LifecycleAutoConfigurationTests {
 	}
 
 	@Test
-	void lifecycleProcessorIsConfiguredWithCustomDefaultTimeoutInAChildContext() {
+	void lifecycleProcessorIsConfiguredWithCustomTimeoutInAChildContext() {
 		new ApplicationContextRunner().run((parent) -> {
 			this.contextRunner.withParent(parent).withPropertyValues("spring.lifecycle.timeout-per-shutdown-phase=15s")
 					.run((child) -> {

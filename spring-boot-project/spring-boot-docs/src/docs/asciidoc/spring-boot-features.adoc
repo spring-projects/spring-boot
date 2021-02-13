@@ -621,7 +621,7 @@ This might result in two separate `application.properties` files mounted at diff
 In such a case, having a wildcard location of `config/*/`, will result in both files being processed.
 
 By default, Spring Boot includes `config/*/` in the default search locations.
-The means that all subdirectories of the `/config` directory outside of your jar will be searched.
+It means that all subdirectories of the `/config` directory outside of your jar will be searched.
 
 You can use wildcard locations yourself with the `spring.config.location` and `spring.config.additional-location` properties.
 
@@ -1282,7 +1282,7 @@ The properties above will bind to a `Map` with `/key1`, `/key2` and `key3` as th
 The slash has been removed from `key3` because it wasn't surrounded by square brackets.
 
 You may also occasionally need to use the bracket notation if your `key` contains a `.` and you are binding to non-scalar value.
-For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` where as `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`.
+For example, binding `a.b=c` to `Map<String, Object>` will return a Map with the entry `{"a"={"b"="c"}}` whereas `[a.b]=c` will return a Map with the entry `{"a.b"="c"}`.
 
 
 
@@ -2264,7 +2264,7 @@ If you want to take complete control of Spring MVC, you can add your own `@Confi
 [NOTE]
 ====
 Spring MVC uses a different `ConversionService` to the one used to convert values from your `application.properties` or `application.yaml` file.
-The means that `Period`, `Duration` and `DataSize` converters are not available and that `@DurationUnit` and `@DataSizeUnit` annotations will be ignored.
+It means that `Period`, `Duration` and `DataSize` converters are not available and that `@DurationUnit` and `@DataSizeUnit` annotations will be ignored.
 
 If you want to customize the `ConversionService` used by Spring MVC, you can provide a `WebMvcConfigurer` bean with an `addFormatters` method.
 From this method you can register any converter that you like, or you can delegate to the static methods available on `ApplicationConversionService`.
