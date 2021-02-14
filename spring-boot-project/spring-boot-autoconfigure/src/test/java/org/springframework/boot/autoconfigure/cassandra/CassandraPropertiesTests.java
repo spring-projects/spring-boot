@@ -27,7 +27,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Chris Bono
  */
-class CassandraPropertiesTest {
+class CassandraPropertiesTests {
 
 	@Test
 	void defaultValuesAreConsistent() {
