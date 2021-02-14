@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jms;
 import java.time.Duration;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.ExceptionListener;
 
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
 import org.springframework.jms.support.converter.MessageConverter;
@@ -30,6 +31,7 @@ import org.springframework.util.Assert;
  * Configure {@link DefaultJmsListenerContainerFactory} with sensible defaults.
  *
  * @author Stephane Nicoll
+ * @author Eddú Meléndez
  * @since 1.3.3
  */
 public final class DefaultJmsListenerContainerFactoryConfigurer {
@@ -41,6 +43,8 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	private JtaTransactionManager transactionManager;
 
 	private JmsProperties jmsProperties;
+
+	private ExceptionListener exceptionListener;
 
 	/**
 	 * Set the {@link DestinationResolver} to use or {@code null} if no destination
@@ -78,6 +82,14 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link ExceptionListener}.
+	 * @param exceptionListener the {@link ExceptionListener}
+	 */
+	void setExceptionListener(ExceptionListener exceptionListener) {
+		this.exceptionListener = exceptionListener;
+	}
+
+	/**
 	 * Configure the specified jms listener container factory. The factory can be further
 	 * tuned and default settings can be overridden.
 	 * @param factory the {@link DefaultJmsListenerContainerFactory} instance to configure
@@ -112,6 +124,9 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		Duration receiveTimeout = listener.getReceiveTimeout();
 		if (receiveTimeout != null) {
 			factory.setReceiveTimeout(receiveTimeout.toMillis());
+		}
+		if (this.exceptionListener != null) {
+			factory.setExceptionListener(this.exceptionListener);
 		}
 	}
 
