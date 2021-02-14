@@ -19,15 +19,10 @@ package org.springframework.boot.autoconfigure.orm.jpa;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
-import java.util.stream.Stream;
 
 import org.hibernate.cfg.AvailableSettings;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.Arguments;
-import org.junit.jupiter.params.provider.MethodSource;
-import org.junit.jupiter.params.provider.ValueSource;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 
@@ -141,37 +136,22 @@ class HibernatePropertiesTests {
 				.run(assertDefaultDdlAutoNotInvoked("create"));
 	}
 
-	@ParameterizedTest
-	@MethodSource("validJpaDatabaseActionsToExpectedHbmValues")
-	void defaultDdlAutoIsNotInvokedIfJpaDatabaseActionPropertyIsSetToValidJpaValue(String jpaDatabaseAction,
-			String expectedHbmDdlAuto) {
-		this.contextRunner.withPropertyValues(
-				"spring.jpa.properties.javax.persistence.schema-generation.database.action=" + jpaDatabaseAction)
-				.run(assertDefaultDdlAutoNotInvoked(expectedHbmDdlAuto));
-	}
-
-	private static Stream<Arguments> validJpaDatabaseActionsToExpectedHbmValues() {
-		return Stream.of(Arguments.of("none", null), Arguments.of("create", "create-only"),
-				Arguments.of("drop", "drop"), Arguments.of("drop-and-create", "create"));
-	}
-
-	@ParameterizedTest
-	@ValueSource(strings = { "create-only", "create-drop", "validate", "update" })
-	void defaultDdlAutoIsInvokedIfJpaDatabaseActionPropertyIsSetToNonJpaValue(String nonJpaDatabaseActionValue) {
+	@Test
+	void defaultDdlAutoIsNotInvokedAndDdlAutoIsNotSetIfJpaDbActionPropertyIsSet() {
 		this.contextRunner
-				.withPropertyValues("spring.jpa.properties.javax.persistence.schema-generation.database.action="
-						+ nonJpaDatabaseActionValue)
-				.run(assertHibernateProperties((hibernateProperties) -> verify(this.ddlAutoSupplier).get()));
+				.withPropertyValues(
+						"spring.jpa.properties.javax.persistence.schema-generation.database.action=drop-and-create")
+				.run(assertHibernateProperties((hibernateProperties) -> {
+					assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
+					assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_DATABASE_ACTION,
+							"drop-and-create");
+					verify(this.ddlAutoSupplier, never()).get();
+				}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(String expectedDdlAuto) {
 		return assertHibernateProperties((hibernateProperties) -> {
-			if (expectedDdlAuto == null) {
-				assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
-			}
-			else {
-				assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, expectedDdlAuto);
-			}
+			assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_AUTO, expectedDdlAuto);
 			verify(this.ddlAutoSupplier, never()).get();
 		});
 	}
