@@ -1865,7 +1865,7 @@ Spring Boot registers the following core metrics when applicable:
 ** Number of classes loaded/unloaded
 * CPU metrics
 * File descriptor metrics
-* Kafka consumer and producer metrics
+* Kafka consumer, producer and streams metrics
 * Log4j2 metrics: record the number of events logged to Log4j2 at each level
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
@@ -2117,6 +2117,7 @@ Auto-configuration will enable the instrumentation of all available RabbitMQ con
 [[production-ready-metrics-kafka]]
 ==== Kafka Metrics
 Auto-configuration will register a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory respectively.
+It will also register `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
 For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
 
 
