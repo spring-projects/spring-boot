@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,16 +16,15 @@
 
 package org.springframework.boot.actuate.hazelcast;
 
-import java.io.IOException;
-
 import com.hazelcast.core.HazelcastException;
 import com.hazelcast.core.HazelcastInstance;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.health.Health;
 import org.springframework.boot.actuate.health.Status;
-import org.springframework.boot.autoconfigure.hazelcast.HazelcastInstanceFactory;
-import org.springframework.core.io.ClassPathResource;
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.hazelcast.HazelcastAutoConfiguration;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
@@ -41,19 +40,16 @@ import static org.mockito.Mockito.mock;
 class HazelcastHealthIndicatorTests {
 
 	@Test
-	void hazelcastUp() throws IOException {
-		HazelcastInstance hazelcast = new HazelcastInstanceFactory(new ClassPathResource("hazelcast.xml"))
-				.getHazelcastInstance();
-		try {
-			Health health = new HazelcastHealthIndicator(hazelcast).health();
-			assertThat(health.getStatus()).isEqualTo(Status.UP);
-			assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name",
-					"actuator-hazelcast");
-			assertThat(health.getDetails().get("uuid")).asString().isNotEmpty();
-		}
-		finally {
-			hazelcast.shutdown();
-		}
+	void hazelcastUp() {
+		new ApplicationContextRunner().withConfiguration(AutoConfigurations.of(HazelcastAutoConfiguration.class))
+				.withPropertyValues("spring.hazelcast.config=hazelcast.xml").run((context) -> {
+					HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
+					Health health = new HazelcastHealthIndicator(hazelcast).health();
+					assertThat(health.getStatus()).isEqualTo(Status.UP);
+					assertThat(health.getDetails()).containsOnlyKeys("name", "uuid").containsEntry("name",
+							"actuator-hazelcast");
+					assertThat(health.getDetails().get("uuid")).asString().isNotEmpty();
+				});
 	}
 
 	@Test
