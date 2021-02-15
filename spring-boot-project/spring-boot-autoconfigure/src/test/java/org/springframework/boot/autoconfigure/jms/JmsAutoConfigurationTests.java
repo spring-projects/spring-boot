@@ -213,6 +213,16 @@ class JmsAutoConfigurationTests {
 	}
 
 	@Test
+	void testDefaultContainerFactoryWithExceptionListener() {
+		ExceptionListener exceptionListener = mock(ExceptionListener.class);
+		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
+				.withBean(ExceptionListener.class, () -> exceptionListener).run((context) -> {
+					DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
+					assertThat(container.getExceptionListener()).isSameAs(exceptionListener);
+				});
+	}
+
+	@Test
 	void testCustomContainerFactoryWithConfigurer() {
 		this.contextRunner.withUserConfiguration(TestConfiguration9.class, EnableJmsConfiguration.class)
 				.withPropertyValues("spring.jms.listener.autoStartup=false").run((context) -> {
@@ -395,15 +405,6 @@ class JmsAutoConfigurationTests {
 						.hasBean(JmsListenerConfigUtils.JMS_LISTENER_ENDPOINT_REGISTRY_BEAN_NAME));
 	}
 
-	@Test
-	void testDefaultContainerFactoryWithExceptionListener() {
-		this.contextRunner.withUserConfiguration(TestConfiguration11.class, EnableJmsConfiguration.class)
-				.run((context) -> {
-					DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
-					assertThat(container.getExceptionListener()).isSameAs(context.getBean("exceptionListener"));
-				});
-	}
-
 	@Configuration(proxyBeanMethods = false)
 	static class TestConfiguration {
 
@@ -555,16 +556,6 @@ class JmsAutoConfigurationTests {
 		@Bean
 		ConnectionFactory connectionFactory2() {
 			return new ActiveMQConnectionFactory();
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class TestConfiguration11 {
-
-		@Bean
-		ExceptionListener exceptionListener() {
-			return mock(ExceptionListener.class);
 		}
 
 	}

@@ -40,11 +40,11 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 
 	private MessageConverter messageConverter;
 
+	private ExceptionListener exceptionListener;
+
 	private JtaTransactionManager transactionManager;
 
 	private JmsProperties jmsProperties;
-
-	private ExceptionListener exceptionListener;
 
 	/**
 	 * Set the {@link DestinationResolver} to use or {@code null} if no destination
@@ -65,6 +65,15 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	}
 
 	/**
+	 * Set the {@link ExceptionListener} to use or {@code null} if no exception listener
+	 * should be associated by default.
+	 * @param exceptionListener the {@link ExceptionListener}
+	 */
+	void setExceptionListener(ExceptionListener exceptionListener) {
+		this.exceptionListener = exceptionListener;
+	}
+
+	/**
 	 * Set the {@link JtaTransactionManager} to use or {@code null} if the JTA support
 	 * should not be used.
 	 * @param transactionManager the {@link JtaTransactionManager}
@@ -79,14 +88,6 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 	 */
 	void setJmsProperties(JmsProperties jmsProperties) {
 		this.jmsProperties = jmsProperties;
-	}
-
-	/**
-	 * Set the {@link ExceptionListener}.
-	 * @param exceptionListener the {@link ExceptionListener}
-	 */
-	void setExceptionListener(ExceptionListener exceptionListener) {
-		this.exceptionListener = exceptionListener;
 	}
 
 	/**
@@ -112,6 +113,9 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		if (this.messageConverter != null) {
 			factory.setMessageConverter(this.messageConverter);
 		}
+		if (this.exceptionListener != null) {
+			factory.setExceptionListener(this.exceptionListener);
+		}
 		JmsProperties.Listener listener = this.jmsProperties.getListener();
 		factory.setAutoStartup(listener.isAutoStartup());
 		if (listener.getAcknowledgeMode() != null) {
@@ -124,9 +128,6 @@ public final class DefaultJmsListenerContainerFactoryConfigurer {
 		Duration receiveTimeout = listener.getReceiveTimeout();
 		if (receiveTimeout != null) {
 			factory.setReceiveTimeout(receiveTimeout.toMillis());
-		}
-		if (this.exceptionListener != null) {
-			factory.setExceptionListener(this.exceptionListener);
 		}
 	}
 
