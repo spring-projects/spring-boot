@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,15 @@ import org.flywaydb.core.api.callback.Event;
 import org.flywaydb.core.api.migration.JavaMigration;
 import org.flywaydb.core.internal.license.FlywayProUpgradeRequiredException;
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
+import org.jooq.DSLContext;
+import org.jooq.SQLDialect;
+import org.jooq.impl.DefaultDSLContext;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -520,6 +524,25 @@ class FlywayAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void userConfigurationDslContextDependency() {
+		this.contextRunner
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJooqConfiguration.class)
+				.run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("flyway");
+				});
+	}
+
+	@Test
+	void userConfigurationWithFlywayMigrationAndDslContextDependency() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
+				CustomFlywayMigrationInitializerWithJooqConfiguration.class).run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("flywayMigrationInitializer", "flyway");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class FlywayDataSourceConfiguration {
 
@@ -744,6 +767,42 @@ class FlywayAutoConfigurationTests {
 		@Order(0)
 		FlywayConfigurationCustomizer customizerTwo() {
 			return (configuration) -> configuration.connectRetries(10).ignoreMissingMigrations(true);
+		}
+
+	}
+
+	@Configuration
+	static class CustomFlywayWithJooqConfiguration {
+
+		@Bean
+		Flyway flyway(DataSource dataSource) {
+			return Flyway.configure().dataSource(dataSource).load();
+		}
+
+		@Bean
+		DSLContext dslContext() {
+			return new DefaultDSLContext(SQLDialect.H2);
+		}
+
+	}
+
+	@Configuration
+	protected static class CustomFlywayMigrationInitializerWithJooqConfiguration {
+
+		private final DataSource dataSource;
+
+		protected CustomFlywayMigrationInitializerWithJooqConfiguration(DataSource dataSource) {
+			this.dataSource = dataSource;
+		}
+
+		@Bean
+		public FlywayMigrationInitializer flywayMigrationInitializer(Flyway flyway) {
+			return new FlywayMigrationInitializer(flyway);
+		}
+
+		@Bean
+		DSLContext dslContext() {
+			return new DefaultDSLContext(SQLDialect.H2);
 		}
 
 	}
