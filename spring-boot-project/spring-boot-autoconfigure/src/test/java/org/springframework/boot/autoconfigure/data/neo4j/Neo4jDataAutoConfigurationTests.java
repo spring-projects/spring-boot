@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -215,7 +215,9 @@ class Neo4jDataAutoConfigurationTests {
 	void doesNotProvideABookmarkManagerIfNotPossible() {
 		this.contextRunner.withClassLoader(new FilteredClassLoader(Caffeine.class, EmbeddedDriver.class))
 				.withUserConfiguration(BookmarkManagementEnabledConfiguration.class)
-				.run((context) -> assertThat(context).doesNotHaveBean(BookmarkManager.class));
+				.run((context) -> assertThat(context).hasFailed().getFailure()
+						.hasMessageContaining("Bookmark management has been enabled")
+						.hasMessageContaining("Please provide a bookmark manager"));
 	}
 
 	private static void assertDomainTypesDiscovered(Neo4jMappingContext mappingContext, Class<?>... types) {
