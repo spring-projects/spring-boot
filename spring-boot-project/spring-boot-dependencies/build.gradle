@@ -1665,7 +1665,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Releasetrain", "Neumann-SR6") {
+	library("Spring Data Releasetrain", "Neumann-BUILD-SNAPSHOT") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-releasetrain"
