@@ -3,26 +3,6 @@
 
 
 
-[[publishing-your-application-maven]]
-=== Publishing with the Maven Plugin
-When the {maven-plugin}[`maven` plugin] is applied, an `Upload` task for the `bootArchives` configuration named `uploadBootArchives` is automatically created.
-By default, the `bootArchives` configuration contains the archive produced by the `bootJar` or `bootWar` task.
-The `uploadBootArchives` task can be configured to publish the archive to a Maven repository:
-
-[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
-.Groovy
-----
-include::../gradle/publishing/maven.gradle[tags=upload]
-----
-
-[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
-.Kotlin
-----
-include::../gradle/publishing/maven.gradle.kts[tags=upload]
-----
-
-
-
 [[publishing-your-application-maven-publish]]
 === Publishing with the Maven-publish Plugin
 To publish your Spring Boot jar or war, add it to the publication using the `artifact` method on `MavenPublication`.
@@ -42,6 +22,26 @@ include::../gradle/publishing/maven-publish.gradle.kts[tags=publishing]
 ----
 
 
+
+[[publishing-your-application-maven]]
+=== Publishing with the Maven Plugin
+When the {maven-plugin}[`maven` plugin] is applied, an `Upload` task for the `bootArchives` configuration named `uploadBootArchives` is automatically created.
+By default, the `bootArchives` configuration contains the archive produced by the `bootJar` or `bootWar` task.
+The `uploadBootArchives` task can be configured to publish the archive to a Maven repository:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/publishing/maven.gradle[tags=upload]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/publishing/maven.gradle.kts[tags=upload]
+----
+
+WARNING: The maven plugin has been deprecated in Gradle 6.0 and is scheduled to be removed in Gradle 7.0. Please use the maven-publish plugin instead.
 
 [[publishing-your-application-distribution]]
 === Distributing with the Application Plugin
