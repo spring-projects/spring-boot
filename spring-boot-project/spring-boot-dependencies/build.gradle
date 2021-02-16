@@ -1321,7 +1321,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.4-SNAPSHOT") {
+	library("Reactor Bom", "2020.0.4") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
