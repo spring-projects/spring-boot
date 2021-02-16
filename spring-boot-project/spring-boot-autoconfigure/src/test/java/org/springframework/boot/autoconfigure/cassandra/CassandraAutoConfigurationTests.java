@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.cassandra;
 
 import com.datastax.oss.driver.api.core.CqlIdentifier;
+import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.datastax.oss.driver.api.core.config.DefaultDriverOption;
 import com.datastax.oss.driver.api.core.config.DriverConfigLoader;
@@ -32,6 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 /**
  * Tests for {@link CassandraAutoConfiguration}
@@ -184,6 +186,14 @@ class CassandraAutoConfigurationTests {
 			assertThat(config.getString(DefaultDriverOption.REQUEST_THROTTLER_CLASS))
 					.isEqualTo(PassThroughRequestThrottler.class.getSimpleName());
 		});
+	}
+
+	@Test
+	void driverConfigLoaderWithRateLimitingRequiresExtraConfiguration() {
+		this.contextRunner.withPropertyValues("spring.data.cassandra.request.throttler.type=rate-limiting")
+				.run((context) -> assertThatThrownBy(() -> context.getBean(CqlSession.class))
+						.hasMessageContaining("Error instantiating class RateLimitingRequestThrottler")
+						.hasMessageContaining("No configuration setting found for key"));
 	}
 
 	@Test
