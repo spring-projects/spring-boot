@@ -188,6 +188,21 @@ class BatchAutoConfigurationTests {
 	}
 
 	@Test
+	void testDisableSchemaLoaderWithNewJdbcProperties() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.generate-unique-name=true",
+						"spring.batch.jdbc.initialize-schema:never")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JobLauncher.class);
+					assertThat(context.getBean(BatchProperties.class).getInitializeSchema())
+							.isEqualTo(DataSourceInitializationMode.NEVER);
+					assertThatExceptionOfType(BadSqlGrammarException.class)
+							.isThrownBy(() -> new JdbcTemplate(context.getBean(DataSource.class))
+									.queryForList("select * from BATCH_JOB_EXECUTION"));
+				});
+	}
+
+	@Test
 	void testUsingJpa() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
 				HibernateJpaAutoConfiguration.class).run((context) -> {
@@ -211,6 +226,27 @@ class BatchAutoConfigurationTests {
 				.withPropertyValues("spring.datasource.generate-unique-name=true",
 						"spring.batch.schema:classpath:batch/custom-schema-hsql.sql",
 						"spring.batch.tablePrefix:PREFIX_")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(JobLauncher.class);
+					assertThat(context.getBean(BatchProperties.class).getInitializeSchema())
+							.isEqualTo(DataSourceInitializationMode.EMBEDDED);
+					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
+							.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
+					JobExplorer jobExplorer = context.getBean(JobExplorer.class);
+					assertThat(jobExplorer.findRunningJobExecutions("test")).isEmpty();
+					JobRepository jobRepository = context.getBean(JobRepository.class);
+					assertThat(jobRepository.getLastJobExecution("test", new JobParameters())).isNull();
+				});
+	}
+
+	@Test
+	void testRenamePrefixWithNewJdbcProperties() {
+		this.contextRunner
+				.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class,
+						HibernateJpaAutoConfiguration.class)
+				.withPropertyValues("spring.datasource.generate-unique-name=true",
+						"spring.batch.jdbc.schema:classpath:batch/custom-schema-hsql.sql",
+						"spring.batch.jdbc.tablePrefix:PREFIX_")
 				.run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					assertThat(context.getBean(BatchProperties.class).getInitializeSchema())

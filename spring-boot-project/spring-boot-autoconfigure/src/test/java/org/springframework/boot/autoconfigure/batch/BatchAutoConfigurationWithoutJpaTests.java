@@ -84,6 +84,21 @@ class BatchAutoConfigurationWithoutJpaTests {
 				});
 	}
 
+	@Test
+	void jdbcWithCustomPrefixWithNewJdbcProperties() {
+		this.contextRunner.withUserConfiguration(DefaultConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.datasource.generate-unique-name=true",
+						"spring.batch.jdbc.schema:classpath:batch/custom-schema-hsql.sql",
+						"spring.batch.jdbc.tablePrefix:PREFIX_")
+				.run((context) -> {
+					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
+							.queryForList("select * from PREFIX_JOB_EXECUTION")).isEmpty();
+					assertThat(context.getBean(JobExplorer.class).findRunningJobExecutions("test")).isEmpty();
+					assertThat(context.getBean(JobRepository.class).getLastJobExecution("test", new JobParameters()))
+							.isNull();
+				});
+	}
+
 	@EnableBatchProcessing
 	@TestAutoConfigurationPackage(City.class)
 	static class DefaultConfiguration {
