@@ -64,7 +64,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass({ JobLauncher.class, DataSource.class })
 @AutoConfigureAfter(HibernateJpaAutoConfiguration.class)
 @ConditionalOnBean(JobLauncher.class)
-@EnableConfigurationProperties({ BatchProperties.class })
+@EnableConfigurationProperties(BatchProperties.class)
 @Import(BatchConfigurerConfiguration.class)
 public class BatchAutoConfiguration {
 
