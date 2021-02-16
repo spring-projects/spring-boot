@@ -27,7 +27,7 @@ import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExten
  * {@link ConfigurationPropertiesReportEndpoint}.
  *
  * @author Chris Bono
- * @since 2.4
+ * @since 2.5.0
  */
 @EndpointWebExtension(endpoint = ConfigurationPropertiesReportEndpoint.class)
 public class ConfigurationPropertiesReportEndpointWebExtension {
