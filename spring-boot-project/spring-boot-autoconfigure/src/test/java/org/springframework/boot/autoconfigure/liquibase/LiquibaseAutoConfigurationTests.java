@@ -37,6 +37,7 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -368,6 +369,25 @@ class LiquibaseAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.tag:1.0.0")
 				.run(assertLiquibase((liquibase) -> assertThat(liquibase.getTag()).isEqualTo("1.0.0")));
+	}
+
+	@Test
+	void whenLiquibaseIsAutoConfiguredThenJooqDslContextDependsOnSpringLiquibaseBeans() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("liquibase");
+				});
+	}
+
+	@Test
+	void whenCustomSpringLiquibaseIsDefinedThenJooqDslContextDependsOnSpringLiquibaseBeans() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
+				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("springLiquibase");
+				});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertLiquibase(Consumer<SpringLiquibase> consumer) {
