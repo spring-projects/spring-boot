@@ -425,6 +425,7 @@ bom {
 				"hibernate-java8",
 				"hibernate-jcache",
 				"hibernate-jpamodelgen",
+				"hibernate-micrometer",
 				"hibernate-proxool",
 				"hibernate-spatial",
 				"hibernate-testing",
