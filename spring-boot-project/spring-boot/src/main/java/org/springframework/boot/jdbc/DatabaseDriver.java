@@ -98,7 +98,7 @@ public enum DatabaseDriver {
 	 * Amazon Redshift.
 	 * @since 2.2.0
 	 */
-	REDSHIFT("Amazon Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
+	REDSHIFT("Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
 
 	/**
 	 * HANA - SAP HANA Database - HDB.

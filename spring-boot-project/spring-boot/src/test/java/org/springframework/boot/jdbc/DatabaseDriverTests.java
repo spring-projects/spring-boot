@@ -72,7 +72,7 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("MariaDB")).isEqualTo(DatabaseDriver.MARIADB);
 		assertThat(DatabaseDriver.fromProductName("Oracle")).isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromProductName("PostgreSQL")).isEqualTo(DatabaseDriver.POSTGRESQL);
-		assertThat(DatabaseDriver.fromProductName("Amazon Redshift")).isEqualTo(DatabaseDriver.REDSHIFT);
+		assertThat(DatabaseDriver.fromProductName("Redshift")).isEqualTo(DatabaseDriver.REDSHIFT);
 		assertThat(DatabaseDriver.fromProductName("Microsoft SQL Server")).isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("SQL SERVER")).isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("DB2")).isEqualTo(DatabaseDriver.DB2);
