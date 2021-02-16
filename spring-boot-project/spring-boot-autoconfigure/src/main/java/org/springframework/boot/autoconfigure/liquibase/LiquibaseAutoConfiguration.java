@@ -167,8 +167,8 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	/**
-	 * Post processor to ensure that {@link EntityManagerFactory} beans depend on the
-	 * liquibase bean.
+	 * Post processor to ensure that {@link EntityManagerFactory} beans depend on any
+	 * {@link SpringLiquibase} beans.
 	 */
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
@@ -182,8 +182,8 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	/**
-	 * Additional configuration to ensure that {@link JdbcOperations} beans depend on the
-	 * liquibase bean.
+	 * Additional configuration to ensure that {@link JdbcOperations} beans depend on any
+	 * {@link SpringLiquibase} beans.
 	 */
 	@ConditionalOnClass(JdbcOperations.class)
 	@ConditionalOnBean(JdbcOperations.class)
@@ -197,7 +197,7 @@ public class LiquibaseAutoConfiguration {
 
 	/**
 	 * Post processor to ensure that {@link NamedParameterJdbcOperations} beans depend on
-	 * the liquibase bean.
+	 * any {@link SpringLiquibase} beans.
 	 */
 	@ConditionalOnClass(NamedParameterJdbcOperations.class)
 	@ConditionalOnBean(NamedParameterJdbcOperations.class)
@@ -211,8 +211,8 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	/**
-	 * Post processor to ensure that {@link DSLContext} beans depend on the liquibase
-	 * bean.
+	 * Post processor to ensure that {@link DSLContext} beans depend on any
+	 * {@link SpringLiquibase} beans.
 	 */
 	@ConditionalOnClass(DSLContext.class)
 	@ConditionalOnBean(DSLContext.class)

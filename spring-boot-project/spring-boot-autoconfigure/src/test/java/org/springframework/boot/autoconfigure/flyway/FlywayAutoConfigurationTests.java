@@ -525,21 +525,29 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void userConfigurationDslContextDependency() {
-		this.contextRunner
-				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, CustomFlywayWithJooqConfiguration.class)
+	void whenFlywayIsAutoConfiguredThenJooqDslContextDependsOnFlywayBeans() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class)
 				.run((context) -> {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-					assertThat(beanDefinition.getDependsOn()).containsExactly("flyway");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("flywayInitializer", "flyway");
 				});
 	}
 
 	@Test
-	void userConfigurationWithFlywayMigrationAndDslContextDependency() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class,
-				CustomFlywayMigrationInitializerWithJooqConfiguration.class).run((context) -> {
+	void whenCustomMigrationInitializerIsDefinedThenJooqDslContextDependsOnIt() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class,
+				CustomFlywayMigrationInitializer.class).run((context) -> {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
 					assertThat(beanDefinition.getDependsOn()).containsExactly("flywayMigrationInitializer", "flyway");
+				});
+	}
+
+	@Test
+	void whenCustomFlywayIsDefinedThenJooqDslContextDependsOnIt() {
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class,
+				CustomFlyway.class).run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("customFlyway");
 				});
 	}
 
@@ -615,6 +623,16 @@ class FlywayAutoConfigurationTests {
 			FlywayMigrationInitializer initializer = new FlywayMigrationInitializer(flyway);
 			initializer.setOrder(Ordered.HIGHEST_PRECEDENCE);
 			return initializer;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomFlyway {
+
+		@Bean
+		Flyway customFlyway() {
+			return Flyway.configure().load();
 		}
 
 	}
@@ -771,34 +789,8 @@ class FlywayAutoConfigurationTests {
 
 	}
 
-	@Configuration
-	static class CustomFlywayWithJooqConfiguration {
-
-		@Bean
-		Flyway flyway(DataSource dataSource) {
-			return Flyway.configure().dataSource(dataSource).load();
-		}
-
-		@Bean
-		DSLContext dslContext() {
-			return new DefaultDSLContext(SQLDialect.H2);
-		}
-
-	}
-
-	@Configuration
-	protected static class CustomFlywayMigrationInitializerWithJooqConfiguration {
-
-		private final DataSource dataSource;
-
-		protected CustomFlywayMigrationInitializerWithJooqConfiguration(DataSource dataSource) {
-			this.dataSource = dataSource;
-		}
-
-		@Bean
-		public FlywayMigrationInitializer flywayMigrationInitializer(Flyway flyway) {
-			return new FlywayMigrationInitializer(flyway);
-		}
+	@Configuration(proxyBeanMethods = false)
+	static class JooqConfiguration {
 
 		@Bean
 		DSLContext dslContext() {

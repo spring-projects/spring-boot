@@ -376,7 +376,16 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void userConfigurationDslContextDependency() {
+	void whenLiquibaseIsAutoConfiguredThenJooqDslContextDependsOnSpringLiquibaseBeans() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class).run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
+					assertThat(beanDefinition.getDependsOn()).containsExactly("liquibase");
+				});
+	}
+
+	@Test
+	void whenCustomSpringLiquibaseIsDefinedThenJooqDslContextDependsOnSpringLiquibaseBeans() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(JooqAutoConfiguration.class))
 				.withUserConfiguration(LiquibaseUserConfiguration.class, EmbeddedDataSourceConfiguration.class)
 				.run((context) -> {
