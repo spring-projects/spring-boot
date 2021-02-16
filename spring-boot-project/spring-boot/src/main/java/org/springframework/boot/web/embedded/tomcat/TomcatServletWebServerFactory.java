@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,6 +71,7 @@ import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.context.ResourceLoaderAware;
+import org.springframework.core.NativeDetector;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -109,8 +110,6 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 	 * The class name of default protocol used.
 	 */
 	public static final String DEFAULT_PROTOCOL = "org.apache.coyote.http11.Http11NioProtocol";
-
-	private static final boolean IN_NATIVE_IMAGE = System.getProperty("org.graalvm.nativeimage.imagecode") != null;
 
 	private File baseDirectory;
 
@@ -169,7 +168,7 @@ public class TomcatServletWebServerFactory extends AbstractServletWebServerFacto
 
 	private static List<LifecycleListener> getDefaultLifecycleListeners() {
 		ArrayList<LifecycleListener> lifecycleListeners = new ArrayList<>();
-		if (!IN_NATIVE_IMAGE) {
+		if (!NativeDetector.inNativeImage()) {
 			AprLifecycleListener aprLifecycleListener = new AprLifecycleListener();
 			if (AprLifecycleListener.isAprAvailable()) {
 				lifecycleListeners.add(aprLifecycleListener);
