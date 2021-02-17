@@ -984,9 +984,6 @@ The `SpringApplication` class automatically supports YAML as an alternative to p
 
 NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
 
-WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
-So, in the case that you need to load values that way, you need to use a properties file.
-
 ==== Mapping YAML to Properties
 YAML documents need to be converted from their hierarchical format to a flat structure that can be used with the Spring `Environment`.
 For example, consider the following YAML document:
@@ -1034,6 +1031,9 @@ The preceding example would be transformed into these properties:
 
 TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
 For more details see the "`<<boot-features-external-config-typesafe-configuration-properties>>`" section below.
+
+WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
+So, in the case that you need to load values that way, you need to use a properties file.
 
 
 
