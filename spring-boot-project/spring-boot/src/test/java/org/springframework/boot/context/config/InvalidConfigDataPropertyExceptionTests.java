@@ -169,6 +169,16 @@ class InvalidConfigDataPropertyExceptionTests {
 				+ "'spring.config.activate.on-profile' [origin: \"spring.profiles\" from property source \"mockProperties\"]");
 	}
 
+	@Test
+	void throwOrWarnWhenHasWarningPropertyWithListSyntaxLogsWarning() {
+		MockPropertySource propertySource = new MockPropertySource();
+		propertySource.setProperty("spring.profiles[0]", "a");
+		ConfigDataEnvironmentContributor contributor = ConfigDataEnvironmentContributor.ofExisting(propertySource);
+		InvalidConfigDataPropertyException.throwOrWarn(this.logger, contributor);
+		verify(this.logger).warn("Property 'spring.profiles[0]' is invalid and should be replaced with "
+				+ "'spring.config.activate.on-profile' [origin: \"spring.profiles[0]\" from property source \"mockProperties\"]");
+	}
+
 	private static class TestConfigDataResource extends ConfigDataResource {
 
 		@Override

@@ -642,9 +642,10 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenHasIncludedProfilesWithProfileSpecificFileThrowsException() {
-		assertThatExceptionOfType(InvalidConfigDataPropertyException.class).isThrownBy(() -> this.application
-				.run("--spring.config.name=application-include-profiles-in-profile-specific-file"));
+	void runWhenHasIncludedProfilesWithListSyntaxWithProfileSpecificDocumentThrowsException() {
+		assertThatExceptionOfType(InvalidConfigDataPropertyException.class).isThrownBy(() -> this.application.run(
+				"--spring.config.name=application-include-profiles-list-in-profile-specific-file",
+				"--spring.profiles.active=test"));
 	}
 
 	@Test
