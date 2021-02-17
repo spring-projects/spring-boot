@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,47 +16,82 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import org.springframework.beans.factory.config.BeanDefinition;
-import org.springframework.beans.factory.support.AbstractBeanDefinition;
-import org.springframework.beans.factory.support.BeanDefinitionBuilder;
-import org.springframework.beans.factory.support.BeanDefinitionRegistry;
+import javax.persistence.EntityManagerFactory;
+import javax.sql.DataSource;
+
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
-import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.jdbc.core.JdbcOperations;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
+import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
- * Configures DataSource initialization.
+ * Configuration for {@link DataSource} initialization using DDL and DML scripts.
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
 @Configuration(proxyBeanMethods = false)
-@Import({ DataSourceInitializerInvoker.class, DataSourceInitializationConfiguration.Registrar.class })
+@ConditionalOnSingleCandidate(DataSource.class)
 class DataSourceInitializationConfiguration {
 
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnProperty(prefix = "spring.datasource", name = "initialization-order", havingValue = "before-jpa",
+			matchIfMissing = true)
+	@Import({ DataSourceInitializationJdbcOperationsDependsOnPostProcessor.class,
+			DataSourceInitializationNamedParameterJdbcOperationsDependsOnPostProcessor.class,
+			DataSourceInitializationEntityManagerFactoryDependsOnPostProcessor.class })
+	static class BeforeJpaDataSourceInitializationConfiguration {
+
+		@Bean
+		DataSourceInitialization dataSourceInitialization(DataSource dataSource, DataSourceProperties properties) {
+			return new DataSourceInitialization(dataSource, properties);
+		}
+
+	}
+
 	/**
-	 * {@link ImportBeanDefinitionRegistrar} to register the
-	 * {@link DataSourceInitializerPostProcessor} without causing early bean instantiation
-	 * issues.
+	 * Post processor to ensure that {@link EntityManagerFactory} beans depend on any
+	 * {@link DataSourceInitialization} beans.
 	 */
-	static class Registrar implements ImportBeanDefinitionRegistrar {
+	@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManagerFactory.class })
+	static class DataSourceInitializationEntityManagerFactoryDependsOnPostProcessor
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
-		private static final String BEAN_NAME = "dataSourceInitializerPostProcessor";
+		DataSourceInitializationEntityManagerFactoryDependsOnPostProcessor() {
+			super(DataSourceInitialization.class);
+		}
 
-		@Override
-		public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata,
-				BeanDefinitionRegistry registry) {
-			if (!registry.containsBeanDefinition(BEAN_NAME)) {
-				AbstractBeanDefinition beanDefinition = BeanDefinitionBuilder
-						.genericBeanDefinition(DataSourceInitializerPostProcessor.class,
-								DataSourceInitializerPostProcessor::new)
-						.getBeanDefinition();
-				beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
-				// We don't need this one to be post processed otherwise it can cause a
-				// cascade of bean instantiation that we would rather avoid.
-				beanDefinition.setSynthetic(true);
-				registry.registerBeanDefinition(BEAN_NAME, beanDefinition);
-			}
+	}
+
+	/**
+	 * Post processor to ensure that {@link JdbcOperations} beans depend on any
+	 * {@link DataSourceInitialization} beans.
+	 */
+	@ConditionalOnClass(JdbcOperations.class)
+	static class DataSourceInitializationJdbcOperationsDependsOnPostProcessor
+			extends JdbcOperationsDependsOnPostProcessor {
+
+		DataSourceInitializationJdbcOperationsDependsOnPostProcessor() {
+			super(DataSourceInitialization.class);
+		}
+
+	}
+
+	/**
+	 * Post processor to ensure that {@link NamedParameterJdbcOperations} beans depend on
+	 * any {@link DataSourceInitialization} beans.
+	 */
+	@ConditionalOnClass(NamedParameterJdbcOperations.class)
+	protected static class DataSourceInitializationNamedParameterJdbcOperationsDependsOnPostProcessor
+			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
+
+		public DataSourceInitializationNamedParameterJdbcOperationsDependsOnPostProcessor() {
+			super(DataSourceInitialization.class);
 		}
 
 	}

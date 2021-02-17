@@ -2029,6 +2029,11 @@ In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{pl
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
 
+By default, script-based `DataSource` initialization is performed before any JPA `EntityManagerFactory` beans are created.
+`schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
+If you want script-based `DataSource` initialization to be performed after the `EntityManagerFactory`, set `spring.datasource.initialization-order` to `after-jpa`.
+`schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
+
 [NOTE]
 ====
 When only basic SQL scripts are used, Spring Boot automatically creates the schema of an embedded `DataSource`.

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,25 +17,36 @@
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.io.IOException;
+import java.io.PrintWriter;
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.sql.SQLFeatureNotSupportedException;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.Random;
 import java.util.UUID;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.logging.Logger;
 
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
+import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
+import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.support.SimpleThreadScope;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
@@ -50,12 +61,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 
 /**
- * Tests for {@link DataSourceInitializerInvoker}.
+ * Integration tests for DataSource initialization.
  *
  * @author Dave Syer
  * @author Stephane Nicoll
  */
-class DataSourceInitializerInvokerTests {
+class DataSourceInitializationIntegrationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
@@ -151,7 +162,6 @@ class DataSourceInitializerInvokerTests {
 		return (context) -> {
 			assertThat(context).hasSingleBean(DataSource.class);
 			DataSource dataSource = context.getBean(DataSource.class);
-			context.publishEvent(new DataSourceSchemaCreatedEvent(dataSource));
 			assertDataSourceNotInitialized(dataSource);
 		};
 	}
@@ -238,6 +248,31 @@ class DataSourceInitializerInvokerTests {
 				});
 	}
 
+	@Test
+	void whenDataSourceIsProxiedByABeanPostProcessorThenDataSourceInitializationUsesTheProxy() {
+		this.contextRunner.withPropertyValues("spring.datasource.initialization-mode:always")
+				.withUserConfiguration(DataSourceProxyConfiguration.class).run((context) -> {
+					assertThat(context).hasSingleBean(DataSource.class);
+					DataSource dataSource = context.getBean(DataSource.class);
+					assertThat(dataSource).isInstanceOf(DataSourceProxy.class);
+					assertThat(((DataSourceProxy) dataSource).connectionsRetrieved).hasPositiveValue();
+					assertDataSourceIsInitialized(dataSource);
+				});
+	}
+
+	@Test
+	// gh-13042
+	void whenDataSourceIsScopedAndJpaIsInvolvedThenInitializationCompletesSuccessfully() {
+		this.contextRunner.withPropertyValues("spring.datasource.initialization-mode:always")
+				.withConfiguration(AutoConfigurations.of(HibernateJpaAutoConfiguration.class))
+				.withUserConfiguration(ScopedDataSourceConfiguration.class).run((context) -> {
+					assertThat(context).hasSingleBean(DataSource.class);
+					DataSource dataSource = context.getBean(DataSource.class);
+					assertThat(dataSource).isInstanceOf(HikariDataSource.class);
+					assertDataSourceIsInitialized(dataSource);
+				});
+	}
+
 	private String getRelativeLocationFor(String resource) {
 		return ClassUtils.addResourcePathToPackagePath(getClass(), resource);
 	}
@@ -289,6 +324,101 @@ class DataSourceInitializerInvokerTests {
 			Resource[] resources = this.resolver.getResources(locationPattern);
 			Arrays.sort(resources, Comparator.comparing(Resource::getFilename).reversed());
 			return resources;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = true)
+	static class DataSourceProxyConfiguration {
+
+		@Bean
+		static BeanPostProcessor dataSourceProxy() {
+			return new BeanPostProcessor() {
+
+				@Override
+				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+					if (bean instanceof DataSource) {
+						return new DataSourceProxy((DataSource) bean);
+					}
+					return bean;
+				}
+
+			};
+		}
+
+	}
+
+	static class DataSourceProxy implements DataSource {
+
+		private final AtomicInteger connectionsRetrieved = new AtomicInteger();
+
+		private final DataSource delegate;
+
+		DataSourceProxy(DataSource delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public PrintWriter getLogWriter() throws SQLException {
+			return this.delegate.getLogWriter();
+		}
+
+		@Override
+		public void setLogWriter(PrintWriter out) throws SQLException {
+			this.delegate.setLogWriter(out);
+		}
+
+		@Override
+		public boolean isWrapperFor(Class<?> iface) throws SQLException {
+			return this.delegate.isWrapperFor(iface);
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> iface) throws SQLException {
+			return this.delegate.unwrap(iface);
+		}
+
+		@Override
+		public Connection getConnection() throws SQLException {
+			this.connectionsRetrieved.incrementAndGet();
+			return this.delegate.getConnection();
+		}
+
+		@Override
+		public Connection getConnection(String username, String password) throws SQLException {
+			this.connectionsRetrieved.incrementAndGet();
+			return this.delegate.getConnection(username, password);
+		}
+
+		@Override
+		public int getLoginTimeout() throws SQLException {
+			return this.delegate.getLoginTimeout();
+		}
+
+		@Override
+		public void setLoginTimeout(int seconds) throws SQLException {
+			this.delegate.setLoginTimeout(seconds);
+		}
+
+		@Override
+		public Logger getParentLogger() throws SQLFeatureNotSupportedException {
+			return this.delegate.getParentLogger();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ScopedDataSourceConfiguration {
+
+		@Bean
+		static BeanFactoryPostProcessor fooScope() {
+			return (beanFactory) -> beanFactory.registerScope("test", new SimpleThreadScope());
+		}
+
+		@Bean
+		@Scope("test")
+		HikariDataSource dataSource(DataSourceProperties properties) {
+			return properties.initializeDataSourceBuilder().type(HikariDataSource.class).build();
 		}
 
 	}

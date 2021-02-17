@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
 /**
@@ -45,11 +46,9 @@ class DataSourceInitializerTests {
 	@Test
 	void initializeEmbeddedByDefault() {
 		try (HikariDataSource dataSource = createDataSource()) {
-			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties());
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties(), null);
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-			assertThat(initializer.createSchema()).isTrue();
-			assertNumberOfRows(jdbcTemplate, 0);
-			initializer.initSchema();
+			initializer.initializeDataSource();
 			assertNumberOfRows(jdbcTemplate, 1);
 		}
 	}
@@ -59,11 +58,9 @@ class DataSourceInitializerTests {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.ALWAYS);
-			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties);
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties, null);
 			JdbcTemplate jdbcTemplate = new JdbcTemplate(dataSource);
-			assertThat(initializer.createSchema()).isTrue();
-			assertNumberOfRows(jdbcTemplate, 0);
-			initializer.initSchema();
+			initializer.initializeDataSource();
 			assertNumberOfRows(jdbcTemplate, 1);
 		}
 	}
@@ -77,8 +74,8 @@ class DataSourceInitializerTests {
 		try (HikariDataSource dataSource = createDataSource()) {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setInitializationMode(DataSourceInitializationMode.NEVER);
-			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties);
-			assertThat(initializer.createSchema()).isFalse();
+			DataSourceInitializer initializer = new DataSourceInitializer(dataSource, properties, null);
+			assertThat(initializer.initializeDataSource()).isFalse();
 		}
 	}
 
@@ -90,9 +87,9 @@ class DataSourceInitializerTests {
 		given(connection.getMetaData()).willReturn(metadata);
 		DataSource dataSource = mock(DataSource.class);
 		given(dataSource.getConnection()).willReturn(connection);
-		DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties());
-		assertThat(initializer.createSchema()).isFalse();
-		verify(dataSource).getConnection();
+		DataSourceInitializer initializer = new DataSourceInitializer(dataSource, new DataSourceProperties(), null);
+		assertThat(initializer.initializeDataSource()).isFalse();
+		verify(dataSource, times(2)).getConnection();
 	}
 
 	private HikariDataSource createDataSource() {

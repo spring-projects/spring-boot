@@ -757,6 +757,10 @@
       "defaultValue": "embedded"
     },
     {
+      "name": "spring.datasource.initialization-order",
+      "defaultValue": "before-jpa"
+    },
+    {
       "name": "spring.datasource.jmx-enabled",
       "type": "java.lang.Boolean",
       "description": "Whether to enable JMX support (if provided by the underlying pool).",
@@ -1898,6 +1902,17 @@
           "parameters": {
             "target": "java.sql.Driver"
           }
+        }
+      ]
+    },
+    {
+      "name": "spring.datasource.initialization-order",
+      "values": [
+        {
+          "value": "before-jpa"
+        },
+        {
+          "value": "after-jpa"
         }
       ]
     },
