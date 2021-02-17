@@ -1429,7 +1429,7 @@ bom {
 			]
 		}
 	}
-	library("RxJava2", "2.2.20") {
+	library("RxJava2", "2.2.21") {
 		group("io.reactivex.rxjava2") {
 			modules = [
 				"rxjava"
