@@ -43,6 +43,8 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 		Map<ConfigurationPropertyName, ConfigurationPropertyName> warnings = new LinkedHashMap<>();
 		warnings.put(ConfigurationPropertyName.of("spring.profiles"),
 				ConfigurationPropertyName.of("spring.config.activate.on-profile"));
+		warnings.put(ConfigurationPropertyName.of("spring.profiles[0]"),
+				ConfigurationPropertyName.of("spring.config.activate.on-profile"));
 		WARNINGS = Collections.unmodifiableMap(warnings);
 	}
 
@@ -50,8 +52,11 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 	static {
 		Set<ConfigurationPropertyName> errors = new LinkedHashSet<>();
 		errors.add(Profiles.INCLUDE_PROFILES);
+		errors.add(Profiles.INCLUDE_PROFILES.append("[0]"));
 		errors.add(ConfigurationPropertyName.of(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME));
+		errors.add(ConfigurationPropertyName.of(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME + "[0]"));
 		errors.add(ConfigurationPropertyName.of(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME));
+		errors.add(ConfigurationPropertyName.of(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME + "[0]"));
 		PROFILE_SPECIFIC_ERRORS = Collections.unmodifiableSet(errors);
 	}
 
