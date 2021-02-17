@@ -950,7 +950,7 @@ bom {
 			]
 		}
 	}
-	library("JUnit", "4.13.1") {
+	library("JUnit", "4.13.2") {
 		group("junit") {
 			modules = [
 				"junit"
