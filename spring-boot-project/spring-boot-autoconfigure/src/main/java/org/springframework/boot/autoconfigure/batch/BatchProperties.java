@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,29 +36,50 @@ public class BatchProperties {
 
 	private final Jdbc jdbc = new Jdbc();
 
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
+	/**
+	 * Return the datasource schema.
+	 * @return the schema
+	 * @deprecated as of 2.5.0 in favor of {@link Jdbc#getSchema()}
+	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.schema")
 	public String getSchema() {
 		return this.jdbc.getSchema();
 	}
 
+	@Deprecated
 	public void setSchema(String schema) {
 		this.jdbc.setSchema(schema);
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
+	/**
+	 * Return the table prefix.
+	 * @return the table prefix
+	 * @deprecated as of 2.5.0 in favor of {@link Jdbc#getTablePrefix()}
+	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.table-prefix")
 	public String getTablePrefix() {
 		return this.jdbc.getTablePrefix();
 	}
 
+	@Deprecated
 	public void setTablePrefix(String tablePrefix) {
 		this.jdbc.setTablePrefix(tablePrefix);
 	}
 
-	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc")
+	/**
+	 * Return whether the schema should be initialized.
+	 * @return the initialization mode
+	 * @deprecated as of 2.5.0 in favor of {@link Jdbc#getInitializeSchema()}
+	 */
+	@Deprecated
+	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.initialize-schema")
 	public DataSourceInitializationMode getInitializeSchema() {
 		return this.jdbc.getInitializeSchema();
 	}
 
+	@Deprecated
 	public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
 		this.jdbc.setInitializeSchema(initializeSchema);
 	}
@@ -89,12 +110,6 @@ public class BatchProperties {
 
 	}
 
-	/**
-	 * JDBC configuration properties for Spring Batch.
-	 *
-	 * @author Mukul Kumar Chaundhyan
-	 * @since 2.5.0
-	 */
 	public static class Jdbc {
 
 		private static final String DEFAULT_SCHEMA_LOCATION = "classpath:org/springframework/"

@@ -228,7 +228,7 @@ class JobLauncherApplicationRunnerTests {
 
 		@Bean
 		BatchDataSourceInitializer batchDataSourceInitializer(ResourceLoader resourceLoader) {
-			return new BatchDataSourceInitializer(this.dataSource, resourceLoader, new BatchProperties().getJdbc());
+			return new BatchDataSourceInitializer(this.dataSource, resourceLoader, new BatchProperties());
 		}
 
 	}

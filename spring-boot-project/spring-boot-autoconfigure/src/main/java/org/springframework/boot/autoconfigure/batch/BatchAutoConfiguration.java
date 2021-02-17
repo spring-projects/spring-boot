@@ -57,7 +57,6 @@ import org.springframework.util.StringUtils;
  * @author Eddú Meléndez
  * @author Kazuki Shimizu
  * @author Mahmoud Ben Hassine
- * @author Mukul Kumar Chaundhyan
  * @since 1.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -108,13 +107,11 @@ public class BatchAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		@ConditionalOnProperty(prefix = "spring.batch.jdbc", name = "enabled", havingValue = "true",
-				matchIfMissing = true)
 		BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, ResourceLoader resourceLoader,
 				BatchProperties properties) {
 			return new BatchDataSourceInitializer(batchDataSource.getIfAvailable(() -> dataSource), resourceLoader,
-					properties.getJdbc());
+					properties);
 		}
 
 	}
