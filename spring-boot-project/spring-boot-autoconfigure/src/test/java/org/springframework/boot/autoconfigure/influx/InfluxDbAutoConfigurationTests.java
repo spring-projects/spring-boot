@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,9 @@ package org.springframework.boot.autoconfigure.influx;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import org.influxdb.BatchOptions;
 import org.influxdb.InfluxDB;
+import org.influxdb.impl.BatchProcessor;
 import org.junit.jupiter.api.Test;
 import retrofit2.Retrofit;
 
@@ -76,6 +78,84 @@ class InfluxDbAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void influxDbWithDatabase() {
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.database:sample-db")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					InfluxDB influxDb = context.getBean(InfluxDB.class);
+					String database = (String) ReflectionTestUtils.getField(influxDb, "database");
+					assertThat(database).isEqualTo("sample-db");
+				});
+	}
+
+	@Test
+	void influxDbWithRetentionPolicy() {
+		this.contextRunner
+				.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.retention-policy:two_hours")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					InfluxDB influxDb = context.getBean(InfluxDB.class);
+					String retentionPolicy = (String) ReflectionTestUtils.getField(influxDb, "retentionPolicy");
+					assertThat(retentionPolicy).isEqualTo("two_hours");
+				});
+	}
+
+	@Test
+	void influxDbWithLogLevel() {
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.log:basic")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					InfluxDB influxDb = context.getBean(InfluxDB.class);
+					InfluxDB.LogLevel log = (InfluxDB.LogLevel) ReflectionTestUtils.getField(influxDb, "logLevel");
+					assertThat(log).isEqualTo(InfluxDB.LogLevel.BASIC);
+				});
+	}
+
+	@Test
+	void influxDbWithConsistency() {
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.consistency:all")
+				.run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					InfluxDB influxDb = context.getBean(InfluxDB.class);
+					InfluxDB.ConsistencyLevel consistency = (InfluxDB.ConsistencyLevel) ReflectionTestUtils
+							.getField(influxDb, "consistency");
+					assertThat(consistency).isEqualTo(InfluxDB.ConsistencyLevel.ALL);
+				});
+	}
+
+	@Test
+	void influxDbWithBatchOptions() {
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.batch.enabled:true",
+				"spring.influx.batch.actions:50", "spring.influx.batch.flush-duration:50").run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					InfluxDB influxDb = context.getBean(InfluxDB.class);
+					BatchProcessor batchProcessor = (BatchProcessor) ReflectionTestUtils.getField(influxDb,
+							"batchProcessor");
+					int actions = (int) ReflectionTestUtils.getField(batchProcessor, "actions");
+					int flushInterval = (int) ReflectionTestUtils.getField(batchProcessor, "flushInterval");
+					assertThat(actions).isEqualTo(50);
+					assertThat(flushInterval).isEqualTo(50);
+				});
+	}
+
+	@Test
+	void influxDbWithBatchOptionsCustomizer() {
+		this.contextRunner.withUserConfiguration(CustomInfluxDbBatchOptionsCustomizerConfig.class)
+				.withPropertyValues("spring.influx.url=http://localhost").run((context) -> {
+					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
+					InfluxDB influxDb = context.getBean(InfluxDB.class);
+					BatchProcessor batchProcessor = (BatchProcessor) ReflectionTestUtils.getField(influxDb,
+							"batchProcessor");
+					int actions = (int) ReflectionTestUtils.getField(batchProcessor, "actions");
+					int flushInterval = (int) ReflectionTestUtils.getField(batchProcessor, "flushInterval");
+					int jitterInterval = (int) ReflectionTestUtils.getField(batchProcessor, "jitterInterval");
+					assertThat(actions).isEqualTo(20);
+					assertThat(flushInterval).isEqualTo(20);
+					assertThat(jitterInterval).isEqualTo(20);
+				});
+	}
+
 	private int getReadTimeoutProperty(AssertableApplicationContext context) {
 		InfluxDB influxDB = context.getBean(InfluxDB.class);
 		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDB, "retrofit");
@@ -89,6 +169,19 @@ class InfluxDbAutoConfigurationTests {
 		@Bean
 		InfluxDbOkHttpClientBuilderProvider influxDbOkHttpClientBuilderProvider() {
 			return () -> new OkHttpClient.Builder().readTimeout(40, TimeUnit.SECONDS);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomInfluxDbBatchOptionsCustomizerConfig {
+
+		@Bean
+		InfluxDbCustomizer influxDbBatchOptionsCustomizer() {
+			return (influxDb) -> {
+				BatchOptions batchOptions = BatchOptions.DEFAULTS.actions(20).flushDuration(20).jitterDuration(20);
+				influxDb.enableBatch(batchOptions);
+			};
 		}
 
 	}
