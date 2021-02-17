@@ -376,9 +376,13 @@
       "type": "java.lang.Boolean",
       "description": "Create the required batch tables on startup if necessary. Enabled automatically\n if no custom table prefix is set or if a custom schema is configured.",
       "deprecation": {
-        "replacement": "spring.batch.initialize-schema",
+        "replacement": "spring.batch.jdbc.initialize-schema",
         "level": "error"
       }
+    },
+    {
+      "name": "spring.batch.jdbc.initialize-schema",
+      "defaultValue": "embedded"
     },
     {
       "name": "spring.batch.job.enabled",

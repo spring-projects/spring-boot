@@ -2087,10 +2087,11 @@ You can also enable it for any database type, as shown in the following example:
 ----
 	spring:
 	  batch:
-	    initialize-schema: "always"
+	    jdbc:
+	      initialize-schema: "always"
 ----
 
-You can also switch off the initialization explicitly by setting `spring.batch.initialize-schema` to `never`.
+You can also switch off the initialization explicitly by setting `spring.batch.jdbc.initialize-schema` to `never`.
 
 
 
