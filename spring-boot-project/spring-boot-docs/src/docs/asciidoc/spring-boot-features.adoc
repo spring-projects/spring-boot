@@ -984,8 +984,6 @@ The `SpringApplication` class automatically supports YAML as an alternative to p
 
 NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
 
-
-
 ==== Mapping YAML to Properties
 YAML documents need to be converted from their hierarchical format to a flat structure that can be used with the Spring `Environment`.
 For example, consider the following YAML document:
@@ -1034,6 +1032,9 @@ The preceding example would be transformed into these properties:
 TIP: Properties that use the `[index]` notation can be bound to Java `List` or `Set` objects using Spring Boot's `Binder` class.
 For more details see the "`<<boot-features-external-config-typesafe-configuration-properties>>`" section below.
 
+WARNING: YAML files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
+So, in the case that you need to load values that way, you need to use a properties file.
+
 
 
 [[boot-features-external-config-loading-yaml]]
@@ -1043,34 +1044,6 @@ Spring Framework provides two convenient classes that can be used to load YAML d
 The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
 
 You can also use the `YamlPropertySourceLoader` class if you want to load YAML as a Spring `PropertySource`.
-
-
-
-[[boot-features-external-config-yaml-shortcomings]]
-==== YAML Shortcomings
-YAML files cannot be loaded by using the `@PropertySource` annotation.
-So, in the case that you need to load values that way, you need to use a properties file.
-
-Using the multi-document YAML syntax in profile-specific YAML files can lead to unexpected behavior.
-For example, consider the following config in a file:
-
-.application-dev.yml
-[source,yaml,indent=0]
-----
-	server.port: 8000
-	---
-	spring.config.activate.on-profile: "!test"
-	mypassword: "secret"
-----
-
-If you run the application with the argument `--spring.profiles.active=dev` you might expect `mypassword` to be set to "`secret`", but this is not the case.
-
-The nested document will be filtered because the main file is named `application-dev.yml`.
-It is already considered to be profile-specific, and nested documents will be ignored.
-
-TIP: We recommend that you don't mix profile-specific YAML files and multiple YAML documents.
-Stick to using only one of them.
-
 
 
 [[boot-features-external-config-random-values]]
