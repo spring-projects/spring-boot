@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link TarLayoutWriter}.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class TarLayoutWriterTests {
 
@@ -39,7 +40,7 @@ class TarLayoutWriterTests {
 		ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 		try (TarLayoutWriter writer = new TarLayoutWriter(outputStream)) {
 			writer.directory("/foo", Owner.ROOT);
-			writer.file("/foo/bar.txt", Owner.of(1, 1), Content.of("test"));
+			writer.file("/foo/bar.txt", Owner.of(1, 1), 0777, Content.of("test"));
 		}
 		try (TarArchiveInputStream tarInputStream = new TarArchiveInputStream(
 				new ByteArrayInputStream(outputStream.toByteArray()))) {
@@ -54,7 +55,7 @@ class TarLayoutWriterTests {
 			assertThat(directoryEntry.getLongGroupId()).isEqualTo(0);
 			assertThat(directoryEntry.getModTime()).isEqualTo(new Date(TarLayoutWriter.NORMALIZED_MOD_TIME));
 			assertThat(fileEntry.getName()).isEqualTo("/foo/bar.txt");
-			assertThat(fileEntry.getMode()).isEqualTo(0644);
+			assertThat(fileEntry.getMode()).isEqualTo(0777);
 			assertThat(fileEntry.getLongUserId()).isEqualTo(1);
 			assertThat(fileEntry.getLongGroupId()).isEqualTo(1);
 			assertThat(fileEntry.getModTime()).isEqualTo(new Date(TarLayoutWriter.NORMALIZED_MOD_TIME));

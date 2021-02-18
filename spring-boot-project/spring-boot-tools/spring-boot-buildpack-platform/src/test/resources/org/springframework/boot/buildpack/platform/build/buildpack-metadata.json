@@ -1,0 +1,13 @@
+{
+	"id": "example/hello-universe",
+	"version": "0.0.1",
+	"homepage": "https://github.com/example/tree/main/buildpacks/hello-universe",
+	"stacks": [
+		{
+			"id": "io.buildpacks.stacks.alpine"
+		},
+		{
+			"id": "io.buildpacks.stacks.bionic"
+		}
+	]
+}

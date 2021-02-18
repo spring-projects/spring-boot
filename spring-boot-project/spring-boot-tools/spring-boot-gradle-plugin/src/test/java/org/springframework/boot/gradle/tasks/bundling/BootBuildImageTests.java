@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -28,6 +29,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
+import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -219,6 +221,33 @@ class BootBuildImageTests {
 	void whenPullPolicyIsConfiguredThenRequestHasPullPolicy() {
 		this.buildImage.setPullPolicy(PullPolicy.NEVER);
 		assertThat(this.buildImage.createRequest().getPullPolicy()).isEqualTo(PullPolicy.NEVER);
+	}
+
+	@Test
+	void whenNoBuildpacksAreConfiguredThenRequestUsesDefaultBuildpacks() {
+		assertThat(this.buildImage.createRequest().getBuildpacks()).isEmpty();
+	}
+
+	@Test
+	void whenBuildpacksAreConfiguredThenRequestHasBuildpacks() {
+		this.buildImage.setBuildpacks(Arrays.asList("example/buildpack1", "example/buildpack2"));
+		assertThat(this.buildImage.createRequest().getBuildpacks()).containsExactly(
+				BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
+	}
+
+	@Test
+	void whenEntriesAreAddedToBuildpacksThenRequestHasBuildpacks() {
+		this.buildImage.buildpacks(Arrays.asList("example/buildpack1", "example/buildpack2"));
+		assertThat(this.buildImage.createRequest().getBuildpacks()).containsExactly(
+				BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
+	}
+
+	@Test
+	void whenIndividualEntriesAreAddedToBuildpacksThenRequestHasBuildpacks() {
+		this.buildImage.buildpack("example/buildpack1");
+		this.buildImage.buildpack("example/buildpack2");
+		assertThat(this.buildImage.createRequest().getBuildpacks()).containsExactly(
+				BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
 	}
 
 }

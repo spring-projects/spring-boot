@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
@@ -161,6 +162,23 @@ public class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withEnv("test", null))
 				.withMessage("Value must not be empty");
+	}
+
+	@Test
+	void withBuildpacksAddsBuildpacks() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildpackReference buildpackReference1 = BuildpackReference.of("example/buildpack1");
+		BuildpackReference buildpackReference2 = BuildpackReference.of("example/buildpack2");
+		BuildRequest withBuildpacks = request.withBuildpacks(buildpackReference1, buildpackReference2);
+		assertThat(request.getBuildpacks()).isEmpty();
+		assertThat(withBuildpacks.getBuildpacks()).containsExactly(buildpackReference1, buildpackReference2);
+	}
+
+	@Test
+	void withBuildpacksWhenBuildpacksIsNullThrowsException() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildpacks((List<BuildpackReference>) null))
+				.withMessage("Buildpacks must not be null");
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -151,6 +151,24 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenBuildImageIsInvokedWithBuildpacks(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-custom-buildpacks").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT").execute((project) -> {
+					assertThat(buildLog(project)).contains("Building image")
+							.contains("docker.io/library/build-image-custom-buildpacks:0.0.1.BUILD-SNAPSHOT")
+							.contains("Successfully built image");
+					ImageReference imageReference = ImageReference
+							.of("docker.io/library/build-image-custom-buildpacks:0.0.1.BUILD-SNAPSHOT");
+					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+					}
+					finally {
+						removeImage(imageReference);
+					}
+				});
+	}
+
+	@TestTemplate
 	void failsWhenPublishWithoutPublishRegistryConfigured(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image").goals("package").systemProperty("spring-boot.build-image.publish", "true")
 				.executeAndFail((project) -> assertThat(buildLog(project)).contains("requires docker.publishRegistry"));
@@ -168,6 +186,14 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void failsWithWarPackaging(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-war-packaging").goals("package").executeAndFail(
 				(project) -> assertThat(buildLog(project)).contains("Executable jar file required for building image"));
+	}
+
+	@TestTemplate
+	void failsWithBuildpackNotInBuilder(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-bad-buildpack").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+				.executeAndFail((project) -> assertThat(buildLog(project))
+						.contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder"));
 	}
 
 	private void writeLongNameResource(File project) {

@@ -37,6 +37,7 @@ import com.fasterxml.jackson.module.paramnames.ParameterNamesModule;
 import com.sun.jna.Platform;
 import io.spring.gradle.dependencymanagement.DependencyManagementPlugin;
 import io.spring.gradle.dependencymanagement.dsl.DependencyManagementExtension;
+import org.antlr.v4.runtime.Lexer;
 import org.apache.commons.compress.archivers.ArchiveEntry;
 import org.apache.http.HttpRequest;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -49,6 +50,7 @@ import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinGradleSubplugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
+import org.tomlj.Toml;
 
 import org.springframework.asm.ClassVisitor;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
@@ -116,7 +118,8 @@ public class GradleBuild {
 				new File(pathOfJarContaining(HttpRequest.class)), new File(pathOfJarContaining(Module.class)),
 				new File(pathOfJarContaining(Versioned.class)),
 				new File(pathOfJarContaining(ParameterNamesModule.class)),
-				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)));
+				new File(pathOfJarContaining(JsonView.class)), new File(pathOfJarContaining(Platform.class)),
+				new File(pathOfJarContaining(Toml.class)), new File(pathOfJarContaining(Lexer.class)));
 	}
 
 	private String pathOfJarContaining(Class<?> type) {

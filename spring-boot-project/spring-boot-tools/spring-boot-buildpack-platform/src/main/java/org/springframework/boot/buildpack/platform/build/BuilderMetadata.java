@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,9 @@ package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
 import java.lang.invoke.MethodHandles;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.function.Consumer;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -50,11 +53,23 @@ class BuilderMetadata extends MappedObject {
 
 	private final CreatedBy createdBy;
 
+	private final List<BuildpackMetadata> buildpacks;
+
 	BuilderMetadata(JsonNode node) {
 		super(node, MethodHandles.lookup());
 		this.stack = valueAt("/stack", Stack.class);
 		this.lifecycle = valueAt("/lifecycle", Lifecycle.class);
 		this.createdBy = valueAt("/createdBy", CreatedBy.class);
+		this.buildpacks = extractBuildpacks(getNode().at("/buildpacks"));
+	}
+
+	private List<BuildpackMetadata> extractBuildpacks(JsonNode node) {
+		if (node.isEmpty()) {
+			return Collections.emptyList();
+		}
+		List<BuildpackMetadata> entries = new ArrayList<>();
+		node.forEach((child) -> entries.add(BuildpackMetadata.fromJson(child)));
+		return entries;
 	}
 
 	/**
@@ -79,6 +94,14 @@ class BuilderMetadata extends MappedObject {
 	 */
 	CreatedBy getCreatedBy() {
 		return this.createdBy;
+	}
+
+	/**
+	 * Return the buildpacks that are bundled in the builder.
+	 * @return the buildpacks
+	 */
+	List<BuildpackMetadata> getBuildpacks() {
+		return this.buildpacks;
 	}
 
 	/**

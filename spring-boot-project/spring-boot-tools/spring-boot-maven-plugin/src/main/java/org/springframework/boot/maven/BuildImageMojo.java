@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -176,8 +176,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 		try {
 			DockerConfiguration dockerConfiguration = (this.docker != null) ? this.docker.asDockerConfiguration()
 					: null;
-			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
 			BuildRequest request = getBuildRequest(libraries);
+			Builder builder = new Builder(new MojoBuildLog(this::getLog), dockerConfiguration);
 			builder.build(request);
 		}
 		catch (IOException ex) {

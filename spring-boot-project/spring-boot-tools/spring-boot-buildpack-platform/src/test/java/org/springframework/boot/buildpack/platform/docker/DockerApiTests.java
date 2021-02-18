@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,14 @@
 
 package org.springframework.boot.buildpack.platform.docker;
 
+import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveInputStream;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -48,6 +51,8 @@ import org.springframework.boot.buildpack.platform.io.Content;
 import org.springframework.boot.buildpack.platform.io.IOConsumer;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -302,6 +307,45 @@ class DockerApiTests {
 			given(http().get(imageUri)).willReturn(responseOf("type/image.json"));
 			Image image = this.api.inspect(reference);
 			assertThat(image.getLayers()).hasSize(46);
+		}
+
+		@Test
+		void exportLayersWhenReferenceIsNullThrowsException() {
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayers(null, (name, archive) -> {
+			})).withMessage("Reference must not be null");
+		}
+
+		@Test
+		void exportLayersWhenExportsIsNullThrowsException() {
+			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			assertThatIllegalArgumentException().isThrownBy(() -> this.api.exportLayers(reference, null))
+					.withMessage("Exports must not be null");
+		}
+
+		@Test
+		void exportLayersExportsLayerTars() throws Exception {
+			ImageReference reference = ImageReference.of("gcr.io/paketo-buildpacks/builder:base");
+			URI exportUri = new URI(IMAGES_URL + "/gcr.io/paketo-buildpacks/builder:base/get");
+			given(DockerApiTests.this.http.get(exportUri)).willReturn(responseOf("export.tar"));
+			MultiValueMap<String, String> contents = new LinkedMultiValueMap<>();
+			this.api.exportLayers(reference, (name, archive) -> {
+				ByteArrayOutputStream out = new ByteArrayOutputStream();
+				archive.writeTo(out);
+				try (TarArchiveInputStream in = new TarArchiveInputStream(
+						new ByteArrayInputStream(out.toByteArray()))) {
+					TarArchiveEntry entry = in.getNextTarEntry();
+					while (entry != null) {
+						contents.add(name, entry.getName());
+						entry = in.getNextTarEntry();
+					}
+				}
+			});
+			assertThat(contents).hasSize(3).containsKeys(
+					"1bf6c63a1e9ed1dd7cb961273bf60b8e0f440361faf273baf866f408e4910601/layer.tar",
+					"8fdfb915302159a842cbfae6faec5311b00c071ebf14e12da7116ae7532e9319/layer.tar",
+					"93cd584bb189bfca4f51744bd19d836fd36da70710395af5a1523ee88f208c6a/layer.tar");
+			assertThat(contents.get("1bf6c63a1e9ed1dd7cb961273bf60b8e0f440361faf273baf866f408e4910601/layer.tar"))
+					.containsExactly("etc/", "etc/apt/", "etc/apt/sources.list");
 		}
 
 	}

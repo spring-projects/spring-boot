@@ -1,0 +1,15 @@
+[[order]]
+group = [
+  { id = "example/buildpack1" }
+]
+
+[[order]]
+group = [
+  { id = "example/buildpack2" }
+]
+
+[[order]]
+group = [
+  { id = "example/buildpack3" }
+]
+

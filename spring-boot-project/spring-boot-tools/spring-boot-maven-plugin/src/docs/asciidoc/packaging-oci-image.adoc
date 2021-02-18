@@ -152,6 +152,18 @@ Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
 |
 |
 
+| `buildpacks`
+a|Buildpacks that the builder should use when building the image.
+Only the specified buildpacks will be used, overriding the default buildpacks included in the builder.
+Buildpack references must be in one of the following forms:
+
+* Buildpack in the builder - [urn:cnb:builder:]<buildpack id>[@<version>]
+* Buildpack in a directory on the file system - [file://]<path>
+* Buildpack in a gzipped tar (.tgz) file on the file system - [file://]<path>/<file name>
+* Buildpack in an OCI image - [docker://]<host>/<repo>[:<tag>][@<digest>]
+|
+| None, indicating the builder should use the buildpacks included in it.
+
 | `cleanCache`
 | Whether to clean the cache before building.
 | `spring-boot.build-image.cleanCache`
@@ -308,6 +320,64 @@ The image name can be specified on the command line as well, as shown in this ex
 ----
 	$ mvn spring-boot:build-image -Dspring-boot.build-image.imageName=example.com/library/my-app:v1
 ----
+
+
+
+[[build-image-example-buildpacks]]
+==== Buildpacks
+By default, the builder will use buildpacks included in the builder image and apply them in a pre-defined order.
+An alternative set of buildpacks can be provided to apply buildpacks that are not included in the builder, or to change the order of included buildpacks.
+When one or more buildpacks are provided, only the specified buildpacks will be applied.
+
+The following example instructs the builder to use a custom buildpack packaged in a `.tgz` file, followed by a buildpack included in the builder.
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<buildpacks>
+                            <buildpack>file:///path/to/example-buildpack.tgz</buildpack>
+                            <buildpack>urn:cnb:builder:paketo-buildpacks/java</buildpack>
+						</image>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+Buildpacks can be specified in any of the forms shown below.
+
+A buildpack located in a CNB Builder (version may be omitted if there is only one buildpack in the builder matching the `buildpack-id`):
+
+* `urn:cnb:builder:buildpack-id`
+* `urn:cnb:builder:buildpack-id@0.0.1`
+* `buildpack-id`
+* `buildpack-id@0.0.1`
+
+A path to a directory containing buildpack content (not supported on Windows):
+
+* `\file:///path/to/buildpack/`
+* `/path/to/buildpack/`
+
+A path to a gzipped tar file containing buildpack content:
+
+* `\file:///path/to/buildpack.tgz`
+* `/path/to/buildpack.tgz`
+
+An OCI image:
+
+* `docker://example/buildpack`
+* `docker:///example/buildpack:latest`
+* `docker:///example/buildpack@sha256:45b23dee08...`
+* `example/buildpack`
+* `example/buildpack:latest`
+* `example/buildpack@sha256:45b23dee08...`
 
 
 
