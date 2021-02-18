@@ -67,7 +67,6 @@ public class InfluxDbAutoConfiguration {
 
 	private BatchOptions mapBatchOptions(InfluxDbProperties properties) {
 		InfluxDbProperties.Batch batch = properties.getBatch();
-		PropertyMapper map = PropertyMapper.get();
 		return BatchOptions.DEFAULTS.actions(batch.getActions())
 				.flushDuration(Long.valueOf(batch.getFlushDuration().toMillis()).intValue())
 				.jitterDuration(Long.valueOf(batch.getJitterDuration().toMillis()).intValue())
