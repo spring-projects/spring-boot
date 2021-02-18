@@ -48,7 +48,7 @@ public class InfluxDbAutoConfiguration {
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty("spring.influx.url")
 	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
-			ObjectProvider<InfluxDbBatchOptionsCustomizer> customizers) {
+			ObjectProvider<InfluxDbCustomizer> customizers) {
 		InfluxDB influxDb = new InfluxDBImpl(properties.getUrl(), properties.getUser(), properties.getPassword(),
 				determineBuilder(builder.getIfAvailable()));
 		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
@@ -56,24 +56,22 @@ public class InfluxDbAutoConfiguration {
 		map.from(properties::getDatabase).to(influxDb::setDatabase);
 		map.from(properties::getLog).to(influxDb::setLogLevel);
 		map.from(properties::getRetentionPolicy).to(influxDb::setRetentionPolicy);
-		if (properties.isGzipEnabled()) {
-			influxDb.enableGzip();
-		}
+		map.from(properties.isGzipEnabled()).whenTrue().toCall(influxDb::enableGzip);
 		if (properties.getBatch().isEnabled()) {
 			BatchOptions batchOptions = mapBatchOptions(properties);
-			InfluxDbBatchOptionsCustomizer influxDbBatchOptionsCustomizer = customizers.orderedStream()
-					.reduce((after, before) -> (options) -> after.customize(before.customize(options)))
-					.orElse((options) -> options);
-			influxDb.enableBatch(influxDbBatchOptionsCustomizer.customize(batchOptions));
+			influxDb.enableBatch(batchOptions);
 		}
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(influxDb));
 		return influxDb;
 	}
 
 	private BatchOptions mapBatchOptions(InfluxDbProperties properties) {
 		InfluxDbProperties.Batch batch = properties.getBatch();
-		return BatchOptions.DEFAULTS.actions(batch.getActions()).flushDuration(batch.getFlushDuration())
-				.jitterDuration(batch.getJitterDuration()).bufferLimit(batch.getBufferLimit())
-				.consistency(batch.getConsistency()).precision(batch.getPrecision())
+		PropertyMapper map = PropertyMapper.get();
+		return BatchOptions.DEFAULTS.actions(batch.getActions())
+				.flushDuration(Long.valueOf(batch.getFlushDuration().toMillis()).intValue())
+				.jitterDuration(Long.valueOf(batch.getJitterDuration().toMillis()).intValue())
+				.bufferLimit(batch.getBufferLimit()).consistency(batch.getConsistency()).precision(batch.getPrecision())
 				.dropActionsOnQueueExhaustion(batch.isDropActionsOnQueueExhaustion());
 	}
 

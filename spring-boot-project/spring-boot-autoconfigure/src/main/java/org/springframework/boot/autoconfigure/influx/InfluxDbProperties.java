@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
+import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 
 import org.influxdb.InfluxDB;
@@ -159,19 +160,19 @@ public class InfluxDbProperties {
 		private int actions = 1000;
 
 		/**
-		 * Time to wait in milliseconds.
+		 * Time to wait.
 		 */
-		private int flushDuration = 1000;
+		private Duration flushDuration = Duration.ofMillis(1000);
 
 		/**
-		 * Time in milliseconds to jitter.
+		 * Time to jitter the batch flush interval.
 		 */
-		private int jitterDuration = 0;
+		private Duration jitterDuration = Duration.ofMillis(0);
 
 		/**
 		 * Number of points stored in the retry buffer.
 		 */
-		private int bufferLimit = 1000;
+		private int bufferLimit = 10000;
 
 		/**
 		 * Cluster consistency.
@@ -204,19 +205,19 @@ public class InfluxDbProperties {
 			this.actions = actions;
 		}
 
-		public int getFlushDuration() {
+		public Duration getFlushDuration() {
 			return this.flushDuration;
 		}
 
-		public void setFlushDuration(int flushDuration) {
+		public void setFlushDuration(Duration flushDuration) {
 			this.flushDuration = flushDuration;
 		}
 
-		public int getJitterDuration() {
+		public Duration getJitterDuration() {
 			return this.jitterDuration;
 		}
 
-		public void setJitterDuration(int jitterDuration) {
+		public void setJitterDuration(Duration jitterDuration) {
 			this.jitterDuration = jitterDuration;
 		}
 

@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.influx;
 import java.util.concurrent.TimeUnit;
 
 import okhttp3.OkHttpClient;
+import org.influxdb.BatchOptions;
 import org.influxdb.InfluxDB;
 import org.influxdb.impl.BatchProcessor;
 import org.junit.jupiter.api.Test;
@@ -141,9 +142,7 @@ class InfluxDbAutoConfigurationTests {
 	@Test
 	void influxDbWithBatchOptionsCustomizer() {
 		this.contextRunner.withUserConfiguration(CustomInfluxDbBatchOptionsCustomizerConfig.class)
-				.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.batch.enabled:true",
-						"spring.influx.batch.actions:20")
-				.run((context) -> {
+				.withPropertyValues("spring.influx.url=http://localhost").run((context) -> {
 					assertThat(context.getBeansOfType(InfluxDB.class)).hasSize(1);
 					InfluxDB influxDb = context.getBean(InfluxDB.class);
 					BatchProcessor batchProcessor = (BatchProcessor) ReflectionTestUtils.getField(influxDb,
@@ -178,13 +177,11 @@ class InfluxDbAutoConfigurationTests {
 	static class CustomInfluxDbBatchOptionsCustomizerConfig {
 
 		@Bean
-		InfluxDbBatchOptionsCustomizer influxDbBatchOptionsCustomizer() {
-			return (batchOptions) -> batchOptions.flushDuration(20);
-		}
-
-		@Bean
-		InfluxDbBatchOptionsCustomizer influxDbBatchOptionsCustomizer2() {
-			return (batchOptions) -> batchOptions.jitterDuration(20);
+		InfluxDbCustomizer influxDbBatchOptionsCustomizer() {
+			return (influxDb) -> {
+				BatchOptions batchOptions = BatchOptions.DEFAULTS.actions(20).flushDuration(20).jitterDuration(20);
+				influxDb.enableBatch(batchOptions);
+			};
 		}
 
 	}

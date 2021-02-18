@@ -16,22 +16,21 @@
 
 package org.springframework.boot.autoconfigure.influx;
 
-import org.influxdb.BatchOptions;
+import org.influxdb.InfluxDB;
 
 /**
- * Callback interface for customizing {@code BatchOptions} beans.
+ * Callback interface for customizing {@code InfluxDB} beans.
  *
  * @author Eddú Meléndez
  * @since 2.5.0
  */
 @FunctionalInterface
-public interface InfluxDbBatchOptionsCustomizer {
+public interface InfluxDbCustomizer {
 
 	/**
-	 * Customize the {@link BatchOptions}.
-	 * @param batchOptions the batch options to customize
-	 * @return the new batch options instance
+	 * Customize the {@link InfluxDB}.
+	 * @param influxDB the batch options to customize
 	 */
-	BatchOptions customize(BatchOptions batchOptions);
+	void customize(InfluxDB influxDB);
 
 }
