@@ -4,7 +4,7 @@ image_resource:
   type: registry-image
   source:
     repository: springio/github-changelog-generator
-    tag: '0.0.5'
+    tag: '0.0.6-SNAPSHOT'
 inputs:
 - name: git-repo
 - name: artifactory-repo
