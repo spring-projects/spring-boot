@@ -1196,14 +1196,14 @@ bom {
 			]
 		}
 	}
-	library("OAuth2 OIDC SDK", "8.23.1") {
+	library("OAuth2 OIDC SDK", "8.36") {
 		group("com.nimbusds") {
 			modules = [
 				"oauth2-oidc-sdk"
 			]
 		}
 	}
-	library("Nimbus JOSE JWT", "9.1.3") {
+	library("Nimbus JOSE JWT", "8.20.2") {
 		group("com.nimbusds") {
 			modules = [
 				"nimbus-jose-jwt"
@@ -1624,7 +1624,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.4.2") {
+	library("Spring Security", "5.4.5") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
