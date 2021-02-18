@@ -33,6 +33,7 @@ import org.h2.Driver;
 import org.h2.jdbcx.JdbcDataSource;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+import org.postgresql.ds.PGSimpleDataSource;
 
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
@@ -127,6 +128,15 @@ class DataSourceBuilderTests {
 		assertThat(this.dataSource).isInstanceOf(JdbcDataSource.class);
 		JdbcDataSource h2DataSource = (JdbcDataSource) this.dataSource;
 		assertThat(h2DataSource.getUser()).isEqualTo("test");
+	}
+
+	@Test
+	void dataSourceCanBeCreatedWithPGDataSource() {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:postgresql://localhost/test")
+				.type(PGSimpleDataSource.class).username("test").build();
+		assertThat(this.dataSource).isInstanceOf(PGSimpleDataSource.class);
+		PGSimpleDataSource pgDataSource = (PGSimpleDataSource) this.dataSource;
+		assertThat(pgDataSource.getUser()).isEqualTo("test");
 	}
 
 	@Test
