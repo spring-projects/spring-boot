@@ -2,7 +2,7 @@
 set -e
 
 CONFIG_DIR=git-repo/ci/config
-version=$( cat version/version )
+version=$( cat artifactory-repo/build-info.json | jq -r '.buildInfo.modules[0].id' | sed 's/.*:.*:\(.*\)/\1/' )
 
 milestone=${version}
 if [[ $RELEASE_TYPE = "RELEASE" ]]; then
