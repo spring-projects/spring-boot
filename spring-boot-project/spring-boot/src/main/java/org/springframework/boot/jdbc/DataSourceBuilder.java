@@ -198,6 +198,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 					create(classLoader, "oracle.jdbc.datasource.OracleDataSource", OracleDataSourceSettings::new));
 			addIfAvailable(this.allDataSourceSettings, create(classLoader, "org.h2.jdbcx.JdbcDataSource",
 					(type) -> new DataSourceSettings(type, (aliases) -> aliases.addAliases("username", "user"))));
+			addIfAvailable(this.allDataSourceSettings, create(classLoader, "org.postgresql.ds.PGSimpleDataSource",
+					(type) -> new DataSourceSettings(type, (aliases) -> aliases.addAliases("username", "user"))));
 		}
 
 		private static List<DataSourceSettings> resolveAvailableDataSourceSettings(ClassLoader classLoader) {
