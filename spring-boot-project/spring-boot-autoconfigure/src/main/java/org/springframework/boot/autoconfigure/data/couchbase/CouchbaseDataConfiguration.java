@@ -72,6 +72,7 @@ class CouchbaseDataConfiguration {
 			mappingContext
 					.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiateClass(fieldNamingStrategy));
 		}
+		mappingContext.setAutoIndexCreation(properties.isAutoIndex());
 		return mappingContext;
 	}
 

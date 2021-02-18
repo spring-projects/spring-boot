@@ -24,8 +24,6 @@ import org.springframework.data.couchbase.CouchbaseClientFactory;
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.core.CouchbaseTemplate;
 import org.springframework.data.couchbase.core.convert.MappingCouchbaseConverter;
-import org.springframework.data.couchbase.core.index.CouchbasePersistentEntityIndexCreator;
-import org.springframework.data.couchbase.core.mapping.CouchbaseMappingContext;
 import org.springframework.data.couchbase.repository.config.RepositoryOperationsMapping;
 
 /**
@@ -49,14 +47,6 @@ class CouchbaseClientFactoryDependentConfiguration {
 	@ConditionalOnMissingBean(name = BeanNames.COUCHBASE_OPERATIONS_MAPPING)
 	RepositoryOperationsMapping couchbaseRepositoryOperationsMapping(CouchbaseTemplate couchbaseTemplate) {
 		return new RepositoryOperationsMapping(couchbaseTemplate);
-	}
-
-	@Bean
-	@ConditionalOnMissingBean
-	CouchbasePersistentEntityIndexCreator couchbasePersistentEntityIndexCreator(CouchbaseDataProperties properties,
-			CouchbaseMappingContext couchbaseMappingContext, CouchbaseClientFactory clientFactory) {
-		return new CouchbasePersistentEntityIndexCreator(couchbaseMappingContext, clientFactory,
-				properties.getTypeKey(), properties.isAutoIndex());
 	}
 
 }
