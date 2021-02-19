@@ -32,9 +32,21 @@ import org.springframework.boot.jdbc.DataSourceInitializationMode;
 @ConfigurationProperties(prefix = "spring.integration")
 public class IntegrationProperties {
 
+	private final Channels channels = new Channels();
+
+	private final Endpoints endpoints = new Endpoints();
+
 	private final Jdbc jdbc = new Jdbc();
 
 	private final RSocket rsocket = new RSocket();
+
+	public Channels getChannels() {
+		return this.channels;
+	}
+
+	public Endpoints getEndpoints() {
+		return this.endpoints;
+	}
 
 	public Jdbc getJdbc() {
 		return this.jdbc;
@@ -42,6 +54,118 @@ public class IntegrationProperties {
 
 	public RSocket getRsocket() {
 		return this.rsocket;
+	}
+
+	public static class Channels {
+
+		/**
+		 * Whether to create input channels when no respective beans.
+		 */
+		private boolean autoCreate = true;
+
+		/**
+		 * Default number of max subscribers on unicasting channels.
+		 */
+		private int maxUnicastSubscribers = Integer.MAX_VALUE;
+
+		/**
+		 * Default number of max subscribers on broadcasting channels.
+		 */
+		private int maxBroadcastSubscribers = Integer.MAX_VALUE;
+
+		/**
+		 * Require subscribers flag for global 'errorChannel'.
+		 */
+		private boolean errorRequireSubscribers = true;
+
+		/**
+		 * Ignore failures flag for global 'errorChannel'.
+		 */
+		private boolean errorIgnoreFailures = true;
+
+		public void setAutoCreate(boolean autoCreate) {
+			this.autoCreate = autoCreate;
+		}
+
+		public boolean isAutoCreate() {
+			return this.autoCreate;
+		}
+
+		public void setMaxUnicastSubscribers(int maxUnicastSubscribers) {
+			this.maxUnicastSubscribers = maxUnicastSubscribers;
+		}
+
+		public int getMaxUnicastSubscribers() {
+			return this.maxUnicastSubscribers;
+		}
+
+		public void setMaxBroadcastSubscribers(int maxBroadcastSubscribers) {
+			this.maxBroadcastSubscribers = maxBroadcastSubscribers;
+		}
+
+		public int getMaxBroadcastSubscribers() {
+			return this.maxBroadcastSubscribers;
+		}
+
+		public void setErrorRequireSubscribers(boolean errorRequireSubscribers) {
+			this.errorRequireSubscribers = errorRequireSubscribers;
+		}
+
+		public boolean isErrorRequireSubscribers() {
+			return this.errorRequireSubscribers;
+		}
+
+		public void setErrorIgnoreFailures(boolean errorIgnoreFailures) {
+			this.errorIgnoreFailures = errorIgnoreFailures;
+		}
+
+		public boolean isErrorIgnoreFailures() {
+			return this.errorIgnoreFailures;
+		}
+
+	}
+
+	public static class Endpoints {
+
+		/**
+		 * Whether throw an exception on late reply for gateways.
+		 */
+		private boolean throwExceptionOnLateReply = false;
+
+		/**
+		 * Ignored headers during message building.
+		 */
+		private String[] readOnlyHeaders = {};
+
+		/**
+		 * Spring Integration endpoints do not start automatically.
+		 */
+		private String[] noAutoStartup = {};
+
+		public void setThrowExceptionOnLateReply(boolean throwExceptionOnLateReply) {
+			this.throwExceptionOnLateReply = throwExceptionOnLateReply;
+		}
+
+		public boolean isThrowExceptionOnLateReply() {
+			return this.throwExceptionOnLateReply;
+		}
+
+		public void setReadOnlyHeaders(String[] readOnlyHeaders) {
+			this.readOnlyHeaders = readOnlyHeaders;
+		}
+
+		public String[] getReadOnlyHeaders() {
+			return this.readOnlyHeaders;
+		}
+
+		public void setNoAutoStartup(String[] noAutoStartup) {
+			this.noAutoStartup = noAutoStartup;
+		}
+
+		public String[] getNoAutoStartup() {
+			return this.noAutoStartup;
+		}
+
 	}
 
 	public static class Jdbc {
@@ -139,7 +263,7 @@ public class IntegrationProperties {
 			/**
 			 * Whether to handle message mapping for RSocket via Spring Integration.
 			 */
-			boolean messageMappingEnabled;
+			private boolean messageMappingEnabled;
 
 			public boolean isMessageMappingEnabled() {
 				return this.messageMappingEnabled;
