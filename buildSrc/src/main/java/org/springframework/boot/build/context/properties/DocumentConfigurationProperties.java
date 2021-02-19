@@ -92,7 +92,8 @@ public class DocumentConfigurationProperties extends DefaultTask {
 						"Hikari specific settings bound to an instance of Hikari's HikariDataSource")
 				.addSection("transaction").withKeyPrefixes("spring.jta", "spring.transaction").addSection("integration")
 				.withKeyPrefixes("spring.activemq", "spring.artemis", "spring.batch", "spring.integration",
-						"spring.jms", "spring.kafka", "spring.rabbitmq", "spring.hazelcast", "spring.webservices")
+						"spring.jms", "spring.kafka", "spring.rabbitmq", "spring.multirabbitmq", "spring.hazelcast",
+						"spring.webservices")
 				.addSection("actuator").withKeyPrefixes("management").addSection("devtools")
 				.withKeyPrefixes("spring.devtools").addSection("testing").withKeyPrefixes("spring.test");
 		DocumentOptions options = builder.build();

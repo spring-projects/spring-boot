@@ -5497,6 +5497,38 @@ See {spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[`RabbitPr
 
 TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ] for more details.
 
+===== Multiple RabbitMQ
+Additional RabbitMQ brokers can be configured through the properties under `+spring.multirabbitmq+`.
+All properties available under `+spring.rabbitmq+` are also available under `spring.multirabbitmq.connections.[]`.
+There is no strict limitation on the names assigned to the brokers or the number of different brokers that can be
+configured.
+
+For example, in the configuration below, there is one default broker provided at `+spring.rabbitmq+` and
+two additional brokers, provided under `spring.multirabbitmq.connections.brokerA` and
+`spring.multirabbitmq.connections.brokerB`:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+      rabbitmq:
+        host: "192.168.0.10"
+        port: 5672
+        username: "user"
+        password: "pass"
+	  multirabbitmq:
+        enabled: true
+        connections:
+          brokerA:
+            host: "10.10.10.10"
+            port: 5672
+            username: "admin"
+            password: "firstSecret"
+          brokerB:
+            host: "210.10.0.190"
+            port: 5672
+            username: "admin"
+            password: "secondSecret"
+----
 
 
 [[boot-features-using-amqp-sending]]
@@ -5549,6 +5581,59 @@ You can also customize the `RetryTemplate` programmatically by declaring a `Rabb
 
 If you need to create more `RabbitTemplate` instances or if you want to override the default, Spring Boot provides a `RabbitTemplateConfigurer` bean that you can use to initialize a `RabbitTemplate` with the same settings as the factories used by the auto-configuration.
 
+===== MultiRabbitMQ
+Once enabled, MultiRabbitMQ will instantiate a `RoutingConnectionFactory` backed by multiple `ConnectionFactory` s.
+
+In the example below, there is the default and two additional brokers: `brokerA` and `brokerB`.
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+      rabbitmq:
+        # ...
+	  multirabbitmq:
+        enabled: true
+        connections:
+          brokerA:
+            # ...
+          brokerB:
+            # ...
+----
+
+To send messages, it's necessary to bind to the proper `ConnectionFactory` by using `SimpleResourceHolder` or by using
+`ConnectionFactoryContextWrapper`.
+
+[source,java,indent=0]
+[subs="verbatim,quotes"]
+----
+	@Component
+	public class MyPublisher {
+
+        @Autowired
+        private RabbitTemplate template;
+
+        @Autowired
+        private ConnectionFactoryContextWrapper contextWrapper;
+
+        void sendMessageToDefaultBroker(String message) {
+            rabbitTemplate.convertAndSend("exc", "rk", message);
+        }
+
+        void sendMessageToBrokerA(String message) {
+            SimpleResourceHolder.bind(template.getConnectionFactory(), "brokerA");
+            try {
+            	rabbitTemplate.convertAndSend("exc", "rk", message);
+            } finally {
+                SimpleResourceHolder.unbind(template.getConnectionFactory());
+            }
+        }
+
+        void sendMessageToBrokerB(String message) {
+        	contextWrapper.run("brokerB", () -> rabbitTemplate.convertAndSend("exc", "rk", message));
+        }
+
+    }
+----
 
 
 [[boot-features-using-amqp-receiving]]
@@ -5625,6 +5710,53 @@ IMPORTANT: By default, if retries are disabled and the listener throws an except
 You can modify this behavior in two ways: Set the `defaultRequeueRejected` property to `false` so that zero re-deliveries are attempted or throw an `AmqpRejectAndDontRequeueException` to signal the message should be rejected.
 The latter is the mechanism used when retries are enabled and the maximum number of delivery attempts is reached.
 
+===== MultiRabbitMQ
+Once enabled, MultiRabbitMQ will instantiate multiple `RabbitListenerContainerFactory` s, `AmqpAdmin` s and
+`ConnectionFactory` s and create an easy way to link listeners to the different brokers provided.
+
+In the example below, there is the default and two additional brokers: `brokerA` and `brokerB`.
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+      rabbitmq:
+        # ...
+	  multirabbitmq:
+        enabled: true
+        connections:
+          brokerA:
+            # ...
+          brokerB:
+            # ...
+----
+
+To link a `@RabbitListener` to one of the additional brokers, the listener must reference the proper `containerFactory`,
+which follows the same name as the connection entry. If no `containerFactory` is provided, the listener is linked to the
+default broker.
+
+[source,java,indent=0]
+[subs="verbatim,quotes"]
+----
+	@Component
+	public class MyListeners {
+
+		@RabbitListener(queues = "someQueue")
+		public void processMessageFromDefaultBroker(String content) {
+			// ...
+		}
+
+		@RabbitListener(queues = "otherQueue", **containerFactory="brokerA"**)
+		public void processMessageFromBrokerA(String content) {
+			// ...
+		}
+
+		@RabbitListener(queues = "anotherQueue", **containerFactory="brokerB"**)
+		public void processMessageFromBrokerB(String content) {
+			// ...
+		}
+
+	}
+----
 
 
 [[boot-features-kafka]]

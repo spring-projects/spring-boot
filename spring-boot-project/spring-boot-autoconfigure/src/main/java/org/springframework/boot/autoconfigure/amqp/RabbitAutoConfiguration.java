@@ -24,6 +24,7 @@ import com.rabbitmq.client.impl.CredentialsProvider;
 import com.rabbitmq.client.impl.CredentialsRefreshService;
 
 import org.springframework.amqp.core.AmqpAdmin;
+import org.springframework.amqp.rabbit.config.RabbitListenerConfigUtils;
 import org.springframework.amqp.rabbit.connection.CachingConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionNameStrategy;
@@ -96,7 +97,7 @@ public class RabbitAutoConfiguration {
 	@ConditionalOnMissingBean(ConnectionFactory.class)
 	protected static class RabbitConnectionFactoryCreator {
 
-		@Bean
+		@Bean(RabbitListenerConfigUtils.RABBIT_CONNECTION_FACTORY_BEAN_NAME)
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties properties,
 				ResourceLoader resourceLoader, ObjectProvider<CredentialsProvider> credentialsProvider,
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService,
@@ -187,7 +188,7 @@ public class RabbitAutoConfiguration {
 			return template;
 		}
 
-		@Bean
+		@Bean(RabbitListenerConfigUtils.RABBIT_ADMIN_BEAN_NAME)
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		@ConditionalOnProperty(prefix = "spring.rabbitmq", name = "dynamic", matchIfMissing = true)
 		@ConditionalOnMissingBean

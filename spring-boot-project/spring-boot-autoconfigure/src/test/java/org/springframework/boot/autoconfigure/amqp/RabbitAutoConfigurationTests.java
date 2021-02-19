@@ -89,7 +89,7 @@ import static org.mockito.Mockito.verify;
  */
 class RabbitAutoConfigurationTests {
 
-	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	protected ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(RabbitAutoConfiguration.class));
 
 	@Test

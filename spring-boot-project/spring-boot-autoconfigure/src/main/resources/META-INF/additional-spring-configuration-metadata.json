@@ -1650,6 +1650,16 @@
       }
     },
     {
+      "name": "spring.multirabbitmq.enabled",
+      "type": "java.lang.Boolean",
+      "description": "The flag to enable/disable MultiRabbit processing."
+    },
+    {
+      "name": "spring.multirabbitmq.connections",
+      "type": "java.util.Map<java.lang.String,org.springframework.boot.autoconfigure.amqp.RabbitProperties>",
+      "description": "The Map containing all the connections."
+    },
+    {
       "name": "spring.reactor.stacktrace-mode.enabled",
       "description": "Whether Reactor should collect stacktrace information at runtime.",
       "defaultValue": false,
