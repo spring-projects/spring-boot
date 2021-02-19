@@ -6589,11 +6589,11 @@ Mock beans are automatically reset after each test method.
 [NOTE]
 ====
 If your test uses one of Spring Boot's test annotations (such as `@SpringBootTest`), this feature is automatically enabled.
-To use this feature with a different arrangement, a listener must be explicitly added, as shown in the following example:
+To use this feature with a different arrangement, listeners must be explicitly added, as shown in the following example:
 
 [source,java,indent=0]
 ----
-	@TestExecutionListeners(MockitoTestExecutionListener.class)
+	@TestExecutionListeners({MockitoTestExecutionListener.class, ResetMocksTestExecutionListener.class})
 ----
 
 ====
