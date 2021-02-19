@@ -16,19 +16,13 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
-import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.boot.jdbc.init.DataSourceInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
  * Configuration for {@link DataSource} initialization using DDL and DML scripts.
@@ -37,63 +31,12 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnSingleCandidate(DataSource.class)
+@Import(DataSourceInitializationDependencyConfigurer.class)
 class DataSourceInitializationConfiguration {
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnProperty(prefix = "spring.datasource", name = "initialization-order", havingValue = "before-jpa",
-			matchIfMissing = true)
-	@Import({ DataSourceInitializationJdbcOperationsDependsOnPostProcessor.class,
-			DataSourceInitializationNamedParameterJdbcOperationsDependsOnPostProcessor.class,
-			DataSourceInitializationEntityManagerFactoryDependsOnPostProcessor.class })
-	static class BeforeJpaDataSourceInitializationConfiguration {
-
-		@Bean
-		DataSourceInitialization dataSourceInitialization(DataSource dataSource, DataSourceProperties properties) {
-			return new DataSourceInitialization(dataSource, properties);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link EntityManagerFactory} beans depend on any
-	 * {@link DataSourceInitialization} beans.
-	 */
-	@ConditionalOnClass({ LocalContainerEntityManagerFactoryBean.class, EntityManagerFactory.class })
-	static class DataSourceInitializationEntityManagerFactoryDependsOnPostProcessor
-			extends EntityManagerFactoryDependsOnPostProcessor {
-
-		DataSourceInitializationEntityManagerFactoryDependsOnPostProcessor() {
-			super(DataSourceInitialization.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link JdbcOperations} beans depend on any
-	 * {@link DataSourceInitialization} beans.
-	 */
-	@ConditionalOnClass(JdbcOperations.class)
-	static class DataSourceInitializationJdbcOperationsDependsOnPostProcessor
-			extends JdbcOperationsDependsOnPostProcessor {
-
-		DataSourceInitializationJdbcOperationsDependsOnPostProcessor() {
-			super(DataSourceInitialization.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link NamedParameterJdbcOperations} beans depend on
-	 * any {@link DataSourceInitialization} beans.
-	 */
-	@ConditionalOnClass(NamedParameterJdbcOperations.class)
-	protected static class DataSourceInitializationNamedParameterJdbcOperationsDependsOnPostProcessor
-			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
-
-		public DataSourceInitializationNamedParameterJdbcOperationsDependsOnPostProcessor() {
-			super(DataSourceInitialization.class);
-		}
-
+	@Bean
+	DataSourceInitialization dataSourceInitialization(DataSource dataSource, DataSourceProperties properties) {
+		return new DataSourceInitialization(dataSource, properties);
 	}
 
 }

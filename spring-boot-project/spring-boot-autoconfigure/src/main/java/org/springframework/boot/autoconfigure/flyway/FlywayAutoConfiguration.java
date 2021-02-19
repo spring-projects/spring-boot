@@ -26,7 +26,6 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import javax.persistence.EntityManagerFactory;
 import javax.sql.DataSource;
 
 import org.flywaydb.core.Flyway;
@@ -34,7 +33,6 @@ import org.flywaydb.core.api.MigrationVersion;
 import org.flywaydb.core.api.callback.Callback;
 import org.flywaydb.core.api.configuration.FluentConfiguration;
 import org.flywaydb.core.api.migration.JavaMigration;
-import org.jooq.DSLContext;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -45,22 +43,15 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDataSourceCondition;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayDslContextDependsOnPostProcessor;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayEntityManagerFactoryDependsOnPostProcessor;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayJdbcOperationsDependsOnPostProcessor;
-import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration.FlywayNamedParameterJdbcOperationsDependencyConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
-import org.springframework.boot.autoconfigure.jdbc.JdbcOperationsDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.NamedParameterJdbcOperationsDependsOnPostProcessor;
-import org.springframework.boot.autoconfigure.jooq.DslContextDependsOnPostProcessor;
-import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jdbc.DatabaseDriver;
+import org.springframework.boot.jdbc.init.DataSourceInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -68,12 +59,8 @@ import org.springframework.context.annotation.Import;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
-import org.springframework.jdbc.core.JdbcOperations;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.support.JdbcUtils;
 import org.springframework.jdbc.support.MetaDataAccessException;
-import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
-import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -100,8 +87,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
-@Import({ FlywayEntityManagerFactoryDependsOnPostProcessor.class, FlywayJdbcOperationsDependsOnPostProcessor.class,
-		FlywayNamedParameterJdbcOperationsDependencyConfiguration.class, FlywayDslContextDependsOnPostProcessor.class })
+@Import(DataSourceInitializationDependencyConfigurer.class)
 public class FlywayAutoConfiguration {
 
 	@Bean
@@ -118,10 +104,6 @@ public class FlywayAutoConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class, FlywayProperties.class })
-	@Import({ FlywayMigrationInitializerEntityManagerFactoryDependsOnPostProcessor.class,
-			FlywayMigrationInitializerJdbcOperationsDependsOnPostProcessor.class,
-			FlywayMigrationInitializerNamedParameterJdbcOperationsDependsOnPostProcessor.class,
-			FlywayMigrationInitializerDslContextDependsOnPostProcessor.class })
 	public static class FlywayConfiguration {
 
 		@Bean
@@ -321,122 +303,6 @@ public class FlywayAutoConfiguration {
 		public FlywayMigrationInitializer flywayInitializer(Flyway flyway,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
 			return new FlywayMigrationInitializer(flyway, migrationStrategy.getIfAvailable());
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link EntityManagerFactory} beans depend on any
-	 * {@link FlywayMigrationInitializer} beans.
-	 */
-	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
-	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	static class FlywayMigrationInitializerEntityManagerFactoryDependsOnPostProcessor
-			extends EntityManagerFactoryDependsOnPostProcessor {
-
-		FlywayMigrationInitializerEntityManagerFactoryDependsOnPostProcessor() {
-			super(FlywayMigrationInitializer.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link JdbcOperations} beans depend on any
-	 * {@link FlywayMigrationInitializer} beans.
-	 */
-	@ConditionalOnClass(JdbcOperations.class)
-	@ConditionalOnBean(JdbcOperations.class)
-	static class FlywayMigrationInitializerJdbcOperationsDependsOnPostProcessor
-			extends JdbcOperationsDependsOnPostProcessor {
-
-		FlywayMigrationInitializerJdbcOperationsDependsOnPostProcessor() {
-			super(FlywayMigrationInitializer.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link NamedParameterJdbcOperations} beans depend on
-	 * any {@link FlywayMigrationInitializer} beans.
-	 */
-	@ConditionalOnClass(NamedParameterJdbcOperations.class)
-	@ConditionalOnBean(NamedParameterJdbcOperations.class)
-	static class FlywayMigrationInitializerNamedParameterJdbcOperationsDependsOnPostProcessor
-			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
-
-		FlywayMigrationInitializerNamedParameterJdbcOperationsDependsOnPostProcessor() {
-			super(FlywayMigrationInitializer.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link DSLContext} beans depend on any
-	 * {@link FlywayMigrationInitializer} beans.
-	 */
-	@ConditionalOnClass(DSLContext.class)
-	@ConditionalOnBean(DSLContext.class)
-	static class FlywayMigrationInitializerDslContextDependsOnPostProcessor extends DslContextDependsOnPostProcessor {
-
-		FlywayMigrationInitializerDslContextDependsOnPostProcessor() {
-			super(FlywayMigrationInitializer.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link EntityManagerFactory} beans depend on any
-	 * {@link Flyway} beans.
-	 */
-	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
-	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	static class FlywayEntityManagerFactoryDependsOnPostProcessor extends EntityManagerFactoryDependsOnPostProcessor {
-
-		FlywayEntityManagerFactoryDependsOnPostProcessor() {
-			super(Flyway.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link JdbcOperations} beans depend on any
-	 * {@link Flyway} beans.
-	 */
-	@ConditionalOnClass(JdbcOperations.class)
-	@ConditionalOnBean(JdbcOperations.class)
-	static class FlywayJdbcOperationsDependsOnPostProcessor extends JdbcOperationsDependsOnPostProcessor {
-
-		FlywayJdbcOperationsDependsOnPostProcessor() {
-			super(Flyway.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link NamedParameterJdbcOperations} beans depend on
-	 * any {@link Flyway} beans.
-	 */
-	@ConditionalOnClass(NamedParameterJdbcOperations.class)
-	@ConditionalOnBean(NamedParameterJdbcOperations.class)
-	protected static class FlywayNamedParameterJdbcOperationsDependencyConfiguration
-			extends NamedParameterJdbcOperationsDependsOnPostProcessor {
-
-		public FlywayNamedParameterJdbcOperationsDependencyConfiguration() {
-			super(Flyway.class);
-		}
-
-	}
-
-	/**
-	 * Post processor to ensure that {@link DSLContext} beans depend on any {@link Flyway}
-	 * beans.
-	 */
-	@ConditionalOnClass(DSLContext.class)
-	@ConditionalOnBean(DSLContext.class)
-	protected static class FlywayDslContextDependsOnPostProcessor extends DslContextDependsOnPostProcessor {
-
-		public FlywayDslContextDependsOnPostProcessor() {
-			super(Flyway.class);
 		}
 
 	}

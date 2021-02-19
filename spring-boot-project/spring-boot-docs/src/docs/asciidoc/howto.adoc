@@ -2030,11 +2030,6 @@ In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{pl
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
 
-By default, script-based `DataSource` initialization is performed before any JPA `EntityManagerFactory` beans are created.
-`schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
-If you want script-based `DataSource` initialization to be performed after the `EntityManagerFactory`, set `spring.datasource.initialization-order` to `after-jpa`.
-`schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
-
 [NOTE]
 ====
 When only basic SQL scripts are used, Spring Boot automatically creates the schema of an embedded `DataSource`.
@@ -2046,13 +2041,12 @@ For instance, if you want to always initialize the `DataSource` regardless of it
 	spring.datasource.initialization-mode=always
 ----
 
-In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
-Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
-
-[indent=0,subs="verbatim,quotes,attributes"]
-----
-	spring.jpa.hibernate.ddl-auto=none
-----
+By default, script-based `DataSource` initialization is performed before any JPA `EntityManagerFactory` beans are created.
+`schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
+We do not recommend using multiple data source initialization technologies.
+However, if you want script-based `DataSource` initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
+This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
+`schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
 If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
@@ -2197,6 +2191,47 @@ Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient t
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 See {spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[`LiquibaseProperties`] for details about available settings such as contexts, the default schema, and others.
+
+
+
+[[howto-initialize-a-database-configuring-dependencies]]
+=== Depend Upon an Initialized DataSource
+DataSource initialization is performed while the application is starting up as part of application context refresh.
+To allow an initialized database to be accessed during startup, beans that act as DataSource initializers and beans that
+require that DataSource to have been initialized are detected automatically.
+Beans whose initialization depends upon the DataSource having been initialized are configured to depend upon those that initialize it.
+If, during startup, your application tries to access the database and it has not been initialized, you can configure additional detection of beans that initialize the DataSource and require the DataSource to have been initialized.
+
+
+
+[[howto-initialize-a-database-configuring-dependencies-initializer-detection]]
+==== Detect a DataSource Initializer
+Spring Boot will automatically detect beans of the following types that initialize a `DataSource`:
+
+- `DataSourceInitialization`
+- `EntityManagerFactory`
+- `Flyway`
+- `FlywayMigrationInitializer`
+- `SpringLiquibase`
+
+If you are using a third-party starter for a DataSource initialization library, it may provide a detector such that beans of other types are also detected automatically.
+To have other beans be detected, register an implementation of `DataSourceInitializerDetector` in `META-INF/spring-factories`.
+
+
+
+[[howto-initialize-a-database-configuring-dependencies-depends-on-initialization-detection]]
+==== Detect a Bean That Depends On DataSource Initialization
+Spring Boot will automatically detect beans of the following types that depends upon `DataSource` initialization:
+
+- `AbstractEntityManagerFactoryBean` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
+- `DSLContext` (jOOQ)
+- `EntityManagerFactory` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
+- `JdbcOperations`
+- `NamedParameterJdbcOperations`
+
+If you are using a third-party starter data access library, it may provide a detector such that beans of other types are also detected automatically.
+To have other beans be detected, register an implementation of `DependsOnDataSourceInitializationDetector` in `META-INF/spring-factories`.
+Alternatively, annotate the bean's class or its `@Bean` method with `@DependsOnDataSourceInitializationDetector`.
 
 
 

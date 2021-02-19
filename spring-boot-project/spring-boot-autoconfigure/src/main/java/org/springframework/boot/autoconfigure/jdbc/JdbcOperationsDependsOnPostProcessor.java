@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
+import org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector;
 import org.springframework.jdbc.core.JdbcOperations;
 
 /**
@@ -32,7 +33,9 @@ import org.springframework.jdbc.core.JdbcOperations;
  * @author Andrii Hrytsiuk
  * @since 2.0.4
  * @see BeanDefinition#setDependsOn(String[])
+ * @deprecated since 2.5.0 in favor of {@link DependsOnDataSourceInitializationDetector}
  */
+@Deprecated
 public class JdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	/**

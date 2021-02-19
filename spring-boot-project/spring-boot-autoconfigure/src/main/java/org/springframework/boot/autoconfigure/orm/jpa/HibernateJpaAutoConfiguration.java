@@ -17,23 +17,16 @@
 package org.springframework.boot.autoconfigure.orm.jpa;
 
 import javax.persistence.EntityManager;
-import javax.sql.DataSource;
 
-import org.hibernate.cfg.AvailableSettings;
 import org.hibernate.engine.spi.SessionImplementor;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializer;
-import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 /**
@@ -51,19 +44,5 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class })
 @Import(HibernateJpaConfiguration.class)
 public class HibernateJpaAutoConfiguration {
-
-	@ConditionalOnProperty(prefix = "spring.datasource", name = "initialization-order", havingValue = "after-jpa",
-			matchIfMissing = false)
-	static class AfterJpaDataSourceInitializationConfiguration {
-
-		@Bean
-		HibernatePropertiesCustomizer dataSourceInitializationCustomizer(DataSource dataSource,
-				DataSourceProperties properties, ResourceLoader resourceLoader) {
-			return (hibernateProperties) -> hibernateProperties.put(AvailableSettings.SCHEMA_MANAGEMENT_TOOL,
-					new SpringBootSchemaManagementTool(
-							new DataSourceInitializer(dataSource, properties, resourceLoader)));
-		}
-
-	}
 
 }

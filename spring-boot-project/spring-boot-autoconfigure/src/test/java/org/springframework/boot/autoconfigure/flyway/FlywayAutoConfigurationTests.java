@@ -577,7 +577,7 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class)
 				.run((context) -> {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-					assertThat(beanDefinition.getDependsOn()).containsExactly("flywayInitializer", "flyway");
+					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("flywayInitializer", "flyway");
 				});
 	}
 
@@ -586,7 +586,8 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class,
 				CustomFlywayMigrationInitializer.class).run((context) -> {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-					assertThat(beanDefinition.getDependsOn()).containsExactly("flywayMigrationInitializer", "flyway");
+					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("flywayMigrationInitializer",
+							"flyway");
 				});
 	}
 
@@ -595,7 +596,7 @@ class FlywayAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class, JooqConfiguration.class,
 				CustomFlyway.class).run((context) -> {
 					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition("dslContext");
-					assertThat(beanDefinition.getDependsOn()).containsExactly("customFlyway");
+					assertThat(beanDefinition.getDependsOn()).containsExactlyInAnyOrder("customFlyway");
 				});
 	}
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.jdbc.init;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;
@@ -22,14 +22,12 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
-import javax.sql.DataSource;
-
-import org.springframework.context.annotation.DependsOn;
+import org.springframework.context.annotation.Bean;
 
 /**
- * Annotation used to indicate that a bean depends upon the auto-configured DataSource
- * initialization having completed before the {@link DataSource} is injected. If the
- * DataSource is not used during startup, no such dependency is required.
+ * Indicate that a bean's creation and initialization depends upon data source
+ * initialization having completed. May be used on a bean's class or its
+ * {@link Bean @Bean} definition.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
@@ -37,7 +35,6 @@ import org.springframework.context.annotation.DependsOn;
 @Target({ ElementType.TYPE, ElementType.METHOD })
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-@DependsOn("dataSourceInitialization")
 public @interface DependsOnDataSourceInitialization {
 
 }

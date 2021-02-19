@@ -21,6 +21,7 @@ import org.jooq.DSLContext;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
+import org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector;
 
 /**
  * {@link BeanFactoryPostProcessor} that can be used to dynamically declare that all
@@ -29,7 +30,9 @@ import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostPr
  * @author Eddú Meléndez
  * @since 2.3.9
  * @see BeanDefinition#setDependsOn(String[])
+ * @deprecated since 2.5.0 in favor of {@link DependsOnDataSourceInitializationDetector}
  */
+@Deprecated
 public class DslContextDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
 	/**

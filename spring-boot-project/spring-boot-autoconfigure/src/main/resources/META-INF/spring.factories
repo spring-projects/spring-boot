@@ -166,3 +166,9 @@ org.springframework.boot.autoconfigure.mustache.MustacheTemplateAvailabilityProv
 org.springframework.boot.autoconfigure.groovy.template.GroovyTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafTemplateAvailabilityProvider,\
 org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvider
+
+# DataSource initializer detectors
+org.springframework.boot.jdbc.init.DataSourceInitializerDetector=\
+org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializerDataSourceInitializerDetector,\
+org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationDataSourceInitializerDetector
+
