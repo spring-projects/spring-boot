@@ -109,7 +109,7 @@ final class TarGzipBuildpack implements Buildpack {
 	 */
 	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		Path path = reference.asPath();
-		if (Files.exists(path) && Files.isRegularFile(path)) {
+		if (path != null && Files.exists(path) && Files.isRegularFile(path)) {
 			return new TarGzipBuildpack(path);
 		}
 		return null;

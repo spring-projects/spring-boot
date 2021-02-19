@@ -93,7 +93,7 @@ final class DirectoryBuildpack implements Buildpack {
 	 */
 	static Buildpack resolve(BuildpackResolverContext context, BuildpackReference reference) {
 		Path path = reference.asPath();
-		if (Files.exists(path) && Files.isDirectory(path)) {
+		if (path != null && Files.exists(path) && Files.isDirectory(path)) {
 			return new DirectoryBuildpack(path);
 		}
 		return null;

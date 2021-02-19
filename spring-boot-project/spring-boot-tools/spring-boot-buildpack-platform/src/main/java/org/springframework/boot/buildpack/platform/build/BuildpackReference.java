@@ -53,11 +53,17 @@ public final class BuildpackReference {
 			if (url.getProtocol().equals("file")) {
 				return Paths.get(url.getPath());
 			}
+			return null;
 		}
 		catch (MalformedURLException ex) {
 			// not a URL, fall through to attempting to find a plain file path
 		}
-		return Paths.get(this.value);
+		try {
+			return Paths.get(this.value);
+		}
+		catch (Exception ex) {
+			return null;
+		}
 	}
 
 	@Override
