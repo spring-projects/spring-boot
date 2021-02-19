@@ -2267,7 +2267,7 @@ To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
 [[production-ready-metrics-http-clients]]
 ==== HTTP Client Metrics
 Spring Boot Actuator manages the instrumentation of both `RestTemplate` and `WebClient`.
-For that, you have to get injected with an auto-configured builder and use it to create instances:
+For that, you have to inject the auto-configured builder and use it to create instances:
 
 * `RestTemplateBuilder` for `RestTemplate`
 * `WebClient.Builder` for `WebClient`
