@@ -6656,7 +6656,7 @@ To use this feature with a different arrangement, a listener must be explicitly 
 
 [source,java,pending-extract=true,indent=0]
 ----
-	@TestExecutionListeners(MockitoTestExecutionListener.class)
+	@TestExecutionListeners({MockitoTestExecutionListener.class, ResetMocksTestExecutionListener.class})
 ----
 
 ====
