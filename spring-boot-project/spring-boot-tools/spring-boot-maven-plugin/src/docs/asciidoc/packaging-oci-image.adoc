@@ -340,9 +340,11 @@ The following example instructs the builder to use a custom buildpack packaged i
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
 					<configuration>
-						<buildpacks>
-                            <buildpack>file:///path/to/example-buildpack.tgz</buildpack>
-                            <buildpack>urn:cnb:builder:paketo-buildpacks/java</buildpack>
+						<image>
+							<buildpacks>
+								<buildpack>file:///path/to/example-buildpack.tgz</buildpack>
+								<buildpack>urn:cnb:builder:paketo-buildpacks/java</buildpack>
+							</buildpacks>
 						</image>
 					</configuration>
 				</plugin>
@@ -370,7 +372,7 @@ A path to a gzipped tar file containing buildpack content:
 * `\file:///path/to/buildpack.tgz`
 * `/path/to/buildpack.tgz`
 
-An OCI image:
+An OCI image containing a https://buildpacks.io/docs/buildpack-author-guide/package-a-buildpack/[packaged buildpack]:
 
 * `docker://example/buildpack`
 * `docker:///example/buildpack:latest`
