@@ -80,6 +80,23 @@ import org.springframework.util.StringUtils;
 		TaskSchedulingAutoConfiguration.class })
 public class IntegrationAutoConfiguration {
 
+	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
+	@ConditionalOnMissingBean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
+	public static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
+			IntegrationProperties properties) {
+		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
+		integrationProperties.setChannelsAutoCreate(properties.getChannels().isAutoCreate());
+		integrationProperties.setChannelsMaxUnicastSubscribers(properties.getChannels().getMaxUnicastSubscribers());
+		integrationProperties.setChannelsMaxBroadcastSubscribers(properties.getChannels().getMaxBroadcastSubscribers());
+		integrationProperties.setErrorChannelRequireSubscribers(properties.getChannels().isErrorRequireSubscribers());
+		integrationProperties.setErrorChannelIgnoreFailures(properties.getChannels().isErrorIgnoreFailures());
+		integrationProperties
+				.setMessagingTemplateThrowExceptionOnLateReply(properties.getEndpoints().isThrowExceptionOnLateReply());
+		integrationProperties.setReadOnlyHeaders(properties.getEndpoints().getReadOnlyHeaders());
+		integrationProperties.setNoAutoStartupEndpoints(properties.getEndpoints().getNoAutoStartup());
+		return integrationProperties;
+	}
+
 	/**
 	 * Basic Spring Integration configuration.
 	 */
