@@ -31,7 +31,12 @@ Before we accept a non-trivial patch or pull request we will need you to https:/
 Signing the contributor's agreement does not grant anyone commit rights to the main repository, but it does mean that we can accept your contributions, and you will get an author credit if we do.
 Active contributors might be asked to join the core team, and given the ability to merge pull requests.
 
+== Documentation contributions
 
+The documentation is stored in this repository, in the link:https://github.com/spring-projects/spring-boot/tree/master/spring-boot-project/spring-boot-docs/src/docs/asciidoc[spring-boot-docs] project.
+
+You may use GitHub's built-in editor for Asciidoc by pressing the top-right Edit button to edit the documentation in browser.
+Alternatively, you can clone and change it in an editor of your choice on your machine.
 
 == Code Conventions and Housekeeping
 None of these is essential for a pull request, but they will all help.  They can also be
