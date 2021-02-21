@@ -37,7 +37,7 @@ import org.springframework.boot.loader.tools.BuildPropertiesWriter.NullAdditiona
 import org.springframework.boot.loader.tools.BuildPropertiesWriter.ProjectDetails;
 
 /**
- * Generate a {@code build-info.properties} file based the content of the current
+ * Generate a {@code build-info.properties} file based on the content of the current
  * {@link MavenProject}.
  *
  * @author Stephane Nicoll
