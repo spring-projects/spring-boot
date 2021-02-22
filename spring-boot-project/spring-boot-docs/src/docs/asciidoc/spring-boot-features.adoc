@@ -4922,6 +4922,8 @@ If the connection to InfluxDB requires a user and password, you can set the `spr
 InfluxDB relies on OkHttp.
 If you need to tune the http client `InfluxDB` uses behind the scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.
 
+If you need more control over the configuration, consider registering a `InfluxDbCustomizer` bean.
+
 
 
 [[boot-features-caching]]

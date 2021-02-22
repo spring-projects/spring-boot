@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.influx;
 
 import okhttp3.OkHttpClient;
-import org.influxdb.BatchOptions;
 import org.influxdb.InfluxDB;
 import org.influxdb.impl.InfluxDBImpl;
 
@@ -27,7 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -51,27 +49,8 @@ public class InfluxDbAutoConfiguration {
 			ObjectProvider<InfluxDbCustomizer> customizers) {
 		InfluxDB influxDb = new InfluxDBImpl(properties.getUrl(), properties.getUser(), properties.getPassword(),
 				determineBuilder(builder.getIfAvailable()));
-		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
-		map.from(properties::getConsistency).to(influxDb::setConsistency);
-		map.from(properties::getDatabase).to(influxDb::setDatabase);
-		map.from(properties::getLog).to(influxDb::setLogLevel);
-		map.from(properties::getRetentionPolicy).to(influxDb::setRetentionPolicy);
-		map.from(properties.isGzipEnabled()).whenTrue().toCall(influxDb::enableGzip);
-		if (properties.getBatch().isEnabled()) {
-			BatchOptions batchOptions = mapBatchOptions(properties);
-			influxDb.enableBatch(batchOptions);
-		}
 		customizers.orderedStream().forEach((customizer) -> customizer.customize(influxDb));
 		return influxDb;
-	}
-
-	private BatchOptions mapBatchOptions(InfluxDbProperties properties) {
-		InfluxDbProperties.Batch batch = properties.getBatch();
-		return BatchOptions.DEFAULTS.actions(batch.getActions())
-				.flushDuration(Long.valueOf(batch.getFlushDuration().toMillis()).intValue())
-				.jitterDuration(Long.valueOf(batch.getJitterDuration().toMillis()).intValue())
-				.bufferLimit(batch.getBufferLimit()).consistency(batch.getConsistency()).precision(batch.getPrecision())
-				.dropActionsOnQueueExhaustion(batch.isDropActionsOnQueueExhaustion());
 	}
 
 	private static OkHttpClient.Builder determineBuilder(InfluxDbOkHttpClientBuilderProvider builder) {

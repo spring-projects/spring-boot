@@ -19,7 +19,8 @@ package org.springframework.boot.autoconfigure.influx;
 import org.influxdb.InfluxDB;
 
 /**
- * Callback interface for customizing {@code InfluxDB} beans.
+ * Callback interface that can be implemented by beans wishing to further customize
+ * {@code InfluxDB} whilst retaining default auto-configuration.
  *
  * @author Eddú Meléndez
  * @since 2.5.0
@@ -29,7 +30,7 @@ public interface InfluxDbCustomizer {
 
 	/**
 	 * Customize the {@link InfluxDB}.
-	 * @param influxDB the batch options to customize
+	 * @param influxDB the influxDB instance to customize
 	 */
 	void customize(InfluxDB influxDB);
 
