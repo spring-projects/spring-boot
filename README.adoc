@@ -65,8 +65,10 @@ If you want to raise an issue, please follow the recommendations below:
 
 * Before you log a bug, please search the {github}/issues[issue tracker] to see if someone has already reported the problem.
 * If the issue doesn't already exist, {github}/issues/new[create a new issue].
-* Please provide as much information as possible with the issue report. We like to know the Spring Boot version, operating system, and JVM version you're using.
-* If you need to paste code or include a stack trace, use Markdown. +++```+++ escapes before and after your text.
+* Please provide as much information as possible with the issue report.
+We like to know the Spring Boot version, operating system, and JVM version you're using.
+* If you need to paste code or include a stack trace, use Markdown.
++++```+++ escapes before and after your text.
 * If possible, try to create a test-case or project that replicates the problem and attach it to the issue.
 
 
@@ -88,6 +90,8 @@ If you want to build everything, use the `build` task:
 ----
 	$ ./gradlew build
 ----
+
+
 
 == Modules
 There are several modules in Spring Boot. Here is a quick overview:
