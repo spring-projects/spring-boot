@@ -169,6 +169,15 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void failsWithBindingContainingInvalidCertificate(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-bindings").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+				.executeAndFail((project) -> assertThat(buildLog(project)).contains("Building image")
+						.contains("failed to decode certificate")
+						.contains("/platform/bindings/ca-certificates/test.crt"));
+	}
+
+	@TestTemplate
 	void failsWhenPublishWithoutPublishRegistryConfigured(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image").goals("package").systemProperty("spring-boot.build-image.publish", "true")
 				.executeAndFail((project) -> assertThat(buildLog(project)).contains("requires docker.publishRegistry"));

@@ -220,6 +220,17 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	void failsWithBindingContainingInvalidCertificate() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		writeCertificateBindingFiles();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("failed to decode certificate")
+				.contains("/platform/bindings/certificates/test.crt");
+	}
+
+	@TestTemplate
 	void failsWithLaunchScript() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
@@ -378,6 +389,19 @@ class BootBuildImageIntegrationTests {
 		tar.putArchiveEntry(entry);
 		IOUtils.copy(Files.newInputStream(file.toPath()), tar);
 		tar.closeArchiveEntry();
+	}
+
+	private void writeCertificateBindingFiles() throws IOException {
+		File bindingDir = new File(this.gradleBuild.getProjectDir(), "bindings/ca-certificates");
+		bindingDir.mkdirs();
+		File type = new File(bindingDir, "type");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(type))) {
+			writer.print("ca-certificates");
+		}
+		File cert = new File(bindingDir, "test.crt");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(cert))) {
+			writer.println("not a valid certificate");
+		}
 	}
 
 }

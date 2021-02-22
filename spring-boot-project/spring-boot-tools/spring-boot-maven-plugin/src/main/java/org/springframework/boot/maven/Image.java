@@ -26,6 +26,7 @@ import org.apache.maven.artifact.Artifact;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
@@ -58,6 +59,8 @@ public class Image {
 	Boolean publish;
 
 	List<String> buildpacks;
+
+	List<String> bindings;
 
 	/**
 	 * The name of the created image.
@@ -182,6 +185,9 @@ public class Image {
 		if (this.buildpacks != null && !this.buildpacks.isEmpty()) {
 			request = request
 					.withBuildpacks(this.buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
+		}
+		if (this.bindings != null && !this.bindings.isEmpty()) {
+			request = request.withBindings(this.bindings.stream().map(Binding::of).collect(Collectors.toList()));
 		}
 		return request;
 	}

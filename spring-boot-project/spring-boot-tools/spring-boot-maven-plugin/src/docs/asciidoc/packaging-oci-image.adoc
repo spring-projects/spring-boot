@@ -157,12 +157,28 @@ a|Buildpacks that the builder should use when building the image.
 Only the specified buildpacks will be used, overriding the default buildpacks included in the builder.
 Buildpack references must be in one of the following forms:
 
-* Buildpack in the builder - [urn:cnb:builder:]<buildpack id>[@<version>]
-* Buildpack in a directory on the file system - [file://]<path>
-* Buildpack in a gzipped tar (.tgz) file on the file system - [file://]<path>/<file name>
-* Buildpack in an OCI image - [docker://]<host>/<repo>[:<tag>][@<digest>]
+* Buildpack in the builder - `[urn:cnb:builder:]<buildpack ID>[@<version>]`
+* Buildpack in a directory on the file system - `[file://]<path>`
+* Buildpack in a gzipped tar (.tgz) file on the file system - `[file://]<path>/<file name>`
+* Buildpack in an OCI image - `[docker://]<host>/<repo>[:<tag>][@<digest>]`
 |
 | None, indicating the builder should use the buildpacks included in it.
+
+| `bindings`
+a|https://docs.docker.com/storage/bind-mounts/[Volume bind mounts] that should be mounted to the builder container when building the image.
+The bindings will be passed unparsed and unvalidated to Docker when creating the builder container.
+Bindings must be in one of the following forms:
+
+* `<host source path>:<container destination path>[:<options>]`
+* `<host volume name>:<container destination path>[:<options>]`
+
+Where `<options>` can contain:
+
+* `ro` to mount the volume as read-only in the container
+* `rw` to mount the volume as readable and writable in the container
+* `volume-opt=key=value` to specify key-value pairs consisting of an option name and its value
+|
+|
 
 | `cleanCache`
 | Whether to clean the cache before building.

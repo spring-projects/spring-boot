@@ -31,6 +31,7 @@ import org.apache.commons.compress.archivers.zip.ZipArchiveOutputStream;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -179,6 +180,23 @@ public class BuildRequestTests {
 		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
 		assertThatIllegalArgumentException().isThrownBy(() -> request.withBuildpacks((List<BuildpackReference>) null))
 				.withMessage("Buildpacks must not be null");
+	}
+
+	@Test
+	void withBindingsAddsBindings() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		BuildRequest withBindings = request.withBindings(Binding.of("/host/path:/container/path:ro"),
+				Binding.of("volume-name:/container/path:rw"));
+		assertThat(request.getBindings()).isEmpty();
+		assertThat(withBindings.getBindings()).containsExactly(Binding.of("/host/path:/container/path:ro"),
+				Binding.of("volume-name:/container/path:rw"));
+	}
+
+	@Test
+	void withBindingsWhenBindingsIsNullThrowsException() throws IOException {
+		BuildRequest request = BuildRequest.forJarFile(writeTestJarFile("my-app-0.0.1.jar"));
+		assertThatIllegalArgumentException().isThrownBy(() -> request.withBindings((List<Binding>) null))
+				.withMessage("Bindings must not be null");
 	}
 
 	private void hasExpectedJarContent(TarArchive archive) {

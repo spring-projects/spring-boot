@@ -45,6 +45,7 @@ import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.Creator;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.ZipFileTarArchive;
@@ -87,9 +88,11 @@ public class BootBuildImage extends DefaultTask {
 
 	private boolean publish;
 
-	private ListProperty<String> buildpacks;
+	private final ListProperty<String> buildpacks;
 
-	private DockerSpec docker = new DockerSpec();
+	private final ListProperty<String> bindings;
+
+	private final DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
 		this.jar = getProject().getObjects().fileProperty();
@@ -99,6 +102,7 @@ public class BootBuildImage extends DefaultTask {
 		Project project = getProject();
 		this.projectVersion.set(getProject().provider(() -> project.getVersion().toString()));
 		this.buildpacks = getProject().getObjects().listProperty(String.class);
+		this.bindings = getProject().getObjects().listProperty(String.class);
 	}
 
 	/**
@@ -292,7 +296,7 @@ public class BootBuildImage extends DefaultTask {
 
 	/**
 	 * Returns the buildpacks that will be used when building the image.
-	 * @return the buildpacks
+	 * @return the buildpack references
 	 */
 	@Input
 	@Optional
@@ -302,7 +306,7 @@ public class BootBuildImage extends DefaultTask {
 
 	/**
 	 * Sets the buildpacks that will be used when building the image.
-	 * @param buildpacks the buildpacks
+	 * @param buildpacks the buildpack references
 	 */
 	public void setBuildpacks(List<String> buildpacks) {
 		this.buildpacks.set(buildpacks);
@@ -317,11 +321,49 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-	 * Adds entries to the environment that will be used when building the image.
+	 * Adds entries to the buildpacks that will be used when building the image.
 	 * @param buildpacks the buildpack references
 	 */
 	public void buildpacks(List<String> buildpacks) {
 		this.buildpacks.addAll(buildpacks);
+	}
+
+	/**
+	 * Returns the volume bindings that will be mounted to the container when building the
+	 * image.
+	 * @return the bindings
+	 */
+	@Input
+	@Optional
+	public List<String> getBindings() {
+		return this.bindings.getOrNull();
+	}
+
+	/**
+	 * Sets the volume bindings that will be mounted to the container when building the
+	 * image.
+	 * @param bindings the bindings
+	 */
+	public void setBindings(List<String> bindings) {
+		this.bindings.set(bindings);
+	}
+
+	/**
+	 * Add an entry to the volume bindings that will be mounted to the container when
+	 * building the image.
+	 * @param binding the binding
+	 */
+	public void binding(String binding) {
+		this.bindings.add(binding);
+	}
+
+	/**
+	 * Add entries to the volume bindings that will be mounted to the container when
+	 * building the image.
+	 * @param bindings the bindings
+	 */
+	public void bindings(List<String> bindings) {
+		this.bindings.addAll(bindings);
 	}
 
 	/**
@@ -388,6 +430,7 @@ public class BootBuildImage extends DefaultTask {
 		request = customizePullPolicy(request);
 		request = customizePublish(request);
 		request = customizeBuildpacks(request);
+		request = customizeBindings(request);
 		return request;
 	}
 
@@ -444,6 +487,14 @@ public class BootBuildImage extends DefaultTask {
 		List<String> buildpacks = this.buildpacks.getOrNull();
 		if (buildpacks != null && !buildpacks.isEmpty()) {
 			return request.withBuildpacks(buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
+		}
+		return request;
+	}
+
+	private BuildRequest customizeBindings(BuildRequest request) {
+		List<String> bindings = this.bindings.getOrNull();
+		if (bindings != null && !bindings.isEmpty()) {
+			return request.withBindings(bindings.stream().map(Binding::of).collect(Collectors.toList()));
 		}
 		return request;
 	}

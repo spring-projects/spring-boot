@@ -24,6 +24,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
@@ -65,6 +66,8 @@ public class BuildRequest {
 
 	private final List<BuildpackReference> buildpacks;
 
+	private final List<Binding> bindings;
+
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent) {
 		Assert.notNull(name, "Name must not be null");
 		Assert.notNull(applicationContent, "ApplicationContent must not be null");
@@ -79,11 +82,13 @@ public class BuildRequest {
 		this.publish = false;
 		this.creator = Creator.withVersion("");
 		this.buildpacks = Collections.emptyList();
+		this.bindings = Collections.emptyList();
 	}
 
 	BuildRequest(ImageReference name, Function<Owner, TarArchive> applicationContent, ImageReference builder,
 			ImageReference runImage, Creator creator, Map<String, String> env, boolean cleanCache,
-			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks) {
+			boolean verboseLogging, PullPolicy pullPolicy, boolean publish, List<BuildpackReference> buildpacks,
+			List<Binding> bindings) {
 		this.name = name;
 		this.applicationContent = applicationContent;
 		this.builder = builder;
@@ -95,6 +100,7 @@ public class BuildRequest {
 		this.pullPolicy = pullPolicy;
 		this.publish = publish;
 		this.buildpacks = buildpacks;
+		this.bindings = bindings;
 	}
 
 	/**
@@ -106,7 +112,7 @@ public class BuildRequest {
 		Assert.notNull(builder, "Builder must not be null");
 		return new BuildRequest(this.name, this.applicationContent, builder.inTaggedOrDigestForm(), this.runImage,
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks);
+				this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -117,7 +123,7 @@ public class BuildRequest {
 	public BuildRequest withRunImage(ImageReference runImageName) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, runImageName.inTaggedOrDigestForm(),
 				this.creator, this.env, this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks);
+				this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -128,7 +134,7 @@ public class BuildRequest {
 	public BuildRequest withCreator(Creator creator) {
 		Assert.notNull(creator, "Creator must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks);
+				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -144,7 +150,7 @@ public class BuildRequest {
 		env.put(name, value);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(env), this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish,
-				this.buildpacks);
+				this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -158,7 +164,7 @@ public class BuildRequest {
 		updatedEnv.putAll(env);
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator,
 				Collections.unmodifiableMap(updatedEnv), this.cleanCache, this.verboseLogging, this.pullPolicy,
-				this.publish, this.buildpacks);
+				this.publish, this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -168,7 +174,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withCleanCache(boolean cleanCache) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks);
+				cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -178,7 +184,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withVerboseLogging(boolean verboseLogging) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, verboseLogging, this.pullPolicy, this.publish, this.buildpacks);
+				this.cleanCache, verboseLogging, this.pullPolicy, this.publish, this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -188,7 +194,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withPullPolicy(PullPolicy pullPolicy) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, pullPolicy, this.publish, this.buildpacks);
+				this.cleanCache, this.verboseLogging, pullPolicy, this.publish, this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -198,7 +204,7 @@ public class BuildRequest {
 	 */
 	public BuildRequest withPublish(boolean publish) {
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, publish, this.buildpacks);
+				this.cleanCache, this.verboseLogging, this.pullPolicy, publish, this.buildpacks, this.bindings);
 	}
 
 	/**
@@ -219,7 +225,28 @@ public class BuildRequest {
 	public BuildRequest withBuildpacks(List<BuildpackReference> buildpacks) {
 		Assert.notNull(buildpacks, "Buildpacks must not be null");
 		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
-				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks);
+				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, buildpacks, this.bindings);
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with updated bindings.
+	 * @param bindings a collection of bindings to mount to the build container
+	 * @return an updated build request
+	 */
+	public BuildRequest withBindings(Binding... bindings) {
+		Assert.notEmpty(bindings, "Bindings must not be empty");
+		return withBindings(Arrays.asList(bindings));
+	}
+
+	/**
+	 * Return a new {@link BuildRequest} with updated bindings.
+	 * @param bindings a collection of bindings to mount to the build container
+	 * @return an updated build request
+	 */
+	public BuildRequest withBindings(List<Binding> bindings) {
+		Assert.notNull(bindings, "Bindings must not be null");
+		return new BuildRequest(this.name, this.applicationContent, this.builder, this.runImage, this.creator, this.env,
+				this.cleanCache, this.verboseLogging, this.pullPolicy, this.publish, this.buildpacks, bindings);
 	}
 
 	/**
@@ -307,10 +334,18 @@ public class BuildRequest {
 
 	/**
 	 * Return the collection of buildpacks to use when building the image, if provided.
-	 * @return the collection of buildpacks
+	 * @return the buildpacks
 	 */
 	public List<BuildpackReference> getBuildpacks() {
 		return this.buildpacks;
+	}
+
+	/**
+	 * Return the collection of bindings to mount to the build container.
+	 * @return the bindings
+	 */
+	public List<Binding> getBindings() {
+		return this.bindings;
 	}
 
 	/**

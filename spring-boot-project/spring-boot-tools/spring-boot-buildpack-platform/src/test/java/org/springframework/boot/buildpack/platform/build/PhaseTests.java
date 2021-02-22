@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.buildpack.platform.build;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 import org.springframework.boot.buildpack.platform.docker.type.ContainerConfig.Update;
 import org.springframework.boot.buildpack.platform.docker.type.VolumeName;
 
@@ -65,7 +66,7 @@ class PhaseTests {
 		Update update = mock(Update.class);
 		phase.apply(update);
 		verify(update).withUser("root");
-		verify(update).withBind("/var/run/docker.sock", "/var/run/docker.sock");
+		verify(update).withBinding(Binding.from("/var/run/docker.sock", "/var/run/docker.sock"));
 		verify(update).withCommand("/cnb/lifecycle/test", NO_ARGS);
 		verify(update).withLabel("author", "spring-boot");
 		verifyNoMoreInteractions(update);
@@ -108,12 +109,12 @@ class PhaseTests {
 	void applyWhenWithBindsUpdatesConfigurationWithBinds() {
 		Phase phase = new Phase("test", false);
 		VolumeName volumeName = VolumeName.of("test");
-		phase.withBinds(volumeName, "/test");
+		phase.withBinding(Binding.from(volumeName, "/test"));
 		Update update = mock(Update.class);
 		phase.apply(update);
 		verify(update).withCommand("/cnb/lifecycle/test");
 		verify(update).withLabel("author", "spring-boot");
-		verify(update).withBind(volumeName, "/test");
+		verify(update).withBinding(Binding.from(volumeName, "/test"));
 		verifyNoMoreInteractions(update);
 	}
 

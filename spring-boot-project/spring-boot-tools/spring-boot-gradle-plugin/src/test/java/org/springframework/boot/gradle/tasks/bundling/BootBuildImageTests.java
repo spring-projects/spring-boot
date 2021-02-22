@@ -31,6 +31,7 @@ import org.junit.jupiter.api.io.TempDir;
 import org.springframework.boot.buildpack.platform.build.BuildRequest;
 import org.springframework.boot.buildpack.platform.build.BuildpackReference;
 import org.springframework.boot.buildpack.platform.build.PullPolicy;
+import org.springframework.boot.buildpack.platform.docker.type.Binding;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -248,6 +249,33 @@ class BootBuildImageTests {
 		this.buildImage.buildpack("example/buildpack2");
 		assertThat(this.buildImage.createRequest().getBuildpacks()).containsExactly(
 				BuildpackReference.of("example/buildpack1"), BuildpackReference.of("example/buildpack2"));
+	}
+
+	@Test
+	void whenNoBindingsAreConfiguredThenRequestHasNoBindings() {
+		assertThat(this.buildImage.createRequest().getBindings()).isEmpty();
+	}
+
+	@Test
+	void whenBindingsAreConfiguredThenRequestHasBindings() {
+		this.buildImage.setBindings(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
+		assertThat(this.buildImage.createRequest().getBindings())
+				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+	}
+
+	@Test
+	void whenEntriesAreAddedToBindingsThenRequestHasBindings() {
+		this.buildImage.bindings(Arrays.asList("host-src:container-dest:ro", "volume-name:container-dest:rw"));
+		assertThat(this.buildImage.createRequest().getBindings())
+				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
+	}
+
+	@Test
+	void whenIndividualEntriesAreAddedToBindingsThenRequestHasBindings() {
+		this.buildImage.binding("host-src:container-dest:ro");
+		this.buildImage.binding("volume-name:container-dest:rw");
+		assertThat(this.buildImage.createRequest().getBindings())
+				.containsExactly(Binding.of("host-src:container-dest:ro"), Binding.of("volume-name:container-dest:rw"));
 	}
 
 }
