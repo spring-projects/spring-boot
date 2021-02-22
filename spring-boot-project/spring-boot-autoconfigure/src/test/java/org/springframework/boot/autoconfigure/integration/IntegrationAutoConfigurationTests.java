@@ -16,11 +16,14 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
+import java.io.File;
+import java.util.Arrays;
+import java.util.List;
+
 import javax.management.MBeanServer;
 
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
-
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -39,9 +42,14 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfi
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.DefaultResourceLoader;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.channel.DirectChannel;
@@ -258,14 +266,20 @@ class IntegrationAutoConfigurationTests {
 
 	@Test
 	void integrationGlobalPropertiesAutoConfigured() {
-		this.contextRunner.withPropertyValues("spring.integration.channels.auto-create=false",
-				"spring.integration.channels.max-unicast-subscribers=2",
-				"spring.integration.channels.max-broadcast-subscribers=3",
-				"spring.integration.channels.error-require-subscribers=false",
-				"spring.integration.channels.error-ignore-failures=false",
-				"spring.integration.endpoints.throw-exception-on-late-reply=true",
-				"spring.integration.endpoints.read-only-headers=ignoredHeader",
-				"spring.integration.endpoints.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger")
+		new ApplicationContextRunner(() -> {
+			AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+			context.setResourceLoader(
+					new FilteringResourceLoader(new DefaultResourceLoader(), "META-INF/spring.integration.properties"));
+			return context;
+		}).withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, IntegrationAutoConfiguration.class))
+				.withPropertyValues("spring.integration.channels.auto-create=false",
+						"spring.integration.channels.max-unicast-subscribers=2",
+						"spring.integration.channels.max-broadcast-subscribers=3",
+						"spring.integration.channels.error-require-subscribers=false",
+						"spring.integration.channels.error-ignore-failures=false",
+						"spring.integration.endpoints.throw-exception-on-late-reply=true",
+						"spring.integration.endpoints.read-only-headers=ignoredHeader",
+						"spring.integration.endpoints.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger")
 				.withBean("testDirectChannel", DirectChannel.class).run((context) -> {
 					assertThat(context)
 							.getBean(IntegrationContextUtils.ERROR_CHANNEL_BEAN_NAME, PublishSubscribeChannel.class)
@@ -307,34 +321,70 @@ class IntegrationAutoConfigurationTests {
 							properties.setChannelsMaxUnicastSubscribers(5);
 							return properties;
 						})
-				.run((context) -> {
-					assertThat(context).getBean(LoggingHandler.class)
-							.extracting("integrationProperties", InstanceOfAssertFactories.MAP)
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.CHANNELS_AUTOCREATE,
-									"true")
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.ERROR_CHANNEL_REQUIRE_SUBSCRIBERS,
-									"true")
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.ERROR_CHANNEL_IGNORE_FAILURES,
-									"true")
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.THROW_EXCEPTION_ON_LATE_REPLY,
-									"false")
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.CHANNELS_MAX_UNICAST_SUBSCRIBERS,
-									"5")
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.CHANNELS_MAX_BROADCAST_SUBSCRIBERS,
-									"2147483647")
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.ENDPOINTS_NO_AUTO_STARTUP,
-									"")
-							.containsEntry(
-									org.springframework.integration.context.IntegrationProperties.READ_ONLY_HEADERS,
-									"");
-				});
+				.run((context) -> assertThat(context).getBean(LoggingHandler.class)
+						.extracting("integrationProperties", InstanceOfAssertFactories.MAP)
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.CHANNELS_AUTOCREATE,
+								"true")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.ERROR_CHANNEL_REQUIRE_SUBSCRIBERS,
+								"true")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.ERROR_CHANNEL_IGNORE_FAILURES,
+								"true")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.THROW_EXCEPTION_ON_LATE_REPLY,
+								"false")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.CHANNELS_MAX_UNICAST_SUBSCRIBERS,
+								"5")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.CHANNELS_MAX_BROADCAST_SUBSCRIBERS,
+								"2147483647")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.ENDPOINTS_NO_AUTO_STARTUP,
+								"")
+						.containsEntry(org.springframework.integration.context.IntegrationProperties.READ_ONLY_HEADERS,
+								""));
+	}
+
+	@Test
+	void integrationGlobalPropertiesFromSpringIntegrationPropertiesFile() {
+		// See META-INF/spring.integration.properties
+		this.contextRunner
+				.withPropertyValues("spring.integration.channels.auto-create=false",
+						"spring.integration.channels.max-unicast-subscribers=2",
+						"spring.integration.channels.max-broadcast-subscribers=3",
+						"spring.integration.channels.error-require-subscribers=false",
+						"spring.integration.channels.error-ignore-failures=false",
+						"spring.integration.endpoints.throw-exception-on-late-reply=true",
+						"spring.integration.endpoints.read-only-headers=ignoredHeader",
+						"spring.integration.endpoints.no-auto-startup=notStartedEndpoint")
+				.run((context) -> assertThat(context).getBean(LoggingHandler.class)
+						.extracting("integrationProperties", InstanceOfAssertFactories.MAP)
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.CHANNELS_AUTOCREATE,
+								"true")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.ERROR_CHANNEL_REQUIRE_SUBSCRIBERS,
+								"true")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.ERROR_CHANNEL_IGNORE_FAILURES,
+								"true")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.THROW_EXCEPTION_ON_LATE_REPLY,
+								"false")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.CHANNELS_MAX_UNICAST_SUBSCRIBERS,
+								"2147483647")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.CHANNELS_MAX_BROADCAST_SUBSCRIBERS,
+								"2147483647")
+						.containsEntry(
+								org.springframework.integration.context.IntegrationProperties.ENDPOINTS_NO_AUTO_STARTUP,
+								"testService*")
+						.containsEntry(org.springframework.integration.context.IntegrationProperties.READ_ONLY_HEADERS,
+								""));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -387,6 +437,34 @@ class IntegrationAutoConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	private static final class FilteringResourceLoader implements ResourceLoader {
+
+		private final ResourceLoader delegate;
+
+		private final List<String> resourcesToFilter;
+
+		FilteringResourceLoader(ResourceLoader delegate, String... resourcesToFilter) {
+			this.delegate = delegate;
+			this.resourcesToFilter = Arrays.asList(resourcesToFilter);
+		}
+
+		@Override
+		public Resource getResource(String location) {
+			if (!this.resourcesToFilter.contains(location)) {
+				return this.delegate.getResource(location);
+			}
+			else {
+				return new FileSystemResource(mock(File.class));
+			}
+		}
+
+		@Override
+		public ClassLoader getClassLoader() {
+			return this.delegate.getClassLoader();
 		}
 
 	}

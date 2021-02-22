@@ -29,7 +29,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnResource;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
+import org.springframework.boot.autoconfigure.condition.NoneNestedConditions;
 import org.springframework.boot.autoconfigure.condition.SearchStrategy;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
@@ -82,6 +85,7 @@ public class IntegrationAutoConfiguration {
 
 	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
+	@Conditional(NoSpringIntegrationPropertiesFile.class)
 	public static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
 		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
@@ -95,6 +99,19 @@ public class IntegrationAutoConfiguration {
 		integrationProperties.setReadOnlyHeaders(properties.getEndpoints().getReadOnlyHeaders());
 		integrationProperties.setNoAutoStartupEndpoints(properties.getEndpoints().getNoAutoStartup());
 		return integrationProperties;
+	}
+
+	static class NoSpringIntegrationPropertiesFile extends NoneNestedConditions {
+
+		NoSpringIntegrationPropertiesFile() {
+			super(ConfigurationPhase.REGISTER_BEAN);
+		}
+
+		@ConditionalOnResource(resources = "META-INF/spring.integration.properties")
+		static class SpringIntegrationPropertiesFile {
+
+		}
+
 	}
 
 	/**
