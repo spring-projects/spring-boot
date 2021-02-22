@@ -22,16 +22,18 @@ import java.io.IOException;
 import java.io.Reader;
 import java.nio.file.Path;
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.Properties;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.gradle.api.DefaultTask;
 import org.gradle.api.InvalidUserDataException;
 import org.gradle.api.Task;
+import org.gradle.api.artifacts.repositories.MavenArtifactRepository;
 import org.gradle.api.internal.tasks.userinput.UserInputHandler;
 import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.TaskAction;
@@ -51,6 +53,8 @@ import org.springframework.util.StringUtils;
  */
 public class UpgradeBom extends DefaultTask {
 
+	private Set<String> repositoryUrls;
+
 	private final BomExtension bom;
 
 	private String milestone;
@@ -58,6 +62,13 @@ public class UpgradeBom extends DefaultTask {
 	@Inject
 	public UpgradeBom(BomExtension bom) {
 		this.bom = bom;
+		this.repositoryUrls = new LinkedHashSet<>();
+		getProject().getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
+			String repositoryUrl = repository.getUrl().toString();
+			if (!repositoryUrl.endsWith("snapshot")) {
+				this.repositoryUrls.add(repository.getUrl().toString());
+			}
+		});
 	}
 
 	@Option(option = "milestone", description = "Milestone to which dependency upgrade issues should be assigned")
@@ -83,8 +94,7 @@ public class UpgradeBom extends DefaultTask {
 					"Unknown label(s): " + StringUtils.collectionToCommaDelimitedString(unknownLabels));
 		}
 		Milestone milestone = determineMilestone(repository);
-		List<Upgrade> upgrades = new InteractiveUpgradeResolver(
-				new MavenMetadataVersionResolver(Arrays.asList("https://repo1.maven.org/maven2/")),
+		List<Upgrade> upgrades = new InteractiveUpgradeResolver(new MavenMetadataVersionResolver(this.repositoryUrls),
 				this.bom.getUpgrade().getPolicy(), getServices().get(UserInputHandler.class))
 						.resolveUpgrades(this.bom.getLibraries());
 		Path buildFile = getProject().getBuildFile().toPath();
