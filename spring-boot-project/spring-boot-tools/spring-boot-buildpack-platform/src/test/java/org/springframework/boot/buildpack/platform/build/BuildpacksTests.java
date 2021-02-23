@@ -94,17 +94,18 @@ class BuildpacksTests {
 	private String getExpectedToml() {
 		StringBuilder toml = new StringBuilder();
 		toml.append("[[order]]\n");
-		toml.append("group = [\n");
-		toml.append("  { id = \"example/buildpack1\", version = \"0.0.1\" }\n");
-		toml.append("]\n\n");
-		toml.append("[[order]]\n");
-		toml.append("group = [\n");
-		toml.append("  { id = \"example/buildpack2\", version = \"0.0.2\" }\n");
-		toml.append("]\n\n");
-		toml.append("[[order]]\n");
-		toml.append("group = [\n");
-		toml.append("  { id = \"example/buildpack3\" }\n");
-		toml.append("]\n\n");
+		toml.append("\n");
+		toml.append("  [[order.group]]\n");
+		toml.append("    id = \"example/buildpack1\"\n");
+		toml.append("    version = \"0.0.1\"\n");
+		toml.append("\n");
+		toml.append("  [[order.group]]\n");
+		toml.append("    id = \"example/buildpack2\"\n");
+		toml.append("    version = \"0.0.2\"\n");
+		toml.append("\n");
+		toml.append("  [[order.group]]\n");
+		toml.append("    id = \"example/buildpack3\"\n");
+		toml.append("\n");
 		return toml.toString();
 	}
 

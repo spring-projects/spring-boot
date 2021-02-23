@@ -63,6 +63,7 @@ final class Buildpacks {
 
 	private String getOrderToml() {
 		StringBuilder builder = new StringBuilder();
+		builder.append("[[order]]\n\n");
 		for (Buildpack buildpack : this.buildpacks) {
 			appendToOrderToml(builder, buildpack.getCoordinates());
 		}
@@ -70,15 +71,12 @@ final class Buildpacks {
 	}
 
 	private void appendToOrderToml(StringBuilder builder, BuildpackCoordinates coordinates) {
-		builder.append("[[order]]\n");
-		builder.append("group = [\n");
-		builder.append("  { ");
-		builder.append("id = \"" + coordinates.getId() + "\"");
+		builder.append("  [[order.group]]\n");
+		builder.append("    id = \"" + coordinates.getId() + "\"\n");
 		if (StringUtils.hasText(coordinates.getVersion())) {
-			builder.append(", version = \"" + coordinates.getVersion() + "\"");
+			builder.append("    version = \"" + coordinates.getVersion() + "\"\n");
 		}
-		builder.append(" }\n");
-		builder.append("]\n\n");
+		builder.append("\n");
 	}
 
 	static Buildpacks of(List<Buildpack> buildpacks) {

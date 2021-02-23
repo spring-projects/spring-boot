@@ -203,7 +203,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void buildsImageWithBuildpackFromImage() throws IOException {
+	void buildsImageWithBuildpacksFromImages() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");

@@ -146,7 +146,7 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 		assertBuildpackLayerContent(builder, 2, "/cnb/buildpacks/example_buildpack3/0.0.3/buildpack.toml");
 		File orderDirectory = unpack(getLayer(builder.getArchive(), 3), "order");
 		assertThat(new File(orderDirectory, "cnb/order.toml")).usingCharset(StandardCharsets.UTF_8)
-				.hasContent(content("order-versions.toml"));
+				.hasContent(content("order.toml"));
 	}
 
 	private void assertBuildpackLayerContent(EphemeralBuilder builder, int index, String s) throws Exception {

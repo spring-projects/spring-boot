@@ -24,7 +24,9 @@
 						<configuration>
 							<image>
 								<buildpacks>
-									<buildpack>paketo-buildpacks/java</buildpack>
+									<buildpack>gcr.io/paketo-buildpacks/bellsoft-liberica:latest</buildpack>
+									<buildpack>gcr.io/paketo-buildpacks/executable-jar:latest</buildpack>
+									<buildpack>gcr.io/paketo-buildpacks/spring-boot:latest</buildpack>
 								</buildpacks>
 							</image>
 						</configuration>
