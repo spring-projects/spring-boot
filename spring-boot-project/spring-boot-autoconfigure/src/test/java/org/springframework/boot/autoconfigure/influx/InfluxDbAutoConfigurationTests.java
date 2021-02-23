@@ -79,8 +79,7 @@ class InfluxDbAutoConfigurationTests {
 	@Test
 	void influxDbWithCustomizer() {
 		this.contextRunner.withBean(InfluxDbCustomizer.class, () -> (influxDb) -> influxDb.setDatabase("test"))
-				.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.database=sample-db")
-				.run((context) -> {
+				.withPropertyValues("spring.influx.url=http://localhost").run((context) -> {
 					assertThat(context).hasSingleBean(InfluxDB.class);
 					InfluxDB influxDb = context.getBean(InfluxDB.class);
 					assertThat(influxDb).hasFieldOrPropertyWithValue("database", "test");
