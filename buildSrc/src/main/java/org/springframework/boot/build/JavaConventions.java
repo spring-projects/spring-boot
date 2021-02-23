@@ -20,14 +20,12 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
-import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
@@ -44,14 +42,12 @@ import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
-import org.gradle.jvm.toolchain.JavaLanguageVersion;
-import org.gradle.jvm.toolchain.JavaToolchainService;
-import org.gradle.jvm.toolchain.JavaToolchainSpec;
 import org.gradle.testretry.TestRetryPlugin;
 import org.gradle.testretry.TestRetryTaskExtension;
 
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
+import org.springframework.boot.build.toolchain.ToolchainPlugin;
 
 /**
  * Conventions that are applied in the presence of the {@link JavaBasePlugin}. When the
@@ -106,6 +102,7 @@ class JavaConventions {
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
 			configureDependencyManagement(project);
+			configureToolchain(project);
 		});
 	}
 
@@ -150,14 +147,6 @@ class JavaConventions {
 		project.getTasks().withType(Test.class, (test) -> {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
-			withOptionalJavaToolchain(project).ifPresent((action) -> {
-				JavaToolchainService service = getJavaToolchainService(project);
-				test.getJavaLauncher().set(service.launcherFor(action));
-				// See https://github.com/spring-projects/spring-ldap/issues/570
-				List<String> arguments = Arrays.asList("--add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
-						"--illegal-access=warn");
-				test.jvmArgs(arguments);
-			});
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
@@ -175,13 +164,7 @@ class JavaConventions {
 	}
 
 	private void configureJavadocConventions(Project project) {
-		project.getTasks().withType(Javadoc.class, (javadoc) -> {
-			javadoc.getOptions().source("1.8").encoding("UTF-8");
-			withOptionalJavaToolchain(project).ifPresent((action) -> {
-				JavaToolchainService service = getJavaToolchainService(project);
-				javadoc.getJavadocTool().set(service.javadocToolFor(action));
-			});
-		});
+		project.getTasks().withType(Javadoc.class, (javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
 	}
 
 	private void configureJavaCompileConventions(Project project) {
@@ -189,15 +172,6 @@ class JavaConventions {
 			compile.getOptions().setEncoding("UTF-8");
 			compile.setSourceCompatibility("1.8");
 			compile.setTargetCompatibility("1.8");
-			withOptionalJavaToolchain(project).ifPresent((action) -> {
-				JavaToolchainService service = getJavaToolchainService(project);
-				compile.getJavaCompiler().set(service.compilerFor(action));
-				compile.getOptions().setFork(true);
-				// See https://github.com/gradle/gradle/issues/15538
-				List<String> forkArgs = Arrays.asList("--add-opens",
-						"jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED");
-				compile.getOptions().getForkOptions().getJvmArgs().addAll(forkArgs);
-			});
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
@@ -207,26 +181,6 @@ class JavaConventions {
 						"-Xlint:varargs"));
 			}
 		});
-	}
-
-	private JavaToolchainService getJavaToolchainService(Project project) {
-		return project.getExtensions().getByType(JavaToolchainService.class);
-	}
-
-	private Optional<Action<JavaToolchainSpec>> withOptionalJavaToolchain(Project project) {
-		String version = (String) project.findProperty("toolchainVersion");
-		if (version == null) {
-			return Optional.empty();
-		}
-		int toolchainVersion = Integer.parseInt(version);
-		if (toolchainVersion >= 8) {
-			Action<JavaToolchainSpec> action = (javaToolchainSpec) -> {
-				JavaLanguageVersion languageVersion = JavaLanguageVersion.of(toolchainVersion);
-				javaToolchainSpec.getLanguageVersion().convention(languageVersion);
-			};
-			return Optional.of(action);
-		}
-		return Optional.empty();
 	}
 
 	private void configureSpringJavaFormat(Project project) {
@@ -258,6 +212,10 @@ class JavaConventions {
 		dependencyManagement.getDependencies().add(springBootParent);
 		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
 				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
+	}
+
+	private void configureToolchain(Project project) {
+		project.getPlugins().apply(ToolchainPlugin.class);
 	}
 
 }
