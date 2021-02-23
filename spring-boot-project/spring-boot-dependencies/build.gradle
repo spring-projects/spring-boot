@@ -520,6 +520,13 @@ bom {
 			]
 		}
 	}
+	library("InfluxDB Client Java", "2.3.0") {
+		group("com.influxdb") {
+			modules = [
+					"influxdb-client-java"
+			]
+		}
+	}
 	library("InfluxDB Java", "2.21") {
 		group("org.influxdb") {
 			modules = [

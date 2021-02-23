@@ -17,8 +17,12 @@
 package org.springframework.boot.autoconfigure.influx;
 
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
+import com.influxdb.client.InfluxDBClient;
+import com.influxdb.client.InfluxDBClientOptions;
 import okhttp3.OkHttpClient;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.influxdb.InfluxDB;
 import org.junit.jupiter.api.Test;
 import retrofit2.Retrofit;
@@ -26,6 +30,7 @@ import retrofit2.Retrofit;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -86,11 +91,57 @@ class InfluxDbAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void influxDbClientRequiresUrl() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(InfluxDBClient.class));
+	}
+
+	@Test
+	void influxDbClientCanBeCustomized() {
+		this.contextRunner
+				.withPropertyValues("spring.influx.url=http://localhost", "spring.influx.user=user",
+						"spring.influx.password=password")
+				.run((context) -> assertThat(context).hasSingleBean(InfluxDBClient.class));
+	}
+
+	@Test
+	void influxDbClientCanBeCreatedWithoutCredentials() {
+		this.contextRunner.withPropertyValues("spring.influx.url=http://localhost").run(assertInfluxDbClientOptions(
+				(options) -> assertThat(options.getOkHttpClient().build().readTimeoutMillis()).isEqualTo(10000)));
+	}
+
+	@Test
+	void influxDbClientWithOkHttpClientBuilderProvider() {
+		this.contextRunner.withUserConfiguration(CustomOkHttpClientBuilderProviderConfig.class)
+				.withPropertyValues("spring.influx.url=http://localhost")
+				.run(assertInfluxDbClientOptions(
+						(options) -> assertThat(options.getOkHttpClient().build().readTimeoutMillis())
+								.isEqualTo(40000)));
+	}
+
+	@Test
+	void influxDbClientWithCustomizer() {
+		this.contextRunner
+				.withBean(InfluxDbClientOptionsBuilderCustomizer.class, () -> (options) -> options.org("my_org"))
+				.withPropertyValues("spring.influx.url=http://localhost")
+				.run(assertInfluxDbClientOptions((options) -> assertThat(options.getOrg()).isEqualTo("my_org")));
+	}
+
 	private int getReadTimeoutProperty(AssertableApplicationContext context) {
 		InfluxDB influxDb = context.getBean(InfluxDB.class);
 		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDb, "retrofit");
 		OkHttpClient callFactory = (OkHttpClient) retrofit.callFactory();
 		return callFactory.readTimeoutMillis();
+	}
+
+	private ContextConsumer<AssertableApplicationContext> assertInfluxDbClientOptions(
+			Consumer<InfluxDBClientOptions> options) {
+		return (context) -> {
+			assertThat(context).hasSingleBean(InfluxDBClient.class);
+			assertThat(context).getBean(InfluxDBClient.class)
+					.extracting("options", InstanceOfAssertFactories.type(InfluxDBClientOptions.class))
+					.satisfies(options);
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)

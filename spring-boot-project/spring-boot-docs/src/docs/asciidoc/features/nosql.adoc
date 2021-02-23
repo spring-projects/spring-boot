@@ -631,7 +631,7 @@ https://www.influxdata.com/[InfluxDB] is an open-source time series database opt
 
 [[features.nosql.influxdb.connecting]]
 ==== Connecting to InfluxDB
-Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set, as shown in the following example:
+Spring Boot auto-configures a client instance, provided that either `influxdb-java` (Influx 1.x) or `influxdb-client-java` (Influx 2.x)  is on the classpath and the URL of the database is set, as shown in the following example:
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
@@ -645,4 +645,4 @@ If the connection to InfluxDB requires a user and password, you can set the `spr
 InfluxDB relies on OkHttp.
 If you need to tune the http client `InfluxDB` uses behind the scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.
 
-If you need more control over the configuration, consider registering an `InfluxDbCustomizer` bean.
+If you need more control over the configuration, consider registering an `InfluxDbCustomizer` (Influx 1.x), or an `InfluxDbClientOptionsBuilderCustomizer` (Influx 2.x) bean.
