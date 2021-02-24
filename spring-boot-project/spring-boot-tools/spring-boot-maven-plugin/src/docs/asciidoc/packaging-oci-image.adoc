@@ -1,12 +1,10 @@
 [[build-image]]
 == Packaging OCI Images
-The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from an executable jar file using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
+The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from a jar or war file using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
 Images can be built using the `build-image` goal.
 
 NOTE: For security reasons, images build and run as non-root users.
 See the {buildpacks-reference}/reference/spec/platform-api/#users[CNB specification] for more details.
-
-NOTE: The `build-image` goal is not supported with projects using <<repackage, war packaging>>.
 
 The easiest way to get started is to invoke `mvn spring-boot:build-image` on a project.
 It is possible to automate the creation of an image whenever the `package` phase is invoked, as shown in the following example:
