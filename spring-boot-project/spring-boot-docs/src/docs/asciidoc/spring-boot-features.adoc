@@ -643,9 +643,9 @@ For example, if `spring.config.location` is configured with the value `optional:
 . `optional:classpath:custom-config/`
 . `optional:file:./custom-config/`
 
-If you prefer to add addition locations, rather than replacing them, you can use `spring.config.additional-location`.
+If you prefer to add additional locations, rather than replacing them, you can use `spring.config.additional-location`.
 Properties loaded from additional locations can override those in the default locations.
-For example, if `spring.config.additional-location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete the complete set of locations considered is:
+For example, if `spring.config.additional-location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
 
 . `optional:classpath:/`
 . `optional:classpath:/config/`
