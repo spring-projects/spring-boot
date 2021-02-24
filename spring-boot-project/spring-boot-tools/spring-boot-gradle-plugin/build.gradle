@@ -56,15 +56,10 @@ gradlePlugin {
 	}
 }
 
-task preparePluginValidationClasses(type: Copy) {
-	destinationDir = file("$buildDir/classes/java/pluginValidation")
-	from(sourceSets.main.output.classesDirs) {
-		exclude "**/CreateBootStartScripts.class"
-	}
-}
-
 validatePlugins {
-	classes.setFrom preparePluginValidationClasses
+	classes.setFrom(files(sourceSets.main.output.classesDirs).asFileTree.matching {
+		exclude "**/CreateBootStartScripts.class"
+	})
 	enableStricterValidation = true
 }
 
