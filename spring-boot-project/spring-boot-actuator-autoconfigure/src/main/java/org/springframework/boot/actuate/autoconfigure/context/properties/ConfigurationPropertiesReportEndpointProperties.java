@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,26 @@ public class ConfigurationPropertiesReportEndpointProperties {
 	 */
 	private String[] keysToSanitize;
 
+	/**
+	 * Keys that should be sanitized in addition to those already configured. Keys can be
+	 * simple strings that the property ends with or regular expressions.
+	 */
+	private String[] additionalKeysToSanitize;
+
 	public String[] getKeysToSanitize() {
 		return this.keysToSanitize;
 	}
 
 	public void setKeysToSanitize(String[] keysToSanitize) {
 		this.keysToSanitize = keysToSanitize;
+	}
+
+	public String[] getAdditionalKeysToSanitize() {
+		return this.additionalKeysToSanitize;
+	}
+
+	public void setAdditionalKeysToSanitize(String[] additionalKeysToSanitize) {
+		this.additionalKeysToSanitize = additionalKeysToSanitize;
 	}
 
 }

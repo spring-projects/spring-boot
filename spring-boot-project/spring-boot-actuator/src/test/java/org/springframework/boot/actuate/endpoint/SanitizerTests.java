@@ -48,6 +48,23 @@ class SanitizerTests {
 		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
 	}
 
+	@Test
+	void whenAdditionalKeysAreAddedValuesOfBothThemAndTheDefaultKeysAreSanitized() {
+		Sanitizer sanitizer = new Sanitizer();
+		sanitizer.keysToSanitize("find", "confidential");
+		assertThat(sanitizer.sanitize("password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-password", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("my-OTHER.paSSword", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somesecret", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("somekey", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("token", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sometoken", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("find", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("sun.java.command", "--spring.redis.password=pa55w0rd")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("confidential", "secret")).isEqualTo("******");
+		assertThat(sanitizer.sanitize("private", "secret")).isEqualTo("secret");
+	}
+
 	@ParameterizedTest(name = "key = {0}")
 	@MethodSource("matchingUriUserInfoKeys")
 	void uriWithSingleValueWithPasswordShouldBeSanitized(String key) {

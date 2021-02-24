@@ -2333,14 +2333,10 @@ See also the section on "`<<spring-boot-features.adoc#boot-features-error-handli
 [[howto-sanitize-sensible-values]]
 [[howto-sanitize-sensitive-values]]
 === Sanitize Sensitive Values
-Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching a certain pattern are sanitized by default (i.e. their values are replaced by `+******+`).
+Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching certain patterns are sanitized by default (i.e. their values are replaced by `+******+`). Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
+Additionally, any key that holds the word `credentials` (configured as a regular expression, i.e. `+*credentials.*+`) as part of the key is also entirely sanitized.
 
-The patterns to use can be customized using the `management.endpoint.env.keys-to-sanitize` and `management.endpoint.configprops.keys-to-sanitize` respectively.
-
-Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
-Additionally, any key that holds the word `credentials` as part of the key is sanitized (configured as a regular expression, i.e. `+*credentials.*+`).
-
-Furthermore, Spring Boot only sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
+Furthermore, Spring Boot sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
 
 - `address`
 - `addresses`
@@ -2352,6 +2348,9 @@ Furthermore, Spring Boot only sanitizes the sensitive portion of URI-like values
 The sensitive portion of the URI is identified using the format `<scheme>://<username>:<password>@<host>:<port>/`.
 For example, for the property `myclient.uri=http://user1:password1@localhost:8081`, the resulting sanitized value is
 `++http://user1:******@localhost:8081++`.
+
+The defaults patterns used by the `env` and `configprops` endpoints can be replaced using configprop:management.endpoint.env.keys-to-sanitize[] and configprop:management.endpoint.configprops.keys-to-sanitize[] respectively.
+Alternatively, additional patterns can be configured using configprop:management.endpoint.env.additional-keys-to-sanitize[] and configprop:management.endpoint.configprops.additional-keys-to-sanitize[].
 
 
 

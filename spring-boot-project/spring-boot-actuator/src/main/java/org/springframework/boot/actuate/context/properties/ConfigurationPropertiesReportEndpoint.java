@@ -115,6 +115,10 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		this.sanitizer.setKeysToSanitize(keysToSanitize);
 	}
 
+	public void keysToSanitize(String... keysToSanitize) {
+		this.sanitizer.keysToSanitize(keysToSanitize);
+	}
+
 	@ReadOperation
 	public ApplicationConfigurationProperties configurationProperties() {
 		return extract(this.context, (bean) -> true);
