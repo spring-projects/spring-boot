@@ -109,9 +109,9 @@
     {
       "name": "logging.register-shutdown-hook",
       "type": "java.lang.Boolean",
-      "description": "Register a shutdown hook for the logging system when it is initialized.",
+      "description": "Register a shutdown hook for the logging system when it is initialized. Disabled automatically when deployed as a war file.",
       "sourceType": "org.springframework.boot.context.logging.LoggingApplicationListener",
-      "defaultValue": false
+      "defaultValue": true
     },
     {
       "name": "logging.pattern.rolling-file-name",

@@ -1912,20 +1912,19 @@ Spring Boot includes the following pre-defined logging groups that can be used o
 
 [[boot-features-log-shutdown-hook]]
 === Using a Log Shutdown Hook
-In order to release logging resources it is usually a good idea to stop the logging system when your application terminates.
-Unfortunately, there's no single way to do this that will work with all application types.
-If your application has complex context hierarchies or is deployed as a war file, you'll need to investigate the options provided directly by the underlying logging system.
+In order to release logging resources when your application terminates, a shutdown hook that will trigger log system cleanup when the JVM exits is provided.
+This shutdown hook is registered automatically unless your application is deployed as a war file.
+If your application has complex context hierarchies the shutdown hook may not meet your needs.
+If it does not, disable the shutdown hook and investigate the options provided directly by the underlying logging system.
 For example, Logback offers http://logback.qos.ch/manual/loggingSeparation.html[context selectors] which allow each Logger to be created in its own context.
-
-For simple "single jar" applications deployed in their own JVM, you can use the `logging.register-shutdown-hook` property.
-Setting `logging.register-shutdown-hook` to `true` will register a shutdown hook that will trigger log system cleanup when the JVM exits.
-
+You can use the configprop:logging.register-shutdown-hook[] property to disable the shutdown hook.
+Setting it to `false` will disable the registration.
 You can set the property in your `application.properties` or `application.yaml` file:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----
 	logging:
-	  register-shutdown-hook: true
+	  register-shutdown-hook: false
 ----
 
 
