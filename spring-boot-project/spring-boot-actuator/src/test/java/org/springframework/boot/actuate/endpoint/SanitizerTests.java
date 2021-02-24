@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -123,8 +123,8 @@ class SanitizerTests {
 	}
 
 	private static Stream<String> matchingUriUserInfoKeys() {
-		return Stream.of("uri", "my.uri", "myuri", "uris", "my.uris", "myuris", "address", "my.address", "myaddress",
-				"addresses", "my.addresses", "myaddresses");
+		return Stream.of("uri", "my.uri", "myuri", "uris", "my.uris", "myuris", "url", "my.url", "myurl", "urls",
+				"my.urls", "myurls", "address", "my.address", "myaddress", "addresses", "my.addresses", "myaddresses");
 	}
 
 	@Test

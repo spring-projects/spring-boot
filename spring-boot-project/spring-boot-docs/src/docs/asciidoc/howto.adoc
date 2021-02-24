@@ -2340,7 +2340,15 @@ The patterns to use can be customized using the `management.endpoint.env.keys-to
 Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
 Additionally, any key that holds the word `credentials` as part of the key is sanitized (configured as a regular expression, i.e. `+*credentials.*+`).
 
-Furthermore, Spring Boot only sanitizes the sensitive portion of URIs for keys which end with "uri", "uris", "address", or "addresses".
+Furthermore, Spring Boot only sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
+
+- `address`
+- `addresses`
+- `uri`
+- `uris`
+- `url`
+- `urls`
+
 The sensitive portion of the URI is identified using the format `<scheme>://<username>:<password>@<host>:<port>/`.
 For example, for the property `myclient.uri=http://user1:password1@localhost:8081`, the resulting sanitized value is
 `++http://user1:******@localhost:8081++`.
