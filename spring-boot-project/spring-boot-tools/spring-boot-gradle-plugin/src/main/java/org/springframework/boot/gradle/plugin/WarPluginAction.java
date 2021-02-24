@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.FileCollection;
-import org.gradle.api.file.RegularFile;
 import org.gradle.api.internal.artifacts.dsl.LazyPublishArtifact;
 import org.gradle.api.plugins.BasePlugin;
 import org.gradle.api.plugins.WarPlugin;
@@ -56,18 +55,13 @@ class WarPluginAction implements PluginApplicationAction {
 	@Override
 	public void execute(Project project) {
 		disableWarTask(project);
-		disableBootBuildImageTask(project);
 		TaskProvider<BootWar> bootWar = configureBootWarTask(project);
+		configureBootBuildImageTask(project, bootWar);
 		configureArtifactPublication(bootWar);
 	}
 
 	private void disableWarTask(Project project) {
 		project.getTasks().named(WarPlugin.WAR_TASK_NAME).configure((war) -> war.setEnabled(false));
-	}
-
-	private void disableBootBuildImageTask(Project project) {
-		project.getTasks().named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
-				.configure((buildImage) -> buildImage.getJar().set((RegularFile) null));
 	}
 
 	private TaskProvider<BootWar> configureBootWarTask(Project project) {
@@ -101,6 +95,11 @@ class WarPluginAction implements PluginApplicationAction {
 	private FileCollection providedRuntimeConfiguration(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		return configurations.getByName(WarPlugin.PROVIDED_RUNTIME_CONFIGURATION_NAME);
+	}
+
+	private void configureBootBuildImageTask(Project project, TaskProvider<BootWar> bootWar) {
+		project.getTasks().named(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class)
+				.configure((buildImage) -> buildImage.getArchiveFile().set(bootWar.get().getArchiveFile()));
 	}
 
 	private void configureArtifactPublication(TaskProvider<BootWar> bootWar) {

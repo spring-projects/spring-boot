@@ -1,14 +1,12 @@
 [[build-image]]
 == Packaging OCI Images
-The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from an executable jar file using https://buildpacks.io[Cloud Native Buildpacks] (CNB).
+The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from a jar or war file using https://buildpacks.io[Cloud Native Buildpacks] (CNB).
 Images can be built using the `bootBuildImage` task.
 
 NOTE: For security reasons, images build and run as non-root users.
 See the {buildpacks-reference}/reference/spec/platform-api/#users[CNB specification] for more details.
 
-The task is automatically created when the `java` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
-
-NOTE: The `bootBuildImage` task is not supported with projects using <<packaging-executable-wars, war packaging>>.
+The task is automatically created when the `java` or `war` plugin is applied and is an instance of {boot-build-image-javadoc}[`BootBuildImage`].
 
 NOTE: The `bootBuildImage` task can not be used with a <<packaging-executable-configuring-launch-script, fully executable Spring Boot archive>> that includes a launch script.
 Disable launch script configuration in the `bootJar` task when building a jar file that is intended to be used with `bootBuildImage`.

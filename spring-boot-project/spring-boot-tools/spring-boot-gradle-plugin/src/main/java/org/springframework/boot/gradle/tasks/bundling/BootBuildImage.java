@@ -68,7 +68,7 @@ public class BootBuildImage extends DefaultTask {
 
 	private final Property<String> projectVersion;
 
-	private RegularFileProperty jar;
+	private RegularFileProperty archiveFile;
 
 	private Property<JavaVersion> targetJavaVersion;
 
@@ -95,7 +95,7 @@ public class BootBuildImage extends DefaultTask {
 	private final DockerSpec docker = new DockerSpec();
 
 	public BootBuildImage() {
-		this.jar = getProject().getObjects().fileProperty();
+		this.archiveFile = getProject().getObjects().fileProperty();
 		this.targetJavaVersion = getProject().getObjects().property(JavaVersion.class);
 		this.projectName = getProject().getName();
 		this.projectVersion = getProject().getObjects().property(String.class);
@@ -106,13 +106,22 @@ public class BootBuildImage extends DefaultTask {
 	}
 
 	/**
-	 * Returns the property for the jar file from which the image will be built.
-	 * @return the jar property
+	 * Returns the property for the archive file from which the image will be built.
+	 * @return the archive file property
 	 */
 	@Input
-	@Optional
+	public RegularFileProperty getArchiveFile() {
+		return this.archiveFile;
+	}
+
+	/**
+	 * Returns the property for the archive file from which the image will be built.
+	 * @return the archive file property
+	 * @deprecated since 2.5.0 in favor of {@link #getArchiveFile()}
+	 */
+	@Input
 	public RegularFileProperty getJar() {
-		return this.jar;
+		return this.archiveFile;
 	}
 
 	/**
@@ -396,17 +405,14 @@ public class BootBuildImage extends DefaultTask {
 
 	@TaskAction
 	void buildImage() throws DockerEngineException, IOException {
-		if (!this.jar.isPresent()) {
-			throw new GradleException("Executable jar file required for building image");
-		}
-		BuildRequest request = createRequest();
 		Builder builder = new Builder(this.docker.asDockerConfiguration());
+		BuildRequest request = createRequest();
 		builder.build(request);
 	}
 
 	BuildRequest createRequest() {
 		return customize(BuildRequest.of(determineImageReference(),
-				(owner) -> new ZipFileTarArchive(this.jar.get().getAsFile(), owner)));
+				(owner) -> new ZipFileTarArchive(this.archiveFile.get().getAsFile(), owner)));
 	}
 
 	private ImageReference determineImageReference() {

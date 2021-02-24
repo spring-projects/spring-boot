@@ -80,6 +80,47 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
+	void buildsImageWithWarPackaging() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "-PapplyWarPlugin",
+				"--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles())
+				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	void buildsImageWithWarPackagingAndJarConfiguration() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles())
+				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
 	void buildsImageWithCustomName() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
@@ -268,41 +309,12 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void failsWithWarPackaging() throws IOException {
-		writeMainClass();
-		writeLongNameResource();
-		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "-PapplyWarPlugin");
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains("Executable jar file required for building image");
-	}
-
-	@TestTemplate
 	void failsWithBuildpackNotInBuilder() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
 		assertThat(result.getOutput()).contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder");
-	}
-
-	@TestTemplate
-	void buildsImageWithWarPackagingAndJarConfiguration() throws IOException {
-		writeMainClass();
-		writeLongNameResource();
-		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
-		String projectName = this.gradleBuild.getProjectDir().getName();
-		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
-		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
-		assertThat(buildLibs.listFiles())
-				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
-		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
-		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
-			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
-		}
-		finally {
-			new DockerApi().image().remove(imageReference, false);
-		}
 	}
 
 	private void writeMainClass() throws IOException {

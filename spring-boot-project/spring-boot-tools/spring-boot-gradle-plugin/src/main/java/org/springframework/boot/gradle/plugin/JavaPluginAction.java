@@ -123,7 +123,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		project.getTasks().register(SpringBootPlugin.BOOT_BUILD_IMAGE_TASK_NAME, BootBuildImage.class, (buildImage) -> {
 			buildImage.setDescription("Builds an OCI image of the application using the output of the bootJar task");
 			buildImage.setGroup(BasePlugin.BUILD_GROUP);
-			buildImage.getJar().set(bootJar.get().getArchiveFile());
+			buildImage.getArchiveFile().set(bootJar.get().getArchiveFile());
 			buildImage.getTargetJavaVersion().set(javaPluginConvention(project).getTargetCompatibility());
 		});
 	}
