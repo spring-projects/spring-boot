@@ -44,7 +44,7 @@ bom {
 			]
 		}
 	}
-	library("JNA", "5.5.0") {
+	library("JNA", "5.7.0") {
 		group("net.java.dev.jna") {
 			modules = [
 				"jna-platform"
