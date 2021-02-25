@@ -88,7 +88,7 @@ bom {
 			]
 		}
 	}
-	library("Maven Resolver", "1.4.2") {
+	library("Maven Resolver", "1.6.1") {
 		group("org.apache.maven.resolver") {
 			modules = [
 				"maven-resolver-connector-basic",
