@@ -22,6 +22,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.cache.CacheManager;
+import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
@@ -60,6 +61,7 @@ class SpyBeanWithAopProxyTests {
 		verify(this.dateService, times(1)).getDate(false);
 		verify(this.dateService, times(1)).getDate(eq(false));
 		verify(this.dateService, times(1)).getDate(anyBoolean());
+		this.dateService.clearCache();
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -91,6 +93,8 @@ class SpyBeanWithAopProxyTests {
 			return System.nanoTime();
 		}
 
+		@CacheEvict(value = "test", allEntries = true)
+		public void clearCache() {}
 	}
 
 }
