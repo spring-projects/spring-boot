@@ -24,6 +24,7 @@ import java.util.NoSuchElementException;
 import java.util.Random;
 import java.util.function.Function;
 
+import org.springframework.boot.env.Prefixed;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
@@ -63,6 +64,9 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 			return result;
 		}
 		result = SpringConfigurationPropertySource.from(source);
+		if (source instanceof Prefixed) {
+			result = result.withPrefix(((Prefixed) source).getPrefix());
+		}
 		this.cache.put(source, result);
 		return result;
 	}

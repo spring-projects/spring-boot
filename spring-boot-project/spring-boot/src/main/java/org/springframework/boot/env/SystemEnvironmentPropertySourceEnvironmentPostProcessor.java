@@ -27,11 +27,12 @@ import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
+import org.springframework.util.StringUtils;
 
 /**
  * An {@link EnvironmentPostProcessor} that replaces the systemEnvironment
  * {@link SystemEnvironmentPropertySource} with an
- * {@link OriginAwareSystemEnvironmentPropertySource} that can track the
+ * {@link OriginAndPrefixAwareSystemEnvironmentPropertySource} that can track the
  * {@link SystemEnvironmentOrigin} for every system environment property.
  *
  * @author Madhura Bhave
@@ -51,16 +52,16 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 		String sourceName = StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME;
 		PropertySource<?> propertySource = environment.getPropertySources().get(sourceName);
 		if (propertySource != null) {
-			replacePropertySource(environment, sourceName, propertySource);
+			replacePropertySource(environment, sourceName, propertySource, application.getEnvironmentPrefix());
 		}
 	}
 
 	@SuppressWarnings("unchecked")
 	private void replacePropertySource(ConfigurableEnvironment environment, String sourceName,
-			PropertySource<?> propertySource) {
+			PropertySource<?> propertySource, String environmentPrefix) {
 		Map<String, Object> originalSource = (Map<String, Object>) propertySource.getSource();
-		SystemEnvironmentPropertySource source = new OriginAwareSystemEnvironmentPropertySource(sourceName,
-				originalSource);
+		SystemEnvironmentPropertySource source = new OriginAndPrefixAwareSystemEnvironmentPropertySource(sourceName,
+				originalSource, environmentPrefix);
 		environment.getPropertySources().replace(sourceName, source);
 	}
 
@@ -76,11 +77,36 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 	/**
 	 * {@link SystemEnvironmentPropertySource} that also tracks {@link Origin}.
 	 */
-	protected static class OriginAwareSystemEnvironmentPropertySource extends SystemEnvironmentPropertySource
-			implements OriginLookup<String> {
+	protected static class OriginAndPrefixAwareSystemEnvironmentPropertySource extends SystemEnvironmentPropertySource
+			implements OriginLookup<String>, Prefixed {
 
-		OriginAwareSystemEnvironmentPropertySource(String name, Map<String, Object> source) {
+		private final String environmentPrefix;
+
+		OriginAndPrefixAwareSystemEnvironmentPropertySource(String name, Map<String, Object> source,
+				String environmentPrefix) {
 			super(name, source);
+			this.environmentPrefix = getEnvironmentPrefix(environmentPrefix);
+		}
+
+		private String getEnvironmentPrefix(String environmentPrefix) {
+			String prefix = environmentPrefix;
+			if (!StringUtils.hasText(environmentPrefix)) {
+				return "";
+			}
+			if (environmentPrefix.endsWith(".") || environmentPrefix.endsWith("_") || environmentPrefix.endsWith("-")) {
+				prefix = environmentPrefix.substring(0, environmentPrefix.length() - 1);
+			}
+			return prefix;
+		}
+
+		@Override
+		public boolean containsProperty(String name) {
+			return super.containsProperty(name);
+		}
+
+		@Override
+		public Object getProperty(String name) {
+			return super.getProperty(name);
 		}
 
 		@Override
@@ -90,6 +116,11 @@ public class SystemEnvironmentPropertySourceEnvironmentPostProcessor implements 
 				return new SystemEnvironmentOrigin(property);
 			}
 			return null;
+		}
+
+		@Override
+		public String getPrefix() {
+			return this.environmentPrefix;
 		}
 
 	}

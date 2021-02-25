@@ -75,6 +75,15 @@ public interface ConfigurationPropertySource {
 	}
 
 	/**
+	 * Return a variant of this source that supports a prefix.
+	 * @param prefix the prefix for properties in the source
+	 * @return a {@link ConfigurationPropertySource} instance supporting a prefix
+	 */
+	default ConfigurationPropertySource withPrefix(String prefix) {
+		return new PrefixedConfigurationPropertySource(this, prefix);
+	}
+
+	/**
 	 * Return the underlying source that is actually providing the properties.
 	 * @return the underlying property source or {@code null}.
 	 */

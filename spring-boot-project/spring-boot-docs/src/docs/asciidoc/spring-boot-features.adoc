@@ -996,6 +996,14 @@ The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` a
 If `max` is provided, then `value` is the minimum value and `max` is the maximum value (exclusive).
 
 
+[[boot-features-external-config-system-environment]]
+=== Configuring System Environment Properties
+Spring Boot supports setting a prefix for environment properties.
+This is useful if the system environment is shared by multiple Spring Boot applications with different configuration requirements.
+The prefix for system environment properties can be set directly on `SpringApplication`.
+
+For example, if you set the prefix to `input`, a property such as `foo.bar` will also be resolved as `input.foo.bar` in the system environment.
+
 
 [[boot-features-external-config-typesafe-configuration-properties]]
 === Type-safe Configuration Properties

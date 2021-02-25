@@ -246,6 +246,8 @@ public class SpringApplication {
 
 	private boolean lazyInitialization = false;
 
+	private String environmentPrefix;
+
 	private ApplicationContextFactory applicationContextFactory = ApplicationContextFactory.DEFAULT;
 
 	private ApplicationStartup applicationStartup = ApplicationStartup.DEFAULT;
@@ -362,6 +364,9 @@ public class SpringApplication {
 		listeners.environmentPrepared(bootstrapContext, environment);
 		DefaultPropertiesPropertySource.moveToEnd(environment);
 		configureAdditionalProfiles(environment);
+		if (environment.getProperty("spring.main.environment-prefix") != null) {
+			throw new IllegalStateException("Environment prefix cannot be set via properties.");
+		}
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
@@ -1172,6 +1177,14 @@ public class SpringApplication {
 	public void setResourceLoader(ResourceLoader resourceLoader) {
 		Assert.notNull(resourceLoader, "ResourceLoader must not be null");
 		this.resourceLoader = resourceLoader;
+	}
+
+	public String getEnvironmentPrefix() {
+		return this.environmentPrefix;
+	}
+
+	public void setEnvironmentPrefix(String environmentPrefix) {
+		this.environmentPrefix = environmentPrefix;
 	}
 
 	/**

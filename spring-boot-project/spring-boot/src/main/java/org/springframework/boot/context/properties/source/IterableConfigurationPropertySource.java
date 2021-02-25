@@ -73,4 +73,9 @@ public interface IterableConfigurationPropertySource
 		return new AliasedIterableConfigurationPropertySource(this, aliases);
 	}
 
+	@Override
+	default IterableConfigurationPropertySource withPrefix(String prefix) {
+		return new PrefixedIterableConfigurationPropertySource(this, prefix);
+	}
+
 }
