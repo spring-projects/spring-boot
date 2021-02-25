@@ -25,6 +25,7 @@ import org.jooq.SQLDialect;
 import org.jooq.impl.DefaultExecuteListener;
 
 import org.springframework.dao.DataAccessException;
+import org.springframework.jdbc.UncategorizedSQLException;
 import org.springframework.jdbc.support.SQLErrorCodeSQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLExceptionTranslator;
 import org.springframework.jdbc.support.SQLStateSQLExceptionTranslator;
@@ -80,6 +81,9 @@ public class JooqExceptionTranslator extends DefaultExecuteListener {
 	private void handle(ExecuteContext context, SQLExceptionTranslator translator, SQLException exception) {
 		DataAccessException translated = translate(context, translator, exception);
 		if (exception.getNextException() == null) {
+			if (translated == null) {
+				translated = new UncategorizedSQLException("jOOQ", context.sql(), exception);
+			}
 			context.exception(translated);
 		}
 		else {

@@ -26,6 +26,7 @@ import org.junit.jupiter.params.provider.MethodSource;
 import org.mockito.ArgumentCaptor;
 
 import org.springframework.jdbc.BadSqlGrammarException;
+import org.springframework.jdbc.UncategorizedSQLException;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -41,9 +42,10 @@ class JooqExceptionTranslatorTests {
 
 	private final JooqExceptionTranslator exceptionTranslator = new JooqExceptionTranslator();
 
-	@ParameterizedTest(name = "{0}")
+	@ParameterizedTest(name = "{0} {2}")
 	@MethodSource
-	void exceptionTranslation(SQLDialect dialect, SQLException sqlException) {
+	void exceptionTranslation(SQLDialect dialect, SQLException sqlException,
+			Class<? extends RuntimeException> expectedExceptionClass) {
 		ExecuteContext context = mock(ExecuteContext.class);
 		Configuration configuration = mock(Configuration.class);
 		given(context.configuration()).willReturn(configuration);
@@ -52,17 +54,18 @@ class JooqExceptionTranslatorTests {
 		this.exceptionTranslator.exception(context);
 		ArgumentCaptor<RuntimeException> captor = ArgumentCaptor.forClass(RuntimeException.class);
 		verify(context).exception(captor.capture());
-		assertThat(captor.getValue()).isInstanceOf(BadSqlGrammarException.class);
+		assertThat(captor.getValue()).isInstanceOf(expectedExceptionClass);
 	}
 
 	static Object[] exceptionTranslation() {
-		return new Object[] { new Object[] { SQLDialect.DERBY, sqlException("42802") },
-				new Object[] { SQLDialect.H2, sqlException(42000) },
-				new Object[] { SQLDialect.HSQLDB, sqlException(-22) },
-				new Object[] { SQLDialect.MARIADB, sqlException(1054) },
-				new Object[] { SQLDialect.MYSQL, sqlException(1054) },
-				new Object[] { SQLDialect.POSTGRES, sqlException("03000") },
-				new Object[] { SQLDialect.SQLITE, sqlException("21000") } };
+		return new Object[] { new Object[] { SQLDialect.DERBY, sqlException("42802"), BadSqlGrammarException.class },
+				new Object[] { SQLDialect.H2, sqlException(42000), BadSqlGrammarException.class },
+				new Object[] { SQLDialect.HSQLDB, sqlException(-22), BadSqlGrammarException.class },
+				new Object[] { SQLDialect.MARIADB, sqlException(1054), BadSqlGrammarException.class },
+				new Object[] { SQLDialect.MYSQL, sqlException(1054), BadSqlGrammarException.class },
+				new Object[] { SQLDialect.POSTGRES, sqlException("03000"), BadSqlGrammarException.class },
+				new Object[] { SQLDialect.SQLITE, sqlException("21000"), BadSqlGrammarException.class },
+				new Object[] { SQLDialect.DEFAULT, sqlException(null), UncategorizedSQLException.class } };
 	}
 
 	private static SQLException sqlException(String sqlState) {
