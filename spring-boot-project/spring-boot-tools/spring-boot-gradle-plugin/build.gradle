@@ -64,6 +64,7 @@ task preparePluginValidationClasses(type: Copy) {
 
 validatePlugins {
 	classes.setFrom preparePluginValidationClasses
+	enableStricterValidation = true
 }
 
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
