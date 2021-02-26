@@ -110,12 +110,6 @@ public class EntityManagerFactoryBuilder {
 	/**
 	 * Set the PersistenceUnitPostProcessors to be applied to the PersistenceUnitInfo used
 	 * for creating this EntityManagerFactory.
-	 * <p>
-	 * Such post-processors can, for example, register further entity classes and jar
-	 * files, in addition to the metadata read from {@code persistence.xml}.
-	 * <p>
-	 * <b>NOTE: Only applied if no external PersistenceUnitManager specified.</b>
-	 * {@link LocalContainerEntityManagerFactoryBean#setPersistenceUnitPostProcessors}
 	 * @param persistenceUnitPostProcessors internal persistence unit post processors
 	 * @since 2.5.0
 	 */
