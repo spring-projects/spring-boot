@@ -29,6 +29,7 @@ import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -57,6 +58,8 @@ public class EntityManagerFactoryBuilder {
 	private final URL persistenceUnitRootLocation;
 
 	private AsyncTaskExecutor bootstrapExecutor;
+
+	private PersistenceUnitPostProcessor[] persistenceUnitPostProcessors;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -102,6 +105,16 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public void setBootstrapExecutor(AsyncTaskExecutor bootstrapExecutor) {
 		this.bootstrapExecutor = bootstrapExecutor;
+	}
+
+	/**
+	 * Set the PersistenceUnitPostProcessors to be applied to the PersistenceUnitInfo used
+	 * for creating this EntityManagerFactory.
+	 * @param persistenceUnitPostProcessors internal persistence unit post processors
+	 * @since 2.5.0
+	 */
+	public void setPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
+		this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
 	}
 
 	/**
@@ -232,6 +245,8 @@ public class EntityManagerFactoryBuilder {
 			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
 				entityManagerFactoryBean.setBootstrapExecutor(EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
+			entityManagerFactoryBean
+					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
 			return entityManagerFactoryBean;
 		}
 
