@@ -42,24 +42,24 @@ class InfluxDbHealthIndicatorTests {
 	void influxDbIsUp() {
 		Pong pong = mock(Pong.class);
 		given(pong.getVersion()).willReturn("0.9");
-		InfluxDB influxDB = mock(InfluxDB.class);
-		given(influxDB.ping()).willReturn(pong);
-		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);
+		InfluxDB influxDb = mock(InfluxDB.class);
+		given(influxDb.ping()).willReturn(pong);
+		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDb);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails().get("version")).isEqualTo("0.9");
-		verify(influxDB).ping();
+		verify(influxDb).ping();
 	}
 
 	@Test
 	void influxDbIsDown() {
-		InfluxDB influxDB = mock(InfluxDB.class);
-		given(influxDB.ping()).willThrow(new InfluxDBException(new IOException("Connection failed")));
-		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDB);
+		InfluxDB influxDb = mock(InfluxDB.class);
+		given(influxDb.ping()).willThrow(new InfluxDBException(new IOException("Connection failed")));
+		InfluxDbHealthIndicator healthIndicator = new InfluxDbHealthIndicator(influxDb);
 		Health health = healthIndicator.health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
 		assertThat((String) health.getDetails().get("error")).contains("Connection failed");
-		verify(influxDB).ping();
+		verify(influxDb).ping();
 	}
 
 }
