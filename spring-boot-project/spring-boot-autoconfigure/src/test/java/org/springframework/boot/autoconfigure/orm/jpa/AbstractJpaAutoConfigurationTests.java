@@ -21,6 +21,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import javax.persistence.EntityManagerFactory;
+import javax.persistence.spi.PersistenceUnitInfo;
 import javax.sql.DataSource;
 
 import org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform;
@@ -229,6 +230,21 @@ abstract class AbstractJpaAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void customPersistenceUnitPostProcessors() {
+		this.contextRunner.withUserConfiguration(
+				TestConfigurationWithCustomPersistenceUnitPostProcessors.class)
+				.run(context -> {
+					LocalContainerEntityManagerFactoryBean entityManagerFactoryBean =
+							context.getBean(LocalContainerEntityManagerFactoryBean.class);
+					PersistenceUnitInfo persistenceUnitInfo =
+							entityManagerFactoryBean.getPersistenceUnitInfo();
+					assertThat(persistenceUnitInfo).isNotNull();
+					assertThat(persistenceUnitInfo.getManagedClassNames())
+							.contains("customized.attribute.converter.class.name");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class TestTwoDataSourcesConfiguration {
 
@@ -386,6 +402,19 @@ abstract class AbstractJpaAutoConfigurationTests {
 			return persistenceUnitManager;
 		}
 
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(AbstractJpaAutoConfigurationTests.class)
+	static class TestConfigurationWithCustomPersistenceUnitPostProcessors {
+
+		@Bean
+		EntityManagerFactoryBuilderCustomizer entityManagerFactoryBuilderCustomizer() {
+			return builder -> builder.setPersistenceUnitPostProcessors(
+					pui -> pui.addManagedClassName(
+							"customized.attribute.converter.class.name")
+			);
+		}
 	}
 
 	@SuppressWarnings("serial")
