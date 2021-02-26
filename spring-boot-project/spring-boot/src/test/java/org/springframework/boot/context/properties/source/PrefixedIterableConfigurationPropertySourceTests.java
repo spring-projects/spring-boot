@@ -38,4 +38,15 @@ class PrefixedIterableConfigurationPropertySourceTests {
 				ConfigurationPropertyName.of("foo.baz"), ConfigurationPropertyName.of("hello.bing"));
 	}
 
+	@Test
+	void emptyPrefixShouldReturnOriginalStream() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("my.foo.bar", "bing");
+		source.put("my.foo.baz", "biff");
+		source.put("hello.bing", "blah");
+		IterableConfigurationPropertySource prefixed = source.withPrefix("");
+		assertThat(prefixed.stream()).containsExactly(ConfigurationPropertyName.of("my.foo.bar"),
+				ConfigurationPropertyName.of("my.foo.baz"), ConfigurationPropertyName.of("hello.bing"));
+	}
+
 }

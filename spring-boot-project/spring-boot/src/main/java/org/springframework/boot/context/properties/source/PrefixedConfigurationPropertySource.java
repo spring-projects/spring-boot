@@ -47,7 +47,10 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 	}
 
 	private ConfigurationPropertyName getPrefixedName(ConfigurationPropertyName name) {
-		String prefix = (StringUtils.hasText(this.prefix)) ? this.prefix + "." : "";
+		if (!StringUtils.hasText(this.prefix)) {
+			return name;
+		}
+		String prefix = this.prefix + ".";
 		return ConfigurationPropertyName.of(prefix + name);
 	}
 
