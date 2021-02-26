@@ -242,6 +242,13 @@ class PackagingDocumentationTests {
 		assertThat(result.getOutput()).contains("example.com/library/" + this.gradleBuild.getProjectDir().getName());
 	}
 
+	@TestTemplate
+	void bootBuildImagePublish() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-publish")
+				.build("bootBuildImagePublish");
+		assertThat(result.getOutput()).contains("true");
+	}
+
 	protected void jarFile(File file) throws IOException {
 		try (JarOutputStream jar = new JarOutputStream(new FileOutputStream(file))) {
 			jar.putNextEntry(new ZipEntry("META-INF/MANIFEST.MF"));
