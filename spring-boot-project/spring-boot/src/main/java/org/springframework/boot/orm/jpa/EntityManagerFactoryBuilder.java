@@ -128,13 +128,13 @@ public class EntityManagerFactoryBuilder {
 	 */
 	public final class Builder {
 
-		private final DataSource dataSource;
+		private DataSource dataSource;
 
 		private String[] packagesToScan;
 
 		private String persistenceUnit;
 
-		private final Map<String, Object> properties = new HashMap<>();
+		private Map<String, Object> properties = new HashMap<>();
 
 		private String[] mappingResources;
 
