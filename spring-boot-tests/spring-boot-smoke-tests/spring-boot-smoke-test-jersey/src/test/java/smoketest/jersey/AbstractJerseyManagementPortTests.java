@@ -43,8 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
-		properties = { "management.server.port=0", "debug=true" })
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "management.server.port=0")
 @Import(ResourceConfigConfiguration.class)
 class AbstractJerseyManagementPortTests {
 
