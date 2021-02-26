@@ -29,6 +29,7 @@ import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.persistenceunit.PersistenceUnitManager;
+import org.springframework.orm.jpa.persistenceunit.PersistenceUnitPostProcessor;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
@@ -57,6 +58,8 @@ public class EntityManagerFactoryBuilder {
 	private final URL persistenceUnitRootLocation;
 
 	private AsyncTaskExecutor bootstrapExecutor;
+
+	private PersistenceUnitPostProcessor[] persistenceUnitPostProcessors;
 
 	/**
 	 * Create a new instance passing in the common pieces that will be shared if multiple
@@ -105,17 +108,33 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
+	 * Set the PersistenceUnitPostProcessors to be applied to the PersistenceUnitInfo used
+	 * for creating this EntityManagerFactory.
+	 * <p>
+	 * Such post-processors can, for example, register further entity classes and jar
+	 * files, in addition to the metadata read from {@code persistence.xml}.
+	 * <p>
+	 * <b>NOTE: Only applied if no external PersistenceUnitManager specified.</b>
+	 * {@link LocalContainerEntityManagerFactoryBean#setPersistenceUnitPostProcessors}
+	 * @param persistenceUnitPostProcessors internal persistence unit post processors
+	 * @since 2.5.0
+	 */
+	public void setPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
+		this.persistenceUnitPostProcessors = persistenceUnitPostProcessors;
+	}
+
+	/**
 	 * A fluent builder for a LocalContainerEntityManagerFactoryBean.
 	 */
 	public final class Builder {
 
-		private DataSource dataSource;
+		private final DataSource dataSource;
 
 		private String[] packagesToScan;
 
 		private String persistenceUnit;
 
-		private Map<String, Object> properties = new HashMap<>();
+		private final Map<String, Object> properties = new HashMap<>();
 
 		private String[] mappingResources;
 
@@ -232,6 +251,8 @@ public class EntityManagerFactoryBuilder {
 			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
 				entityManagerFactoryBean.setBootstrapExecutor(EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
+			entityManagerFactoryBean
+					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
 			return entityManagerFactoryBean;
 		}
 
