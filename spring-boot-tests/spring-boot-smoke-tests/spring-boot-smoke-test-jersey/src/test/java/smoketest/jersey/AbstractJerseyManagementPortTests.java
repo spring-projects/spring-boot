@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import javax.ws.rs.Path;
 
 import org.glassfish.jersey.server.ResourceConfig;
 import org.junit.jupiter.api.Test;
+import smoketest.jersey.AbstractJerseyManagementPortTests.ResourceConfigConfiguration;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.actuate.autoconfigure.web.server.LocalManagementPort;
@@ -30,18 +31,22 @@ import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Import;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Integration tests for separate management and main service ports.
+ * Base class for integration tests for Jersey using separate management and main service
+ * ports.
  *
  * @author Madhura Bhave
  */
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT, properties = "management.server.port=0")
-class JerseyManagementPortTests {
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT,
+		properties = { "management.server.port=0", "debug=true" })
+@Import(ResourceConfigConfiguration.class)
+class AbstractJerseyManagementPortTests {
 
 	@LocalServerPort
 	private int port;
@@ -64,6 +69,20 @@ class JerseyManagementPortTests {
 	void resourceShouldNotBeAvailableOnManagementPort() {
 		ResponseEntity<String> entity = this.testRestTemplate
 				.getForEntity("http://localhost:" + this.managementPort + "/test", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+	}
+
+	@Test
+	void actuatorShouldBeAvailableOnManagementPort() {
+		ResponseEntity<String> entity = this.testRestTemplate
+				.getForEntity("http://localhost:" + this.managementPort + "/actuator/health", String.class);
+		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
+	}
+
+	@Test
+	void actuatorShouldNotBeAvailableOnMainPort() {
+		ResponseEntity<String> entity = this.testRestTemplate
+				.getForEntity("http://localhost:" + this.port + "/actuator/health", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
