@@ -44,7 +44,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Deployment integration tests.
  */
 @DisabledIfDockerUnavailable
-class DeploymentIntegrationTests {
+class AbstractDeploymentIntegrationTests {
 
 	@ParameterizedTest
 	@MethodSource("deployedApplications")
