@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,21 +18,17 @@ package sample;
 
 import java.io.File;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
 import java.util.function.Consumer;
 
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.client.StandardHttpRequestRetryHandler;
 import org.awaitility.Awaitility;
 import org.awaitility.core.ConditionTimeoutException;
-import org.junit.jupiter.params.ParameterizedTest;
-import org.junit.jupiter.params.provider.MethodSource;
+import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.boot.testsupport.testcontainers.DisabledIfDockerUnavailable;
 import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -41,102 +37,88 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Deployment integration tests.
+ * Abstract class for deployment integration tests.
  */
-@DisabledIfDockerUnavailable
-class AbstractDeploymentIntegrationTests {
+abstract class AbstractDeploymentIntegrationTests {
 
-	@ParameterizedTest
-	@MethodSource("deployedApplications")
-	void home(DeployedApplication app) {
-		app.test((rest) -> {
+	protected static final int DEFAULT_PORT = 8080;
+
+	@Test
+	void home() {
+		getDeployedApplication().test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/", String.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 			assertThat(response.getBody()).isEqualTo("Hello World");
 		});
 	}
 
-	@ParameterizedTest
-	@MethodSource("deployedApplications")
-	void health(DeployedApplication application) {
-		application.test((rest) -> {
+	@Test
+	void health() {
+		getDeployedApplication().test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/actuator/health", String.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 			assertThat(response.getBody()).isEqualTo("{\"status\":\"UP\"}");
 		});
 	}
 
-	@ParameterizedTest
-	@MethodSource("deployedApplications")
-	void conditionalOnWarShouldBeTrue(DeployedApplication application) throws Exception {
-		application.test((rest) -> {
+	@Test
+	void conditionalOnWarShouldBeTrue() {
+		getDeployedApplication().test((rest) -> {
 			ResponseEntity<String> response = rest.getForEntity("/actuator/war", String.class);
 			assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
 			assertThat(response.getBody()).isEqualTo("{\"hello\":\"world\"}");
 		});
 	}
 
-	static List<DeployedApplication> deployedApplications() {
-		return Arrays.asList(
-				new DeployedApplication("openliberty/open-liberty:20.0.0.9-kernel-java8-openj9-ubi", "/config/dropins",
-						9080),
-				new DeployedApplication("tomcat:9.0.37-jdk8-openjdk", "/usr/local/tomcat/webapps", 8080),
-				new DeployedApplication("tomee:8-jre-8.0.2-webprofile", "/usr/local/tomee/webapps", 8080),
-				new DeployedApplication("jboss/wildfly:20.0.1.Final", "/opt/jboss/wildfly/standalone/deployments",
-						8080));
+	private DeployedApplication getDeployedApplication() {
+		return new DeployedApplication(getContainer(), getPort());
 	}
 
-	public static final class DeployedApplication {
+	protected int getPort() {
+		return DEFAULT_PORT;
+	}
 
-		private final String baseImage;
+	abstract WarDeploymentContainer getContainer();
 
-		private final String deploymentLocation;
+	static final class DeployedApplication {
+
+		private final WarDeploymentContainer container;
 
 		private final int port;
 
-		private DeployedApplication(String baseImage, String deploymentLocation, int port) {
-			this.baseImage = baseImage;
-			this.deploymentLocation = deploymentLocation;
+		DeployedApplication(WarDeploymentContainer container, int port) {
+			this.container = container;
 			this.port = port;
 		}
 
 		private void test(Consumer<TestRestTemplate> consumer) {
-			try (WarDeploymentContainer container = new WarDeploymentContainer(this.baseImage, this.deploymentLocation,
-					this.port)) {
-				container.start();
-				TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
-						.rootUri("http://" + container.getHost() + ":" + container.getMappedPort(this.port)
-								+ "/spring-boot")
-						.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
-								.setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
-				try {
-					Awaitility.await().atMost(Duration.ofMinutes(10)).until(() -> {
-						try {
-							consumer.accept(rest);
-							return true;
-						}
-						catch (Throwable ex) {
-							return false;
-						}
-					});
-				}
-				catch (ConditionTimeoutException ex) {
-					System.out.println(container.getLogs());
-					throw ex;
-				}
+			TestRestTemplate rest = new TestRestTemplate(new RestTemplateBuilder()
+					.rootUri("http://" + this.container.getHost() + ":" + this.container.getMappedPort(this.port)
+							+ "/spring-boot")
+					.requestFactory(() -> new HttpComponentsClientHttpRequestFactory(HttpClients.custom()
+							.setRetryHandler(new StandardHttpRequestRetryHandler(10, false)).build())));
+			try {
+				Awaitility.await().atMost(Duration.ofMinutes(10)).until(() -> {
+					try {
+						consumer.accept(rest);
+						return true;
+					}
+					catch (Throwable ex) {
+						return false;
+					}
+				});
 			}
-		}
-
-		@Override
-		public String toString() {
-			return this.baseImage;
+			catch (ConditionTimeoutException ex) {
+				System.out.println(this.container.getLogs());
+				throw ex;
+			}
 		}
 
 	}
 
-	private static final class WarDeploymentContainer extends GenericContainer<WarDeploymentContainer> {
+	static final class WarDeploymentContainer extends GenericContainer<WarDeploymentContainer> {
 
-		private WarDeploymentContainer(String baseImage, String deploymentLocation, int port) {
+		WarDeploymentContainer(String baseImage, String deploymentLocation, int port) {
 			super(new ImageFromDockerfile().withFileFromFile("spring-boot.war", findWarToDeploy())
 					.withDockerfileFromBuilder((builder) -> builder.from(baseImage)
 							.add("spring-boot.war", deploymentLocation + "/spring-boot.war").build()));
