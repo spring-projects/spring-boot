@@ -50,7 +50,7 @@ class ConditionalOnEnabledMetricsExportAutoConfigurationTests {
 	}
 
 	@Test
-	void exporterCanBeGloballyDisabledWitSpecificOverride() {
+	void exporterCanBeGloballyDisabledWithSpecificOverride() {
 		this.contextRunner
 				.withPropertyValues("management.metrics.export.defaults.enabled=false",
 						"management.metrics.export.simple.enabled=true")
