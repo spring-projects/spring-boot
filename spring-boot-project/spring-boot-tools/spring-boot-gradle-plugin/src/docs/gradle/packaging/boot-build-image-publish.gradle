@@ -21,3 +21,9 @@ bootBuildImage {
 	}
 }
 // end::publish[]
+
+task bootBuildImagePublish {
+    doFirst {
+        println(tasks.bootBuildImage.publish)
+    }
+}
