@@ -330,31 +330,31 @@ public class FlywayProperties {
 	private Boolean skipExecutingMigrations;
 
 	/**
-	 * The REST API URL of the Conjur server. Requires Flyway teams.
+	 * REST API URL of the Conjur server. Requires Flyway teams.
 	 */
 	private String conjurUrl;
 
 	/**
-	 * The Conjur token required to access secrets. Requires Flyway teams.
+	 * Conjur token required to access secrets. Requires Flyway teams.
 	 */
 	private String conjurToken;
 
 	/**
-	 * The REST API URL of the Vault server. Requires Flyway teams.
+	 * REST API URL of the Vault server. Requires Flyway teams.
 	 */
 	private String vaultUrl;
 
 	/**
-	 * The Vault token required to access secrets. Requires Flyway teams.
+	 * Vault token required to access secrets. Requires Flyway teams.
 	 */
 	private String vaultToken;
 
 	/**
-	 * A comma-separated list of paths to secrets that contain Flyway configurations. Each
+	 * Comma-separated list of paths to secrets that contain Flyway configurations. Each
 	 * path must start with the name of the engine and end with the name of the secret
 	 * such 'kv/test/1/config'. Requires Flyway teams.
 	 */
-	private String vaultSecrets;
+	private List<String> vaultSecrets;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -832,11 +832,11 @@ public class FlywayProperties {
 		this.vaultToken = vaultToken;
 	}
 
-	public String getVaultSecrets() {
+	public List<String> getVaultSecrets() {
 		return vaultSecrets;
 	}
 
-	public void setVaultSecrets(String vaultSecrets) {
+	public void setVaultSecrets(List<String> vaultSecrets) {
 		this.vaultSecrets = vaultSecrets;
 	}
 

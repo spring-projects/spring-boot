@@ -254,7 +254,7 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getVaultUrl()).whenNonNull().to((vaultUrl) -> configuration.vaultUrl(vaultUrl));
 			map.from(properties.getVaultToken()).whenNonNull().to((vaultToken) -> configuration.vaultToken(vaultToken));
 			map.from(properties.getVaultSecrets()).whenNonNull()
-					.to((vaultSecrets) -> configuration.vaultSecrets(vaultSecrets));
+					.to((vaultSecrets) -> configuration.vaultSecrets(vaultSecrets.toArray(new String[0])));
 		}
 
 		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
