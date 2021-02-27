@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,10 @@ package org.springframework.boot.cloud;
 
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +39,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link CloudPlatform}.
  *
  * @author Phillip Webb
+ * @author Nguyen Sach
  */
 class CloudPlatformTests {
 
@@ -175,6 +179,18 @@ class CloudPlatformTests {
 	void isEnforcedWhenBinderPropertyIsMissingReturnsFalse() {
 		Binder binder = new Binder(new MockConfigurationPropertySource());
 		assertThat(CloudPlatform.KUBERNETES.isEnforced(binder)).isFalse();
+	}
+
+	@Test
+	void isActiveWhenNoCloudPlatformIsEnforcedAndHasKubernetesServiceHostAndKubernetesServicePort() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("EXAMPLE_SERVICE_HOST", "---");
+		envVars.put("EXAMPLE_SERVICE_PORT", "8080");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
+		((MockEnvironment) environment).setProperty("spring.main.cloud-platform", "none");
+		List<CloudPlatform> activeCloudPlatforms = Stream.of(CloudPlatform.values())
+				.filter((cloudPlatform) -> cloudPlatform.isActive(environment)).collect(Collectors.toList());
+		assertThat(activeCloudPlatforms).containsExactly(CloudPlatform.NONE);
 	}
 
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {
