@@ -91,6 +91,7 @@ import org.springframework.util.StringUtils;
  * @author Dan Zheng
  * @author András Deák
  * @author Semyon Danilov
+ * @author Chris Bono
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -245,6 +246,15 @@ public class FlywayAutoConfiguration {
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getSkipExecutingMigrations()).whenNonNull()
 					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
+			// Teams secrets management properties (all non-method reference for
+			// compatibility with Flyway 6.x)
+			map.from(properties.getConjurUrl()).whenNonNull().to((conjurUrl) -> configuration.conjurUrl(conjurUrl));
+			map.from(properties.getConjurToken()).whenNonNull()
+					.to((conjurToken) -> configuration.conjurToken(conjurToken));
+			map.from(properties.getVaultUrl()).whenNonNull().to((vaultUrl) -> configuration.vaultUrl(vaultUrl));
+			map.from(properties.getVaultToken()).whenNonNull().to((vaultToken) -> configuration.vaultToken(vaultToken));
+			map.from(properties.getVaultSecrets()).whenNonNull()
+					.to((vaultSecrets) -> configuration.vaultSecrets(vaultSecrets.toArray(new String[0])));
 		}
 
 		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {

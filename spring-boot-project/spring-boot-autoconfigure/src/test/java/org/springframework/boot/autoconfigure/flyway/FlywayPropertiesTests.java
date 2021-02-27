@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link FlywayProperties}.
  *
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class FlywayPropertiesTests {
 
@@ -108,9 +109,6 @@ class FlywayPropertiesTests {
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");
-		// Teams-only properties that we cannot detect as no exception is thrown and
-		// getters return null
-		ignoreProperties(configuration, "conjurToken", "conjurUrl", "vaultSecrets", "vaultToken", "vaultUrl");
 		// Handled as initSql array
 		ignoreProperties(configuration, "initSql");
 		ignoreProperties(properties, "initSqls");
