@@ -4929,7 +4929,7 @@ If the connection to InfluxDB requires a user and password, you can set the `spr
 InfluxDB relies on OkHttp.
 If you need to tune the http client `InfluxDB` uses behind the scenes, you can register an `InfluxDbOkHttpClientBuilderProvider` bean.
 
-If you need more control over the configuration, consider registering a `InfluxDbCustomizer` bean.
+If you need more control over the configuration, consider registering an `InfluxDbCustomizer` bean.
 
 
 
@@ -6255,7 +6255,7 @@ The thread pool uses one thread by default and its settings can be fine-tuned us
 	spring:
 	  task:
 	    scheduling:
-          thread-name-prefix: "scheduling-"
+	      thread-name-prefix: "scheduling-"
 	      pool:
 	        size: 2
 ----

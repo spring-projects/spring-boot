@@ -87,8 +87,8 @@ class InfluxDbAutoConfigurationTests {
 	}
 
 	private int getReadTimeoutProperty(AssertableApplicationContext context) {
-		InfluxDB influxDB = context.getBean(InfluxDB.class);
-		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDB, "retrofit");
+		InfluxDB influxDb = context.getBean(InfluxDB.class);
+		Retrofit retrofit = (Retrofit) ReflectionTestUtils.getField(influxDb, "retrofit");
 		OkHttpClient callFactory = (OkHttpClient) retrofit.callFactory();
 		return callFactory.readTimeoutMillis();
 	}

@@ -30,8 +30,8 @@ public interface InfluxDbCustomizer {
 
 	/**
 	 * Customize the {@link InfluxDB}.
-	 * @param influxDB the influxDB instance to customize
+	 * @param influxDb the InfluxDB instance to customize
 	 */
-	void customize(InfluxDB influxDB);
+	void customize(InfluxDB influxDb);
 
 }

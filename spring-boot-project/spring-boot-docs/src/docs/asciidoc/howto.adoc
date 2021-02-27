@@ -2349,7 +2349,7 @@ The sensitive portion of the URI is identified using the format `<scheme>://<use
 For example, for the property `myclient.uri=http://user1:password1@localhost:8081`, the resulting sanitized value is
 `++http://user1:******@localhost:8081++`.
 
-The defaults patterns used by the `env` and `configprops` endpoints can be replaced using configprop:management.endpoint.env.keys-to-sanitize[] and configprop:management.endpoint.configprops.keys-to-sanitize[] respectively.
+The default patterns used by the `env` and `configprops` endpoints can be replaced using configprop:management.endpoint.env.keys-to-sanitize[] and configprop:management.endpoint.configprops.keys-to-sanitize[] respectively.
 Alternatively, additional patterns can be configured using configprop:management.endpoint.env.additional-keys-to-sanitize[] and configprop:management.endpoint.configprops.additional-keys-to-sanitize[].
 
 
