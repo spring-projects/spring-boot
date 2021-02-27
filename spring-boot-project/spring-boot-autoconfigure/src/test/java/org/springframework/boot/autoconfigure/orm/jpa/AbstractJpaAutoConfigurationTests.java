@@ -233,7 +233,7 @@ abstract class AbstractJpaAutoConfigurationTests {
 	@Test
 	void customPersistenceUnitPostProcessors() {
 		this.contextRunner.withUserConfiguration(TestConfigurationWithCustomPersistenceUnitPostProcessors.class)
-				.run(context -> {
+				.run((context) -> {
 					LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = context
 							.getBean(LocalContainerEntityManagerFactoryBean.class);
 					PersistenceUnitInfo persistenceUnitInfo = entityManagerFactoryBean.getPersistenceUnitInfo();
@@ -408,8 +408,8 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 		@Bean
 		EntityManagerFactoryBuilderCustomizer entityManagerFactoryBuilderCustomizer() {
-			return builder -> builder.setPersistenceUnitPostProcessors(
-					pui -> pui.addManagedClassName("customized.attribute.converter.class.name"));
+			return (builder) -> builder.setPersistenceUnitPostProcessors(
+					(pui) -> pui.addManagedClassName("customized.attribute.converter.class.name"));
 		}
 
 	}
