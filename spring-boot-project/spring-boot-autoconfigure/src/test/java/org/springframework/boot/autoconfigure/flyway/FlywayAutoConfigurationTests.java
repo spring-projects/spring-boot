@@ -82,6 +82,7 @@ import static org.mockito.Mockito.mock;
  * @author Dominic Gunn
  * @author András Deák
  * @author Takaaki Shimbo
+ * @author Chris Bono
  */
 @ExtendWith(OutputCaptureExtension.class)
 class FlywayAutoConfigurationTests {
@@ -412,35 +413,19 @@ class FlywayAutoConfigurationTests {
 
 	@Test
 	void batchIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.batch=true").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" batch ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.batch=true", "batch");
 	}
 
 	@Test
 	void dryRunOutputIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.dryRunOutput=dryrun.sql").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" dryRunOutput ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.dryRunOutput=dryrun.sql",
+				"dryRunOutput");
 	}
 
 	@Test
 	void errorOverridesIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.errorOverrides=D12345").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" errorOverrides ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.errorOverrides=D12345",
+				"errorOverrides");
 	}
 
 	@Test
@@ -452,46 +437,25 @@ class FlywayAutoConfigurationTests {
 
 	@Test
 	void oracleSqlplusIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.oracle-sqlplus=true").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" oracle.sqlplus ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.oracle-sqlplus=true",
+				"oracle.sqlplus");
 	}
 
 	@Test
 	void oracleSqlplusWarnIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.oracle-sqlplus-warn=true").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" oracle.sqlplusWarn ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.oracle-sqlplus-warn=true",
+				"oracle.sqlplusWarn");
 	}
 
 	@Test
 	void streamIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.stream=true").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" stream ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.stream=true", "stream");
 	}
 
 	@Test
 	void undoSqlMigrationPrefix() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.undo-sql-migration-prefix=undo").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" undoSqlMigrationPrefix ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.undo-sql-migration-prefix=undo",
+				"undoSqlMigrationPrefix");
 	}
 
 	@Test
@@ -525,67 +489,77 @@ class FlywayAutoConfigurationTests {
 
 	@Test
 	void cherryPickIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.cherry-pick=1.1").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" cherryPick ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.cherry-pick=1.1", "cherryPick");
 	}
 
 	@Test
 	void jdbcPropertiesAreCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.jdbc-properties.prop=value").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" jdbcProperties ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.jdbc-properties.prop=value",
+				"jdbcProperties");
 	}
 
 	@Test
 	void oracleKerberosCacheFileIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.oracle-kerberos-cache-file=/tmp/cache").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" oracle.kerberosCacheFile ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException(
+				"spring.flyway.oracle-kerberos-cache-file=/tmp/cache", "oracle.kerberosCacheFile");
 	}
 
 	@Test
 	void oracleKerberosConfigFileIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.oracle-kerberos-config-file=/tmp/config").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" oracle.kerberosConfigFile ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException(
+				"spring.flyway.oracle-kerberos-config-file=/tmp/config", "oracle.kerberosConfigFile");
 	}
 
 	@Test
 	void outputQueryResultsIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.output-query-results=false").run((context) -> {
-					assertThat(context).hasFailed();
-					Throwable failure = context.getStartupFailure();
-					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" outputQueryResults ");
-				});
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.output-query-results=false",
+				"outputQueryResults");
 	}
 
 	@Test
 	void skipExecutingMigrationsIsCorrectlyMapped() {
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.skip-executing-migrations=true",
+				"skipExecutingMigrations");
+	}
+
+	@Test
+	void conjurUrlIsCorrectlyMapped() {
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException(
+				"spring.flyway.conjur-url=http://foo.com/secrets", "conjurUrl");
+	}
+
+	@Test
+	void conjurTokenIsCorrectlyMapped() {
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.conjur-token=5150",
+				"conjurToken");
+	}
+
+	@Test
+	void vaultUrlIsCorrectlyMapped() {
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.vault-url=http://foo.com/secrets",
+				"vaultUrl");
+	}
+
+	@Test
+	void vaultTokenIsCorrectlyMapped() {
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.vault-token=5150", "vaultToken");
+	}
+
+	@Test
+	void vaultSecretsIsCorrectlyMapped() {
+		assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException("spring.flyway.vault-secrets=kv/test/1/config",
+				"vaultSecrets");
+	}
+
+	@Test
+	private void assertThatPropertyResultsInFlywayTeamsUpgradeRequiredException(String propertyKeyAndValue,
+			String flywayPropertyNameInException) {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.skip-executing-migrations=true").run((context) -> {
+				.withPropertyValues(propertyKeyAndValue).run((context) -> {
 					assertThat(context).hasFailed();
 					Throwable failure = context.getStartupFailure();
 					assertThat(failure).hasRootCauseInstanceOf(FlywayTeamsUpgradeRequiredException.class);
-					assertThat(failure).hasMessageContaining(" skipExecutingMigrations ");
+					assertThat(failure).hasMessageContaining(String.format(" %s ", flywayPropertyNameInException));
 				});
 	}
 
