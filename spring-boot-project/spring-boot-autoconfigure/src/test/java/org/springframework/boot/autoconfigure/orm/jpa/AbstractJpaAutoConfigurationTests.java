@@ -232,13 +232,11 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	@Test
 	void customPersistenceUnitPostProcessors() {
-		this.contextRunner.withUserConfiguration(
-				TestConfigurationWithCustomPersistenceUnitPostProcessors.class)
+		this.contextRunner.withUserConfiguration(TestConfigurationWithCustomPersistenceUnitPostProcessors.class)
 				.run(context -> {
-					LocalContainerEntityManagerFactoryBean entityManagerFactoryBean =
-							context.getBean(LocalContainerEntityManagerFactoryBean.class);
-					PersistenceUnitInfo persistenceUnitInfo =
-							entityManagerFactoryBean.getPersistenceUnitInfo();
+					LocalContainerEntityManagerFactoryBean entityManagerFactoryBean = context
+							.getBean(LocalContainerEntityManagerFactoryBean.class);
+					PersistenceUnitInfo persistenceUnitInfo = entityManagerFactoryBean.getPersistenceUnitInfo();
 					assertThat(persistenceUnitInfo).isNotNull();
 					assertThat(persistenceUnitInfo.getManagedClassNames())
 							.contains("customized.attribute.converter.class.name");
@@ -411,10 +409,9 @@ abstract class AbstractJpaAutoConfigurationTests {
 		@Bean
 		EntityManagerFactoryBuilderCustomizer entityManagerFactoryBuilderCustomizer() {
 			return builder -> builder.setPersistenceUnitPostProcessors(
-					pui -> pui.addManagedClassName(
-							"customized.attribute.converter.class.name")
-			);
+					pui -> pui.addManagedClassName("customized.attribute.converter.class.name"));
 		}
+
 	}
 
 	@SuppressWarnings("serial")
