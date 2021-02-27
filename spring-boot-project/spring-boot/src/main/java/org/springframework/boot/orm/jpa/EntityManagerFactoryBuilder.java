@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -108,9 +108,10 @@ public class EntityManagerFactoryBuilder {
 	}
 
 	/**
-	 * Set the PersistenceUnitPostProcessors to be applied to the PersistenceUnitInfo used
-	 * for creating this EntityManagerFactory.
-	 * @param persistenceUnitPostProcessors internal persistence unit post processors
+	 * Set the {@linkplain PersistenceUnitPostProcessor persistence unit post processors}
+	 * to be applied to the PersistenceUnitInfo used for creating the
+	 * {@link LocalContainerEntityManagerFactoryBean}.
+	 * @param persistenceUnitPostProcessors the persistence unit post processors to use
 	 * @since 2.5.0
 	 */
 	public void setPersistenceUnitPostProcessors(PersistenceUnitPostProcessor... persistenceUnitPostProcessors) {
@@ -245,8 +246,10 @@ public class EntityManagerFactoryBuilder {
 			if (EntityManagerFactoryBuilder.this.bootstrapExecutor != null) {
 				entityManagerFactoryBean.setBootstrapExecutor(EntityManagerFactoryBuilder.this.bootstrapExecutor);
 			}
-			entityManagerFactoryBean
-					.setPersistenceUnitPostProcessors(EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
+			if (EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors != null) {
+				entityManagerFactoryBean.setPersistenceUnitPostProcessors(
+						EntityManagerFactoryBuilder.this.persistenceUnitPostProcessors);
+			}
 			return entityManagerFactoryBean;
 		}
 
