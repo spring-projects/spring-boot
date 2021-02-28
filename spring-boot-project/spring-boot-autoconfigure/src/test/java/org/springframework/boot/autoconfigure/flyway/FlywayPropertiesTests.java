@@ -109,7 +109,6 @@ class FlywayPropertiesTests {
 		// Handled by the conversion service
 		ignoreProperties(configuration, "baselineVersionAsString", "encodingAsString", "locationsAsStrings",
 				"targetAsString");
-		// getters return null
 		// Handled as initSql array
 		ignoreProperties(configuration, "initSql");
 		ignoreProperties(properties, "initSqls");
