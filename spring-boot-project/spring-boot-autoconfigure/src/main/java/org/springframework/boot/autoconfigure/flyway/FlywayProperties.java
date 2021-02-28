@@ -801,7 +801,7 @@ public class FlywayProperties {
 	}
 
 	public String getConjurUrl() {
-		return conjurUrl;
+		return this.conjurUrl;
 	}
 
 	public void setConjurUrl(String conjurUrl) {
@@ -809,7 +809,7 @@ public class FlywayProperties {
 	}
 
 	public String getConjurToken() {
-		return conjurToken;
+		return this.conjurToken;
 	}
 
 	public void setConjurToken(String conjurToken) {
@@ -817,7 +817,7 @@ public class FlywayProperties {
 	}
 
 	public String getVaultUrl() {
-		return vaultUrl;
+		return this.vaultUrl;
 	}
 
 	public void setVaultUrl(String vaultUrl) {
@@ -825,7 +825,7 @@ public class FlywayProperties {
 	}
 
 	public String getVaultToken() {
-		return vaultToken;
+		return this.vaultToken;
 	}
 
 	public void setVaultToken(String vaultToken) {
@@ -833,7 +833,7 @@ public class FlywayProperties {
 	}
 
 	public List<String> getVaultSecrets() {
-		return vaultSecrets;
+		return this.vaultSecrets;
 	}
 
 	public void setVaultSecrets(List<String> vaultSecrets) {
