@@ -22,3 +22,12 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 	}
 }
 // end::docker-auth-user[]
+
+tasks.register("bootBuildImageDocker") {
+	doFirst {
+		println("username=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.username}")
+		println("password=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.password}")
+		println("url=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.url}")
+		println("email=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.email}")
+	}
+}

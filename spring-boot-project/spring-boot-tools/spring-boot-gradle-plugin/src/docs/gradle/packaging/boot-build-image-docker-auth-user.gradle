@@ -19,3 +19,12 @@ bootBuildImage {
 	}
 }
 // end::docker-auth-user[]
+
+task bootBuildImageDocker {
+	doFirst {
+		println("username=${tasks.bootBuildImage.docker.builderRegistry.username}")
+		println("password=${tasks.bootBuildImage.docker.builderRegistry.password}")
+		println("url=${tasks.bootBuildImage.docker.builderRegistry.url}")
+		println("email=${tasks.bootBuildImage.docker.builderRegistry.email}")
+	}
+}
