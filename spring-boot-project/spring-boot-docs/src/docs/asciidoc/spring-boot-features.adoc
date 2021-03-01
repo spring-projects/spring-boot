@@ -522,7 +522,8 @@ Config data files are considered in the following order:
 . <<boot-features-external-config-files,Application properties>> outside of your packaged jar (`application.properties` and YAML variants).
 . <<boot-features-external-config-files-profile-specific,Profile-specific application properties>> outside of your packaged jar (`application-\{profile}.properties` and YAML variants).
 
-NOTE: If you have both `application.yml` and `application.properties` on the same level, the `application.properties` will take precedence.
+NOTE: It is recommended to stick with one format for your entire application.
+If you have configuration files with both `.properties` and `.yml` format in the same location, `.properties` takes precedence.
 
 To provide a concrete example, suppose you develop a `@Component` that uses a `name` property, as shown in the following example:
 
