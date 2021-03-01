@@ -187,7 +187,7 @@ public class FlywayAutoConfiguration {
 			configureCreateSchemas(configuration, properties.isCreateSchemas());
 			map.from(properties.getTable()).to(configuration::table);
 			// No method reference for compatibility with Flyway 5.x
-			map.from(properties.getTablespace()).whenNonNull().to((tablespace) -> configuration.tablespace(tablespace));
+			map.from(properties.getTablespace()).to((tablespace) -> configuration.tablespace(tablespace));
 			map.from(properties.getBaselineDescription()).to(configuration::baselineDescription);
 			map.from(properties.getBaselineVersion()).to(configuration::baselineVersion);
 			map.from(properties.getInstalledBy()).to(configuration::installedBy);
@@ -219,32 +219,32 @@ public class FlywayAutoConfiguration {
 					.as((initSqls) -> StringUtils.collectionToDelimitedString(initSqls, "\n"))
 					.to(configuration::initSql);
 			// Pro properties
-			map.from(properties.getBatch()).whenNonNull().to(configuration::batch);
-			map.from(properties.getDryRunOutput()).whenNonNull().to(configuration::dryRunOutput);
-			map.from(properties.getErrorOverrides()).whenNonNull().to(configuration::errorOverrides);
-			map.from(properties.getLicenseKey()).whenNonNull().to(configuration::licenseKey);
-			map.from(properties.getOracleSqlplus()).whenNonNull().to(configuration::oracleSqlplus);
+			map.from(properties.getBatch()).to(configuration::batch);
+			map.from(properties.getDryRunOutput()).to(configuration::dryRunOutput);
+			map.from(properties.getErrorOverrides()).to(configuration::errorOverrides);
+			map.from(properties.getLicenseKey()).to(configuration::licenseKey);
+			map.from(properties.getOracleSqlplus()).to(configuration::oracleSqlplus);
 			// No method reference for compatibility with Flyway 5.x
-			map.from(properties.getOracleSqlplusWarn()).whenNonNull()
+			map.from(properties.getOracleSqlplusWarn())
 					.to((oracleSqlplusWarn) -> configuration.oracleSqlplusWarn(oracleSqlplusWarn));
-			map.from(properties.getStream()).whenNonNull().to(configuration::stream);
-			map.from(properties.getUndoSqlMigrationPrefix()).whenNonNull().to(configuration::undoSqlMigrationPrefix);
+			map.from(properties.getStream()).to(configuration::stream);
+			map.from(properties.getUndoSqlMigrationPrefix()).to(configuration::undoSqlMigrationPrefix);
 			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getCherryPick()).whenNonNull().to((cherryPick) -> configuration.cherryPick(cherryPick));
+			map.from(properties.getCherryPick()).to((cherryPick) -> configuration.cherryPick(cherryPick));
 			// No method reference for compatibility with Flyway 6.x
 			map.from(properties.getJdbcProperties()).whenNot(Map::isEmpty)
 					.to((jdbcProperties) -> configuration.jdbcProperties(jdbcProperties));
 			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getOracleKerberosCacheFile()).whenNonNull()
+			map.from(properties.getOracleKerberosCacheFile())
 					.to((cacheFile) -> configuration.oracleKerberosCacheFile(cacheFile));
 			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getOracleKerberosConfigFile()).whenNonNull()
+			map.from(properties.getOracleKerberosConfigFile())
 					.to((configFile) -> configuration.oracleKerberosConfigFile(configFile));
 			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getOutputQueryResults()).whenNonNull()
+			map.from(properties.getOutputQueryResults())
 					.to((outputQueryResults) -> configuration.outputQueryResults(outputQueryResults));
 			// No method reference for compatibility with Flyway 6.x
-			map.from(properties.getSkipExecutingMigrations()).whenNonNull()
+			map.from(properties.getSkipExecutingMigrations())
 					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
 			// Teams secrets management properties (all non-method reference for
 			// compatibility with Flyway 6.x)
