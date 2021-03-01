@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * @author Dave Syer
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.flyway")
@@ -327,6 +328,34 @@ public class FlywayProperties {
 	 * the schema history table. Requires Flyway teams.
 	 */
 	private Boolean skipExecutingMigrations;
+
+	/**
+	 * REST API URL of the Conjur server. Requires Flyway teams.
+	 */
+	private String conjurUrl;
+
+	/**
+	 * Conjur token required to access secrets. Requires Flyway teams.
+	 */
+	private String conjurToken;
+
+	/**
+	 * REST API URL of the Vault server. Requires Flyway teams.
+	 */
+	private String vaultUrl;
+
+	/**
+	 * Vault token required to access secrets. Requires Flyway teams.
+	 */
+	private String vaultToken;
+
+	/**
+	 * Comma-separated list of paths to secrets that contain Flyway configurations. This
+	 * must start with the name of the engine followed by '/data/' and end with the name
+	 * of the secret. The resulting form is '{engine}/data/{path}/{to}/{secret_name}'.
+	 * Requires Flyway teams.
+	 */
+	private List<String> vaultSecrets;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -770,6 +799,46 @@ public class FlywayProperties {
 
 	public void setSkipExecutingMigrations(Boolean skipExecutingMigrations) {
 		this.skipExecutingMigrations = skipExecutingMigrations;
+	}
+
+	public String getConjurUrl() {
+		return this.conjurUrl;
+	}
+
+	public void setConjurUrl(String conjurUrl) {
+		this.conjurUrl = conjurUrl;
+	}
+
+	public String getConjurToken() {
+		return this.conjurToken;
+	}
+
+	public void setConjurToken(String conjurToken) {
+		this.conjurToken = conjurToken;
+	}
+
+	public String getVaultUrl() {
+		return this.vaultUrl;
+	}
+
+	public void setVaultUrl(String vaultUrl) {
+		this.vaultUrl = vaultUrl;
+	}
+
+	public String getVaultToken() {
+		return this.vaultToken;
+	}
+
+	public void setVaultToken(String vaultToken) {
+		this.vaultToken = vaultToken;
+	}
+
+	public List<String> getVaultSecrets() {
+		return this.vaultSecrets;
+	}
+
+	public void setVaultSecrets(List<String> vaultSecrets) {
+		this.vaultSecrets = vaultSecrets;
 	}
 
 }
