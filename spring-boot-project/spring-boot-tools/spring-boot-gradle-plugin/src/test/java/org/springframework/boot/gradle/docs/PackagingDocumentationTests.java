@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
+ * @author Scott Frederick
  */
 @ExtendWith(GradleMultiDslExtension.class)
 class PackagingDocumentationTests {
@@ -221,14 +222,21 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootBuildImageWithCustomBuildpackJvmVersion() throws IOException {
+	void bootBuildImageWithBuilder() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-builder")
+				.build("bootBuildImageBuilder");
+		assertThat(result.getOutput()).contains("builder=mine/java-cnb-builder").contains("runImage=mine/java-cnb-run");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithCustomBuildpackJvmVersion() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env")
 				.build("bootBuildImageEnvironment");
 		assertThat(result.getOutput()).contains("BP_JVM_VERSION=8.*");
 	}
 
 	@TestTemplate
-	void bootBuildImageWithCustomProxySettings() throws IOException {
+	void bootBuildImageWithCustomProxySettings() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-proxy")
 				.build("bootBuildImageEnvironment");
 		assertThat(result.getOutput()).contains("HTTP_PROXY=http://proxy.example.com")
@@ -236,17 +244,48 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootBuildImageWithCustomImageName() throws IOException {
+	void bootBuildImageWithCustomImageName() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-name")
 				.build("bootBuildImageName");
 		assertThat(result.getOutput()).contains("example.com/library/" + this.gradleBuild.getProjectDir().getName());
 	}
 
 	@TestTemplate
-	void bootBuildImagePublish() throws IOException {
+	void bootBuildImageWithDockerHost() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-host")
+				.build("bootBuildImageDocker");
+		assertThat(result.getOutput()).contains("host=tcp://192.168.99.100:2376").contains("tlsVerify=true")
+				.contains("certPath=/home/users/.minikube/certs");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithDockerUserAuth() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-auth-user")
+				.build("bootBuildImageDocker");
+		assertThat(result.getOutput()).contains("username=user").contains("password=secret")
+				.contains("url=https://docker.example.com/v1/").contains("email=user@example.com");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithDockerTokenAuth() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-docker-auth-token")
+				.build("bootBuildImageDocker");
+		assertThat(result.getOutput()).contains("token=9cbaf023786cd7...");
+	}
+
+	@TestTemplate
+	void bootBuildImagePublish() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-publish")
 				.build("bootBuildImagePublish");
 		assertThat(result.getOutput()).contains("true");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithBuildpacks() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-buildpacks")
+				.build("bootBuildImageBuildpacks");
+		assertThat(result.getOutput()).contains("file:///path/to/example-buildpack.tgz")
+				.contains("urn:cnb:builder:paketo-buildpacks/java");
 	}
 
 	protected void jarFile(File file) throws IOException {
