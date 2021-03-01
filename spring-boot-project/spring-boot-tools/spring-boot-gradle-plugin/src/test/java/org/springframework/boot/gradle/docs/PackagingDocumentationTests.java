@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -240,6 +240,13 @@ class PackagingDocumentationTests {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-name")
 				.build("bootBuildImageName");
 		assertThat(result.getOutput()).contains("example.com/library/" + this.gradleBuild.getProjectDir().getName());
+	}
+
+	@TestTemplate
+	void bootBuildImagePublish() throws IOException {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-publish")
+				.build("bootBuildImagePublish");
+		assertThat(result.getOutput()).contains("true");
 	}
 
 	protected void jarFile(File file) throws IOException {
