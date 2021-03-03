@@ -97,8 +97,8 @@ class EmbeddedServerContainerInvocationContextProvider
 
 	@Override
 	public void afterAll(ExtensionContext context) throws Exception {
-		FileSystemUtils.deleteRecursively(this.tempDir);
 		cleanupCaches();
+		FileSystemUtils.deleteRecursively(this.tempDir);
 	}
 
 	private void cleanupCaches() {
