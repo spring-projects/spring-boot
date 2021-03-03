@@ -64,6 +64,12 @@ abstract class AbstractApplicationLauncher implements BeforeEachCallback {
 	void destroyProcess() {
 		if (this.process != null) {
 			this.process.destroy();
+			try {
+				this.process.waitFor();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
 		}
 	}
 
