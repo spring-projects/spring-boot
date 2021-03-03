@@ -117,7 +117,7 @@ public class ErrorProperties {
 		ALWAYS,
 
 		/**
-		 * Add error attribute when the appropriate request parameter is "true".
+		 * Add stacktrace attribute when the appropriate request parameter is not "false".
 		 */
 		ON_PARAM,
 
@@ -145,7 +145,7 @@ public class ErrorProperties {
 		ALWAYS,
 
 		/**
-		 * Add error attribute when the appropriate request parameter is "true".
+		 * Add error attribute when the appropriate request parameter is not "false".
 		 */
 		ON_PARAM
 
