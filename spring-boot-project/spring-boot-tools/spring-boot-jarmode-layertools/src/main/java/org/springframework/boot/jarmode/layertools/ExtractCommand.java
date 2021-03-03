@@ -88,7 +88,7 @@ class ExtractCommand extends Command {
 	private void write(ZipInputStream zip, ZipEntry entry, File destination) throws IOException {
 		String path = StringUtils.cleanPath(entry.getName());
 		File file = new File(destination, path);
-		if (file.getAbsolutePath().startsWith(destination.getAbsolutePath())) {
+		if (file.getCanonicalPath().startsWith(destination.getCanonicalPath() + File.separator)) {
 			mkParentDirs(file);
 			try (OutputStream out = new FileOutputStream(file)) {
 				StreamUtils.copy(zip, out);
