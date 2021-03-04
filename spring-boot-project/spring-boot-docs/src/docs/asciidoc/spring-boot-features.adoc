@@ -875,6 +875,18 @@ NOTE: Directories loaded using a wildcard are sorted alphabetically.
 If you need a different order, then you should list each location as a separate import
 
 
+Configuration trees can also be used for Docker secrets.
+When a Docker swarm service is granted access to a secret, the secret gets mounted into the container.
+For example, if a secret named `db.password` is mounted at location `/run/secrets/`, you can make `db.password` available to the Spring environment using the following:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	spring:
+	  config:
+	    import: "optional:configtree:/run/secrets/"
+----
+
+
 
 [[boot-features-external-config-placeholders-in-properties]]
 ==== Property Placeholders
