@@ -25,6 +25,8 @@ import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledForJreRange;
+import org.junit.jupiter.api.condition.JRE;
 import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.loader.tools.FileUtils;
@@ -247,6 +249,7 @@ class JarIntegrationTests extends AbstractArchiveIntegrationTests {
 		});
 	}
 
+	@DisabledForJreRange(min = JRE.JAVA_16) // Remove this once Kotlin supports Java 16
 	@TestTemplate
 	void whenAProjectUsesKotlinItsModuleMetadataIsRepackagedIntoBootInfClasses(MavenBuild mavenBuild) {
 		mavenBuild.project("jar-with-kotlin-module").execute((project) -> {
