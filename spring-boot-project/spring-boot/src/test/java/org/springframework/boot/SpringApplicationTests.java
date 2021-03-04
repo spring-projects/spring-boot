@@ -53,6 +53,7 @@ import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.AvailabilityState;
 import org.springframework.boot.availability.LivenessState;
 import org.springframework.boot.availability.ReadinessState;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 import org.springframework.boot.context.event.ApplicationContextInitializedEvent;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.event.ApplicationFailedEvent;
@@ -105,6 +106,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.metrics.StartupStep;
 import org.springframework.http.server.reactive.HttpHandler;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.context.support.TestPropertySourceUtils;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -885,6 +887,18 @@ class SpringApplicationTests {
 		assertThat(this.context).isInstanceOf(AnnotationConfigApplicationContext.class);
 		assertThat(getEnvironment().getProperty("bar")).isEqualTo("foo");
 		assertThat(getEnvironment().getProperty("baz")).isEqualTo("");
+	}
+
+	@Test
+	void defaultPropertiesShouldBeMerged() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.getPropertySources().addFirst(
+				new MapPropertySource(DefaultPropertiesPropertySource.NAME, Collections.singletonMap("bar", "foo")));
+		SpringApplication application = new SpringApplicationBuilder(ExampleConfig.class).environment(environment)
+				.properties("baz=bing").web(WebApplicationType.NONE).build();
+		this.context = application.run();
+		assertThat(getEnvironment().getProperty("bar")).isEqualTo("foo");
+		assertThat(getEnvironment().getProperty("baz")).isEqualTo("bing");
 	}
 
 	@Test

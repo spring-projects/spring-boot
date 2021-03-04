@@ -16,6 +16,7 @@
 
 package org.springframework.boot;
 
+import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Consumer;
 
@@ -69,6 +70,40 @@ public class DefaultPropertiesPropertySource extends MapPropertySource {
 	public static void ifNotEmpty(Map<String, Object> source, Consumer<DefaultPropertiesPropertySource> action) {
 		if (!CollectionUtils.isEmpty(source) && action != null) {
 			action.accept(new DefaultPropertiesPropertySource(source));
+		}
+	}
+
+	/**
+	 * Add a new {@link DefaultPropertiesPropertySource} or merge with an existing one.
+	 * @param source the {@code Map} source
+	 * @param sources the existing sources
+	 * @since 2.4.4
+	 */
+	public static void addOrMerge(Map<String, Object> source, MutablePropertySources sources) {
+		if (!CollectionUtils.isEmpty(source)) {
+			Map<String, Object> resultingSource = new HashMap<>();
+			DefaultPropertiesPropertySource propertySource = new DefaultPropertiesPropertySource(resultingSource);
+			if (sources.contains(NAME)) {
+				mergeIfPossible(source, sources, resultingSource);
+				sources.replace(NAME, propertySource);
+			}
+			else {
+				resultingSource.putAll(source);
+				sources.addLast(propertySource);
+			}
+		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private static void mergeIfPossible(Map<String, Object> source, MutablePropertySources sources,
+			Map<String, Object> resultingSource) {
+		PropertySource<?> existingSource = sources.get(NAME);
+		if (existingSource != null) {
+			Object underlyingSource = existingSource.getSource();
+			if (underlyingSource instanceof Map) {
+				resultingSource.putAll((Map<String, Object>) underlyingSource);
+			}
+			resultingSource.putAll(source);
 		}
 	}
 
