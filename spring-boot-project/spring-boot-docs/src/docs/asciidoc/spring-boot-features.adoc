@@ -872,6 +872,8 @@ The lines immediately before and after the separator must not be comments.
 TIP: Multi-document property files are often used in conjunction with activation properties such as `spring.config.activate.on-profile`.
 See the <<boot-features-external-config-file-activation-properties, next section>> for details.
 
+WARNING: Multi-document property files cannot be loaded by using the `@PropertySource` or `@TestPropertySource` annotations.
+
 
 
 [[boot-features-external-config-file-activation-properties]]
