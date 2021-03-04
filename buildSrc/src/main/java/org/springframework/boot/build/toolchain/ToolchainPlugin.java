@@ -18,16 +18,14 @@ package org.springframework.boot.build.toolchain;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.Optional;
 
-import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
-import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
 
 /**
@@ -44,19 +42,28 @@ public class ToolchainPlugin implements Plugin<Project> {
 
 	private void configureToolchain(Project project) {
 		ToolchainExtension toolchain = project.getExtensions().create("toolchain", ToolchainExtension.class, project);
-		project.afterEvaluate((evaluated) -> {
-			Optional<JavaLanguageVersion> toolchainVersion = toolchain.getToolchainVersion();
-			if (toolchainVersion.isPresent()) {
-				if (!toolchain.isJavaVersionSupported()) {
-					disableToolchainTasks(project);
-				}
-				else {
-					configureJavaCompileToolchain(project, toolchain);
-					configureJavadocToolchain(project, toolchain);
-					configureTestToolchain(project, toolchain);
-				}
-			}
-		});
+		JavaLanguageVersion toolchainVersion = toolchain.getJavaVersion();
+		if (toolchainVersion != null) {
+			project.afterEvaluate((evaluated) -> configure(evaluated, toolchain));
+		}
+	}
+
+	private void configure(Project project, ToolchainExtension toolchain) {
+		if (!isJavaVersionSupported(toolchain, toolchain.getJavaVersion())) {
+			disableToolchainTasks(project);
+		}
+		else {
+			JavaToolchainSpec toolchainSpec = project.getExtensions().getByType(JavaPluginExtension.class)
+					.getToolchain();
+			toolchainSpec.getLanguageVersion().set(toolchain.getJavaVersion());
+			configureJavaCompileToolchain(project, toolchain);
+			configureTestToolchain(project, toolchain);
+		}
+	}
+
+	public boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
+		return toolchain.getMaximumCompatibleJavaVersion().map((version) -> version.canCompileOrRun(toolchainVersion))
+				.getOrElse(true);
 	}
 
 	private void disableToolchainTasks(Project project) {
@@ -67,50 +74,20 @@ public class ToolchainPlugin implements Plugin<Project> {
 
 	private void configureJavaCompileToolchain(Project project, ToolchainExtension toolchain) {
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
-			withOptionalJavaToolchain(toolchain).ifPresent((action) -> {
-				JavaToolchainService service = getJavaToolchainService(project);
-				compile.getJavaCompiler().set(service.compilerFor(action));
-				compile.getOptions().setFork(true);
-				// See https://github.com/gradle/gradle/issues/15538
-				List<String> forkArgs = Arrays.asList("--add-opens",
-						"jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED");
-				compile.getOptions().getForkOptions().getJvmArgs().addAll(forkArgs);
-			});
-		});
-	}
-
-	private void configureJavadocToolchain(Project project, ToolchainExtension toolchain) {
-		project.getTasks().withType(Javadoc.class, (javadoc) -> {
-			withOptionalJavaToolchain(toolchain).ifPresent((action) -> {
-				JavaToolchainService service = getJavaToolchainService(project);
-				javadoc.getJavadocTool().set(service.javadocToolFor(action));
-			});
+			compile.getOptions().setFork(true);
+			// See https://github.com/gradle/gradle/issues/15538
+			List<String> forkArgs = Arrays.asList("--add-opens", "jdk.compiler/com.sun.tools.javac.code=ALL-UNNAMED");
+			compile.getOptions().getForkOptions().getJvmArgs().addAll(forkArgs);
 		});
 	}
 
 	private void configureTestToolchain(Project project, ToolchainExtension toolchain) {
 		project.getTasks().withType(Test.class, (test) -> {
-			withOptionalJavaToolchain(toolchain).ifPresent((action) -> {
-				JavaToolchainService service = getJavaToolchainService(project);
-				test.getJavaLauncher().set(service.launcherFor(action));
-				// See https://github.com/spring-projects/spring-ldap/issues/570
-				List<String> arguments = Arrays.asList("--add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
-						"--illegal-access=warn");
-				test.jvmArgs(arguments);
-			});
+			// See https://github.com/spring-projects/spring-ldap/issues/570
+			List<String> arguments = Arrays.asList("--add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
+					"--illegal-access=warn");
+			test.jvmArgs(arguments);
 		});
-	}
-
-	private JavaToolchainService getJavaToolchainService(Project project) {
-		return project.getExtensions().getByType(JavaToolchainService.class);
-	}
-
-	private Optional<Action<JavaToolchainSpec>> withOptionalJavaToolchain(ToolchainExtension toolchain) {
-		return toolchain.getToolchainVersion().map((toolchainVersion) -> {
-			Action<JavaToolchainSpec> action = (javaToolchainSpec) -> javaToolchainSpec.getLanguageVersion()
-					.convention(toolchainVersion);
-			return Optional.of(action);
-		}).orElse(Optional.empty());
 	}
 
 }

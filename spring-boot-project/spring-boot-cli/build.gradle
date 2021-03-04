@@ -8,7 +8,7 @@ plugins {
 description = "Spring Boot CLI"
 
 toolchain {
-	maximumCompatibleJavaVersion = 15
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(15)
 }
 
 configurations {

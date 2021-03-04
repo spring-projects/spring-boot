@@ -16,9 +16,8 @@
 
 package org.springframework.boot.build.toolchain;
 
-import java.util.Optional;
-
 import org.gradle.api.Project;
+import org.gradle.api.provider.Property;
 import org.gradle.jvm.toolchain.JavaLanguageVersion;
 
 /**
@@ -28,41 +27,22 @@ import org.gradle.jvm.toolchain.JavaLanguageVersion;
  */
 public class ToolchainExtension {
 
-	private final Project project;
+	private final Property<JavaLanguageVersion> maximumCompatibleJavaVersion;
 
-	private int maximumCompatibleJavaVersion;
+	private final JavaLanguageVersion javaVersion;
 
 	public ToolchainExtension(Project project) {
-		this.project = project;
+		this.maximumCompatibleJavaVersion = project.getObjects().property(JavaLanguageVersion.class);
+		String toolchainVersion = (String) project.findProperty("toolchainVersion");
+		this.javaVersion = (toolchainVersion != null) ? JavaLanguageVersion.of(toolchainVersion) : null;
 	}
 
-	public void setMaximumCompatibleJavaVersion(int maximumVersion) {
-		this.maximumCompatibleJavaVersion = maximumVersion;
+	public Property<JavaLanguageVersion> getMaximumCompatibleJavaVersion() {
+		return this.maximumCompatibleJavaVersion;
 	}
 
-	public Optional<JavaLanguageVersion> getToolchainVersion() {
-		String toolchainVersion = (String) this.project.findProperty("toolchainVersion");
-		if (toolchainVersion == null) {
-			return Optional.empty();
-		}
-		int version = Integer.parseInt(toolchainVersion);
-		return getJavaLanguageVersion(version);
-	}
-
-	public boolean isJavaVersionSupported() {
-		Optional<JavaLanguageVersion> maximumVersion = getJavaLanguageVersion(this.maximumCompatibleJavaVersion);
-		if (!maximumVersion.isPresent()) {
-			return true;
-		}
-		Optional<JavaLanguageVersion> toolchainVersion = getToolchainVersion();
-		return toolchainVersion.isPresent() && maximumVersion.get().canCompileOrRun(toolchainVersion.get());
-	}
-
-	private Optional<JavaLanguageVersion> getJavaLanguageVersion(int version) {
-		if (version >= 8) {
-			return Optional.of(JavaLanguageVersion.of(version));
-		}
-		return Optional.empty();
+	JavaLanguageVersion getJavaVersion() {
+		return this.javaVersion;
 	}
 
 }
