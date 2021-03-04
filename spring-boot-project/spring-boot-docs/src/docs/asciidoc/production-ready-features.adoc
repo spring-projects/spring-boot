@@ -44,6 +44,8 @@ For Gradle, use the following declaration:
 
 [[production-ready-endpoints]]
 == Endpoints
+TIP: To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html/[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
+
 Actuator endpoints let you monitor and interact with your application.
 Spring Boot includes a number of built-in endpoints and lets you add your own.
 For example, the `health` endpoint provides basic application health information.
@@ -146,8 +148,6 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | Exposes metrics in a format that can be scraped by a Prometheus server.
   Requires a dependency on `micrometer-registry-prometheus`.
 |===
-
-To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi}/html/[HTML] or {spring-boot-actuator-restapi}/pdf/spring-boot-actuator-web-api.pdf[PDF]).
 
 
 
