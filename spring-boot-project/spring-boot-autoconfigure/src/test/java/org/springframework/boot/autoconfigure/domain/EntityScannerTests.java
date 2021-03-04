@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.domain.scan.b.EmbeddableB;
 import org.springframework.boot.autoconfigure.domain.scan.b.EntityB;
 import org.springframework.boot.autoconfigure.domain.scan.c.EmbeddableC;
 import org.springframework.boot.autoconfigure.domain.scan.c.EntityC;
+import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
@@ -60,6 +61,19 @@ class EntityScannerTests {
 	@Test
 	void scanShouldScanFromSinglePackage() throws Exception {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext(ScanConfig.class);
+		EntityScanner scanner = new EntityScanner(context);
+		Set<Class<?>> scanned = scanner.scan(Entity.class);
+		assertThat(scanned).containsOnly(EntityA.class, EntityB.class, EntityC.class);
+		context.close();
+	}
+
+	@Test
+	void scanShouldScanFromResolvedPlaceholderPackage() throws Exception {
+		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("com.example.entity-package=org.springframework.boot.autoconfigure.domain.scan")
+				.applyTo(context);
+		context.register(ScanPlaceholderConfig.class);
+		context.refresh();
 		EntityScanner scanner = new EntityScanner(context);
 		Set<Class<?>> scanned = scanner.scan(Entity.class);
 		assertThat(scanned).containsOnly(EntityA.class, EntityB.class, EntityC.class);
@@ -138,6 +152,12 @@ class EntityScannerTests {
 	@Configuration(proxyBeanMethods = false)
 	@EntityScan(basePackageClasses = EntityB.class)
 	static class ScanBConfig {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EntityScan("${com.example.entity-package}")
+	static class ScanPlaceholderConfig {
 
 	}
 
