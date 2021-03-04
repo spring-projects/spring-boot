@@ -7,6 +7,10 @@ plugins {
 
 description = "Spring Boot CLI"
 
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(15)
+}
+
 configurations {
 	dependenciesBom
 	loader
