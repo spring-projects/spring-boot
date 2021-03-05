@@ -6593,7 +6593,7 @@ To use this feature with a different arrangement, listeners must be explicitly a
 
 [source,java,indent=0]
 ----
-	@TestExecutionListeners({MockitoTestExecutionListener.class, ResetMocksTestExecutionListener.class})
+	@TestExecutionListeners({ MockitoTestExecutionListener.class, ResetMocksTestExecutionListener.class })
 ----
 
 ====
