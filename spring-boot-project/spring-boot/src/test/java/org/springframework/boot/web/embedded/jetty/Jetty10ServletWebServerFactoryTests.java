@@ -40,7 +40,7 @@ public class Jetty10ServletWebServerFactoryTests extends JettyServletWebServerFa
 	@Test
 	protected void correctVersionOfJettyUsed() {
 		String jettyVersion = ErrorHandler.class.getPackage().getImplementationVersion();
-		assertThat(jettyVersion.startsWith("10.0"));
+		assertThat(jettyVersion).startsWith("10.0");
 	}
 
 	@Override
