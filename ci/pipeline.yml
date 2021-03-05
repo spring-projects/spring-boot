@@ -162,6 +162,12 @@ resources:
   source:
     <<: *registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci-jdk15
+- name: ci-image-jdk16
+  type: registry-image
+  icon: docker
+  source:
+    <<: *registry-image-resource-source
+    repository: ((docker-hub-organization))/spring-boot-ci-jdk16
 - name: artifactory-repo
   type: artifactory-resource
   icon: package-variant
@@ -194,6 +200,14 @@ resources:
     access_token: ((github-ci-status-token))
     branch: ((branch))
     context: jdk15-build
+- name: repo-status-jdk16-build
+  type: github-status-resource
+  icon: eye-check-outline
+  source:
+    repository: ((github-repo-name))
+    access_token: ((github-ci-status-token))
+    branch: ((branch))
+    context: jdk16-build
 - name: slack-alert
   type: slack-notification
   icon: slack
@@ -243,6 +257,13 @@ jobs:
         image: ci-image-jdk15
       vars:
         ci-image-name: ci-image-jdk15
+    - task: build-ci-image-jdk16
+      privileged: true
+      file: git-repo/ci/tasks/build-ci-image.yml
+      output_mapping:
+        image: ci-image-jdk16
+      vars:
+        ci-image-name: ci-image-jdk16
   - in_parallel:
     - put: ci-image
       params:
@@ -253,6 +274,9 @@ jobs:
     - put: ci-image-jdk15
       params:
         image: ci-image-jdk15/image.tar
+    - put: ci-image-jdk16
+      params:
+        image: ci-image-jdk16/image.tar
 - name: detect-jdk-updates
   plan:
   - get: git-repo
@@ -278,6 +302,12 @@ jobs:
       params:
         <<: *github-task-params
         JDK_VERSION: java15
+    - task: detect-jdk16-update
+      image: ci-image
+      file: git-repo/ci/tasks/detect-jdk-updates.yml
+      params:
+        <<: *github-task-params
+        JDK_VERSION: java16
 - name: detect-ubuntu-image-updates
   plan:
   - get: git-repo
@@ -411,6 +441,31 @@ jobs:
             params:
               <<: *slack-fail-params
     - put: repo-status-jdk15-build
+      params: { state: "success", commit: "git-repo" }
+    - put: slack-alert
+      params:
+       <<: *slack-success-params
+- name: jdk16-build
+  serial: true
+  public: true
+  plan:
+    - get: ci-image-jdk16
+    - get: git-repo
+      trigger: true
+    - put: repo-status-jdk16-build
+      params: { state: "pending", commit: "git-repo" }
+    - do:
+      - task: build-project
+        image: ci-image-jdk16
+        <<: *build-project-task-params
+      on_failure:
+        do:
+          - put: repo-status-jdk16-build
+            params: { state: "failure", commit: "git-repo" }
+          - put: slack-alert
+            params:
+              <<: *slack-fail-params
+    - put: repo-status-jdk16-build
       params: { state: "success", commit: "git-repo" }
     - put: slack-alert
       params:
@@ -638,7 +693,7 @@ jobs:
         repository: updated-homebrew-tap-repo
 groups:
 - name: "builds"
-  jobs: ["build", "jdk11-build", "jdk15-build", "windows-build"]
+  jobs: ["build", "jdk11-build", "jdk15-build", "jdk16-build", "windows-build"]
 - name: "releases"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-to-sdkman", "update-homebrew-tap"]
 - name: "ci-images"
