@@ -457,7 +457,14 @@ jobs:
     - do:
       - task: build-project
         image: ci-image-jdk16
-        <<: *build-project-task-params
+        privileged: true
+        timeout: ((task-timeout))
+        file: git-repo/ci/tasks/build-project.yml
+        params:
+          BRANCH: ((branch))
+          TOOLCHAIN_JAVA_VERSION: 16
+          <<: *gradle-enterprise-task-params
+          <<: *docker-hub-task-params
       on_failure:
         do:
           - put: repo-status-jdk16-build
