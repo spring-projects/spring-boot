@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.neo4j;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;
 import org.testcontainers.junit.jupiter.Container;
@@ -44,7 +46,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 public class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
-	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j());
+	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
+			.withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {
