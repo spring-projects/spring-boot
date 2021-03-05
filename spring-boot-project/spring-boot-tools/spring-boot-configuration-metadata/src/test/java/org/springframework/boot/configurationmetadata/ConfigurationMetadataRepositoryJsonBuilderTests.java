@@ -18,6 +18,7 @@ package org.springframework.boot.configurationmetadata;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -99,16 +100,56 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 			try (InputStream foo2 = getInputStreamFor("foo2")) {
 				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo2)
 						.build();
-				assertThat(repo.getAllGroups()).hasSize(1);
+				Iterable<String> allKeys = Arrays.asList("spring.foo.name", "spring.foo.description",
+						"spring.foo.counter", "spring.foo.enabled", "spring.foo.type");
+				assertThat(repo.getAllProperties()).containsOnlyKeys(allKeys);
+				assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");
 				ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
-				contains(group.getSources(), "org.acme.Foo", "org.acme.Foo2", "org.springframework.boot.FooProperties");
-				assertThat(group.getSources()).hasSize(3);
-				contains(group.getProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
-						"spring.foo.enabled", "spring.foo.type");
-				assertThat(group.getProperties()).hasSize(5);
-				contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
-						"spring.foo.enabled", "spring.foo.type");
-				assertThat(repo.getAllProperties()).hasSize(5);
+				assertThat(group.getProperties()).containsOnlyKeys(allKeys);
+				assertThat(group.getSources()).containsOnlyKeys("org.acme.Foo", "org.acme.Foo2",
+						"org.springframework.boot.FooProperties");
+				assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys("spring.foo.name",
+						"spring.foo.description");
+				assertThat(group.getSources().get("org.acme.Foo2").getProperties())
+						.containsOnlyKeys("spring.foo.enabled", "spring.foo.type");
+				assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
+						.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+			}
+		}
+	}
+
+	@Test
+	void severalRepositoriesIdenticalGroupsWithSameType() throws IOException {
+		try (InputStream foo = getInputStreamFor("foo")) {
+			try (InputStream foo3 = getInputStreamFor("foo3")) {
+				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo3)
+						.build();
+				Iterable<String> allKeys = Arrays.asList("spring.foo.name", "spring.foo.description",
+						"spring.foo.counter", "spring.foo.enabled", "spring.foo.type");
+				assertThat(repo.getAllProperties()).containsOnlyKeys(allKeys);
+				assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");
+				ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
+				assertThat(group.getProperties()).containsOnlyKeys(allKeys);
+				assertThat(group.getSources()).containsOnlyKeys("org.acme.Foo",
+						"org.springframework.boot.FooProperties");
+				assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys("spring.foo.name",
+						"spring.foo.description", "spring.foo.enabled", "spring.foo.type");
+				assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
+						.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+			}
+		}
+	}
+
+	@Test
+	void severalRepositoriesIdenticalGroupsWithSameTypeDoesNotOverrideSource() throws IOException {
+		try (InputStream foo = getInputStreamFor("foo")) {
+			try (InputStream foo3 = getInputStreamFor("foo3")) {
+				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo3)
+						.build();
+				ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
+				ConfigurationMetadataSource fooSource = group.getSources().get("org.acme.Foo");
+				assertThat(fooSource.getSourceMethod()).isEqualTo("foo()");
+				assertThat(fooSource.getDescription()).isEqualTo("This is Foo.");
 			}
 		}
 	}
