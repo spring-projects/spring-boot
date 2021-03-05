@@ -117,4 +117,17 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 		}
 	}
 
+/*
+Uncomment this code to fix issue revealed by ConfigurationMetadataRepositoryJsonBuilderTests#severalRepositoriesIdenticalGroups3()
+
+	private void putIfAbsent(Map<String, ConfigurationMetadataSource> sources, String name,
+			ConfigurationMetadataSource source) {
+		ConfigurationMetadataSource existing = sources.get(name);
+		if (existing == null) {
+			sources.put(name, source);
+		} else {
+			source.getProperties().forEach((k, v) -> putIfAbsent(existing.getProperties(), k, v));
+		}
+	}
+*/
 }
