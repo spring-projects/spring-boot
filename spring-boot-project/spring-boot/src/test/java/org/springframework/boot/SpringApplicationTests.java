@@ -1247,6 +1247,29 @@ class SpringApplicationTests {
 		assertThat(applicationContext.getBean("test")).isEqualTo("boot");
 	}
 
+	@Test
+	void whenABootstrapperImplementsOnlyTheOldMethodThenItIsCalled() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		OnlyOldMethodTestBootstrapper bootstrapper = new OnlyOldMethodTestBootstrapper();
+		application.addBootstrapper(bootstrapper);
+		try (ConfigurableApplicationContext applicationContext = application.run()) {
+			assertThat(bootstrapper.intitialized).isTrue();
+		}
+	}
+
+	@Test
+	void whenABootstrapperImplementsTheOldMethodAndTheNewMethodThenOnlyTheNewMethodIsCalled() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		BothMethodsTestBootstrapper bootstrapper = new BothMethodsTestBootstrapper();
+		application.addBootstrapper(bootstrapper);
+		try (ConfigurableApplicationContext applicationContext = application.run()) {
+			assertThat(bootstrapper.intitialized).isFalse();
+			assertThat(bootstrapper.initialized).isTrue();
+		}
+	}
+
 	private <S extends AvailabilityState> ArgumentMatcher<ApplicationEvent> isAvailabilityChangeEventWithState(
 			S state) {
 		return (argument) -> (argument instanceof AvailabilityChangeEvent<?>)
@@ -1716,6 +1739,37 @@ class SpringApplicationTests {
 		@SuppressWarnings("unchecked")
 		<E extends ApplicationEvent> E getEvent(Class<E> type) {
 			return (E) this.events.get(type).get(0);
+		}
+
+	}
+
+	static class OnlyOldMethodTestBootstrapper implements Bootstrapper {
+
+		private boolean intitialized;
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public void intitialize(BootstrapRegistry registry) {
+			this.intitialized = true;
+		}
+
+	}
+
+	static class BothMethodsTestBootstrapper implements Bootstrapper {
+
+		private boolean intitialized;
+
+		private boolean initialized;
+
+		@Override
+		@SuppressWarnings("deprecation")
+		public void intitialize(BootstrapRegistry registry) {
+			this.intitialized = true;
+		}
+
+		@Override
+		public void initialize(BootstrapRegistry registry) {
+			this.initialized = true;
 		}
 
 	}
