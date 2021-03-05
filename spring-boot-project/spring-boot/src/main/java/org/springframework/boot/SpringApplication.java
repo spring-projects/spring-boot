@@ -351,7 +351,7 @@ public class SpringApplication {
 
 	private DefaultBootstrapContext createBootstrapContext() {
 		DefaultBootstrapContext bootstrapContext = new DefaultBootstrapContext();
-		this.bootstrappers.forEach((initializer) -> initializer.intitialize(bootstrapContext));
+		this.bootstrappers.forEach((initializer) -> initializer.initialize(bootstrapContext));
 		return bootstrapContext;
 	}
 
