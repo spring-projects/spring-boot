@@ -64,7 +64,7 @@ abstract class AbstractArchiveIntegrationTests {
 
 		private JarAssert(File actual) {
 			super(actual, JarAssert.class);
-			assertThat(actual.exists());
+			assertThat(actual).exists();
 		}
 
 		JarAssert doesNotHaveEntryWithName(String name) {

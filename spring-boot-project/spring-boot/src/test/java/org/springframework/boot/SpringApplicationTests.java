@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -1228,10 +1228,10 @@ class SpringApplicationTests {
 		application.addListeners(listener);
 		application.run();
 		ApplicationStartingEvent startingEvent = listener.getEvent(ApplicationStartingEvent.class);
-		assertThat(startingEvent.getBootstrapContext().get(String.class));
+		assertThat(startingEvent.getBootstrapContext().get(String.class)).isEqualTo("boot");
 		ApplicationEnvironmentPreparedEvent environmentPreparedEvent = listener
 				.getEvent(ApplicationEnvironmentPreparedEvent.class);
-		assertThat(environmentPreparedEvent.getBootstrapContext().get(String.class));
+		assertThat(environmentPreparedEvent.getBootstrapContext().get(String.class)).isEqualTo("boot");
 	}
 
 	@Test
