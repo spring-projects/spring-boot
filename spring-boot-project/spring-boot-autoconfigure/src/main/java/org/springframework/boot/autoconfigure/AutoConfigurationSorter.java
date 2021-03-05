@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.core.type.classreading.MetadataReader;
 import org.springframework.core.type.classreading.MetadataReaderFactory;
@@ -40,6 +43,8 @@ import org.springframework.util.Assert;
  * @author Phillip Webb
  */
 class AutoConfigurationSorter {
+
+	private static final Log logger = LogFactory.getLog(AutoConfigurationSorter.class);
 
 	private final MetadataReaderFactory metadataReaderFactory;
 
@@ -66,6 +71,9 @@ class AutoConfigurationSorter {
 		});
 		// Then respect @AutoConfigureBefore @AutoConfigureAfter
 		orderedClassNames = sortByAnnotation(classes, orderedClassNames);
+		if (logger.isTraceEnabled()) {
+			logger.trace(getOrderedClassLogMessage(orderedClassNames, "AUTO CONFIGURATION ORDER REPORT"));
+		}
 		return orderedClassNames;
 	}
 
@@ -100,6 +108,24 @@ class AutoConfigurationSorter {
 	private void checkForCycles(Set<String> processing, String current, String after) {
 		Assert.state(!processing.contains(after),
 				() -> "AutoConfigure cycle detected between " + current + " and " + after);
+	}
+
+	private String getOrderedClassLogMessage(List<String> orderedClassNames, String title) {
+		StringBuilder separator = new StringBuilder();
+		for (int i = 0; i < title.length(); i++) {
+			separator.append("=");
+		}
+
+		StringBuilder message = new StringBuilder();
+		message.append(String.format("%n%n"));
+		message.append(String.format("%s%n", separator));
+		message.append(String.format("%s%n", title));
+		message.append(String.format("%s%n%n", separator));
+		for (int i = 0; i < orderedClassNames.size(); i++) {
+			message.append(String.format("%3d - %s%n", i + 1, orderedClassNames.get(i)));
+		}
+		message.append(String.format("%n%n"));
+		return message.toString();
 	}
 
 	private static class AutoConfigurationClasses {
