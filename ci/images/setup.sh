@@ -26,14 +26,14 @@ curl -L ${JDK_URL} | tar zx --strip-components=1
 test -f /opt/openjdk/bin/java
 test -f /opt/openjdk/bin/javac
 
-if [[ $1 != $2 ]]; then
-	SECONDARY_JDK_URL=$( ./get-jdk-url.sh $2 )
+if [[ $# -eq 2 ]]; then
+	TOOLCHAIN_JDK_URL=$( ./get-jdk-url.sh $2 )
 
-	mkdir -p /opt/openjdk-secondary
-	cd /opt/openjdk-secondary
-	curl -L ${SECONDARY_JDK_URL} | tar zx --strip-components=1
-	test -f /opt/openjdk-secondary/bin/java
-	test -f /opt/openjdk-secondary/bin/javac
+	mkdir -p /opt/openjdk-toolchain
+	cd /opt/openjdk-toolchain
+	curl -L ${TOOLCHAIN_JDK_URL} | tar zx --strip-components=1
+	test -f /opt/openjdk-toolchain/bin/java
+	test -f /opt/openjdk-toolchain/bin/javac
 fi
 
 ###########################################################
