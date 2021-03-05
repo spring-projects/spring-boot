@@ -113,6 +113,102 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 		}
 	}
 
+	
+	/*
+	 * A rewrite of severalRepositoriesIdenticalGroups() using "containsOnlyKeys" to show actual vs. expected when assert fails.
+	 */
+	@Test
+	void severalRepositoriesIdenticalGroups_rewritten() throws IOException {
+		try (InputStream foo = getInputStreamFor("foo")) {
+			try (InputStream foo2 = getInputStreamFor("foo2")) {
+				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo2)
+						.build();
+				
+				// assert all properties are found
+				assertThat(repo.getAllProperties()).containsOnlyKeys(
+						"spring.foo.name", 
+						"spring.foo.description", 
+						"spring.foo.counter", 
+						"spring.foo.enabled", 
+						"spring.foo.type");
+				
+				// we have a single group containing all properties
+				assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");
+				
+				ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
+				assertThat(group.getProperties()).containsOnlyKeys(
+						"spring.foo.name", 
+						"spring.foo.description", 
+						"spring.foo.counter", 
+						"spring.foo.enabled", 
+						"spring.foo.type");
+				
+				// the group contains 3 different sources
+				assertThat(group.getSources()).containsOnlyKeys(
+						"org.acme.Foo", "org.acme.Foo2", "org.springframework.boot.FooProperties");
+				
+				assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys(
+						"spring.foo.name",
+						"spring.foo.description");
+				
+				assertThat(group.getSources().get("org.acme.Foo2").getProperties()).containsOnlyKeys(
+						"spring.foo.enabled",
+						"spring.foo.type");
+				
+				assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties()).containsOnlyKeys(
+						"spring.foo.name",
+						"spring.foo.counter");
+			}
+		}
+	}
+	
+	/*
+	 * "foo3" contains the same properties as "foo2" except they refer to a group that already exists in 
+	 * "foo1" (same NAME, same TYPE).
+	 * 
+	 * This test shows that the union of properties collected from the sources is less than what the group actually 
+	 * contains (some properties are missing).
+	 */
+	@Test
+	void severalRepositoriesIdenticalGroups3() throws IOException {
+		try (InputStream foo = getInputStreamFor("foo")) {
+			try (InputStream foo3 = getInputStreamFor("foo3")) {
+				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo3)
+						.build();
+				
+				assertThat(repo.getAllProperties()).containsOnlyKeys(
+						"spring.foo.name", 
+						"spring.foo.description", 
+						"spring.foo.counter", 
+						"spring.foo.enabled", 
+						"spring.foo.type");
+				
+				assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");
+				
+				ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
+				assertThat(group.getProperties()).containsOnlyKeys(
+						"spring.foo.name", 
+						"spring.foo.description", 
+						"spring.foo.counter", 
+						"spring.foo.enabled", 
+						"spring.foo.type");
+				
+				
+				assertThat(group.getSources()).containsOnlyKeys("org.acme.Foo", "org.springframework.boot.FooProperties");
+				assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys(
+						"spring.foo.name",
+						"spring.foo.description",
+						"spring.foo.enabled",		// <-- missing although present in repo.getAllProperties()
+						"spring.foo.type");			// <-- missing although present in repo.getAllProperties()
+				
+				assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties()).containsOnlyKeys(
+						"spring.foo.name",
+						"spring.foo.counter");
+			}
+		}
+	}
+	
+	
 	@Test
 	void emptyGroups() throws IOException {
 		try (InputStream in = getInputStreamFor("empty-groups")) {
