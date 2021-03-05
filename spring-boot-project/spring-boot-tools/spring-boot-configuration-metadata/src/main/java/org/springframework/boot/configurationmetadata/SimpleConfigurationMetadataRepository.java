@@ -61,7 +61,7 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 			}
 			String sourceType = source.getType();
 			if (sourceType != null) {
-				putIfAbsent(group.getSources(), sourceType, source);
+				addOrMergeSource(group.getSources(), sourceType, source);
 			}
 		}
 	}
@@ -93,7 +93,7 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 				// Merge properties
 				group.getProperties().forEach((name, value) -> putIfAbsent(existingGroup.getProperties(), name, value));
 				// Merge sources
-				group.getSources().forEach((name, value) -> putIfAbsent(existingGroup.getSources(), name, value));
+				group.getSources().forEach((name, value) -> addOrMergeSource(existingGroup.getSources(), name, value));
 			}
 		}
 
@@ -111,23 +111,21 @@ public class SimpleConfigurationMetadataRepository implements ConfigurationMetad
 		return this.allGroups.get(source.getGroupId());
 	}
 
+	private void addOrMergeSource(Map<String, ConfigurationMetadataSource> sources, String name,
+			ConfigurationMetadataSource source) {
+		ConfigurationMetadataSource existingSource = sources.get(name);
+		if (existingSource == null) {
+			sources.put(name, source);
+		}
+		else {
+			source.getProperties().forEach((k, v) -> putIfAbsent(existingSource.getProperties(), k, v));
+		}
+	}
+
 	private <V> void putIfAbsent(Map<String, V> map, String key, V value) {
 		if (!map.containsKey(key)) {
 			map.put(key, value);
 		}
 	}
 
-/*
-Uncomment this code to fix issue revealed by ConfigurationMetadataRepositoryJsonBuilderTests#severalRepositoriesIdenticalGroups3()
-
-	private void putIfAbsent(Map<String, ConfigurationMetadataSource> sources, String name,
-			ConfigurationMetadataSource source) {
-		ConfigurationMetadataSource existing = sources.get(name);
-		if (existing == null) {
-			sources.put(name, source);
-		} else {
-			source.getProperties().forEach((k, v) -> putIfAbsent(existing.getProperties(), k, v));
-		}
-	}
-*/
 }

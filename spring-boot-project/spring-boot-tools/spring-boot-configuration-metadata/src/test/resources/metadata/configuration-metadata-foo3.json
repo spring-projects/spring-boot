@@ -4,8 +4,8 @@
       "name": "spring.foo",
       "type": "org.acme.Foo",
       "sourceType": "org.acme.config.FooApp",
-      "sourceMethod": "foo2()",
-      "description": "This is Foo."
+      "sourceMethod": "foo3()",
+      "description": "This is Foo3."
     }
   ],
   "properties": [
