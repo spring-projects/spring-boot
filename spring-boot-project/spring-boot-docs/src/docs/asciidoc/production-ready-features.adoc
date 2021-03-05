@@ -54,6 +54,8 @@ The built-in endpoints will only be auto-configured when they are available.
 Most applications choose exposure via HTTP, where the ID of the endpoint along with a prefix of `/actuator` is mapped to a URL.
 For example, by default, the `health` endpoint is mapped to `/actuator/health`.
 
+TIP: To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]).
+
 The following technology-agnostic endpoints are available:
 
 [cols="2,5"]
@@ -150,8 +152,6 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | Exposes metrics in a format that can be scraped by a Prometheus server.
   Requires a dependency on `micrometer-registry-prometheus`.
 |===
-
-To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]).
 
 
 
