@@ -22,6 +22,7 @@ import java.util.List;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
+import org.gradle.api.tasks.GradleBuild;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
@@ -70,6 +71,7 @@ public class ToolchainPlugin implements Plugin<Project> {
 		project.getTasks().withType(JavaCompile.class, (task) -> task.setEnabled(false));
 		project.getTasks().withType(Javadoc.class, (task) -> task.setEnabled(false));
 		project.getTasks().withType(Test.class, (task) -> task.setEnabled(false));
+		project.getTasks().withType(GradleBuild.class, (task) -> task.setEnabled(false));
 	}
 
 	private void configureJavaCompileToolchain(Project project, ToolchainExtension toolchain) {
