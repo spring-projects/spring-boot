@@ -1426,6 +1426,7 @@ This can be achieved using the configprop:management.endpoints.web.exposure.excl
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
 By default, this feature is not enabled and can be turned on by setting the configuration property configprop:spring.jmx.enabled[] to `true`.
 Spring Boot exposes management endpoints as JMX MBeans under the `org.springframework.boot` domain by default.
+To Take full control over endpoints registration in the JMX domain, consider registering your own `EndpointObjectNameFactory` implementation.
 
 
 
