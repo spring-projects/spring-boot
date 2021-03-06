@@ -32,7 +32,11 @@ settings.gradle.projectsLoaded {
 	gradleEnterprise {
 		buildScan {
 			if (settings.gradle.rootProject.hasProperty('toolchainVersion')) {
-				value('Toolchain Version', settings.gradle.rootProject.getProperty('toolchainVersion'))
+				def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
+				if (toolchainVersion != null) {
+					value('Toolchain version', toolchainVersion)
+					tag("JDK-$toolchainVersion")
+				}
 			}
 
 			settings.gradle.rootProject.getBuildDir().mkdirs()
