@@ -21,16 +21,11 @@ Doing so means that the `jvmArguments`, `systemPropertyVariables`, `environmentV
 Spring Boot `devtools` is a module to improve the development-time experience when working on Spring Boot applications.
 To enable it, just add the following dependency to your project:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<dependencies>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-devtools</artifactId>
-			<optional>true</optional>
-		</dependency>
-	</dependencies>
+include::../maven/running/devtools-pom.xml[tags=devtools]
 ----
+
 
 When `devtools` is running, it detects change when you recompile your application and automatically refreshes it.
 This works for not only resources but code as well.
@@ -47,19 +42,9 @@ Just include the following property in your project:
 Prior to `devtools`, the plugin supported hot refreshing of resources by default which has now be disabled in favour of the solution described above.
 You can restore it at any time by configuring your project:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-<build>
-	<plugins>
-		<plugin>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-maven-plugin</artifactId>
-			<configuration>
-				<addResources>true</addResources>
-			</configuration>
-		</plugin>
-	</plugins>
-</build>
+include::../maven/running/hot-refresh-pom.xml[tags=hot-refresh]
 ----
 
 When `addResources` is enabled, any `src/main/resources` directory will be added to the application classpath when you run the application and any duplicate found in `target/classes` will be removed.
@@ -93,23 +78,9 @@ By default, the `run` goal runs your application in a forked process.
 If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
 The following configuration suspend the process until a debugger has joined on port 5005:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<jvmArguments>
-							-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
-						</jvmArguments>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/running/debug-pom.xml[tags=debug]
 ----
 
 These arguments can be specified on the command line as well, make sure to wrap that properly, that is:
@@ -126,27 +97,9 @@ These arguments can be specified on the command line as well, make sure to wrap 
 System properties can be specified using the `systemPropertyVariables` attribute.
 The following example sets `property1` to `test` and `property2` to 42:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-	<project>
-		<build>
-			<properties>
-				<my.value>42</my.value>
-			</properties>
-			<plugins>
-				<plugin>
-					<groupId>org.springframework.boot</groupId>
-					<artifactId>spring-boot-maven-plugin</artifactId>
-					<configuration>
-						<systemPropertyVariables>
-							<property1>test</property1>
-							<property2>${my.value}</property2>
-						</systemPropertyVariables>
-					</configuration>
-				</plugin>
-			</plugins>
-		</build>
-	</project>
+include::../maven/running/system-properties-pom.xml[tags=system-properties]
 ----
 
 If the value is empty or not defined (i.e. `<my-property/`>), the system property is set with an empty String as the value.
@@ -170,26 +123,9 @@ In the following example, the value for `property1` is `overridden`:
 Environment variables can be specified using the `environmentVariables` attribute.
 The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-<project>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<environmentVariables>
-						<ENV1>5000</ENV1>
-						<ENV2>Some Text</ENV2>
-						<ENV3/>
-						<ENV4></ENV4>
-					</environmentVariables>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-</project>
+include::../maven/running/environment-variables-pom.xml[tags=environment-variables]
 ----
 
 If the value is empty or not defined (i.e. `<MY_ENV/`>), the env variable is set with an empty String as the value.
@@ -207,24 +143,9 @@ Environment variables defined this way take precedence over existing values.
 Application arguments can be specified using the `arguments` attribute.
 The following example sets two arguments: `property1` and `property2=42`:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-<project>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<arguments>
-						<argument>property1</argument>
-						<argument>property2=${my.value}</argument>
-					</arguments>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-</project>
+include::../maven/running/application-arguments-pom.xml[tags=application-arguments]
 ----
 
 On the command-line, arguments are separated by a space the same way `jvmArguments` are.
@@ -244,24 +165,9 @@ The active profiles to use for a particular application can be specified using t
 
 The following configuration enables the `foo` and `bar` profiles:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-<project>
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.springframework.boot</groupId>
-				<artifactId>spring-boot-maven-plugin</artifactId>
-				<configuration>
-					<profiles>
-						<profile>foo</profile>
-						<profile>bar</profile>
-					</profiles>
-				</configuration>
-			</plugin>
-		</plugins>
-	</build>
-</project>
+include::../maven/running/active-profiles-pom.xml[tags=active-profiles]
 ----
 
 The profiles to enable can be specified on the command line as well, make sure to separate them with a comma, as shown in the following example:
