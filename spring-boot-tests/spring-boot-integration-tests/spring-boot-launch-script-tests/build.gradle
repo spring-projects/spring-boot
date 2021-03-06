@@ -6,6 +6,10 @@ plugins {
 
 description = "Spring Boot Launch Script Integration Tests"
 
+toolchain {
+	maximumCompatibleJavaVersion = JavaLanguageVersion.of(15)
+}
+
 configurations {
 	app
 }
