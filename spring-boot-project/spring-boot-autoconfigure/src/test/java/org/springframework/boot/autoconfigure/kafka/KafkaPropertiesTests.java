@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class KafkaPropertiesTests {
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() {
 		org.apache.kafka.common.IsolationLevel[] original = org.apache.kafka.common.IsolationLevel.values();
