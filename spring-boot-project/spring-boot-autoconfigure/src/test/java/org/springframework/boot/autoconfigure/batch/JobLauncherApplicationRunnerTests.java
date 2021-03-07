@@ -102,8 +102,8 @@ class JobLauncherApplicationRunnerTests {
 			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
 			Job job = jobLauncherContext.configureJob().incrementer(new RunIdIncrementer()).build();
 			// start job instance with non-identifying parameter
-			JobParameters nonIdentifyingParameter = new JobParametersBuilder()
-					.addString("foo", "bar", false).toJobParameters();
+			JobParameters nonIdentifyingParameter = new JobParametersBuilder().addString("foo", "bar", false)
+					.toJobParameters();
 			jobLauncherContext.runner.execute(job, nonIdentifyingParameter);
 			// start next job instance without the non-identifying parameter
 			jobLauncherContext.runner.execute(job, new JobParameters());
@@ -111,8 +111,8 @@ class JobLauncherApplicationRunnerTests {
 			List<JobExecution> jobExecutions = jobLauncherContext.jobExecutions();
 			assertThat(jobExecutions).hasSize(2);
 			assertThat(jobExecutions.get(0).getJobParameters().getParameters()).doesNotContainKey("foo");
-			assertThat(jobExecutions.get(1).getJobParameters().getParameters())
-					.containsEntry("foo", new JobParameter("bar", false));
+			assertThat(jobExecutions.get(1).getJobParameters().getParameters()).containsEntry("foo",
+					new JobParameter("bar", false));
 		});
 	}
 
@@ -221,8 +221,7 @@ class JobLauncherApplicationRunnerTests {
 		}
 
 		List<JobExecution> jobExecutions() {
-			return jobInstances().stream()
-					.flatMap(instance -> jobExplorer.getJobExecutions(instance).stream())
+			return jobInstances().stream().flatMap((instance) -> this.jobExplorer.getJobExecutions(instance).stream())
 					.collect(Collectors.toList());
 		}
 
