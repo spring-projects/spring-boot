@@ -17,14 +17,15 @@
 package org.springframework.boot.autoconfigure.batch;
 
 import java.util.List;
-
+import java.util.stream.Collectors;
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
-
 import org.springframework.batch.core.Job;
+import org.springframework.batch.core.JobExecution;
 import org.springframework.batch.core.JobExecutionException;
 import org.springframework.batch.core.JobInstance;
+import org.springframework.batch.core.JobParameter;
 import org.springframework.batch.core.JobParameters;
 import org.springframework.batch.core.JobParametersBuilder;
 import org.springframework.batch.core.Step;
@@ -90,6 +91,26 @@ class JobLauncherApplicationRunnerTests {
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			jobLauncherContext.runner.execute(job, new JobParameters());
 			assertThat(jobLauncherContext.jobInstances()).hasSize(2);
+		});
+	}
+
+	@Test
+	void incrementExistingExecutionWithNonIdentifyingParameter() {
+		this.contextRunner.run((context) -> {
+			JobLauncherApplicationRunnerContext jobLauncherContext = new JobLauncherApplicationRunnerContext(context);
+			Job job = jobLauncherContext.configureJob().incrementer(new RunIdIncrementer()).build();
+			// start job instance with non-identifying parameter
+			JobParameters nonIdentifyingParameter = new JobParametersBuilder()
+					.addString("foo", "bar", false).toJobParameters();
+			jobLauncherContext.runner.execute(job, nonIdentifyingParameter);
+			// start next job instance without the non-identifying parameter
+			jobLauncherContext.runner.execute(job, new JobParameters());
+
+			List<JobExecution> jobExecutions = jobLauncherContext.jobExecutions();
+			assertThat(jobExecutions).hasSize(2);
+			assertThat(jobExecutions.get(0).getJobParameters().getParameters()).doesNotContainKey("foo");
+			assertThat(jobExecutions.get(1).getJobParameters().getParameters())
+					.containsEntry("foo", new JobParameter("bar", false));
 		});
 	}
 
@@ -195,6 +216,12 @@ class JobLauncherApplicationRunnerTests {
 
 		List<JobInstance> jobInstances() {
 			return this.jobExplorer.getJobInstances("job", 0, 100);
+		}
+
+		List<JobExecution> jobExecutions() {
+			return jobInstances().stream()
+					.flatMap(instance -> jobExplorer.getJobExecutions(instance).stream())
+					.collect(Collectors.toList());
 		}
 
 		void executeJob(JobParameters jobParameters) throws JobExecutionException {

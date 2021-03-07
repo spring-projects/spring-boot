@@ -211,13 +211,13 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		}
 		JobParameters nextParameters = new JobParametersBuilder(jobParameters, this.jobExplorer)
 				.getNextJobParameters(job).toJobParameters();
-		return merge(nextParameters, jobParameters);
+		return merge(getIdentifying(nextParameters), jobParameters);
 	}
 
 	private JobParameters getNextJobParametersForExisting(Job job, JobParameters jobParameters) {
 		JobExecution lastExecution = this.jobRepository.getLastJobExecution(job.getName(), jobParameters);
 		if (isStoppedOrFailed(lastExecution) && job.isRestartable()) {
-			JobParameters previousIdentifyingParameters = getGetIdentifying(lastExecution.getJobParameters());
+			JobParameters previousIdentifyingParameters = getIdentifying(lastExecution.getJobParameters());
 			return merge(previousIdentifyingParameters, jobParameters);
 		}
 		return jobParameters;
@@ -228,14 +228,14 @@ public class JobLauncherApplicationRunner implements ApplicationRunner, Ordered,
 		return (status == BatchStatus.STOPPED || status == BatchStatus.FAILED);
 	}
 
-	private JobParameters getGetIdentifying(JobParameters parameters) {
-		HashMap<String, JobParameter> nonIdentifying = new LinkedHashMap<>(parameters.getParameters().size());
+	private JobParameters getIdentifying(JobParameters parameters) {
+		HashMap<String, JobParameter> identifying = new LinkedHashMap<>(parameters.getParameters().size());
 		parameters.getParameters().forEach((key, value) -> {
 			if (value.isIdentifying()) {
-				nonIdentifying.put(key, value);
+				identifying.put(key, value);
 			}
 		});
-		return new JobParameters(nonIdentifying);
+		return new JobParameters(identifying);
 	}
 
 	private JobParameters merge(JobParameters parameters, JobParameters additionals) {
