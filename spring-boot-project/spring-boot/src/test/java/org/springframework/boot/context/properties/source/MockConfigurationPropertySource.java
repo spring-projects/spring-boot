@@ -46,6 +46,10 @@ public class MockConfigurationPropertySource implements IterableConfigurationPro
 				OriginTrackedValue.of(value, MockOrigin.of(origin)));
 	}
 
+	public MockConfigurationPropertySource(Map<String, String> configs) {
+		configs.forEach(this::put);
+	}
+
 	public void put(String name, String value) {
 		put(ConfigurationPropertyName.of(name), value);
 	}
