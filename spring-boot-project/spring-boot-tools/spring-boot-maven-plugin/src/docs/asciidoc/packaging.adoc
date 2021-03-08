@@ -208,7 +208,7 @@ Spring Boot repackages the jar file for this project using a custom layout facto
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging/custom-layout.xml[tags=custom-layout]
+include::../maven/packaging/custom-layout-pom.xml[tags=custom-layout]
 ----
 
 The layout factory is provided as an implementation of `LayoutFactory` (from `spring-boot-loader-tools`) explicitly specified in the pom.
