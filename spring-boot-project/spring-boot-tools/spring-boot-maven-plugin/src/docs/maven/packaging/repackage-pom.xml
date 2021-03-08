@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- tag::getting-started[] -->
+<!-- tag::repackage[] -->
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>getting-started</artifactId>
@@ -9,9 +9,16 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
+				<executions>
+					<execution>
+						<goals>
+							<goal>repackage</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 		</plugins>
 	</build>
 </project>
-<!-- end::getting-started[] -->
+<!-- end::repackage[] -->
 
