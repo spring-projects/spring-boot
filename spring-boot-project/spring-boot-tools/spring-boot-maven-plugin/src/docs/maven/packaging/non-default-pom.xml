@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- tag::non-default[] -->
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>packaging</artifactId>
 	<!-- ... -->
+	<!-- tag::non-default[] -->
 	<build>
 		<plugins>
 			<plugin>
@@ -23,7 +23,6 @@
 			</plugin>
 		</plugins>
 	</build>
-
+	<!-- end::non-default[] -->
 </project>
-<!-- end::non-default[] -->
 
