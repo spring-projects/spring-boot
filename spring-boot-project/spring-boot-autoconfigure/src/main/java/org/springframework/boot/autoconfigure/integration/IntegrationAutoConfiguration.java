@@ -84,7 +84,6 @@ public class IntegrationAutoConfiguration {
 
 	@Bean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
 	@ConditionalOnMissingBean(name = IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME)
-	@Conditional(NoSpringIntegrationPropertiesFile.class)
 	public static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
 		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
@@ -98,19 +97,6 @@ public class IntegrationAutoConfiguration {
 		integrationProperties.setReadOnlyHeaders(properties.getEndpoints().getReadOnlyHeaders());
 		integrationProperties.setNoAutoStartupEndpoints(properties.getEndpoints().getNoAutoStartup());
 		return integrationProperties;
-	}
-
-	static class NoSpringIntegrationPropertiesFile extends NoneNestedConditions {
-
-		NoSpringIntegrationPropertiesFile() {
-			super(ConfigurationPhase.REGISTER_BEAN);
-		}
-
-		@ConditionalOnResource(resources = "META-INF/spring.integration.properties")
-		static class SpringIntegrationPropertiesFile {
-
-		}
-
 	}
 
 	/**
