@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>build-info</artifactId>
+	<artifactId>integration-tests</artifactId>
 	<!-- tag::customize-jmx-port[] -->
 	<build>
 		<plugins>

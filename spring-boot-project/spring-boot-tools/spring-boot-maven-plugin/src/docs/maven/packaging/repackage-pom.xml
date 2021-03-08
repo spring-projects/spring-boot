@@ -2,7 +2,7 @@
 <!-- tag::repackage[] -->
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<artifactId>getting-started</artifactId>
+	<artifactId>packaging</artifactId>
 	<!-- ... -->
 	<build>
 		<plugins>
