@@ -59,8 +59,8 @@ public class Neo4jReactiveDataAutoConfiguration {
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
 	@ConditionalOnMissingBean
 	public ReactiveNeo4jClient reactiveNeo4jClient(Driver driver,
-			ReactiveDatabaseSelectionProvider databaseSelectionProvider) {
-		return ReactiveNeo4jClient.create(driver);
+			ReactiveDatabaseSelectionProvider databaseNameProvider) {
+		return ReactiveNeo4jClient.create(driver, databaseNameProvider);
 	}
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
