@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,11 +32,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ClassPathOverrides("org.apache.kafka:kafka-clients:2.4.1")
 class KafkaPropertiesKafka24Tests {
 
+	@SuppressWarnings("rawtypes")
 	@Test
 	void isolationLevelEnumConsistentWithKafkaVersion() throws ClassNotFoundException {
 		Class<?> isolationLevelClass = Class.forName("org.apache.kafka.common.requests.IsolationLevel");
-		Object[] original = ReflectionTestUtils.invokeMethod(isolationLevelClass, "values");
-		assertThat(original).extracting("name").containsExactly(IsolationLevel.READ_UNCOMMITTED.name(),
+		Enum[] original = ReflectionTestUtils.invokeMethod(isolationLevelClass, "values");
+		assertThat(original).extracting(Enum::name).containsExactly(IsolationLevel.READ_UNCOMMITTED.name(),
 				IsolationLevel.READ_COMMITTED.name());
 		assertThat(original).extracting("id").containsExactly(IsolationLevel.READ_UNCOMMITTED.id(),
 				IsolationLevel.READ_COMMITTED.id());
