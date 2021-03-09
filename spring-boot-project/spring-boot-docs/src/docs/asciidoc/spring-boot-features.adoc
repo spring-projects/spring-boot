@@ -747,7 +747,7 @@ For the second case, you need to use the `configtree:` prefix so that Spring Boo
 
 As an example, let's imagine that Kubernetes has mounted the following volume:
 
-[source,indent=0]
+[indent=0]
 ----
 	etc/
 	  config/
@@ -776,7 +776,7 @@ Any `configtree:` location that ends with `/*/` will import all immediate childr
 
 For example, given the following volume:
 
-[source,indent=0]
+[indent=0]
 ----
 	etc/
 	  config/
