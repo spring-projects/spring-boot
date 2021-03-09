@@ -25,7 +25,9 @@ import java.util.List;
  * @author Anand Shastri
  * @author Stephane Nicoll
  * @since 2.2.0
+ * @deprecated since 2.5.0 as location checking is deprecated
  */
+@Deprecated
 public class FlywayMigrationScriptMissingException extends RuntimeException {
 
 	private final List<String> locations;

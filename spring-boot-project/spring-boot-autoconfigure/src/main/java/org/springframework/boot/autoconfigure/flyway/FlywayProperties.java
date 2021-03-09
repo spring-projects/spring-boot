@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Flyway database migrations.
@@ -45,8 +46,10 @@ public class FlywayProperties {
 	private boolean enabled = true;
 
 	/**
-	 * Whether to check that migration scripts location exists.
+	 * Whether to check that migration scripts location exists. Should be set to false
+	 * when using a wildcard location or a remote-hosted location such as S3 or GCS.
 	 */
+	@Deprecated
 	private boolean checkLocation = true;
 
 	/**
@@ -365,10 +368,14 @@ public class FlywayProperties {
 		this.enabled = enabled;
 	}
 
+	@Deprecated
+	@DeprecatedConfigurationProperty(
+			reason = "Locations can no longer be checked accurately due to changes in Flyway's location support.")
 	public boolean isCheckLocation() {
 		return this.checkLocation;
 	}
 
+	@Deprecated
 	public void setCheckLocation(boolean checkLocation) {
 		this.checkLocation = checkLocation;
 	}

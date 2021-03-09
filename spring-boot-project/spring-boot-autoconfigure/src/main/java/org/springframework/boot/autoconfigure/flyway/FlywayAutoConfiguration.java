@@ -143,6 +143,7 @@ public class FlywayAutoConfiguration {
 			return configuration.getDataSource();
 		}
 
+		@SuppressWarnings("deprecation")
 		private void checkLocationExists(DataSource dataSource, FlywayProperties properties,
 				ResourceLoader resourceLoader) {
 			if (properties.isCheckLocation()) {
