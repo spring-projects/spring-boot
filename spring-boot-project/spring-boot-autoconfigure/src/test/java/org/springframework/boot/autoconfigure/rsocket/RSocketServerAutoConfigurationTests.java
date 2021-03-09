@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,13 @@ package org.springframework.boot.autoconfigure.rsocket;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
 import org.springframework.boot.rsocket.server.RSocketServerFactory;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
@@ -30,6 +33,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.codec.CharSequenceEncoder;
 import org.springframework.core.codec.StringDecoder;
+import org.springframework.http.client.reactive.ReactorResourceFactory;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 
@@ -104,6 +108,14 @@ class RSocketServerAutoConfigurationTests {
 						"spring.rsocket.server.mapping-path=/rsocket")
 				.run((context) -> assertThat(context).getBeanNames(RSocketWebSocketNettyRouteProvider.class)
 						.containsExactly("customNettyRouteProvider"));
+	}
+
+	@Test
+	void whenSpringWebIsNotPresentThenEmbeddedServerConfigurationBacksOff() {
+		contextRunner().withClassLoader(new FilteredClassLoader(ReactorResourceFactory.class))
+				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
+				.withPropertyValues("spring.rsocket.server.port=0")
+				.run((context) -> assertThat(context).doesNotHaveBean(RSocketServerFactory.class));
 	}
 
 	private ApplicationContextRunner contextRunner() {
