@@ -66,7 +66,7 @@ public class RSocketServerAutoConfiguration {
 
 	@Conditional(OnRSocketWebServerCondition.class)
 	@Configuration(proxyBeanMethods = false)
-	static class WebFluxServerAutoConfiguration {
+	static class WebFluxServerConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
@@ -83,7 +83,7 @@ public class RSocketServerAutoConfiguration {
 	@ConditionalOnProperty(prefix = "spring.rsocket.server", name = "port")
 	@ConditionalOnClass(ReactorResourceFactory.class)
 	@Configuration(proxyBeanMethods = false)
-	static class EmbeddedServerAutoConfiguration {
+	static class EmbeddedServerConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
