@@ -148,7 +148,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Asciidoctor Extensions", "0.5.0") {
+	library("Spring Asciidoctor Extensions", "0.5.1-SNAPSHOT") {
 		group("io.spring.asciidoctor") {
 			modules = [
 				"spring-asciidoctor-extensions-block-switch",

@@ -2788,15 +2788,19 @@ Most standard media types are supported out-of-the-box, but you can also define 
 Suffix pattern matching is deprecated and will be removed in a future release.
 If you understand the caveats and would still like your application to use suffix pattern matching, the following configuration is required:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
 ----
-	spring.mvc.contentnegotiation.favor-path-extension=true
-	spring.mvc.pathmatch.use-suffix-pattern=true
+	spring:
+	  mvc:
+	    contentnegotiation:
+	      favor-path-extension: true
+	    pathmatch:
+	      use-suffix-pattern: true
 ----
 
 Alternatively, rather than open all suffix patterns, it's more secure to only support registered suffix patterns:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
 ----
 	spring:
 	  mvc:
