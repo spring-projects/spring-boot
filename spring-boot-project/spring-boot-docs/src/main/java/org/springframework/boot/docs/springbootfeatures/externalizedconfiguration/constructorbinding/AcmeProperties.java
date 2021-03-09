@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.constructorbinding;
 
-//tag::code[]
 import java.net.InetAddress;
 import java.util.List;
 
@@ -28,11 +27,14 @@ import org.springframework.boot.context.properties.bind.DefaultValue;
 @ConfigurationProperties("acme")
 public class AcmeProperties {
 
+	// @fold:on // fields...
 	private final boolean enabled;
 
 	private final InetAddress remoteAddress;
 
 	private final Security security;
+
+	// @fold:off
 
 	public AcmeProperties(boolean enabled, InetAddress remoteAddress, Security security) {
 		this.enabled = enabled;
@@ -40,6 +42,7 @@ public class AcmeProperties {
 		this.security = security;
 	}
 
+	// @fold:on // getters...
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -51,14 +54,18 @@ public class AcmeProperties {
 	public Security getSecurity() {
 		return this.security;
 	}
+	// @fold:off
 
 	public static class Security {
 
+		// @fold:on // fields...
 		private final String username;
 
 		private final String password;
 
 		private final List<String> roles;
+
+		// @fold:off
 
 		public Security(String username, String password, @DefaultValue("USER") List<String> roles) {
 			this.username = username;
@@ -66,6 +73,7 @@ public class AcmeProperties {
 			this.roles = roles;
 		}
 
+		// @fold:on // getters...
 		public String getUsername() {
 			return this.username;
 		}
@@ -77,8 +85,8 @@ public class AcmeProperties {
 		public List<String> getRoles() {
 			return this.roles;
 		}
+		// @fold:off
 
 	}
 
 }
-// end::code[]

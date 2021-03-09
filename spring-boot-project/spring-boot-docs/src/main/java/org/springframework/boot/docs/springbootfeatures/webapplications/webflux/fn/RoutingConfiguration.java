@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.webflux.fn;
 
-//tag::code[]
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.MediaType;
@@ -45,4 +44,3 @@ public class RoutingConfiguration {
 	}
 
 }
-// end::code[]

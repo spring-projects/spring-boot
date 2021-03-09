@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.nosql;
 
-// tag::code[]
 import java.time.Duration;
 
 import org.springframework.boot.autoconfigure.cache.RedisCacheManagerBuilderCustomizer;
@@ -38,4 +37,3 @@ public class RedisCacheManagerConfiguration {
 	}
 
 }
-// end::code[]

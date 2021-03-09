@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.duration.constructorbinding;
 
-// tag::code[]
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 
@@ -29,16 +28,19 @@ import org.springframework.boot.convert.DurationUnit;
 @ConstructorBinding
 public class AppSystemProperties {
 
+	// @fold:on // fields...
 	private final Duration sessionTimeout;
 
 	private final Duration readTimeout;
 
+	// @fold:off
 	public AppSystemProperties(@DurationUnit(ChronoUnit.SECONDS) @DefaultValue("30s") Duration sessionTimeout,
 			@DefaultValue("1000ms") Duration readTimeout) {
 		this.sessionTimeout = sessionTimeout;
 		this.readTimeout = readTimeout;
 	}
 
+	// @fold:on // getters...
 	public Duration getSessionTimeout() {
 		return this.sessionTimeout;
 	}
@@ -46,6 +48,6 @@ public class AppSystemProperties {
 	public Duration getReadTimeout() {
 		return this.readTimeout;
 	}
+	// @fold:off
 
 }
-// end::code[]

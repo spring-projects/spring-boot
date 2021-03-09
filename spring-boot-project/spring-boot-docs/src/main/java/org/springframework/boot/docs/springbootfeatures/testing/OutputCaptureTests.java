@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing;
 
-// tag::code[]
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -35,4 +34,3 @@ class OutputCaptureTests {
 	}
 
 }
-// end::code[]

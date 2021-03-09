@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.springapplication.exitcode;
 
-// tag::code[]
 import org.springframework.boot.ExitCodeGenerator;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -35,4 +34,3 @@ public class MyApplication {
 	}
 
 }
-// end::code[]

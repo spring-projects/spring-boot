@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing.restdocs.restassured;
 
-// tag::code[]
 import org.springframework.boot.test.autoconfigure.restdocs.RestDocsRestAssuredConfigurationCustomizer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.restdocs.restassured3.RestAssuredRestDocumentationConfigurer;
@@ -31,4 +30,3 @@ public class AdvancedRestDocsConfiguration implements RestDocsRestAssuredConfigu
 	}
 
 }
-// end::code[]

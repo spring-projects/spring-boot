@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications;
 
-//tag::code[]
 import java.io.IOException;
 
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
@@ -40,7 +39,7 @@ public class HttpMessageConvertersConfiguration {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class AdditionalHttpMessageConverter extends AbstractHttpMessageConverter<Object> {
 

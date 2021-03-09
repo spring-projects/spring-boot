@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.webflux.fn;
 
-//tag::code[]
 import reactor.core.publisher.Mono;
 
 import org.springframework.stereotype.Component;
@@ -27,19 +26,15 @@ import org.springframework.web.reactive.function.server.ServerResponse;
 public class UserHandler {
 
 	public Mono<ServerResponse> getUser(ServerRequest request) {
-		// ...
-		return ServerResponse.ok().build();
+		/**/ return ServerResponse.ok().build();
 	}
 
 	public Mono<ServerResponse> getUserCustomers(ServerRequest request) {
-		// ...
-		return ServerResponse.ok().build();
+		/**/ return ServerResponse.ok().build();
 	}
 
 	public Mono<ServerResponse> deleteUser(ServerRequest request) {
-		// ...
-		return ServerResponse.ok().build();
+		/**/ return ServerResponse.ok().build();
 	}
 
 }
-// end::code[]

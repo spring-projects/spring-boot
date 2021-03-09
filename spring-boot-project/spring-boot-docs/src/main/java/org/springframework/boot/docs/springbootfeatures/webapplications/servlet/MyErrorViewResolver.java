@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.servlet;
 
-//tag::code[]
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -38,4 +37,3 @@ public class MyErrorViewResolver implements ErrorViewResolver {
 	}
 
 }
-// end::code[]

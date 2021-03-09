@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.datasize.javabeanbinding;
 
-// tag::code[]
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DataSizeUnit;
 import org.springframework.util.unit.DataSize;
@@ -30,6 +29,7 @@ public class AppIoProperties {
 
 	private DataSize sizeThreshold = DataSize.ofBytes(512);
 
+	// @fold:on // getters/setters...
 	public DataSize getBufferSize() {
 		return this.bufferSize;
 	}
@@ -45,6 +45,6 @@ public class AppIoProperties {
 	public void setSizeThreshold(DataSize sizeThreshold) {
 		this.sizeThreshold = sizeThreshold;
 	}
+	// @fold:off
 
 }
-// end::code[]

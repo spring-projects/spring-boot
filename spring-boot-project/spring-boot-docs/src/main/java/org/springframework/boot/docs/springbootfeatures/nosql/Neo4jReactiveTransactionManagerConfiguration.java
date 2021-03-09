@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.nosql;
 
-// tag::code[]
 import org.neo4j.driver.Driver;
 
 import org.springframework.context.annotation.Bean;
@@ -34,4 +33,3 @@ public class Neo4jReactiveTransactionManagerConfiguration {
 	}
 
 }
-// end::code[]

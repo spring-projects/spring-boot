@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration;
 
-//tag::code[]
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -31,7 +30,7 @@ public class ThirdPartyConfiguration {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class AnotherComponent {
 

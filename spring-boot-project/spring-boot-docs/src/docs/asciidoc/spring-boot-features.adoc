@@ -15,7 +15,7 @@ In many situations, you can delegate to the static `SpringApplication.run` metho
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/main/run/MyApplication.java[tag=*]
+include::{include-springbootfeatures}/springapplication/main/run/MyApplication.java[]
 ----
 
 When your application starts, you should see something similar to the following output:
@@ -176,7 +176,7 @@ For example, to turn off the banner, you could write:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/main/custom/MyApplication.java[tag=*]
+include::{include-springbootfeatures}/springapplication/main/custom/MyApplication.java[]
 ----
 
 NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
@@ -251,7 +251,7 @@ For example, we can export the "Readiness" state of the application to a file so
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/availability/ReadinessStateExporter.java[tag=*]
+include::{include-springbootfeatures}/springapplication/availability/ReadinessStateExporter.java[]
 ----
 
 We can also update the state of the application, when the application breaks and cannot recover:
@@ -343,7 +343,7 @@ The `ApplicationArguments` interface provides access to both the raw `String[]` 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/ApplicationArgumentsExample.java[tag=*]
+include::{include-springbootfeatures}/springapplication/ApplicationArgumentsExample.java[]
 ----
 
 TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
@@ -364,7 +364,7 @@ The following example shows a `CommandLineRunner` with a `run` method:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/CommandLineRunnerExample.java[tag=*]
+include::{include-springbootfeatures}/springapplication/CommandLineRunnerExample.java[]
 ----
 
 If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
@@ -381,7 +381,7 @@ This exit code can then be passed to `System.exit()` to return it as a status co
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/exitcode/MyApplication.java[tag=*]
+include::{include-springbootfeatures}/springapplication/exitcode/MyApplication.java[]
 ----
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
@@ -470,7 +470,7 @@ To provide a concrete example, suppose you develop a `@Component` that uses a `n
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/valueinjection/MyBean.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/valueinjection/MyBean.java[]
 ----
 
 On your application classpath (for example, inside your jar) you can have an `application.properties` file that provides a sensible default property value for `name`.
@@ -1037,7 +1037,7 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/javabeanbinding/AcmeProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/javabeanbinding/AcmeProperties.java[]
 ----
 
 The preceding POJO defines the following properties:
@@ -1078,7 +1078,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/constructorbinding/AcmeProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/constructorbinding/AcmeProperties.java[]
 ----
 
 In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
@@ -1118,7 +1118,7 @@ This can be done on any `@Configuration` class, as shown in the following exampl
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/enable/MyConfiguration.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/enable/MyConfiguration.java[]
 ----
 
 To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
@@ -1128,7 +1128,7 @@ If you want to define specific packages to scan, you can do so as shown in the f
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/enable/MyApplication.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/enable/MyApplication.java[]
 ----
 
 [NOTE]
@@ -1164,7 +1164,7 @@ To work with `@ConfigurationProperties` beans, you can inject them in the same w
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/use/MyService.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/use/MyService.java[]
 ----
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
@@ -1181,7 +1181,7 @@ To configure a bean from the `Environment` properties, add `@ConfigurationProper
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/ThirdPartyConfiguration.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/ThirdPartyConfiguration.java[]
 ----
 
 Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `AcmeProperties` example.
@@ -1197,7 +1197,7 @@ As an example, consider the following `@ConfigurationProperties` class:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/relaxed/OwnerProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/relaxed/OwnerProperties.java[]
 ----
 
 With the preceding code, the following properties names can all be used:
@@ -1428,7 +1428,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/duration/javabeanbinding/AppSystemProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/duration/javabeanbinding/AppSystemProperties.java[]
 ----
 
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
@@ -1451,7 +1451,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/duration/constructorbinding/AppSystemProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/duration/constructorbinding/AppSystemProperties.java[]
 ----
 
 
@@ -1492,7 +1492,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/datasize/javabeanbinding/AppIoProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/datasize/javabeanbinding/AppIoProperties.java[]
 ----
 
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
@@ -1513,7 +1513,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/datasize/constructorbinding/AppIoProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/datasize/constructorbinding/AppIoProperties.java[]
 ----
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes.
@@ -1529,7 +1529,7 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/validate/AcmeProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/validate/AcmeProperties.java[]
 ----
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
@@ -1539,7 +1539,7 @@ The following example builds on the preceding `AcmeProperties` example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/validate/nested/AcmeProperties.java[tag=*]
+include::{include-springbootfeatures}/externalizedconfiguration/validate/nested/AcmeProperties.java[]
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.
@@ -1596,7 +1596,7 @@ Any `@Component`, `@Configuration` or `@ConfigurationProperties` can be marked w
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/profiles/ProductionConfiguration.java[tag=*]
+include::{include-springbootfeatures}/profiles/ProductionConfiguration.java[]
 ----
 
 NOTE: If `@ConfigurationProperties` beans are registered via `@EnableConfigurationProperties` instead of automatic scanning, the `@Profile` annotation needs to be specified on the `@Configuration` class that has the `@EnableConfigurationProperties` annotation.
@@ -2230,7 +2230,7 @@ The following code shows a typical `@RestController` that serves JSON data:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/servlet/MyRestController.java[tag=*]
+include::{include-springbootfeatures}/webapplications/servlet/MyRestController.java[]
 ----
 
 Spring MVC is part of the core Spring Framework, and detailed information is available in the  {spring-framework-docs}/web.html#mvc[reference documentation].
@@ -2280,7 +2280,7 @@ If you need to add or customize converters, you can use Spring Boot's `HttpMessa
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/HttpMessageConvertersConfiguration.java[tag=*]
+include::{include-springbootfeatures}/webapplications/HttpMessageConvertersConfiguration.java[]
 ----
 
 Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
@@ -2298,7 +2298,7 @@ You can also use it on classes that contain serializers/deserializers as inner c
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/json/MyJsonComponent.java[tag=*]
+include::{include-springbootfeatures}/webapplications/json/MyJsonComponent.java[]
 ----
 
 All `@JsonComponent` beans in the `ApplicationContext` are automatically registered with Jackson.
@@ -2311,7 +2311,7 @@ The example above can be rewritten to use `JsonObjectSerializer`/`JsonObjectDese
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/json/object/MyJsonComponent.java[tag=*]
+include::{include-springbootfeatures}/webapplications/json/object/MyJsonComponent.java[]
 ----
 
 
@@ -2558,7 +2558,7 @@ You can also define a class annotated with `@ControllerAdvice` to customize the 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-springbootfeatures}/webapplications/servlet/MyControllerAdvice.java[tag=*]
+include::{include-springbootfeatures}/webapplications/servlet/MyControllerAdvice.java[]
 ----
 
 In the preceding example, if `YourException` is thrown by a controller defined in the same package as `AcmeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
@@ -2605,7 +2605,7 @@ For more complex mappings, you can also add beans that implement the `ErrorViewR
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-springbootfeatures}/webapplications/servlet/MyErrorViewResolver.java[tag=*]
+include::{include-springbootfeatures}/webapplications/servlet/MyErrorViewResolver.java[]
 ----
 
 You can also use regular Spring MVC features such as {spring-framework-docs}/web.html#mvc-exceptionhandlers[`@ExceptionHandler` methods] and {spring-framework-docs}/web.html#mvc-ann-controller-advice[`@ControllerAdvice`].
@@ -2620,14 +2620,14 @@ This abstraction works directly with the underlying embedded servlet container a
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-springbootfeatures}/webapplications/servlet/ErrorPageConfiguration.java[tag=*]
+include::{include-springbootfeatures}/webapplications/servlet/ErrorPageConfiguration.java[]
 ----
 
 NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-springbootfeatures}/webapplications/servlet/ServletFilterConfiguration.java[tag=*]
+include::{include-springbootfeatures}/webapplications/servlet/ServletFilterConfiguration.java[]
 ----
 
 Note that the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type.
@@ -2671,7 +2671,7 @@ Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method COR
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/servlet/CorsConfiguration.java[tag=*]
+include::{include-springbootfeatures}/webapplications/servlet/CorsConfiguration.java[]
 ----
 
 
@@ -2686,19 +2686,19 @@ The annotation-based one is quite close to the Spring MVC model, as shown in the
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/webflux/MyRestController.java[tag=*]
+include::{include-springbootfeatures}/webapplications/webflux/MyRestController.java[]
 ----
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/webflux/fn/RoutingConfiguration.java[tag=*]
+include::{include-springbootfeatures}/webapplications/webflux/fn/RoutingConfiguration.java[]
 ----
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/webflux/fn/UserHandler.java[tag=*]
+include::{include-springbootfeatures}/webapplications/webflux/fn/UserHandler.java[]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -2742,7 +2742,7 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webapplications/webflux/CodecConfiguration.java[tag=*]
+include::{include-springbootfeatures}/webapplications/webflux/CodecConfiguration.java[]
 ----
 
 You can also leverage <<boot-features-json-components,Boot's custom JSON serializers and deserializers>>.
@@ -2815,7 +2815,7 @@ Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-springbootfeatures}/webapplications/webflux/CustomErrorWebExceptionHandler.java[tag=*]
+include::{include-springbootfeatures}/webapplications/webflux/CustomErrorWebExceptionHandler.java[]
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
@@ -3058,7 +3058,7 @@ The following example shows how to customize `TomcatServletWebServerFactory` tha
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{include-springbootfeatures}/webapplications/TomcatServerCustomizer.java[tag=*]
+include::{include-springbootfeatures}/webapplications/TomcatServerCustomizer.java[]
 ----
 
 
@@ -3312,7 +3312,7 @@ For example, you can customize your security configuration by adding something l
 
 [source,java,pending-extract=true,indent=0]
 ----
-include::{include-springbootfeatures}/security/CustomWebFluxSecurityConfiguration.java[tag=*]
+include::{include-springbootfeatures}/security/CustomWebFluxSecurityConfiguration.java[]
 ----
 
 
@@ -4467,7 +4467,7 @@ To enable transaction management, the following bean must be defined in your con
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/Neo4jReactiveTransactionManagerConfiguration.java[tag=*]
+include::{include-springbootfeatures}/nosql/Neo4jReactiveTransactionManagerConfiguration.java[]
 ----
 ====
 
@@ -5154,7 +5154,7 @@ The following example shows a customizer that configures a specific entry expira
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/CouchbaseCacheManagerConfiguration.java[tag=*]
+include::{include-springbootfeatures}/nosql/CouchbaseCacheManagerConfiguration.java[]
 ----
 
 
@@ -5185,7 +5185,7 @@ The following example shows a customizer that configures a specific time to live
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/RedisCacheManagerConfiguration.java[tag=*]
+include::{include-springbootfeatures}/nosql/RedisCacheManagerConfiguration.java[]
 ----
 
 
@@ -5752,7 +5752,7 @@ To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/KafkaStreamsConfiguration.java[tag=*]
+include::{include-springbootfeatures}/messaging/KafkaStreamsConfiguration.java[]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
@@ -5907,7 +5907,7 @@ The following example shows a customizer that configures the use of a proxy for 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[tag=*]
+include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[]
 ----
 
 Finally, you can also create your own `RestTemplateBuilder` bean.
@@ -5916,7 +5916,7 @@ The following example exposes a `RestTemplateBuilder` with what Spring Boot woul
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/RestTemplateBuilderConfiguration.java[tag=*]
+include::{include-springbootfeatures}/resttemplate/RestTemplateBuilderConfiguration.java[]
 ----
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.
@@ -6581,7 +6581,7 @@ have `@SpringBootTest` inject them using the `args` attribute.
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/ApplicationArgumentTests.java[tag=*]
+include::{include-springbootfeatures}/testing/ApplicationArgumentTests.java[]
 ----
 
 
@@ -6593,7 +6593,7 @@ If you have web endpoints that you want to test against this mock environment, y
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/MockMvcTests.java[tag=*]
+include::{include-springbootfeatures}/testing/MockMvcTests.java[]
 ----
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<boot-features-testing-spring-boot-applications-testing-autoconfigured-mvc-tests,using `@WebMvcTest` instead>>.
@@ -6602,7 +6602,7 @@ Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestc
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/MockWebTestClientTests.java[tag=*]
+include::{include-springbootfeatures}/testing/MockWebTestClientTests.java[]
 ----
 
 [TIP]
@@ -6627,7 +6627,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/RandomPortWebTestClientTests.java[tag=*]
+include::{include-springbootfeatures}/testing/RandomPortWebTestClientTests.java[]
 ----
 
 This setup requires `spring-webflux` on the classpath.
@@ -6635,7 +6635,7 @@ If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/RandomPortTestRestTemplateTests.java[tag=*]
+include::{include-springbootfeatures}/testing/RandomPortTestRestTemplateTests.java[]
 ----
 
 
@@ -6654,7 +6654,7 @@ If such test needs access to an `MBeanServer`, consider marking it dirty as well
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/jmx/SampleJmxTests.java[tag=*]
+include::{include-springbootfeatures}/testing/jmx/SampleJmxTests.java[]
 ----
 
 
@@ -7477,14 +7477,14 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/restdocs/webclient/UsersDocumentationTests.java[tag=*]
+include::{include-springbootfeatures}/testing/restdocs/webclient/UsersDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsWebTestClientConfigurationCustomizer` bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/restdocs/webclient/AdvancedRestDocsConfiguration.java[tag=*]
+include::{include-springbootfeatures}/testing/restdocs/webclient/AdvancedRestDocsConfiguration.java[]
 ----
 
 
@@ -7496,14 +7496,14 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/restdocs/restassured/UserDocumentationTests.java[tag=*]
+include::{include-springbootfeatures}/testing/restdocs/restassured/UserDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer` bean can be used, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/restdocs/restassured/AdvancedRestDocsConfiguration.java[tag=*]
+include::{include-springbootfeatures}/testing/restdocs/restassured/AdvancedRestDocsConfiguration.java[]
 ----
 
 
@@ -7697,7 +7697,7 @@ To use add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutpu
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/OutputCaptureTests.java[tag=*]
+include::{include-springbootfeatures}/testing/OutputCaptureTests.java[]
 ----
 
 
@@ -7742,7 +7742,7 @@ Any URLs that do not specify a host and port automatically connect to the embedd
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/webclient/SampleWebClientTests.java[tag=*]
+include::{include-springbootfeatures}/testing/webclient/SampleWebClientTests.java[]
 ----
 
 

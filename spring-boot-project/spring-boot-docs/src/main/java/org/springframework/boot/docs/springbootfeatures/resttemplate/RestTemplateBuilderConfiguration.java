@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.resttemplate;
 
-// tag::code[]
 import java.time.Duration;
 
 import org.springframework.boot.autoconfigure.web.client.RestTemplateBuilderConfigurer;
@@ -34,4 +33,3 @@ public class RestTemplateBuilderConfiguration {
 	}
 
 }
-// end::code[]

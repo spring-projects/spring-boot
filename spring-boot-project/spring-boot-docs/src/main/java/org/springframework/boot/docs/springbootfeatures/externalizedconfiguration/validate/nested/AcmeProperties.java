@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.validate.nested;
 
-//tag::code[]
 import java.net.InetAddress;
 
 import javax.validation.Valid;
@@ -36,6 +35,7 @@ public class AcmeProperties {
 	@Valid
 	private final Security security = new Security();
 
+	// @fold:on // getters/setters...
 	public InetAddress getRemoteAddress() {
 		return this.remoteAddress;
 	}
@@ -47,12 +47,14 @@ public class AcmeProperties {
 	public Security getSecurity() {
 		return this.security;
 	}
+	// @fold:off
 
 	public static class Security {
 
 		@NotEmpty
 		private String username;
 
+		// @fold:on // getters/setters...
 		public String getUsername() {
 			return this.username;
 		}
@@ -60,8 +62,8 @@ public class AcmeProperties {
 		public void setUsername(String username) {
 			this.username = username;
 		}
+		// @fold:off
 
 	}
 
 }
-// end::code[]

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.security;
 
-// tag::code[]
 import org.springframework.boot.autoconfigure.security.reactive.PathRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -37,4 +36,3 @@ public class CustomWebFluxSecurityConfiguration {
 	}
 
 }
-// end::code[]

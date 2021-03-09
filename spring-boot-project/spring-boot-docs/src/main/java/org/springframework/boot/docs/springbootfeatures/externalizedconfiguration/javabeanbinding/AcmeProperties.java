@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.javabeanbinding;
 
-//tag::code[]
 import java.net.InetAddress;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -33,6 +32,7 @@ public class AcmeProperties {
 
 	private final Security security = new Security();
 
+	// @fold:on // getters / setters...
 	public boolean isEnabled() {
 		return this.enabled;
 	}
@@ -52,6 +52,7 @@ public class AcmeProperties {
 	public Security getSecurity() {
 		return this.security;
 	}
+	// @fold:off
 
 	public static class Security {
 
@@ -61,6 +62,7 @@ public class AcmeProperties {
 
 		private List<String> roles = new ArrayList<>(Collections.singleton("USER"));
 
+		// @fold:on // getters / setters...
 		public String getUsername() {
 			return this.username;
 		}
@@ -84,8 +86,8 @@ public class AcmeProperties {
 		public void setRoles(List<String> roles) {
 			this.roles = roles;
 		}
+		// @fold:off
 
 	}
 
 }
-// end::code[]

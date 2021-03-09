@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.springapplication;
 
-//tag::code[]
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -29,4 +28,3 @@ public class CommandLineRunnerExample implements CommandLineRunner {
 	}
 
 }
-// end::code[]

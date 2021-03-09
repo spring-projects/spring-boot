@@ -7,9 +7,9 @@
 :numbered:
 :sectanchors:
 :sectnums:
-:icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
+:chomp: tags formatters headers packages
 
 :spring-boot-artifactory-repo: snapshot
 :github-tag: master

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing.restdocs.webclient;
 
-// tag::code[]
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,9 +34,15 @@ class UsersDocumentationTests {
 
 	@Test
 	void listUsers() {
-		this.webTestClient.get().uri("/").exchange().expectStatus().isOk().expectBody()
-				.consumeWith(document("list-users"));
+		// @formatter:off
+		this.webTestClient
+			.get().uri("/")
+		.exchange()
+		.expectStatus()
+			.isOk()
+		.expectBody()
+			.consumeWith(document("list-users"));
+		// @formatter:on
 	}
 
 }
-// end::code[]

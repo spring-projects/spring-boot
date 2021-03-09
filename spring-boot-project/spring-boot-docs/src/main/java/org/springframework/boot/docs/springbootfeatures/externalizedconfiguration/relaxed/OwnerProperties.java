@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.relaxed;
 
-//tag::code[]
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 @ConfigurationProperties(prefix = "acme.my-project.person")
@@ -33,4 +32,3 @@ public class OwnerProperties {
 	}
 
 }
-// end::code[]

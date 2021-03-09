@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.resttemplate;
 
-// tag::code[]
 import org.apache.http.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpRequest;
@@ -56,4 +55,3 @@ public class RestTemplateProxyCustomizer implements RestTemplateCustomizer {
 	}
 
 }
-// end::code[]

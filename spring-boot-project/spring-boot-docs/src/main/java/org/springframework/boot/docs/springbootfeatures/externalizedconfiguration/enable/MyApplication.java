@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.enable;
 
-//tag::code[]
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
@@ -25,4 +24,3 @@ import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 public class MyApplication {
 
 }
-// end::code[]

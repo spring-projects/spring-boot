@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.validate;
 
-//tag::code[]
 import java.net.InetAddress;
 
 import javax.validation.constraints.NotNull;
@@ -31,6 +30,7 @@ public class AcmeProperties {
 	@NotNull
 	private InetAddress remoteAddress;
 
+	// @fold:on // getters/setters...
 	public InetAddress getRemoteAddress() {
 		return this.remoteAddress;
 	}
@@ -38,6 +38,6 @@ public class AcmeProperties {
 	public void setRemoteAddress(InetAddress remoteAddress) {
 		this.remoteAddress = remoteAddress;
 	}
+	// @fold:off
 
 }
-// end::code[]

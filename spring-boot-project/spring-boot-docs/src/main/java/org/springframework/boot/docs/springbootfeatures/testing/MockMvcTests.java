@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing;
 
-// tag::code[]
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,4 +37,3 @@ class MockMvcTests {
 	}
 
 }
-// end::code[]

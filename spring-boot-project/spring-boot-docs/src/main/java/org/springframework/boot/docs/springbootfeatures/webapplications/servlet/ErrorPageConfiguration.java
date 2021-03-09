@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.servlet;
 
-//tag::code[]
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.ErrorPageRegistrar;
 import org.springframework.boot.web.server.ErrorPageRegistry;
@@ -37,4 +36,3 @@ public class ErrorPageConfiguration {
 	}
 
 }
-// end::code[]

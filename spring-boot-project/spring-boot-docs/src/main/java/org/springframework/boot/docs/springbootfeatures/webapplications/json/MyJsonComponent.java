@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.json;
 
-//tag::code[]
 import java.io.IOException;
 
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -59,7 +58,7 @@ public class MyJsonComponent {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class MyObject {
 

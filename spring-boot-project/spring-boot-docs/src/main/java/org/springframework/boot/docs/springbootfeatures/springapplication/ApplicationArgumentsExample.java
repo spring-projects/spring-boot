@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.springapplication;
 
-//tag::code[]
 import java.util.List;
 
 import org.springframework.boot.ApplicationArguments;
@@ -35,4 +34,3 @@ public class ApplicationArgumentsExample {
 	}
 
 }
-// end::code[]

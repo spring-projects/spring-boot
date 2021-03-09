@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.springapplication.availability;
 
-//tag::code[]
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.LivenessState;
 import org.springframework.context.ApplicationEventPublisher;
@@ -41,7 +40,7 @@ public class LocalCacheVerifier {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class CacheCompletelyBrokenException extends RuntimeException {
 

@@ -23,12 +23,10 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 @SpringBootApplication
 public class MyApplication {
 
-	// tag::code[]
 	public static void main(String[] args) {
 		SpringApplication application = new SpringApplication(MyApplication.class);
 		application.setBannerMode(Banner.Mode.OFF);
 		application.run(args);
 	}
-	// end::code[]
 
 }

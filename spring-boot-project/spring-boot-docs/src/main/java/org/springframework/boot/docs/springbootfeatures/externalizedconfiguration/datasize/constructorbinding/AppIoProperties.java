@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.datasize.constructorbinding;
 
-// tag::code[]
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.bind.DefaultValue;
@@ -28,16 +27,19 @@ import org.springframework.util.unit.DataUnit;
 @ConstructorBinding
 public class AppIoProperties {
 
+	// @fold:on // fields...
 	private final DataSize bufferSize;
 
 	private final DataSize sizeThreshold;
 
+	// @fold:off
 	public AppIoProperties(@DataSizeUnit(DataUnit.MEGABYTES) @DefaultValue("2MB") DataSize bufferSize,
 			@DefaultValue("512B") DataSize sizeThreshold) {
 		this.bufferSize = bufferSize;
 		this.sizeThreshold = sizeThreshold;
 	}
 
+	// @fold:on // getters...
 	public DataSize getBufferSize() {
 		return this.bufferSize;
 	}
@@ -45,6 +47,6 @@ public class AppIoProperties {
 	public DataSize getSizeThreshold() {
 		return this.sizeThreshold;
 	}
+	// @fold:off
 
 }
-// end::code[]

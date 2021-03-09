@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.enable;
 
-//tag::code[]
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Configuration;
 
@@ -25,7 +24,7 @@ import org.springframework.context.annotation.Configuration;
 public class MyConfiguration {
 
 }
-// end::code[]
+// @chomp:file
 
 class AcmeProperties {
 

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.servlet;
 
-//tag::code[]
 import java.io.IOException;
 import java.util.EnumSet;
 
@@ -43,7 +42,7 @@ public class ServletFilterConfiguration {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class MyFilter extends GenericFilterBean {
 

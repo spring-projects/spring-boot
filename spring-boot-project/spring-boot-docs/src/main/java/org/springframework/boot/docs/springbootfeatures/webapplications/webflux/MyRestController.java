@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.webflux;
 
-//tag::code[]
 import java.util.List;
 
 import reactor.core.publisher.Flux;
@@ -58,7 +57,7 @@ public class MyRestController {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 interface UserRepository extends ReactiveCrudRepository<User, Long> {
 

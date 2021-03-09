@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
 
-//tag::code[]
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,7 +31,7 @@ public class AcmeProperties {
 	}
 
 }
-// end::code[]
+// @chomp: file
 
 class MyPojo {
 

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.profiles;
 
-//tag::code[]
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
@@ -27,4 +26,3 @@ public class ProductionConfiguration {
 	// ...
 
 }
-// end::code[]

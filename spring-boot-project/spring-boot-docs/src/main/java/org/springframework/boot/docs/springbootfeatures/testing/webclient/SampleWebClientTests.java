@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing.webclient;
 
-// tag::code[]
 import java.time.Duration;
 
 import org.junit.jupiter.api.Test;
@@ -56,4 +55,3 @@ class SampleWebClientTests {
 	}
 
 }
-// end::code[]

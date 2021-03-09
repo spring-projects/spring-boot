@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.messaging;
 
-// tag::code[]
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KeyValue;
 import org.apache.kafka.streams.StreamsBuilder;
@@ -41,4 +40,3 @@ public class KafkaStreamsConfiguration {
 	}
 
 }
-// end::code[]

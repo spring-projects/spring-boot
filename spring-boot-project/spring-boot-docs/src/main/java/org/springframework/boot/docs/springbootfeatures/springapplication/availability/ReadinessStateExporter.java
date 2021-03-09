@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.springapplication.availability;
 
-// tag::code[]
 import org.springframework.boot.availability.AvailabilityChangeEvent;
 import org.springframework.boot.availability.ReadinessState;
 import org.springframework.context.event.EventListener;
@@ -38,4 +37,3 @@ public class ReadinessStateExporter {
 	}
 
 }
-// end::code[]

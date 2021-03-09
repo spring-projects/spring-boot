@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.webflux;
 
-//tag::code[]
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,4 +34,3 @@ public class CodecConfiguration {
 	}
 
 }
-// end::code[]

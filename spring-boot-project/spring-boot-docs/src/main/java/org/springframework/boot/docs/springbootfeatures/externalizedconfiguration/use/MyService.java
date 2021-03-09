@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.use;
 
-//tag::code[]
 import org.springframework.stereotype.Service;
 
 @Service
@@ -37,7 +36,7 @@ public class MyService {
 	// ...
 
 }
-// end::code[]
+// @chomp:file
 
 class AcmeProperties {
 

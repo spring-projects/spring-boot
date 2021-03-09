@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing.restdocs.restassured;
 
-// tag::code[]
 import io.restassured.specification.RequestSpecification;
 import org.junit.jupiter.api.Test;
 
@@ -36,9 +35,15 @@ class UserDocumentationTests {
 
 	@Test
 	void listUsers(@Autowired RequestSpecification documentationSpec, @LocalServerPort int port) {
-		given(documentationSpec).filter(document("list-users")).when().port(port).get("/").then().assertThat()
-				.statusCode(is(200));
+		// @formatter:off
+		given(documentationSpec)
+			.filter(document("list-users"))
+		.when()
+			.port(port)
+			.get("/")
+		.then().assertThat()
+			.statusCode(is(200));
+		// @formatter:on
 	}
 
 }
-// end::code[]

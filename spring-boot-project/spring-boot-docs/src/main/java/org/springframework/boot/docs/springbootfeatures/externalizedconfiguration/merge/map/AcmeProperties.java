@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.map;
 
-//tag::code[]
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -32,7 +31,7 @@ public class AcmeProperties {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class MyPojo {
 

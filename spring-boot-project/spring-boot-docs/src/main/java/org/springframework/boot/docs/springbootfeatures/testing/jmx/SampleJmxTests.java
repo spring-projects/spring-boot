@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing.jmx;
 
-// tag::code[]
 import javax.management.MBeanServer;
 import javax.management.MalformedObjectNameException;
 
@@ -45,4 +44,3 @@ class SampleJmxTests {
 	}
 
 }
-// end::code[]

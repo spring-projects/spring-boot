@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications;
 
-// tag::code[]
 import java.time.Duration;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -32,4 +31,3 @@ public class TomcatServerCustomizer implements WebServerFactoryCustomizer<Tomcat
 	}
 
 }
-// end::code[]

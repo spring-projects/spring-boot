@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.valueinjection;
 
-// tag::code[]
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,4 +28,3 @@ public class MyBean {
 	// ...
 
 }
-// end::code[]

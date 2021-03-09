@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.servlet;
 
-//tag::code[]
 import javax.servlet.RequestDispatcher;
 import javax.servlet.http.HttpServletRequest;
 
@@ -44,7 +43,7 @@ public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class AcmeController {
 

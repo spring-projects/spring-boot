@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.testing.restdocs.webclient;
 
-// tag::code[]
 import org.springframework.boot.test.autoconfigure.restdocs.RestDocsWebTestClientConfigurationCustomizer;
 import org.springframework.boot.test.context.TestConfiguration;
 import org.springframework.restdocs.webtestclient.WebTestClientRestDocumentationConfigurer;
@@ -30,4 +29,3 @@ public class AdvancedRestDocsConfiguration implements RestDocsWebTestClientConfi
 	}
 
 }
-// end::code[]

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.springbootfeatures.webapplications.webflux;
 
-//tag::code[]
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
@@ -56,4 +55,3 @@ public class CustomErrorWebExceptionHandler extends AbstractErrorWebExceptionHan
 	}
 
 }
-// end::code[]
