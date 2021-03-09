@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,16 +26,10 @@ import org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask;
 import org.asciidoctor.gradle.jvm.AsciidoctorJExtension;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.asciidoctor.gradle.jvm.AsciidoctorTask;
-import org.gradle.api.Action;
-import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.file.FileCollection;
-import org.gradle.api.tasks.InputFiles;
-import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.tasks.Sync;
-import org.gradle.api.tasks.TaskAction;
 
 import org.springframework.boot.build.artifactory.ArtifactoryRepository;
 import org.springframework.util.StringUtils;
@@ -46,15 +40,13 @@ import org.springframework.util.StringUtils;
  *
  * <ul>
  * <li>All warnings are made fatal.
- * <li>The version of AsciidoctorJ is upgraded to 2.4.1.
- * <li>A task is created to resolve and unzip our documentation resources (CSS and
- * Javascript).
+ * <li>The version of AsciidoctorJ is upgraded to 2.4.3.
+ * <li>A {@code asciidoctorExtensions} configuration is created.
  * <li>For each {@link AsciidoctorTask} (HTML only):
  * <ul>
  * <li>A task is created to sync the documentation resources to its output directory.
  * <li>{@code doctype} {@link AsciidoctorTask#options(Map) option} is configured.
- * <li>{@link AsciidoctorTask#attributes(Map) Attributes} are configured for syntax
- * highlighting, CSS styling, docinfo, etc.
+ * <li>The {@code backend} is configured.
  * </ul>
  * <li>For each {@link AbstractAsciidoctorTask} (HTML and PDF):
  * <ul>
@@ -70,43 +62,25 @@ import org.springframework.util.StringUtils;
  */
 class AsciidoctorConventions {
 
-	private static final String ASCIIDOCTORJ_VERSION = "2.4.1";
+	private static final String EXTENSIONS_CONFIGURATION = "asciidoctorExtensions";
+
+	private static final String ASCIIDOCTORJ_VERSION = "2.4.3";
 
 	void apply(Project project) {
 		project.getPlugins().withType(AsciidoctorJPlugin.class, (asciidoctorPlugin) -> {
 			configureDocResourcesRepository(project);
 			makeAllWarningsFatal(project);
 			upgradeAsciidoctorJVersion(project);
-			UnzipDocumentationResources unzipResources = createUnzipDocumentationResourcesTask(project);
-			project.getTasks().withType(AbstractAsciidoctorTask.class, (asciidoctorTask) -> {
-				configureCommonAttributes(project, asciidoctorTask);
-				configureOptions(asciidoctorTask);
-				asciidoctorTask.baseDirFollowsSourceDir();
-				Sync syncSource = createSyncDocumentationSourceTask(project, asciidoctorTask);
-				if (asciidoctorTask instanceof AsciidoctorTask) {
-					configureHtmlOnlyAttributes(asciidoctorTask);
-					syncSource.from(unzipResources, (resources) -> resources.into("asciidoc"));
-					asciidoctorTask.doFirst(new Action<Task>() {
-
-						@Override
-						public void execute(Task task) {
-							project.copy((spec) -> {
-								spec.from(asciidoctorTask.getSourceDir());
-								spec.into(asciidoctorTask.getOutputDir());
-								spec.include("css/**", "js/**");
-							});
-						}
-
-					});
-				}
-			});
+			createAsciidoctorExtensionsConfiguration(project);
+			project.getTasks().withType(AbstractAsciidoctorTask.class,
+					(asciidoctorTask) -> configureAsciidoctorTask(project, asciidoctorTask));
 		});
 	}
 
 	private void configureDocResourcesRepository(Project project) {
 		project.getRepositories().maven((mavenRepo) -> {
-			mavenRepo.setUrl(URI.create("https://repo.spring.io/release"));
-			mavenRepo.mavenContent((mavenContent) -> mavenContent.includeGroup("io.spring.docresources"));
+			mavenRepo.setUrl(URI.create("https://repo.spring.io/snapshot"));
+			mavenRepo.mavenContent((mavenContent) -> mavenContent.includeGroup("io.spring.asciidoctor.backends"));
 		});
 	}
 
@@ -118,41 +92,26 @@ class AsciidoctorConventions {
 		project.getExtensions().getByType(AsciidoctorJExtension.class).setVersion(ASCIIDOCTORJ_VERSION);
 	}
 
-	private UnzipDocumentationResources createUnzipDocumentationResourcesTask(Project project) {
-		Configuration documentationResources = project.getConfigurations().maybeCreate("documentationResources");
-		documentationResources.getDependencies()
-				.add(project.getDependencies().create("io.spring.docresources:spring-doc-resources:0.2.5"));
-		UnzipDocumentationResources unzipResources = project.getTasks().create("unzipDocumentationResources",
-				UnzipDocumentationResources.class);
-		unzipResources.setResources(documentationResources);
-		unzipResources.setOutputDir(new File(project.getBuildDir(), "docs/resources"));
-		return unzipResources;
+	private void createAsciidoctorExtensionsConfiguration(Project project) {
+		ConfigurationContainer configurations = project.getConfigurations();
+		Configuration asciidoctorExtensions = configurations.maybeCreate(EXTENSIONS_CONFIGURATION);
+		asciidoctorExtensions.getDependencies().add(project.getDependencies()
+				.create("io.spring.asciidoctor.backends:asciidoctor-spring-backends:0.0.1-SNAPSHOT"));
+		Configuration dependencyManagement = configurations.findByName("dependencyManagement");
+		if (dependencyManagement != null) {
+			asciidoctorExtensions.extendsFrom(dependencyManagement);
+		}
 	}
 
-	private Sync createSyncDocumentationSourceTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
-		Sync syncDocumentationSource = project.getTasks()
-				.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
-		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());
-		syncDocumentationSource.setDestinationDir(syncedSource);
-		syncDocumentationSource.from("src/docs/");
-		asciidoctorTask.dependsOn(syncDocumentationSource);
-		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
-		return syncDocumentationSource;
-	}
-
-	private void configureOptions(AbstractAsciidoctorTask asciidoctorTask) {
-		asciidoctorTask.options(Collections.singletonMap("doctype", "book"));
-	}
-
-	private void configureHtmlOnlyAttributes(AbstractAsciidoctorTask asciidoctorTask) {
-		Map<String, Object> attributes = new HashMap<>();
-		attributes.put("source-highlighter", "highlightjs");
-		attributes.put("highlightjsdir", "js/highlight");
-		attributes.put("highlightjs-theme", "github");
-		attributes.put("linkcss", true);
-		attributes.put("icons", "font");
-		attributes.put("stylesheet", "css/spring.css");
-		asciidoctorTask.attributes(attributes);
+	private void configureAsciidoctorTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+		asciidoctorTask.configurations(EXTENSIONS_CONFIGURATION);
+		configureCommonAttributes(project, asciidoctorTask);
+		configureOptions(asciidoctorTask);
+		asciidoctorTask.baseDirFollowsSourceDir();
+		createSyncDocumentationSourceTask(project, asciidoctorTask);
+		if (asciidoctorTask instanceof AsciidoctorTask) {
+			configureAsciidoctorHtmlTask(project, (AsciidoctorTask) asciidoctorTask);
+		}
 	}
 
 	private void configureCommonAttributes(Project project, AbstractAsciidoctorTask asciidoctorTask) {
@@ -169,43 +128,23 @@ class AsciidoctorConventions {
 		return (version.endsWith("-SNAPSHOT")) ? "master" : version;
 	}
 
-	/**
-	 * {@link Task} for unzipping the documentation resources.
-	 */
-	public static class UnzipDocumentationResources extends DefaultTask {
+	private void configureOptions(AbstractAsciidoctorTask asciidoctorTask) {
+		asciidoctorTask.options(Collections.singletonMap("doctype", "book"));
+	}
 
-		private FileCollection resources;
+	private Sync createSyncDocumentationSourceTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
+		Sync syncDocumentationSource = project.getTasks()
+				.create("syncDocumentationSourceFor" + StringUtils.capitalize(asciidoctorTask.getName()), Sync.class);
+		File syncedSource = new File(project.getBuildDir(), "docs/src/" + asciidoctorTask.getName());
+		syncDocumentationSource.setDestinationDir(syncedSource);
+		syncDocumentationSource.from("src/docs/");
+		asciidoctorTask.dependsOn(syncDocumentationSource);
+		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
+		return syncDocumentationSource;
+	}
 
-		private File outputDir;
-
-		@InputFiles
-		public FileCollection getResources() {
-			return this.resources;
-		}
-
-		public void setResources(FileCollection resources) {
-			this.resources = resources;
-		}
-
-		@OutputDirectory
-		public File getOutputDir() {
-			return this.outputDir;
-		}
-
-		public void setOutputDir(File outputDir) {
-			this.outputDir = outputDir;
-		}
-
-		@TaskAction
-		void syncDocumentationResources() {
-			getProject().sync((copySpec) -> {
-				copySpec.into(this.outputDir);
-				for (File resource : this.resources) {
-					copySpec.from(getProject().zipTree(resource));
-				}
-			});
-		}
-
+	private void configureAsciidoctorHtmlTask(Project project, AsciidoctorTask asciidoctorTask) {
+		asciidoctorTask.outputOptions((outputOptions) -> outputOptions.backends("spring-html"));
 	}
 
 }

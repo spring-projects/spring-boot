@@ -11,9 +11,6 @@ plugins {
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	documentation
 }
 
@@ -170,14 +167,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 }
 
 asciidoctor {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}
 }
 
 asciidoctorPdf {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}
