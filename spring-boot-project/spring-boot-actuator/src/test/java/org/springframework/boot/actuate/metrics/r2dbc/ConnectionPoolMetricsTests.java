@@ -59,7 +59,7 @@ class ConnectionPoolMetricsTests {
 	@AfterEach
 	void close() {
 		if (this.connectionFactory != null) {
-			this.connectionFactory.close();
+			StepVerifier.create(this.connectionFactory.close()).verifyComplete();
 		}
 	}
 
