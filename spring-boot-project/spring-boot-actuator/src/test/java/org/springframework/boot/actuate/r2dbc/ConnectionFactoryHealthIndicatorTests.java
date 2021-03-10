@@ -59,7 +59,7 @@ class ConnectionFactoryHealthIndicatorTests {
 			}).verifyComplete();
 		}
 		finally {
-			connectionFactory.close();
+			StepVerifier.create(connectionFactory.close()).verifyComplete();
 		}
 	}
 
@@ -110,7 +110,7 @@ class ConnectionFactoryHealthIndicatorTests {
 			}).verifyComplete();
 		}
 		finally {
-			connectionFactory.close();
+			StepVerifier.create(connectionFactory.close()).verifyComplete();
 		}
 
 	}
@@ -130,7 +130,7 @@ class ConnectionFactoryHealthIndicatorTests {
 			}).verifyComplete();
 		}
 		finally {
-			connectionFactory.close();
+			StepVerifier.create(connectionFactory.close()).verifyComplete();
 		}
 	}
 
