@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ public enum EmbeddedDatabaseConnection {
 	 * H2 Database Connection.
 	 */
 	H2("H2", "io.r2dbc.h2.H2ConnectionFactoryProvider",
-			"r2dbc:h2:mem://in-memory/%s?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
+			"r2dbc:h2:mem:///%s?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
 
 	private final String type;
 
