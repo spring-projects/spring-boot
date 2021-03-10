@@ -148,7 +148,7 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	/**
 	 * Timestamp for reproducible output archive entries, either formatted as ISO 8601
 	 * (<code>yyyy-MM-dd'T'HH:mm:ssXXX</code>) or an {@code int} representing seconds
-	 * since the epoch. Not supported with war packaging.
+	 * since the epoch.
 	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.outputTimestamp}")
