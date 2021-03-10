@@ -173,6 +173,11 @@ public class RestartClassLoader extends URLClassLoader implements SmartClassLoad
 		return defineClass(name, b, 0, b.length, protectionDomain);
 	}
 
+	@Override
+	public ClassLoader getOriginalClassLoader() {
+		return getParent();
+	}
+
 	private URL createFileUrl(String name, ClassLoaderFile file) {
 		try {
 			return new URL("reloaded", null, -1, "/" + name, new ClassLoaderFileURLStreamHandler(file));
