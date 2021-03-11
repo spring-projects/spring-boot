@@ -32,6 +32,8 @@ import org.springframework.core.io.support.SpringFactoriesLoader;
  * @author Dave Syer
  * @author Andy Wilkinson
  * @since 1.0.0
+ *
+ * @apiNote SpringApplicationRunListener接口规定了SpringBoot的生命周期，在各个生命周期广播相应的事件，调用实际的ApplicationListener类。
  */
 public interface SpringApplicationRunListener {
 

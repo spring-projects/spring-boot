@@ -301,6 +301,7 @@ public class SpringApplication {
 		ConfigurableApplicationContext context = null;
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
 		configureHeadlessProperty();
+		// .创建了应用的监听器SpringApplicationRunListeners并开始监听
 		SpringApplicationRunListeners listeners = getRunListeners(args);
 		listeners.starting();
 		try {

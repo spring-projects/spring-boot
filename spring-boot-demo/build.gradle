@@ -18,6 +18,7 @@ dependencies {
 
     implementation(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
     implementation(project(":spring-boot-project:spring-boot"))
+    implementation(project(":spring-boot-project:spring-boot-autoconfigure"))
     /*implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starters-web"))*/
     implementation("jakarta.validation:jakarta.validation-api")
 
