@@ -17,18 +17,20 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.jar.JarFile;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.loader.tools.FileUtils;
 import org.springframework.boot.loader.tools.JarModeLibrary;
-import org.springframework.util.FileCopyUtils;
+import org.springframework.util.FileSystemUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -78,17 +80,34 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void whenWarIsRepackagedWithOutputTimestampTheBuildFailsAsItIsNotSupported(MavenBuild mavenBuild)
+	void whenWarIsRepackagedWithOutputTimestampConfiguredThenWarIsReproducible(MavenBuild mavenBuild)
 			throws InterruptedException {
-		mavenBuild.project("war-output-timestamp").executeAndFail((project) -> {
-			try {
-				String log = FileCopyUtils.copyToString(new FileReader(new File(project, "target/build.log")));
-				assertThat(log).contains("Reproducible repackaging is not supported with war packaging");
+		String firstHash = buildWarWithOutputTimestamp(mavenBuild);
+		Thread.sleep(1500);
+		String secondHash = buildWarWithOutputTimestamp(mavenBuild);
+		assertThat(firstHash).isEqualTo(secondHash);
+	}
+
+	private String buildWarWithOutputTimestamp(MavenBuild mavenBuild) {
+		AtomicReference<String> warHash = new AtomicReference<>();
+		mavenBuild.project("war-output-timestamp").execute((project) -> {
+			File repackaged = new File(project, "target/war-output-timestamp-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(repackaged).isFile();
+			assertThat(repackaged.lastModified()).isEqualTo(1584352800000L);
+			try (JarFile jar = new JarFile(repackaged)) {
+				List<String> unreproducibleEntries = jar.stream()
+						.filter((entry) -> entry.getLastModifiedTime().toMillis() != 1584352800000L)
+						.map((entry) -> entry.getName() + ": " + entry.getLastModifiedTime())
+						.collect(Collectors.toList());
+				assertThat(unreproducibleEntries).isEmpty();
+				warHash.set(FileUtils.sha1Hash(repackaged));
+				FileSystemUtils.deleteRecursively(project);
 			}
-			catch (Exception ex) {
+			catch (IOException ex) {
 				throw new RuntimeException(ex);
 			}
 		});
+		return warHash.get();
 	}
 
 	@TestTemplate
