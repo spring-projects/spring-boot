@@ -30,6 +30,7 @@ public interface Bootstrapper {
 	/**
 	 * Initialize the given {@link BootstrapRegistry} with any required registrations.
 	 * @param registry the registry to initialize
+	 * @since 2.4.4
 	 */
 	default void initialize(BootstrapRegistry registry) {
 		intitialize(registry);
