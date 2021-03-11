@@ -92,6 +92,16 @@ class Neo4jReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldProvideReactiveNeo4jClientWithCustomDatabaseSelectionProvider() {
+		this.contextRunner.withUserConfiguration(CustomReactiveDatabaseSelectionProviderConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ReactiveNeo4jClient.class);
+					assertThat(context.getBean(ReactiveNeo4jClient.class)).extracting("databaseSelectionProvider")
+							.isSameAs(context.getBean(ReactiveDatabaseSelectionProvider.class));
+				});
+	}
+
+	@Test
 	void shouldReuseExistingReactiveNeo4jClient() {
 		this.contextRunner
 				.withBean("myCustomReactiveClient", ReactiveNeo4jClient.class, () -> mock(ReactiveNeo4jClient.class))
@@ -102,11 +112,7 @@ class Neo4jReactiveDataAutoConfigurationTests {
 	@Test
 	void shouldProvideReactiveNeo4jTemplate() {
 		this.contextRunner.withUserConfiguration(CustomReactiveDatabaseSelectionProviderConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveNeo4jTemplate.class);
-					assertThat(context.getBean(ReactiveNeo4jTemplate.class)).extracting("databaseSelectionProvider")
-							.isSameAs(context.getBean(ReactiveDatabaseSelectionProvider.class));
-				});
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveNeo4jTemplate.class));
 	}
 
 	@Test

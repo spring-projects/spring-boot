@@ -98,6 +98,15 @@ class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldProvideNeo4jClientWithCustomDatabaseSelectionProvider() {
+		this.contextRunner.withUserConfiguration(CustomDatabaseSelectionProviderConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Neo4jClient.class);
+			assertThat(context.getBean(Neo4jClient.class)).extracting("databaseSelectionProvider")
+					.isSameAs(context.getBean(DatabaseSelectionProvider.class));
+		});
+	}
+
+	@Test
 	void shouldReuseExistingNeo4jClient() {
 		this.contextRunner.withBean("myCustomClient", Neo4jClient.class, () -> mock(Neo4jClient.class))
 				.run((context) -> assertThat(context).hasSingleBean(Neo4jClient.class).hasBean("myCustomClient"));
@@ -105,11 +114,8 @@ class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	void shouldProvideNeo4jTemplate() {
-		this.contextRunner.withUserConfiguration(CustomDatabaseSelectionProviderConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(Neo4jTemplate.class);
-			assertThat(context.getBean(Neo4jTemplate.class)).extracting("databaseSelectionProvider")
-					.isSameAs(context.getBean(DatabaseSelectionProvider.class));
-		});
+		this.contextRunner.withUserConfiguration(CustomDatabaseSelectionProviderConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Neo4jTemplate.class));
 	}
 
 	@Test

@@ -94,15 +94,14 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
 	@ConditionalOnMissingBean
-	public Neo4jClient neo4jClient(Driver driver) {
-		return Neo4jClient.create(driver);
+	public Neo4jClient neo4jClient(Driver driver, DatabaseSelectionProvider databaseNameProvider) {
+		return Neo4jClient.create(driver, databaseNameProvider);
 	}
 
 	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
 	@ConditionalOnMissingBean(Neo4jOperations.class)
-	public Neo4jTemplate neo4jTemplate(Neo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext,
-			DatabaseSelectionProvider databaseNameProvider) {
-		return new Neo4jTemplate(neo4jClient, neo4jMappingContext, databaseNameProvider);
+	public Neo4jTemplate neo4jTemplate(Neo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext) {
+		return new Neo4jTemplate(neo4jClient, neo4jMappingContext);
 	}
 
 	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)
