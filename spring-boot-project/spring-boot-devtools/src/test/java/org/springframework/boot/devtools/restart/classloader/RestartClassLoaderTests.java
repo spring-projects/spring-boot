@@ -20,7 +20,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -219,17 +218,18 @@ class RestartClassLoaderTests {
 	}
 
 	@Test
-	void packagePrivateClassLoadedByParentClassLoaderCanBeProxied() throws MalformedURLException {
-		new ApplicationContextRunner()
-				.withClassLoader(new RestartClassLoader(ExampleTransactional.class.getClassLoader(),
-						new URL[] { this.sampleJarFile.toURI().toURL() }, this.updatedFiles))
-				.withUserConfiguration(ProxyConfiguration.class).run((context) -> {
-					assertThat(context).hasNotFailed();
-					ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
-					assertThat(AopUtils.isCglibProxy(transactional)).isTrue();
-					assertThat(transactional.getClass().getClassLoader())
-							.isEqualTo(ExampleTransactional.class.getClassLoader());
-				});
+	void packagePrivateClassLoadedByParentClassLoaderCanBeProxied() throws IOException {
+		try (RestartClassLoader restartClassLoader = new RestartClassLoader(ExampleTransactional.class.getClassLoader(),
+				new URL[] { this.sampleJarFile.toURI().toURL() }, this.updatedFiles)) {
+			new ApplicationContextRunner().withClassLoader(restartClassLoader)
+					.withUserConfiguration(ProxyConfiguration.class).run((context) -> {
+						assertThat(context).hasNotFailed();
+						ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
+						assertThat(AopUtils.isCglibProxy(transactional)).isTrue();
+						assertThat(transactional.getClass().getClassLoader())
+								.isEqualTo(ExampleTransactional.class.getClassLoader());
+					});
+		}
 	}
 
 	private String readString(InputStream in) throws IOException {
