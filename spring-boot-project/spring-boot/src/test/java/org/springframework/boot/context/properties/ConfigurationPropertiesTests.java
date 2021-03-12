@@ -714,6 +714,13 @@ class ConfigurationPropertiesTests {
 	}
 
 	@Test
+	void loadWhenConfigurationPropertiesWithValidDefaultValuesShouldNotFail() {
+		AnnotationConfigApplicationContext context = load(ValidatorPropertiesWithDefaultValues.class);
+		ValidatorPropertiesWithDefaultValues bean = context.getBean(ValidatorPropertiesWithDefaultValues.class);
+		assertThat(bean.getBar()).isEqualTo("a");
+	}
+
+	@Test
 	void loadWhenSetterThrowsValidationExceptionShouldFail() {
 		assertThatExceptionOfType(BeanCreationException.class)
 				.isThrownBy(() -> load(WithSetterThatThrowsValidationExceptionProperties.class, "test.foo=spam"))
