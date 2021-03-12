@@ -258,7 +258,7 @@ We can also update the state of the application, when the application breaks and
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/availability/LocalCacheVerifier.java[tag=*]
+include::{include-springbootfeatures}/springapplication/availability/LocalCacheVerifier.java[]
 ----
 
 Spring Boot provides <<production-ready-features.adoc#production-ready-kubernetes-probes,Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints>>.
