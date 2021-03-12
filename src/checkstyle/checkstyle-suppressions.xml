@@ -49,4 +49,5 @@
 	<suppress files="LinuxDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="StringSequence" checks="SpringMethodVisibility" message="isEmpty"/>
+	<suppress files="ValidatorPropertiesWithDefaultValues\.java" checks="SpringMethodVisibility" />
 </suppressions>
