@@ -50,4 +50,5 @@
 	<suppress files="BsdDomainSocket" checks="FinalClass" message="SockaddrUn" />
 	<suppress files="StringSequence" checks="SpringMethodVisibility" message="isEmpty"/>
 	<suppress files="ValidatorPropertiesWithDefaultValues\.java" checks="SpringMethodVisibility" />
+	<suppress files="JooqExample.java" checks="SpringAvoidStaticImport" />
 </suppressions>

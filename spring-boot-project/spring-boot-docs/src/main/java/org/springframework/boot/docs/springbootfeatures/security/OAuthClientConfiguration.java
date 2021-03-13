@@ -14,20 +14,21 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.webapplications;
+package org.springframework.boot.docs.springbootfeatures.security;
 
-import java.time.Duration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 
-import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
-import org.springframework.boot.web.server.WebServerFactoryCustomizer;
-import org.springframework.stereotype.Component;
+@Configuration
+public class OAuthClientConfiguration {
 
-@Component
-public class TomcatServerCustomizer implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
-
-	@Override
-	public void customize(TomcatServletWebServerFactory server) {
-		server.addConnectorCustomizers((connector) -> connector.setAsyncTimeout(Duration.ofSeconds(20).toMillis()));
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.authorizeRequests().anyRequest().authenticated();
+		http.oauth2Login().redirectionEndpoint().baseUri("custom-callback");
+		return http.build();
 	}
 
 }
