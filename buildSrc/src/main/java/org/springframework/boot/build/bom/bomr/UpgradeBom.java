@@ -66,7 +66,7 @@ public class UpgradeBom extends DefaultTask {
 		getProject().getRepositories().withType(MavenArtifactRepository.class, (repository) -> {
 			String repositoryUrl = repository.getUrl().toString();
 			if (!repositoryUrl.endsWith("snapshot")) {
-				this.repositoryUrls.add(repository.getUrl().toString());
+				this.repositoryUrls.add(repositoryUrl);
 			}
 		});
 	}

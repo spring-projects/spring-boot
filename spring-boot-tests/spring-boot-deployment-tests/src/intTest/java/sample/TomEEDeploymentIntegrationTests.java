@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * @author Christoph Dreis
  */
 @Testcontainers(disabledWithoutDocker = true)
-public class TomEEDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
+class TomEEDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
 
 	@Container
 	static WarDeploymentContainer container = new WarDeploymentContainer("tomee:8-jre-8.0.2-webprofile",
