@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * @author Christoph Dreis
  */
 @Testcontainers(disabledWithoutDocker = true)
-public class WildflyDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
+class WildflyDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
 
 	@Container
 	static WarDeploymentContainer container = new WarDeploymentContainer("jboss/wildfly:20.0.1.Final",
