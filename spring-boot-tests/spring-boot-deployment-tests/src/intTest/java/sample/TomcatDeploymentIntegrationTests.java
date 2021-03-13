@@ -25,7 +25,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
  * @author Christoph Dreis
  */
 @Testcontainers(disabledWithoutDocker = true)
-public class TomcatDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
+class TomcatDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
 
 	@Container
 	static WarDeploymentContainer container = new WarDeploymentContainer("tomcat:9.0.37-jdk8-openjdk",

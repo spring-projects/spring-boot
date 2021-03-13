@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.rsocket;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.rsocket.context.RSocketPortInfoApplicationContextInitializer;
 import org.springframework.boot.rsocket.context.RSocketServerBootstrap;
 import org.springframework.boot.rsocket.server.RSocketServerCustomizer;
@@ -148,7 +146,6 @@ class RSocketServerAutoConfigurationTests {
 	@Test
 	void whenSpringWebIsNotPresentThenEmbeddedServerConfigurationBacksOff() {
 		contextRunner().withClassLoader(new FilteredClassLoader(ReactorResourceFactory.class))
-				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
 				.withPropertyValues("spring.rsocket.server.port=0")
 				.run((context) -> assertThat(context).doesNotHaveBean(RSocketServerFactory.class));
 	}

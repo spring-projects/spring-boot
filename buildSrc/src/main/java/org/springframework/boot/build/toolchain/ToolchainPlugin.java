@@ -62,7 +62,7 @@ public class ToolchainPlugin implements Plugin<Project> {
 		}
 	}
 
-	public boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
+	private boolean isJavaVersionSupported(ToolchainExtension toolchain, JavaLanguageVersion toolchainVersion) {
 		return toolchain.getMaximumCompatibleJavaVersion().map((version) -> version.canCompileOrRun(toolchainVersion))
 				.getOrElse(true);
 	}
