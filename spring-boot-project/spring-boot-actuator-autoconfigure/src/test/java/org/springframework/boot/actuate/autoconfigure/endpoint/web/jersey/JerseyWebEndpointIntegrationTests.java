@@ -27,9 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.web.jersey.JerseySameManagementContextConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jersey.JerseyAutoConfiguration;
-import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.web.servlet.ServletWebServerFactoryAutoConfiguration;
-import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
@@ -55,7 +53,6 @@ class JerseyWebEndpointIntegrationTests {
 						JerseyWebEndpointManagementContextConfiguration.class))
 				.withUserConfiguration(ResourceConfigConfiguration.class)
 				.withClassLoader(new FilteredClassLoader(DispatcherServlet.class))
-				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
 				.withPropertyValues("spring.jersey.type=filter", "server.port=0").run((context) -> {
 					assertThat(context).hasNotFailed();
 					Set<Resource> resources = context.getBean(ResourceConfig.class).getResources();
