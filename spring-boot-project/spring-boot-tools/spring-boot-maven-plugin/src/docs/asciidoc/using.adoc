@@ -120,7 +120,7 @@ If you are running integration tests with the https://maven.apache.org/surefire/
     </plugin>
 ----
 
-NOTE: When using JDK 11, Failsafe puts the repackaged application JAR on the module-path: `<property name="jdk.module.path" value="/path/to/project/target/MyApplication.jar"/>`. This also can cause a test failure when  not using the Spring Boot Parent POM. To solve, you need to set `<useModulePath>false</useModulePath>` in the `useModulePath` to `false` in the  `<configuration>` section of the `maven-failsafe-plugin` as follows:
+WARNING: When using JDK 11, Failsafe puts the repackaged application JAR on the module-path: `<property name="jdk.module.path" value="/path/to/project/target/MyApplication.jar"/>`. This also can cause a test failure when  not using the Spring Boot Parent POM. To solve, set the `useModulePath` to `false` in the  `<configuration>` section of the `maven-failsafe-plugin` as follows:
 
 [source,xml,indent=0]
 ----
