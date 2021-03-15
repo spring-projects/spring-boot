@@ -39,7 +39,6 @@ import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.boot.web.server.WebServerException;
 import org.springframework.util.Assert;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -261,20 +260,8 @@ public class JettyWebServer implements WebServer {
 	}
 
 	private Integer getLocalPort(Connector connector) {
-		try {
-			if (connector instanceof NetworkConnector) {
-				return ((NetworkConnector) connector).getLocalPort();
-			}
-		}
-		catch (Exception ex) {
-		}
-		try {
-			// Jetty 9 internals are different, but the method name is the same
-			return (Integer) ReflectionUtils
-					.invokeMethod(ReflectionUtils.findMethod(connector.getClass(), "getLocalPort"), connector);
-		}
-		catch (Exception ex) {
-			logger.info("could not determine port (" + ex.getMessage() + ")");
+		if (connector instanceof NetworkConnector) {
+			return ((NetworkConnector) connector).getLocalPort();
 		}
 		return 0;
 	}
