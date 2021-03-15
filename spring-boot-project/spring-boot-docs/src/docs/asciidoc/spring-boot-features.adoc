@@ -4085,22 +4085,11 @@ Disabling the database's automatic shutdown lets Spring Boot control when the da
 [[boot-features-connect-to-production-database]]
 ==== Connection to a Production Database
 Production database connections can also be auto-configured by using a pooling `DataSource`.
-Spring Boot uses the following algorithm for choosing a specific implementation:
 
-. We prefer https://github.com/brettwooldridge/HikariCP[HikariCP] for its performance and concurrency.
-  If HikariCP is available, we always choose it.
-. Otherwise, if the Tomcat pooling `DataSource` is available, we use it.
-. Otherwise, if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
-. If none of HikariCP, Tomcat, and DBCP2 are available and if Oracle UCP is available, we use it.
 
-If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` "`starters`", you automatically get a dependency to `HikariCP`.
 
-NOTE: You can bypass that algorithm completely and specify the connection pool to use by setting the configprop:spring.datasource.type[] property.
-This is especially important if you run your application in a Tomcat container, as `tomcat-jdbc` is provided by default.
-
-TIP: Additional connection pools can always be configured manually.
-If you define your own `DataSource` bean, auto-configuration does not occur.
-
+[[boot-features-connect-to-production-database-configuration]]
+==== DataSource Configuration
 DataSource configuration is controlled by external configuration properties in `+spring.datasource.*+`.
 For example, you might declare the following section in `application.properties`:
 
@@ -4119,12 +4108,11 @@ Otherwise, Spring Boot tries to auto-configure an embedded database.
 TIP: Spring Boot can deduce the JDBC driver class for most databases from the URL.
 If you need to specify a specific class, you can use the configprop:spring.datasource.driver-class-name[] property.
 
-
 NOTE: For a pooling `DataSource` to be created, we need to be able to verify that a valid `Driver` class is available, so we check for that before doing anything.
 In other words, if you set `spring.datasource.driver-class-name=com.mysql.jdbc.Driver`, then that class has to be loadable.
 
 See {spring-boot-autoconfigure-module-code}/jdbc/DataSourceProperties.java[`DataSourceProperties`] for more of the supported options.
-These are the standard options that work regardless of the actual implementation.
+These are the standard options that work regardless of <<boot-features-connect-to-production-database-connection-pool, the actual implementation>>.
 It is also possible to fine-tune implementation-specific settings by using their respective prefix (`+spring.datasource.hikari.*+`, `+spring.datasource.tomcat.*+`, `+spring.datasource.dbcp2.*+`, and `+spring.datasource.oracleucp.*+`).
 Refer to the documentation of the connection pool implementation you are using for more details.
 
@@ -4141,6 +4129,35 @@ For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomc
 ----
 
 This will set the pool to wait 10000 ms before throwing an exception if no connection is available, limit the maximum number of connections to 50 and validate the connection before borrowing it from the pool.
+
+
+
+[[boot-features-connect-to-production-database-connection-pool]]
+==== Supported Connection Pools
+Spring Boot uses the following algorithm for choosing a specific implementation:
+
+. We prefer https://github.com/brettwooldridge/HikariCP[HikariCP] for its performance and concurrency.
+If HikariCP is available, we always choose it.
+. Otherwise, if the Tomcat pooling `DataSource` is available, we use it.
+. Otherwise, if https://commons.apache.org/proper/commons-dbcp/[Commons DBCP2] is available, we use it.
+. If none of HikariCP, Tomcat, and DBCP2 are available and if Oracle UCP is available, we use it.
+
+NOTE: If you use the `spring-boot-starter-jdbc` or `spring-boot-starter-data-jpa` "`starters`", you automatically get a dependency to `HikariCP`.
+
+You can bypass that algorithm completely and specify the connection pool to use by setting the configprop:spring.datasource.type[] property.
+This is especially important if you run your application in a Tomcat container, as `tomcat-jdbc` is provided by default.
+
+Additional connection pools can always be configured manually, using `DataSourceBuilder`.
+If you define your own `DataSource` bean, auto-configuration does not occur.
+The following connection pools are supported by `DataSourceBuilder`:
+
+* HikariCP
+* Tomcat pooling `Datasource`
+* Commons DBCP2
+* Orale UCP & `OracleDataSource`
+* Spring Framework's `SimpleDriverDataSource`
+* H2 `JdbcDataSource`
+* PostgreSQL `PGSimpleDataSource`
 
 
 
