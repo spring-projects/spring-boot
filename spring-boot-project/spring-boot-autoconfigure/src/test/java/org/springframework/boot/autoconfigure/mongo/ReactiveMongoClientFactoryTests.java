@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.mongo;
 import java.util.List;
 
 import com.mongodb.MongoClientSettings;
-import com.mongodb.internal.async.client.AsyncMongoClient;
 import com.mongodb.reactivestreams.client.MongoClient;
 
 import org.springframework.test.util.ReflectionTestUtils;
@@ -41,8 +40,7 @@ class ReactiveMongoClientFactoryTests extends MongoClientFactorySupportTests<Mon
 
 	@Override
 	protected MongoClientSettings getClientSettings(MongoClient client) {
-		AsyncMongoClient wrapped = (AsyncMongoClient) ReflectionTestUtils.getField(client, "wrapped");
-		return (MongoClientSettings) ReflectionTestUtils.getField(wrapped, "settings");
+		return (MongoClientSettings) ReflectionTestUtils.getField(client, "settings");
 	}
 
 }
