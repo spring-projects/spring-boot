@@ -57,7 +57,7 @@ public class JooqExceptionTranslator extends DefaultExecuteListener {
 		}
 	}
 
-	private SQLExceptionTranslator getTranslator(ExecuteContext context) {
+	protected SQLExceptionTranslator getTranslator(ExecuteContext context) {
 		SQLDialect dialect = context.configuration().dialect();
 		if (dialect != null && dialect.thirdParty() != null) {
 			String dbName = dialect.thirdParty().springDbName();
@@ -77,7 +77,7 @@ public class JooqExceptionTranslator extends DefaultExecuteListener {
 	 * @param translator the exception translator
 	 * @param exception the exception
 	 */
-	private void handle(ExecuteContext context, SQLExceptionTranslator translator, SQLException exception) {
+	protected void handle(ExecuteContext context, SQLExceptionTranslator translator, SQLException exception) {
 		DataAccessException translated = translate(context, translator, exception);
 		if (exception.getNextException() == null) {
 			context.exception(translated);
@@ -87,7 +87,7 @@ public class JooqExceptionTranslator extends DefaultExecuteListener {
 		}
 	}
 
-	private DataAccessException translate(ExecuteContext context, SQLExceptionTranslator translator,
+	protected DataAccessException translate(ExecuteContext context, SQLExceptionTranslator translator,
 			SQLException exception) {
 		return translator.translate("jOOQ", context.sql(), exception);
 	}
