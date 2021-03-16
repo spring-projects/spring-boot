@@ -5,17 +5,11 @@ plugins {
 	id("org.springframework.boot") version "{gradle-project-version}"
 }
 
-// tag::enable-jar[]
+// tag::disable-jar[]
 tasks.getByName<Jar>("jar") {
-	enabled = true
+	enabled = false
 }
-// end::enable-jar[]
-
-// tag::classifier[]
-tasks.getByName<BootJar>("bootJar") {
-	classifier = "boot"
-}
-// end::classifier[]
+// end::disable-jar[]
 
 tasks.getByName<BootJar>("bootJar") {
 	mainClass.set("com.example.Application")

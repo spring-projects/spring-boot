@@ -29,6 +29,7 @@ import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.bundling.War;
 
 import org.springframework.boot.gradle.tasks.bundling.BootBuildImage;
 import org.springframework.boot.gradle.tasks.bundling.BootWar;
@@ -54,14 +55,15 @@ class WarPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
-		disableWarTask(project);
+		classifyWarTask(project);
 		TaskProvider<BootWar> bootWar = configureBootWarTask(project);
 		configureBootBuildImageTask(project, bootWar);
 		configureArtifactPublication(bootWar);
 	}
 
-	private void disableWarTask(Project project) {
-		project.getTasks().named(WarPlugin.WAR_TASK_NAME).configure((war) -> war.setEnabled(false));
+	private void classifyWarTask(Project project) {
+		project.getTasks().named(WarPlugin.WAR_TASK_NAME, War.class)
+				.configure((war) -> war.getArchiveClassifier().convention("plain"));
 	}
 
 	private TaskProvider<BootWar> configureBootWarTask(Project project) {

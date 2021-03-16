@@ -171,14 +171,34 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootJarAndJar() {
-		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-and-jar").build("assemble");
-		File jar = new File(this.gradleBuild.getProjectDir(),
+	void onlyBootJar() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/packaging/only-boot-jar").build("assemble");
+		File plainJar = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + "-plain.jar");
+		assertThat(plainJar).doesNotExist();
+		File bootJar = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
-		assertThat(jar).isFile();
+		assertThat(bootJar).isFile();
+		try (JarFile jar = new JarFile(bootJar)) {
+			assertThat(jar.getEntry("BOOT-INF/")).isNotNull();
+		}
+	}
+
+	@TestTemplate
+	void classifiedBootJar() throws IOException {
+		this.gradleBuild.script("src/docs/gradle/packaging/boot-jar-and-jar-classifiers").build("assemble");
+		File plainJar = new File(this.gradleBuild.getProjectDir(),
+				"build/libs/" + this.gradleBuild.getProjectDir().getName() + ".jar");
+		assertThat(plainJar).isFile();
+		try (JarFile jar = new JarFile(plainJar)) {
+			assertThat(jar.getEntry("BOOT-INF/")).isNull();
+		}
 		File bootJar = new File(this.gradleBuild.getProjectDir(),
 				"build/libs/" + this.gradleBuild.getProjectDir().getName() + "-boot.jar");
 		assertThat(bootJar).isFile();
+		try (JarFile jar = new JarFile(bootJar)) {
+			assertThat(jar.getEntry("BOOT-INF/")).isNotNull();
+		}
 	}
 
 	@TestTemplate

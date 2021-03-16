@@ -3,17 +3,11 @@ plugins {
 	id 'org.springframework.boot' version '{gradle-project-version}'
 }
 
-// tag::enable-jar[]
+// tag::disable-jar[]
 jar {
-	enabled = true
+	enabled = false
 }
-// end::enable-jar[]
-
-// tag::classifier[]
-bootJar {
-	classifier = 'boot'
-}
-// end::classifier[]
+// end::disable-jar[]
 
 bootJar {
 	mainClass = 'com.example.Application'

@@ -44,37 +44,37 @@ NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as,
 
 
 
-[[packaging-executable-and-normal]]
-=== Packaging Executable and Normal Archives
-By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are disabled.
-A project can be configured to build both an executable archive and a normal archive at the same time by enabling the `jar` or `war` task:
+[[packaging-executable-and-plain]]
+=== Packaging Executable and Plain Archives
+By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are configured to use `plain` as the convention for their archive classifier.
+This ensures that `bootJar` and `jar` or `bootWar` and `war` have different output locations, allowing both the executable archive and the plain archive to be built at the same time.
+
+If you prefer that its the executable archive, rather than the plain archive, that uses a classifier, configure the classifiers as shown in the following example for the `jar` and `bootJar` tasks:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle[tags=enable-jar]
+include::../gradle/packaging/boot-jar-and-jar-classifiers.gradle[tags=classifiers]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=enable-jar]
+include::../gradle/packaging/boot-jar-and-jar-classifiers.gradle.kts[tags=classifiers]
 ----
 
-
-To avoid the executable archive and the normal archive from being written to the same location, one or the other should be configured to use a different location.
-One way to do so is by configuring a classifier:
+Alternatively, if you prefer that the plain archive isn't built at all, disable its task as shown in the following example for the `jar` task:
 
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle[tags=classifier]
+include::../gradle/packaging/only-boot-jar.gradle[tags=disable-jar]
 ----
 
 [source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
 .Kotlin
 ----
-include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=classifier]
+include::../gradle/packaging/only-boot-jar.gradle.kts[tags=disable-jar]
 ----
 
 

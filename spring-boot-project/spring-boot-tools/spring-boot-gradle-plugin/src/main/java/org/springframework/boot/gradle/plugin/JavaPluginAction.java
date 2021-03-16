@@ -42,6 +42,7 @@ import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskProvider;
+import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.jvm.toolchain.JavaToolchainService;
 import org.gradle.jvm.toolchain.JavaToolchainSpec;
@@ -75,7 +76,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 
 	@Override
 	public void execute(Project project) {
-		disableJarTask(project);
+		classifyJarTask(project);
 		configureBuildTask(project);
 		configureDevelopmentOnlyConfiguration(project);
 		TaskProvider<BootJar> bootJar = configureBootJarTask(project);
@@ -87,8 +88,9 @@ final class JavaPluginAction implements PluginApplicationAction {
 		configureAdditionalMetadataLocations(project);
 	}
 
-	private void disableJarTask(Project project) {
-		project.getTasks().named(JavaPlugin.JAR_TASK_NAME).configure((task) -> task.setEnabled(false));
+	private void classifyJarTask(Project project) {
+		project.getTasks().named(JavaPlugin.JAR_TASK_NAME, Jar.class)
+				.configure((task) -> task.getArchiveClassifier().convention("plain"));
 	}
 
 	private void configureBuildTask(Project project) {
