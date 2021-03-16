@@ -567,7 +567,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Mail", "1.6.5") {
+	library("Jakarta Mail", "1.6.6") {
 		prohibit("[2.0.0-RC1,)") {
 			because "it uses the jakarta.* namespace"
 		}
