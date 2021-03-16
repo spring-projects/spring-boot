@@ -333,16 +333,6 @@ public class FlywayProperties {
 	private Boolean skipExecutingMigrations;
 
 	/**
-	 * REST API URL of the Conjur server. Requires Flyway teams.
-	 */
-	private String conjurUrl;
-
-	/**
-	 * Conjur token required to access secrets. Requires Flyway teams.
-	 */
-	private String conjurToken;
-
-	/**
 	 * REST API URL of the Vault server. Requires Flyway teams.
 	 */
 	private String vaultUrl;
@@ -806,22 +796,6 @@ public class FlywayProperties {
 
 	public void setSkipExecutingMigrations(Boolean skipExecutingMigrations) {
 		this.skipExecutingMigrations = skipExecutingMigrations;
-	}
-
-	public String getConjurUrl() {
-		return this.conjurUrl;
-	}
-
-	public void setConjurUrl(String conjurUrl) {
-		this.conjurUrl = conjurUrl;
-	}
-
-	public String getConjurToken() {
-		return this.conjurToken;
-	}
-
-	public void setConjurToken(String conjurToken) {
-		this.conjurToken = conjurToken;
 	}
 
 	public String getVaultUrl() {

@@ -538,20 +538,6 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void conjurUrlIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.conjur-url=http://foo.com/secrets")
-				.run(validateFlywayTeamsPropertyOnly("conjurUrl"));
-	}
-
-	@Test
-	void conjurTokenIsCorrectlyMapped() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.conjur-token=5150")
-				.run(validateFlywayTeamsPropertyOnly("conjurToken"));
-	}
-
-	@Test
 	void vaultUrlIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.vault-url=http://foo.com/secrets")

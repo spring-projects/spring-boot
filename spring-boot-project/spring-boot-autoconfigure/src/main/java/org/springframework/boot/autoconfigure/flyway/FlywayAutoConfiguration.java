@@ -231,8 +231,6 @@ public class FlywayAutoConfiguration {
 					.to((skipExecutingMigrations) -> configuration.skipExecutingMigrations(skipExecutingMigrations));
 			// Teams secrets management properties (all non-method reference for
 			// compatibility with Flyway 6.x)
-			map.from(properties.getConjurUrl()).to((conjurUrl) -> configuration.conjurUrl(conjurUrl));
-			map.from(properties.getConjurToken()).to((conjurToken) -> configuration.conjurToken(conjurToken));
 			map.from(properties.getVaultUrl()).to((vaultUrl) -> configuration.vaultUrl(vaultUrl));
 			map.from(properties.getVaultToken()).to((vaultToken) -> configuration.vaultToken(vaultToken));
 			map.from(properties.getVaultSecrets()).whenNot(List::isEmpty)
