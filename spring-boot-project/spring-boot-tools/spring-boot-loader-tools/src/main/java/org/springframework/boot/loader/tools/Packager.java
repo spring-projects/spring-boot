@@ -45,6 +45,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public abstract class Packager {
@@ -69,34 +70,21 @@ public abstract class Packager {
 
 	private static final String SPRING_BOOT_APPLICATION_CLASS_NAME = "org.springframework.boot.autoconfigure.SpringBootApplication";
 
-	private List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
+	private final List<MainClassTimeoutWarningListener> mainClassTimeoutListeners = new ArrayList<>();
 
 	private String mainClass;
 
-	private final File source;
+	protected File source;
 
 	private Layout layout;
 
-	private LayoutFactory layoutFactory;
+	protected LayoutFactory layoutFactory;
 
 	private Layers layers;
 
 	private LayersIndex layersIndex;
 
 	private boolean includeRelevantJarModeJars = true;
-
-	/**
-	 * Create a new {@link Packager} instance.
-	 * @param source the source JAR file to package
-	 * @param layoutFactory the layout factory to use or {@code null}
-	 */
-	protected Packager(File source, LayoutFactory layoutFactory) {
-		Assert.notNull(source, "Source file must not be null");
-		Assert.isTrue(source.exists() && source.isFile(),
-				"Source must refer to an existing file, got " + source.getAbsolutePath());
-		this.source = source.getAbsoluteFile();
-		this.layoutFactory = layoutFactory;
-	}
 
 	/**
 	 * Add a listener that will be triggered to display a warning if searching for the
@@ -153,14 +141,17 @@ public abstract class Packager {
 		this.includeRelevantJarModeJars = includeRelevantJarModeJars;
 	}
 
-	protected final boolean isAlreadyPackaged() throws IOException {
+	protected final boolean isAlreadyPackaged() {
 		return isAlreadyPackaged(this.source);
 	}
 
-	protected final boolean isAlreadyPackaged(File file) throws IOException {
+	protected final boolean isAlreadyPackaged(File file) {
 		try (JarFile jarFile = new JarFile(file)) {
 			Manifest manifest = jarFile.getManifest();
 			return (manifest != null && manifest.getMainAttributes().getValue(BOOT_VERSION_ATTRIBUTE) != null);
+		}
+		catch (IOException ex) {
+			throw new IllegalStateException("Error reading archive file", ex);
 		}
 	}
 
@@ -285,8 +276,7 @@ public abstract class Packager {
 	 * @return the file to use to backup the original source
 	 */
 	public final File getBackupFile() {
-		File source = getSource();
-		return new File(source.getParentFile(), source.getName() + ".original");
+		return new File(this.source.getParentFile(), this.source.getName() + ".original");
 	}
 
 	protected final File getSource() {
