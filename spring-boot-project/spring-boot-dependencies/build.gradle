@@ -1178,7 +1178,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.6.4") {
+	library("Micrometer", "1.6.5") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
