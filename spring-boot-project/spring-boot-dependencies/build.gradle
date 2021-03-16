@@ -851,7 +851,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty Reactive HTTPClient", "1.1.5") {
+	library("Jetty Reactive HTTPClient", "1.1.6") {
 		prohibit("[2,)") {
 			because "it uses the jakarta.* namespace"
 		}
