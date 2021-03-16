@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public class Repackager extends Packager {
@@ -41,8 +42,16 @@ public class Repackager extends Packager {
 		this(source, null);
 	}
 
+	/**
+	 * Create a new {@link Repackager} instance.
+	 * @param source the source archive file to package
+	 * @param layoutFactory the layout factory to use or {@code null}
+	 */
 	public Repackager(File source, LayoutFactory layoutFactory) {
-		super(source, layoutFactory);
+		Assert.notNull(source, "Source file must not be null");
+		Assert.isTrue(source.exists() && source.isFile(), "Source '" + source + "' must refer to an existing file");
+		this.source = source.getAbsoluteFile();
+		this.layoutFactory = layoutFactory;
 	}
 
 	/**
