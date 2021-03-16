@@ -223,8 +223,8 @@ class DataSourceInitializerInvokerTests {
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
 					assertThat(context.getStartupFailure()).hasMessageContaining("[does/not/exist.sql]");
 					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.schema");
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("Resource 'classpath:does/not/exist.sql' does not exist.");
+					assertThat(context.getStartupFailure()).hasMessageContaining(
+							"No resources were found at location 'classpath:does/not/exist.sql'.");
 				});
 	}
 
@@ -237,8 +237,8 @@ class DataSourceInitializerInvokerTests {
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
 					assertThat(context.getStartupFailure()).hasMessageContaining("[does/not/exist.sql]");
 					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.data");
-					assertThat(context.getStartupFailure())
-							.hasMessageContaining("Resource 'classpath:does/not/exist.sql' does not exist.");
+					assertThat(context.getStartupFailure()).hasMessageContaining(
+							"No resources were found at location 'classpath:does/not/exist.sql'.");
 				});
 	}
 
