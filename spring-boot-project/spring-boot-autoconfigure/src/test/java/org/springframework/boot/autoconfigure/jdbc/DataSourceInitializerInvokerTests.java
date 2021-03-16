@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -221,8 +221,10 @@ class DataSourceInitializerInvokerTests {
 				"spring.datasource.schema:classpath:does/not/exist.sql").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
-					assertThat(context.getStartupFailure()).hasMessageContaining("does/not/exist.sql");
+					assertThat(context.getStartupFailure()).hasMessageContaining("[does/not/exist.sql]");
 					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.schema");
+					assertThat(context.getStartupFailure()).hasMessageContaining(
+							"No resources were found at location 'classpath:does/not/exist.sql'.");
 				});
 	}
 
@@ -233,8 +235,10 @@ class DataSourceInitializerInvokerTests {
 				"spring.datasource.data:classpath:does/not/exist.sql").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
-					assertThat(context.getStartupFailure()).hasMessageContaining("does/not/exist.sql");
+					assertThat(context.getStartupFailure()).hasMessageContaining("[does/not/exist.sql]");
 					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.data");
+					assertThat(context.getStartupFailure()).hasMessageContaining(
+							"No resources were found at location 'classpath:does/not/exist.sql'.");
 				});
 	}
 
