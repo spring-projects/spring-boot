@@ -12,7 +12,6 @@ dependencies {
 
 	runtimeOnly("com.h2database:h2")
 	runtimeOnly("org.flywaydb:flyway-core")
-	runtimeOnly("org.hibernate:hibernate-micrometer")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
 }

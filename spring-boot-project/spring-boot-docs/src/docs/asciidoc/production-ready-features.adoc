@@ -2355,7 +2355,7 @@ Each metric is tagged by the name of the Pool (can be controlled with `spring.da
 
 [[production-ready-metrics-hibernate]]
 ==== Hibernate Metrics
-Auto-configuration enables the instrumentation of all available Hibernate `EntityManagerFactory` instances that have statistics enabled with a metric named `hibernate`.
+If `org.hibernate:hibernate-micrometer` is on the classpath, all available Hibernate `EntityManagerFactory` instances that have statistics enabled with a metric named `hibernate` are instrumented.
 
 Metrics are also tagged by the name of the `EntityManagerFactory` that is derived from the bean name.
 
