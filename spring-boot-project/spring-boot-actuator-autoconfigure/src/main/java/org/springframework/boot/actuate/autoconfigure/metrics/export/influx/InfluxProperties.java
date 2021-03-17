@@ -33,7 +33,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class InfluxProperties extends StepRegistryProperties {
 
 	/**
-	 * Tag that will be mapped to "host" when shipping metrics to Influx.
+	 * Database to send metrics to.
 	 */
 	private String db = "mydb";
 
