@@ -48,7 +48,7 @@ class CouchbaseHealth {
 	}
 
 	private boolean isCouchbaseUp(DiagnosticsResult diagnostics) {
-		return diagnostics.state() == ClusterState.ONLINE;
+		return diagnostics.state() != ClusterState.OFFLINE;
 	}
 
 	private Map<String, Object> describe(EndpointDiagnostics endpointHealth) {
