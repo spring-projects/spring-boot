@@ -100,7 +100,8 @@ class FlywayPropertiesTests {
 		Map<String, PropertyDescriptor> configuration = indexProperties(
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
-		ignoreProperties(properties, "url", "user", "password", "enabled", "checkLocation", "createDataSource");
+		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled", "checkLocation",
+				"createDataSource");
 		// High level object we can't set with properties
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "resourceProvider", "resolvers");

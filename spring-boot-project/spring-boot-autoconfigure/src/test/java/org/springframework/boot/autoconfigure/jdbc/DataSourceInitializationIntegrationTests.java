@@ -92,6 +92,17 @@ class DataSourceInitializationIntegrationTests {
 				});
 	}
 
+	@Test
+	void initializationWithUsernameAndPasswordAppliesToCustomDataSource() {
+		this.contextRunner.withUserConfiguration(OneDataSource.class)
+				.withPropertyValues("spring.datasource.initialization-mode:always",
+						"spring.datasource.schema-username=test", "spring.datasource.schema-password=secret")
+				.run((context) -> {
+					assertThat(context).hasSingleBean(DataSource.class);
+					assertDataSourceIsInitialized(context.getBean(DataSource.class));
+				});
+	}
+
 	private void assertDataSourceIsInitialized(DataSource dataSource) {
 		JdbcOperations template = new JdbcTemplate(dataSource);
 		assertThat(template.queryForObject("SELECT COUNT(*) from BAR", Integer.class)).isEqualTo(1);
@@ -286,7 +297,7 @@ class DataSourceInitializationIntegrationTests {
 
 		@Bean
 		DataSource oneDataSource() {
-			return new TestDataSource();
+			return new TestDataSource(true);
 		}
 
 	}
@@ -296,7 +307,7 @@ class DataSourceInitializationIntegrationTests {
 
 		@Bean
 		DataSource twoDataSource() {
-			return new TestDataSource();
+			return new TestDataSource(true);
 		}
 
 	}

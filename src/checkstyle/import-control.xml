@@ -4,6 +4,7 @@
 	<allow pkg=".*" regex="true" />
 
 	<subpackage name="autoconfigure">
+		<disallow class="org.springframework.boot.autoconfigure.jdbc.DataSourceProperties"/>
 		<subpackage name="web">
 			<allow pkg="org.springframework.boot.web.server" />
 			<allow pkg="org.springframework.boot.web.servlet.server" />

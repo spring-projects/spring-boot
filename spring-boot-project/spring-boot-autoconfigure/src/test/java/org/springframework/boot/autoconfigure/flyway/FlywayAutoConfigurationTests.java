@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.flyway;
 
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -42,7 +44,9 @@ import org.mockito.InOrder;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
@@ -62,6 +66,10 @@ import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 import org.springframework.stereotype.Component;
@@ -128,25 +136,42 @@ class FlywayAutoConfigurationTests {
 	}
 
 	@Test
-	void createDataSourceFallbackToEmbeddedProperties() {
+	void createDataSourceDoesNotFallbackToEmbeddedProperties() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:flywaytest").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					DataSource dataSource = context.getBean(Flyway.class).getConfiguration().getDataSource();
 					assertThat(dataSource).isNotNull();
-					assertThat(dataSource).hasFieldOrPropertyWithValue("user", "sa");
+					assertThat(dataSource).hasFieldOrPropertyWithValue("username", null);
 					assertThat(dataSource).hasFieldOrPropertyWithValue("password", "");
 				});
 	}
 
 	@Test
 	void createDataSourceWithUserAndFallbackToEmbeddedProperties() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.user:sa").run((context) -> {
+		this.contextRunner.withUserConfiguration(PropertiesBackedH2DataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.user:test", "spring.flyway.password:secret").run((context) -> {
 					assertThat(context).hasSingleBean(Flyway.class);
 					DataSource dataSource = context.getBean(Flyway.class).getConfiguration().getDataSource();
 					assertThat(dataSource).isNotNull();
 					assertThat(dataSource).extracting("url").asString().startsWith("jdbc:h2:mem:");
+					assertThat(dataSource).extracting("username").asString().isEqualTo("test");
+				});
+	}
+
+	@Test
+	void createDataSourceWithUserAndCustomEmbeddedProperties() {
+		this.contextRunner.withUserConfiguration(CustomBackedH2DataSourceConfiguration.class)
+				.withPropertyValues("spring.flyway.user:test", "spring.flyway.password:secret").run((context) -> {
+					assertThat(context).hasSingleBean(Flyway.class);
+					String expectedName = context.getBean(CustomBackedH2DataSourceConfiguration.class).name;
+					String propertiesName = context.getBean(DataSourceProperties.class).determineDatabaseName();
+					assertThat(expectedName).isNotEqualTo(propertiesName);
+					DataSource dataSource = context.getBean(Flyway.class).getConfiguration().getDataSource();
+					assertThat(dataSource).isNotNull();
+					assertThat(dataSource).extracting("url").asString().startsWith("jdbc:h2:mem:")
+							.contains(expectedName);
+					assertThat(dataSource).extracting("username").asString().isEqualTo("test");
 				});
 	}
 
@@ -236,6 +261,20 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					Flyway flyway = context.getBean(Flyway.class);
 					assertThat(Arrays.asList(flyway.getConfiguration().getSchemas()).toString()).isEqualTo("[public]");
+				});
+	}
+
+	@Test
+	void overrideDataSourceAndDriverClassName() {
+		String jdbcUrl = "jdbc:hsqldb:mem:flyway" + UUID.randomUUID();
+		String driverClassName = "org.hsqldb.jdbcDriver";
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class).withPropertyValues(
+				"spring.flyway.url:" + jdbcUrl, "spring.flyway.driver-class-name:" + driverClassName).run((context) -> {
+					Flyway flyway = context.getBean(Flyway.class);
+					SimpleDriverDataSource dataSource = (SimpleDriverDataSource) flyway.getConfiguration()
+							.getDataSource();
+					assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
+					assertThat(dataSource.getDriver().getClass().getName()).isEqualTo(driverClassName);
 				});
 	}
 
@@ -838,6 +877,51 @@ class FlywayAutoConfigurationTests {
 		@Bean
 		DSLContext dslContext() {
 			return new DefaultDSLContext(SQLDialect.H2);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableConfigurationProperties(DataSourceProperties.class)
+	abstract static class AbstractUserH2DataSourceConfiguration {
+
+		@Bean(destroyMethod = "shutdown")
+		EmbeddedDatabase dataSource(DataSourceProperties properties) throws SQLException {
+			EmbeddedDatabase database = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+					.setName(getDatabaseName(properties)).build();
+			insertUser(database);
+			return database;
+		}
+
+		protected abstract String getDatabaseName(DataSourceProperties properties);
+
+		private void insertUser(EmbeddedDatabase database) throws SQLException {
+			try (Connection connection = database.getConnection()) {
+				connection.prepareStatement("CREATE USER test password 'secret'").execute();
+				connection.prepareStatement("ALTER USER test ADMIN TRUE").execute();
+			}
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class PropertiesBackedH2DataSourceConfiguration extends AbstractUserH2DataSourceConfiguration {
+
+		@Override
+		protected String getDatabaseName(DataSourceProperties properties) {
+			return properties.determineDatabaseName();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomBackedH2DataSourceConfiguration extends AbstractUserH2DataSourceConfiguration {
+
+		private final String name = UUID.randomUUID().toString();
+
+		@Override
+		protected String getDatabaseName(DataSourceProperties properties) {
+			return this.name;
 		}
 
 	}

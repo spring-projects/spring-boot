@@ -162,12 +162,6 @@ public class FlywayProperties {
 	private String target;
 
 	/**
-	 * JDBC url of the database to migrate. If not set, the primary configured data source
-	 * is used.
-	 */
-	private String url;
-
-	/**
 	 * Login user of the database to migrate.
 	 */
 	private String user;
@@ -176,6 +170,17 @@ public class FlywayProperties {
 	 * Login password of the database to migrate.
 	 */
 	private String password;
+
+	/**
+	 * Fully qualified name of the JDBC driver. Auto-detected based on the URL by default.
+	 */
+	private String driverClassName;
+
+	/**
+	 * JDBC url of the database to migrate. If not set, the primary configured data source
+	 * is used.
+	 */
+	private String url;
 
 	/**
 	 * SQL statements to execute to initialize a connection immediately after obtaining
@@ -538,16 +543,14 @@ public class FlywayProperties {
 		this.target = target;
 	}
 
+	/**
+	 * Return if a new datasource is being created.
+	 * @return {@code true} if a new datasource is created
+	 * @deprecated since 2.5.0 in favor of directly checking user and url.
+	 */
+	@Deprecated
 	public boolean isCreateDataSource() {
 		return this.url != null || this.user != null;
-	}
-
-	public String getUrl() {
-		return this.url;
-	}
-
-	public void setUrl(String url) {
-		this.url = url;
 	}
 
 	public String getUser() {
@@ -564,6 +567,22 @@ public class FlywayProperties {
 
 	public void setPassword(String password) {
 		this.password = password;
+	}
+
+	public String getDriverClassName() {
+		return this.driverClassName;
+	}
+
+	public void setDriverClassName(String driverClassName) {
+		this.driverClassName = driverClassName;
+	}
+
+	public String getUrl() {
+		return this.url;
+	}
+
+	public void setUrl(String url) {
+		this.url = url;
 	}
 
 	public List<String> getInitSqls() {

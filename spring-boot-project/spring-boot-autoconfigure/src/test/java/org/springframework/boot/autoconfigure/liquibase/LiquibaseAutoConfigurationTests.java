@@ -20,7 +20,10 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.sql.DataSource;
@@ -50,6 +53,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -82,11 +88,11 @@ class LiquibaseAutoConfigurationTests {
 
 	@Test
 	void createsDataSourceWithNoDataSourceBeanAndLiquibaseUrl() {
-		this.contextRunner.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
-				.run(assertLiquibase((liquibase) -> {
-					SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
-					assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:liquibase");
-				}));
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase" + UUID.randomUUID();
+		this.contextRunner.withPropertyValues("spring.liquibase.url:" + jdbcUrl).run(assertLiquibase((liquibase) -> {
+			SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
+			assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
+		}));
 	}
 
 	@Test
@@ -191,18 +197,18 @@ class LiquibaseAutoConfigurationTests {
 
 	@Test
 	void overrideDataSource() {
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase" + UUID.randomUUID();
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
-				.run(assertLiquibase((liquibase) -> {
+				.withPropertyValues("spring.liquibase.url:" + jdbcUrl).run(assertLiquibase((liquibase) -> {
 					SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
-					assertThat(dataSource.getUrl()).isEqualTo("jdbc:hsqldb:mem:liquibase");
+					assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
 					assertThat(dataSource.getDriver().getClass().getName()).isEqualTo("org.hsqldb.jdbc.JDBCDriver");
 				}));
 	}
 
 	@Test
 	void overrideDataSourceAndDriverClassName() {
-		String jdbcUrl = "jdbc:hsqldb:mem:liquibase";
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase" + UUID.randomUUID();
 		String driverClassName = "org.hsqldb.jdbcDriver";
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
 				.withPropertyValues("spring.liquibase.url:" + jdbcUrl,
@@ -215,40 +221,39 @@ class LiquibaseAutoConfigurationTests {
 	}
 
 	@Test
-	void overrideDataSourceWithFallbackDriverClassName() {
-		String jdbcUrl = "jdbc:hsqldb:mem:liquibase";
-		String driverClassName = "org.hsqldb.jdbcDriver";
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.url:" + jdbcUrl,
-						"spring.datasource.driver-class-name:" + driverClassName)
-				.run(assertLiquibase((liquibase) -> {
-					SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
-					assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
-					assertThat(dataSource.getDriver().getClass().getName()).isEqualTo(driverClassName);
-				}));
-	}
-
-	@Test
 	void overrideUser() {
-		String jdbcUrl = "jdbc:hsqldb:mem:normal";
+		String databaseName = "normal" + UUID.randomUUID();
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.datasource.url:" + jdbcUrl, "spring.datasource.username:not-sa",
+				.withPropertyValues("spring.datasource.generate-unique-name:false",
+						"spring.datasource.name:" + databaseName, "spring.datasource.username:not-sa",
 						"spring.liquibase.user:sa")
 				.run(assertLiquibase((liquibase) -> {
 					SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
-					assertThat(dataSource.getUrl()).isEqualTo(jdbcUrl);
+					assertThat(dataSource.getUrl()).contains("jdbc:h2:mem:" + databaseName);
 					assertThat(dataSource.getUsername()).isEqualTo("sa");
 				}));
 	}
 
 	@Test
-	void overrideDataSourceAndFallbackToEmbeddedProperties() {
-		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:liquibase")
-				.run(assertLiquibase((liquibase) -> {
+	void overrideUserWhenCustom() {
+		this.contextRunner.withUserConfiguration(CustomDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.user:test", "spring.liquibase.password:secret").run((context) -> {
+					String expectedName = context.getBean(CustomDataSourceConfiguration.class).name;
+					SpringLiquibase liquibase = context.getBean(SpringLiquibase.class);
 					SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
-					assertThat(dataSource.getUsername()).isEqualTo("sa");
-					assertThat(dataSource.getPassword()).isEqualTo("");
+					assertThat(dataSource.getUrl()).contains(expectedName);
+					assertThat(dataSource.getUsername()).isEqualTo("test");
+				});
+	}
+
+	@Test
+	void createDataSourceDoesNotFallbackToEmbeddedProperties() {
+		String jdbcUrl = "jdbc:hsqldb:mem:liquibase" + UUID.randomUUID();
+		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.liquibase.url:" + jdbcUrl).run(assertLiquibase((liquibase) -> {
+					SimpleDriverDataSource dataSource = (SimpleDriverDataSource) liquibase.getDataSource();
+					assertThat(dataSource.getUsername()).isNull();
+					assertThat(dataSource.getPassword()).isNull();
 				}));
 	}
 
@@ -404,13 +409,14 @@ class LiquibaseAutoConfigurationTests {
 		@Bean
 		@Primary
 		DataSource normalDataSource() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal").username("sa").build();
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:normal" + UUID.randomUUID()).username("sa").build();
 		}
 
 		@LiquibaseDataSource
 		@Bean
 		DataSource liquibaseDataSource() {
-			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:liquibasetest").username("sa").build();
+			return DataSourceBuilder.create().url("jdbc:hsqldb:mem:liquibasetest" + UUID.randomUUID()).username("sa")
+					.build();
 		}
 
 	}
@@ -426,6 +432,49 @@ class LiquibaseAutoConfigurationTests {
 			liquibase.setDataSource(dataSource);
 			return liquibase;
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDataSourceConfiguration {
+
+		private String name = UUID.randomUUID().toString();
+
+		@Bean(destroyMethod = "shutdown")
+		EmbeddedDatabase dataSource() throws SQLException {
+			EmbeddedDatabase database = new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
+					.setName(this.name).build();
+			insertUser(database);
+			return database;
+		}
+
+		private void insertUser(EmbeddedDatabase database) throws SQLException {
+			try (Connection connection = database.getConnection()) {
+				connection.prepareStatement("CREATE USER test password 'secret'").execute();
+				connection.prepareStatement("ALTER USER test ADMIN TRUE").execute();
+			}
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDriverConfiguration {
+
+		private String name = UUID.randomUUID().toString();
+
+		@Bean
+		SimpleDriverDataSource dataSource() throws SQLException {
+			SimpleDriverDataSource dataSource = new SimpleDriverDataSource();
+			dataSource.setDriverClass(CustomH2Driver.class);
+			dataSource.setUrl(String.format("jdbc:h2:mem:%s;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=false", this.name));
+			dataSource.setUsername("sa");
+			dataSource.setPassword("");
+			return dataSource;
+		}
+
+	}
+
+	static class CustomH2Driver extends org.h2.Driver {
 
 	}
 

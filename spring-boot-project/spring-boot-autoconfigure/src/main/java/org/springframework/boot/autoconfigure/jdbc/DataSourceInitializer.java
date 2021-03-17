@@ -33,6 +33,7 @@ import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.config.SortedResourcesFactoryBean;
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
 import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.StringUtils;
@@ -185,10 +186,9 @@ public class DataSourceInitializer {
 			populator.addScript(resource);
 		}
 		DataSource dataSource = this.dataSource;
-		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			dataSource = DataSourceBuilder.create(this.properties.getClassLoader())
-					.driverClassName(this.properties.determineDriverClassName()).url(this.properties.determineUrl())
-					.username(username).password(password).build();
+		if (StringUtils.hasText(username) && dataSource != null) {
+			dataSource = DataSourceBuilder.derivedFrom(dataSource).type(SimpleDriverDataSource.class).username(username)
+					.password(password).build();
 		}
 		DatabasePopulatorUtils.execute(populator, dataSource);
 	}
