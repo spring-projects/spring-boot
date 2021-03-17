@@ -16,10 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
+import io.micrometer.influx.InfluxApiVersion;
 import io.micrometer.influx.InfluxConsistency;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Influx metrics
@@ -33,7 +35,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class InfluxProperties extends StepRegistryProperties {
 
 	/**
-	 * Database to send metrics to.
+	 * Database to send metrics to when using an InfluxDB 1.x database.
 	 */
 	private String db = "mydb";
 
@@ -92,6 +94,29 @@ public class InfluxProperties extends StepRegistryProperties {
 	 * publish metrics to it.
 	 */
 	private boolean autoCreateDb = true;
+
+	/**
+	 * API version of InfluxDB to use. Defaults to 'v1' unless an org is configured. If an
+	 * org is configured, defaults to 'v2'.
+	 */
+	private InfluxApiVersion apiVersion;
+
+	/**
+	 * InfluxDB v2 org to write metrics.
+	 */
+	private String org;
+
+	/**
+	 * InfluxDB v2 bucket for metrics. Use either the bucket name or ID. Defaults to the
+	 * value of the db property if not set.
+	 */
+	private String bucket;
+
+	/**
+	 * Authentication token to use with calls to the InfluxDB backend. For InfluxDB v1,
+	 * the Bearer scheme is used. For v2, the Token scheme is used.
+	 */
+	private String token;
 
 	public String getDb() {
 		return this.db;
@@ -179,6 +204,44 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	public void setAutoCreateDb(boolean autoCreateDb) {
 		this.autoCreateDb = autoCreateDb;
+	}
+
+	public InfluxApiVersion getApiVersion() {
+		if (this.apiVersion != null) {
+			return this.apiVersion;
+		}
+		return StringUtils.hasText(this.org) ? InfluxApiVersion.V2 : InfluxApiVersion.V1;
+	}
+
+	public void setApiVersion(InfluxApiVersion apiVersion) {
+		this.apiVersion = apiVersion;
+	}
+
+	public String getOrg() {
+		return this.org;
+	}
+
+	public void setOrg(String org) {
+		this.org = org;
+	}
+
+	public String getBucket() {
+		if (this.bucket != null) {
+			return this.bucket;
+		}
+		return this.db;
+	}
+
+	public void setBucket(String bucket) {
+		this.bucket = bucket;
+	}
+
+	public String getToken() {
+		return this.token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 }

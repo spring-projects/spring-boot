@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
+import io.micrometer.influx.InfluxApiVersion;
 import io.micrometer.influx.InfluxConfig;
 import io.micrometer.influx.InfluxConsistency;
 
@@ -92,6 +93,26 @@ class InfluxPropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<
 	@Override
 	public boolean autoCreateDb() {
 		return get(InfluxProperties::isAutoCreateDb, InfluxConfig.super::autoCreateDb);
+	}
+
+	@Override
+	public InfluxApiVersion apiVersion() {
+		return get(InfluxProperties::getApiVersion, InfluxConfig.super::apiVersion);
+	}
+
+	@Override
+	public String org() {
+		return get(InfluxProperties::getOrg, InfluxConfig.super::org);
+	}
+
+	@Override
+	public String bucket() {
+		return get(InfluxProperties::getBucket, InfluxConfig.super::bucket);
+	}
+
+	@Override
+	public String token() {
+		return get(InfluxProperties::getToken, InfluxConfig.super::token);
 	}
 
 }
