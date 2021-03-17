@@ -63,7 +63,7 @@ class CouchbaseReactiveHealthIndicatorTests {
 
 	@Test
 	@SuppressWarnings("unchecked")
-	void couchbaseClusterWithDegradedStateIsUp() {
+	void couchbaseClusterIsUpWhenLeastOneServiceIsConnected() {
 		Cluster cluster = mock(Cluster.class);
 		CouchbaseReactiveHealthIndicator healthIndicator = new CouchbaseReactiveHealthIndicator(cluster);
 		Map<ServiceType, List<EndpointDiagnostics>> endpoints = Collections.singletonMap(ServiceType.KV,
