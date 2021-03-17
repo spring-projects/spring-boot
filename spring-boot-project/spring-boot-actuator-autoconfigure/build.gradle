@@ -78,6 +78,7 @@ dependencies {
 	optional("org.glassfish.jersey.core:jersey-server")
 	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	optional("org.hibernate:hibernate-core")
+	optional("org.hibernate:hibernate-micrometer")
 	optional("org.hibernate.validator:hibernate-validator")
 	optional("org.influxdb:influxdb-java")
 	optional("org.jolokia:jolokia-core")
