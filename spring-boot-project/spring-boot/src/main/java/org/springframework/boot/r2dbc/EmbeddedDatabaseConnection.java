@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc;
 
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -24,32 +24,26 @@ import org.springframework.util.ClassUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
- * @since 2.3.0
- * @deprecated since 2.5.0 in favor of
- * {@link org.springframework.boot.r2dbc.EmbeddedDatabaseConnection}
+ * @since 2.5.0
  */
-@Deprecated
 public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * No Connection.
 	 */
-	NONE(null, null, null),
+	NONE(null, null),
 
 	/**
 	 * H2 Database Connection.
 	 */
-	H2("H2", "io.r2dbc.h2.H2ConnectionFactoryProvider",
+	H2("io.r2dbc.h2.H2ConnectionFactoryProvider",
 			"r2dbc:h2:mem:///%s?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE");
-
-	private final String type;
 
 	private final String driverClassName;
 
 	private final String url;
 
-	EmbeddedDatabaseConnection(String type, String driverClassName, String url) {
-		this.type = type;
+	EmbeddedDatabaseConnection(String driverClassName, String url) {
 		this.driverClassName = driverClassName;
 		this.url = url;
 	}
@@ -60,14 +54,6 @@ public enum EmbeddedDatabaseConnection {
 	 */
 	public String getDriverClassName() {
 		return this.driverClassName;
-	}
-
-	/**
-	 * Returns the embedded database type name for the connection.
-	 * @return the database type
-	 */
-	public String getType() {
-		return this.type;
 	}
 
 	/**

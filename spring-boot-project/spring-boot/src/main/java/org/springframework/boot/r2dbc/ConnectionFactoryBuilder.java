@@ -14,15 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.r2dbc;
+package org.springframework.boot.r2dbc;
 
 import java.util.function.Consumer;
-import java.util.function.Supplier;
 
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
+
+import org.springframework.util.Assert;
 
 /**
  * Builder for {@link ConnectionFactory}.
@@ -30,34 +31,36 @@ import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
  * @author Mark Paluch
  * @author Tadaya Tsuyukubo
  * @author Stephane Nicoll
- * @since 2.3.0
- * @deprecated since 2.5.0 in favor of
- * {@link org.springframework.boot.r2dbc.ConnectionFactoryBuilder}
+ * @since 2.5.0
  */
-@Deprecated
 public final class ConnectionFactoryBuilder {
 
-	private final ConnectionFactoryOptions.Builder optionsBuilder;
+	private final Builder optionsBuilder;
 
-	private ConnectionFactoryBuilder(ConnectionFactoryOptions.Builder optionsBuilder) {
+	private ConnectionFactoryBuilder(Builder optionsBuilder) {
 		this.optionsBuilder = optionsBuilder;
 	}
 
 	/**
-	 * Initialize a new {@link ConnectionFactoryBuilder} based on the specified
-	 * {@link R2dbcProperties}. If no url is specified, the
-	 * {@link EmbeddedDatabaseConnection} supplier is invoked to determine if an embedded
-	 * database can be configured instead.
-	 * @param properties the properties to use to initialize the builder
-	 * @param embeddedDatabaseConnection a supplier for an
-	 * {@link EmbeddedDatabaseConnection}
-	 * @return a new builder initialized with the settings defined in
-	 * {@link R2dbcProperties}
+	 * Initialize a new {@link ConnectionFactoryBuilder} based on the specified R2DBC url.
+	 * @param url the url to use
+	 * @return a new builder initialized with the options exposed in the specified url
+	 * @see EmbeddedDatabaseConnection#getUrl(String)
 	 */
-	public static ConnectionFactoryBuilder of(R2dbcProperties properties,
-			Supplier<EmbeddedDatabaseConnection> embeddedDatabaseConnection) {
-		return new ConnectionFactoryBuilder(
-				new ConnectionFactoryOptionsInitializer().initialize(properties, adapt(embeddedDatabaseConnection)));
+	public static ConnectionFactoryBuilder withUrl(String url) {
+		Assert.hasText(url, () -> "Url must not be null");
+		return withOptions(ConnectionFactoryOptions.parse(url).mutate());
+	}
+
+	/**
+	 * Initialize a new {@link ConnectionFactoryBuilder} based on the specified
+	 * {@link Builder options}.
+	 * @param options the options to use to initialize the builder
+	 * @return a new builder initialized with the settings defined in the given
+	 * {@link Builder options}
+	 */
+	public static ConnectionFactoryBuilder withOptions(Builder options) {
+		return new ConnectionFactoryBuilder(options);
 	}
 
 	/**
@@ -129,15 +132,6 @@ public final class ConnectionFactoryBuilder {
 	 */
 	public ConnectionFactoryOptions buildOptions() {
 		return this.optionsBuilder.build();
-	}
-
-	private static Supplier<org.springframework.boot.r2dbc.EmbeddedDatabaseConnection> adapt(
-			Supplier<EmbeddedDatabaseConnection> embeddedDatabaseConnection) {
-		return () -> {
-			EmbeddedDatabaseConnection connection = embeddedDatabaseConnection.get();
-			return (connection != null)
-					? org.springframework.boot.r2dbc.EmbeddedDatabaseConnection.valueOf(connection.name()) : null;
-		};
 	}
 
 }
