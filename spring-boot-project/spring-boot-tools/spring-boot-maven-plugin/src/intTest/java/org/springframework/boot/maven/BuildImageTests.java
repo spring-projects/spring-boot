@@ -223,13 +223,6 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 						.contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder"));
 	}
 
-	@TestTemplate
-	void failsWhenFinalNameIsMisconfigured(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-final-name").goals("package")
-				.executeAndFail((project) -> assertThat(buildLog(project)).contains("final-name.jar.original")
-						.contains("must refer to an existing file"));
-	}
-
 	private void writeLongNameResource(File project) {
 		StringBuilder name = new StringBuilder();
 		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));

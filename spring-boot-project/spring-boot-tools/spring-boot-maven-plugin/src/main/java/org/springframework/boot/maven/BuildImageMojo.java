@@ -186,8 +186,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	private BuildRequest getBuildRequest(Libraries libraries) throws MojoExecutionException {
-		ImagePackager imagePackager = new ImagePackager(getArchiveFile());
-		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries, imagePackager);
+		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries);
 		Image image = (this.image != null) ? this.image : new Image();
 		if (image.name == null && this.imageName != null) {
 			image.setName(this.imageName);
@@ -218,8 +217,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 				|| this.docker.getPublishRegistry().isEmpty();
 	}
 
-	private TarArchive getApplicationContent(Owner owner, Libraries libraries, ImagePackager imagePackager) {
-		ImagePackager packager = getConfiguredPackager(() -> imagePackager);
+	private TarArchive getApplicationContent(Owner owner, Libraries libraries) {
+		ImagePackager packager = getConfiguredPackager(() -> new ImagePackager(getArchiveFile()));
 		return new PackagedTarArchive(owner, libraries, packager);
 	}
 
