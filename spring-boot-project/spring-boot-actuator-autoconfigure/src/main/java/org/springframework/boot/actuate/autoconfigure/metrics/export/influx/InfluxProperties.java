@@ -21,7 +21,6 @@ import io.micrometer.influx.InfluxConsistency;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.util.StringUtils;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Influx metrics
@@ -35,7 +34,7 @@ import org.springframework.util.StringUtils;
 public class InfluxProperties extends StepRegistryProperties {
 
 	/**
-	 * Database to send metrics to when using an InfluxDB 1.x database.
+	 * Database to send metrics to. InfluxDB v1 only.
 	 */
 	private String db = "mydb";
 
@@ -45,12 +44,12 @@ public class InfluxProperties extends StepRegistryProperties {
 	private InfluxConsistency consistency = InfluxConsistency.ONE;
 
 	/**
-	 * Login user of the Influx server.
+	 * Login user of the Influx server. InfluxDB v1 only.
 	 */
 	private String userName;
 
 	/**
-	 * Login password of the Influx server.
+	 * Login password of the Influx server. InfluxDB v1 only.
 	 */
 	private String password;
 
@@ -91,7 +90,7 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	/**
 	 * Whether to create the Influx database if it does not exist before attempting to
-	 * publish metrics to it.
+	 * publish metrics to it. InfluxDB v1 only.
 	 */
 	private boolean autoCreateDb = true;
 
@@ -102,13 +101,13 @@ public class InfluxProperties extends StepRegistryProperties {
 	private InfluxApiVersion apiVersion;
 
 	/**
-	 * InfluxDB v2 org to write metrics.
+	 * Org to write metrics to. InfluxDB v2 only.
 	 */
 	private String org;
 
 	/**
-	 * InfluxDB v2 bucket for metrics. Use either the bucket name or ID. Defaults to the
-	 * value of the db property if not set.
+	 * Bucket for metrics. Use either the bucket name or ID. Defaults to the value of the
+	 * db property if not set. InfluxDB v2 only.
 	 */
 	private String bucket;
 
@@ -207,10 +206,7 @@ public class InfluxProperties extends StepRegistryProperties {
 	}
 
 	public InfluxApiVersion getApiVersion() {
-		if (this.apiVersion != null) {
-			return this.apiVersion;
-		}
-		return StringUtils.hasText(this.org) ? InfluxApiVersion.V2 : InfluxApiVersion.V1;
+		return this.apiVersion;
 	}
 
 	public void setApiVersion(InfluxApiVersion apiVersion) {
@@ -226,10 +222,7 @@ public class InfluxProperties extends StepRegistryProperties {
 	}
 
 	public String getBucket() {
-		if (this.bucket != null) {
-			return this.bucket;
-		}
-		return this.db;
+		return this.bucket;
 	}
 
 	public void setBucket(String bucket) {
