@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,6 @@ import org.springframework.util.Assert;
  * Utility class that can be used to export a fully packaged archive to an OCI image.
  *
  * @author Phillip Webb
- * @author Scott Frederick
  * @since 2.3.0
  */
 public class ImagePackager extends Packager {
@@ -38,18 +37,11 @@ public class ImagePackager extends Packager {
 	 * @param source the source file to package
 	 */
 	public ImagePackager(File source) {
-		Assert.notNull(source, "Source file must not be null");
-		this.source = source.getAbsoluteFile();
-		if (isAlreadyPackaged()) {
-			this.source = getBackupFile();
-		}
-		Assert.isTrue(this.source.exists() && this.source.isFile(),
-				"Source '" + this.source + "' must refer to an existing file");
-		Assert.state(!isAlreadyPackaged(), () -> "Repackaged archive file " + getSource() + " cannot be exported");
+		super(source, null);
 	}
 
 	/**
-	 * Create a packaged image.
+	 * Create an packaged image.
 	 * @param libraries the contained libraries
 	 * @param exporter the exporter used to write the image
 	 * @throws IOException on IO error
@@ -59,7 +51,10 @@ public class ImagePackager extends Packager {
 	}
 
 	private void packageImage(Libraries libraries, AbstractJarWriter writer) throws IOException {
-		try (JarFile sourceJar = new JarFile(getSource())) {
+		File source = isAlreadyPackaged() ? getBackupFile() : getSource();
+		Assert.state(source.exists() && source.isFile(), () -> "Unable to read jar file " + source);
+		Assert.state(!isAlreadyPackaged(source), () -> "Repackaged jar file " + source + " cannot be exported");
+		try (JarFile sourceJar = new JarFile(source)) {
 			write(sourceJar, libraries, writer);
 		}
 	}
