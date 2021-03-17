@@ -46,6 +46,8 @@ class InfluxPropertiesTests extends StepRegistryPropertiesTests {
 		assertThat(properties.getUri()).isEqualTo(config.uri());
 		assertThat(properties.isCompressed()).isEqualTo(config.compressed());
 		assertThat(properties.isAutoCreateDb()).isEqualTo(config.autoCreateDb());
+		assertThat(properties.getOrg()).isEqualTo(config.org());
+		assertThat(properties.getToken()).isEqualTo(config.token());
 	}
 
 }

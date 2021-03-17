@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
+import io.micrometer.influx.InfluxApiVersion;
 import io.micrometer.influx.InfluxConsistency;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
@@ -33,7 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class InfluxProperties extends StepRegistryProperties {
 
 	/**
-	 * Database to send metrics to.
+	 * Database to send metrics to. InfluxDB v1 only.
 	 */
 	private String db = "mydb";
 
@@ -43,12 +44,12 @@ public class InfluxProperties extends StepRegistryProperties {
 	private InfluxConsistency consistency = InfluxConsistency.ONE;
 
 	/**
-	 * Login user of the Influx server.
+	 * Login user of the Influx server. InfluxDB v1 only.
 	 */
 	private String userName;
 
 	/**
-	 * Login password of the Influx server.
+	 * Login password of the Influx server. InfluxDB v1 only.
 	 */
 	private String password;
 
@@ -89,9 +90,32 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	/**
 	 * Whether to create the Influx database if it does not exist before attempting to
-	 * publish metrics to it.
+	 * publish metrics to it. InfluxDB v1 only.
 	 */
 	private boolean autoCreateDb = true;
+
+	/**
+	 * API version of InfluxDB to use. Defaults to 'v1' unless an org is configured. If an
+	 * org is configured, defaults to 'v2'.
+	 */
+	private InfluxApiVersion apiVersion;
+
+	/**
+	 * Org to write metrics to. InfluxDB v2 only.
+	 */
+	private String org;
+
+	/**
+	 * Bucket for metrics. Use either the bucket name or ID. Defaults to the value of the
+	 * db property if not set. InfluxDB v2 only.
+	 */
+	private String bucket;
+
+	/**
+	 * Authentication token to use with calls to the InfluxDB backend. For InfluxDB v1,
+	 * the Bearer scheme is used. For v2, the Token scheme is used.
+	 */
+	private String token;
 
 	public String getDb() {
 		return this.db;
@@ -179,6 +203,38 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	public void setAutoCreateDb(boolean autoCreateDb) {
 		this.autoCreateDb = autoCreateDb;
+	}
+
+	public InfluxApiVersion getApiVersion() {
+		return this.apiVersion;
+	}
+
+	public void setApiVersion(InfluxApiVersion apiVersion) {
+		this.apiVersion = apiVersion;
+	}
+
+	public String getOrg() {
+		return this.org;
+	}
+
+	public void setOrg(String org) {
+		this.org = org;
+	}
+
+	public String getBucket() {
+		return this.bucket;
+	}
+
+	public void setBucket(String bucket) {
+		this.bucket = bucket;
+	}
+
+	public String getToken() {
+		return this.token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 }

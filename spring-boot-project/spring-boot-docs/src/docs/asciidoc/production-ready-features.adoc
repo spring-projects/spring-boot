@@ -1833,7 +1833,8 @@ You should also configure one or more tags to identify the data source to which 
 
 [[production-ready-metrics-export-influx]]
 ==== Influx
-By default, metrics are exported to {micrometer-registry-docs}/influx[Influx] running on your local machine.
+By default, metrics are exported to an {micrometer-registry-docs}/influx[Influx] v1 instance running on your local machine with the default configuration.
+To export metrics to InfluxDB v2, configure the `org`, `bucket`, and authentication `token` for writing metrics.
 The location of the https://www.influxdata.com[Influx server] to use can be provided using:
 
 [source,yaml,indent=0,configprops,configblocks]
