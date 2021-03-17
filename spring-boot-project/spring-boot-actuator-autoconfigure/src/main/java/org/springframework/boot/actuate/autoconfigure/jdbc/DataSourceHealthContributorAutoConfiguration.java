@@ -17,19 +17,19 @@
 package org.springframework.boot.actuate.autoconfigure.jdbc;
 
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.boot.actuate.autoconfigure.health.CompositeHealthContributorConfiguration;
 import org.springframework.boot.actuate.autoconfigure.health.ConditionalOnEnabledHealthIndicator;
-import org.springframework.boot.actuate.health.AbstractHealthIndicator;
-import org.springframework.boot.actuate.health.Health.Builder;
+import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.HealthContributor;
-import org.springframework.boot.actuate.health.HealthIndicator;
+import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -45,6 +45,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
+import org.springframework.util.Assert;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for
@@ -64,8 +65,7 @@ import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 @ConditionalOnEnabledHealthIndicator("db")
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(DataSourceHealthIndicatorProperties.class)
-public class DataSourceHealthContributorAutoConfiguration extends
-		CompositeHealthContributorConfiguration<AbstractHealthIndicator, DataSource> implements InitializingBean {
+public class DataSourceHealthContributorAutoConfiguration implements InitializingBean {
 
 	private final Collection<DataSourcePoolMetadataProvider> metadataProviders;
 
@@ -94,10 +94,18 @@ public class DataSourceHealthContributorAutoConfiguration extends
 		return createContributor(dataSources);
 	}
 
-	@Override
-	protected AbstractHealthIndicator createIndicator(DataSource source) {
+	private HealthContributor createContributor(Map<String, DataSource> beans) {
+		Assert.notEmpty(beans, "Beans must not be empty");
+		if (beans.size() == 1) {
+			return createIndicator(beans.values().iterator().next());
+		}
+		return CompositeHealthContributor.fromMap(beans, this::createIndicator);
+	}
+
+	private HealthContributor createIndicator(DataSource source) {
 		if (source instanceof AbstractRoutingDataSource) {
-			return new RoutingDataSourceHealthIndicator();
+			AbstractRoutingDataSource routingDataSource = (AbstractRoutingDataSource) source;
+			return new RoutingDataSourceHealthIndicator(routingDataSource, this::createIndicator);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
@@ -108,14 +116,29 @@ public class DataSourceHealthContributorAutoConfiguration extends
 	}
 
 	/**
-	 * {@link HealthIndicator} used for {@link AbstractRoutingDataSource} beans where we
-	 * can't actually query for the status.
+	 * {@link CompositeHealthContributor} used for {@link AbstractRoutingDataSource} beans
+	 * where the overall health is composed of a {@link DataSourceHealthIndicator} for
+	 * each routed datasource.
 	 */
-	static class RoutingDataSourceHealthIndicator extends AbstractHealthIndicator {
+	static class RoutingDataSourceHealthIndicator implements CompositeHealthContributor {
+
+		private CompositeHealthContributor delegate;
+
+		RoutingDataSourceHealthIndicator(AbstractRoutingDataSource routingDataSource,
+				Function<DataSource, HealthContributor> indicatorFunction) {
+			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources().entrySet().stream()
+					.collect(Collectors.toMap((e) -> e.getKey().toString(), Map.Entry::getValue));
+			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, indicatorFunction);
+		}
 
 		@Override
-		protected void doHealthCheck(Builder builder) throws Exception {
-			builder.unknown().withDetail("routing", true);
+		public HealthContributor getContributor(String name) {
+			return this.delegate.getContributor(name);
+		}
+
+		@Override
+		public Iterator<NamedContributor<HealthContributor>> iterator() {
+			return this.delegate.iterator();
 		}
 
 	}
