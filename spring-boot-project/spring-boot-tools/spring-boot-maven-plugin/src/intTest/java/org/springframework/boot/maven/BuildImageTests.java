@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -74,9 +74,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 					File original = new File(project,
 							"target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar.original");
 					assertThat(original).isFile();
-					String log = buildLog(project);
-					System.out.println(log);
-					assertThat(log).contains("Building image").contains("paketo-buildpacks/builder")
+					assertThat(buildLog(project)).contains("Building image").contains("paketo-buildpacks/builder")
 							.contains("docker.io/library/build-image-with-repackage:0.0.1.BUILD-SNAPSHOT")
 							.contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of(ImageName.of("build-image-with-repackage"),
@@ -181,6 +179,13 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	void failsWithWarPackaging(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-war-packaging").goals("package").executeAndFail(
 				(project) -> assertThat(buildLog(project)).contains("Executable jar file required for building image"));
+	}
+
+	@TestTemplate
+	void failsWhenFinalNameIsMisconfigured(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-final-name").goals("package")
+				.executeAndFail((project) -> assertThat(buildLog(project)).contains("final-name.jar.original")
+						.contains("is required for building an image"));
 	}
 
 	private void writeLongNameResource(File project) {
