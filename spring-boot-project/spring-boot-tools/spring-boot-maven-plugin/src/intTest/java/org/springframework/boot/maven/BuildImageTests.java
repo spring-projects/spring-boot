@@ -79,7 +79,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 					assertThat(original).isFile();
 					String log = buildLog(project);
 					System.out.println(log);
-					assertThat(log).contains("Building image").contains("paketo-buildpacks/builder")
+					assertThat(log).contains("Building image")
 							.contains("docker.io/library/build-image-with-repackage:0.0.1.BUILD-SNAPSHOT")
 							.contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of(ImageName.of("build-image-with-repackage"),
