@@ -83,7 +83,7 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 							.contains("docker.io/library/build-image-with-repackage:0.0.1.BUILD-SNAPSHOT")
 							.contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of(ImageName.of("build-image-with-repackage"),
-								"0.0.1.BUILD-SNAPSHOT");
+							"0.0.1.BUILD-SNAPSHOT");
 					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
 					}
