@@ -69,6 +69,31 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 	}
 
 	@TestTemplate
+	void whenBuildImageIsInvokedWithRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-with-repackage").goals("package").prepare(this::writeLongNameResource)
+				.execute((project) -> {
+					File jar = new File(project, "target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar");
+					assertThat(jar).isFile();
+					File original = new File(project,
+							"target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar.original");
+					assertThat(original).isFile();
+					String log = buildLog(project);
+					System.out.println(log);
+					assertThat(log).contains("Building image").contains("paketo-buildpacks/builder")
+							.contains("docker.io/library/build-image-with-repackage:0.0.1.BUILD-SNAPSHOT")
+							.contains("Successfully built image");
+					ImageReference imageReference = ImageReference.of(ImageName.of("build-image-with-repackage"),
+							"0.0.1.BUILD-SNAPSHOT");
+					try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+						container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+					}
+					finally {
+						removeImage(imageReference);
+					}
+				});
+	}
+
+	@TestTemplate
 	void whenBuildImageIsInvokedWithCustomImageName(MavenBuild mavenBuild) {
 		mavenBuild.project("build-image-custom-name").goals("package")
 				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
