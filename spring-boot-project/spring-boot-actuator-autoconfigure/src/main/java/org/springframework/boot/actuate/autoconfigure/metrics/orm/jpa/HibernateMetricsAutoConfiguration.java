@@ -23,8 +23,8 @@ import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceException;
 
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.jpa.HibernateMetrics;
 import org.hibernate.SessionFactory;
+import org.hibernate.stat.HibernateMetrics;
 
 import org.springframework.beans.factory.SmartInitializingSingleton;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
