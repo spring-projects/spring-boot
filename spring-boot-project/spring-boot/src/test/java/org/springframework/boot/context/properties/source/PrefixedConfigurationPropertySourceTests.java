@@ -76,6 +76,20 @@ class PrefixedConfigurationPropertySourceTests {
 				.isEqualTo(ConfigurationPropertyState.ABSENT);
 	}
 
+	@Test
+	void withPrefixWhenPrefixIsNullReturnsOriginalSource() {
+		ConfigurationPropertySource source = new MockConfigurationPropertySource().nonIterable();
+		ConfigurationPropertySource prefixed = source.withPrefix(null);
+		assertThat(prefixed).isSameAs(source);
+	}
+
+	@Test
+	void withPrefixWhenPrefixIsEmptyReturnsOriginalSource() {
+		ConfigurationPropertySource source = new MockConfigurationPropertySource().nonIterable();
+		ConfigurationPropertySource prefixed = source.withPrefix("");
+		assertThat(prefixed).isSameAs(source);
+	}
+
 	private ConfigurationPropertyName getName(ConfigurationPropertySource source, String name) {
 		ConfigurationProperty property = source.getConfigurationProperty(ConfigurationPropertyName.of(name));
 		return (property != null) ? property.getName() : null;

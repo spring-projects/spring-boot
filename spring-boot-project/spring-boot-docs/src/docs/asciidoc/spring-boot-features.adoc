@@ -993,6 +993,7 @@ The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFacto
 You can also use the `YamlPropertySourceLoader` class if you want to load YAML as a Spring `PropertySource`.
 
 
+
 [[boot-features-external-config-random-values]]
 === Configuring Random Values
 The `RandomValuePropertySource` is useful for injecting random values (for example, into secrets or test cases).
@@ -1013,13 +1014,15 @@ The `+random.int*+` syntax is `OPEN value (,max) CLOSE` where the `OPEN,CLOSE` a
 If `max` is provided, then `value` is the minimum value and `max` is the maximum value (exclusive).
 
 
+
 [[boot-features-external-config-system-environment]]
 === Configuring System Environment Properties
 Spring Boot supports setting a prefix for environment properties.
 This is useful if the system environment is shared by multiple Spring Boot applications with different configuration requirements.
 The prefix for system environment properties can be set directly on `SpringApplication`.
 
-For example, if you set the prefix to `input`, a property such as `foo.bar` will also be resolved as `input.foo.bar` in the system environment.
+For example, if you set the prefix to `input`, a property such as `remote.timeout` will also be resolved as `input.remote.timeout` in the system environment.
+
 
 
 [[boot-features-external-config-typesafe-configuration-properties]]

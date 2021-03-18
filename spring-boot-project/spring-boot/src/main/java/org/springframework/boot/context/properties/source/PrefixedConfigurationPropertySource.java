@@ -17,7 +17,6 @@
 package org.springframework.boot.context.properties.source;
 
 import org.springframework.util.Assert;
-import org.springframework.util.StringUtils;
 
 /**
  * A {@link ConfigurationPropertySource} supporting a prefix.
@@ -28,13 +27,17 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 
 	private final ConfigurationPropertySource source;
 
-	private final String prefix;
+	private final ConfigurationPropertyName prefix;
 
 	PrefixedConfigurationPropertySource(ConfigurationPropertySource source, String prefix) {
 		Assert.notNull(source, "Source must not be null");
-		Assert.notNull(prefix, "Prefix must not be null");
+		Assert.hasText(prefix, "Prefix must not be empty");
 		this.source = source;
-		this.prefix = prefix;
+		this.prefix = ConfigurationPropertyName.of(prefix);
+	}
+
+	protected final ConfigurationPropertyName getPrefix() {
+		return this.prefix;
 	}
 
 	@Override
@@ -47,11 +50,7 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 	}
 
 	private ConfigurationPropertyName getPrefixedName(ConfigurationPropertyName name) {
-		if (!StringUtils.hasText(this.prefix)) {
-			return name;
-		}
-		String prefix = this.prefix + ".";
-		return ConfigurationPropertyName.of(prefix + name);
+		return this.prefix.append(name);
 	}
 
 	@Override
@@ -66,10 +65,6 @@ class PrefixedConfigurationPropertySource implements ConfigurationPropertySource
 
 	protected ConfigurationPropertySource getSource() {
 		return this.source;
-	}
-
-	protected String getPrefix() {
-		return this.prefix;
 	}
 
 }

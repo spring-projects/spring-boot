@@ -18,8 +18,6 @@ package org.springframework.boot.context.properties.source;
 
 import java.util.stream.Stream;
 
-import org.springframework.util.StringUtils;
-
 /**
  * An iterable {@link PrefixedConfigurationPropertySource}.
  *
@@ -34,17 +32,11 @@ class PrefixedIterableConfigurationPropertySource extends PrefixedConfigurationP
 
 	@Override
 	public Stream<ConfigurationPropertyName> stream() {
-		if (!StringUtils.hasText(getPrefix())) {
-			return getSource().stream();
-		}
-		ConfigurationPropertyName prefix = ConfigurationPropertyName.of(getPrefix());
-		return getSource().stream().map((propertyName) -> {
-			if (prefix.isAncestorOf(propertyName)) {
-				String name = propertyName.toString();
-				return ConfigurationPropertyName.of(name.substring(getPrefix().length() + 1));
-			}
-			return propertyName;
-		});
+		return getSource().stream().map(this::stripPrefix);
+	}
+
+	private ConfigurationPropertyName stripPrefix(ConfigurationPropertyName name) {
+		return (getPrefix().isAncestorOf(name)) ? name.subName(getPrefix().getNumberOfElements()) : name;
 	}
 
 	@Override

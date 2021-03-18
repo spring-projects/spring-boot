@@ -364,9 +364,8 @@ public class SpringApplication {
 		listeners.environmentPrepared(bootstrapContext, environment);
 		DefaultPropertiesPropertySource.moveToEnd(environment);
 		configureAdditionalProfiles(environment);
-		if (environment.getProperty("spring.main.environment-prefix") != null) {
-			throw new IllegalStateException("Environment prefix cannot be set via properties.");
-		}
+		Assert.state(!environment.containsProperty("spring.main.environment-prefix"),
+				"Environment prefix cannot be set via properties.");
 		bindToSpringApplication(environment);
 		if (!this.isCustomEnvironment) {
 			environment = new EnvironmentConverter(getClassLoader()).convertEnvironmentIfNecessary(environment,
@@ -1181,10 +1180,22 @@ public class SpringApplication {
 		this.resourceLoader = resourceLoader;
 	}
 
+	/**
+	 * Return a prefix that should be applied when obtaining configuration properties from
+	 * the system environment.
+	 * @return the environment property prefix
+	 * @since 2.5.0
+	 */
 	public String getEnvironmentPrefix() {
 		return this.environmentPrefix;
 	}
 
+	/**
+	 * Set the prefix that should be applied when obtaining configuration properties from
+	 * the system environment.
+	 * @param environmentPrefix the environment property prefix to set
+	 * @since 2.5.0
+	 */
 	public void setEnvironmentPrefix(String environmentPrefix) {
 		this.environmentPrefix = environmentPrefix;
 	}
