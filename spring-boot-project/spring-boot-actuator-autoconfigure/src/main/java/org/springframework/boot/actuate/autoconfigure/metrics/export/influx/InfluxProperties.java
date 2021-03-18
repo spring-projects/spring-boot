@@ -55,26 +55,26 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	/**
 	 * Retention policy to use (Influx writes to the DEFAULT retention policy if one is
-	 * not specified).
+	 * not specified). InfluxDB v1 only.
 	 */
 	private String retentionPolicy;
 
 	/**
 	 * Time period for which Influx should retain data in the current database. For
 	 * instance 7d, check the influx documentation for more details on the duration
-	 * format.
+	 * format. InfluxDB v1 only.
 	 */
 	private String retentionDuration;
 
 	/**
 	 * How many copies of the data are stored in the cluster. Must be 1 for a single node
-	 * instance.
+	 * instance. InfluxDB v1 only.
 	 */
 	private Integer retentionReplicationFactor;
 
 	/**
 	 * Time range covered by a shard group. For instance 2w, check the influx
-	 * documentation for more details on the duration format.
+	 * documentation for more details on the duration format. InfluxDB v1 only.
 	 */
 	private String retentionShardDuration;
 
