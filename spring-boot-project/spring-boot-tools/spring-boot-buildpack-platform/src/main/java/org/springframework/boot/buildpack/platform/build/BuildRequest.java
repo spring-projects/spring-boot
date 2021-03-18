@@ -211,6 +211,7 @@ public class BuildRequest {
 	 * Return a new {@link BuildRequest} with an updated buildpacks setting.
 	 * @param buildpacks a collection of buildpacks to use when building the image
 	 * @return an updated build request
+	 * @since 2.5.0
 	 */
 	public BuildRequest withBuildpacks(BuildpackReference... buildpacks) {
 		Assert.notEmpty(buildpacks, "Buildpacks must not be empty");
@@ -221,6 +222,7 @@ public class BuildRequest {
 	 * Return a new {@link BuildRequest} with an updated buildpacks setting.
 	 * @param buildpacks a collection of buildpacks to use when building the image
 	 * @return an updated build request
+	 * @since 2.5.0
 	 */
 	public BuildRequest withBuildpacks(List<BuildpackReference> buildpacks) {
 		Assert.notNull(buildpacks, "Buildpacks must not be null");
@@ -232,6 +234,7 @@ public class BuildRequest {
 	 * Return a new {@link BuildRequest} with updated bindings.
 	 * @param bindings a collection of bindings to mount to the build container
 	 * @return an updated build request
+	 * @since 2.5.0
 	 */
 	public BuildRequest withBindings(Binding... bindings) {
 		Assert.notEmpty(bindings, "Bindings must not be empty");
@@ -242,6 +245,7 @@ public class BuildRequest {
 	 * Return a new {@link BuildRequest} with updated bindings.
 	 * @param bindings a collection of bindings to mount to the build container
 	 * @return an updated build request
+	 * @since 2.5.0
 	 */
 	public BuildRequest withBindings(List<Binding> bindings) {
 		Assert.notNull(bindings, "Bindings must not be null");
@@ -343,6 +347,7 @@ public class BuildRequest {
 	/**
 	 * Return the collection of bindings to mount to the build container.
 	 * @return the bindings
+	 * @since 2.5.0
 	 */
 	public List<Binding> getBindings() {
 		return this.bindings;

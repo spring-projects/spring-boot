@@ -31,6 +31,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -182,11 +183,11 @@ public class Image {
 		if (this.publish != null) {
 			request = request.withPublish(this.publish);
 		}
-		if (this.buildpacks != null && !this.buildpacks.isEmpty()) {
+		if (!CollectionUtils.isEmpty(this.buildpacks)) {
 			request = request
 					.withBuildpacks(this.buildpacks.stream().map(BuildpackReference::of).collect(Collectors.toList()));
 		}
-		if (this.bindings != null && !this.bindings.isEmpty()) {
+		if (!CollectionUtils.isEmpty(this.bindings)) {
 			request = request.withBindings(this.bindings.stream().map(Binding::of).collect(Collectors.toList()));
 		}
 		return request;

@@ -31,7 +31,7 @@ class BindingTests {
 	@Test
 	void ofReturnsValue() {
 		Binding binding = Binding.of("host-src:container-dest:ro");
-		assertThat(binding.getValue()).isEqualTo("host-src:container-dest:ro");
+		assertThat(binding).hasToString("host-src:container-dest:ro");
 	}
 
 	@Test
@@ -43,7 +43,7 @@ class BindingTests {
 	@Test
 	void fromReturnsValue() {
 		Binding binding = Binding.from("host-src", "container-dest");
-		assertThat(binding.getValue()).isEqualTo("host-src:container-dest");
+		assertThat(binding).hasToString("host-src:container-dest");
 	}
 
 	@Test
@@ -61,7 +61,7 @@ class BindingTests {
 	@Test
 	void fromVolumeNameSourceReturnsValue() {
 		Binding binding = Binding.from(VolumeName.of("host-src"), "container-dest");
-		assertThat(binding.getValue()).isEqualTo("host-src:container-dest");
+		assertThat(binding).hasToString("host-src:container-dest");
 	}
 
 	@Test

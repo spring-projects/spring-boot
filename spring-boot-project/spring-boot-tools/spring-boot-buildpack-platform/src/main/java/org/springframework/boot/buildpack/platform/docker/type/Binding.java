@@ -34,7 +34,25 @@ public final class Binding {
 		this.value = value;
 	}
 
-	public String getValue() {
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj) {
+			return true;
+		}
+		if (!(obj instanceof Binding)) {
+			return false;
+		}
+		Binding binding = (Binding) obj;
+		return Objects.equals(this.value, binding.value);
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.value);
+	}
+
+	@Override
+	public String toString() {
 		return this.value;
 	}
 
@@ -70,28 +88,6 @@ public final class Binding {
 		Assert.notNull(source, "Source must not be null");
 		Assert.notNull(destination, "Destination must not be null");
 		return new Binding(source + ":" + destination);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj) {
-			return true;
-		}
-		if (!(obj instanceof Binding)) {
-			return false;
-		}
-		Binding binding = (Binding) obj;
-		return Objects.equals(this.value, binding.value);
-	}
-
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.value);
-	}
-
-	@Override
-	public String toString() {
-		return this.value;
 	}
 
 }

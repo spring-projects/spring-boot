@@ -65,7 +65,7 @@ public class ContainerConfig {
 		labels.forEach(labelsNode::put);
 		ObjectNode hostConfigNode = node.putObject("HostConfig");
 		ArrayNode bindsNode = hostConfigNode.putArray("Binds");
-		bindings.forEach((binding) -> bindsNode.add(binding.getValue()));
+		bindings.forEach((binding) -> bindsNode.add(binding.toString()));
 		this.json = objectMapper.writeValueAsString(node);
 	}
 
