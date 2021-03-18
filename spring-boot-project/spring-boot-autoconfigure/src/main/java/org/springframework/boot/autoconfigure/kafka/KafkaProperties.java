@@ -1264,7 +1264,7 @@ public class KafkaProperties {
 		/**
 		 * Cleanup the application’s local state directory on shutdown.
 		 */
-		private boolean onShutdown = false;
+		private boolean onShutdown = true;
 
 		public boolean isOnStartup() {
 			return this.onStartup;
