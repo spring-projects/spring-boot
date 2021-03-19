@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.util.CollectionUtils;
+import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 /**
@@ -29,17 +30,17 @@ import org.springframework.util.MimeTypeUtils;
  * @author Phillip Webb
  * @since 2.2.0
  */
-public enum ApiVersion {
+public enum ApiVersion implements Producible<ApiVersion> {
 
 	/**
 	 * Version 2 (supported by Spring Boot 2.0+).
 	 */
-	V2,
+	V2(ActuatorMediaType.V2_JSON),
 
 	/**
 	 * Version 3 (supported by Spring Boot 2.2+).
 	 */
-	V3;
+	V3(ActuatorMediaType.V3_JSON);
 
 	private static final String MEDIA_TYPE_PREFIX = "application/vnd.spring-boot.actuator.";
 
@@ -85,6 +86,17 @@ public enum ApiVersion {
 		int existingOrdinal = (existing != null) ? existing.ordinal() : -1;
 		int candidateOrdinal = (candidate != null) ? candidate.ordinal() : -1;
 		return (candidateOrdinal > existingOrdinal) ? candidate : existing;
+	}
+
+	private final MimeType mimeType;
+
+	ApiVersion(String mimeType) {
+		this.mimeType = MimeTypeUtils.parseMimeType(mimeType);
+	}
+
+	@Override
+	public MimeType getMimeType() {
+		return this.mimeType;
 	}
 
 }

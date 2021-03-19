@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -43,7 +44,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
+import org.springframework.boot.actuate.endpoint.http.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -151,9 +152,9 @@ public class JerseyEndpointResourceFactory {
 			arguments.putAll(extractPathParameters(data));
 			arguments.putAll(extractQueryParameters(data));
 			try {
-				ApiVersion apiVersion = ApiVersion.fromHttpHeaders(data.getHeaders());
 				JerseySecurityContext securityContext = new JerseySecurityContext(data.getSecurityContext());
-				InvocationContext invocationContext = new InvocationContext(apiVersion, securityContext, arguments);
+				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
+						Arrays.asList(new ProducibleOperationArgumentResolver(data.getHeaders())));
 				Object response = this.operation.invoke(invocationContext);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}
@@ -215,6 +216,7 @@ public class JerseyEndpointResourceFactory {
 				}
 				WebEndpointResponse<?> webEndpointResponse = (WebEndpointResponse<?>) response;
 				return Response.status(webEndpointResponse.getStatus())
+						.header("Content-Type", webEndpointResponse.getContentType())
 						.entity(convertIfNecessary(webEndpointResponse.getBody())).build();
 			}
 			catch (IOException ex) {

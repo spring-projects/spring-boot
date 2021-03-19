@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -79,6 +79,12 @@ class ApiVersionTests {
 	@Test
 	void fromHttpHeadersWhenHasUnknownVersionReturnsLatest() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("application/vnd.spring-boot.actuator.v200"));
+		assertThat(version).isEqualTo(ApiVersion.V3);
+	}
+
+	@Test
+	void fromHttpHeadersWhenAcceptsEverythingReturnsLatest() {
+		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("*/*"));
 		assertThat(version).isEqualTo(ApiVersion.V3);
 	}
 

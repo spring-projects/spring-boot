@@ -79,7 +79,8 @@ public class CachingOperationInvoker implements OperationInvoker {
 		}
 		long accessTime = System.currentTimeMillis();
 		ApiVersion contextApiVersion = context.getApiVersion();
-		CacheKey cacheKey = new CacheKey(contextApiVersion, context.getSecurityContext().getPrincipal());
+		Principal principal = context.resolveArgument(Principal.class);
+		CacheKey cacheKey = new CacheKey(contextApiVersion, principal);
 		CachedResponse cached = this.cachedResponses.get(cacheKey);
 		if (cached == null || cached.isStale(accessTime, this.timeToLive)) {
 			Object response = this.invoker.invoke(context);

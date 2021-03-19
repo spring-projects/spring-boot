@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
+import org.springframework.boot.actuate.endpoint.http.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -44,6 +44,7 @@ import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicat
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
@@ -284,9 +285,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
-				ApiVersion apiVersion = ApiVersion.fromHttpHeaders(headers);
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
-				InvocationContext invocationContext = new InvocationContext(apiVersion, securityContext, arguments);
+				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
+						Arrays.asList(new ProducibleOperationArgumentResolver(headers)));
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
@@ -352,7 +353,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				return result;
 			}
 			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
-			return ResponseEntity.status(response.getStatus()).body(response.getBody());
+			MediaType contentType = (response.getContentType() != null) ? new MediaType(response.getContentType())
+					: null;
+			return ResponseEntity.status(response.getStatus()).contentType(contentType).body(response.getBody());
 		}
 
 	}
