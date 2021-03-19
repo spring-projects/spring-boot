@@ -16,39 +16,60 @@
 
 package org.springframework.boot.actuate.metrics.export.prometheus;
 
+import java.io.IOException;
+import java.io.Writer;
+import java.util.Enumeration;
+
+import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.exporter.common.TextFormat;
 
-import org.springframework.boot.actuate.endpoint.http.Producible;
+import org.springframework.boot.actuate.endpoint.annotation.Producible;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
 /**
- * A {@link Producible} for Prometheus's {@link TextFormat}.
+ * A {@link Producible} enum for supported Prometheus {@link TextFormat}.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
  */
-public enum ProducibleTextFormat implements Producible<ProducibleTextFormat> {
+public enum TextOutputFormat implements Producible<TextOutputFormat> {
 
 	/**
 	 * Openmetrics text version 1.0.0.
 	 */
-	CONTENT_TYPE_OPENMETRICS_100(TextFormat.CONTENT_TYPE_OPENMETRICS_100),
+	CONTENT_TYPE_OPENMETRICS_100(TextFormat.CONTENT_TYPE_OPENMETRICS_100) {
+
+		@Override
+		void write(Writer writer, Enumeration<MetricFamilySamples> samples) throws IOException {
+			TextFormat.writeOpenMetrics100(writer, samples);
+		}
+
+	},
 
 	/**
 	 * Prometheus text version 0.0.4.
 	 */
-	CONTENT_TYPE_004(TextFormat.CONTENT_TYPE_004);
+	CONTENT_TYPE_004(TextFormat.CONTENT_TYPE_004) {
+
+		@Override
+		void write(Writer writer, Enumeration<MetricFamilySamples> samples) throws IOException {
+			TextFormat.write004(writer, samples);
+		}
+
+	};
 
 	private final MimeType mimeType;
 
-	ProducibleTextFormat(String mimeType) {
+	TextOutputFormat(String mimeType) {
 		this.mimeType = MimeTypeUtils.parseMimeType(mimeType);
 	}
 
 	@Override
-	public MimeType getMimeType() {
+	public MimeType getProducedMimeType() {
 		return this.mimeType;
 	}
+
+	abstract void write(Writer writer, Enumeration<MetricFamilySamples> samples) throws IOException;
 
 }

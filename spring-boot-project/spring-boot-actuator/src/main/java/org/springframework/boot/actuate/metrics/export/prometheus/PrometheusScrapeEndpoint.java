@@ -24,14 +24,12 @@ import java.util.Set;
 
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.common.TextFormat;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.lang.Nullable;
-import org.springframework.util.MimeType;
 
 /**
  * {@link Endpoint @Endpoint} that outputs metrics in a format that can be scraped by the
@@ -50,30 +48,19 @@ public class PrometheusScrapeEndpoint {
 		this.collectorRegistry = collectorRegistry;
 	}
 
-	@ReadOperation(produces = { TextFormat.CONTENT_TYPE_004, TextFormat.CONTENT_TYPE_OPENMETRICS_100 })
-	public WebEndpointResponse<String> scrape(ProducibleTextFormat producibleTextFormat,
-			@Nullable Set<String> includedNames) {
+	@ReadOperation(producesFrom = TextOutputFormat.class)
+	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
 			Writer writer = new StringWriter();
 			Enumeration<MetricFamilySamples> samples = (includedNames != null)
 					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
 					: this.collectorRegistry.metricFamilySamples();
-			MimeType contentType = producibleTextFormat.getMimeType();
-			if (producibleTextFormat == ProducibleTextFormat.CONTENT_TYPE_004) {
-				TextFormat.write004(writer, samples);
-			}
-			else if (producibleTextFormat == ProducibleTextFormat.CONTENT_TYPE_OPENMETRICS_100) {
-				TextFormat.writeOpenMetrics100(writer, samples);
-			}
-			else {
-				throw new RuntimeException("Unsupported text format '" + producibleTextFormat.getMimeType() + "'");
-			}
-			return new WebEndpointResponse<>(writer.toString(), contentType);
+			format.write(writer, samples);
+			return new WebEndpointResponse<>(writer.toString(), format);
 		}
 		catch (IOException ex) {
-			// This actually never happens since StringWriter::write() doesn't throw any
-			// IOException
-			throw new RuntimeException("Writing metrics failed", ex);
+			// This actually never happens since StringWriter doesn't throw an IOException
+			throw new IllegalStateException("Writing metrics failed", ex);
 		}
 	}
 
