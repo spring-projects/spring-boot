@@ -70,16 +70,15 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 
 	@TestTemplate
 	void whenBuildImageIsInvokedWithRepackageTheExistingArchiveIsUsed(MavenBuild mavenBuild) {
-		mavenBuild.project("build-image-with-repackage").goals("package").prepare(this::writeLongNameResource)
-				.execute((project) -> {
+		mavenBuild.project("build-image-with-repackage").goals("package")
+				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
+				.prepare(this::writeLongNameResource).execute((project) -> {
 					File jar = new File(project, "target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar");
 					assertThat(jar).isFile();
 					File original = new File(project,
 							"target/build-image-with-repackage-0.0.1.BUILD-SNAPSHOT.jar.original");
 					assertThat(original).isFile();
-					String log = buildLog(project);
-					System.out.println(log);
-					assertThat(log).contains("Building image")
+					assertThat(buildLog(project)).contains("Building image")
 							.contains("docker.io/library/build-image-with-repackage:0.0.1.BUILD-SNAPSHOT")
 							.contains("Successfully built image");
 					ImageReference imageReference = ImageReference.of(ImageName.of("build-image-with-repackage"),
@@ -246,6 +245,13 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 				.systemProperty("spring-boot.build-image.pullPolicy", "IF_NOT_PRESENT")
 				.executeAndFail((project) -> assertThat(buildLog(project))
 						.contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder"));
+	}
+
+	@TestTemplate
+	void failsWhenFinalNameIsMisconfigured(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-final-name").goals("package")
+				.executeAndFail((project) -> assertThat(buildLog(project)).contains("final-name.jar.original")
+						.contains("is required for building an image"));
 	}
 
 	private void writeLongNameResource(File project) {

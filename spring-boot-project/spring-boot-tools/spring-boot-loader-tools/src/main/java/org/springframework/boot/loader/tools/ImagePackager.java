@@ -28,6 +28,7 @@ import org.springframework.util.Assert;
  * Utility class that can be used to export a fully packaged archive to an OCI image.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  * @since 2.3.0
  */
 public class ImagePackager extends Packager {
@@ -38,10 +39,14 @@ public class ImagePackager extends Packager {
 	 */
 	public ImagePackager(File source) {
 		super(source, null);
+		if (isAlreadyPackaged()) {
+			Assert.isTrue(getBackupFile().exists() && getBackupFile().isFile(),
+					"Original source '" + getBackupFile() + "' is required for building an image");
+		}
 	}
 
 	/**
-	 * Create an packaged image.
+	 * Create a packaged image.
 	 * @param libraries the contained libraries
 	 * @param exporter the exporter used to write the image
 	 * @throws IOException on IO error
@@ -52,8 +57,8 @@ public class ImagePackager extends Packager {
 
 	private void packageImage(Libraries libraries, AbstractJarWriter writer) throws IOException {
 		File source = isAlreadyPackaged() ? getBackupFile() : getSource();
-		Assert.state(source.exists() && source.isFile(), () -> "Unable to read jar file " + source);
-		Assert.state(!isAlreadyPackaged(source), () -> "Repackaged jar file " + source + " cannot be exported");
+		Assert.state(!isAlreadyPackaged(source),
+				() -> "Repackaged archive file " + source + " cannot be used to build an image");
 		try (JarFile sourceJar = new JarFile(source)) {
 			write(sourceJar, libraries, writer);
 		}
