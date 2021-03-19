@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -186,7 +186,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	private BuildRequest getBuildRequest(Libraries libraries) throws MojoExecutionException {
-		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries);
+		ImagePackager imagePackager = new ImagePackager(getJarFile());
+		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries, imagePackager);
 		Image image = (this.image != null) ? this.image : new Image();
 		if (image.name == null && this.imageName != null) {
 			image.setName(this.imageName);
@@ -217,8 +218,8 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 				|| this.docker.getPublishRegistry().isEmpty();
 	}
 
-	private TarArchive getApplicationContent(Owner owner, Libraries libraries) {
-		ImagePackager packager = getConfiguredPackager(() -> new ImagePackager(getJarFile()));
+	private TarArchive getApplicationContent(Owner owner, Libraries libraries, ImagePackager imagePackager) {
+		ImagePackager packager = getConfiguredPackager(() -> imagePackager);
 		return new PackagedTarArchive(owner, libraries, packager);
 	}
 
