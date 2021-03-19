@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -154,7 +153,7 @@ public class JerseyEndpointResourceFactory {
 			try {
 				JerseySecurityContext securityContext = new JerseySecurityContext(data.getSecurityContext());
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						Arrays.asList(new ProducibleOperationArgumentResolver(data.getHeaders())));
+						new ProducibleOperationArgumentResolver(data.getHeaders()));
 				Object response = this.operation.invoke(invocationContext);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}

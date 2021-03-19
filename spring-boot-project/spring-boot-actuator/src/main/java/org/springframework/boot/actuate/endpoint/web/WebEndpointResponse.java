@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import org.springframework.boot.actuate.endpoint.annotation.Producible;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
 import org.springframework.util.MimeType;
 
@@ -96,6 +97,17 @@ public final class WebEndpointResponse<T> {
 	 */
 	public WebEndpointResponse(T body) {
 		this(body, STATUS_OK);
+	}
+
+	/**
+	 * Creates a new {@code WebEndpointResponse} with the given body and content type and
+	 * a 200 (OK) status.
+	 * @param body the body
+	 * @param producible the producible providing the content type
+	 * @since 2.5.0
+	 */
+	public WebEndpointResponse(T body, Producible<?> producible) {
+		this(body, STATUS_OK, producible.getProducedMimeType());
 	}
 
 	/**

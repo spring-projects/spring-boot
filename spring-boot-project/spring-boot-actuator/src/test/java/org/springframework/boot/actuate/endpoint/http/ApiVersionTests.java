@@ -39,24 +39,28 @@ class ApiVersionTests {
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenEmptyReturnsLatest() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(Collections.emptyMap());
 		assertThat(version).isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasSingleV2HeaderReturnsV2() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader(ActuatorMediaType.V2_JSON));
 		assertThat(version).isEqualTo(ApiVersion.V2);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasSingleV3HeaderReturnsV3() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader(ActuatorMediaType.V3_JSON));
 		assertThat(version).isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasV2AndV3HeaderReturnsV3() {
 		ApiVersion version = ApiVersion
 				.fromHttpHeaders(acceptHeader(ActuatorMediaType.V2_JSON, ActuatorMediaType.V3_JSON));
@@ -64,6 +68,7 @@ class ApiVersionTests {
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasV2AndV3AsOneHeaderReturnsV3() {
 		ApiVersion version = ApiVersion
 				.fromHttpHeaders(acceptHeader(ActuatorMediaType.V2_JSON + "," + ActuatorMediaType.V3_JSON));
@@ -71,18 +76,21 @@ class ApiVersionTests {
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasSingleHeaderWithoutJsonReturnsHeader() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("application/vnd.spring-boot.actuator.v2"));
 		assertThat(version).isEqualTo(ApiVersion.V2);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenHasUnknownVersionReturnsLatest() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("application/vnd.spring-boot.actuator.v200"));
 		assertThat(version).isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
+	@Deprecated
 	void fromHttpHeadersWhenAcceptsEverythingReturnsLatest() {
 		ApiVersion version = ApiVersion.fromHttpHeaders(acceptHeader("*/*"));
 		assertThat(version).isEqualTo(ApiVersion.V3);

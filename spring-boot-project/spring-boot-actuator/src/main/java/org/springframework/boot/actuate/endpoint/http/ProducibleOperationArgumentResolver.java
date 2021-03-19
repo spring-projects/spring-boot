@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
+import org.springframework.boot.actuate.endpoint.annotation.Producible;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
@@ -34,10 +35,10 @@ import org.springframework.util.MimeTypeUtils;
  */
 public class ProducibleOperationArgumentResolver implements OperationArgumentResolver {
 
-	private final Map<String, List<String>> httpHeaders;
+	private final Map<String, List<String>> headers;
 
-	public ProducibleOperationArgumentResolver(Map<String, List<String>> httpHeaders) {
-		this.httpHeaders = httpHeaders;
+	public ProducibleOperationArgumentResolver(Map<String, List<String>> headers) {
+		this.headers = headers;
 	}
 
 	@Override
@@ -52,7 +53,7 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 	}
 
 	private Enum<? extends Producible<?>> resolveProducible(Class<Enum<? extends Producible<?>>> type) {
-		List<String> accepts = this.httpHeaders.get("Accept");
+		List<String> accepts = this.headers.get("Accept");
 		List<Enum<? extends Producible<?>>> values = Arrays.asList(type.getEnumConstants());
 		Collections.reverse(values);
 		if (CollectionUtils.isEmpty(accepts)) {
@@ -69,15 +70,15 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 
 	private static Enum<? extends Producible<?>> mostRecent(Enum<? extends Producible<?>> existing,
 			Enum<? extends Producible<?>> candidate) {
-		int existingOrdinal = (existing != null) ? ((Enum<?>) existing).ordinal() : -1;
-		int candidateOrdinal = (candidate != null) ? ((Enum<?>) candidate).ordinal() : -1;
+		int existingOrdinal = (existing != null) ? existing.ordinal() : -1;
+		int candidateOrdinal = (candidate != null) ? candidate.ordinal() : -1;
 		return (candidateOrdinal > existingOrdinal) ? candidate : existing;
 	}
 
 	private static Enum<? extends Producible<?>> forType(List<Enum<? extends Producible<?>>> candidates,
 			MimeType mimeType) {
 		for (Enum<? extends Producible<?>> candidate : candidates) {
-			if (mimeType.isCompatibleWith(((Producible<?>) candidate).getMimeType())) {
+			if (mimeType.isCompatibleWith(((Producible<?>) candidate).getProducedMimeType())) {
 				return candidate;
 			}
 		}

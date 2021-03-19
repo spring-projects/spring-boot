@@ -19,7 +19,6 @@ package org.springframework.boot.actuate.endpoint.web.reactive;
 import java.lang.reflect.Method;
 import java.nio.charset.StandardCharsets;
 import java.security.Principal;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.LinkedHashMap;
@@ -308,7 +307,7 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			}
 			return this.securityContextSupplier.get()
 					.map((securityContext) -> new InvocationContext(securityContext, arguments,
-							Arrays.asList(new ProducibleOperationArgumentResolver(exchange.getRequest().getHeaders()))))
+							new ProducibleOperationArgumentResolver(exchange.getRequest().getHeaders())))
 					.flatMap((invocationContext) -> handleResult((Publisher<?>) this.invoker.invoke(invocationContext),
 							exchange.getRequest().getMethod()));
 		}

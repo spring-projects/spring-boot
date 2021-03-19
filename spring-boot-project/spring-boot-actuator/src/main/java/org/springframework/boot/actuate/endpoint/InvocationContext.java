@@ -21,7 +21,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.function.Supplier;
 
 import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
@@ -58,11 +57,11 @@ public class InvocationContext {
 	 * @param arguments the arguments available to the operation. Never {@code null}
 	 * @since 2.2.0
 	 * @deprecated since 2.5.0 in favor of
-	 * {@link #InvocationContext(SecurityContext, Map, List)}
+	 * {@link #InvocationContext(SecurityContext, Map, OperationArgumentResolver[])}
 	 */
 	@Deprecated
 	public InvocationContext(ApiVersion apiVersion, SecurityContext securityContext, Map<String, Object> arguments) {
-		this(securityContext, arguments, Arrays.asList(new FixedValueArgumentResolver<>(ApiVersion.class, apiVersion)));
+		this(securityContext, arguments, OperationArgumentResolver.of(ApiVersion.class, () -> apiVersion));
 	}
 
 	/**
@@ -74,17 +73,17 @@ public class InvocationContext {
 	 * the operation.
 	 */
 	public InvocationContext(SecurityContext securityContext, Map<String, Object> arguments,
-			List<OperationArgumentResolver> argumentResolvers) {
+			OperationArgumentResolver... argumentResolvers) {
 		Assert.notNull(securityContext, "SecurityContext must not be null");
 		Assert.notNull(arguments, "Arguments must not be null");
 		this.arguments = arguments;
 		this.argumentResolvers = new ArrayList<>();
 		if (argumentResolvers != null) {
-			this.argumentResolvers.addAll(argumentResolvers);
+			this.argumentResolvers.addAll(Arrays.asList(argumentResolvers));
 		}
-		this.argumentResolvers.add(new FixedValueArgumentResolver<>(SecurityContext.class, securityContext));
-		this.argumentResolvers.add(new SuppliedValueArgumentResolver<>(Principal.class, securityContext::getPrincipal));
-		this.argumentResolvers.add(new FixedValueArgumentResolver<>(ApiVersion.class, ApiVersion.LATEST));
+		this.argumentResolvers.add(OperationArgumentResolver.of(SecurityContext.class, () -> securityContext));
+		this.argumentResolvers.add(OperationArgumentResolver.of(Principal.class, securityContext::getPrincipal));
+		this.argumentResolvers.add(OperationArgumentResolver.of(ApiVersion.class, () -> ApiVersion.LATEST));
 	}
 
 	/**
@@ -152,54 +151,6 @@ public class InvocationContext {
 			}
 		}
 		return false;
-	}
-
-	private static final class FixedValueArgumentResolver<T> implements OperationArgumentResolver {
-
-		private final Class<T> argumentType;
-
-		private final T value;
-
-		private FixedValueArgumentResolver(Class<T> argumentType, T value) {
-			this.argumentType = argumentType;
-			this.value = value;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <U> U resolve(Class<U> type) {
-			return (U) this.value;
-		}
-
-		@Override
-		public boolean canResolve(Class<?> type) {
-			return this.argumentType.equals(type);
-		}
-
-	}
-
-	private static final class SuppliedValueArgumentResolver<T> implements OperationArgumentResolver {
-
-		private final Class<T> argumentType;
-
-		private final Supplier<T> value;
-
-		private SuppliedValueArgumentResolver(Class<T> argumentType, Supplier<T> value) {
-			this.argumentType = argumentType;
-			this.value = value;
-		}
-
-		@SuppressWarnings("unchecked")
-		@Override
-		public <U> U resolve(Class<U> type) {
-			return (U) this.value.get();
-		}
-
-		@Override
-		public boolean canResolve(Class<?> type) {
-			return this.argumentType.equals(type);
-		}
-
 	}
 
 }

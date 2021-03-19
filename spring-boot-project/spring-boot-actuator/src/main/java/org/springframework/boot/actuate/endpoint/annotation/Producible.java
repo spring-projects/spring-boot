@@ -14,15 +14,23 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.http;
+package org.springframework.boot.actuate.endpoint.annotation;
 
 import org.springframework.util.MimeType;
 
 /**
- * Interface to be implemented by an {@link Enum} that can be injected into an operation
- * on a web endpoint. The value of the {@code Producible} enum is resolved using the
- * {@code Accept} header of the request. When multiple values are equally acceptable, the
- * value with the highest {@link Enum#ordinal() ordinal} is used.
+ * Interface that can be implemented by any {@link Enum} that represents a finite set of
+ * producible mime-types.
+ * <p>
+ * Can be used with {@link ReadOperation @ReadOperation},
+ * {@link WriteOperation @ReadOperation} and {@link DeleteOperation @ReadOperation}
+ * annotations to quickly define a list of {@code produces} values.
+ * <p>
+ * {@link Producible} types can also be injected into operations when the underlying
+ * technology supports content negotiation. For example, with web based endpoints, the
+ * value of the {@code Producible} enum is resolved using the {@code Accept} header of the
+ * request. When multiple values are equally acceptable, the value with the highest
+ * {@link Enum#ordinal() ordinal} is used.
  *
  * @param <E> enum type that implements this interface
  * @author Andy Wilkinson
@@ -34,6 +42,6 @@ public interface Producible<E extends Enum<E> & Producible<E>> {
 	 * Mime type that can be produced.
 	 * @return the producible mime type
 	 */
-	MimeType getMimeType();
+	MimeType getProducedMimeType();
 
 }

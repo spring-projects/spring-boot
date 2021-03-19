@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.http;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.annotation.Producible;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
@@ -49,12 +50,26 @@ public enum ApiVersion implements Producible<ApiVersion> {
 	 */
 	public static final ApiVersion LATEST = ApiVersion.V3;
 
+	private final MimeType mimeType;
+
+	ApiVersion(String mimeType) {
+		this.mimeType = MimeTypeUtils.parseMimeType(mimeType);
+	}
+
+	@Override
+	public MimeType getProducedMimeType() {
+		return this.mimeType;
+	}
+
 	/**
 	 * Return the {@link ApiVersion} to use based on the HTTP request headers. The version
 	 * will be deduced based on the {@code Accept} header.
 	 * @param headers the HTTP headers
 	 * @return the API version to use
+	 * @deprecated since 2.5.0 in favor of direct injection with resolution via the
+	 * {@link ProducibleOperationArgumentResolver}.
 	 */
+	@Deprecated
 	public static ApiVersion fromHttpHeaders(Map<String, List<String>> headers) {
 		ApiVersion version = null;
 		List<String> accepts = headers.get("Accept");
@@ -86,17 +101,6 @@ public enum ApiVersion implements Producible<ApiVersion> {
 		int existingOrdinal = (existing != null) ? existing.ordinal() : -1;
 		int candidateOrdinal = (candidate != null) ? candidate.ordinal() : -1;
 		return (candidateOrdinal > existingOrdinal) ? candidate : existing;
-	}
-
-	private final MimeType mimeType;
-
-	ApiVersion(String mimeType) {
-		this.mimeType = MimeTypeUtils.parseMimeType(mimeType);
-	}
-
-	@Override
-	public MimeType getMimeType() {
-		return this.mimeType;
 	}
 
 }

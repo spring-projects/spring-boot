@@ -18,7 +18,6 @@ package org.springframework.boot.actuate.endpoint.invoker.cache;
 
 import java.security.Principal;
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -203,9 +202,9 @@ class CachingOperationInvokerTests {
 		Object expectedV2 = new Object();
 		Object expectedV3 = new Object();
 		InvocationContext contextV2 = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
-				Arrays.asList(new ApiVersionArgumentResolver(ApiVersion.V2)));
+				new ApiVersionArgumentResolver(ApiVersion.V2));
 		InvocationContext contextV3 = new InvocationContext(mock(SecurityContext.class), Collections.emptyMap(),
-				Arrays.asList(new ApiVersionArgumentResolver(ApiVersion.V3)));
+				new ApiVersionArgumentResolver(ApiVersion.V3));
 		given(target.invoke(contextV2)).willReturn(expectedV2);
 		given(target.invoke(contextV3)).willReturn(expectedV3);
 		CachingOperationInvoker invoker = new CachingOperationInvoker(target, CACHE_TTL);

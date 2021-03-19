@@ -16,6 +16,10 @@
 
 package org.springframework.boot.actuate.endpoint;
 
+import java.util.function.Supplier;
+
+import org.springframework.util.Assert;
+
 /**
  * Resolver for an argument of an {@link Operation}.
  *
@@ -23,6 +27,14 @@ package org.springframework.boot.actuate.endpoint;
  * @since 2.5.0
  */
 public interface OperationArgumentResolver {
+
+	/**
+	 * Return whether an argument of the given {@code type} can be resolved.
+	 * @param type argument type
+	 * @return {@code true} if an argument of the required type can be resolved, otherwise
+	 * {@code false}
+	 */
+	boolean canResolve(Class<?> type);
 
 	/**
 	 * Resolves an argument of the given {@code type}.
@@ -33,11 +45,30 @@ public interface OperationArgumentResolver {
 	<T> T resolve(Class<T> type);
 
 	/**
-	 * Return whether an argument of the given {@code type} can be resolved.
-	 * @param type argument type
-	 * @return {@code true} if an argument of the required type can be resolved, otherwise
-	 * {@code false}
+	 * Factory method that creates an {@link OperationArgumentResolver} for a specific
+	 * type using a {@link Supplier}.
+	 * @param <T> the resolvable type
+	 * @param type the resolvable type
+	 * @param supplier the value supplier
+	 * @return an {@link OperationArgumentResolver} instance
 	 */
-	boolean canResolve(Class<?> type);
+	static <T> OperationArgumentResolver of(Class<T> type, Supplier<? extends T> supplier) {
+		Assert.notNull(type, "Type must not be null");
+		Assert.notNull(supplier, "Supplier must not be null");
+		return new OperationArgumentResolver() {
+
+			@Override
+			public boolean canResolve(Class<?> actualType) {
+				return actualType.equals(type);
+			}
+
+			@Override
+			@SuppressWarnings("unchecked")
+			public <R> R resolve(Class<R> argumentType) {
+				return (R) supplier.get();
+			}
+
+		};
+	}
 
 }
