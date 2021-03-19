@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -56,8 +57,8 @@ class WebServerManager {
 				.publishEvent(new ReactiveWebServerInitializedEvent(this.webServer, this.applicationContext));
 	}
 
-	void shutDownGracefully(Runnable callback) {
-		this.webServer.shutDownGracefully((result) -> callback.run());
+	void shutDownGracefully(GracefulShutdownCallback callback) {
+		this.webServer.shutDownGracefully(callback);
 	}
 
 	void stop() {

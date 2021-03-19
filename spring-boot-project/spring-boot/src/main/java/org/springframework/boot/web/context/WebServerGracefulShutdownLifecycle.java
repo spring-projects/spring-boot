@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,25 +14,36 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.reactive.context;
+package org.springframework.boot.web.context;
 
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.context.SmartLifecycle;
 
 /**
- * {@link SmartLifecycle} to trigger {@link WebServer} graceful shutdown in a
- * {@link ReactiveWebServerApplicationContext}.
+ * {@link SmartLifecycle} to trigger {@link WebServer} graceful shutdown.
  *
  * @author Andy Wilkinson
+ * @since 2.5.0
  */
-class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
+public final class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
 
-	private final WebServerManager serverManager;
+	/**
+	 * {@link SmartLifecycle#getPhase() SmartLifecycle phase} in which graceful shutdown
+	 * of the web server is performed.
+	 */
+	public static final int SMART_LIFECYCLE_PHASE = SmartLifecycle.DEFAULT_PHASE;
+
+	private final WebServer webServer;
 
 	private volatile boolean running;
 
-	WebServerGracefulShutdownLifecycle(WebServerManager serverManager) {
-		this.serverManager = serverManager;
+	/**
+	 * Creates a new {@code WebServerGracefulShutdownLifecycle} that will gracefully shut
+	 * down the given {@code webServer}.
+	 * @param webServer web server to shut down gracefully
+	 */
+	public WebServerGracefulShutdownLifecycle(WebServer webServer) {
+		this.webServer = webServer;
 	}
 
 	@Override
@@ -48,12 +59,17 @@ class WebServerGracefulShutdownLifecycle implements SmartLifecycle {
 	@Override
 	public void stop(Runnable callback) {
 		this.running = false;
-		this.serverManager.shutDownGracefully(callback);
+		this.webServer.shutDownGracefully((result) -> callback.run());
 	}
 
 	@Override
 	public boolean isRunning() {
 		return this.running;
+	}
+
+	@Override
+	public int getPhase() {
+		return SMART_LIFECYCLE_PHASE;
 	}
 
 }
