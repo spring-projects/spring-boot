@@ -16,18 +16,17 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
-import static org.mockito.Mockito.mock;
-
 import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
 import javax.management.MBeanServer;
 
+import io.rsocket.transport.ClientTransport;
+import io.rsocket.transport.netty.client.TcpClientTransport;
 import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.Test;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -75,9 +74,9 @@ import org.springframework.messaging.Message;
 import org.springframework.messaging.rsocket.annotation.support.RSocketMessageHandler;
 import org.springframework.scheduling.TaskScheduler;
 
-import io.rsocket.transport.ClientTransport;
-import io.rsocket.transport.netty.client.TcpClientTransport;
-import reactor.core.publisher.Mono;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link IntegrationAutoConfiguration}.
