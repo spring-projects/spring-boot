@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,11 +40,19 @@ import static org.assertj.core.api.Assertions.assertThat;
 class PrometheusScrapeEndpointIntegrationTests {
 
 	@WebEndpointTest
-	void scrapeHasContentTypeText004(WebTestClient client) {
+	void scrapeHasContentTypeText004ByDefault(WebTestClient client) {
 		client.get().uri("/actuator/prometheus").exchange().expectStatus().isOk().expectHeader()
 				.contentType(MediaType.parseMediaType(TextFormat.CONTENT_TYPE_004)).expectBody(String.class)
 				.value((body) -> assertThat(body).contains("counter1_total").contains("counter2_total")
 						.contains("counter3_total"));
+	}
+
+	@WebEndpointTest
+	void scrapeCanProduceOpenMetrics100(WebTestClient client) {
+		MediaType openMetrics = MediaType.parseMediaType(TextFormat.CONTENT_TYPE_OPENMETRICS_100);
+		client.get().uri("/actuator/prometheus").accept(openMetrics).exchange().expectStatus().isOk().expectHeader()
+				.contentType(openMetrics).expectBody(String.class).value((body) -> assertThat(body)
+						.contains("counter1_total").contains("counter2_total").contains("counter3_total"));
 	}
 
 	@WebEndpointTest
