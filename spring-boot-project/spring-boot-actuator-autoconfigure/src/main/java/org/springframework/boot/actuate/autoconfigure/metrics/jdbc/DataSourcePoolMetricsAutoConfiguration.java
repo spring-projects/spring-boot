@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -41,10 +42,12 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceUnwrapper;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.log.LogMessage;
+import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 import org.springframework.util.StringUtils;
 
 /**
@@ -52,6 +55,7 @@ import org.springframework.util.StringUtils;
  * {@link DataSource datasources}.
  *
  * @author Stephane Nicoll
+ * @author Chris Bono
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -59,6 +63,7 @@ import org.springframework.util.StringUtils;
 		SimpleMetricsExportAutoConfiguration.class })
 @ConditionalOnClass({ DataSource.class, MeterRegistry.class })
 @ConditionalOnBean({ DataSource.class, MeterRegistry.class })
+@EnableConfigurationProperties(DataSourcePoolMetricsProperties.class)
 public class DataSourcePoolMetricsAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
@@ -69,10 +74,31 @@ public class DataSourcePoolMetricsAutoConfiguration {
 
 		@Autowired
 		void bindDataSourcesToRegistry(Map<String, DataSource> dataSources, MeterRegistry registry,
-				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
+				ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders,
+				DataSourcePoolMetricsProperties properties) {
 			List<DataSourcePoolMetadataProvider> metadataProvidersList = metadataProviders.stream()
 					.collect(Collectors.toList());
-			dataSources.forEach(
+
+			// Possibly expand routing datasources into their resolved datasources
+			Map<String, DataSource> allDataSources = new HashMap<>();
+			dataSources.forEach((beanName, dataSource) -> {
+				if (!(dataSource instanceof AbstractRoutingDataSource)) {
+					allDataSources.put(beanName, dataSource);
+					return;
+				}
+				if (properties.isIgnoreRoutingDataSources()) {
+					return;
+				}
+				AbstractRoutingDataSource routingDataSource = (AbstractRoutingDataSource) dataSource;
+				routingDataSource.getResolvedDataSources().forEach((routingKey, routedDataSource) -> {
+					boolean alreadyRegistered = dataSources.containsValue(routedDataSource);
+					if (!properties.isDeduplicateRoutingDataSources() || !alreadyRegistered) {
+						allDataSources.put(getRoutedDataSourceName(beanName, routingKey), routedDataSource);
+					}
+				});
+			});
+
+			allDataSources.forEach(
 					(name, dataSource) -> bindDataSourceToRegistry(name, dataSource, metadataProvidersList, registry));
 		}
 
@@ -94,6 +120,18 @@ public class DataSourcePoolMetricsAutoConfiguration {
 				return beanName.substring(0, beanName.length() - DATASOURCE_SUFFIX.length());
 			}
 			return beanName;
+		}
+
+		/**
+		 * Gets the name of a routed DataSource based on the name of its containing
+		 * {@link AbstractRoutingDataSource} {@code beanName} and its {@code routingKey}.
+		 * {@link #getDataSourceName}
+		 * @param routingDataSourceBeanName the name of the routing data source bean
+		 * @param routingKey the routing key for the routed data source
+		 * @return a name for the given routed data source
+		 */
+		private String getRoutedDataSourceName(String routingDataSourceBeanName, Object routingKey) {
+			return getDataSourceName(routingDataSourceBeanName) + "." + routingKey;
 		}
 
 	}

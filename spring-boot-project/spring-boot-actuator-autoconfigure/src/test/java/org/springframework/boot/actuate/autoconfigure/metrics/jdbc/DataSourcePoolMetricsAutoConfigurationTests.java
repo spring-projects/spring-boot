@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.jdbc;
 
+import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -25,6 +29,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
@@ -36,12 +41,17 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
+import org.springframework.boot.test.context.FilteredClassLoader;
+import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
+import org.springframework.jdbc.datasource.lookup.AbstractRoutingDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -51,6 +61,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Stephane Nicoll
  * @author Andy Wilkinson
  * @author Tommy Ludwig
+ * @author Chris Bono
  */
 class DataSourcePoolMetricsAutoConfigurationTests {
 
@@ -191,11 +202,109 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		});
 	}
 
-	private static HikariDataSource createHikariDataSource(String poolName) {
-		String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
-		HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url).type(HikariDataSource.class).build();
-		hikariDataSource.setPoolName(poolName);
-		return hikariDataSource;
+	@Test
+	void routingDataSourcesCanBeInstrumented() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withUserConfiguration(RoutingDataSourceConfiguration.class).run((context) -> {
+					validateRoutingDataSource();
+					validateMetricsAvailableForDataSources("routing.one", "routing.two");
+				});
+	}
+
+	@Test
+	void routingDataSourcesCanBeIgnored() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withUserConfiguration(RoutingDataSourceConfiguration.class)
+				.withPropertyValues("management.metrics.jdbc.ignore-routing-data-sources: true").run((context) -> {
+					validateRoutingDataSource();
+					validateMetricsNotAvailableForDataSources("routing.one", "routing.two");
+				});
+	}
+
+	@Test
+	void routingDataSourcesCanBeDeduplicated() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withUserConfiguration(TwoDataSourcesConfiguration.class,
+						RoutingDataSourceWithRegisteredTargetsConfiguration.class)
+				.withPropertyValues("management.metrics.jdbc.deduplicate-routing-data-sources: true").run((context) -> {
+					validateRoutingDataSource();
+					validateDataSources("firstDataSource", "secondOne");
+					validateMetricsNotAvailableForDataSources("routing.one", "routing.two");
+					validateMetricsAvailableForDataSources("first", "secondOne");
+				});
+	}
+
+	@Test
+	void routingDataSourcesMixedWithOthersCanBeInstrumented() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withUserConfiguration(MixedDataSourcesConfiguration.class, RoutingDataSourceConfiguration.class)
+				.run((context) -> {
+					validateRoutingDataSource();
+					validateDataSources("firstDataSource", "secondOne");
+					validateMetricsAvailableForDataSources("routing.one", "routing.two");
+					validateMetricsAvailableForDataSources("first", "secondOne");
+				});
+	}
+
+	@Test
+	void routingDataSourcesMixedWithOthersCanBeIgnored() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withUserConfiguration(MixedDataSourcesConfiguration.class, RoutingDataSourceConfiguration.class)
+				.withPropertyValues("management.metrics.jdbc.ignore-routing-data-sources: true").run((context) -> {
+					validateRoutingDataSource();
+					validateDataSources("firstDataSource", "secondOne");
+					validateMetricsNotAvailableForDataSources("routing.one", "routing.two");
+					validateMetricsAvailableForDataSources("first", "secondOne");
+				});
+	}
+
+	@Test
+	void routingDataSourcesWithoutMetadataProviderAreIgnored() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withUserConfiguration(MixedDataSourcesConfiguration.class,
+						RoutingDataSourceWithRegisteredTargetsConfiguration.class)
+				.withClassLoader(new FilteredClassLoader(org.apache.tomcat.jdbc.pool.DataSource.class))
+				.run((context) -> {
+					validateRoutingDataSource();
+					// secondOne is a tomcat datasource - no metrics
+					validateDataSources("firstDataSource", "secondOne");
+					validateMetricsAvailableForDataSources("routing.one", "first");
+					validateMetricsNotAvailableForDataSources("routing.two", "secondOne");
+				});
+	}
+
+	private ContextConsumer<AssertableApplicationContext> validateRoutingDataSource() {
+		return (context) -> {
+			assertThat(context).hasSingleBean(AbstractRoutingDataSource.class);
+			assertThat(context.getBean(AbstractRoutingDataSource.class).getResolvedDataSources().values())
+					.map(DataSource::getConnection).map(Connection::getMetaData).isNotNull();
+		};
+	}
+
+	private ContextConsumer<AssertableApplicationContext> validateDataSources(String... beanNames) {
+		return (context) -> {
+			for (String beanName : beanNames) {
+				context.getBean(beanName, DataSource.class).getConnection().getMetaData();
+			}
+		};
+	}
+
+	private ContextConsumer<AssertableApplicationContext> validateMetricsAvailableForDataSources(String... names) {
+		return (context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			for (String name : names) {
+				registry.get("jdbc.connections.max").tags("name", name).meter();
+			}
+		};
+	}
+
+	private ContextConsumer<AssertableApplicationContext> validateMetricsNotAvailableForDataSources(String... names) {
+		return (context) -> {
+			MeterRegistry registry = context.getBean(MeterRegistry.class);
+			for (String name : names) {
+				assertThat(registry.find("jdbc.connections.max").tags("name", name).meter()).isNull();
+			}
+		};
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -324,6 +433,60 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 				return bean;
 			}
 
+		}
+
+	}
+
+	private static HikariDataSource createHikariDataSource(String poolName) {
+		String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
+		HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url).type(HikariDataSource.class).build();
+		hikariDataSource.setPoolName(poolName);
+		return hikariDataSource;
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RoutingDataSourceWithRegisteredTargetsConfiguration {
+
+		@Bean
+		AbstractRoutingDataSource routingDataSource(DataSource firstDataSource, DataSource secondOne) {
+			Map<Object, Object> dataSources = new HashMap<>();
+			dataSources.put("one", firstDataSource);
+			dataSources.put("two", secondOne);
+			SimpleRoutingDataSource routingDataSource = new SimpleRoutingDataSource();
+			routingDataSource.setTargetDataSources(dataSources);
+			return routingDataSource;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class RoutingDataSourceConfiguration {
+
+		@Bean
+		AbstractRoutingDataSource routingDataSource() {
+			Map<Object, Object> dataSources = new HashMap<>();
+			dataSources.put("one", createDataSource());
+			dataSources.put("two", createDataSource());
+			SimpleRoutingDataSource routingDataSource = new SimpleRoutingDataSource();
+			routingDataSource.setTargetDataSources(dataSources);
+			return routingDataSource;
+		}
+
+		private DataSource createDataSource() {
+			String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
+			return DataSourceBuilder.create().url(url).build();
+		}
+
+	}
+
+	static class SimpleRoutingDataSource extends AbstractRoutingDataSource {
+
+		@Override
+		protected Object determineCurrentLookupKey() {
+			if (getResolvedDataSources() == null) {
+				return null;
+			}
+			return getResolvedDataSources().keySet().stream().findAny().orElse(null);
 		}
 
 	}
