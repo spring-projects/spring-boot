@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
-import org.springframework.boot.jdbc.init.DataSourceInitializationDependencyConfigurer;
+import org.springframework.boot.jdbc.init.dependency.DataSourceInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;

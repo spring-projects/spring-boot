@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
-import org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
 import org.springframework.jdbc.core.JdbcOperations;
 
 /**

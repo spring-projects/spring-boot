@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.jdbc.init.dependency;
 
 import java.lang.annotation.Documented;
 import java.lang.annotation.ElementType;

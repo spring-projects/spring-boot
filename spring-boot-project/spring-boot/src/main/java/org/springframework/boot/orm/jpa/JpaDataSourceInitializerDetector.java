@@ -25,8 +25,8 @@ import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.jdbc.init.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.DataSourceInitializerDetector;
+import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSourceInitializerDetector;
+import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 

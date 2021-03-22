@@ -21,8 +21,8 @@ import java.util.Set;
 
 import org.jooq.DSLContext;
 
-import org.springframework.boot.jdbc.init.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
-import org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
 
 /**
  * {@link DependsOnDataSourceInitializationDetector} for jOOQ.

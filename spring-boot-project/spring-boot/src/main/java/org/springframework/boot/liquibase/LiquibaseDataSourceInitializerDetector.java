@@ -21,8 +21,8 @@ import java.util.Set;
 
 import liquibase.integration.spring.SpringLiquibase;
 
-import org.springframework.boot.jdbc.init.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.DataSourceInitializerDetector;
+import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSourceInitializerDetector;
+import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
 
 /**
  * A {@link DataSourceInitializerDetector} for Liquibase.

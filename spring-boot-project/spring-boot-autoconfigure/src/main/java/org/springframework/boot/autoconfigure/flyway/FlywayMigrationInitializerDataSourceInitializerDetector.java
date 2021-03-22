@@ -19,8 +19,8 @@ package org.springframework.boot.autoconfigure.flyway;
 import java.util.Collections;
 import java.util.Set;
 
-import org.springframework.boot.jdbc.init.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.DataSourceInitializerDetector;
+import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSourceInitializerDetector;
+import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
 
 /**
  * A {@link DataSourceInitializerDetector} for {@link FlywayMigrationInitializer}.

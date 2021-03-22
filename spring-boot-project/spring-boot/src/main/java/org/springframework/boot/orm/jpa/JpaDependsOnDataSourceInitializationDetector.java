@@ -23,8 +23,8 @@ import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.springframework.boot.jdbc.init.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
-import org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 

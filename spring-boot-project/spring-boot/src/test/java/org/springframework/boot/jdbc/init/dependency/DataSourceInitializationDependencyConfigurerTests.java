@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.jdbc.init.dependency;
 
 import java.io.File;
 import java.io.FileWriter;

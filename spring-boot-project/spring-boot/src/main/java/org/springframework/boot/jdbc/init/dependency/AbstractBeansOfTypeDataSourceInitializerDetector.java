@@ -14,30 +14,39 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.jdbc.init.dependency;
 
-import java.util.HashSet;
+import java.util.Collections;
 import java.util.Set;
+
+import javax.sql.DataSource;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
- * {@link DependsOnDataSourceInitializationDetector} that detects beans annotated with
- * {@link DependsOnDataSourceInitialization}.
+ * Base class for {@link DataSourceInitializerDetector DataSourceInitializerDetectors}
+ * that detect {@link DataSource} beans by type.
  *
  * @author Andy Wilkinson
+ * @since 2.5.0
  */
-class AnnotationDependsOnDataSourceInitializationDetector implements DependsOnDataSourceInitializationDetector {
+public abstract class AbstractBeansOfTypeDataSourceInitializerDetector implements DataSourceInitializerDetector {
+
+	/**
+	 * Returns the bean types that should be detected as being data source initializers.
+	 * @return the data source initializer bean types
+	 */
+	protected abstract Set<Class<?>> getDataSourceInitializerBeanTypes();
 
 	@Override
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-		Set<String> dependentBeans = new HashSet<>();
-		for (String beanName : beanFactory.getBeanDefinitionNames()) {
-			if (beanFactory.findAnnotationOnBean(beanName, DependsOnDataSourceInitialization.class) != null) {
-				dependentBeans.add(beanName);
-			}
+		try {
+			Set<Class<?>> types = getDataSourceInitializerBeanTypes();
+			return new BeansOfTypeDetector(types).detect(beanFactory);
 		}
-		return dependentBeans;
+		catch (Throwable ex) {
+			return Collections.emptySet();
+		}
 	}
 
 }

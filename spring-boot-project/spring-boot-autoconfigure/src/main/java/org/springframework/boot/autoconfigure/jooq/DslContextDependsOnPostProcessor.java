@@ -21,7 +21,7 @@ import org.jooq.DSLContext;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
-import org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
 
 /**
  * {@link BeanFactoryPostProcessor} that can be used to dynamically declare that all

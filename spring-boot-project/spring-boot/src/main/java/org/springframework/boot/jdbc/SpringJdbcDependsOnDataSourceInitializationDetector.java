@@ -20,8 +20,8 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.jdbc.init.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
-import org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
+import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 

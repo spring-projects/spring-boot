@@ -80,14 +80,14 @@ org.springframework.boot.diagnostics.FailureAnalysisReporter=\
 org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter
 
 # DataSource Initializer Detectors
-org.springframework.boot.jdbc.init.DataSourceInitializerDetector=\
+org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector=\
 org.springframework.boot.flyway.FlywayDataSourceInitializerDetector,\
 org.springframework.boot.liquibase.LiquibaseDataSourceInitializerDetector,\
 org.springframework.boot.orm.jpa.JpaDataSourceInitializerDetector
 
 # Depends On DataSource Initialization Detectors
-org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector=\
-org.springframework.boot.jdbc.init.AnnotationDependsOnDataSourceInitializationDetector,\
+org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector=\
+org.springframework.boot.jdbc.init.dependency.AnnotationDependsOnDataSourceInitializationDetector,\
 org.springframework.boot.jdbc.SpringJdbcDependsOnDataSourceInitializationDetector,\
 org.springframework.boot.jooq.JooqDependsOnDataSourceInitializationDetector,\
 org.springframework.boot.orm.jpa.JpaDependsOnDataSourceInitializationDetector
