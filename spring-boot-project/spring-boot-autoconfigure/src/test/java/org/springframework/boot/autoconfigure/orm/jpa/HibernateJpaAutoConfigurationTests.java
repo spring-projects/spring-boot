@@ -104,7 +104,6 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 				"spring.datasource.schema:classpath:/ddl.sql").run((context) -> {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).hasMessageContaining("ddl.sql");
-					assertThat(context.getStartupFailure()).hasMessageContaining("spring.datasource.schema");
 				});
 	}
 

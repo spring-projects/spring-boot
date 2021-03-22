@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.jdbc;
+package org.springframework.boot.jdbc.init;
 
 import java.util.Collections;
 import java.util.Set;
@@ -23,15 +23,15 @@ import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSour
 import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
 
 /**
- * A {@link DataSourceInitializerDetector} for {@link DataSourceInitialization}.
+ * A {@link DataSourceInitializerDetector} for {@link ScriptDataSourceInitializer}.
  *
  * @author Andy Wilkinson
  */
-class DataSourceInitializationDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
+class ScriptDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
 
 	@Override
 	protected Set<Class<?>> getDataSourceInitializerBeanTypes() {
-		return Collections.singleton(DataSourceInitialization.class);
+		return Collections.singleton(ScriptDataSourceInitializer.class);
 	}
 
 }

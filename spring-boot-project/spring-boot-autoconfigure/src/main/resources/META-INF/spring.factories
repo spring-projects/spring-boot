@@ -169,5 +169,4 @@ org.springframework.boot.autoconfigure.web.servlet.JspTemplateAvailabilityProvid
 
 # DataSource initializer detectors
 org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector=\
-org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializerDataSourceInitializerDetector,\
-org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationDataSourceInitializerDetector
+org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializerDataSourceInitializerDetector

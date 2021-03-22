@@ -2056,6 +2056,10 @@ By default, Spring Boot enables the fail-fast feature of the Spring JDBC initial
 This means that, if the scripts cause exceptions, the application fails to start.
 You can tune that behavior by setting `spring.datasource.continue-on-error`.
 
+To take complete control over the script-based initialization of a `DataSource`, define your own `ScriptDataSourceInitializer` bean.
+Doing so will cause the auto-configuration of script-based initialization to back off.
+If you have multiple `DataSource`s in your application, you can define multiple `ScriptDataSourceInitializer` beans.
+
 
 
 [[howto-initialize-a-database-using-r2dbc]]
