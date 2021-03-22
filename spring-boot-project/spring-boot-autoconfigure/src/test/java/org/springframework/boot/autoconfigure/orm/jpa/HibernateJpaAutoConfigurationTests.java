@@ -373,47 +373,65 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	@Test
-	void dataSourceSchemaCreatedEventFiredWhenDdlAutoPropertyIsSet() {
-		dataSourceSchemaCreatedEventFired("spring.jpa.hibernate.ddl-auto:create-drop", true);
+	void vendorPropertiesWithEmbeddedDatabaseAndNoDdlProperty() {
+		contextRunner().run(vendorProperties((vendorProperties) -> {
+			assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_DATABASE_ACTION);
+			assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-drop");
+		}));
 	}
 
 	@Test
-	void dataSourceSchemaCreatedEventNotFiredWhenDdlAutoPropertyIsSetToNone() {
-		dataSourceSchemaCreatedEventFired("spring.jpa.hibernate.ddl-auto:none", false);
+	void vendorPropertiesWithDdlAutoPropertyIsSet() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=update")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_DATABASE_ACTION);
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("update");
+				}));
 	}
 
 	@Test
-	void dataSourceSchemaCreatedEventFiredWhenHibernateSpecificDdlAutoPropertyIsSet() {
-		dataSourceSchemaCreatedEventFired("spring.jpa.properties.hibernate.hbm2ddl.auto=create", true);
+	void vendorPropertiesWithDdlAutoPropertyAndHibernatePropertiesAreSet() {
+		contextRunner()
+				.withPropertyValues("spring.jpa.hibernate.ddl-auto=update",
+						"spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_DATABASE_ACTION);
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-drop");
+				}));
 	}
 
 	@Test
-	void dataSourceSchemaCreatedEventNotFiredWhenHibernateSpecificDdlAutoPropertyIsSetToNone() {
-		dataSourceSchemaCreatedEventFired("spring.jpa.properties.hibernate.hbm2ddl.auto=none", false);
+	void vendorPropertiesWithDdlAutoPropertyIsSetToNone() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=none")
+				.run(vendorProperties((vendorProperties) -> assertThat(vendorProperties).doesNotContainKeys(
+						AvailableSettings.HBM2DDL_DATABASE_ACTION, AvailableSettings.HBM2DDL_AUTO)));
 	}
 
 	@Test
-	void dataSourceSchemaCreatedEventFiredWhenJpaDbActionPropertyIsSet() {
-		dataSourceSchemaCreatedEventFired(
-				"spring.jpa.properties.javax.persistence.schema-generation.database.action=drop-and-create", true);
+	void vendorPropertiesWhenJpaDdlActionIsSet() {
+		contextRunner()
+				.withPropertyValues("spring.jpa.properties.javax.persistence.schema-generation.database.action=create")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_DATABASE_ACTION)).isEqualTo("create");
+					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_AUTO);
+				}));
 	}
 
 	@Test
-	void dataSourceSchemaCreatedEventNotFiredWhenJpaDbActionPropertyIsSetToNone() {
-		dataSourceSchemaCreatedEventFired(
-				"spring.jpa.properties.javax.persistence.schema-generation.database.action=none", false);
+	void vendorPropertiesWhenBothDdlAutoPropertiesAreSet() {
+		contextRunner()
+				.withPropertyValues("spring.jpa.properties.javax.persistence.schema-generation.database.action=create",
+						"spring.jpa.hibernate.ddl-auto=create-only")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_DATABASE_ACTION)).isEqualTo("create");
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-only");
+				}));
 	}
 
-	private void dataSourceSchemaCreatedEventFired(String schemaGenerationPropertyWithValue,
-			boolean expectEventToBeFired) {
-		contextRunner().withUserConfiguration(JpaUsingApplicationListenerConfiguration.class)
-				.withPropertyValues("spring.datasource.initialization-mode=never", schemaGenerationPropertyWithValue)
-				.run((context) -> {
-					assertThat(context).hasNotFailed();
-					assertThat(context.getBean(EventCapturingApplicationListener.class).events.stream()
-							.filter(DataSourceSchemaCreatedEvent.class::isInstance))
-									.hasSize(expectEventToBeFired ? 1 : 0);
-				});
+	private ContextConsumer<AssertableApplicationContext> vendorProperties(
+			Consumer<Map<String, Object>> vendorProperties) {
+		return (context) -> vendorProperties
+				.accept(context.getBean(HibernateJpaConfiguration.class).getVendorProperties());
 	}
 
 	@Test
