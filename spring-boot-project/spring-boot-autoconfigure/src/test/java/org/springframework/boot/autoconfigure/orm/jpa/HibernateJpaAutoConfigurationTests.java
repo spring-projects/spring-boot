@@ -91,6 +91,7 @@ import static org.mockito.Mockito.mock;
  * @author Andy Wilkinson
  * @author Kazuki Shimizu
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTests {
 
@@ -369,6 +370,68 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	void hibernatePropertiesCustomizerCanDisableBeanContainer() {
 		contextRunner().withUserConfiguration(DisableBeanContainerConfiguration.class)
 				.run((context) -> assertThat(context).doesNotHaveBean(City.class));
+	}
+
+	@Test
+	void vendorPropertiesWithEmbeddedDatabaseAndNoDdlProperty() {
+		contextRunner().run(vendorProperties((vendorProperties) -> {
+			assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_DATABASE_ACTION);
+			assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-drop");
+		}));
+	}
+
+	@Test
+	void vendorPropertiesWithDdlAutoPropertyIsSet() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=update")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_DATABASE_ACTION);
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("update");
+				}));
+	}
+
+	@Test
+	void vendorPropertiesWithDdlAutoPropertyAndHibernatePropertiesAreSet() {
+		contextRunner()
+				.withPropertyValues("spring.jpa.hibernate.ddl-auto=update",
+						"spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_DATABASE_ACTION);
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-drop");
+				}));
+	}
+
+	@Test
+	void vendorPropertiesWithDdlAutoPropertyIsSetToNone() {
+		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=none")
+				.run(vendorProperties((vendorProperties) -> assertThat(vendorProperties).doesNotContainKeys(
+						AvailableSettings.HBM2DDL_DATABASE_ACTION, AvailableSettings.HBM2DDL_AUTO)));
+	}
+
+	@Test
+	void vendorPropertiesWhenJpaDdlActionIsSet() {
+		contextRunner()
+				.withPropertyValues("spring.jpa.properties.javax.persistence.schema-generation.database.action=create")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_DATABASE_ACTION)).isEqualTo("create");
+					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_AUTO);
+				}));
+	}
+
+	@Test
+	void vendorPropertiesWhenBothDdlAutoPropertiesAreSet() {
+		contextRunner()
+				.withPropertyValues("spring.jpa.properties.javax.persistence.schema-generation.database.action=create",
+						"spring.jpa.hibernate.ddl-auto=create-only")
+				.run(vendorProperties((vendorProperties) -> {
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_DATABASE_ACTION)).isEqualTo("create");
+					assertThat(vendorProperties.get(AvailableSettings.HBM2DDL_AUTO)).isEqualTo("create-only");
+				}));
+	}
+
+	private ContextConsumer<AssertableApplicationContext> vendorProperties(
+			Consumer<Map<String, Object>> vendorProperties) {
+		return (context) -> vendorProperties
+				.accept(context.getBean(HibernateJpaConfiguration.class).getVendorProperties());
 	}
 
 	@Test
