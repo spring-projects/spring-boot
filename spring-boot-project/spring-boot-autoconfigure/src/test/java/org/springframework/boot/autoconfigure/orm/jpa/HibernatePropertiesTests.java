@@ -44,6 +44,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Stephane Nicoll
  * @author Artsiom Yudovin
+ * @author Chris Bono
  */
 @ExtendWith(MockitoExtension.class)
 class HibernatePropertiesTests {
@@ -129,6 +130,19 @@ class HibernatePropertiesTests {
 	void defaultDdlAutoIsNotInvokedIfHibernateSpecificPropertyIsSet() {
 		this.contextRunner.withPropertyValues("spring.jpa.properties.hibernate.hbm2ddl.auto=create")
 				.run(assertDefaultDdlAutoNotInvoked("create"));
+	}
+
+	@Test
+	void defaultDdlAutoIsNotInvokedAndDdlAutoIsNotSetIfJpaDbActionPropertyIsSet() {
+		this.contextRunner
+				.withPropertyValues(
+						"spring.jpa.properties.javax.persistence.schema-generation.database.action=drop-and-create")
+				.run(assertHibernateProperties((hibernateProperties) -> {
+					assertThat(hibernateProperties).doesNotContainKey(AvailableSettings.HBM2DDL_AUTO);
+					assertThat(hibernateProperties).containsEntry(AvailableSettings.HBM2DDL_DATABASE_ACTION,
+							"drop-and-create");
+					verify(this.ddlAutoSupplier, never()).get();
+				}));
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDefaultDdlAutoNotInvoked(String expectedDdlAuto) {
