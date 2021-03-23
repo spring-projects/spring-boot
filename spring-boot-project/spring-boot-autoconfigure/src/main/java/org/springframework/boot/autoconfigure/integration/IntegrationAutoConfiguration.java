@@ -36,6 +36,7 @@ import org.springframework.boot.autoconfigure.jmx.JmxAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketMessagingAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.task.TaskSchedulerBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
@@ -85,15 +86,21 @@ public class IntegrationAutoConfiguration {
 	public static org.springframework.integration.context.IntegrationProperties integrationGlobalProperties(
 			IntegrationProperties properties) {
 		org.springframework.integration.context.IntegrationProperties integrationProperties = new org.springframework.integration.context.IntegrationProperties();
-		integrationProperties.setChannelsAutoCreate(properties.getChannels().isAutoCreate());
-		integrationProperties.setChannelsMaxUnicastSubscribers(properties.getChannels().getMaxUnicastSubscribers());
-		integrationProperties.setChannelsMaxBroadcastSubscribers(properties.getChannels().getMaxBroadcastSubscribers());
-		integrationProperties.setErrorChannelRequireSubscribers(properties.getChannels().isErrorRequireSubscribers());
-		integrationProperties.setErrorChannelIgnoreFailures(properties.getChannels().isErrorIgnoreFailures());
-		integrationProperties
-				.setMessagingTemplateThrowExceptionOnLateReply(properties.getEndpoints().isThrowExceptionOnLateReply());
-		integrationProperties.setReadOnlyHeaders(properties.getEndpoints().getReadOnlyHeaders());
-		integrationProperties.setNoAutoStartupEndpoints(properties.getEndpoints().getNoAutoStartup());
+		PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+		map.from(properties.getChannel().isAutoCreate()).to(integrationProperties::setChannelsAutoCreate);
+		map.from(properties.getChannel().getMaxUnicastSubscribers())
+				.to(integrationProperties::setChannelsMaxUnicastSubscribers);
+		map.from(properties.getChannel().getMaxBroadcastSubscribers())
+				.to(integrationProperties::setChannelsMaxBroadcastSubscribers);
+		map.from(properties.getError().isRequireSubscribers())
+				.to(integrationProperties::setErrorChannelRequireSubscribers);
+		map.from(properties.getError().isIgnoreFailures()).to(integrationProperties::setErrorChannelIgnoreFailures);
+		map.from(properties.getEndpoint().isThrowExceptionOnLateReply())
+				.to(integrationProperties::setMessagingTemplateThrowExceptionOnLateReply);
+		map.from(properties.getEndpoint().getReadOnlyHeaders()).as(StringUtils::toStringArray)
+				.to(integrationProperties::setReadOnlyHeaders);
+		map.from(properties.getEndpoint().getNoAutoStartup()).as(StringUtils::toStringArray)
+				.to(integrationProperties::setNoAutoStartupEndpoints);
 		return integrationProperties;
 	}
 

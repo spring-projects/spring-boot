@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.integration;
 
-import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,12 +35,13 @@ import org.springframework.core.io.Resource;
 import org.springframework.integration.context.IntegrationProperties;
 
 /**
- * The {@link EnvironmentPostProcessor} for Spring Integration.
+ * An {@link EnvironmentPostProcessor} that maps the configuration of
+ * {@code META-INF/spring.integration.properties} in the environment.
  *
  * @author Artem Bilan
- * @since 2.5
+ * @author Stephane Nicoll
  */
-public class IntegrationEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
+class IntegrationPropertiesEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
 
 	@Override
 	public int getOrder() {
@@ -49,65 +50,62 @@ public class IntegrationEnvironmentPostProcessor implements EnvironmentPostProce
 
 	@Override
 	public void postProcessEnvironment(ConfigurableEnvironment environment, SpringApplication application) {
-		registerIntegrationPropertiesFileSource(environment);
+		Resource resource = new ClassPathResource("META-INF/spring.integration.properties");
+		if (resource.exists()) {
+			registerIntegrationPropertiesPropertySource(environment, resource);
+		}
 	}
 
-	private static void registerIntegrationPropertiesFileSource(ConfigurableEnvironment environment) {
-		Resource integrationPropertiesResource = new ClassPathResource("META-INF/spring.integration.properties");
+	protected void registerIntegrationPropertiesPropertySource(ConfigurableEnvironment environment, Resource resource) {
 		PropertiesPropertySourceLoader loader = new PropertiesPropertySourceLoader();
 		try {
 			OriginTrackedMapPropertySource propertyFileSource = (OriginTrackedMapPropertySource) loader
-					.load("integration-properties-file", integrationPropertiesResource).get(0);
-
-			environment.getPropertySources().addLast(new IntegrationPropertySource(propertyFileSource));
-		}
-		catch (FileNotFoundException ex) {
-			// Ignore when no META-INF/spring.integration.properties file in classpath
+					.load("META-INF/spring.integration.properties", resource).get(0);
+			environment.getPropertySources().addLast(new IntegrationPropertiesPropertySource(propertyFileSource));
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException(
-					"Failed to load integration properties from " + integrationPropertiesResource, ex);
+			throw new IllegalStateException("Failed to load integration properties from " + resource, ex);
 		}
 	}
 
-	private static final class IntegrationPropertySource extends PropertySource<Map<String, Object>>
+	private static final class IntegrationPropertiesPropertySource extends PropertySource<Map<String, Object>>
 			implements OriginLookup<String> {
 
 		private static final String PREFIX = "spring.integration.";
 
-		private static final Map<String, String> KEYS_MAPPING = new HashMap<>();
+		private static final Map<String, String> KEYS_MAPPING;
 
 		static {
-			KEYS_MAPPING.put(PREFIX + "channels.auto-create", IntegrationProperties.CHANNELS_AUTOCREATE);
-			KEYS_MAPPING.put(PREFIX + "channels.max-unicast-subscribers",
+			Map<String, String> mappings = new HashMap<>();
+			mappings.put(PREFIX + "channel.auto-create", IntegrationProperties.CHANNELS_AUTOCREATE);
+			mappings.put(PREFIX + "channel.max-unicast-subscribers",
 					IntegrationProperties.CHANNELS_MAX_UNICAST_SUBSCRIBERS);
-			KEYS_MAPPING.put(PREFIX + "channels.max-broadcast-subscribers",
+			mappings.put(PREFIX + "channel.max-broadcast-subscribers",
 					IntegrationProperties.CHANNELS_MAX_BROADCAST_SUBSCRIBERS);
-			KEYS_MAPPING.put(PREFIX + "channels.error-require-subscribers",
-					IntegrationProperties.ERROR_CHANNEL_REQUIRE_SUBSCRIBERS);
-			KEYS_MAPPING.put(PREFIX + "channels.error-ignore-failures",
-					IntegrationProperties.ERROR_CHANNEL_IGNORE_FAILURES);
-			KEYS_MAPPING.put(PREFIX + "endpoints.throw-exception-on-late-reply",
+			mappings.put(PREFIX + "error.require-subscribers", IntegrationProperties.ERROR_CHANNEL_REQUIRE_SUBSCRIBERS);
+			mappings.put(PREFIX + "error.ignore-failures", IntegrationProperties.ERROR_CHANNEL_IGNORE_FAILURES);
+			mappings.put(PREFIX + "endpoint.throw-exception-on-late-reply",
 					IntegrationProperties.THROW_EXCEPTION_ON_LATE_REPLY);
-			KEYS_MAPPING.put(PREFIX + "endpoints.read-only-headers", IntegrationProperties.READ_ONLY_HEADERS);
-			KEYS_MAPPING.put(PREFIX + "endpoints.no-auto-startup", IntegrationProperties.ENDPOINTS_NO_AUTO_STARTUP);
+			mappings.put(PREFIX + "endpoint.read-only-headers", IntegrationProperties.READ_ONLY_HEADERS);
+			mappings.put(PREFIX + "endpoint.no-auto-startup", IntegrationProperties.ENDPOINTS_NO_AUTO_STARTUP);
+			KEYS_MAPPING = Collections.unmodifiableMap(mappings);
 		}
 
-		private final OriginTrackedMapPropertySource origin;
+		private final OriginTrackedMapPropertySource delegate;
 
-		IntegrationPropertySource(OriginTrackedMapPropertySource origin) {
-			super("original-integration-properties", origin.getSource());
-			this.origin = origin;
+		IntegrationPropertiesPropertySource(OriginTrackedMapPropertySource delegate) {
+			super("META-INF/spring.integration.properties", delegate.getSource());
+			this.delegate = delegate;
 		}
 
 		@Override
 		public Object getProperty(String name) {
-			return this.origin.getProperty(KEYS_MAPPING.get(name));
+			return this.delegate.getProperty(KEYS_MAPPING.get(name));
 		}
 
 		@Override
 		public Origin getOrigin(String key) {
-			return this.origin.getOrigin(KEYS_MAPPING.get(name));
+			return this.delegate.getOrigin(KEYS_MAPPING.get(key));
 		}
 
 	}
