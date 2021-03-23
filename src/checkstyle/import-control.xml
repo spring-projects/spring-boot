@@ -1,8 +1,8 @@
 <?xml version="1.0"?>
 <!DOCTYPE import-control PUBLIC "-//Checkstyle//DTD ImportControl Configuration 1.4//EN" "https://checkstyle.org/dtds/import_control_1_4.dtd">
 <import-control pkg="org.springframework.boot">
+	<disallow pkg="io.micrometer" />
 	<allow pkg=".*" regex="true" />
-
 	<subpackage name="autoconfigure">
 		<subpackage name="web">
 			<allow pkg="org.springframework.boot.web.server" />
@@ -38,20 +38,27 @@
 		</subpackage>
 	</subpackage>
 
-	<!-- Endpoint infrastructure -->
-	<subpackage name="actuate.endpoint">
-		<disallow pkg="org.springframework.http" />
-		<disallow pkg="org.springframework.web" />
-		<subpackage name="web">
-			<allow pkg="org.springframework.http" />
-			<allow pkg="org.springframework.web" />
-			<subpackage name="servlet">
-				<disallow pkg="org.springframework.web.reactive" />
-			</subpackage>
-			<subpackage name="reactive">
-				<disallow pkg="org.springframework.web.servlet" />
+	<subpackage name="actuate">
+		<allow pkg="io.micrometer" />
+		<!-- Endpoint infrastructure -->
+		<subpackage name="endpoint">
+			<disallow pkg="org.springframework.http" />
+			<disallow pkg="org.springframework.web" />
+			<subpackage name="web">
+				<allow pkg="org.springframework.http" />
+				<allow pkg="org.springframework.web" />
+				<subpackage name="servlet">
+					<disallow pkg="org.springframework.web.reactive" />
+				</subpackage>
+				<subpackage name="reactive">
+					<disallow pkg="org.springframework.web.servlet" />
+				</subpackage>
 			</subpackage>
 		</subpackage>
+	</subpackage>
+
+	<subpackage name="docs.actuate">
+		<allow pkg="io.micrometer" />
 	</subpackage>
 
 	<!-- Logging -->
