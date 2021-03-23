@@ -154,6 +154,8 @@ final class TldPatterns {
 		skipPatterns.add("spring-oxm-*.jar");
 		skipPatterns.add("spring-tx-*.jar");
 		skipPatterns.add("snakeyaml-*.jar");
+		skipPatterns.add("tomcat-embed-core-*.jar");
+		skipPatterns.add("tomcat-embed-logging-*.jar");
 		skipPatterns.add("tomcat-embed-el-*.jar");
 		skipPatterns.add("validation-api-*.jar");
 		ADDITIONAL_SKIP = Collections.unmodifiableSet(skipPatterns);
