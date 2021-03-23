@@ -29,6 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -100,27 +101,38 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	}
 
 	UriTemplateHandler createUriTemplateHandler(UriTemplateHandler delegate) {
-		return new UriTemplateHandler() {
-
-			@Override
-			public URI expand(String url, Map<String, ?> arguments) {
-				urlTemplate.get().push(url);
-				return delegate.expand(url, arguments);
-			}
-
-			@Override
-			public URI expand(String url, Object... arguments) {
-				urlTemplate.get().push(url);
-				return delegate.expand(url, arguments);
-			}
-
-		};
+		if (delegate instanceof RootUriTemplateHandler) {
+			return ((RootUriTemplateHandler) delegate).withHandlerWrapper(CapturingUriTemplateHandler::new);
+		}
+		return new CapturingUriTemplateHandler(delegate);
 	}
 
 	private Timer.Builder getTimeBuilder(HttpRequest request, ClientHttpResponse response) {
 		return this.autoTimer.builder(this.metricName)
 				.tags(this.tagProvider.getTags(urlTemplate.get().poll(), request, response))
 				.description("Timer of RestTemplate operation");
+	}
+
+	private static final class CapturingUriTemplateHandler implements UriTemplateHandler {
+
+		private final UriTemplateHandler delegate;
+
+		private CapturingUriTemplateHandler(UriTemplateHandler delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public URI expand(String url, Map<String, ?> arguments) {
+			urlTemplate.get().push(url);
+			return this.delegate.expand(url, arguments);
+		}
+
+		@Override
+		public URI expand(String url, Object... arguments) {
+			urlTemplate.get().push(url);
+			return this.delegate.expand(url, arguments);
+		}
+
 	}
 
 	private static final class UrlTemplateThreadLocal extends NamedThreadLocal<Deque<String>> {
