@@ -78,7 +78,7 @@ public class DocumentConfigurationProperties extends DefaultTask {
 				.withKeyPrefixes("spring.freemarker", "spring.groovy", "spring.mustache", "spring.thymeleaf")
 				.addOverride("spring.groovy.template.configuration", "See GroovyMarkupConfigurer")
 				.addSection("security").withKeyPrefixes("spring.security").addSection("data-migration")
-				.withKeyPrefixes("spring.flyway", "spring.liquibase").addSection("data")
+				.withKeyPrefixes("spring.flyway", "spring.liquibase", "spring.sql.init").addSection("data")
 				.withKeyPrefixes("spring.couchbase", "spring.elasticsearch", "spring.h2", "spring.influx",
 						"spring.ldap", "spring.mongodb", "spring.neo4j", "spring.redis", "spring.dao", "spring.data",
 						"spring.datasource", "spring.jooq", "spring.jdbc", "spring.jpa", "spring.r2dbc")

@@ -1743,6 +1743,12 @@
       ]
     },
     {
+      "name": "spring.sql.init.enabled",
+      "type": "java.lang.Boolean",
+      "description": "Whether basic script-based initialization of an SQL database is enabled.",
+      "defaultValue": true
+    },
+    {
       "name": "spring.thymeleaf.prefix",
       "defaultValue": "classpath:/templates/"
     },

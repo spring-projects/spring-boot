@@ -2026,20 +2026,14 @@ It is a Hibernate feature (and has nothing to do with Spring).
 === Initialize a Database using basic SQL scripts
 Spring Boot can automatically create the schema (DDL scripts) of your `DataSource` and initialize it (DML scripts).
 It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
-In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of `spring.datasource.platform`.
+In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of configprop:spring.sql.init.platform[].
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
 
 [NOTE]
 ====
-When only basic SQL scripts are used, Spring Boot automatically creates the schema of an embedded `DataSource`.
-This behavior can be customized by using the configprop:spring.datasource.initialization-mode[] property.
-For instance, if you want to always initialize the `DataSource` regardless of its type:
-
-[indent=0,subs="verbatim,quotes,attributes"]
-----
-	spring.datasource.initialization-mode=always
-----
+When only basic SQL scripts are used, Spring Boot automatically initializes the `DataSource`.
+This initialization can be disabled by setting the configprop:spring.sql.init.enabled[] property to `false`.
 
 By default, script-based `DataSource` initialization is performed before any JPA `EntityManagerFactory` beans are created.
 `schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
@@ -2054,7 +2048,7 @@ Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibas
 
 By default, Spring Boot enables the fail-fast feature of the Spring JDBC initializer.
 This means that, if the scripts cause exceptions, the application fails to start.
-You can tune that behavior by setting `spring.datasource.continue-on-error`.
+You can tune that behavior by setting configprop:spring.sql.init.continue-on-error[].
 
 To take complete control over the script-based initialization of a `DataSource`, define your own `ScriptDataSourceInitializer` bean.
 Doing so will cause the auto-configuration of script-based initialization to back off.

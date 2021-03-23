@@ -127,6 +127,7 @@ org.springframework.boot.autoconfigure.security.oauth2.client.reactive.ReactiveO
 org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration,\
 org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration,\
 org.springframework.boot.autoconfigure.solr.SolrAutoConfiguration,\
+org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration,\
 org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration,\
 org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration,\
 org.springframework.boot.autoconfigure.thymeleaf.ThymeleafAutoConfiguration,\

@@ -68,8 +68,7 @@ class JobLauncherApplicationRunnerTests {
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
 					AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class))
-			.withUserConfiguration(BatchConfiguration.class)
-			.withPropertyValues("spring.datasource.initialization-mode=never");
+			.withUserConfiguration(BatchConfiguration.class);
 
 	@Test
 	void basicExecution() {

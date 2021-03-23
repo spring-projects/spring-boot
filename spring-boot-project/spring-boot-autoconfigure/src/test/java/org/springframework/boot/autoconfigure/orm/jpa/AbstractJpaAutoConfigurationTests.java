@@ -32,6 +32,7 @@ import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
+import org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -71,8 +72,9 @@ abstract class AbstractJpaAutoConfigurationTests {
 		this.autoConfiguredClass = autoConfiguredClass;
 		this.contextRunner = new ApplicationContextRunner()
 				.withPropertyValues("spring.datasource.generate-unique-name=true")
-				.withUserConfiguration(TestConfiguration.class).withConfiguration(AutoConfigurations.of(
-						DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class, autoConfiguredClass));
+				.withUserConfiguration(TestConfiguration.class).withConfiguration(
+						AutoConfigurations.of(DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class,
+								SqlInitializationAutoConfiguration.class, autoConfiguredClass));
 	}
 
 	protected ApplicationContextRunner contextRunner() {

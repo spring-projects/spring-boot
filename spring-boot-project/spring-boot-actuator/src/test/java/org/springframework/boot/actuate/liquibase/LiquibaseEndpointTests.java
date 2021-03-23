@@ -18,7 +18,9 @@ package org.springframework.boot.actuate.liquibase;
 
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.Arrays;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.sql.DataSource;
 
@@ -30,6 +32,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
+import org.springframework.boot.jdbc.init.DataSourceInitializationSettings;
+import org.springframework.boot.jdbc.init.ScriptDataSourceInitializer;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -75,10 +79,8 @@ class LiquibaseEndpointTests {
 
 	@Test
 	void invokeWithCustomSchema() {
-		this.contextRunner.withUserConfiguration(Config.class)
-				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA",
-						"spring.datasource.schema=classpath:/db/create-custom-schema.sql")
-				.run((context) -> {
+		this.contextRunner.withUserConfiguration(Config.class, DataSourceWithSchemaConfiguration.class)
+				.withPropertyValues("spring.liquibase.default-schema=CUSTOMSCHEMA").run((context) -> {
 					Map<String, LiquibaseBean> liquibaseBeans = context.getBean(LiquibaseEndpoint.class)
 							.liquibaseBeans().getContexts().get(context.getId()).getLiquibaseBeans();
 					assertThat(liquibaseBeans.get("liquibase").getChangeSets()).hasSize(1);
@@ -134,6 +136,23 @@ class LiquibaseEndpointTests {
 		@Bean
 		LiquibaseEndpoint endpoint(ApplicationContext context) {
 			return new LiquibaseEndpoint(context);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class DataSourceWithSchemaConfiguration {
+
+		@Bean
+		DataSource dataSource() {
+			DataSource dataSource = new EmbeddedDatabaseBuilder()
+					.setType(EmbeddedDatabaseConnection.get(getClass().getClassLoader()).getType())
+					.setName(UUID.randomUUID().toString()).build();
+			DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+			settings.setSchemaLocations(Arrays.asList("classpath:/db/create-custom-schema.sql"));
+			ScriptDataSourceInitializer initializer = new ScriptDataSourceInitializer(dataSource, settings);
+			initializer.initializeDatabase();
+			return dataSource;
 		}
 
 	}
