@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -531,6 +531,18 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder environment(ConfigurableEnvironment environment) {
 		this.application.setEnvironment(environment);
 		this.environment = environment;
+		return this;
+	}
+
+	/**
+	 * Prefix that should be applied when obtaining configuration properties from the
+	 * system environment.
+	 * @param environmentPrefix the environment property prefix to set
+	 * @return the current builder
+	 * @since 2.5.0
+	 */
+	public SpringApplicationBuilder environmentPrefix(String environmentPrefix) {
+		this.application.setEnvironmentPrefix(environmentPrefix);
 		return this;
 	}
 
