@@ -58,7 +58,7 @@
 		</subpackage>
 	</subpackage>
 
-	<subpackage name="docs.actuate">
+	<subpackage name="docs">
 		<allow pkg="io.micrometer" />
 	</subpackage>
 
