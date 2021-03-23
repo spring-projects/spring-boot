@@ -43,7 +43,7 @@ import org.springframework.util.StringUtils;
 final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
 
 	private static final List<String> GRADLE_VERSIONS = Arrays.asList("6.3", "6.4.1", "6.5.1", "6.6.1", "6.7.1",
-			"current", "7.0-milestone-3");
+			"current", "7.0-rc-1");
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
