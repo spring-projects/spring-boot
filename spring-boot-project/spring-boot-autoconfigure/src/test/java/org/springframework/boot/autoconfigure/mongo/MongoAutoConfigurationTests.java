@@ -21,9 +21,20 @@ import java.util.concurrent.TimeUnit;
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import com.mongodb.event.CommandListener;
+import com.mongodb.event.ConnectionPoolListener;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -38,6 +49,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Dave Syer
  * @author Stephane Nicoll
  * @author Scott Frederick
+ * @author Jonatan Ivanov
  */
 class MongoAutoConfigurationTests {
 
@@ -84,6 +96,62 @@ class MongoAutoConfigurationTests {
 				.run((context) -> assertThat(getSettings(context).getApplicationName()).isEqualTo("overridden-name"));
 	}
 
+	@Test
+	void metricsBeansShouldBeCreatedIfMeterRegistryExists() {
+		this.contextRunner.withUserConfiguration(MetricsConfig.class).run((context) -> assertThat(context)
+				.hasSingleBean(MeterRegistry.class).hasSingleBean(MongoMetricsConnectionPoolTagsProvider.class)
+				.hasSingleBean(MongoMetricsConnectionPoolListener.class)
+				.hasSingleBean(MongoMetricsCommandTagsProvider.class).hasSingleBean(MongoMetricsCommandListener.class)
+				.hasSingleBean(MongoConnectionPoolListenerClientSettingsBuilderCustomizer.class)
+				.hasSingleBean(MongoCommandListenerClientSettingsBuilderCustomizer.class));
+	}
+
+	@Test
+	void metricsBeansShouldNotBeCreatedIfMeterRegistryDoesNotExist() {
+		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(MeterRegistry.class)
+				.doesNotHaveBean(MongoMetricsConnectionPoolTagsProvider.class)
+				.doesNotHaveBean(MongoMetricsConnectionPoolListener.class)
+				.doesNotHaveBean(MongoMetricsCommandTagsProvider.class)
+				.doesNotHaveBean(MongoMetricsCommandListener.class)
+				.doesNotHaveBean(MongoConnectionPoolListenerClientSettingsBuilderCustomizer.class)
+				.doesNotHaveBean(MongoCommandListenerClientSettingsBuilderCustomizer.class));
+	}
+
+	@Test
+	void metricsBeansShouldNotBeCreatedIfMongoMetricsDisabled() {
+		this.contextRunner.withUserConfiguration(MetricsConfig.class)
+				.withPropertyValues("spring.data.mongodb.metrics.enabled=false")
+				.run((context) -> assertThat(context).doesNotHaveBean(MongoMetricsConnectionPoolTagsProvider.class)
+						.doesNotHaveBean(MongoMetricsConnectionPoolListener.class)
+						.doesNotHaveBean(MongoMetricsCommandTagsProvider.class)
+						.doesNotHaveBean(MongoMetricsCommandListener.class)
+						.doesNotHaveBean(MongoConnectionPoolListenerClientSettingsBuilderCustomizer.class)
+						.doesNotHaveBean(MongoCommandListenerClientSettingsBuilderCustomizer.class));
+	}
+
+	@Test
+	void mongoListenerCustomizersShouldBeCreatedIfListenersExist() {
+		this.contextRunner.withUserConfiguration(MongoListenersConfig.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(MeterRegistry.class)
+						.doesNotHaveBean(MongoMetricsConnectionPoolTagsProvider.class)
+						.doesNotHaveBean(MongoMetricsConnectionPoolListener.class)
+						.doesNotHaveBean(MongoMetricsCommandTagsProvider.class)
+						.doesNotHaveBean(MongoMetricsCommandListener.class).hasSingleBean(ConnectionPoolListener.class)
+						.hasSingleBean(CommandListener.class)
+						.hasSingleBean(MongoConnectionPoolListenerClientSettingsBuilderCustomizer.class)
+						.hasSingleBean(MongoCommandListenerClientSettingsBuilderCustomizer.class));
+	}
+
+	@Test
+	void fallBackMetricsBeansShouldBeUsedIfTheyExists() {
+		this.contextRunner.withUserConfiguration(FallbackMetricsConfig.class).run((context) -> assertThat(context)
+				.hasSingleBean(MeterRegistry.class).hasSingleBean(MongoMetricsConnectionPoolTagsProvider.class)
+				.hasSingleBean(MongoMetricsConnectionPoolListener.class)
+				.hasSingleBean(MongoMetricsCommandTagsProvider.class).hasSingleBean(MongoMetricsCommandListener.class)
+				.hasSingleBean(MongoConnectionPoolListenerClientSettingsBuilderCustomizer.class)
+				.hasSingleBean(MongoCommandListenerClientSettingsBuilderCustomizer.class));
+	}
+
 	private MongoClientSettings getSettings(AssertableApplicationContext context) {
 		assertThat(context).hasSingleBean(MongoClient.class);
 		MongoClient client = context.getBean(MongoClient.class);
@@ -127,6 +195,67 @@ class MongoAutoConfigurationTests {
 		@Bean
 		MongoClientSettingsBuilderCustomizer customizer() {
 			return (clientSettingsBuilder) -> clientSettingsBuilder.applicationName("overridden-name");
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MetricsConfig {
+
+		@Bean
+		MeterRegistry meterRegistry() {
+			return new SimpleMeterRegistry();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MongoListenersConfig {
+
+		@Bean
+		ConnectionPoolListener connectionPoolListener() {
+			return new ConnectionPoolListener() {
+			};
+		}
+
+		@Bean
+		CommandListener commandListener() {
+			return new CommandListener() {
+			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class FallbackMetricsConfig {
+
+		@Bean
+		MeterRegistry meterRegistry() {
+			return new SimpleMeterRegistry();
+		}
+
+		@Bean
+		MongoMetricsCommandListener mongoMetricsCommandListener(MeterRegistry meterRegistry,
+				MongoMetricsCommandTagsProvider mongoMetricsCommandTagsProvider) {
+			return new MongoMetricsCommandListener(meterRegistry, mongoMetricsCommandTagsProvider);
+		}
+
+		@Bean
+		MongoMetricsCommandTagsProvider mongoMetricsCommandTagsProvider() {
+			return new DefaultMongoMetricsCommandTagsProvider();
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener(MeterRegistry meterRegistry,
+				MongoMetricsConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider) {
+			return new MongoMetricsConnectionPoolListener(meterRegistry, mongoMetricsConnectionPoolTagsProvider);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		MongoMetricsConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider() {
+			return new DefaultMongoMetricsConnectionPoolTagsProvider();
 		}
 
 	}
