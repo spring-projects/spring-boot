@@ -9,6 +9,12 @@ plugins {
 
 description = "Spring Boot"
 
+def tomcatConfigProperties = "$buildDir/tomcat-config-properties"
+
+configurations {
+	tomcatDistribution
+}
+
 dependencies {
 	annotationProcessor("org.apache.logging.log4j:log4j-core")
 
@@ -106,6 +112,22 @@ dependencies {
 	testRuntimeOnly("org.testcontainers:jdbc") {
 		exclude group: "javax.annotation", module: "javax.annotation-api"
 		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+
+	tomcatDistribution("org.apache.tomcat:tomcat:${tomcatVersion}@zip")
+}
+
+task extractTomcatConfigProperties(type: Sync) {
+	dependsOn configurations.tomcatDistribution
+	destinationDir = file(tomcatConfigProperties)
+	from(zipTree(configurations.tomcatDistribution.incoming.files.singleFile).matching {
+		include '**/conf/catalina.properties'
+	}.singleFile)
+}
+
+sourceSets {
+	test {
+		output.dir(tomcatConfigProperties, builtBy: "extractTomcatConfigProperties")
 	}
 }
 
