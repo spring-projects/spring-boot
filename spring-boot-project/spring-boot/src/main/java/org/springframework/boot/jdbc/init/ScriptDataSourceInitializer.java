@@ -36,8 +36,8 @@ import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.CollectionUtils;
 
 /**
- * {@link InitializingBean} that performs {@link DataSource} initialization using DDL and
- * DML scripts.
+ * {@link InitializingBean} that performs {@link DataSource} initialization using schema
+ * (DDL) and data (DML) scripts.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
@@ -82,23 +82,23 @@ public class ScriptDataSourceInitializer implements ResourceLoaderAware, Initial
 	}
 
 	/**
-	 * Initializes the database by running DDL and DML scripts.
+	 * Initializes the database by applying schema and data scripts.
 	 * @return {@code true} if one or more scripts were applied to the database, otherwise
 	 * {@code false}
 	 */
 	public boolean initializeDatabase() {
 		ScriptLocationResolver locationResolver = new ScriptLocationResolver(this.resourceLoader);
-		boolean initialized = applyDdlScripts(locationResolver);
-		initialized = applyDmlScripts(locationResolver) || initialized;
+		boolean initialized = applySchemaScripts(locationResolver);
+		initialized = applyDataScripts(locationResolver) || initialized;
 		return initialized;
 	}
 
-	private boolean applyDdlScripts(ScriptLocationResolver locationResolver) {
-		return applyScripts(this.settings.getDdlScriptLocations(), "DDL", locationResolver);
+	private boolean applySchemaScripts(ScriptLocationResolver locationResolver) {
+		return applyScripts(this.settings.getSchemaLocations(), "schema", locationResolver);
 	}
 
-	private boolean applyDmlScripts(ScriptLocationResolver locationResolver) {
-		return applyScripts(this.settings.getDmlScriptLocations(), "DML", locationResolver);
+	private boolean applyDataScripts(ScriptLocationResolver locationResolver) {
+		return applyScripts(this.settings.getDataLocations(), "data", locationResolver);
 	}
 
 	private boolean applyScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {

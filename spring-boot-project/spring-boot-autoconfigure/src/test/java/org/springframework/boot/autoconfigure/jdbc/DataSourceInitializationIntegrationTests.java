@@ -243,7 +243,7 @@ class DataSourceInitializationIntegrationTests {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
 					assertThat(context.getStartupFailure())
-							.hasMessageContaining("No DDL scripts found at location 'classpath:does/not/exist.sql'");
+							.hasMessageContaining("No schema scripts found at location 'classpath:does/not/exist.sql'");
 				});
 	}
 
@@ -255,7 +255,7 @@ class DataSourceInitializationIntegrationTests {
 					assertThat(context).hasFailed();
 					assertThat(context.getStartupFailure()).isInstanceOf(BeanCreationException.class);
 					assertThat(context.getStartupFailure())
-							.hasMessageContaining("No DML scripts found at location 'classpath:does/not/exist.sql'");
+							.hasMessageContaining("No data scripts found at location 'classpath:does/not/exist.sql'");
 				});
 	}
 

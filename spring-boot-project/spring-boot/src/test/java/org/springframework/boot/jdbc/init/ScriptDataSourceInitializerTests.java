@@ -46,10 +46,10 @@ class ScriptDataSourceInitializerTests {
 	}
 
 	@Test
-	void whenDatabaseIsInitializedThenDdlAndDmlScriptsAreApplied() {
+	void whenDatabaseIsInitializedThenSchemaAndDataScriptsAreApplied() {
 		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
-		settings.setDdlScriptLocations(Arrays.asList("schema.sql"));
-		settings.setDmlScriptLocations(Arrays.asList("data.sql"));
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
 		ScriptDataSourceInitializer initializer = createInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
 		assertThat(numberOfRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
@@ -58,7 +58,7 @@ class ScriptDataSourceInitializerTests {
 	@Test
 	void whenContinueOnErrorIsFalseThenInitializationFailsOnError() {
 		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
-		settings.setDmlScriptLocations(Arrays.asList("data.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
 		ScriptDataSourceInitializer initializer = createInitializer(settings);
 		assertThatExceptionOfType(DataAccessException.class).isThrownBy(() -> initializer.initializeDatabase());
 	}
@@ -67,7 +67,7 @@ class ScriptDataSourceInitializerTests {
 	void whenContinueOnErrorIsTrueThenInitializationDoesNotFailOnError() {
 		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
 		settings.setContinueOnError(true);
-		settings.setDmlScriptLocations(Arrays.asList("data.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
 		ScriptDataSourceInitializer initializer = createInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
 	}

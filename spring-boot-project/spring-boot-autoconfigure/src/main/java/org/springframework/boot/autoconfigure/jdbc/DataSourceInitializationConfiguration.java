@@ -83,7 +83,7 @@ class DataSourceInitializationConfiguration {
 		ScriptDataSourceInitializer ddlOnlyScriptDataSourceInitializer(ObjectProvider<DataSource> dataSource,
 				DataSourceProperties properties, ResourceLoader resourceLoader) {
 			DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
-			settings.setDdlScriptLocations(scriptLocations(properties.getSchema(), "schema", properties.getPlatform()));
+			settings.setSchemaLocations(scriptLocations(properties.getSchema(), "schema", properties.getPlatform()));
 			settings.setContinueOnError(properties.isContinueOnError());
 			settings.setSeparator(properties.getSeparator());
 			settings.setEncoding(properties.getSqlScriptEncoding());
@@ -98,7 +98,7 @@ class DataSourceInitializationConfiguration {
 		ScriptDataSourceInitializer dmlOnlyScriptDataSourceInitializer(ObjectProvider<DataSource> dataSource,
 				DataSourceProperties properties, ResourceLoader resourceLoader) {
 			DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
-			settings.setDmlScriptLocations(scriptLocations(properties.getData(), "data", properties.getPlatform()));
+			settings.setDataLocations(scriptLocations(properties.getData(), "data", properties.getPlatform()));
 			settings.setContinueOnError(properties.isContinueOnError());
 			settings.setSeparator(properties.getSeparator());
 			settings.setEncoding(properties.getSqlScriptEncoding());
@@ -138,8 +138,8 @@ class DataSourceInitializationConfiguration {
 		ScriptDataSourceInitializer scriptDataSourceInitializer(DataSource dataSource, DataSourceProperties properties,
 				ResourceLoader resourceLoader) {
 			DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
-			settings.setDdlScriptLocations(scriptLocations(properties.getSchema(), "schema", properties.getPlatform()));
-			settings.setDmlScriptLocations(scriptLocations(properties.getData(), "data", properties.getPlatform()));
+			settings.setSchemaLocations(scriptLocations(properties.getSchema(), "schema", properties.getPlatform()));
+			settings.setDataLocations(scriptLocations(properties.getData(), "data", properties.getPlatform()));
 			settings.setContinueOnError(properties.isContinueOnError());
 			settings.setSeparator(properties.getSeparator());
 			settings.setEncoding(properties.getSqlScriptEncoding());

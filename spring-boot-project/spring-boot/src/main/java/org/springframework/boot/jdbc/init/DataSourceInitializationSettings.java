@@ -29,9 +29,9 @@ import javax.sql.DataSource;
  */
 public class DataSourceInitializationSettings {
 
-	private List<String> ddlScriptLocations;
+	private List<String> schemaLocations;
 
-	private List<String> dmlScriptLocations;
+	private List<String> dataLocations;
 
 	private boolean continueOnError = false;
 
@@ -40,43 +40,43 @@ public class DataSourceInitializationSettings {
 	private Charset encoding;
 
 	/**
-	 * Returns the locations of the DDL (schema) scripts to apply to the database.
-	 * @return the locations of the DDL scripts
+	 * Returns the locations of the schema (DDL) scripts to apply to the database.
+	 * @return the locations of the schema scripts
 	 */
-	public List<String> getDdlScriptLocations() {
-		return this.ddlScriptLocations;
+	public List<String> getSchemaLocations() {
+		return this.schemaLocations;
 	}
 
 	/**
-	 * Sets the locations of DDL (schema) scripts to apply to the database. By default,
+	 * Sets the locations of schema (DDL) scripts to apply to the database. By default,
 	 * initialization will fail if a location does not exist. To prevent a failure, a
 	 * location can be made optional by prefixing it with {@code optional:}.
-	 * @param ddlScriptLocations locations of the DDL scripts
+	 * @param schemaLocations locations of the schema scripts
 	 */
-	public void setDdlScriptLocations(List<String> ddlScriptLocations) {
-		this.ddlScriptLocations = ddlScriptLocations;
+	public void setSchemaLocations(List<String> schemaLocations) {
+		this.schemaLocations = schemaLocations;
 	}
 
 	/**
-	 * Returns the locations of the DML (data) scripts to apply to the database.
-	 * @return the locations of the DML scripts
+	 * Returns the locations of data (DML) scripts to apply to the database.
+	 * @return the locations of the data scripts
 	 */
-	public List<String> getDmlScriptLocations() {
-		return this.dmlScriptLocations;
+	public List<String> getDataLocations() {
+		return this.dataLocations;
 	}
 
 	/**
-	 * Sets the locations of DML (data) scripts to apply to the database. By default,
+	 * Sets the locations of data (DML) scripts to apply to the database. By default,
 	 * initialization will fail if a location does not exist. To prevent a failure, a
 	 * location can be made optional by prefixing it with {@code optional:}.
-	 * @param dmlScriptLocations locations of the DML scripts
+	 * @param dataLocations locations of the data scripts
 	 */
-	public void setDmlScriptLocations(List<String> dmlScriptLocations) {
-		this.dmlScriptLocations = dmlScriptLocations;
+	public void setDataLocations(List<String> dataLocations) {
+		this.dataLocations = dataLocations;
 	}
 
 	/**
-	 * Returns whether to continue when an error occurs while applying a DDL or DML
+	 * Returns whether to continue when an error occurs while applying a schema or data
 	 * script.
 	 * @return whether to continue on error
 	 */
@@ -86,7 +86,7 @@ public class DataSourceInitializationSettings {
 
 	/**
 	 * Sets whether initialization should continue when an error occurs when applying a
-	 * DDL or DML script.
+	 * schema or data script.
 	 * @param continueOnError whether to continue when an error occurs.
 	 */
 	public void setContinueOnError(boolean continueOnError) {
@@ -94,7 +94,7 @@ public class DataSourceInitializationSettings {
 	}
 
 	/**
-	 * Returns the statement separator used in the DDL and DML scripts.
+	 * Returns the statement separator used in the schema and data scripts.
 	 * @return the statement separator
 	 */
 	public String getSeparator() {
@@ -102,15 +102,15 @@ public class DataSourceInitializationSettings {
 	}
 
 	/**
-	 * Sets the statement separator to use when reading the DDL and DML scripts.
-	 * @param separator statement separator used in DDL and DML scripts
+	 * Sets the statement separator to use when reading the schema and data scripts.
+	 * @param separator statement separator used in the schema and data scripts
 	 */
 	public void setSeparator(String separator) {
 		this.separator = separator;
 	}
 
 	/**
-	 * Returns the encoding to use when reading the DDL and DML scripts.
+	 * Returns the encoding to use when reading the schema and data scripts.
 	 * @return the script encoding
 	 */
 	public Charset getEncoding() {
@@ -118,8 +118,8 @@ public class DataSourceInitializationSettings {
 	}
 
 	/**
-	 * Sets the encoding to use when reading the DDL and DML scripts.
-	 * @param encoding encoding to use when reading the DDL and DML scripts
+	 * Sets the encoding to use when reading the schema and data scripts.
+	 * @param encoding encoding to use when reading the schema and data scripts
 	 */
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
