@@ -1219,10 +1219,10 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void addBootstrapper() {
+	void addBootstrapRegistryInitializer() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.addBootstrapper(
+		application.addBootstrapRegistryInitializer(
 				(bootstrapContext) -> bootstrapContext.register(String.class, InstanceSupplier.of("boot")));
 		TestApplicationListener listener = new TestApplicationListener();
 		application.addListeners(listener);
@@ -1235,10 +1235,10 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void addBootstrapperCanRegisterBeans() {
+	void addBootstrapRegistryInitializerCanRegisterBeans() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
-		application.addBootstrapper((bootstrapContext) -> {
+		application.addBootstrapRegistryInitializer((bootstrapContext) -> {
 			bootstrapContext.register(String.class, InstanceSupplier.of("boot"));
 			bootstrapContext.addCloseListener((event) -> event.getApplicationContext().getBeanFactory()
 					.registerSingleton("test", event.getBootstrapContext().get(String.class)));
@@ -1248,6 +1248,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@Deprecated
 	void whenABootstrapperImplementsOnlyTheOldMethodThenItIsCalled() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -1259,6 +1260,7 @@ class SpringApplicationTests {
 	}
 
 	@Test
+	@Deprecated
 	void whenABootstrapperImplementsTheOldMethodAndTheNewMethodThenOnlyTheNewMethodIsCalled() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
@@ -1758,18 +1760,19 @@ class SpringApplicationTests {
 
 	}
 
+	@Deprecated
 	static class OnlyOldMethodTestBootstrapper implements Bootstrapper {
 
 		private boolean intitialized;
 
 		@Override
-		@SuppressWarnings("deprecation")
 		public void intitialize(BootstrapRegistry registry) {
 			this.intitialized = true;
 		}
 
 	}
 
+	@Deprecated
 	static class BothMethodsTestBootstrapper implements Bootstrapper {
 
 		private boolean intitialized;
@@ -1777,7 +1780,6 @@ class SpringApplicationTests {
 		private boolean initialized;
 
 		@Override
-		@SuppressWarnings("deprecation")
 		public void intitialize(BootstrapRegistry registry) {
 			this.intitialized = true;
 		}

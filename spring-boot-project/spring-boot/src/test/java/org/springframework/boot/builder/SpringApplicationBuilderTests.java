@@ -283,9 +283,19 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	@Deprecated
 	void addBootstrapper() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.web(WebApplicationType.NONE).addBootstrapper((context) -> context.addCloseListener(
+						(event) -> event.getApplicationContext().getBeanFactory().registerSingleton("test", "spring")));
+		this.context = application.run();
+		assertThat(this.context.getBean("test")).isEqualTo("spring");
+	}
+
+	@Test
+	void addBootstrapRegistryInitializer() {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
+				.web(WebApplicationType.NONE).addBootstrapRegistryInitializer((context) -> context.addCloseListener(
 						(event) -> event.getApplicationContext().getBeanFactory().registerSingleton("test", "spring")));
 		this.context = application.run();
 		assertThat(this.context.getBean("test")).isEqualTo("spring");

@@ -31,7 +31,7 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.Bootstrapper;
+import org.springframework.boot.BootstrapRegistryInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -400,14 +400,30 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Adds a {@link Bootstrapper} that can be used to initialize the
-	 * {@link BootstrapRegistry}.
+	 * Adds a {@link org.springframework.boot.Bootstrapper} that can be used to initialize
+	 * the {@link BootstrapRegistry}.
 	 * @param bootstrapper the bootstraper
 	 * @return the current builder
 	 * @since 2.4.0
+	 * @deprecated since 2.4.5 in favor of
+	 * {@link #addBootstrapRegistryInitializer(BootstrapRegistryInitializer)}
 	 */
-	public SpringApplicationBuilder addBootstrapper(Bootstrapper bootstrapper) {
+	@Deprecated
+	public SpringApplicationBuilder addBootstrapper(org.springframework.boot.Bootstrapper bootstrapper) {
 		this.application.addBootstrapper(bootstrapper);
+		return this;
+	}
+
+	/**
+	 * Adds {@link BootstrapRegistryInitializer} instances that can be used to initialize
+	 * the {@link BootstrapRegistry}.
+	 * @param bootstrapRegistryInitializer the bootstrap registry initializer to add
+	 * @return the current builder
+	 * @since 2.4.5
+	 */
+	public SpringApplicationBuilder addBootstrapRegistryInitializer(
+			BootstrapRegistryInitializer bootstrapRegistryInitializer) {
+		this.application.addBootstrapRegistryInitializer(bootstrapRegistryInitializer);
 		return this;
 	}
 
