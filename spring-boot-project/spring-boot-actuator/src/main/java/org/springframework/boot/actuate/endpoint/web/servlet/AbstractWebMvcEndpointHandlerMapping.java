@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,9 +53,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 import org.springframework.web.servlet.handler.RequestMatchResult;
@@ -290,7 +290,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
-				throw new BadOperationRequestException(ex.getReason());
+				throw new InvalidEndpointBadRequestException(ex);
 			}
 		}
 
@@ -401,11 +401,14 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 	}
 
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	private static class BadOperationRequestException extends RuntimeException {
+	/**
+	 * Nested exception used to wrap a {@link InvalidEndpointRequestException} and provide
+	 * a {@link HttpStatus#BAD_REQUEST} status.
+	 */
+	private static class InvalidEndpointBadRequestException extends ResponseStatusException {
 
-		BadOperationRequestException(String message) {
-			super(message);
+		InvalidEndpointBadRequestException(InvalidEndpointRequestException cause) {
+			super(HttpStatus.BAD_REQUEST, cause.getReason(), cause);
 		}
 
 	}
