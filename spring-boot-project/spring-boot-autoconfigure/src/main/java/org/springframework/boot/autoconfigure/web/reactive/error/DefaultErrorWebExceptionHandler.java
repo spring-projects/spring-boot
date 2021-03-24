@@ -237,7 +237,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		return (serverRequest) -> {
 			try {
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
-				acceptedMediaTypes.remove(MediaType.ALL);
+				acceptedMediaTypes.removeIf((mediaType) -> MediaType.ALL.equalsTypeAndSubtype(mediaType));
 				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
 				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}

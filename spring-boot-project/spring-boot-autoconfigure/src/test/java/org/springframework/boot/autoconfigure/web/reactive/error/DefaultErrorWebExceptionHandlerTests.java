@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive.error;
 
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -28,9 +29,12 @@ import org.springframework.boot.web.reactive.context.AnnotationConfigReactiveWeb
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.context.ApplicationContext;
 import org.springframework.http.MediaType;
+import org.springframework.http.codec.HttpMessageReader;
+import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.test.util.ReflectionTestUtils;
+import org.springframework.web.reactive.function.server.ServerRequest;
 import org.springframework.web.reactive.result.view.View;
 import org.springframework.web.reactive.result.view.ViewResolver;
 import org.springframework.web.server.ServerWebExchange;
@@ -84,6 +88,23 @@ class DefaultErrorWebExceptionHandlerTests {
 		ViewResolver viewResolver = mock(ViewResolver.class);
 		given(viewResolver.resolveViewName(any(), any())).willReturn(Mono.just(view));
 		exceptionHandler.setViewResolvers(Collections.singletonList(viewResolver));
+	}
+
+	@Test
+	void acceptsTextHtmlShouldNotConsiderMediaAllEvenWithQuality() {
+		ErrorAttributes errorAttributes = mock(ErrorAttributes.class);
+		ResourceProperties resourceProperties = new ResourceProperties();
+		ErrorProperties errorProperties = new ErrorProperties();
+		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
+		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
+				resourceProperties, errorProperties, context);
+		MediaType allWithQuality = new MediaType(MediaType.ALL.getType(), MediaType.ALL.getSubtype(), 0.9);
+		MockServerWebExchange exchange = MockServerWebExchange
+				.from(MockServerHttpRequest.get("/test").accept(allWithQuality));
+		List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
+		ServerRequest request = ServerRequest.create(exchange, readers);
+		boolean accepts = exceptionHandler.acceptsTextHtml().test(request);
+		assertThat(accepts).isFalse();
 	}
 
 }
