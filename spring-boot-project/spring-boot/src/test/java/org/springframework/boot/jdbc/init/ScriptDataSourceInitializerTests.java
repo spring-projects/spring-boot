@@ -29,6 +29,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link ScriptDataSourceInitializer}.
@@ -70,6 +71,40 @@ class ScriptDataSourceInitializerTests {
 		settings.setDataLocations(Arrays.asList("data.sql"));
 		ScriptDataSourceInitializer initializer = createInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
+	}
+
+	@Test
+	void whenNoScriptsExistAtASchemaLocationThenInitializationFails() {
+		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("does-not-exist.sql"));
+		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
+				.withMessage("No schema scripts found at location 'does-not-exist.sql'");
+	}
+
+	@Test
+	void whenNoScriptsExistAtADataLocationThenInitializationFails() {
+		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		settings.setDataLocations(Arrays.asList("does-not-exist.sql"));
+		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
+				.withMessage("No data scripts found at location 'does-not-exist.sql'");
+	}
+
+	@Test
+	void whenNoScriptsExistAtAnOptionalSchemaLocationThenInitializationSucceeds() {
+		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("optional:does-not-exist.sql"));
+		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
+	}
+
+	@Test
+	void whenNoScriptsExistAtAnOptionalDataLocationThenInitializationSucceeds() {
+		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		settings.setDataLocations(Arrays.asList("optional:does-not-exist.sql"));
+		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
 	}
 
 	private ScriptDataSourceInitializer createInitializer(DataSourceInitializationSettings settings) {
