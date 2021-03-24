@@ -250,6 +250,92 @@ class IntegrationAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void integrationGlobalPropertiesAutoConfigured() {
+		this.contextRunner.withPropertyValues("spring.integration.channel.auto-create=false",
+				"spring.integration.channel.max-unicast-subscribers=2",
+				"spring.integration.channel.max-broadcast-subscribers=3",
+				"spring.integration.error.require-subscribers=false", "spring.integration.error.ignore-failures=false",
+				"spring.integration.endpoint.throw-exception-on-late-reply=true",
+				"spring.integration.endpoint.read-only-headers=ignoredHeader",
+				"spring.integration.endpoint.no-auto-startup=notStartedEndpoint,_org.springframework.integration.errorLogger")
+				.run((context) -> {
+					assertThat(context)
+							.hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+					org.springframework.integration.context.IntegrationProperties integrationProperties = context
+							.getBean(org.springframework.integration.context.IntegrationProperties.class);
+					assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
+					assertThat(integrationProperties.getChannelsMaxUnicastSubscribers()).isEqualTo(2);
+					assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers()).isEqualTo(3);
+					assertThat(integrationProperties.isErrorChannelRequireSubscribers()).isFalse();
+					assertThat(integrationProperties.isErrorChannelIgnoreFailures()).isFalse();
+					assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply()).isTrue();
+					assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
+					assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("notStartedEndpoint",
+							"_org.springframework.integration.errorLogger");
+				});
+	}
+
+	@Test
+	void integrationGlobalPropertiesUseConsistentDefault() {
+		org.springframework.integration.context.IntegrationProperties defaultIntegrationProperties = new org.springframework.integration.context.IntegrationProperties();
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+			org.springframework.integration.context.IntegrationProperties integrationProperties = context
+					.getBean(org.springframework.integration.context.IntegrationProperties.class);
+			assertThat(integrationProperties.isChannelsAutoCreate())
+					.isEqualTo(defaultIntegrationProperties.isChannelsAutoCreate());
+			assertThat(integrationProperties.getChannelsMaxUnicastSubscribers())
+					.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
+			assertThat(integrationProperties.getChannelsMaxBroadcastSubscribers())
+					.isEqualTo(defaultIntegrationProperties.getChannelsMaxBroadcastSubscribers());
+			assertThat(integrationProperties.isErrorChannelRequireSubscribers())
+					.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
+			assertThat(integrationProperties.isErrorChannelIgnoreFailures())
+					.isEqualTo(defaultIntegrationProperties.isErrorChannelIgnoreFailures());
+			assertThat(integrationProperties.isMessagingTemplateThrowExceptionOnLateReply())
+					.isEqualTo(defaultIntegrationProperties.isMessagingTemplateThrowExceptionOnLateReply());
+			assertThat(integrationProperties.getReadOnlyHeaders())
+					.isEqualTo(defaultIntegrationProperties.getReadOnlyHeaders());
+			assertThat(integrationProperties.getNoAutoStartupEndpoints())
+					.isEqualTo(defaultIntegrationProperties.getNoAutoStartupEndpoints());
+		});
+	}
+
+	@Test
+	void integrationGlobalPropertiesUserBeanOverridesAutoConfiguration() {
+		org.springframework.integration.context.IntegrationProperties userIntegrationProperties = new org.springframework.integration.context.IntegrationProperties();
+		this.contextRunner.withPropertyValues()
+				.withBean(IntegrationContextUtils.INTEGRATION_GLOBAL_PROPERTIES_BEAN_NAME,
+						org.springframework.integration.context.IntegrationProperties.class,
+						() -> userIntegrationProperties)
+				.run((context) -> {
+					assertThat(context)
+							.hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+					assertThat(context.getBean(org.springframework.integration.context.IntegrationProperties.class))
+							.isSameAs(userIntegrationProperties);
+				});
+	}
+
+	@Test
+	void integrationGlobalPropertiesFromSpringIntegrationPropertiesFile() {
+		this.contextRunner
+				.withPropertyValues("spring.integration.channel.auto-create=false",
+						"spring.integration.endpoint.read-only-headers=ignoredHeader")
+				.withInitializer((applicationContext) -> new IntegrationPropertiesEnvironmentPostProcessor()
+						.postProcessEnvironment(applicationContext.getEnvironment(), null))
+				.run((context) -> {
+					assertThat(context)
+							.hasSingleBean(org.springframework.integration.context.IntegrationProperties.class);
+					org.springframework.integration.context.IntegrationProperties integrationProperties = context
+							.getBean(org.springframework.integration.context.IntegrationProperties.class);
+					assertThat(integrationProperties.isChannelsAutoCreate()).isFalse();
+					assertThat(integrationProperties.getReadOnlyHeaders()).containsOnly("ignoredHeader");
+					// See META-INF/spring.integration.properties
+					assertThat(integrationProperties.getNoAutoStartupEndpoints()).containsOnly("testService*");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
