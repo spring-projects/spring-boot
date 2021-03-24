@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -283,9 +283,19 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	@Deprecated
 	void addBootstrapper() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.web(WebApplicationType.NONE).addBootstrapper((context) -> context.addCloseListener(
+						(event) -> event.getApplicationContext().getBeanFactory().registerSingleton("test", "spring")));
+		this.context = application.run();
+		assertThat(this.context.getBean("test")).isEqualTo("spring");
+	}
+
+	@Test
+	void addBootstrapRegistryInitializer() {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
+				.web(WebApplicationType.NONE).addBootstrapRegistryInitializer((context) -> context.addCloseListener(
 						(event) -> event.getApplicationContext().getBeanFactory().registerSingleton("test", "spring")));
 		this.context = application.run();
 		assertThat(this.context.getBean("test")).isEqualTo("spring");
