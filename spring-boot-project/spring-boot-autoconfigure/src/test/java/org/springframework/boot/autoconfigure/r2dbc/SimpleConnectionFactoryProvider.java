@@ -25,15 +25,16 @@ import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 /**
- * Simple driver to capture {@link ConnectionFactoryOptions}.
+ * Simple driver for testing.
  *
  * @author Mark Paluch
+ * @author Andy Wilkinson
  */
 public class SimpleConnectionFactoryProvider implements ConnectionFactoryProvider {
 
 	@Override
 	public ConnectionFactory create(ConnectionFactoryOptions connectionFactoryOptions) {
-		return new SimpleTestConnectionFactory(connectionFactoryOptions);
+		return new SimpleTestConnectionFactory();
 	}
 
 	@Override
@@ -48,12 +49,6 @@ public class SimpleConnectionFactoryProvider implements ConnectionFactoryProvide
 
 	public static class SimpleTestConnectionFactory implements ConnectionFactory {
 
-		final ConnectionFactoryOptions options;
-
-		SimpleTestConnectionFactory(ConnectionFactoryOptions options) {
-			this.options = options;
-		}
-
 		@Override
 		public Publisher<? extends Connection> create() {
 			return Mono.error(new UnsupportedOperationException());
@@ -62,10 +57,6 @@ public class SimpleConnectionFactoryProvider implements ConnectionFactoryProvide
 		@Override
 		public ConnectionFactoryMetadata getMetadata() {
 			return SimpleConnectionFactoryProvider.class::getName;
-		}
-
-		public ConnectionFactoryOptions getOptions() {
-			return this.options;
 		}
 
 	}
