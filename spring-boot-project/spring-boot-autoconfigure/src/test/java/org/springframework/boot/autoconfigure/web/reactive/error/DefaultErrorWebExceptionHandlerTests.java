@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
 /**
- * Tests for {@link AbstractErrorWebExceptionHandler}.
+ * Tests for {@link DefaultErrorWebExceptionHandler}.
  *
  * @author Phillip Webb
  * @author Madhura Bhave
@@ -66,10 +66,10 @@ class DefaultErrorWebExceptionHandlerTests {
 	@Test
 	void nonStandardErrorStatusCodeShouldNotFail() {
 		ErrorAttributes errorAttributes = mock(ErrorAttributes.class);
+		given(errorAttributes.getErrorAttributes(any(), any())).willReturn(getErrorAttributes());
 		ResourceProperties resourceProperties = new ResourceProperties();
 		ErrorProperties errorProperties = new ErrorProperties();
 		ApplicationContext context = new AnnotationConfigReactiveWebApplicationContext();
-		given(errorAttributes.getErrorAttributes(any(), any())).willReturn(getErrorAttributes());
 		DefaultErrorWebExceptionHandler exceptionHandler = new DefaultErrorWebExceptionHandler(errorAttributes,
 				resourceProperties, errorProperties, context);
 		setupViewResolver(exceptionHandler);
@@ -103,8 +103,7 @@ class DefaultErrorWebExceptionHandlerTests {
 				.from(MockServerHttpRequest.get("/test").accept(allWithQuality));
 		List<HttpMessageReader<?>> readers = ServerCodecConfigurer.create().getReaders();
 		ServerRequest request = ServerRequest.create(exchange, readers);
-		boolean accepts = exceptionHandler.acceptsTextHtml().test(request);
-		assertThat(accepts).isFalse();
+		assertThat(exceptionHandler.acceptsTextHtml().test(request)).isFalse();
 	}
 
 }
