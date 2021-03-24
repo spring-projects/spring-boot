@@ -158,6 +158,7 @@ public class JarFileArchive implements Archive {
 
 	private void unpack(JarEntry entry, Path path) throws IOException {
 		createFile(path);
+		path.toFile().deleteOnExit();
 		try (InputStream inputStream = this.jarFile.getInputStream(entry);
 				OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.WRITE,
 						StandardOpenOption.TRUNCATE_EXISTING)) {
