@@ -20,6 +20,7 @@ import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.BeanFactoryUtils;
+import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -81,9 +82,13 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 		String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Validator.class,
 				false, false);
 		for (String validatorBean : validatorBeans) {
-			BeanDefinition definition = registry.getBeanDefinition(validatorBean);
-			if (definition != null && definition.isPrimary()) {
-				return true;
+			try {
+				BeanDefinition definition = registry.getBeanDefinition(validatorBean);
+				if (definition.isPrimary()) {
+					return true;
+				}
+			}
+			catch (NoSuchBeanDefinitionException ignored) {
 			}
 		}
 		return false;
