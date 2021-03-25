@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.function.Function;
 
 import javax.annotation.processing.ProcessingEnvironment;
@@ -31,13 +34,18 @@ class MetadataGenerationEnvironmentFactory implements Function<ProcessingEnviron
 
 	@Override
 	public MetadataGenerationEnvironment apply(ProcessingEnvironment environment) {
+		Set<String> endpointAnnotations = new HashSet<>(
+				Arrays.asList(TestConfigurationMetadataAnnotationProcessor.CONTROLLER_ENDPOINT_ANNOTATION,
+						TestConfigurationMetadataAnnotationProcessor.ENDPOINT_ANNOTATION,
+						TestConfigurationMetadataAnnotationProcessor.REST_CONTROLLER_ENDPOINT_ANNOTATION,
+						TestConfigurationMetadataAnnotationProcessor.SERVLET_ENDPOINT_ANNOTATION,
+						TestConfigurationMetadataAnnotationProcessor.WEB_ENDPOINT_ANNOTATION));
 		return new MetadataGenerationEnvironment(environment,
 				TestConfigurationMetadataAnnotationProcessor.CONFIGURATION_PROPERTIES_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.NESTED_CONFIGURATION_PROPERTY_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.DEPRECATED_CONFIGURATION_PROPERTY_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.CONSTRUCTOR_BINDING_ANNOTATION,
-				TestConfigurationMetadataAnnotationProcessor.DEFAULT_VALUE_ANNOTATION,
-				TestConfigurationMetadataAnnotationProcessor.ENDPOINT_ANNOTATION,
+				TestConfigurationMetadataAnnotationProcessor.DEFAULT_VALUE_ANNOTATION, endpointAnnotations,
 				TestConfigurationMetadataAnnotationProcessor.READ_OPERATION_ANNOTATION,
 				TestConfigurationMetadataAnnotationProcessor.NAME_ANNOTATION);
 	}
