@@ -14,24 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.configurationsample.endpoint;
+package org.springframework.boot.configurationsample;
 
-import org.springframework.boot.configurationsample.ReadOperation;
-import org.springframework.boot.configurationsample.WebEndpoint;
-import org.springframework.lang.Nullable;
+import java.lang.annotation.Documented;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
 /**
- * A meta-annotated endpoint. Also with a package private read operation that has an
- * optional argument.
+ * Alternative to Spring Boot's {@code @WebEndpoint} for testing (removes the need for a
+ * dependency on the real annotation).
  *
- * @author Stephane Nicoll
+ * @author Andy Wilkinson
  */
-@WebEndpoint(id = "specific", enableByDefault = true)
-public class SpecificEndpoint {
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface WebEndpoint {
 
-	@ReadOperation
-	String invoke(@Nullable String param) {
-		return "test";
-	}
+	String id() default "";
+
+	boolean enableByDefault() default true;
 
 }
