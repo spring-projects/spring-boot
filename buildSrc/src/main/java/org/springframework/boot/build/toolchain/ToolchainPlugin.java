@@ -22,7 +22,6 @@ import java.util.List;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.JavaPluginExtension;
-import org.gradle.api.tasks.GradleBuild;
 import org.gradle.api.tasks.compile.JavaCompile;
 import org.gradle.api.tasks.javadoc.Javadoc;
 import org.gradle.api.tasks.testing.Test;
@@ -57,8 +56,8 @@ public class ToolchainPlugin implements Plugin<Project> {
 			JavaToolchainSpec toolchainSpec = project.getExtensions().getByType(JavaPluginExtension.class)
 					.getToolchain();
 			toolchainSpec.getLanguageVersion().set(toolchain.getJavaVersion());
-			configureJavaCompileToolchain(project, toolchain);
-			configureTestToolchain(project, toolchain);
+			configureJavaCompileToolchain(project);
+			configureTestToolchain(project);
 		}
 	}
 
@@ -71,10 +70,9 @@ public class ToolchainPlugin implements Plugin<Project> {
 		project.getTasks().withType(JavaCompile.class, (task) -> task.setEnabled(false));
 		project.getTasks().withType(Javadoc.class, (task) -> task.setEnabled(false));
 		project.getTasks().withType(Test.class, (task) -> task.setEnabled(false));
-		project.getTasks().withType(GradleBuild.class, (task) -> task.setEnabled(false));
 	}
 
-	private void configureJavaCompileToolchain(Project project, ToolchainExtension toolchain) {
+	private void configureJavaCompileToolchain(Project project) {
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setFork(true);
 			// See https://github.com/gradle/gradle/issues/15538
@@ -83,7 +81,7 @@ public class ToolchainPlugin implements Plugin<Project> {
 		});
 	}
 
-	private void configureTestToolchain(Project project, ToolchainExtension toolchain) {
+	private void configureTestToolchain(Project project) {
 		project.getTasks().withType(Test.class, (test) -> {
 			// See https://github.com/spring-projects/spring-ldap/issues/570
 			List<String> arguments = Arrays.asList("--add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",

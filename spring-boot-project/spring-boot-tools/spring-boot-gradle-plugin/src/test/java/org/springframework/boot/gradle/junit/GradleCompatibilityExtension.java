@@ -21,6 +21,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.gradle.api.JavaVersion;
 import org.gradle.util.GradleVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
@@ -42,8 +43,17 @@ import org.springframework.util.StringUtils;
  */
 final class GradleCompatibilityExtension implements TestTemplateInvocationContextProvider {
 
-	private static final List<String> GRADLE_VERSIONS = Arrays.asList("6.3", "6.4.1", "6.5.1", "6.6.1", "6.7.1",
-			"current", "7.0-rc-1");
+	private static final List<String> GRADLE_VERSIONS;
+
+	static {
+		JavaVersion javaVersion = JavaVersion.current();
+		if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
+			GRADLE_VERSIONS = Arrays.asList("7.0-rc-1");
+		}
+		else {
+			GRADLE_VERSIONS = Arrays.asList("6.3", "6.4.1", "6.5.1", "6.6.1", "6.7.1", "current", "7.0-rc-1");
+		}
+	}
 
 	@Override
 	public Stream<TestTemplateInvocationContext> provideTestTemplateInvocationContexts(ExtensionContext context) {
