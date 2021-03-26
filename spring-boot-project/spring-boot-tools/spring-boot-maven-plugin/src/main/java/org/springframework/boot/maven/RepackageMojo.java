@@ -207,8 +207,8 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	}
 
 	private void repackage() throws MojoExecutionException {
-		Artifact source = getSourceArtifact();
-		File target = getTargetFile();
+		Artifact source = getSourceArtifact(this.classifier);
+		File target = getTargetFile(this.finalName, this.classifier, this.outputDirectory);
 		Repackager repackager = getRepackager(source.getFile());
 		Libraries libraries = getLibraries(this.requiresUnpack);
 		try {
@@ -237,41 +237,6 @@ public class RepackageMojo extends AbstractPackagerMojo {
 		catch (NumberFormatException ex) {
 			return OffsetDateTime.parse(this.outputTimestamp).toInstant().getEpochSecond();
 		}
-	}
-
-	/**
-	 * Return the source {@link Artifact} to repackage. If a classifier is specified and
-	 * an artifact with that classifier exists, it is used. Otherwise, the main artifact
-	 * is used.
-	 * @return the source artifact to repackage
-	 */
-	private Artifact getSourceArtifact() {
-		Artifact sourceArtifact = getArtifact(this.classifier);
-		return (sourceArtifact != null) ? sourceArtifact : this.project.getArtifact();
-	}
-
-	private Artifact getArtifact(String classifier) {
-		if (classifier != null) {
-			for (Artifact attachedArtifact : this.project.getAttachedArtifacts()) {
-				if (classifier.equals(attachedArtifact.getClassifier()) && attachedArtifact.getFile() != null
-						&& attachedArtifact.getFile().isFile()) {
-					return attachedArtifact;
-				}
-			}
-		}
-		return null;
-	}
-
-	private File getTargetFile() {
-		String classifier = (this.classifier != null) ? this.classifier.trim() : "";
-		if (!classifier.isEmpty() && !classifier.startsWith("-")) {
-			classifier = "-" + classifier;
-		}
-		if (!this.outputDirectory.exists()) {
-			this.outputDirectory.mkdirs();
-		}
-		return new File(this.outputDirectory,
-				this.finalName + classifier + "." + this.project.getArtifact().getArtifactHandler().getExtension());
 	}
 
 	private Repackager getRepackager(File source) {
