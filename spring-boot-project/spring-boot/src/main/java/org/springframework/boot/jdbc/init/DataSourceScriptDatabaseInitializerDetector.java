@@ -23,15 +23,16 @@ import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSour
 import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
 
 /**
- * A {@link DataSourceInitializerDetector} for {@link ScriptDataSourceInitializer}.
+ * A {@link DataSourceInitializerDetector} for
+ * {@link DataSourceScriptDatabaseInitializer}.
  *
  * @author Andy Wilkinson
  */
-class ScriptDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
+class DataSourceScriptDatabaseInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
 
 	@Override
 	protected Set<Class<?>> getDataSourceInitializerBeanTypes() {
-		return Collections.singleton(ScriptDataSourceInitializer.class);
+		return Collections.singleton(DataSourceScriptDatabaseInitializer.class);
 	}
 
 }

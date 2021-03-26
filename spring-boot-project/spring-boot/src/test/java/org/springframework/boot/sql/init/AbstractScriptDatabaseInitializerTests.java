@@ -14,105 +14,88 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.sql.init;
 
 import java.util.Arrays;
-import java.util.UUID;
 
-import com.zaxxer.hikari.HikariDataSource;
-import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.dao.DataAccessException;
-import org.springframework.jdbc.core.JdbcTemplate;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
- * Tests for {@link ScriptDataSourceInitializer}.
+ * Base class for testing {@link AbstractScriptDatabaseInitializer} implementations.
  *
  * @author Andy Wilkinson
  */
-class ScriptDataSourceInitializerTests {
-
-	private final HikariDataSource dataSource = DataSourceBuilder.create().type(HikariDataSource.class)
-			.url("jdbc:h2:mem:" + UUID.randomUUID()).build();
-
-	@AfterEach
-	void closeDataSource() {
-		this.dataSource.close();
-	}
+public abstract class AbstractScriptDatabaseInitializerTests {
 
 	@Test
 	void whenDatabaseIsInitializedThenSchemaAndDataScriptsAreApplied() {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("schema.sql"));
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
 		assertThat(numberOfRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
 	}
 
 	@Test
 	void whenContinueOnErrorIsFalseThenInitializationFailsOnError() {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
 		assertThatExceptionOfType(DataAccessException.class).isThrownBy(() -> initializer.initializeDatabase());
 	}
 
 	@Test
 	void whenContinueOnErrorIsTrueThenInitializationDoesNotFailOnError() {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setContinueOnError(true);
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
 	}
 
 	@Test
 	void whenNoScriptsExistAtASchemaLocationThenInitializationFails() {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("does-not-exist.sql"));
-		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
 				.withMessage("No schema scripts found at location 'does-not-exist.sql'");
 	}
 
 	@Test
 	void whenNoScriptsExistAtADataLocationThenInitializationFails() {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("does-not-exist.sql"));
-		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
 				.withMessage("No data scripts found at location 'does-not-exist.sql'");
 	}
 
 	@Test
 	void whenNoScriptsExistAtAnOptionalSchemaLocationThenInitializationSucceeds() {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("optional:does-not-exist.sql"));
-		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isFalse();
 	}
 
 	@Test
 	void whenNoScriptsExistAtAnOptionalDataLocationThenInitializationSucceeds() {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("optional:does-not-exist.sql"));
-		ScriptDataSourceInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isFalse();
 	}
 
-	private ScriptDataSourceInitializer createInitializer(DataSourceInitializationSettings settings) {
-		return new ScriptDataSourceInitializer(this.dataSource, settings);
-	}
+	protected abstract AbstractScriptDatabaseInitializer createInitializer(DatabaseInitializationSettings settings);
 
-	private int numberOfRows(String sql) {
-		return new JdbcTemplate(this.dataSource).queryForObject(sql, Integer.class);
-	}
+	protected abstract int numberOfRows(String sql);
 
 }

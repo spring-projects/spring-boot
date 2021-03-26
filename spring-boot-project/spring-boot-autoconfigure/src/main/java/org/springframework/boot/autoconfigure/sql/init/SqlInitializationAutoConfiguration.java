@@ -29,9 +29,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandi
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.jdbc.init.DataSourceInitializationSettings;
-import org.springframework.boot.jdbc.init.ScriptDataSourceInitializer;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.dependency.DataSourceInitializationDependencyConfigurer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
@@ -45,7 +45,7 @@ import org.springframework.util.StringUtils;
  * @since 2.5.0
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnMissingBean(ScriptDataSourceInitializer.class)
+@ConditionalOnMissingBean(DataSourceScriptDatabaseInitializer.class)
 @ConditionalOnSingleCandidate(DataSource.class)
 @ConditionalOnProperty(prefix = "spring.sql.init", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
@@ -54,15 +54,15 @@ import org.springframework.util.StringUtils;
 public class SqlInitializationAutoConfiguration {
 
 	@Bean
-	ScriptDataSourceInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
+	DataSourceScriptDatabaseInitializer dataSourceScriptDatabaseInitializer(DataSource dataSource,
 			SqlInitializationProperties initializationProperties) {
-		DataSourceInitializationSettings settings = createSettings(initializationProperties);
-		return new ScriptDataSourceInitializer(determineDataSource(dataSource, initializationProperties.getUsername(),
-				initializationProperties.getPassword()), settings);
+		DatabaseInitializationSettings settings = createSettings(initializationProperties);
+		return new DataSourceScriptDatabaseInitializer(determineDataSource(dataSource,
+				initializationProperties.getUsername(), initializationProperties.getPassword()), settings);
 	}
 
-	private static DataSourceInitializationSettings createSettings(SqlInitializationProperties properties) {
-		DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+	private static DatabaseInitializationSettings createSettings(SqlInitializationProperties properties) {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(
 				scriptLocations(properties.getSchemaLocations(), "schema", properties.getPlatform()));
 		settings.setDataLocations(scriptLocations(properties.getDataLocations(), "data", properties.getPlatform()));

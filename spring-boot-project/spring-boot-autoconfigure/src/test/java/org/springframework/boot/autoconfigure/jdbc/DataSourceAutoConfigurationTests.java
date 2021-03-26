@@ -43,7 +43,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.jdbc.DatabaseDriver;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.jdbc.init.ScriptDataSourceInitializer;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitialization;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -240,14 +240,15 @@ class DataSourceAutoConfigurationTests {
 	void testDataSourceIsInitializedEarly() {
 		this.contextRunner.withUserConfiguration(TestInitializedDataSourceConfiguration.class)
 				.withPropertyValues("spring.datasource.initialization-mode=always").run((context) -> {
-					assertThat(context).hasSingleBean(ScriptDataSourceInitializer.class);
+					assertThat(context).hasSingleBean(DataSourceScriptDatabaseInitializer.class);
 					assertThat(context.getBean(TestInitializedDataSourceConfiguration.class).called).isTrue();
 				});
 	}
 
 	@Test
 	void whenNoInitializationRelatedSpringDataSourcePropertiesAreConfiguredThenInitializationBacksOff() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ScriptDataSourceInitializer.class));
+		this.contextRunner
+				.run((context) -> assertThat(context).doesNotHaveBean(DataSourceScriptDatabaseInitializer.class));
 	}
 
 	private static Function<ApplicationContextRunner, ApplicationContextRunner> hideConnectionPools() {
