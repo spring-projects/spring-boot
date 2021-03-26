@@ -10,10 +10,6 @@ plugins {
 
 description = "Spring Boot Gradle Plugin"
 
-toolchain {
-	maximumCompatibleJavaVersion = JavaLanguageVersion.of(15)
-}
-
 configurations {
 	documentation
 }

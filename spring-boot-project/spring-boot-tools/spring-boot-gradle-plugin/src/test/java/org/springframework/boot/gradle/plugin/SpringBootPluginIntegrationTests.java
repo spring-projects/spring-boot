@@ -45,6 +45,7 @@ class SpringBootPluginIntegrationTests {
 				.contains("Spring Boot plugin requires Gradle 6 (6.3 or later). The current version is Gradle 6.2.2");
 	}
 
+	@DisabledForJreRange(min = JRE.JAVA_16)
 	@Test
 	void succeedWithVersionOfGradle6MatchingWithIsRequired() {
 		this.gradleBuild.gradleVersion("6.3").build();
