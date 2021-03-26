@@ -66,6 +66,7 @@ import org.springframework.util.unit.DataSize;
  * @author HaiTao Zhang
  * @author Victor Mandujano
  * @author Chris Bono
+ * @author Michael Lubavin
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -396,6 +397,19 @@ public class ServerProperties {
 		private Duration connectionTimeout;
 
 		/**
+		 * Amount of time a connection is allowed to remain idle until it is closed. Set
+		 * to -1 to indicate idle connections should not be closed.
+		 */
+		private Duration keepAliveTimeout;
+
+		/**
+		 * The maximum number of requests which can be processed on one connection before
+		 * it is closed by the server. Set to -1 for an unlimited number of requests per
+		 * connection. The default is 100, same as Tomcat default.
+		 */
+		private int maxKeepAliveRequests = 100;
+
+		/**
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
@@ -528,6 +542,22 @@ public class ServerProperties {
 
 		public void setConnectionTimeout(Duration connectionTimeout) {
 			this.connectionTimeout = connectionTimeout;
+		}
+
+		public Duration getKeepAliveTimeout() {
+			return this.keepAliveTimeout;
+		}
+
+		public void setKeepAliveTimeout(Duration keepAliveTimeout) {
+			this.keepAliveTimeout = keepAliveTimeout;
+		}
+
+		public int getMaxKeepAliveRequests() {
+			return this.maxKeepAliveRequests;
+		}
+
+		public void setMaxKeepAliveRequests(int maxKeepAliveRequests) {
+			this.maxKeepAliveRequests = maxKeepAliveRequests;
 		}
 
 		public Resource getResource() {

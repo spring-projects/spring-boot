@@ -102,6 +102,10 @@ public class TomcatWebServerFactoryCustomizer
 		propertyMapper.from(tomcatProperties::getUriEncoding).whenNonNull().to(factory::setUriEncoding);
 		propertyMapper.from(tomcatProperties::getConnectionTimeout).whenNonNull()
 				.to((connectionTimeout) -> customizeConnectionTimeout(factory, connectionTimeout));
+		propertyMapper.from(tomcatProperties::getKeepAliveTimeout).whenNonNull()
+				.to((keepAliveTimeout) -> customizeKeepAliveTimeout(factory, keepAliveTimeout));
+		propertyMapper.from(tomcatProperties::getMaxKeepAliveRequests)
+				.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
 		propertyMapper.from(tomcatProperties::getMaxConnections).when(this::isPositive)
 				.to((maxConnections) -> customizeMaxConnections(factory, maxConnections));
 		propertyMapper.from(tomcatProperties::getAcceptCount).when(this::isPositive)
@@ -155,6 +159,26 @@ public class TomcatWebServerFactoryCustomizer
 			if (handler instanceof AbstractProtocol) {
 				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
 				protocol.setConnectionTimeout((int) connectionTimeout.toMillis());
+			}
+		});
+	}
+
+	private void customizeKeepAliveTimeout(ConfigurableTomcatWebServerFactory factory, Duration keepAliveTimeout) {
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractProtocol) {
+				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+				protocol.setKeepAliveTimeout((int) keepAliveTimeout.toMillis());
+			}
+		});
+	}
+
+	private void customizeMaxKeepAliveRequests(ConfigurableTomcatWebServerFactory factory, int maxKeepAliveRequests) {
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractHttp11Protocol) {
+				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+				protocol.setMaxKeepAliveRequests(maxKeepAliveRequests);
 			}
 		});
 	}

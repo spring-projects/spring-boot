@@ -38,6 +38,8 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.coyote.http11.Http11NioProtocol;
+import org.apache.tomcat.util.net.NioEndpoint;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -82,6 +84,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
  * @author Chris Bono
+ * @author Michael Lubavin
  */
 class ServerPropertiesTests {
 
@@ -132,6 +135,8 @@ class ServerPropertiesTests {
 		map.put("server.tomcat.relaxed-path-chars", "|,<");
 		map.put("server.tomcat.relaxed-query-chars", "^  ,  | ");
 		map.put("server.tomcat.use-relative-redirects", "true");
+		map.put("server.tomcat.keep-alive-timeout", "100s");
+		map.put("server.tomcat.max-keep-alive-requests", "-1");
 		bind(map);
 		ServerProperties.Tomcat tomcat = this.properties.getTomcat();
 		Accesslog accesslog = tomcat.getAccesslog();
@@ -154,6 +159,8 @@ class ServerPropertiesTests {
 		assertThat(tomcat.getRelaxedPathChars()).containsExactly('|', '<');
 		assertThat(tomcat.getRelaxedQueryChars()).containsExactly('^', '|');
 		assertThat(tomcat.isUseRelativeRedirects()).isTrue();
+		assertThat(tomcat.getKeepAliveTimeout()).hasSeconds(100);
+		assertThat(tomcat.getMaxKeepAliveRequests()).isEqualTo(-1);
 	}
 
 	@Test
@@ -323,6 +330,16 @@ class ServerPropertiesTests {
 	@Test
 	void tomcatMaxThreadsMatchesProtocolDefault() throws Exception {
 		assertThat(this.properties.getTomcat().getThreads().getMax()).isEqualTo(getDefaultProtocol().getMaxThreads());
+	}
+
+	@Test
+	void tomcatMaxKeepAliveRequestsMatchesProtocolDefault() throws Exception {
+		Http11NioProtocol http11NioProtocol = (Http11NioProtocol) getDefaultProtocol();
+		NioEndpoint endpoint = (NioEndpoint) ReflectionTestUtils.getField(http11NioProtocol, "endpoint");
+		// cannot use getter since it returns 1 when endpoint is not bound,
+		// so using reflection to fetch the default maxKeepAliveRequests instead
+		int defaultMaxKeepAliveRequests = (int) ReflectionTestUtils.getField(endpoint, "maxKeepAliveRequests");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(defaultMaxKeepAliveRequests);
 	}
 
 	@Test

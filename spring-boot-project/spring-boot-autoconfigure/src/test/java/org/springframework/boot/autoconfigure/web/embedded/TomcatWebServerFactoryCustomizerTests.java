@@ -325,6 +325,29 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void customKeepAliveTimeout() {
+		bind("server.tomcat.keep-alive-timeout=50s");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getKeepAliveTimeout())
+						.isEqualTo(50000));
+	}
+
+	@Test
+	void defaultMaxKeepAliveRequests() {
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getMaxKeepAliveRequests()).isEqualTo(100));
+	}
+
+	@Test
+	void customMaxKeepAliveRequests() {
+		bind("server.tomcat.max-keep-alive-requests=-1");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getMaxKeepAliveRequests()).isEqualTo(-1));
+	}
+
+	@Test
 	void accessLogBufferingCanBeDisabled() {
 		bind("server.tomcat.accesslog.enabled=true", "server.tomcat.accesslog.buffered=false");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
