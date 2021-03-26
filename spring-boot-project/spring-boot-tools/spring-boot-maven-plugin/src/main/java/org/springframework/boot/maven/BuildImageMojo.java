@@ -29,6 +29,7 @@ import java.util.zip.ZipEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
 import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
 import org.apache.commons.compress.archivers.tar.TarConstants;
+import org.apache.maven.artifact.Artifact;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.logging.Log;
 import org.apache.maven.plugins.annotations.Execute;
@@ -72,14 +73,14 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-	 * Directory containing the JAR.
+	 * Directory containing the source archive.
 	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.directory}", required = true)
 	private File sourceDirectory;
 
 	/**
-	 * Name of the JAR.
+	 * Name of the source archive.
 	 * @since 2.3.0
 	 */
 	@Parameter(defaultValue = "${project.build.finalName}", readonly = true)
@@ -93,7 +94,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private boolean skip;
 
 	/**
-	 * Classifier used when finding the source jar.
+	 * Classifier used when finding the source archive.
 	 * @since 2.3.0
 	 */
 	@Parameter
@@ -186,7 +187,7 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	}
 
 	private BuildRequest getBuildRequest(Libraries libraries) throws MojoExecutionException {
-		ImagePackager imagePackager = new ImagePackager(getArchiveFile());
+		ImagePackager imagePackager = new ImagePackager(getArchiveFile(), getBackupFile());
 		Function<Owner, TarArchive> content = (owner) -> getApplicationContent(owner, libraries, imagePackager);
 		Image image = (this.image != null) ? this.image : new Image();
 		if (image.name == null && this.imageName != null) {
@@ -226,19 +227,26 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	private File getArchiveFile() {
 		// We can use 'project.getArtifact().getFile()' because that was done in a
 		// forked lifecycle and is now null
-		StringBuilder name = new StringBuilder(this.finalName);
-		if (StringUtils.hasText(this.classifier)) {
-			name.append("-").append(this.classifier);
+		File archiveFile = getTargetFile(this.finalName, this.classifier, this.sourceDirectory);
+		if (!archiveFile.exists()) {
+			archiveFile = getSourceArtifact(this.classifier).getFile();
 		}
-		File archiveFile = new File(this.sourceDirectory, name.toString() + ".jar");
-		if (archiveFile.exists()) {
-			return archiveFile;
+		if (!archiveFile.exists()) {
+			throw new IllegalStateException("A jar or war file is required for building image");
 		}
-		archiveFile = new File(this.sourceDirectory, name.toString() + ".war");
-		if (archiveFile.exists()) {
-			return archiveFile;
+		return archiveFile;
+	}
+
+	/**
+	 * Return the {@link File} to use to backup the original source.
+	 * @return the file to use to backup the original source
+	 */
+	private File getBackupFile() {
+		Artifact source = getSourceArtifact(null);
+		if (this.classifier != null && !this.classifier.equals(source.getClassifier())) {
+			return source.getFile();
 		}
-		throw new IllegalStateException("A jar or war file is required for building image");
+		return null;
 	}
 
 	private BuildRequest customize(BuildRequest request) {

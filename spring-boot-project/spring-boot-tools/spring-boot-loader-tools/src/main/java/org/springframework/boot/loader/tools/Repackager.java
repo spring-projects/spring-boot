@@ -31,16 +31,29 @@ import org.springframework.util.Assert;
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Madhura Bhave
+ * @author Scott Frederick
  * @since 1.0.0
  */
 public class Repackager extends Packager {
 
 	private boolean backupSource = true;
 
+	/**
+	 * Create a new {@link Repackager} instance.
+	 * @param source the source archive file to package
+	 */
 	public Repackager(File source) {
-		this(source, null);
+		super(source);
 	}
 
+	/**
+	 * Create a new {@link Repackager} instance.
+	 * @param source the source archive file to package
+	 * @param layoutFactory the layout factory to use or {@code null}
+	 * @deprecated since 2.5.0 in favor of {@link #Repackager(File)} and
+	 * {@link #setLayoutFactory(LayoutFactory)}
+	 */
+	@Deprecated
 	public Repackager(File source, LayoutFactory layoutFactory) {
 		super(source, layoutFactory);
 	}
