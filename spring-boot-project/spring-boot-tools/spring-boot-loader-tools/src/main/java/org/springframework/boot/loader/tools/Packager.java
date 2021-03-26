@@ -76,6 +76,8 @@ public abstract class Packager {
 
 	private final File source;
 
+	private File backupFile;
+
 	private Layout layout;
 
 	private LayoutFactory layoutFactory;
@@ -88,9 +90,20 @@ public abstract class Packager {
 
 	/**
 	 * Create a new {@link Packager} instance.
-	 * @param source the source JAR file to package
-	 * @param layoutFactory the layout factory to use or {@code null}
+	 * @param source the source archive file to package
 	 */
+	protected Packager(File source) {
+		this(source, null);
+	}
+
+	/**
+	 * Create a new {@link Packager} instance.
+	 * @param source the source archive file to package
+	 * @param layoutFactory the layout factory to use or {@code null}
+	 * @deprecated since 2.5.0 in favor of {@link #Packager(File)} and
+	 * {@link #setLayoutFactory(LayoutFactory)}
+	 */
+	@Deprecated
 	protected Packager(File source, LayoutFactory layoutFactory) {
 		Assert.notNull(source, "Source file must not be null");
 		Assert.isTrue(source.exists() && source.isFile(),
@@ -144,6 +157,14 @@ public abstract class Packager {
 		Assert.notNull(layers, "Layers must not be null");
 		this.layers = layers;
 		this.layersIndex = new LayersIndex(layers);
+	}
+
+	/**
+	 * Sets the {@link File} to use to backup the original source.
+	 * @param backupFile the file to use to backup the original source
+	 */
+	protected void setBackupFile(File backupFile) {
+		this.backupFile = backupFile;
 	}
 
 	/**
@@ -291,6 +312,9 @@ public abstract class Packager {
 	 * @return the file to use to backup the original source
 	 */
 	public final File getBackupFile() {
+		if (this.backupFile != null) {
+			return this.backupFile;
+		}
 		return new File(this.source.getParentFile(), this.source.getName() + ".original");
 	}
 
