@@ -66,6 +66,7 @@ import org.springframework.util.unit.DataSize;
  * @author HaiTao Zhang
  * @author Victor Mandujano
  * @author Chris Bono
+ * @author Parviz Rozikov
  * @since 1.0.0
  */
 @ConfigurationProperties(prefix = "server", ignoreUnknownFields = true)
@@ -371,6 +372,22 @@ public class ServerProperties {
 		private int processorCache = 200;
 
 		/**
+		 * The number of milliseconds this Connector will wait for another HTTP request
+		 * before closing the connection. The default value is to use the value that has
+		 * been set for the connectionTimeout attribute. Use a value of -1 to indicate no
+		 * (i.e. infinite) timeout.
+		 */
+		private Duration keepAliveTimeout;
+
+		/**
+		 * The maximum number of HTTP requests which can be pipelined until the connection
+		 * is closed by the server./ Setting this attribute to 1 will disable HTTP/1.0
+		 * keep-alive as well as HTTP/1.1 keep-alive and pipelining. Setting this to -1
+		 * will allow an unlimited amount of pipelined or keep-alive HTTP requests.
+		 */
+		private int maxKeepAliveRequests = 100;
+
+		/**
 		 * Comma-separated list of additional patterns that match jars to ignore for TLD
 		 * scanning. The special '?' and '*' characters can be used in the pattern to
 		 * match one and only one character and zero or more characters respectively.
@@ -496,6 +513,22 @@ public class ServerProperties {
 
 		public void setProcessorCache(int processorCache) {
 			this.processorCache = processorCache;
+		}
+
+		public Duration getKeepAliveTimeout() {
+			return this.keepAliveTimeout;
+		}
+
+		public void setKeepAliveTimeout(Duration keepAliveTimeout) {
+			this.keepAliveTimeout = keepAliveTimeout;
+		}
+
+		public int getMaxKeepAliveRequests() {
+			return this.maxKeepAliveRequests;
+		}
+
+		public void setMaxKeepAliveRequests(int maxKeepAliveRequests) {
+			this.maxKeepAliveRequests = maxKeepAliveRequests;
 		}
 
 		public List<String> getAdditionalTldSkipPatterns() {
