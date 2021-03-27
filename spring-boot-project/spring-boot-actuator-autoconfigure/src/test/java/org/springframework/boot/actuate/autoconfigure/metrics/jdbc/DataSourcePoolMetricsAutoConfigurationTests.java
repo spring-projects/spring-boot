@@ -20,7 +20,6 @@ import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Optional;
 import java.util.UUID;
 
 import javax.sql.DataSource;
@@ -29,7 +28,6 @@ import com.zaxxer.hikari.HikariDataSource;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
-import org.flywaydb.core.internal.license.FlywayTeamsUpgradeRequiredException;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
@@ -47,7 +45,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.core.Ordered;
 import org.springframework.core.PriorityOrdered;
 import org.springframework.jdbc.datasource.DelegatingDataSource;
@@ -307,6 +304,13 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		};
 	}
 
+	private static HikariDataSource createHikariDataSource(String poolName) {
+		String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
+		HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url).type(HikariDataSource.class).build();
+		hikariDataSource.setPoolName(poolName);
+		return hikariDataSource;
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class BaseConfiguration {
 
@@ -435,13 +439,6 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 
 		}
 
-	}
-
-	private static HikariDataSource createHikariDataSource(String poolName) {
-		String url = "jdbc:hsqldb:mem:test-" + UUID.randomUUID();
-		HikariDataSource hikariDataSource = DataSourceBuilder.create().url(url).type(HikariDataSource.class).build();
-		hikariDataSource.setPoolName(poolName);
-		return hikariDataSource;
 	}
 
 	@Configuration(proxyBeanMethods = false)

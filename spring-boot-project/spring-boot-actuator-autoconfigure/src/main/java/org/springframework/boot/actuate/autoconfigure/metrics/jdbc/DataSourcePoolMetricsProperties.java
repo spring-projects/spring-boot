@@ -51,7 +51,7 @@ public class DataSourcePoolMetricsProperties {
 	}
 
 	public boolean isDeduplicateRoutingDataSources() {
-		return deduplicateRoutingDataSources;
+		return this.deduplicateRoutingDataSources;
 	}
 
 	public void setDeduplicateRoutingDataSources(boolean deduplicateRoutingDataSources) {
