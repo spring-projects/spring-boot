@@ -18,7 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.metrics;
 
 import com.mongodb.MongoClientSettings;
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsConnectionPoolTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
+import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolTagsProvider;
 
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
@@ -36,7 +41,8 @@ import org.springframework.context.annotation.Configuration;
  * {@link EnableAutoConfiguration Auto-configuration} for Mongo metrics.
  *
  * @author Chris Bono
- * @since 2.4.0
+ * @author Jonatan Ivanov
+ * @since 2.5.0
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureBefore(MongoAutoConfiguration.class)
@@ -52,14 +58,49 @@ public class MongoMetricsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		MongoMetricsCommandListener mongoMetricsCommandListener(MeterRegistry meterRegistry) {
-			return new MongoMetricsCommandListener(meterRegistry);
+		MongoMetricsCommandListener mongoMetricsCommandListener(MeterRegistry meterRegistry,
+				MongoMetricsCommandTagsProvider mongoMetricsCommandTagsProvider) {
+			return new MongoMetricsCommandListener(meterRegistry, mongoMetricsCommandTagsProvider);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		MongoMetricsCommandTagsProvider mongoMetricsCommandTagsProvider() {
+			return new DefaultMongoMetricsCommandTagsProvider();
 		}
 
 		@Bean
 		MongoClientSettingsBuilderCustomizer mongoMetricsCommandListenerClientSettingsBuilderCustomizer(
 				MongoMetricsCommandListener mongoMetricsCommandListener) {
-			return (builder) -> builder.addCommandListener(mongoMetricsCommandListener);
+			return (clientSettingsBuilder) -> clientSettingsBuilder.addCommandListener(mongoMetricsCommandListener);
+		}
+
+	}
+
+	@ConditionalOnClass(MongoMetricsConnectionPoolListener.class)
+	@ConditionalOnProperty(name = "management.metrics.mongo.connectionpoollistener.enabled", havingValue = "true",
+			matchIfMissing = true)
+	static class MongoMetricsConnectionPoolListenerConfiguration {
+
+		@Bean
+		@ConditionalOnMissingBean
+		MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener(MeterRegistry meterRegistry,
+				MongoMetricsConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider) {
+			return new MongoMetricsConnectionPoolListener(meterRegistry, mongoMetricsConnectionPoolTagsProvider);
+		}
+
+		@Bean
+		@ConditionalOnMissingBean
+		MongoMetricsConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider() {
+			return new DefaultMongoMetricsConnectionPoolTagsProvider();
+		}
+
+		@Bean
+		MongoClientSettingsBuilderCustomizer mongoMetricsConnectionPoolListenerClientSettingsBuilderCustomizer(
+				MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener) {
+			return (clientSettingsBuilder) -> clientSettingsBuilder
+					.applyToConnectionPoolSettings((connectionPoolSettingsBuilder) -> connectionPoolSettingsBuilder
+							.addConnectionPoolListener(mongoMetricsConnectionPoolListener));
 		}
 
 	}
