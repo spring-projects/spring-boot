@@ -56,6 +56,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andrew McGhie
  * @author Rafiullah Hamedy
  * @author Victor Mandujano
+ * @author Parviz Rozikov
  */
 class TomcatWebServerFactoryCustomizerTests {
 
@@ -95,6 +96,29 @@ class TomcatWebServerFactoryCustomizerTests {
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getProcessorCache())
 						.isEqualTo(100));
+	}
+
+	@Test
+	void customizeKeepAliveTimeout() {
+		bind("server.tomcat.keep-alive-timeout=30ms");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getKeepAliveTimeout())
+						.isEqualTo(30));
+	}
+
+	@Test
+	void customizeMaxKeepAliveRequests() {
+		bind("server.tomcat.max-keep-alive-requests=-1");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getMaxKeepAliveRequests()).isEqualTo(-1));
+	}
+
+	@Test
+	void defaultMaxKeepAliveRequests() {
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getMaxKeepAliveRequests()).isEqualTo(100));
 	}
 
 	@Test

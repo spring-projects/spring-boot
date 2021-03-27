@@ -56,6 +56,7 @@ import org.springframework.util.unit.DataSize;
  * @author Dirk Deyne
  * @author Rafiullah Hamedy
  * @author Victor Mandujano
+ * @author Parviz Rozikov
  * @since 2.0.0
  */
 public class TomcatWebServerFactoryCustomizer
@@ -108,6 +109,10 @@ public class TomcatWebServerFactoryCustomizer
 				.to((acceptCount) -> customizeAcceptCount(factory, acceptCount));
 		propertyMapper.from(tomcatProperties::getProcessorCache)
 				.to((processorCache) -> customizeProcessorCache(factory, processorCache));
+		propertyMapper.from(tomcatProperties::getKeepAliveTimeout).whenNonNull()
+				.to((keepAliveTimeout) -> customizeKeepAliveTimeout(factory, keepAliveTimeout));
+		propertyMapper.from(tomcatProperties::getMaxKeepAliveRequests)
+				.to((maxKeepAliveRequests) -> customizeMaxKeepAliveRequests(factory, maxKeepAliveRequests));
 		propertyMapper.from(tomcatProperties::getRelaxedPathChars).as(this::joinCharacters).whenHasText()
 				.to((relaxedChars) -> customizeRelaxedPathChars(factory, relaxedChars));
 		propertyMapper.from(tomcatProperties::getRelaxedQueryChars).as(this::joinCharacters).whenHasText()
@@ -135,6 +140,26 @@ public class TomcatWebServerFactoryCustomizer
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractProtocol) {
 				((AbstractProtocol<?>) handler).setProcessorCache(processorCache);
+			}
+		});
+	}
+
+	private void customizeKeepAliveTimeout(ConfigurableTomcatWebServerFactory factory, Duration keepAliveTimeout) {
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractProtocol) {
+				final AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+				protocol.setKeepAliveTimeout((int) keepAliveTimeout.toMillis());
+			}
+		});
+	}
+
+	private void customizeMaxKeepAliveRequests(ConfigurableTomcatWebServerFactory factory, int maxKeepAliveRequests) {
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractHttp11Protocol) {
+				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+				protocol.setMaxKeepAliveRequests(maxKeepAliveRequests);
 			}
 		});
 	}
