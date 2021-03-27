@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ package org.springframework.boot.autoconfigure.quartz;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -194,8 +196,8 @@ class QuartzAutoConfigurationTests {
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					assertThat(scheduler.getJobDetail(JobKey.jobKey("fooJob"))).isNotNull();
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger"))).isNotNull();
-					Thread.sleep(1000L);
-					assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue");
+					Awaitility.waitAtMost(Duration.ofSeconds(5)).untilAsserted(
+							() -> assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue"));
 				});
 	}
 
