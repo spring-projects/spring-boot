@@ -14,8 +14,16 @@ tasks.getByName<BootJar>("bootJar") {
 tasks.getByName<BootBuildImage>("bootBuildImage") {
 	docker {
 		host = "tcp://192.168.99.100:2376"
-		tlsVerify = true
+		isTlsVerify = true
 		certPath = "/home/users/.minikube/certs"
 	}
 }
 // end::docker-host[]
+
+tasks.register("bootBuildImageDocker") {
+	doFirst {
+		println("host=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.host}")
+		println("tlsVerify=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.isTlsVerify}")
+		println("certPath=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.certPath}")
+	}
+}

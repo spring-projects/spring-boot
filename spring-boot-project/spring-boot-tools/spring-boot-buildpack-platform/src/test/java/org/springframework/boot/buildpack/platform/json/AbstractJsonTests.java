@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,11 @@
 
 package org.springframework.boot.buildpack.platform.json;
 
+import java.io.BufferedReader;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
@@ -26,6 +30,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Abstract base class for JSON based tests.
  *
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 public abstract class AbstractJsonTests {
 
@@ -37,6 +42,11 @@ public abstract class AbstractJsonTests {
 		InputStream result = getClass().getResourceAsStream(name);
 		assertThat(result).as("JSON source " + name).isNotNull();
 		return result;
+	}
+
+	protected final String getContentAsString(String name) {
+		return new BufferedReader(new InputStreamReader(getContent(name), StandardCharsets.UTF_8)).lines()
+				.collect(Collectors.joining("\n"));
 	}
 
 }

@@ -16,3 +16,9 @@ bootBuildImage {
 	}
 }
 // end::docker-auth-token[]
+
+task bootBuildImageDocker {
+	doFirst {
+		println("token=${tasks.bootBuildImage.docker.builderRegistry.token}")
+	}
+}

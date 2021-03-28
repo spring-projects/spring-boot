@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,10 +22,10 @@ import org.springframework.util.StringUtils;
 
 /**
  * A user specified location that can be {@link ConfigDataLocationResolver resolved} to
- * one or {@link ConfigDataResource config data resources}. A {@link ConfigDataLocation}
- * is a simple wrapper around a {@link String} value. The exact format of the value will
- * depend on the underlying technology, but is usually a URL like syntax consisting of a
- * prefix and path. For example, {@code crypt:somehost/somepath}.
+ * one or more {@link ConfigDataResource config data resources}. A
+ * {@link ConfigDataLocation} is a simple wrapper around a {@link String} value. The exact
+ * format of the value will depend on the underlying technology, but is usually a URL like
+ * syntax consisting of a prefix and path. For example, {@code crypt:somehost/somepath}.
  * <p>
  * Locations can be mandatory or {@link #isOptional() optional}. Optional locations are
  * prefixed with {@code optional:}.
@@ -121,7 +121,7 @@ public final class ConfigDataLocation implements OriginProvider {
 
 	/**
 	 * Create a new {@link ConfigDataLocation} with a specific {@link Origin}.
-	 * @param origin the orgin to set
+	 * @param origin the origin to set
 	 * @return a new {@link ConfigDataLocation} instance.
 	 */
 	ConfigDataLocation withOrigin(Origin origin) {

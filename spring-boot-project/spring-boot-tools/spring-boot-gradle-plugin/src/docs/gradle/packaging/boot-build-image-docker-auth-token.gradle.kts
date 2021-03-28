@@ -19,3 +19,9 @@ tasks.getByName<BootBuildImage>("bootBuildImage") {
 	}
 }
 // end::docker-auth-token[]
+
+tasks.register("bootBuildImageDocker") {
+	doFirst {
+		println("token=${tasks.getByName<BootBuildImage>("bootBuildImage").docker.builderRegistry.token}")
+	}
+}

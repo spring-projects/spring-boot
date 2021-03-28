@@ -4,6 +4,8 @@ include::authors.adoc[]
 :docinfo: shared
 include::attributes.adoc[]
 
+*{spring-boot-version}*
+
 include::legal.adoc[leveloffset=+1]
 include::documentation-overview.adoc[leveloffset=+1]
 include::getting-started.adoc[leveloffset=+1]

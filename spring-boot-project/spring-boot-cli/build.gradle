@@ -108,7 +108,10 @@ task fullJar(type: Jar) {
 		into "BOOT-INF/classes"
 	}
 	into("") {
-		from zipTree(configurations.loader.singleFile)
+		from(zipTree(configurations.loader.singleFile)) {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+		}
 	}
 	manifest {
 		attributes(
@@ -168,11 +171,11 @@ def scoopManifestArtifact = artifacts.add("archives", file("${buildDir}/scoop/sp
 task homebrewFormula(type: org.springframework.boot.build.cli.HomebrewFormula) {
 	dependsOn tar
 	outputDir = file("${buildDir}/homebrew")
-	template = file("src/main/homebrew/springboot.rb")
+	template = file("src/main/homebrew/spring-boot.rb")
 	archive = tar.archiveFile
 }
 
-def homebrewFormulaArtifact = artifacts.add("archives", file("${buildDir}/homebrew/springboot.rb")) {
+def homebrewFormulaArtifact = artifacts.add("archives", file("${buildDir}/homebrew/spring-boot.rb")) {
 	type "rb"
 	classifier "homebrew"
 	builtBy "homebrewFormula"

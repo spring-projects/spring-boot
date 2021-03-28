@@ -7,9 +7,9 @@
 :numbered:
 :sectanchors:
 :sectnums:
-:icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
+:chomp: tags formatters headers packages
 
 :spring-boot-artifactory-repo: snapshot
 :github-tag: master
@@ -20,8 +20,10 @@
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
 
-:code-examples: ../main/java/org/springframework/boot/docs
-:test-examples: ../test/java/org/springframework/boot/docs
+:include: ../main/java/org/springframework/boot/docs
+:include-springbootfeatures: {include}/springbootfeatures
+:include-productionreadyfeatures: {include}/productionreadyfeatures
+:include-howto: {include}/howto
 
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
@@ -79,8 +81,6 @@
 :spring-data-r2dbc-docs: https://docs.spring.io/spring-data/r2dbc/docs/{spring-data-r2dbc-version}/reference/html/
 :spring-data-redis: https://spring.io/projects/spring-data-redis
 :spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/{spring-data-rest-version}/api/org/springframework/data/rest
-:spring-data-solr: https://spring.io/projects/spring-data-solr
-:spring-data-solr-docs: https://docs.spring.io/spring-data/solr/docs/{spring-data-solr-version}/reference/html/
 :spring-framework: https://spring.io/projects/spring-framework
 :spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
 :spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/reference/html
@@ -96,15 +96,11 @@
 :spring-session: https://spring.io/projects/spring-session
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/
 
-
-
-
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :gradle-docs: https://docs.gradle.org/current/userguide
 :hibernate-docs: https://docs.jboss.org/hibernate/orm/5.4/userguide/html_single/Hibernate_User_Guide.html
 :java-api: https://docs.oracle.com/javase/8/docs/api
-:jetty-docs: https://www.eclipse.org/jetty/documentation/{jetty-version}
 :jooq-docs: https://www.jooq.org/doc/{jooq-version}/manual-single-page
 :junit5-docs: https://junit.org/junit5/docs/current/user-guide
 :kotlin-docs: https://kotlinlang.org/docs/reference/

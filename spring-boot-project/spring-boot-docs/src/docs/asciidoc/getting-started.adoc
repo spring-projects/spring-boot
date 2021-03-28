@@ -29,7 +29,7 @@ Our primary goals are:
 
 [[getting-started-system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 15 (included).
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 16 (included).
 {spring-framework-docs}/[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
@@ -58,6 +58,9 @@ Spring Boot supports the following embedded servlet containers:
 
 | Jetty 9.4
 | 3.1
+
+| Jetty 10.0
+| 4.0
 
 | Undertow 2.0
 | 4.0
@@ -115,7 +118,6 @@ More details on getting started with Spring Boot and Maven can be found in the {
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
 Spring Boot is compatible with Gradle 6 (6.3 or later).
-Gradle 5.6.x is also supported but this support is deprecated and will be removed in a future release.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
@@ -210,8 +212,8 @@ If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spri
 
 [indent=0]
 ----
-	$ brew tap pivotal/tap
-	$ brew install springboot
+	$ brew tap spring-io/tap
+	$ brew install spring-boot
 ----
 
 Homebrew installs `spring` to `/usr/local/bin`.
@@ -483,7 +485,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 To finish our application, we need to create a single Java file.
 By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/Example.java` to contain the following code:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.*;
 	import org.springframework.boot.autoconfigure.*;

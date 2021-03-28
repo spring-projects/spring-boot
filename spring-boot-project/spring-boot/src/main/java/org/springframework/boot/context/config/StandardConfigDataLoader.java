@@ -36,11 +36,14 @@ public class StandardConfigDataLoader implements ConfigDataLoader<StandardConfig
 	@Override
 	public ConfigData load(ConfigDataLoaderContext context, StandardConfigDataResource resource)
 			throws IOException, ConfigDataNotFoundException {
+		if (resource.isEmptyDirectory()) {
+			return ConfigData.EMPTY;
+		}
 		ConfigDataResourceNotFoundException.throwIfDoesNotExist(resource, resource.getResource());
 		StandardConfigDataReference reference = resource.getReference();
 		Resource originTrackedResource = OriginTrackedResource.of(resource.getResource(),
 				Origin.from(reference.getConfigDataLocation()));
-		String name = String.format("Config resource '%s' via location '%s'", reference.getResourceLocation(),
+		String name = String.format("Config resource '%s' via location '%s'", resource,
 				reference.getConfigDataLocation());
 		List<PropertySource<?>> propertySources = reference.getPropertySourceLoader().load(name, originTrackedResource);
 		return new ConfigData(propertySources);

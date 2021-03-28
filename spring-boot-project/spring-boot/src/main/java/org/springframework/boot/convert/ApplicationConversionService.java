@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,9 +21,11 @@ import java.util.Set;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterRegistry;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.convert.converter.GenericConverter.ConvertiblePair;
 import org.springframework.core.convert.support.ConfigurableConversionService;
 import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.format.Formatter;
@@ -59,6 +61,28 @@ public class ApplicationConversionService extends FormattingConversionService {
 			setEmbeddedValueResolver(embeddedValueResolver);
 		}
 		configure(this);
+	}
+
+	/**
+	 * Return {@code true} if objects of {@code sourceType} can be converted to the
+	 * {@code targetType} and the converter has {@code Object.class} as a supported source
+	 * type.
+	 * @param sourceType the source type to test
+	 * @param targetType the target type to test
+	 * @return if conversion happens via an {@code ObjectTo...} converter
+	 * @since 2.4.3
+	 */
+	public boolean isConvertViaObjectSourceType(TypeDescriptor sourceType, TypeDescriptor targetType) {
+		GenericConverter converter = getConverter(sourceType, targetType);
+		Set<ConvertiblePair> pairs = (converter != null) ? converter.getConvertibleTypes() : null;
+		if (pairs != null) {
+			for (ConvertiblePair pair : pairs) {
+				if (Object.class.equals(pair.getSourceType())) {
+					return true;
+				}
+			}
+		}
+		return false;
 	}
 
 	/**
@@ -122,6 +146,13 @@ public class ApplicationConversionService extends FormattingConversionService {
 		registry.addConverter(new InputStreamSourceToByteArrayConverter());
 		registry.addConverterFactory(new LenientStringToEnumConverterFactory());
 		registry.addConverterFactory(new LenientBooleanToEnumConverterFactory());
+		if (registry instanceof ConversionService) {
+			addApplicationConverters(registry, (ConversionService) registry);
+		}
+	}
+
+	private static void addApplicationConverters(ConverterRegistry registry, ConversionService conversionService) {
+		registry.addConverter(new CharSequenceToObjectConverter(conversionService));
 	}
 
 	/**

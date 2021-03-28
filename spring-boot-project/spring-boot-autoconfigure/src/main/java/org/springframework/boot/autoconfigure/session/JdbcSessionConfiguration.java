@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import javax.sql.DataSource;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -33,6 +34,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.session.SessionRepository;
 import org.springframework.session.jdbc.JdbcIndexedSessionRepository;
+import org.springframework.session.jdbc.config.annotation.SpringSessionDataSource;
 import org.springframework.session.jdbc.config.annotation.web.http.JdbcHttpSessionConfiguration;
 
 /**
@@ -52,9 +54,11 @@ class JdbcSessionConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(DataSource dataSource,
-			ResourceLoader resourceLoader, JdbcSessionProperties properties) {
-		return new JdbcSessionDataSourceInitializer(dataSource, resourceLoader, properties);
+	JdbcSessionDataSourceInitializer jdbcSessionDataSourceInitializer(
+			@SpringSessionDataSource ObjectProvider<DataSource> sessionDataSource,
+			ObjectProvider<DataSource> dataSource, ResourceLoader resourceLoader, JdbcSessionProperties properties) {
+		return new JdbcSessionDataSourceInitializer(sessionDataSource.getIfAvailable(dataSource::getObject),
+				resourceLoader, properties);
 	}
 
 	@Configuration(proxyBeanMethods = false)

@@ -29,7 +29,7 @@ import org.springframework.validation.beanvalidation.MethodValidationPostProcess
 
 /**
  * Custom {@link MethodValidationPostProcessor} that applies
- * {@code MethodValidationExclusionFilter exclusion filters}.
+ * {@link MethodValidationExcludeFilter exclusion filters}.
  *
  * @author Andy Wilkinson
  * @since 2.4.0
@@ -39,8 +39,8 @@ public class FilteredMethodValidationPostProcessor extends MethodValidationPostP
 	private final Collection<MethodValidationExcludeFilter> excludeFilters;
 
 	/**
-	 * Creates a new {@code ExcludingMethodValidationPostProcessor} that will apply the
-	 * given {@code exclusionFilters} when identifying beans that are eligible for method
+	 * Creates a new {@code FilteredMethodValidationPostProcessor} that will apply the
+	 * given {@code excludeFilters} when identifying beans that are eligible for method
 	 * validation post-processing.
 	 * @param excludeFilters filters to apply
 	 */
@@ -49,8 +49,8 @@ public class FilteredMethodValidationPostProcessor extends MethodValidationPostP
 	}
 
 	/**
-	 * Creates a new {@code ExcludingMethodValidationPostProcessor} that will apply the
-	 * given {@code exclusionFilters} when identifying beans that are eligible for method
+	 * Creates a new {@code FilteredMethodValidationPostProcessor} that will apply the
+	 * given {@code excludeFilters} when identifying beans that are eligible for method
 	 * validation post-processing.
 	 * @param excludeFilters filters to apply
 	 */

@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.cassandra;
 
 import java.util.Collection;
@@ -42,7 +43,7 @@ public class CassandraDriverReactiveHealthIndicator extends AbstractReactiveHeal
 	private final CqlSession session;
 
 	/**
-	 * Create a new {@link CassandraHealthIndicator} instance.
+	 * Create a new {@link CassandraDriverReactiveHealthIndicator} instance.
 	 * @param session the {@link CqlSession}.
 	 */
 	public CassandraDriverReactiveHealthIndicator(CqlSession session) {

@@ -209,7 +209,7 @@ The preceding declaration picks up `custom-bom-1.0.0.pom` in a Maven repository 
 
 When you specify multiple BOMs, they are applied in the order in which you declare them, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@DependencyManagementBom(["com.example.custom-bom:1.0.0",
 			"com.example.another-bom:1.0.0"])

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConstructorBinding;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.DefaultValue;
+import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.origin.Origin;
 import org.springframework.boot.origin.OriginLookup;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
@@ -73,7 +74,7 @@ class ConfigurationPropertiesReportEndpointTests {
 	void descriptorWithValueObjectBindMethodDetectsRelevantProperties() {
 		this.contextRunner.withUserConfiguration(ImmutablePropertiesConfiguration.class).run(assertProperties(
 				"immutable",
-				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "duration")));
+				(properties) -> assertThat(properties).containsOnlyKeys("dbPassword", "myTestProperty", "for")));
 	}
 
 	@Test
@@ -451,16 +452,16 @@ class ConfigurationPropertiesReportEndpointTests {
 
 		private final String nullValue;
 
-		private final Duration duration;
+		private final Duration forDuration;
 
 		private final String ignored;
 
 		ImmutableProperties(@DefaultValue("123456") String dbPassword, @DefaultValue("654321") String myTestProperty,
-				String nullValue, @DefaultValue("10s") Duration duration) {
+				String nullValue, @DefaultValue("10s") @Name("for") Duration forDuration) {
 			this.dbPassword = dbPassword;
 			this.myTestProperty = myTestProperty;
 			this.nullValue = nullValue;
-			this.duration = duration;
+			this.forDuration = forDuration;
 			this.ignored = "dummy";
 		}
 
@@ -476,8 +477,8 @@ class ConfigurationPropertiesReportEndpointTests {
 			return this.nullValue;
 		}
 
-		public Duration getDuration() {
-			return this.duration;
+		public Duration getFor() {
+			return this.forDuration;
 		}
 
 		public String getIgnored() {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.function.Function;
 
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
@@ -48,7 +49,7 @@ class TypeElementMembers {
 
 	private final Map<String, VariableElement> fields = new LinkedHashMap<>();
 
-	private final Map<String, ExecutableElement> publicGetters = new LinkedHashMap<>();
+	private final Map<String, List<ExecutableElement>> publicGetters = new LinkedHashMap<>();
 
 	private final Map<String, List<ExecutableElement>> publicSetters = new LinkedHashMap<>();
 
@@ -74,8 +75,14 @@ class TypeElementMembers {
 	private void processMethod(ExecutableElement method) {
 		if (isPublic(method)) {
 			String name = method.getSimpleName().toString();
-			if (isGetter(method) && !this.publicGetters.containsKey(name)) {
-				this.publicGetters.put(getAccessorName(name), method);
+			if (isGetter(method)) {
+				String propertyName = getAccessorName(name);
+				List<ExecutableElement> matchingGetters = this.publicGetters.computeIfAbsent(propertyName,
+						(k) -> new ArrayList<>());
+				TypeMirror returnType = method.getReturnType();
+				if (getMatchingGetter(matchingGetters, returnType) == null) {
+					matchingGetters.add(method);
+				}
 			}
 			else if (isSetter(method)) {
 				String propertyName = getAccessorName(name);
@@ -95,10 +102,19 @@ class TypeElementMembers {
 				&& !modifiers.contains(Modifier.STATIC);
 	}
 
+	ExecutableElement getMatchingGetter(List<ExecutableElement> candidates, TypeMirror type) {
+		return getMatchingAccessor(candidates, type, ExecutableElement::getReturnType);
+	}
+
 	private ExecutableElement getMatchingSetter(List<ExecutableElement> candidates, TypeMirror type) {
+		return getMatchingAccessor(candidates, type, (candidate) -> candidate.getParameters().get(0).asType());
+	}
+
+	private ExecutableElement getMatchingAccessor(List<ExecutableElement> candidates, TypeMirror type,
+			Function<ExecutableElement, TypeMirror> typeExtractor) {
 		for (ExecutableElement candidate : candidates) {
-			TypeMirror paramType = candidate.getParameters().get(0).asType();
-			if (this.env.getTypeUtils().isSameType(paramType, type)) {
+			TypeMirror candidateType = typeExtractor.apply(candidate);
+			if (this.env.getTypeUtils().isSameType(candidateType, type)) {
 				return candidate;
 			}
 		}
@@ -151,35 +167,30 @@ class TypeElementMembers {
 		return Collections.unmodifiableMap(this.fields);
 	}
 
-	Map<String, ExecutableElement> getPublicGetters() {
+	Map<String, List<ExecutableElement>> getPublicGetters() {
 		return Collections.unmodifiableMap(this.publicGetters);
 	}
 
 	ExecutableElement getPublicGetter(String name, TypeMirror type) {
-		ExecutableElement candidate = this.publicGetters.get(name);
-		if (candidate != null) {
-			TypeMirror returnType = candidate.getReturnType();
-			if (this.env.getTypeUtils().isSameType(returnType, type)) {
-				return candidate;
-			}
-			TypeMirror alternative = this.env.getTypeUtils().getWrapperOrPrimitiveFor(type);
-			if (alternative != null && this.env.getTypeUtils().isSameType(returnType, alternative)) {
-				return candidate;
-			}
-		}
-		return null;
+		List<ExecutableElement> candidates = this.publicGetters.get(name);
+		return getPublicAccessor(candidates, type, (specificType) -> getMatchingGetter(candidates, specificType));
 	}
 
 	ExecutableElement getPublicSetter(String name, TypeMirror type) {
 		List<ExecutableElement> candidates = this.publicSetters.get(name);
+		return getPublicAccessor(candidates, type, (specificType) -> getMatchingSetter(candidates, specificType));
+	}
+
+	private ExecutableElement getPublicAccessor(List<ExecutableElement> candidates, TypeMirror type,
+			Function<TypeMirror, ExecutableElement> matchingAccessorExtractor) {
 		if (candidates != null) {
-			ExecutableElement matching = getMatchingSetter(candidates, type);
+			ExecutableElement matching = matchingAccessorExtractor.apply(type);
 			if (matching != null) {
 				return matching;
 			}
 			TypeMirror alternative = this.env.getTypeUtils().getWrapperOrPrimitiveFor(type);
 			if (alternative != null) {
-				return getMatchingSetter(candidates, alternative);
+				return matchingAccessorExtractor.apply(alternative);
 			}
 		}
 		return null;

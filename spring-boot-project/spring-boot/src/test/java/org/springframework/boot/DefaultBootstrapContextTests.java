@@ -24,6 +24,7 @@ import org.assertj.core.api.AssertProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.BootstrapRegistry.InstanceSupplier;
+import org.springframework.boot.BootstrapRegistry.Scope;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -71,6 +72,24 @@ class DefaultBootstrapContextTests {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
 		this.context.register(Integer.class, InstanceSupplier.of(100));
 		assertThat(this.context.get(Integer.class)).isEqualTo(100);
+		assertThat(this.context.get(Integer.class)).isEqualTo(100);
+	}
+
+	@Test
+	void registerWhenSingletonAlreadyCreatedThrowsException() {
+		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
+		this.context.get(Integer.class);
+		assertThatIllegalStateException()
+				.isThrownBy(() -> this.context.register(Integer.class, InstanceSupplier.of(100)))
+				.withMessage("java.lang.Integer has already been created");
+	}
+
+	@Test
+	void registerWhenPrototypeAlreadyCreatedReplacesInstance() {
+		this.context.register(Integer.class,
+				InstanceSupplier.from(this.counter::getAndIncrement).withScope(Scope.PROTOTYPE));
+		this.context.get(Integer.class);
+		this.context.register(Integer.class, InstanceSupplier.of(100));
 		assertThat(this.context.get(Integer.class)).isEqualTo(100);
 	}
 
@@ -146,10 +165,23 @@ class DefaultBootstrapContextTests {
 	}
 
 	@Test
-	void getCreatesOnlyOneInstance() {
+	void getWhenSingletonCreatesOnlyOneInstance() {
 		this.context.register(Integer.class, InstanceSupplier.from(this.counter::getAndIncrement));
 		assertThat(this.context.get(Integer.class)).isEqualTo(0);
 		assertThat(this.context.get(Integer.class)).isEqualTo(0);
+	}
+
+	@Test
+	void getWhenPrototypeCreatesOnlyNewInstances() {
+		this.context.register(Integer.class,
+				InstanceSupplier.from(this.counter::getAndIncrement).withScope(Scope.PROTOTYPE));
+		assertThat(this.context.get(Integer.class)).isEqualTo(0);
+		assertThat(this.context.get(Integer.class)).isEqualTo(1);
+	}
+
+	@Test
+	void testName() {
+
 	}
 
 	@Test
@@ -226,6 +258,20 @@ class DefaultBootstrapContextTests {
 		this.context.addCloseListener(listener);
 		this.context.close(this.applicationContext);
 		assertThat(listener).wasCalledOnlyOnce();
+	}
+
+	@Test
+	void instanceSupplierGetScopeWhenNotConfiguredReturnsSingleton() {
+		InstanceSupplier<String> supplier = InstanceSupplier.of("test");
+		assertThat(supplier.getScope()).isEqualTo(Scope.SINGLETON);
+		assertThat(supplier.get(null)).isEqualTo("test");
+	}
+
+	@Test
+	void instanceSupplierWithScopeChangesScope() {
+		InstanceSupplier<String> supplier = InstanceSupplier.of("test").withScope(Scope.PROTOTYPE);
+		assertThat(supplier.getScope()).isEqualTo(Scope.PROTOTYPE);
+		assertThat(supplier.get(null)).isEqualTo("test");
 	}
 
 	private static class TestCloseListener

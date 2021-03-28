@@ -11,6 +11,7 @@ dependencies {
 	compileOnly("com.datastax.oss:java-driver-core")
 	compileOnly("javax.servlet:javax.servlet-api")
 	compileOnly("junit:junit")
+	compileOnly("org.elasticsearch:elasticsearch")
 	compileOnly("org.junit.jupiter:junit-jupiter")
 	compileOnly("org.junit.platform:junit-platform-engine")
 	compileOnly("org.mockito:mockito-core")
@@ -33,5 +34,4 @@ dependencies {
 	testImplementation("org.springframework:spring-context")
 
 	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }

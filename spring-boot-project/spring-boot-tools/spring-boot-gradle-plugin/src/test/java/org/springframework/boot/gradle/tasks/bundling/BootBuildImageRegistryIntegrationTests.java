@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.gradle.junit.GradleCompatibility;
 import org.springframework.boot.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -60,7 +61,7 @@ public class BootBuildImageRegistryIntegrationTests {
 
 	@BeforeEach
 	void setUp() {
-		assertThat(registry.isRunning());
+		assertThat(registry.isRunning()).isTrue();
 		this.registryAddress = registry.getHost() + ":" + registry.getFirstMappedPort();
 	}
 
@@ -104,7 +105,7 @@ public class BootBuildImageRegistryIntegrationTests {
 	private static class RegistryContainer extends GenericContainer<RegistryContainer> {
 
 		RegistryContainer() {
-			super("registry:2.7.1");
+			super(DockerImageNames.registry());
 			addExposedPorts(5000);
 			addEnv("SERVER_NAME", "localhost");
 		}

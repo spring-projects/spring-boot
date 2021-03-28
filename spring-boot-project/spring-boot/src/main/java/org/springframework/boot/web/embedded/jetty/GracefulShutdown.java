@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,10 @@
 
 package org.springframework.boot.web.embedded.jetty;
 
+import java.lang.reflect.Method;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
@@ -27,6 +30,7 @@ import org.eclipse.jetty.server.Server;
 import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.GracefulShutdownResult;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.ReflectionUtils;
 
 /**
  * Handles Jetty graceful shutdown.
@@ -50,23 +54,44 @@ final class GracefulShutdown {
 
 	void shutDownGracefully(GracefulShutdownCallback callback) {
 		logger.info("Commencing graceful shutdown. Waiting for active requests to complete");
+		boolean jetty10 = isJetty10();
 		for (Connector connector : this.server.getConnectors()) {
-			shutdown(connector);
+			shutdown(connector, !jetty10);
 		}
 		this.shuttingDown = true;
 		new Thread(() -> awaitShutdown(callback), "jetty-shutdown").start();
 
 	}
 
-	private void shutdown(Connector connector) {
+	@SuppressWarnings("unchecked")
+	private void shutdown(Connector connector, boolean getResult) {
+		Future<Void> result;
 		try {
-			connector.shutdown().get();
+			result = connector.shutdown();
 		}
-		catch (InterruptedException ex) {
-			Thread.currentThread().interrupt();
+		catch (NoSuchMethodError ex) {
+			Method shutdown = ReflectionUtils.findMethod(connector.getClass(), "shutdown");
+			result = (Future<Void>) ReflectionUtils.invokeMethod(shutdown, connector);
 		}
-		catch (ExecutionException ex) {
-			// Continue
+		if (getResult) {
+			try {
+				result.get();
+			}
+			catch (InterruptedException ex) {
+				Thread.currentThread().interrupt();
+			}
+			catch (ExecutionException ex) {
+				// Continue
+			}
+		}
+	}
+
+	private boolean isJetty10() {
+		try {
+			return CompletableFuture.class.equals(Connector.class.getMethod("shutdown").getReturnType());
+		}
+		catch (Exception ex) {
+			return false;
 		}
 	}
 

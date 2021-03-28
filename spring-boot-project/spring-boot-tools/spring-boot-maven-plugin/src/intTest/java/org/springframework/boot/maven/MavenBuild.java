@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,11 +17,9 @@
 package org.springframework.boot.maven;
 
 import java.io.File;
-import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.io.Reader;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.FileVisitResult;
 import java.nio.file.Files;
@@ -62,7 +60,7 @@ class MavenBuild {
 
 	private final File temp;
 
-	private final Map<String, String> pomReplacements = new HashMap<>();
+	private final Map<String, String> pomReplacements;
 
 	private final List<String> goals = new ArrayList<>();
 
@@ -74,24 +72,38 @@ class MavenBuild {
 
 	MavenBuild(File home) {
 		this.home = home;
+		this.temp = createTempDirectory();
+		this.pomReplacements = getPomReplacements();
+	}
+
+	private File createTempDirectory() {
 		try {
-			this.temp = Files.createTempDirectory("maven-build").toFile().getCanonicalFile();
+			return Files.createTempDirectory("maven-build").toFile().getCanonicalFile();
 		}
 		catch (IOException ex) {
-			throw new RuntimeException(ex);
+			throw new IllegalStateException(ex);
 		}
-		this.pomReplacements.put("java.version", "1.8");
-		this.pomReplacements.put("project.groupId", "org.springframework.boot");
-		this.pomReplacements.put("project.artifactId", "spring-boot-maven-plugin");
-		this.pomReplacements.put("project.version", determineVersion());
-		this.pomReplacements.put("log4j2.version", "2.12.1");
-		this.pomReplacements.put("maven-jar-plugin.version", "3.2.0");
-		this.pomReplacements.put("maven-toolchains-plugin.version", "3.0.0");
-		this.pomReplacements.put("maven-war-plugin.version", "3.2.3");
-		this.pomReplacements.put("build-helper-maven-plugin.version", "3.0.0");
-		this.pomReplacements.put("spring-framework.version", "5.2.1.RELEASE");
-		this.pomReplacements.put("jakarta-servlet.version", "4.0.2");
-		this.pomReplacements.put("kotlin.version", "1.3.60");
+	}
+
+	private Map<String, String> getPomReplacements() {
+		Map<String, String> replacements = new HashMap<>();
+		SpringBootDependenciesBom bom = new SpringBootDependenciesBom();
+		replacements.put("java.version", "1.8");
+		replacements.put("project.groupId", "org.springframework.boot");
+		replacements.put("project.artifactId", "spring-boot-maven-plugin");
+		replacements.put("project.version", bom.get("version"));
+		putReplacement(replacements, bom, "log4j2.version");
+		putReplacement(replacements, bom, "maven-jar-plugin.version");
+		putReplacement(replacements, bom, "maven-war-plugin.version");
+		putReplacement(replacements, bom, "build-helper-maven-plugin.version");
+		putReplacement(replacements, bom, "spring-framework.version");
+		putReplacement(replacements, bom, "jakarta-servlet.version");
+		putReplacement(replacements, bom, "kotlin.version");
+		return Collections.unmodifiableMap(replacements);
+	}
+
+	private void putReplacement(Map<String, String> replacements, SpringBootDependenciesBom bom, String property) {
+		replacements.put(property, bom.get("properties/" + property));
 	}
 
 	MavenBuild project(String project) {
@@ -193,21 +205,6 @@ class MavenBuild {
 			callback.doWith(this.temp);
 		}
 		catch (Exception ex) {
-			throw new RuntimeException(ex);
-		}
-	}
-
-	private String determineVersion() {
-		File gradleProperties = new File("gradle.properties").getAbsoluteFile();
-		while (!gradleProperties.isFile()) {
-			gradleProperties = new File(gradleProperties.getParentFile().getParentFile(), "gradle.properties");
-		}
-		Properties properties = new Properties();
-		try (Reader reader = new FileReader(gradleProperties)) {
-			properties.load(reader);
-			return properties.getProperty("version");
-		}
-		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
 	}

@@ -17,13 +17,19 @@
 package org.springframework.boot.web.embedded.netty;
 
 import java.net.ConnectException;
+import java.net.SocketAddress;
 import java.time.Duration;
 import java.util.Arrays;
 
+import io.netty.channel.Channel;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
+import reactor.core.CoreSubscriber;
+import reactor.core.Disposable;
 import reactor.core.publisher.Mono;
+import reactor.netty.DisposableChannel;
+import reactor.netty.DisposableServer;
 import reactor.netty.http.server.HttpServer;
 import reactor.test.StepVerifier;
 
@@ -34,6 +40,7 @@ import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.reactive.ReactorClientHttpConnector;
+import org.springframework.http.server.reactive.ReactorHttpHandlerAdapter;
 import org.springframework.web.reactive.function.BodyInserters;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -52,11 +59,6 @@ import static org.mockito.Mockito.mock;
  */
 class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactoryTests {
 
-	@Override
-	protected NettyReactiveWebServerFactory getFactory() {
-		return new NettyReactiveWebServerFactory(0);
-	}
-
 	@Test
 	void exceptionIsThrownWhenPortIsAlreadyInUse() {
 		AbstractReactiveWebServerFactory factory = getFactory();
@@ -66,6 +68,14 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 		factory.setPort(this.webServer.getPort());
 		assertThatExceptionOfType(PortInUseException.class).isThrownBy(factory.getWebServer(new EchoHandler())::start)
 				.satisfies(this::portMatchesRequirement).withCauseInstanceOf(Throwable.class);
+	}
+
+	@Test
+	void getPortWhenDisposableServerPortOperationIsUnsupportedReturnsMinusOne() {
+		NettyReactiveWebServerFactory factory = new NoPortNettyReactiveWebServerFactory(0);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		assertThat(this.webServer.getPort()).isEqualTo(-1);
 	}
 
 	private void portMatchesRequirement(PortInUseException exception) {
@@ -141,6 +151,104 @@ class NettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 				.clientConnector(connector).build();
 		return client.post().uri("/test").contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World"))
 				.retrieve().bodyToMono(String.class);
+	}
+
+	@Override
+	protected NettyReactiveWebServerFactory getFactory() {
+		return new NettyReactiveWebServerFactory(0);
+	}
+
+	static class NoPortNettyReactiveWebServerFactory extends NettyReactiveWebServerFactory {
+
+		NoPortNettyReactiveWebServerFactory(int port) {
+			super(port);
+		}
+
+		@Override
+		NettyWebServer createNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter,
+				Duration lifecycleTimeout, Shutdown shutdown) {
+			return new NoPortNettyWebServer(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
+		}
+
+	}
+
+	static class NoPortNettyWebServer extends NettyWebServer {
+
+		NoPortNettyWebServer(HttpServer httpServer, ReactorHttpHandlerAdapter handlerAdapter, Duration lifecycleTimeout,
+				Shutdown shutdown) {
+			super(httpServer, handlerAdapter, lifecycleTimeout, shutdown);
+		}
+
+		@Override
+		DisposableServer startHttpServer() {
+			return new NoPortDisposableServer(super.startHttpServer());
+		}
+
+	}
+
+	static class NoPortDisposableServer implements DisposableServer {
+
+		private final DisposableServer delegate;
+
+		NoPortDisposableServer(DisposableServer delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public SocketAddress address() {
+			return this.delegate.address();
+		}
+
+		@Override
+		public String host() {
+			return this.delegate.host();
+		}
+
+		@Override
+		public String path() {
+			return this.delegate.path();
+		}
+
+		@Override
+		public Channel channel() {
+			return this.delegate.channel();
+		}
+
+		@Override
+		public void dispose() {
+			this.delegate.dispose();
+		}
+
+		@Override
+		public void disposeNow() {
+			this.delegate.disposeNow();
+		}
+
+		@Override
+		public void disposeNow(Duration timeout) {
+			this.delegate.disposeNow(timeout);
+		}
+
+		@Override
+		public CoreSubscriber<Void> disposeSubscriber() {
+			return this.delegate.disposeSubscriber();
+		}
+
+		@Override
+		public boolean isDisposed() {
+			return this.delegate.isDisposed();
+		}
+
+		@Override
+		public Mono<Void> onDispose() {
+			return this.delegate.onDispose();
+		}
+
+		@Override
+		public DisposableChannel onDispose(Disposable onDispose) {
+			return this.delegate.onDispose(onDispose);
+		}
+
 	}
 
 }

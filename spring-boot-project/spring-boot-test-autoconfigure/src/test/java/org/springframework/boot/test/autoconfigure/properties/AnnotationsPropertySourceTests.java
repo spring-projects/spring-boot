@@ -19,10 +19,12 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level1;
 import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level2;
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.EnclosingClass.PropertyMappedAnnotationOnEnclosingClass;
 import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.NestedAnnotations.Entry;
 import org.springframework.core.annotation.AliasFor;
 
@@ -151,6 +153,14 @@ class AnnotationsPropertySourceTests {
 	@Test
 	void typeLevelAnnotationOnSuperClass() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedAnnotationOnSuperClass.class);
+		assertThat(source.getPropertyNames()).containsExactly("value");
+		assertThat(source.getProperty("value")).isEqualTo("abc");
+	}
+
+	@Test
+	void typeLevelAnnotationOnEnclosingClass() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertyMappedAnnotationOnEnclosingClass.class);
 		assertThat(source.getPropertyNames()).containsExactly("value");
 		assertThat(source.getProperty("value")).isEqualTo("abc");
 	}
@@ -386,6 +396,15 @@ class AnnotationsPropertySourceTests {
 
 	}
 
+	@TypeLevelAnnotation("abc")
+	static class EnclosingClass {
+
+		class PropertyMappedAnnotationOnEnclosingClass {
+
+		}
+
+	}
+
 	static class AliasedPropertyMappedAnnotationOnSuperClass extends PropertyMappedAttributeWithAnAlias {
 
 	}
@@ -463,6 +482,16 @@ class AnnotationsPropertySourceTests {
 
 	@DeeplyNestedAnnotations(level1 = @Level1(level2 = @Level2("level2")))
 	static class PropertyMappedWithDeeplyNestedAnnotations {
+
+	}
+
+	@TypeLevelAnnotation("outer")
+	static class OuterWithTypeLevel {
+
+		@Nested
+		static class NestedClass {
+
+		}
 
 	}
 

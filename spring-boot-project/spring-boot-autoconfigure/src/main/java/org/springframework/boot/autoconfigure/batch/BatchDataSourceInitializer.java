@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.batch;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
 import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.core.io.ResourceLoader;
@@ -32,23 +33,23 @@ import org.springframework.util.Assert;
  */
 public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 
-	private final BatchProperties properties;
+	private final Jdbc jdbcProperties;
 
 	public BatchDataSourceInitializer(DataSource dataSource, ResourceLoader resourceLoader,
 			BatchProperties properties) {
 		super(dataSource, resourceLoader);
 		Assert.notNull(properties, "BatchProperties must not be null");
-		this.properties = properties;
+		this.jdbcProperties = properties.getJdbc();
 	}
 
 	@Override
 	protected DataSourceInitializationMode getMode() {
-		return this.properties.getInitializeSchema();
+		return this.jdbcProperties.getInitializeSchema();
 	}
 
 	@Override
 	protected String getSchemaLocation() {
-		return this.properties.getSchema();
+		return this.jdbcProperties.getSchema();
 	}
 
 	@Override
@@ -56,6 +57,9 @@ public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 		String databaseName = super.getDatabaseName();
 		if ("oracle".equals(databaseName)) {
 			return "oracle10g";
+		}
+		if ("mariadb".equals(databaseName)) {
+			return "mysql";
 		}
 		return databaseName;
 	}

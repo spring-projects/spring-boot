@@ -107,7 +107,7 @@ class DevToolPropertiesIntegrationTests {
 		this.context = getContext(application::run);
 		ConfigurableEnvironment environment = this.context.getEnvironment();
 		String includeStackTrace = environment.getProperty("server.error.include-stacktrace");
-		assertThat(includeStackTrace).isEqualTo(ErrorProperties.IncludeStacktrace.ALWAYS.toString());
+		assertThat(includeStackTrace).isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString());
 		String includeMessage = environment.getProperty("server.error.include-message");
 		assertThat(includeMessage).isEqualTo(ErrorProperties.IncludeAttribute.ALWAYS.toString());
 	}

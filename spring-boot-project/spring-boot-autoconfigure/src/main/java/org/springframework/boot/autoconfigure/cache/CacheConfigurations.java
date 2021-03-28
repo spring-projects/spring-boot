@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,24 +27,25 @@ import org.springframework.util.Assert;
  *
  * @author Phillip Webb
  * @author Eddú Meléndez
+ * @author Sebastien Deleuze
  */
 @SuppressWarnings("deprecation")
 final class CacheConfigurations {
 
-	private static final Map<CacheType, Class<?>> MAPPINGS;
+	private static final Map<CacheType, String> MAPPINGS;
 
 	static {
-		Map<CacheType, Class<?>> mappings = new EnumMap<>(CacheType.class);
-		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class);
-		mappings.put(CacheType.EHCACHE, EhCacheCacheConfiguration.class);
-		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class);
-		mappings.put(CacheType.INFINISPAN, InfinispanCacheConfiguration.class);
-		mappings.put(CacheType.JCACHE, JCacheCacheConfiguration.class);
-		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class);
-		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class);
-		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class);
-		mappings.put(CacheType.SIMPLE, SimpleCacheConfiguration.class);
-		mappings.put(CacheType.NONE, NoOpCacheConfiguration.class);
+		Map<CacheType, String> mappings = new EnumMap<>(CacheType.class);
+		mappings.put(CacheType.GENERIC, GenericCacheConfiguration.class.getName());
+		mappings.put(CacheType.EHCACHE, EhCacheCacheConfiguration.class.getName());
+		mappings.put(CacheType.HAZELCAST, HazelcastCacheConfiguration.class.getName());
+		mappings.put(CacheType.INFINISPAN, InfinispanCacheConfiguration.class.getName());
+		mappings.put(CacheType.JCACHE, JCacheCacheConfiguration.class.getName());
+		mappings.put(CacheType.COUCHBASE, CouchbaseCacheConfiguration.class.getName());
+		mappings.put(CacheType.REDIS, RedisCacheConfiguration.class.getName());
+		mappings.put(CacheType.CAFFEINE, CaffeineCacheConfiguration.class.getName());
+		mappings.put(CacheType.SIMPLE, SimpleCacheConfiguration.class.getName());
+		mappings.put(CacheType.NONE, NoOpCacheConfiguration.class.getName());
 		MAPPINGS = Collections.unmodifiableMap(mappings);
 	}
 
@@ -52,14 +53,14 @@ final class CacheConfigurations {
 	}
 
 	static String getConfigurationClass(CacheType cacheType) {
-		Class<?> configurationClass = MAPPINGS.get(cacheType);
-		Assert.state(configurationClass != null, () -> "Unknown cache type " + cacheType);
-		return configurationClass.getName();
+		String configurationClassName = MAPPINGS.get(cacheType);
+		Assert.state(configurationClassName != null, () -> "Unknown cache type " + cacheType);
+		return configurationClassName;
 	}
 
 	static CacheType getType(String configurationClassName) {
-		for (Map.Entry<CacheType, Class<?>> entry : MAPPINGS.entrySet()) {
-			if (entry.getValue().getName().equals(configurationClassName)) {
+		for (Map.Entry<CacheType, String> entry : MAPPINGS.entrySet()) {
+			if (entry.getValue().equals(configurationClassName)) {
 				return entry.getKey();
 			}
 		}

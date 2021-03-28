@@ -56,8 +56,6 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 
 	private static final LogLevels<Level> LEVELS = new LogLevels<>();
 
-	private final Set<Logger> configuredLoggers = Collections.synchronizedSet(new HashSet<>());
-
 	static {
 		LEVELS.map(LogLevel.TRACE, Level.FINEST);
 		LEVELS.map(LogLevel.DEBUG, Level.FINE);
@@ -67,6 +65,8 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 		LEVELS.map(LogLevel.FATAL, Level.SEVERE);
 		LEVELS.map(LogLevel.OFF, Level.OFF);
 	}
+
+	private final Set<Logger> configuredLoggers = Collections.synchronizedSet(new HashSet<>());
 
 	public JavaLoggingSystem(ClassLoader classLoader) {
 		super(classLoader);
@@ -187,9 +187,12 @@ public class JavaLoggingSystem extends AbstractLoggingSystem {
 	@Order(Ordered.LOWEST_PRECEDENCE)
 	public static class Factory implements LoggingSystemFactory {
 
+		private static final boolean PRESENT = ClassUtils.isPresent("java.util.logging.LogManager",
+				Factory.class.getClassLoader());
+
 		@Override
 		public LoggingSystem getLoggingSystem(ClassLoader classLoader) {
-			if (ClassUtils.isPresent("java.util.logging.LogManager", classLoader)) {
+			if (PRESENT) {
 				return new JavaLoggingSystem(classLoader);
 			}
 			return null;

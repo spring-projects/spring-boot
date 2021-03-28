@@ -82,7 +82,7 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 	private final StaticResourceJars staticResourceJars = new StaticResourceJars();
 
-	private final Set<String> webListenerClassNames = new HashSet<String>();
+	private final Set<String> webListenerClassNames = new HashSet<>();
 
 	/**
 	 * Create a new {@link AbstractServletWebServerFactory} instance.

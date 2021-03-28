@@ -11,9 +11,6 @@ plugins {
 description = "Spring Boot Gradle Plugin"
 
 configurations {
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	documentation
 }
 
@@ -27,8 +24,6 @@ repositories {
 }
 
 dependencies {
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
-
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation("io.spring.gradle:dependency-management-plugin")
@@ -43,8 +38,6 @@ dependencies {
 	testImplementation("org.mockito:mockito-core")
 	testImplementation("org.testcontainers:junit-jupiter")
 	testImplementation("org.testcontainers:testcontainers")
-
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 gradlePlugin {
@@ -67,6 +60,7 @@ task preparePluginValidationClasses(type: Copy) {
 
 validatePlugins {
 	classes.setFrom preparePluginValidationClasses
+	enableStricterValidation = true
 }
 
 task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
@@ -82,7 +76,6 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 }
 
 asciidoctor {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}

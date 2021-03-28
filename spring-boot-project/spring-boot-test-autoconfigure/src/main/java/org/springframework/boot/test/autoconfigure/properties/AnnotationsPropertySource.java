@@ -30,6 +30,7 @@ import org.springframework.core.annotation.MergedAnnotationPredicates;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.test.context.TestContextAnnotationUtils;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
@@ -58,6 +59,11 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 
 	private Map<String, Object> getProperties(Class<?> source) {
 		Map<String, Object> properties = new LinkedHashMap<>();
+		getProperties(source, properties);
+		return properties;
+	}
+
+	private void getProperties(Class<?> source, Map<String, Object> properties) {
 		MergedAnnotations.from(source, SearchStrategy.SUPERCLASS).stream()
 				.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getType)).forEach((annotation) -> {
 					Class<Annotation> type = annotation.getType();
@@ -70,7 +76,9 @@ public class AnnotationsPropertySource extends EnumerablePropertySource<Class<?>
 						collectProperties(prefix, defaultSkip, annotation, attribute, properties);
 					}
 				});
-		return properties;
+		if (TestContextAnnotationUtils.searchEnclosingClass(source)) {
+			getProperties(source.getEnclosingClass(), properties);
+		}
 	}
 
 	private void collectProperties(String prefix, SkipPropertyMapping skip, MergedAnnotation<?> annotation,

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
@@ -81,6 +82,29 @@ class DataSourceTransactionManagerAutoConfigurationTests {
 				.withBean("myTransactionManager", TransactionManager.class, () -> mock(TransactionManager.class))
 				.run((context) -> assertThat(context).hasSingleBean(TransactionManager.class)
 						.hasBean("myTransactionManager"));
+	}
+
+	@Test // gh-24321
+	void transactionManagerWithDaoExceptionTranslationDisabled() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.dao.exceptiontranslation.enabled=false")
+				.run((context) -> assertThat(context.getBean(TransactionManager.class))
+						.isExactlyInstanceOf(DataSourceTransactionManager.class));
+	}
+
+	@Test // gh-24321
+	void transactionManagerWithDaoExceptionTranslationEnabled() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.dao.exceptiontranslation.enabled=true")
+				.run((context) -> assertThat(context.getBean(TransactionManager.class))
+						.isExactlyInstanceOf(JdbcTransactionManager.class));
+	}
+
+	@Test // gh-24321
+	void transactionManagerWithDaoExceptionTranslationDefault() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.run((context) -> assertThat(context.getBean(TransactionManager.class))
+						.isExactlyInstanceOf(JdbcTransactionManager.class));
 	}
 
 	@Test

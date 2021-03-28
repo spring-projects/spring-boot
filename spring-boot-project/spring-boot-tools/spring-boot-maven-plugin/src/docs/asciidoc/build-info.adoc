@@ -12,7 +12,6 @@ It also allows you to add an arbitrary number of additional properties, as shown
 				<plugin>
 					<groupId>org.springframework.boot</groupId>
 					<artifactId>spring-boot-maven-plugin</artifactId>
-					<version>{gradle-project-version}</version>
 					<executions>
 						<execution>
 							<goals>

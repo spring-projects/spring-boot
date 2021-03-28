@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -173,26 +173,6 @@ class TomcatWebServerFactoryCustomizerTests {
 				"server.tomcat.remoteip.host-header=x-my-forward-host",
 				"server.tomcat.remoteip.port-header=x-my-forward-port",
 				"server.tomcat.remoteip.protocol-header-https-value=On");
-		TomcatServletWebServerFactory factory = customizeAndGetFactory();
-		assertThat(factory.getEngineValves()).hasSize(1);
-		Valve valve = factory.getEngineValves().iterator().next();
-		assertThat(valve).isInstanceOf(RemoteIpValve.class);
-		RemoteIpValve remoteIpValve = (RemoteIpValve) valve;
-		assertThat(remoteIpValve.getProtocolHeader()).isEqualTo("x-my-protocol-header");
-		assertThat(remoteIpValve.getProtocolHeaderHttpsValue()).isEqualTo("On");
-		assertThat(remoteIpValve.getRemoteIpHeader()).isEqualTo("x-my-remote-ip-header");
-		assertThat(remoteIpValve.getHostHeader()).isEqualTo("x-my-forward-host");
-		assertThat(remoteIpValve.getPortHeader()).isEqualTo("x-my-forward-port");
-		assertThat(remoteIpValve.getInternalProxies()).isEqualTo("192.168.0.1");
-	}
-
-	@Test
-	@Deprecated
-	void customRemoteIpValveWithDeprecatedProperties() {
-		bind("server.tomcat.remote-ip-header=x-my-remote-ip-header",
-				"server.tomcat.protocol-header=x-my-protocol-header", "server.tomcat.internal-proxies=192.168.0.1",
-				"server.tomcat.host-header=x-my-forward-host", "server.tomcat.port-header=x-my-forward-port",
-				"server.tomcat.protocol-header-https-value=On");
 		TomcatServletWebServerFactory factory = customizeAndGetFactory();
 		assertThat(factory.getEngineValves()).hasSize(1);
 		Valve valve = factory.getEngineValves().iterator().next();

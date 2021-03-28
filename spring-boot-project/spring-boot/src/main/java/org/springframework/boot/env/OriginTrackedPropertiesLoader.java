@@ -160,7 +160,7 @@ class OriginTrackedPropertiesLoader {
 		return OriginTrackedValue.of(buffer.toString(), origin);
 	}
 
-	boolean isNewDocument(CharacterReader reader) throws IOException {
+	private boolean isNewDocument(CharacterReader reader) throws IOException {
 		if (reader.isLastLineComment()) {
 			return false;
 		}
@@ -168,8 +168,10 @@ class OriginTrackedPropertiesLoader {
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
 		result = result && readAndExpect(reader, reader::isHyphenCharacter);
-		reader.read();
-		reader.skipWhitespace();
+		if (!reader.isEndOfLine()) {
+			reader.read();
+			reader.skipWhitespace();
+		}
 		return result && reader.isEndOfLine();
 	}
 

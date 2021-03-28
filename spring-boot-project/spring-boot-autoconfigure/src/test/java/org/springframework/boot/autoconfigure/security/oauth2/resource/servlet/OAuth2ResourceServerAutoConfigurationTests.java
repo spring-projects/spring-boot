@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.security.oauth2.resource.servlet;
 
 import java.util.Collection;
@@ -74,6 +75,12 @@ class OAuth2ResourceServerAutoConfigurationTests {
 
 	private MockWebServer server;
 
+	private static final String JWK_SET = "{\"keys\":[{\"kty\":\"RSA\",\"e\":\"AQAB\",\"use\":\"sig\","
+			+ "\"kid\":\"one\",\"n\":\"oXJ8OyOv_eRnce4akdanR4KYRfnC2zLV4uYNQpcFn6oHL0dj7D6kxQmsXoYgJV8ZVDn71KGm"
+			+ "uLvolxsDncc2UrhyMBY6DVQVgMSVYaPCTgW76iYEKGgzTEw5IBRQL9w3SRJWd3VJTZZQjkXef48Ocz06PGF3lhbz4t5UEZtd"
+			+ "F4rIe7u-977QwHuh7yRPBQ3sII-cVoOUMgaXB9SHcGF2iZCtPzL_IffDUcfhLQteGebhW8A6eUHgpD5A1PQ-JCw_G7UOzZAj"
+			+ "jDjtNM2eqm8j-Ms_gqnm4MiCZ4E-9pDN77CAAPVN7kuX6ejs9KBXpk01z48i9fORYk9u7rAkh1HuQw\"}]}";
+
 	@AfterEach
 	void cleanup() throws Exception {
 		if (this.server != null) {
@@ -132,7 +139,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
-		assertThat(this.server.getRequestCount()).isEqualTo(1);
+		// The last request is to the JWK Set endpoint to look up the algorithm
+		assertThat(this.server.getRequestCount()).isEqualTo(2);
 	}
 
 	@Test
@@ -148,7 +156,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
-		assertThat(this.server.getRequestCount()).isEqualTo(2);
+		// The last request is to the JWK Set endpoint to look up the algorithm
+		assertThat(this.server.getRequestCount()).isEqualTo(3);
 	}
 
 	@Test
@@ -164,7 +173,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 					assertThat(context).hasSingleBean(JwtDecoder.class);
 					assertThat(context.containsBean("jwtDecoderByIssuerUri")).isTrue();
 				});
-		assertThat(this.server.getRequestCount()).isEqualTo(3);
+		// The last request is to the JWK Set endpoint to look up the algorithm
+		assertThat(this.server.getRequestCount()).isEqualTo(4);
 	}
 
 	@Test
@@ -413,6 +423,8 @@ class OAuth2ResourceServerAutoConfigurationTests {
 				.setBody(new ObjectMapper().writeValueAsString(getResponse(issuer)))
 				.setHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE);
 		this.server.enqueue(mockResponse);
+		this.server.enqueue(
+				new MockResponse().setResponseCode(200).setHeader("Content-Type", "application/json").setBody(JWK_SET));
 	}
 
 	private void setupMockResponsesWithErrors(String issuer, int errorResponseCount) throws JsonProcessingException {
@@ -430,7 +442,7 @@ class OAuth2ResourceServerAutoConfigurationTests {
 		response.put("code_challenge_methods_supported", Collections.emptyList());
 		response.put("id_token_signing_alg_values_supported", Collections.emptyList());
 		response.put("issuer", issuer);
-		response.put("jwks_uri", "https://example.com/oauth2/v3/certs");
+		response.put("jwks_uri", issuer + "/.well-known/jwks.json");
 		response.put("response_types_supported", Collections.emptyList());
 		response.put("revocation_endpoint", "https://example.com/o/oauth2/revoke");
 		response.put("scopes_supported", Collections.singletonList("openid"));

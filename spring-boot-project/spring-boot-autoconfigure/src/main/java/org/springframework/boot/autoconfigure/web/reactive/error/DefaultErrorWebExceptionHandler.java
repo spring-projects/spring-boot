@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.ResourceProperties;
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
@@ -97,10 +97,27 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param resourceProperties the resources configuration properties
 	 * @param errorProperties the error configuration properties
 	 * @param applicationContext the current application context
+	 * @deprecated since 2.4.0 in favor of
+	 * {@link #DefaultErrorWebExceptionHandler(ErrorAttributes, Resources, ErrorProperties, ApplicationContext)}
 	 */
-	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes, ResourceProperties resourceProperties,
+	@Deprecated
+	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes,
+			org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
 			ErrorProperties errorProperties, ApplicationContext applicationContext) {
-		super(errorAttributes, resourceProperties, applicationContext);
+		this(errorAttributes, (Resources) resourceProperties, errorProperties, applicationContext);
+	}
+
+	/**
+	 * Create a new {@code DefaultErrorWebExceptionHandler} instance.
+	 * @param errorAttributes the error attributes
+	 * @param resources the resources configuration properties
+	 * @param errorProperties the error configuration properties
+	 * @param applicationContext the current application context
+	 * @since 2.4.0
+	 */
+	public DefaultErrorWebExceptionHandler(ErrorAttributes errorAttributes, Resources resources,
+			ErrorProperties errorProperties, ApplicationContext applicationContext) {
+		super(errorAttributes, resources, applicationContext);
 		this.errorProperties = errorProperties;
 	}
 
@@ -170,13 +187,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	@SuppressWarnings("deprecation")
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:
 			return true;
 		case ON_PARAM:
-		case ON_TRACE_PARAM:
 			return isTraceEnabled(request);
 		default:
 			return false;
@@ -237,7 +252,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		return (serverRequest) -> {
 			try {
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
-				acceptedMediaTypes.remove(MediaType.ALL);
+				acceptedMediaTypes.removeIf(MediaType.ALL::equalsTypeAndSubtype);
 				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
 				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}

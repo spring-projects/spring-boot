@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.zip.CRC32;
+import java.util.zip.ZipEntry;
 
 import org.apache.commons.compress.archivers.zip.UnixStat;
 import org.apache.commons.compress.archivers.zip.ZipArchiveEntry;
@@ -53,7 +54,6 @@ import org.springframework.boot.loader.tools.JarModeLibrary;
 import org.springframework.boot.loader.tools.Layer;
 import org.springframework.boot.loader.tools.LayersIndex;
 import org.springframework.util.Assert;
-import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.util.StringUtils;
 
@@ -243,7 +243,7 @@ class BootZipCopyAction implements CopyAction {
 			details.copyTo(this.out);
 			this.out.closeArchiveEntry();
 			if (BootZipCopyAction.this.librarySpec.isSatisfiedBy(details)) {
-				this.writtenLibraries.add(name.substring(name.lastIndexOf('/') + 1));
+				this.writtenLibraries.add(name);
 			}
 			if (BootZipCopyAction.this.layerResolver != null) {
 				Layer layer = BootZipCopyAction.this.layerResolver.getLayer(details);
@@ -376,12 +376,7 @@ class BootZipCopyAction implements CopyAction {
 		}
 
 		private void prepareStoredEntry(InputStream input, ZipArchiveEntry archiveEntry) throws IOException {
-			archiveEntry.setMethod(java.util.zip.ZipEntry.STORED);
-			Crc32OutputStream crcStream = new Crc32OutputStream();
-			int size = FileCopyUtils.copy(input, crcStream);
-			archiveEntry.setSize(size);
-			archiveEntry.setCompressedSize(size);
-			archiveEntry.setCrc(crcStream.getCrc());
+			new CrcAndSize(input).setUpStoredEntry(archiveEntry);
 		}
 
 		private Long getTime() {
@@ -464,29 +459,39 @@ class BootZipCopyAction implements CopyAction {
 	}
 
 	/**
-	 * An {@code OutputStream} that provides a CRC-32 of the data that is written to it.
+	 * Data holder for CRC and Size.
 	 */
-	private static final class Crc32OutputStream extends OutputStream {
+	private static class CrcAndSize {
+
+		private static final int BUFFER_SIZE = 32 * 1024;
 
 		private final CRC32 crc = new CRC32();
 
-		@Override
-		public void write(int b) throws IOException {
-			this.crc.update(b);
+		private long size;
+
+		CrcAndSize(InputStream inputStream) throws IOException {
+			try {
+				load(inputStream);
+			}
+			finally {
+				inputStream.close();
+			}
 		}
 
-		@Override
-		public void write(byte[] b) throws IOException {
-			this.crc.update(b);
+		private void load(InputStream inputStream) throws IOException {
+			byte[] buffer = new byte[BUFFER_SIZE];
+			int bytesRead;
+			while ((bytesRead = inputStream.read(buffer)) != -1) {
+				this.crc.update(buffer, 0, bytesRead);
+				this.size += bytesRead;
+			}
 		}
 
-		@Override
-		public void write(byte[] b, int off, int len) throws IOException {
-			this.crc.update(b, off, len);
-		}
-
-		private long getCrc() {
-			return this.crc.getValue();
+		void setUpStoredEntry(ZipArchiveEntry entry) {
+			entry.setSize(this.size);
+			entry.setCompressedSize(this.size);
+			entry.setCrc(this.crc.getValue());
+			entry.setMethod(ZipEntry.STORED);
 		}
 
 	}

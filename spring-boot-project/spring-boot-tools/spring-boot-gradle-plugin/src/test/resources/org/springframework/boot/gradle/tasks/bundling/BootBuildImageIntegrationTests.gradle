@@ -3,5 +3,9 @@ plugins {
 	id 'org.springframework.boot' version '{version}'
 }
 
+if (project.hasProperty('applyWarPlugin')) {
+	apply plugin: 'war'
+}
+
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'

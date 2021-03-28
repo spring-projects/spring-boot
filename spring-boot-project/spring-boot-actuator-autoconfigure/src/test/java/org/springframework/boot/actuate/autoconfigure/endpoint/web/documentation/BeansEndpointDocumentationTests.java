@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.restdocs.payload.FieldDescriptor;
+import org.springframework.restdocs.payload.JsonFieldType;
 import org.springframework.restdocs.payload.ResponseFieldsSnippet;
 import org.springframework.util.CollectionUtils;
 
@@ -52,7 +53,8 @@ class BeansEndpointDocumentationTests extends MockMvcEndpointDocumentationTests 
 		List<FieldDescriptor> beanFields = Arrays.asList(fieldWithPath("aliases").description("Names of any aliases."),
 				fieldWithPath("scope").description("Scope of the bean."),
 				fieldWithPath("type").description("Fully qualified type of the bean."),
-				fieldWithPath("resource").description("Resource in which the bean was defined, if any.").optional(),
+				fieldWithPath("resource").description("Resource in which the bean was defined, if any.").optional()
+						.type(JsonFieldType.STRING),
 				fieldWithPath("dependencies").description("Names of any dependencies."));
 		ResponseFieldsSnippet responseFields = responseFields(
 				fieldWithPath("contexts").description("Application contexts keyed by id."), parentIdField(),

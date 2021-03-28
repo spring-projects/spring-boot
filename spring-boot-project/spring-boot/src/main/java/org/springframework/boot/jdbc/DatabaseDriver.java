@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public enum DatabaseDriver {
 	/**
 	 * Maria DB.
 	 */
-	MARIADB("MySQL", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1") {
+	MARIADB("MariaDB", "org.mariadb.jdbc.Driver", "org.mariadb.jdbc.MariaDbDataSource", "SELECT 1") {
 
 		@Override
 		public String getId() {
@@ -98,7 +98,7 @@ public enum DatabaseDriver {
 	 * Amazon Redshift.
 	 * @since 2.2.0
 	 */
-	REDSHIFT("Amazon Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
+	REDSHIFT("Redshift", "com.amazon.redshift.jdbc.Driver", null, "SELECT 1"),
 
 	/**
 	 * HANA - SAP HANA Database - HDB.
@@ -197,6 +197,12 @@ public enum DatabaseDriver {
 		}
 
 	},
+
+	/**
+	 * Apache Phoenix.
+	 * @since 2.5.0
+	 */
+	PHOENIX("Apache Phoenix", "org.apache.phoenix.jdbc.PhoenixDriver", null, "SELECT 1 FROM SYSTEM.CATALOG LIMIT 1"),
 
 	/**
 	 * Testcontainers.

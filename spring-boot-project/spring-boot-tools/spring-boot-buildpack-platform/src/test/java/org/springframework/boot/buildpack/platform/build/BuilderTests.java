@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -308,20 +308,67 @@ class BuilderTests {
 				.withMessage("Builder lifecycle 'creator' failed with status code 9");
 	}
 
+	@Test
+	void buildWhenDetectedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image-with-run-image-different-registry.json");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration()
+				.withBuilderRegistryTokenAuthentication("builder token");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+						.willAnswer(withPulledImage(builderImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
+		BuildRequest request = getTestRequest();
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request)).withMessage(
+				"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
+	}
+
+	@Test
+	void buildWhenRequestedRunImageInDifferentAuthenticatedRegistryThrowsException() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApi();
+		Image builderImage = loadImage("image.json");
+		DockerConfiguration dockerConfiguration = new DockerConfiguration()
+				.withBuilderRegistryTokenAuthentication("builder token");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(),
+				eq(dockerConfiguration.getBuilderRegistryAuthentication().getAuthHeader())))
+						.willAnswer(withPulledImage(builderImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, dockerConfiguration);
+		BuildRequest request = getTestRequest().withRunImage(ImageReference.of("example.com/custom/run:latest"));
+		assertThatIllegalStateException().isThrownBy(() -> builder.build(request)).withMessage(
+				"Run image 'example.com/custom/run:latest' must be pulled from the 'docker.io' authenticated registry");
+	}
+
+	@Test
+	void buildWhenRequestedBuildpackNotInBuilderThrowsException() throws Exception {
+		TestPrintStream out = new TestPrintStream();
+		DockerApi docker = mockDockerApiLifecycleError();
+		Image builderImage = loadImage("image.json");
+		Image runImage = loadImage("run-image.json");
+		given(docker.image().pull(eq(ImageReference.of(BuildRequest.DEFAULT_BUILDER_IMAGE_NAME)), any(), isNull()))
+				.willAnswer(withPulledImage(builderImage));
+		given(docker.image().pull(eq(ImageReference.of("docker.io/cloudfoundry/run:base-cnb")), any(), isNull()))
+				.willAnswer(withPulledImage(runImage));
+		Builder builder = new Builder(BuildLog.to(out), docker, null);
+		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:example/buildpack@1.2.3");
+		BuildRequest request = getTestRequest().withBuildpacks(reference);
+		assertThatIllegalArgumentException().isThrownBy(() -> builder.build(request))
+				.withMessageContaining("'urn:cnb:builder:example/buildpack@1.2.3'")
+				.withMessageContaining("not found in builder");
+	}
+
 	private DockerApi mockDockerApi() throws IOException {
 		ContainerApi containerApi = mock(ContainerApi.class);
 		ContainerReference reference = ContainerReference.of("container-ref");
 		given(containerApi.create(any(), any())).willReturn(reference);
 		given(containerApi.wait(eq(reference))).willReturn(ContainerStatus.of(0, null));
-
 		ImageApi imageApi = mock(ImageApi.class);
 		VolumeApi volumeApi = mock(VolumeApi.class);
-
 		DockerApi docker = mock(DockerApi.class);
 		given(docker.image()).willReturn(imageApi);
 		given(docker.container()).willReturn(containerApi);
 		given(docker.volume()).willReturn(volumeApi);
-
 		return docker;
 	}
 
@@ -330,15 +377,12 @@ class BuilderTests {
 		ContainerReference reference = ContainerReference.of("container-ref");
 		given(containerApi.create(any(), any())).willReturn(reference);
 		given(containerApi.wait(eq(reference))).willReturn(ContainerStatus.of(9, null));
-
 		ImageApi imageApi = mock(ImageApi.class);
 		VolumeApi volumeApi = mock(VolumeApi.class);
-
 		DockerApi docker = mock(DockerApi.class);
 		given(docker.image()).willReturn(imageApi);
 		given(docker.container()).willReturn(containerApi);
 		given(docker.volume()).willReturn(volumeApi);
-
 		return docker;
 	}
 

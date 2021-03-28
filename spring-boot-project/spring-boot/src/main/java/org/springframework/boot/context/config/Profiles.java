@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,7 @@ import java.util.function.Supplier;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.env.AbstractEnvironment;
 import org.springframework.core.env.Environment;
@@ -53,6 +54,9 @@ public class Profiles implements Iterable<String> {
 	 * Name of property to set to specify additionally included active profiles.
 	 */
 	public static final String INCLUDE_PROFILES_PROPERTY_NAME = "spring.profiles.include";
+
+	static final ConfigurationPropertyName INCLUDE_PROFILES = ConfigurationPropertyName
+			.of(Profiles.INCLUDE_PROFILES_PROPERTY_NAME);
 
 	private static final Bindable<MultiValueMap<String, String>> STRING_STRINGS_MAP = Bindable
 			.of(ResolvableType.forClassWithGenerics(MultiValueMap.class, String.class, String.class));
@@ -97,7 +101,7 @@ public class Profiles implements Iterable<String> {
 		if (hasExplicit(supplier, propertyValue, unset)) {
 			return supplier.get();
 		}
-		return binder.bind(propertyName, String[].class).orElse(StringUtils.toStringArray(unset));
+		return binder.bind(propertyName, String[].class).orElseGet(() -> StringUtils.toStringArray(unset));
 	}
 
 	private boolean hasExplicit(Supplier<String[]> supplier, String propertyValue, Set<String> unset) {
@@ -116,19 +120,20 @@ public class Profiles implements Iterable<String> {
 		Set<String> expandedProfiles = new LinkedHashSet<>();
 		while (!stack.isEmpty()) {
 			String current = stack.pop();
-			expandedProfiles.add(current);
-			asReversedList(this.groups.get(current)).forEach(stack::push);
+			if (expandedProfiles.add(current)) {
+				asReversedList(this.groups.get(current)).forEach(stack::push);
+			}
 		}
 		return asUniqueItemList(StringUtils.toStringArray(expandedProfiles));
 	}
 
 	private List<String> asReversedList(List<String> list) {
-		if (list == null || list.isEmpty()) {
+		if (CollectionUtils.isEmpty(list)) {
 			return Collections.emptyList();
 		}
 		List<String> reversed = new ArrayList<>(list);
 		Collections.reverse(reversed);
-		return Collections.unmodifiableList(reversed);
+		return reversed;
 	}
 
 	private List<String> asUniqueItemList(String[] array) {

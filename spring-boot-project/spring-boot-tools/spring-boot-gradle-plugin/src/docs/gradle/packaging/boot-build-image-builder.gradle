@@ -13,3 +13,10 @@ bootBuildImage {
 	runImage = "mine/java-cnb-run"
 }
 // end::builder[]
+
+task bootBuildImageBuilder {
+	doFirst {
+		println("builder=${tasks.bootBuildImage.builder}")
+		println("runImage=${tasks.bootBuildImage.runImage}")
+	}
+}

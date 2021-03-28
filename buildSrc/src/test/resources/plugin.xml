@@ -14,7 +14,7 @@
   <mojos>
     <mojo>
       <goal>build-info</goal>
-      <description>Generate a {@code build-info.properties} file based the content of the current
+      <description>Generate a {@code build-info.properties} file based on the content of the current
 {@link MavenProject}.</description>
       <requiresDirectInvocation>false</requiresDirectInvocation>
       <requiresProject>true</requiresProject>

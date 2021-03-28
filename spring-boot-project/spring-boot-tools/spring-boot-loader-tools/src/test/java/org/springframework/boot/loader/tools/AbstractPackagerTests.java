@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -234,7 +234,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		String index = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		String[] libraries = index.split("\\r?\\n");
 		List<String> expected = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((jar) -> "- \"" + jar.getName() + "\"").collect(Collectors.toList());
+				.map((jar) -> "- \"BOOT-INF/lib/" + jar.getName() + "\"").collect(Collectors.toList());
 		assertThat(Arrays.asList(libraries)).containsExactlyElementsOf(expected);
 	}
 
@@ -265,7 +265,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		List<String> expectedClasspathIndex = Stream.of(libJarFile1, libJarFile2, libJarFile3)
-				.map((file) -> "- \"" + file.getName() + "\"").collect(Collectors.toList());
+				.map((file) -> "- \"BOOT-INF/lib/" + file.getName() + "\"").collect(Collectors.toList());
 		assertThat(Arrays.asList(classpathIndex.split("\\n"))).containsExactlyElementsOf(expectedClasspathIndex);
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
@@ -296,7 +296,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 		assertThat(hasPackagedEntry("BOOT-INF/classpath.idx")).isTrue();
 		String classpathIndex = getPackagedEntryContent("BOOT-INF/classpath.idx");
 		assertThat(Arrays.asList(classpathIndex.split("\\n")))
-				.containsExactly("- \"spring-boot-jarmode-layertools.jar\"");
+				.containsExactly("- \"BOOT-INF/lib/spring-boot-jarmode-layertools.jar\"");
 		assertThat(hasPackagedEntry("BOOT-INF/layers.idx")).isTrue();
 		String layersIndex = getPackagedEntryContent("BOOT-INF/layers.idx");
 		List<String> expectedLayers = new ArrayList<>();
@@ -644,7 +644,7 @@ abstract class AbstractPackagerTests<P extends Packager> {
 
 		private static final Layer DEFAULT_LAYER = new Layer("default");
 
-		private Set<Layer> layers = new LinkedHashSet<Layer>();
+		private Set<Layer> layers = new LinkedHashSet<>();
 
 		private Map<String, Layer> libraries = new HashMap<>();
 

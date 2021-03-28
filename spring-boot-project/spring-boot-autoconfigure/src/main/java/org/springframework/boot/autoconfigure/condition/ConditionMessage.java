@@ -401,23 +401,28 @@ public final class ConditionMessage {
 	 */
 	public enum Style {
 
+		/**
+		 * Render with normal styling.
+		 */
 		NORMAL {
+
 			@Override
 			protected Object applyToItem(Object item) {
 				return item;
 			}
 
-			@Override
-			public Collection<?> applyTo(Collection<?> items) {
-				return items;
-			}
 		},
 
+		/**
+		 * Render with the item surrounded by quotes.
+		 */
 		QUOTE {
+
 			@Override
 			protected String applyToItem(Object item) {
 				return (item != null) ? "'" + item + "'" : null;
 			}
+
 		};
 
 		public Collection<?> applyTo(Collection<?> items) {

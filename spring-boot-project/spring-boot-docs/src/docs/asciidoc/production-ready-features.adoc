@@ -54,6 +54,8 @@ The built-in endpoints will only be auto-configured when they are available.
 Most applications choose exposure via HTTP, where the ID of the endpoint along with a prefix of `/actuator` is mapped to a URL.
 For example, by default, the `health` endpoint is mapped to `/actuator/health`.
 
+TIP: To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]).
+
 The following technology-agnostic endpoints are available:
 
 [cols="2,5"]
@@ -122,7 +124,7 @@ The following technology-agnostic endpoints are available:
   Disabled by default.
 
 | `startup`
-| Shows the startup steps data collected by the `ApplicationStartup`.
+| Shows the <<spring-boot-features.adoc#boot-features-application-startup-tracking,startup steps data>> collected by the `ApplicationStartup`.
   Requires the `SpringApplication` to be configured with a `BufferingApplicationStartup`.
 
 | `threaddump`
@@ -150,8 +152,6 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 | Exposes metrics in a format that can be scraped by a Prometheus server.
   Requires a dependency on `micrometer-registry-prometheus`.
 |===
-
-To learn more about the Actuator's endpoints and their request and response formats, please refer to the separate API documentation ({spring-boot-actuator-restapi-docs}[HTML] or {spring-boot-actuator-restapi-pdfdocs}[PDF]).
 
 
 
@@ -357,18 +357,14 @@ If you wish to configure custom security for HTTP endpoints, for example, only a
 
 A typical Spring Security configuration might look something like the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
-					requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
-			http.httpBasic();
-		}
-
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+			requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
+		http.httpBasic();
+		return http.build();
 	}
 ----
 
@@ -390,19 +386,18 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class ActuatorSecurity extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
 				requests.anyRequest().permitAll());
-		}
-
+		return http.build();
 	}
 ----
+
+NOTE: In both the examples above, the configuration applies only to the actuator endpoints.
+Since Spring Boot's security configuration backs off completely in the presence of any `SecurityFilterChain` bean, you will need to configure an additional `SecurityFilterChain` bean with rules that apply to the rest of the application.
 
 
 
@@ -429,6 +424,17 @@ NOTE: The prefix `management.endpoint.<name>` is used to uniquely identify the e
 === Hypermedia for Actuator Web Endpoints
 A "`discovery page`" is added with links to all the endpoints.
 The "`discovery page`" is available on `/actuator` by default.
+
+To disable the "`discovery page`", add the following property to your application properties:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	management:
+	  endpoints:
+	    web:
+	      discovery:
+	        enabled: false
+----
 
 When a custom management context path is configured, the "`discovery page`" automatically moves from `/actuator` to the root of the management context.
 For example, if the management context path is `/management`, then the discovery page is available from `/management`.
@@ -468,7 +474,7 @@ The following example exposes a read operation that returns a custom object:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/endpoint/CustomEndpointExample.java[tag=read]
+include::{include-productionreadyfeatures}/endpoints/CustomEndpoint.java[tag=read]
 ----
 
 You can also write technology-specific endpoints by using `@JmxEndpoint` or `@WebEndpoint`.
@@ -488,7 +494,7 @@ Operations on an endpoint receive input via their parameters.
 When exposed via the web, the values for these parameters are taken from the URL's query parameters and from the JSON request body.
 When exposed via JMX, the parameters are mapped to the parameters of the MBean's operations.
 Parameters are required by default.
-They can be made optional by annotating them with `@org.springframework.lang.Nullable`.
+They can be made optional by annotating them with either `@javax.annotation.Nullable` or `@org.springframework.lang.Nullable`.
 
 Each root property in the JSON request body can be mapped to a parameter of the endpoint.
 Consider the following JSON request body:
@@ -505,7 +511,7 @@ This can be used to invoke a write operation that takes `String name` and `int c
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/endpoint/CustomEndpointExample.java[tag=write]
+include::{include-productionreadyfeatures}/endpoints/CustomEndpoint.java[tag=write]
 ----
 
 TIP: Because endpoints are technology agnostic, only simple types can be specified in the method signature.
@@ -781,7 +787,7 @@ You need to provide an implementation of the `health()` method and return a `Hea
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.actuate.health.Health;
 	import org.springframework.boot.actuate.health.HealthIndicator;
@@ -875,7 +881,7 @@ If you need to register a regular `HealthContributor`, you should wrap it using 
 To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	public class MyReactiveHealthIndicator implements ReactiveHealthIndicator {
@@ -1060,50 +1066,62 @@ Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run
 [[production-ready-kubernetes-probes-lifecycle]]
 ==== Application lifecycle and Probes states
 An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
-Spring Boot publishes <<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events during startup and shutdown>>.
+There is a significant difference between the `AvailabilityState` which is the in-memory, internal state of the application
+and the actual Probe which exposes that state: depending on the phase of application lifecycle, the Probe might not be available.
+
+Spring Boot publishes <<spring-boot-features.adoc#boot-features-application-events-and-listeners,Application Events during startup and shutdown>>,
+and Probes can listen to such events and expose the `AvailabilityState` information.
+
+The following tables show the `AvailabilityState` and the state of HTTP connectors at different stages.
 
 When a Spring Boot application starts:
 
-[cols="3,2,2,6"]
+[cols="2,2,2,3,5"]
 |===
-|Application startup phase |Liveness State |Readiness State |Notes
+|Startup phase |LivenessState |ReadinessState |HTTP server |Notes
 
 |Starting
 |`BROKEN`
 |`REFUSING_TRAFFIC`
+|Not started
 |Kubernetes checks the "liveness" Probe and restarts the application if it takes too long.
 
 |Started
 |`CORRECT`
 |`REFUSING_TRAFFIC`
+|Refuses requests
 |The application context is refreshed. The application performs startup tasks and does not receive traffic yet.
 
 |Ready
 |`CORRECT`
 |`ACCEPTING_TRAFFIC`
+|Accepts requests
 |Startup tasks are finished. The application is receiving traffic.
 |===
 
 When a Spring Boot application shuts down:
 
-[cols="3,2,2,6"]
+[cols="2,2,2,3,5"]
 |===
-|Application shutdown phase |Liveness State |Readiness State |Notes
+|Shutdown phase |Liveness State |Readiness State |HTTP server |Notes
 
 |Running
-|live
-|ready
+|`CORRECT`
+|`ACCEPTING_TRAFFIC`
+|Accepts requests
 |Shutdown has been requested.
 
 |Graceful shutdown
-|live
-|unready
+|`CORRECT`
+|`REFUSING_TRAFFIC`
+|New requests are rejected
 |If enabled, <<spring-boot-features#boot-features-graceful-shutdown,graceful shutdown processes in-flight requests>>.
 
 |Shutdown complete
-|broken
-|unready
-|The application context is closed and the application cannot serve traffic.
+|N/A
+|N/A
+|Server is shut down
+|The application context is closed and the application is shut down.
 |===
 
 TIP: Check out the <<deployment.adoc#cloud-deployment-kubernetes-container-lifecycle,Kubernetes container lifecycle section>> for more information about Kubernetes deployment.
@@ -1177,11 +1195,13 @@ Assuming you use Maven, you could rewrite the preceding example as follows:
 [[production-ready-application-info-git]]
 ==== Git Commit Information
 Another useful feature of the `info` endpoint is its ability to publish information about the state of your `git` source code repository when the project was built.
-If a `GitProperties` bean is available, the `git.branch`, `git.commit.id`, and `git.commit.time` properties are exposed.
+If a `GitProperties` bean is available, the `info` endpoint can be used to expose these properties.
 
 TIP: A `GitProperties` bean is auto-configured if a `git.properties` file is available at the root of the classpath.
 See "<<howto.adoc#howto-git-info,Generate git information>>" for more details.
 
+By default, the endpoint exposes `git.branch`, `git.commit.id`, and `git.commit.time` properties, if present.
+If you don't want any of these properties in the endpoint response, they need to be excluded from the `git.properties` file.
 If you want to display the full git information (that is, the full content of `git.properties`), use the configprop:management.info.git.mode[] property, as follows:
 
 [source,yaml,indent=0,configprops,configblocks]
@@ -1190,6 +1210,13 @@ If you want to display the full git information (that is, the full content of `g
 	  info:
 	    git:
 	      mode: "full"
+----
+
+To disable the git commit information from the `info` endpoint completely, set the configprop:management.info.git.enabled[] property to `false`, as follows:
+
+[source,properties,indent=0,configprops]
+----
+	management.info.git.enabled=false
 ----
 
 
@@ -1210,7 +1237,7 @@ To provide custom application information, you can register Spring beans that im
 
 The following example contributes an `example` entry with a single value:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import java.util.Collections;
 
@@ -1399,6 +1426,7 @@ This can be achieved using the configprop:management.endpoints.web.exposure.excl
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
 By default, this feature is not enabled and can be turned on by setting the configuration property configprop:spring.jmx.enabled[] to `true`.
 Spring Boot exposes management endpoints as JMX MBeans under the `org.springframework.boot` domain by default.
+To Take full control over endpoints registration in the JMX domain, consider registering your own `EndpointObjectNameFactory` implementation.
 
 
 
@@ -1596,7 +1624,7 @@ Spring Boot will also add any auto-configured registries to the global static co
 
 You can register any number of `MeterRegistryCustomizer` beans to further configure the registry, such as applying common tags, before any meters are registered with the registry:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	MeterRegistryCustomizer<MeterRegistry> metricsCommonTags() {
@@ -1606,7 +1634,7 @@ You can register any number of `MeterRegistryCustomizer` beans to further config
 
 You can apply customizations to particular registry implementations by being more specific about the generic type:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	MeterRegistryCustomizer<GraphiteMeterRegistry> graphiteMetricsNamingConvention() {
@@ -1764,12 +1792,12 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
 
-[source,java]
+[source,java,pending-extract=true,indent=0]
 ----
-@Bean
-public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
-	return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
-}
+	@Bean
+	public GraphiteMeterRegistry graphiteMeterRegistry(GraphiteConfig config, Clock clock) {
+		return new GraphiteMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+	}
 ----
 
 
@@ -1805,7 +1833,8 @@ You should also configure one or more tags to identify the data source to which 
 
 [[production-ready-metrics-export-influx]]
 ==== Influx
-By default, metrics are exported to {micrometer-registry-docs}/influx[Influx] running on your local machine.
+By default, metrics are exported to an {micrometer-registry-docs}/influx[Influx] v1 instance running on your local machine with the default configuration.
+To export metrics to InfluxDB v2, configure the `org`, `bucket`, and authentication `token` for writing metrics.
 The location of the https://www.influxdata.com[Influx server] to use can be provided using:
 
 [source,yaml,indent=0,configprops,configblocks]
@@ -1839,12 +1868,12 @@ Micrometer provides a default `HierarchicalNameMapper` that governs how a dimens
 TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
 
-[source,java]
+[source,java,pending-extract=true,indent=0]
 ----
-@Bean
-public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
-	return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
-}
+	@Bean
+	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
+		return new JmxMeterRegistry(config, clock, MY_HIERARCHICAL_MAPPER);
+	}
 ----
 
 
@@ -2097,7 +2126,7 @@ Spring Boot registers the following core metrics when applicable:
 ** Number of classes loaded/unloaded
 * CPU metrics
 * File descriptor metrics
-* Kafka consumer and producer metrics
+* Kafka consumer, producer, and streams metrics
 * Log4j2 metrics: record the number of events logged to Log4j2 at each level
 * Logback metrics: record the number of events logged to Logback at each level
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
@@ -2112,7 +2141,7 @@ Auto-configuration enables the instrumentation of requests handled by Spring MVC
 When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
 Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@RestController
 	@Timed <1>
@@ -2201,7 +2230,7 @@ When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configur
 When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
 Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Component
 	@Path("/api/people")
@@ -2251,7 +2280,7 @@ To customize the tags, provide a `@Bean` that implements `JerseyTagsProvider`.
 [[production-ready-metrics-http-clients]]
 ==== HTTP Client Metrics
 Spring Boot Actuator manages the instrumentation of both `RestTemplate` and `WebClient`.
-For that, you have to get injected with an auto-configured builder and use it to create instances:
+For that, you have to inject the auto-configured builder and use it to create instances:
 
 * `RestTemplateBuilder` for `RestTemplate`
 * `WebClient.Builder` for `WebClient`
@@ -2327,7 +2356,7 @@ Each metric is tagged by the name of the Pool (can be controlled with `spring.da
 
 [[production-ready-metrics-hibernate]]
 ==== Hibernate Metrics
-Auto-configuration enables the instrumentation of all available Hibernate `EntityManagerFactory` instances that have statistics enabled with a metric named `hibernate`.
+If `org.hibernate:hibernate-micrometer` is on the classpath, all available Hibernate `EntityManagerFactory` instances that have statistics enabled with a metric named `hibernate` are instrumented.
 
 Metrics are also tagged by the name of the `EntityManagerFactory` that is derived from the bean name.
 
@@ -2353,6 +2382,7 @@ Auto-configuration will enable the instrumentation of all available RabbitMQ con
 [[production-ready-metrics-kafka]]
 ==== Kafka Metrics
 Auto-configuration will register a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory respectively.
+It will also register a `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
 For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
 
 
@@ -2363,14 +2393,14 @@ To register custom metrics, inject `MeterRegistry` into your component, as shown
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/metrics/MetricsMeterRegistryInjectionExample.java[tag=component]
+include::{include-productionreadyfeatures}/metrics/MetricsMeterRegistryInjection.java[tag=*]
 ----
 
 If your metrics depend on other beans, it is recommended that you use a `MeterBinder` to register them, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/metrics/SampleMeterBinderConfiguration.java[tag=example]
+include::{include-productionreadyfeatures}/metrics/SampleMeterBinderConfiguration.java[tag=*]
 ----
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
@@ -2388,7 +2418,7 @@ For example, if you want to rename the `mytag.region` tag to `mytag.area` for al
 
 [source,java,indent=0]
 ----
-include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=configuration]
+include::{include-productionreadyfeatures}/metrics/MetricsFilterConfiguration.java[tag=*]
 ----
 
 
@@ -2450,7 +2480,7 @@ The following properties allow per-meter customization:
 | Publish a cumulative histogram with buckets defined by your service-level objectives.
 |===
 
-For more details on concepts behind `percentiles-histogram`, `percentiles` and `sla` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
+For more details on concepts behind `percentiles-histogram`, `percentiles` and `slo` refer to the {micrometer-concepts-docs}#_histograms_and_percentiles["Histograms and percentiles" section] of the micrometer documentation.
 
 
 
@@ -2606,7 +2636,7 @@ For Tomcat, the following configuration can be added:
 
 [source,java,indent=0]
 ----
-include::{code-examples}/cloudfoundry/CloudFoundryCustomContextPathExample.java[tag=configuration]
+include::{include-productionreadyfeatures}/cloudfoundry/CloudFoundryCustomContextPathConfiguration.java[tag=*]
 ----
 
 

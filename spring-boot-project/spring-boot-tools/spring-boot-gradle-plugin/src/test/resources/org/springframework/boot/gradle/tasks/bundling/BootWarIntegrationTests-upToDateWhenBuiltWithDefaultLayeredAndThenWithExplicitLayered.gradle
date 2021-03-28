@@ -1,0 +1,10 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+	id 'war'
+}
+
+bootWar {
+	mainClass = 'com.example.Application'
+	{layered}
+}

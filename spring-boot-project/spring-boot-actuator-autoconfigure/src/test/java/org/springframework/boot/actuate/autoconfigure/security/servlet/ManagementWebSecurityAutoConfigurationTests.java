@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,14 +69,6 @@ class ManagementWebSecurityAutoConfigurationTests {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN);
 			HttpStatus status = getResponseStatus(context, "/actuator/health");
-			assertThat(status).isEqualTo(HttpStatus.OK);
-		});
-	}
-
-	@Test
-	void permitAllForInfo() {
-		this.contextRunner.run((context) -> {
-			HttpStatus status = getResponseStatus(context, "/actuator/info");
 			assertThat(status).isEqualTo(HttpStatus.OK);
 		});
 	}

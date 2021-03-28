@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,10 @@
 package io.spring.concourse.releasescripts.artifactory;
 
 import java.net.URI;
-import java.time.Duration;
-import java.util.Set;
 
 import io.spring.concourse.releasescripts.ReleaseInfo;
 import io.spring.concourse.releasescripts.artifactory.payload.BuildInfoResponse;
-import io.spring.concourse.releasescripts.artifactory.payload.DistributionRequest;
 import io.spring.concourse.releasescripts.artifactory.payload.PromotionRequest;
-import io.spring.concourse.releasescripts.bintray.BintrayService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,17 +49,11 @@ public class ArtifactoryService {
 
 	private static final String BUILD_INFO_URL = ARTIFACTORY_URL + "/api/build/";
 
-	private static final String DISTRIBUTION_URL = ARTIFACTORY_URL + "/api/build/distribute/";
-
 	private static final String STAGING_REPO = "libs-staging-local";
 
 	private final RestTemplate restTemplate;
 
-	private final BintrayService bintrayService;
-
-	public ArtifactoryService(RestTemplateBuilder builder, ArtifactoryProperties artifactoryProperties,
-			BintrayService bintrayService) {
-		this.bintrayService = bintrayService;
+	public ArtifactoryService(RestTemplateBuilder builder, ArtifactoryProperties artifactoryProperties) {
 		String username = artifactoryProperties.getUsername();
 		String password = artifactoryProperties.getPassword();
 		if (StringUtils.hasLength(username)) {
@@ -113,37 +103,6 @@ public class ArtifactoryService {
 		catch (HttpClientErrorException ex) {
 			logger.debug("Client error, assuming not promoted");
 			return false;
-		}
-	}
-
-	/**
-	 * Deploy builds from Artifactory to Bintray.
-	 * @param sourceRepo the source repo in Artifactory.
-	 * @param releaseInfo the resease info
-	 * @param artifactDigests the artifact digests
-	 */
-	public void distribute(String sourceRepo, ReleaseInfo releaseInfo, Set<String> artifactDigests) {
-		logger.debug("Attempting distribute via Artifactory");
-		if (!this.bintrayService.isDistributionStarted(releaseInfo)) {
-			startDistribute(sourceRepo, releaseInfo);
-		}
-		if (!this.bintrayService.isDistributionComplete(releaseInfo, artifactDigests, Duration.ofMinutes(60))) {
-			throw new DistributionTimeoutException("Distribution timed out.");
-		}
-	}
-
-	private void startDistribute(String sourceRepo, ReleaseInfo releaseInfo) {
-		DistributionRequest request = new DistributionRequest(new String[] { sourceRepo });
-		RequestEntity<DistributionRequest> requestEntity = RequestEntity
-				.post(URI.create(DISTRIBUTION_URL + releaseInfo.getBuildName() + "/" + releaseInfo.getBuildNumber()))
-				.contentType(MediaType.APPLICATION_JSON).body(request);
-		try {
-			this.restTemplate.exchange(requestEntity, Object.class);
-			logger.debug("Distribute call completed");
-		}
-		catch (HttpClientErrorException ex) {
-			logger.info("Failed to distribute.");
-			throw ex;
 		}
 	}
 

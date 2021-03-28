@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,6 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.config.Neo4jDefaultCallbacksRegistrar;
 import org.springframework.data.neo4j.core.DatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.Neo4jClient;
 import org.springframework.data.neo4j.core.Neo4jOperations;
@@ -44,6 +42,7 @@ import org.springframework.data.neo4j.core.Neo4jTemplate;
 import org.springframework.data.neo4j.core.convert.Neo4jConversions;
 import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
 import org.springframework.data.neo4j.core.schema.Node;
+import org.springframework.data.neo4j.core.schema.RelationshipProperties;
 import org.springframework.data.neo4j.core.transaction.Neo4jTransactionManager;
 import org.springframework.data.neo4j.repository.config.Neo4jRepositoryConfigurationExtension;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -66,7 +65,6 @@ import org.springframework.transaction.TransactionManager;
 @ConditionalOnBean(Driver.class)
 @AutoConfigureBefore(TransactionAutoConfiguration.class)
 @AutoConfigureAfter(Neo4jAutoConfiguration.class)
-@Import(Neo4jDefaultCallbacksRegistrar.class)
 public class Neo4jDataAutoConfiguration {
 
 	@Bean
@@ -79,7 +77,8 @@ public class Neo4jDataAutoConfiguration {
 	@ConditionalOnMissingBean
 	public Neo4jMappingContext neo4jMappingContext(ApplicationContext applicationContext,
 			Neo4jConversions neo4jConversions) throws ClassNotFoundException {
-		Set<Class<?>> initialEntityClasses = new EntityScanner(applicationContext).scan(Node.class);
+		Set<Class<?>> initialEntityClasses = new EntityScanner(applicationContext).scan(Node.class,
+				RelationshipProperties.class);
 		Neo4jMappingContext context = new Neo4jMappingContext(neo4jConversions);
 		context.setInitialEntitySet(initialEntityClasses);
 		return context;
@@ -95,15 +94,14 @@ public class Neo4jDataAutoConfiguration {
 
 	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
 	@ConditionalOnMissingBean
-	public Neo4jClient neo4jClient(Driver driver) {
-		return Neo4jClient.create(driver);
+	public Neo4jClient neo4jClient(Driver driver, DatabaseSelectionProvider databaseNameProvider) {
+		return Neo4jClient.create(driver, databaseNameProvider);
 	}
 
 	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
 	@ConditionalOnMissingBean(Neo4jOperations.class)
-	public Neo4jTemplate neo4jTemplate(Neo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext,
-			DatabaseSelectionProvider databaseNameProvider) {
-		return new Neo4jTemplate(neo4jClient, neo4jMappingContext, databaseNameProvider);
+	public Neo4jTemplate neo4jTemplate(Neo4jClient neo4jClient, Neo4jMappingContext neo4jMappingContext) {
+		return new Neo4jTemplate(neo4jClient, neo4jMappingContext);
 	}
 
 	@Bean(Neo4jRepositoryConfigurationExtension.DEFAULT_TRANSACTION_MANAGER_BEAN_NAME)

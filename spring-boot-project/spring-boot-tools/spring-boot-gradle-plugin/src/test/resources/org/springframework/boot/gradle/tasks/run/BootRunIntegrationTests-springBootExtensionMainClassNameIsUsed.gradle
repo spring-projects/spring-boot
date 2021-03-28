@@ -4,5 +4,5 @@ plugins {
 }
 
 springBoot {
-	mainClass = 'com.example.main.CustomMainClass'
+	mainClass = 'com.example.bootrun.main.CustomMainClass'
 }

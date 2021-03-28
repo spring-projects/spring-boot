@@ -30,6 +30,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.data.redis.ExampleService;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.cassandra.core.CassandraTemplate;
@@ -52,8 +53,8 @@ import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 class DataCassandraTestIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra())
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
 	static void cassandraProperties(DynamicPropertyRegistry registry) {

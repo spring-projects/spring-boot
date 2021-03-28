@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,12 @@ package org.springframework.boot.autoconfigure.quartz;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.time.Duration;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.junit.jupiter.api.io.TempDir;
@@ -60,9 +62,11 @@ import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -136,6 +140,17 @@ class QuartzAutoConfigurationTests {
 				.run(assertDataSourceJobStore("quartzDataSource"));
 	}
 
+	@Test
+	void transactionManagerWithQuartzTransactionManagerUsedWhenMultiplePresent() {
+		this.contextRunner
+				.withUserConfiguration(QuartzJobsConfiguration.class, MultipleTransactionManagersConfiguration.class)
+				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
+					SchedulerFactoryBean schedulerFactoryBean = context.getBean(SchedulerFactoryBean.class);
+					assertThat(schedulerFactoryBean).extracting("transactionManager")
+							.isEqualTo(context.getBean("quartzTransactionManager"));
+				});
+	}
+
 	private ContextConsumer<AssertableApplicationContext> assertDataSourceJobStore(String datasourceName) {
 		return (context) -> {
 			assertThat(context).hasSingleBean(Scheduler.class);
@@ -181,8 +196,8 @@ class QuartzAutoConfigurationTests {
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					assertThat(scheduler.getJobDetail(JobKey.jobKey("fooJob"))).isNotNull();
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger"))).isNotNull();
-					Thread.sleep(1000L);
-					assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue");
+					Awaitility.waitAtMost(Duration.ofSeconds(5)).untilAsserted(
+							() -> assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue"));
 				});
 	}
 
@@ -426,6 +441,51 @@ class QuartzAutoConfigurationTests {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setGenerateUniqueName(true);
 			properties.afterPropertiesSet();
+			return properties.initializeDataSourceBuilder().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleTransactionManagersConfiguration extends BaseQuartzConfiguration {
+
+		private final DataSource primaryDataSource = createTestDataSource();
+
+		private final DataSource quartzDataSource = createTestDataSource();
+
+		@Bean
+		@Primary
+		DataSource applicationDataSource() {
+			return this.primaryDataSource;
+		}
+
+		@Bean
+		@QuartzDataSource
+		DataSource quartzDataSource() {
+			return this.quartzDataSource;
+		}
+
+		@Bean
+		@Primary
+		PlatformTransactionManager applicationTransactionManager() {
+			return new DataSourceTransactionManager(this.primaryDataSource);
+		}
+
+		@Bean
+		@QuartzTransactionManager
+		PlatformTransactionManager quartzTransactionManager() {
+			return new DataSourceTransactionManager(this.quartzDataSource);
+		}
+
+		private DataSource createTestDataSource() {
+			DataSourceProperties properties = new DataSourceProperties();
+			properties.setGenerateUniqueName(true);
+			try {
+				properties.afterPropertiesSet();
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 			return properties.initializeDataSourceBuilder().build();
 		}
 

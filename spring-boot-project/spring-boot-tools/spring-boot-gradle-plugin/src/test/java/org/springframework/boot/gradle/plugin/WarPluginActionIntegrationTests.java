@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,21 +50,14 @@ class WarPluginActionIntegrationTests {
 	}
 
 	@TestTemplate
-	void assembleRunsBootWarAndWarIsSkipped() {
-		BuildResult result = this.gradleBuild.build("assemble");
-		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
-		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SKIPPED);
-	}
-
-	@TestTemplate
-	void warAndBootWarCanBothBeBuilt() {
+	void assembleRunsBootWarAndWar() {
 		BuildResult result = this.gradleBuild.build("assemble");
 		assertThat(result.task(":bootWar").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.task(":war").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles()).containsExactlyInAnyOrder(
 				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"),
-				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-boot.war"));
+				new File(buildLibs, this.gradleBuild.getProjectDir().getName() + "-plain.war"));
 	}
 
 	@TestTemplate

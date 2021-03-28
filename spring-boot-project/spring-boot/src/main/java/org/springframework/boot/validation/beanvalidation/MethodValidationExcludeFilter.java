@@ -20,14 +20,13 @@ import java.lang.annotation.Annotation;
 
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
-import org.springframework.validation.beanvalidation.MethodValidationPostProcessor;
 
 /**
  * A filter for excluding types from method validation.
  *
  * @author Andy Wilkinson
  * @since 2.4.0
- * @see MethodValidationPostProcessor
+ * @see FilteredMethodValidationPostProcessor
  */
 public interface MethodValidationExcludeFilter {
 

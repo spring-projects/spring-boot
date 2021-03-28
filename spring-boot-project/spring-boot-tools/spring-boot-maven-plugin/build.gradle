@@ -9,12 +9,15 @@ plugins {
 description = "Spring Boot Maven Plugin"
 
 configurations {
+	dependenciesBom
 	documentation
 }
 
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
+
+	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -41,9 +44,20 @@ dependencies {
 	testImplementation("org.springframework:spring-core")
 }
 
+task syncSpringBootDependenciesBom(type: Sync) {
+	destinationDir = file("${buildDir}/generated-resources/org/springframework/boot/maven")
+	from configurations.dependenciesBom
+}
+
 syncDocumentationSourceForAsciidoctor {
 	from(documentPluginGoals) {
 		into "asciidoc/goals"
+	}
+}
+
+sourceSets {
+	intTest {
+		output.dir("${buildDir}/generated-resources", builtBy: "syncSpringBootDependenciesBom")
 	}
 }
 
@@ -83,12 +97,6 @@ javadoc {
 		use = true
 		windowTitle = "Spring Boot Maven Plugin ${project.version} API"
 	}
-}
-
-tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
-	attributes	"maven-jar-plugin-version": "1.2.3",
-				"maven-failsafe-plugin-version": "1.2.3",
-				"build-helper-maven-plugin-version": "1.2.3"
 }
 
 task zip(type: Zip) {

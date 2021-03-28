@@ -90,7 +90,7 @@ For instance, to use a different version of the SLF4J library and the Spring Dat
 			<dependency>
 				<groupId>org.springframework.data</groupId>
 				<artifactId>spring-data-releasetrain</artifactId>
-				<version>Moore-SR6</version>
+				<version>2020.0.0-SR1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
@@ -131,7 +131,6 @@ If you want to both have a default while allowing it to be overridden on the com
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<version>{gradle-project-version}</version>
 				<configuration>
 					<profiles>${app.profiles}</profiles>
 				</configuration>

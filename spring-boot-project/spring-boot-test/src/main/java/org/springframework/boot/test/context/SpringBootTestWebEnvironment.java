@@ -18,9 +18,9 @@ package org.springframework.boot.test.context;
 
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.test.context.ContextCustomizer;
 import org.springframework.test.context.MergedContextConfiguration;
+import org.springframework.test.context.TestContextAnnotationUtils;
 
 /**
  * {@link ContextCustomizer} to track the web environment that is used in a
@@ -35,8 +35,9 @@ class SpringBootTestWebEnvironment implements ContextCustomizer {
 	private final WebEnvironment webEnvironment;
 
 	SpringBootTestWebEnvironment(Class<?> testClass) {
-		this.webEnvironment = MergedAnnotations.from(testClass, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
-				.get(SpringBootTest.class).getValue("webEnvironment", WebEnvironment.class).orElse(null);
+		SpringBootTest sprintBootTest = TestContextAnnotationUtils.findMergedAnnotation(testClass,
+				SpringBootTest.class);
+		this.webEnvironment = (sprintBootTest != null) ? sprintBootTest.webEnvironment() : null;
 	}
 
 	@Override

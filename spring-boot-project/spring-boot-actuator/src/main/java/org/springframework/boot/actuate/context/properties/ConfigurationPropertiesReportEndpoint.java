@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.actuate.context.properties;
 
 import java.lang.reflect.Constructor;
+import java.lang.reflect.Parameter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +26,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -54,16 +56,21 @@ import org.springframework.beans.BeansException;
 import org.springframework.boot.actuate.endpoint.Sanitizer;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.annotation.Selector;
 import org.springframework.boot.context.properties.BoundConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.ConfigurationPropertiesBean;
 import org.springframework.boot.context.properties.ConstructorBinding;
+import org.springframework.boot.context.properties.bind.Name;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
+import org.springframework.core.DefaultParameterNameDiscoverer;
 import org.springframework.core.KotlinDetector;
+import org.springframework.core.ParameterNameDiscoverer;
+import org.springframework.core.annotation.MergedAnnotation;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.MergedAnnotations.SearchStrategy;
 import org.springframework.util.ClassUtils;
@@ -85,6 +92,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Madhura Bhave
  * @author Andy Wilkinson
+ * @author Chris Bono
  * @since 2.0.0
  */
 @Endpoint(id = "configprops")
@@ -107,17 +115,27 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		this.sanitizer.setKeysToSanitize(keysToSanitize);
 	}
 
-	@ReadOperation
-	public ApplicationConfigurationProperties configurationProperties() {
-		return extract(this.context);
+	public void keysToSanitize(String... keysToSanitize) {
+		this.sanitizer.keysToSanitize(keysToSanitize);
 	}
 
-	private ApplicationConfigurationProperties extract(ApplicationContext context) {
+	@ReadOperation
+	public ApplicationConfigurationProperties configurationProperties() {
+		return extract(this.context, (bean) -> true);
+	}
+
+	@ReadOperation
+	public ApplicationConfigurationProperties configurationPropertiesWithPrefix(@Selector String prefix) {
+		return extract(this.context, (bean) -> bean.getAnnotation().prefix().startsWith(prefix));
+	}
+
+	private ApplicationConfigurationProperties extract(ApplicationContext context,
+			Predicate<ConfigurationPropertiesBean> beanFilterPredicate) {
 		ObjectMapper mapper = getObjectMapper();
 		Map<String, ContextConfigurationProperties> contexts = new HashMap<>();
 		ApplicationContext target = context;
 		while (target != null) {
-			contexts.put(target.getId(), describeBeans(mapper, target));
+			contexts.put(target.getId(), describeBeans(mapper, target, beanFilterPredicate));
 			target = target.getParent();
 		}
 		return new ApplicationConfigurationProperties(contexts);
@@ -164,10 +182,12 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 		mapper.setSerializerFactory(factory);
 	}
 
-	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context) {
+	private ContextConfigurationProperties describeBeans(ObjectMapper mapper, ApplicationContext context,
+			Predicate<ConfigurationPropertiesBean> beanFilterPredicate) {
 		Map<String, ConfigurationPropertiesBean> beans = ConfigurationPropertiesBean.getAll(context);
-		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = new HashMap<>();
-		beans.forEach((beanName, bean) -> descriptors.put(beanName, describeBean(mapper, bean)));
+		Map<String, ConfigurationPropertiesBeanDescriptor> descriptors = beans.values().stream()
+				.filter(beanFilterPredicate)
+				.collect(Collectors.toMap(ConfigurationPropertiesBean::getName, (bean) -> describeBean(mapper, bean)));
 		return new ContextConfigurationProperties(descriptors,
 				(context.getParent() != null) ? context.getParent().getId() : null);
 	}
@@ -384,6 +404,8 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 	 */
 	protected static class GenericSerializerModifier extends BeanSerializerModifier {
 
+		private static final ParameterNameDiscoverer PARAMETER_NAME_DISCOVERER = new DefaultParameterNameDiscoverer();
+
 		@Override
 		public List<BeanPropertyWriter> changeProperties(SerializationConfig config, BeanDescription beanDesc,
 				List<BeanPropertyWriter> beanProperties) {
@@ -398,11 +420,21 @@ public class ConfigurationPropertiesReportEndpoint implements ApplicationContext
 			return result;
 		}
 
-		private boolean isCandidate(BeanDescription beanDesc, BeanPropertyWriter writer,
-				Constructor<?> bindConstructor) {
-			if (bindConstructor != null) {
-				return Arrays.stream(bindConstructor.getParameters())
-						.anyMatch((parameter) -> parameter.getName().equals(writer.getName()));
+		private boolean isCandidate(BeanDescription beanDesc, BeanPropertyWriter writer, Constructor<?> constructor) {
+			if (constructor != null) {
+				Parameter[] parameters = constructor.getParameters();
+				String[] names = PARAMETER_NAME_DISCOVERER.getParameterNames(constructor);
+				if (names == null) {
+					names = new String[parameters.length];
+				}
+				for (int i = 0; i < parameters.length; i++) {
+					String name = MergedAnnotations.from(parameters[i]).get(Name.class)
+							.getValue(MergedAnnotation.VALUE, String.class)
+							.orElse((names[i] != null) ? names[i] : parameters[i].getName());
+					if (name.equals(writer.getName())) {
+						return true;
+					}
+				}
 			}
 			return isReadable(beanDesc, writer);
 		}

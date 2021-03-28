@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,8 @@ public class WebEndpointProperties {
 	 */
 	private final Map<String, String> pathMapping = new LinkedHashMap<>();
 
+	private final Discovery discovery = new Discovery();
+
 	public Exposure getExposure() {
 		return this.exposure;
 	}
@@ -73,6 +75,10 @@ public class WebEndpointProperties {
 
 	public Map<String, String> getPathMapping() {
 		return this.pathMapping;
+	}
+
+	public Discovery getDiscovery() {
+		return this.discovery;
 	}
 
 	public static class Exposure {
@@ -101,6 +107,23 @@ public class WebEndpointProperties {
 
 		public void setExclude(Set<String> exclude) {
 			this.exclude = exclude;
+		}
+
+	}
+
+	public static class Discovery {
+
+		/**
+		 * Whether the discovery page is enabled.
+		 */
+		private boolean enabled = true;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

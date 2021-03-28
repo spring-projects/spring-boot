@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,10 +19,10 @@ package smoketest.bootstrapregistry.external.svn;
 import java.util.function.Function;
 
 import org.springframework.boot.BootstrapContext;
-import org.springframework.boot.Bootstrapper;
+import org.springframework.boot.BootstrapRegistryInitializer;
 
 /**
- * Allows the user to register a {@link Bootstrapper} with a custom
+ * Allows the user to register a {@link BootstrapRegistryInitializer} with a custom
  * {@link SubversionClient}.
  *
  * @author Phillip Webb
@@ -33,11 +33,12 @@ public final class SubversionBootstrap {
 	}
 
 	/**
-	 * Return a {@link Bootstrapper} for the given client factory.
+	 * Return a {@link BootstrapRegistryInitializer} for the given client factory.
 	 * @param clientFactory the client factory
-	 * @return a {@link Bootstrapper} instance
+	 * @return a {@link BootstrapRegistryInitializer} instance
 	 */
-	public static Bootstrapper withCustomClient(Function<SubversionServerCertificate, SubversionClient> clientFactory) {
+	public static BootstrapRegistryInitializer withCustomClient(
+			Function<SubversionServerCertificate, SubversionClient> clientFactory) {
 		return (registry) -> registry.register(SubversionClient.class,
 				(bootstrapContext) -> createSubversionClient(bootstrapContext, clientFactory));
 	}

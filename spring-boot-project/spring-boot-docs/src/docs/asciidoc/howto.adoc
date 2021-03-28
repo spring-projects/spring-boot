@@ -95,7 +95,7 @@ For instance, the following example loads a YAML configuration file from the cla
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/EnvironmentPostProcessorExample.java[tag=example]
+include::{include-howto}/springbootapplication/MyEnvironmentPostProcessor.java[tag=*]
 ----
 
 TIP: The `Environment` has already been prepared with all the usual property sources that Spring Boot loads by default.
@@ -239,7 +239,7 @@ Then the Spring Boot banner is not printed on startup, and the application is no
 Properties defined in external configuration override the values specified with the Java API, with the notable exception of the sources used to create the `ApplicationContext`.
 Consider the following application:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	new SpringApplicationBuilder()
 		.bannerMode(Banner.Mode.OFF)
@@ -451,7 +451,8 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 	</dependency>
 ----
 
-NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2.0, Jetty 9.4 does not support Servlet 4.0.
+NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2, Jetty 9.4 does not support Servlet 4.0.
+If you wish to use Jetty 10, which does support Servlet 4.0, override the `jetty.version` property rather than the `servlet-api.version` property.
 
 The following Gradle example shows how to use Undertow in place of Reactor Netty for Spring WebFlux:
 
@@ -513,7 +514,7 @@ The best way to get that and be sure it has been initialized is to add a `@Bean`
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
 	public class MyWebIntegrationTests {
@@ -653,12 +654,12 @@ As of Undertow 1.4.0+, HTTP/2 is supported without any additional requirement on
 
 [[howto-configure-http2-h2c]]
 ==== HTTP/2 Cleartext with supported servers
-To enable HTTP/2 with cleartext support, you need to leave the `configprop:server.http2.enabled[]` property set to `false`,
+To enable HTTP/2 with cleartext support, you need to leave the configprop:server.http2.enabled[] property set to `false`,
 and instead apply a customizer specific to your choice of server:
 
 For Tomcat, we need to add an upgrade protocol:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public TomcatConnectorCustomizer connectorCustomizer() {
@@ -668,7 +669,7 @@ For Tomcat, we need to add an upgrade protocol:
 
 For Jetty, we need to add a connection factory to the existing connector:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public JettyServerCustomizer serverCustomizer() {
@@ -687,7 +688,7 @@ For Jetty, we need to add a connection factory to the existing connector:
 
 For Netty, we need to add `h2c` as a supported protocol:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public NettyServerCustomizer serverCustomizer() {
@@ -697,7 +698,7 @@ For Netty, we need to add `h2c` as a supported protocol:
 
 For Undertow, we need to enable the HTTP2 option:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public UndertowBuilderCustomizer builderCustomizer() {
@@ -721,7 +722,7 @@ You can declare such a component and get access to the server factory relevant t
 
 The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Component
 	public class MyTomcatWebServerCustomizer
@@ -733,6 +734,11 @@ The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stac
 		}
 	}
 ----
+
+NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
+Auto-configured `WebServerFactoryCustomizer` beans have an order of `0` and will be processed before any user-defined customizers, unless it has an explicit order that states otherwise.
+
+Once you've got access to a `WebServerFactory` using the customizer, you can use it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
 
 In addition Spring Boot provides:
 
@@ -758,10 +764,8 @@ In addition Spring Boot provides:
 | `NettyReactiveWebServerFactory`
 |===
 
-Once you've got access to a `WebServerFactory`, you can often add customizers to it to configure specific parts, like connectors, server resources, or the server itself - all using server-specific APIs.
-
-As a last resort, you can also declare your own `WebServerFactory` component, which will override the one provided by Spring Boot.
-In this case, you can't rely on configuration properties in the `server` namespace anymore.
+As a last resort, you can also declare your own `WebServerFactory` bean, which will override the one provided by Spring Boot.
+When you do so, auto-configured customizers are still applied on your custom factory, so use that option carefully.
 
 
 
@@ -799,7 +803,7 @@ Like any other Spring bean, you can define the order of Servlet filter beans; pl
 As <<howto-add-a-servlet-filter-or-listener-as-spring-bean,described earlier>>, any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public FilterRegistrationBean registration(MyFilter filter) {
@@ -864,7 +868,7 @@ Finally, access logging for Jetty can also be configured as follows:
 ----
 
 By default, logs are redirected to `System.err`.
-For more details, see {jetty-docs}/configuring-jetty-request-logs.html[the Jetty documentation].
+For more details, see the Jetty documentation.
 
 
 
@@ -882,6 +886,9 @@ With this option, the Web servers themselves natively support this feature; you 
 
 If this is not enough, Spring Framework provides a {spring-framework-docs}/web.html#filters-forwarded-headers[ForwardedHeaderFilter].
 You can register it as a Servlet Filter in your application by setting `server.forward-headers-strategy` is set to `FRAMEWORK`.
+
+TIP: If you are using Tomcat and terminating SSL at the proxy, configprop:server.tomcat.redirect-context-root[] should be set to `false`.
+This allows the `X-Forwarded-Proto` header to be honored before any redirects are performed.
 
 NOTE: If your application runs in Cloud Foundry or Heroku, the configprop:server.forward-headers-strategy[] property defaults to `NATIVE`.
 In all other instances, it defaults to `NONE`.
@@ -915,7 +922,7 @@ You can customize the valve's configuration by adding an entry to `application.p
 
 NOTE: You can trust all proxies by setting the `internal-proxies` to empty (but do not do so in production).
 
-You can take complete control of the configuration of Tomcat's `RemoteIpValve` by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance in a `TomcatServletWebServerFactory` bean.
+You can take complete control of the configuration of Tomcat's `RemoteIpValve` by switching the automatic one off (to do so, set `server.forward-headers-strategy=NONE`) and adding a new valve instance using a `WebServerFactoryCustomizer` bean.
 
 
 
@@ -925,35 +932,7 @@ You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWe
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public ServletWebServerFactory servletContainer() {
-		TomcatServletWebServerFactory tomcat = new TomcatServletWebServerFactory();
-		tomcat.addAdditionalTomcatConnectors(createSslConnector());
-		return tomcat;
-	}
-
-	private Connector createSslConnector() {
-		Connector connector = new Connector("org.apache.coyote.http11.Http11NioProtocol");
-		Http11NioProtocol protocol = (Http11NioProtocol) connector.getProtocolHandler();
-		try {
-			File keystore = new ClassPathResource("keystore").getFile();
-			File truststore = new ClassPathResource("keystore").getFile();
-			connector.setScheme("https");
-			connector.setSecure(true);
-			connector.setPort(8443);
-			protocol.setSSLEnabled(true);
-			protocol.setKeystoreFile(keystore.getAbsolutePath());
-			protocol.setKeystorePass("changeit");
-			protocol.setTruststoreFile(truststore.getAbsolutePath());
-			protocol.setTruststorePass("changeit");
-			protocol.setKeyAlias("apitester");
-			return connector;
-		}
-		catch (IOException ex) {
-			throw new IllegalStateException("can't access keystore: [" + keystore
-					+ "] or truststore: [" + truststore + "]", ex);
-		}
-	}
+include::{include-howto}/embeddedwebservers/TomcatMultipleConnectorsConfiguration.java[tag=*]
 ----
 
 
@@ -973,7 +952,7 @@ To switch to the `LegacyCookieProcessor`, use an `WebServerFactoryCustomizer` be
 
 [source,java,indent=0]
 ----
-include::{code-examples}/context/embedded/TomcatLegacyCookieProcessorExample.java[tag=customizer]
+include::{include-howto}/embeddedwebservers/LegacyCookieProcessorConfiguration.java[tag=*]
 ----
 
 
@@ -1000,19 +979,7 @@ Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public UndertowServletWebServerFactory servletWebServerFactory() {
-		UndertowServletWebServerFactory factory = new UndertowServletWebServerFactory();
-		factory.addBuilderCustomizers(new UndertowBuilderCustomizer() {
-
-			@Override
-			public void customize(Builder builder) {
-				builder.addHttpListener(8080, "0.0.0.0");
-			}
-
-		});
-		return factory;
-	}
+include::{include-howto}/embeddedwebservers/UndertowMultipleListenersConfiguration.java[tag=*]
 ----
 
 
@@ -1021,7 +988,7 @@ Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and 
 === Create WebSocket Endpoints Using @ServerEndpoint
 If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public ServerEndpointExporter serverEndpointExporter() {
@@ -1046,7 +1013,7 @@ This section answers common questions about Spring MVC and Spring Boot.
 === Write a JSON REST Service
 Any Spring `@RestController` in a Spring Boot application should render JSON response by default as long as Jackson2 is on the classpath, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@RestController
 	public class MyController {
@@ -1080,7 +1047,7 @@ To use the Jackson XML renderer, add the following dependency to your project:
 
 If Jackson's XML extension is not available and JAXB is available, XML can be rendered with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@XmlRootElement
 	public class MyThing {
@@ -1285,7 +1252,7 @@ For more detail, see the following sections:
 Spring Security provides support for running tests as a specific user.
 For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Test
 	@WithMockUser(roles="ADMIN")
@@ -1317,7 +1284,7 @@ The `jersey.config.server.response.setStatusOverSendError` property must be set 
 
 [source,java,indent=0]
 ----
-include::{code-examples}/jersey/JerseySetStatusOverSendErrorExample.java[tag=resource-config]
+include::{include-howto}/jersey/JerseySetStatusOverSendErrorConfig.java[tag=*]
 ----
 
 
@@ -1328,7 +1295,7 @@ To use Jersey alongside another web framework, such as Spring MVC, it should be 
 First, configure Jersey to use a Filter rather than a Servlet by configuring the configprop:spring.jersey.type[] application property with a value of `filter`.
 Second, configure your `ResourceConfig` to forward requests that would have resulted in a 404, as shown in the following example.
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Component
 	public class JerseyConfig extends ResourceConfig {
@@ -1360,7 +1327,7 @@ The following example configures `HttpComponentsClientRequestFactory` with an `H
 
 [source,java,indent=0]
 ----
-include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
+include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[tag=*]
 ----
 
 [[howto-webclient-reactor-netty-customization]]
@@ -1371,7 +1338,7 @@ The following example configures a 60 second connect timeout and adds a `ReadTim
 
 [source,java,indent=0]
 ----
-include::{code-examples}/web/reactive/function/client/ReactorNettyClientCustomizationExample.java[tag=custom-http-connector]
+include::{include-howto}/httpclients/CustomizeReactorNettyClientConfiguration.java[tag=*]
 ----
 
 TIP: Note the use of `ReactorResourceFactory` for the connection provider and event loop resources.
@@ -1585,7 +1552,7 @@ If you need to externalize some settings, you can bind your `DataSource` to the 
 
 The following example shows how to define a data source in a bean:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	@ConfigurationProperties(prefix="app.datasource")
@@ -1616,7 +1583,7 @@ The following example shows how to create a data source by using a `DataSourceBu
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{code-examples}/jdbc/BasicDataSourceExample.java[tag=configuration]
+include::{include-howto}/dataaccess/BasicDataSourceConfiguration.java[tag=*]
 ----
 
 To run an app with that `DataSource`, all you need is the connection information.
@@ -1657,7 +1624,7 @@ The following example shows how create a `HikariDataSource` with `DataSourceBuil
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{code-examples}/jdbc/SimpleDataSourceExample.java[tag=configuration]
+include::{include-howto}/dataaccess/SimpleDataSourceConfiguration.java[tag=*]
 ----
 
 You can even go further by leveraging what `DataSourceProperties` does for you -- that is, by providing a default embedded database with a sensible username and password if no URL is provided.
@@ -1667,7 +1634,7 @@ To avoid that, you can redefine a custom `DataSourceProperties` on your custom n
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{code-examples}/jdbc/ConfigurableDataSourceExample.java[tag=configuration]
+include::{include-howto}/dataaccess/ConfigurableDataSourceConfiguration.java[tag=*]
 ----
 
 This setup puts you _in sync_ with what Spring Boot does for you by default, except that a dedicated connection pool is chosen (in code) and its settings are exposed in the `app.datasource.configuration` sub namespace.
@@ -1704,7 +1671,7 @@ In the following example, we provide the _exact_ same feature set as the auto-co
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{code-examples}/jdbc/SimpleTwoDataSourcesExample.java[tag=configuration]
+include::{include-howto}/dataaccess/SimpleDataSourcesConfiguration.java[tag=*]
 ----
 
 TIP: `firstDataSourceProperties` has to be flagged as `@Primary` so that the database initializer feature uses your copy (if you use the initializer).
@@ -1734,7 +1701,7 @@ You can apply the same concept to the secondary `DataSource` as well, as shown i
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{code-examples}/jdbc/CompleteTwoDataSourcesExample.java[tag=configuration]
+include::{include-howto}/dataaccess/CompleteDataSourcesConfiguration.java[tag=*]
 ----
 
 The preceding example configures two data sources on custom namespaces with the same logic as Spring Boot would use in auto-configuration.
@@ -1763,7 +1730,7 @@ For more about Spring Data, see the {spring-data}[Spring Data project page].
 Spring Boot tries to guess the location of your `@Entity` definitions, based on the `@EnableAutoConfiguration` it finds.
 To get more control, you can use the `@EntityScan` annotation, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
@@ -1824,10 +1791,12 @@ The fully qualified class name of the physical and the implicit strategy impleme
 Alternatively, if `ImplicitNamingStrategy` or `PhysicalNamingStrategy` beans are available in the application context, Hibernate will be automatically configured to use them.
 
 By default, Spring Boot configures the physical naming strategy with `SpringPhysicalNamingStrategy`.
-This implementation provides the same table structure as Hibernate 4: all dots are replaced by underscores and camel casing is replaced by underscores as well.
-By default, all table names are generated in lower case, but it is possible to override that flag if your schema requires it.
+This implementation provides the same table structure as Hibernate 4: all dots are replaced by underscores and camel casing is replaced by underscores as well. Additionally, by default, all table names are generated in lower case.  For example, a `TelephoneNumber` entity is mapped to the `telephone_number` table. If your schema requires mixed-case identifiers, define a custom `SpringPhysicalNamingStrategy` bean, as shown in the following example:
 
-For example, a `TelephoneNumber` entity is mapped to the `telephone_number` table.
+[source,java,indent=0]
+----
+include::{include-howto}/dataaccess/CaseSensitiveSpringPhysicalNamingStrategyConfiguration.java[tag=*]
+----
 
 If you prefer to use Hibernate 5's default instead, set the following property:
 
@@ -1838,7 +1807,7 @@ If you prefer to use Hibernate 5's default instead, set the following property:
 
 Alternatively, you can configure the following bean:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Bean
 	public PhysicalNamingStrategy physicalNamingStrategy() {
@@ -1860,7 +1829,7 @@ Then, add a `HibernatePropertiesCustomizer` bean as shown in the following examp
 
 [source,java,indent=0]
 ----
-include::{code-examples}/jpa/HibernateSecondLevelCacheExample.java[tag=configuration]
+include::{include-howto}/dataaccess/HibernateSecondLevelCacheConfiguration.java[tag=*]
 ----
 
 This customizer will configure Hibernate to use the same `CacheManager` as the one that the application uses.
@@ -1890,7 +1859,7 @@ Even if the default `EntityManagerFactory` works fine, you need to define a new 
 You can use the `EntityManagerBuilder` provided by Spring Boot to help you to create one.
 Alternatively, you can use the `LocalContainerEntityManagerFactoryBean` directly from Spring ORM, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	// add two data sources configured as above
 
@@ -1928,7 +1897,7 @@ Alternatively, you might be able to use a JTA transaction manager that spans bot
 
 If you use Spring Data, you need to configure `@EnableJpaRepositories` accordingly, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration(proxyBeanMethods = false)
 	@EnableJpaRepositories(basePackageClasses = Customer.class,
@@ -2001,7 +1970,7 @@ For example, if you use Hibernate Search with Elasticsearch as its index manager
 
 [source,java,indent=0]
 ----
-include::{code-examples}/elasticsearch/HibernateSearchElasticsearchExample.java[tag=configuration]
+include::{include-howto}/dataaccess/ElasticsearchEntityManagerFactoryDependsOnPostProcessor.java[tag=*]
 ----
 
 
@@ -2057,28 +2026,21 @@ It is a Hibernate feature (and has nothing to do with Spring).
 === Initialize a Database using basic SQL scripts
 Spring Boot can automatically create the schema (DDL scripts) of your `DataSource` and initialize it (DML scripts).
 It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
-In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of `spring.datasource.platform`.
+In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of configprop:spring.sql.init.platform[].
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
 
 [NOTE]
 ====
-When only basic SQL scripts are used, Spring Boot automatically creates the schema of an embedded `DataSource`.
-This behavior can be customized by using the configprop:spring.datasource.initialization-mode[] property.
-For instance, if you want to always initialize the `DataSource` regardless of its type:
+When only basic SQL scripts are used, Spring Boot automatically initializes the `DataSource`.
+This initialization can be disabled by setting the configprop:spring.sql.init.enabled[] property to `false`.
 
-[indent=0,subs="verbatim,quotes,attributes"]
-----
-	spring.datasource.initialization-mode=always
-----
-
-In a JPA-based app, you can choose to let Hibernate create the schema or use `schema.sql`, but you cannot do both.
-Make sure to disable `spring.jpa.hibernate.ddl-auto` if you use `schema.sql`.
-
-[indent=0,subs="verbatim,quotes,attributes"]
-----
-	spring.jpa.hibernate.ddl-auto=none
-----
+By default, script-based `DataSource` initialization is performed before any JPA `EntityManagerFactory` beans are created.
+`schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
+We do not recommend using multiple data source initialization technologies.
+However, if you want script-based `DataSource` initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
+This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
+`schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
 If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
@@ -2086,7 +2048,11 @@ Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibas
 
 By default, Spring Boot enables the fail-fast feature of the Spring JDBC initializer.
 This means that, if the scripts cause exceptions, the application fails to start.
-You can tune that behavior by setting `spring.datasource.continue-on-error`.
+You can tune that behavior by setting configprop:spring.sql.init.continue-on-error[].
+
+To take complete control over the script-based initialization of a `DataSource`, define your own `ScriptDataSourceInitializer` bean.
+Doing so will cause the auto-configuration of script-based initialization to back off.
+If you have multiple `DataSource`s in your application, you can define multiple `ScriptDataSourceInitializer` beans.
 
 
 
@@ -2098,7 +2064,7 @@ You can initialize the database on startup using SQL scripts as shown in the fol
 
 [source,java,indent=0]
 ----
-include::{code-examples}/r2dbc/R2dbcDatabaseInitializationExample.java[tag=configuration]
+include::{include-howto}/dataaccess/R2dbcDatabaseInitializationConfiguration.java[tag=*]
 ----
 
 Alternatively, you can configure either <<howto-execute-flyway-database-migrations-on-startup,Flyway>> or <<howto-execute-liquibase-database-migrations-on-startup,Liquibase>> to configure a `DataSource` for you for the duration of the migration.
@@ -2119,10 +2085,11 @@ You can also enable it for any database type, as shown in the following example:
 ----
 	spring:
 	  batch:
-	    initialize-schema: "always"
+	    jdbc:
+	      initialize-schema: "always"
 ----
 
-You can also switch off the initialization explicitly by setting `spring.batch.initialize-schema` to `never`.
+You can also switch off the initialization explicitly by setting `spring.batch.jdbc.initialize-schema` to `never`.
 
 
 
@@ -2170,7 +2137,7 @@ If you need more control over the configuration, consider registering a `FlywayC
 Spring Boot calls `Flyway.migrate()` to perform the database migration.
 If you would like more control, provide a `@Bean` that implements {spring-boot-autoconfigure-module-code}/flyway/FlywayMigrationStrategy.java[`FlywayMigrationStrategy`].
 
-Flyway supports SQL and Java https://flywaydb.org/documentation/callbacks.html[callbacks].
+Flyway supports SQL and Java https://flywaydb.org/documentation/concepts/callbacks[callbacks].
 To use SQL-based callbacks, place the callback scripts in the `classpath:db/migration` directory.
 To use Java-based callbacks, create one or more beans that implement `Callback`.
 Any such beans are automatically registered with `Flyway`.
@@ -2217,11 +2184,52 @@ In addition to YAML, Liquibase also supports JSON, XML, and SQL change log forma
 By default, Liquibase autowires the (`@Primary`) `DataSource` in your context and uses that for migrations.
 If you need to use a different `DataSource`, you can create one and mark its `@Bean` as `@LiquibaseDataSource`.
 If you do so and you want two data sources, remember to create another one and mark it as `@Primary`.
-Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[url,user,password]` in external properties.
+Alternatively, you can use Liquibase's native `DataSource` by setting `spring.liquibase.[driver-class-name,url,user,password]` in external properties.
 Setting either `spring.liquibase.url` or `spring.liquibase.user` is sufficient to cause Liquibase to use its own `DataSource`.
 If any of the three properties has not been set, the value of its equivalent `spring.datasource` property will be used.
 
 See {spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[`LiquibaseProperties`] for details about available settings such as contexts, the default schema, and others.
+
+
+
+[[howto-initialize-a-database-configuring-dependencies]]
+=== Depend Upon an Initialized DataSource
+DataSource initialization is performed while the application is starting up as part of application context refresh.
+To allow an initialized database to be accessed during startup, beans that act as DataSource initializers and beans that
+require that DataSource to have been initialized are detected automatically.
+Beans whose initialization depends upon the DataSource having been initialized are configured to depend upon those that initialize it.
+If, during startup, your application tries to access the database and it has not been initialized, you can configure additional detection of beans that initialize the DataSource and require the DataSource to have been initialized.
+
+
+
+[[howto-initialize-a-database-configuring-dependencies-initializer-detection]]
+==== Detect a DataSource Initializer
+Spring Boot will automatically detect beans of the following types that initialize a `DataSource`:
+
+- `DataSourceInitialization`
+- `EntityManagerFactory`
+- `Flyway`
+- `FlywayMigrationInitializer`
+- `SpringLiquibase`
+
+If you are using a third-party starter for a DataSource initialization library, it may provide a detector such that beans of other types are also detected automatically.
+To have other beans be detected, register an implementation of `DataSourceInitializerDetector` in `META-INF/spring-factories`.
+
+
+
+[[howto-initialize-a-database-configuring-dependencies-depends-on-initialization-detection]]
+==== Detect a Bean That Depends On DataSource Initialization
+Spring Boot will automatically detect beans of the following types that depends upon `DataSource` initialization:
+
+- `AbstractEntityManagerFactoryBean` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
+- `DSLContext` (jOOQ)
+- `EntityManagerFactory` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
+- `JdbcOperations`
+- `NamedParameterJdbcOperations`
+
+If you are using a third-party starter data access library, it may provide a detector such that beans of other types are also detected automatically.
+To have other beans be detected, register an implementation of `DependsOnDataSourceInitializationDetector` in `META-INF/spring-factories`.
+Alternatively, annotate the bean's class or its `@Bean` method with `@DependsOnDataSourceInitializationDetector`.
 
 
 
@@ -2238,7 +2246,7 @@ If your JMS broker does not support transacted sessions, you have to disable the
 If you create your own `JmsListenerContainerFactory`, there is nothing to do, since, by default it cannot be transacted.
 If you want to use the `DefaultJmsListenerContainerFactoryConfigurer` to reuse Spring Boot's default, you can disable transacted sessions, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Bean
 	public DefaultJmsListenerContainerFactory jmsListenerContainerFactory(
@@ -2358,17 +2366,24 @@ See also the section on "`<<spring-boot-features.adoc#boot-features-error-handli
 [[howto-sanitize-sensible-values]]
 [[howto-sanitize-sensitive-values]]
 === Sanitize Sensitive Values
-Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching a certain pattern are sanitized by default (i.e. their values are replaced by `+******+`).
+Information returned by the `env` and `configprops` endpoints can be somewhat sensitive so keys matching certain patterns are sanitized by default (i.e. their values are replaced by `+******+`). Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
+Additionally, any key that holds the word `credentials` (configured as a regular expression, i.e. `+*credentials.*+`) as part of the key is also entirely sanitized.
 
-The patterns to use can be customized using the `management.endpoint.env.keys-to-sanitize` and `management.endpoint.configprops.keys-to-sanitize` respectively.
+Furthermore, Spring Boot sanitizes the sensitive portion of URI-like values for keys with one of the following endings:
 
-Spring Boot uses sensible defaults for such keys: any key ending with the word "password", "secret", "key", "token", "vcap_services", "sun.java.command" is entirely sanitized.
-Additionally, any key that holds the word `credentials` as part of the key is sanitized (configured as a regular expression, i.e. `+*credentials.*+`).
+- `address`
+- `addresses`
+- `uri`
+- `uris`
+- `url`
+- `urls`
 
-Furthermore, Spring Boot only sanitizes the sensitive portion of URIs for keys which end with "uri", "uris", "address", or "addresses".
 The sensitive portion of the URI is identified using the format `<scheme>://<username>:<password>@<host>:<port>/`.
 For example, for the property `myclient.uri=http://user1:password1@localhost:8081`, the resulting sanitized value is
 `++http://user1:******@localhost:8081++`.
+
+The default patterns used by the `env` and `configprops` endpoints can be replaced using configprop:management.endpoint.env.keys-to-sanitize[] and configprop:management.endpoint.configprops.keys-to-sanitize[] respectively.
+Alternatively, additional patterns can be configured using configprop:management.endpoint.env.additional-keys-to-sanitize[] and configprop:management.endpoint.configprops.additional-keys-to-sanitize[].
 
 
 
@@ -2383,7 +2398,7 @@ The following example shows one way to write such an exporter:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{code-examples}/actuate/metrics/MetricsHealthMicrometerExportExample.java[tag=configuration]
+include::{include-howto}/actuator/MetricsHealthMicrometerExport.java[tag=*]
 ----
 
 
@@ -2427,21 +2442,17 @@ You can switch on the valve by adding some entries to `application.properties`, 
 ----
 
 (The presence of either of those properties switches on the valve.
-Alternatively, you can add the `RemoteIpValve` by adding a `TomcatServletWebServerFactory` bean.)
+Alternatively, you can add the `RemoteIpValve` by customizing the `TomcatServletWebServerFactory` using a `WebServerFactoryCustomizer` bean.)
 
-To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `WebSecurityConfigurerAdapter` that adds the following `HttpSecurity` configuration:
+To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `SecurityFilterChain` bean that adds the following `HttpSecurity` configuration:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class SslWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
-
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			// Customize the application security
-			http.requiresChannel().anyRequest().requiresSecure();
-		}
-
+	@Bean
+	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+		// Customize the application security
+		http.requiresChannel().anyRequest().requiresSecure();
+		return http.build();
 	}
 ----
 
@@ -2591,9 +2602,11 @@ Gradle users can achieve the same result by using the https://plugins.gradle.org
 [source,groovy,indent=0]
 ----
 	plugins {
-		id "com.gorylenko.gradle-git-properties" version "2.2.2"
+		id "com.gorylenko.gradle-git-properties" version "2.2.4"
 	}
 ----
+
+Both the Maven and Gradle plugins allow the properties that are included in `git.properties` to be configured.
 
 TIP: The commit time in `git.properties` is expected to match the following format: `yyyy-MM-dd'T'HH:mm:ssZ`.
 This is the default format for both plugins listed above.
@@ -2832,7 +2845,7 @@ The first step in producing a deployable war file is to provide a `SpringBootSer
 Doing so makes use of Spring Framework's Servlet 3.0 support and lets you configure your application when it is launched by the servlet container.
 Typically, you should update your application's main class to extend `SpringBootServletInitializer`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
@@ -2909,7 +2922,7 @@ See the https://spring.io/guides/gs/convert-jar-to-war/[Getting Started Guide on
 
 To create a deployable war by extending `SpringBootServletInitializer` (for example, in a class called `Application`) and adding the Spring Boot `@SpringBootApplication` annotation, use code similar to that shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
@@ -2942,7 +2955,7 @@ If you have other features in your application (for instance, using other servle
 
 Once the war file is working, you can make it executable by adding a `main` method to your `Application`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);
@@ -2953,7 +2966,7 @@ Once the war file is working, you can make it executable by adding a `main` meth
 ====
 If you intend to start your application as a war or as an executable application, you need to share the customizations of the builder in a method that is both available to the `SpringBootServletInitializer` callback and in the `main` method in a class similar to the following:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@SpringBootApplication
 	public class Application extends SpringBootServletInitializer {
@@ -3003,7 +3016,7 @@ To deploy a Spring Boot application to WebLogic, you must ensure that your servl
 
 A typical initializer for WebLogic should resemble the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
 	import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
@@ -3086,7 +3099,7 @@ It integrates with JUnit, allowing you to write a test class that can start up a
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
 Testcontainers can be used in a Spring Boot test as follows:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 @SpringBootTest
 @Testcontainers
@@ -3103,7 +3116,7 @@ In most cases, you will need to configure the application using details from the
 
 This can be done with a static `@DynamicPropertySource` method that allows adding dynamic property values to the Spring Environment.
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
 ----
 @SpringBootTest
 @Testcontainers

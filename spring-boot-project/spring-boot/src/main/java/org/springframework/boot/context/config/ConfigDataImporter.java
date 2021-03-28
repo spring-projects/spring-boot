@@ -73,7 +73,7 @@ class ConfigDataImporter {
 	 * @param locations the locations to resolve
 	 * @return a map of the loaded locations and data
 	 */
-	Map<ConfigDataResource, ConfigData> resolveAndLoad(ConfigDataActivationContext activationContext,
+	Map<ConfigDataResolutionResult, ConfigData> resolveAndLoad(ConfigDataActivationContext activationContext,
 			ConfigDataLocationResolverContext locationResolverContext, ConfigDataLoaderContext loaderContext,
 			List<ConfigDataLocation> locations) {
 		try {
@@ -106,9 +106,9 @@ class ConfigDataImporter {
 		}
 	}
 
-	private Map<ConfigDataResource, ConfigData> load(ConfigDataLoaderContext loaderContext,
+	private Map<ConfigDataResolutionResult, ConfigData> load(ConfigDataLoaderContext loaderContext,
 			List<ConfigDataResolutionResult> candidates) throws IOException {
-		Map<ConfigDataResource, ConfigData> result = new LinkedHashMap<>();
+		Map<ConfigDataResolutionResult, ConfigData> result = new LinkedHashMap<>();
 		for (int i = candidates.size() - 1; i >= 0; i--) {
 			ConfigDataResolutionResult candidate = candidates.get(i);
 			ConfigDataLocation location = candidate.getLocation();
@@ -117,7 +117,7 @@ class ConfigDataImporter {
 				try {
 					ConfigData loaded = this.loaders.load(loaderContext, resource);
 					if (loaded != null) {
-						result.put(resource, loaded);
+						result.put(candidate, loaded);
 					}
 				}
 				catch (ConfigDataNotFoundException ex) {

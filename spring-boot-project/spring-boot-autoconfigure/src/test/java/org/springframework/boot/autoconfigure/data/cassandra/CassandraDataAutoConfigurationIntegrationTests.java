@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.cassandra.CassandraAutoConfiguration;
 import org.springframework.boot.autoconfigure.data.cassandra.city.City;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.cassandra.config.SchemaAction;
@@ -48,8 +49,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class CassandraDataAutoConfigurationIntegrationTests {
 
 	@Container
-	static final CassandraContainer<?> cassandra = new CassandraContainer<>().withStartupAttempts(5)
-			.withStartupTimeout(Duration.ofMinutes(10));
+	static final CassandraContainer<?> cassandra = new CassandraContainer<>(DockerImageNames.cassandra())
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(
@@ -57,8 +58,9 @@ class CassandraDataAutoConfigurationIntegrationTests {
 			.withPropertyValues(
 					"spring.data.cassandra.contact-points:" + cassandra.getHost() + ":"
 							+ cassandra.getFirstMappedPort(),
-					"spring.data.cassandra.local-datacenter=datacenter1", "spring.data.cassandra.read-timeout=20s",
-					"spring.data.cassandra.connect-timeout=10s")
+					"spring.data.cassandra.local-datacenter=datacenter1", "spring.data.cassandra.request.timeout=20s",
+					"spring.data.cassandra.connection.init-query-timeout=10s",
+					"spring.data.cassandra.request.timeout=10s")
 			.withInitializer((context) -> AutoConfigurationPackages.register((BeanDefinitionRegistry) context,
 					City.class.getPackage().getName()));
 

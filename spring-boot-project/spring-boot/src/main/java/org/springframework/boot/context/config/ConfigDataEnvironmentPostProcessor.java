@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.log.LogMessage;
 
 /**
- * {@link EnvironmentPostProcessor} that loads and apply {@link ConfigData} to Spring's
+ * {@link EnvironmentPostProcessor} that loads and applies {@link ConfigData} to Spring's
  * {@link Environment}.
  *
  * @author Phillip Webb
@@ -63,11 +63,20 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 
 	private final ConfigurableBootstrapContext bootstrapContext;
 
+	private final ConfigDataEnvironmentUpdateListener environmentUpdateListener;
+
 	public ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
 			ConfigurableBootstrapContext bootstrapContext) {
+		this(logFactory, bootstrapContext, null);
+	}
+
+	public ConfigDataEnvironmentPostProcessor(DeferredLogFactory logFactory,
+			ConfigurableBootstrapContext bootstrapContext,
+			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
 		this.logFactory = logFactory;
 		this.logger = logFactory.getLog(getClass());
 		this.bootstrapContext = bootstrapContext;
+		this.environmentUpdateListener = environmentUpdateListener;
 	}
 
 	@Override
@@ -97,7 +106,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 	ConfigDataEnvironment getConfigDataEnvironment(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
 			Collection<String> additionalProfiles) {
 		return new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, environment, resourceLoader,
-				additionalProfiles);
+				additionalProfiles, this.environmentUpdateListener);
 	}
 
 	private void postProcessUsingLegacyApplicationListener(ConfigurableEnvironment environment,
@@ -151,6 +160,29 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 		bootstrapContext = (bootstrapContext != null) ? bootstrapContext : new DefaultBootstrapContext();
 		ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(logFactory,
 				bootstrapContext);
+		postProcessor.postProcessEnvironment(environment, resourceLoader, additionalProfiles);
+	}
+
+	/**
+	 * Apply {@link ConfigData} post-processing to an existing {@link Environment}. This
+	 * method can be useful when working with an {@link Environment} that has been created
+	 * directly and not necessarily as part of a {@link SpringApplication}.
+	 * @param environment the environment to apply {@link ConfigData} to
+	 * @param resourceLoader the resource loader to use
+	 * @param bootstrapContext the bootstrap context to use or {@code null} to use a
+	 * throw-away context
+	 * @param additionalProfiles any additional profiles that should be applied
+	 * @param environmentUpdateListener optional
+	 * {@link ConfigDataEnvironmentUpdateListener} that can be used to track
+	 * {@link Environment} updates.
+	 */
+	public static void applyTo(ConfigurableEnvironment environment, ResourceLoader resourceLoader,
+			ConfigurableBootstrapContext bootstrapContext, Collection<String> additionalProfiles,
+			ConfigDataEnvironmentUpdateListener environmentUpdateListener) {
+		DeferredLogFactory logFactory = Supplier::get;
+		bootstrapContext = (bootstrapContext != null) ? bootstrapContext : new DefaultBootstrapContext();
+		ConfigDataEnvironmentPostProcessor postProcessor = new ConfigDataEnvironmentPostProcessor(logFactory,
+				bootstrapContext, environmentUpdateListener);
 		postProcessor.postProcessEnvironment(environment, resourceLoader, additionalProfiles);
 	}
 

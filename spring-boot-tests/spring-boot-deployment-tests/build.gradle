@@ -23,6 +23,7 @@ dependencies {
 	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	intTestImplementation("org.apache.httpcomponents:httpasyncclient")
 	intTestImplementation("org.awaitility:awaitility")
+	intTestImplementation("org.testcontainers:junit-jupiter")
 	intTestImplementation("org.testcontainers:testcontainers")
 	intTestImplementation("org.springframework:spring-web")
 
@@ -30,7 +31,7 @@ dependencies {
 }
 
 intTest {
-	dependsOn war
+	inputs.files(war).withNormalizer(ClasspathNormalizer)
 }
 
 war {

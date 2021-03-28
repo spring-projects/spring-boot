@@ -26,6 +26,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.TestConfiguration;
+import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.mongodb.MongoDatabaseFactory;
 import org.springframework.data.mongodb.MongoTransactionManager;
@@ -47,7 +48,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TransactionalDataMongoTestIntegrationTests {
 
 	@Container
-	static final MongoDBContainer mongoDB = new MongoDBContainer().withStartupAttempts(5)
+	static final MongoDBContainer mongoDB = new MongoDBContainer(DockerImageNames.mongo()).withStartupAttempts(5)
 			.withStartupTimeout(Duration.ofMinutes(5));
 
 	@Autowired

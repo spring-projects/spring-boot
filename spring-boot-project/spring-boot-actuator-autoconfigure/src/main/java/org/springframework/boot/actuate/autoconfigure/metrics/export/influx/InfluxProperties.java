@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.influx;
 
+import io.micrometer.influx.InfluxApiVersion;
 import io.micrometer.influx.InfluxConsistency;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
@@ -33,7 +34,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class InfluxProperties extends StepRegistryProperties {
 
 	/**
-	 * Tag that will be mapped to "host" when shipping metrics to Influx.
+	 * Database to send metrics to. InfluxDB v1 only.
 	 */
 	private String db = "mydb";
 
@@ -43,37 +44,37 @@ public class InfluxProperties extends StepRegistryProperties {
 	private InfluxConsistency consistency = InfluxConsistency.ONE;
 
 	/**
-	 * Login user of the Influx server.
+	 * Login user of the Influx server. InfluxDB v1 only.
 	 */
 	private String userName;
 
 	/**
-	 * Login password of the Influx server.
+	 * Login password of the Influx server. InfluxDB v1 only.
 	 */
 	private String password;
 
 	/**
 	 * Retention policy to use (Influx writes to the DEFAULT retention policy if one is
-	 * not specified).
+	 * not specified). InfluxDB v1 only.
 	 */
 	private String retentionPolicy;
 
 	/**
 	 * Time period for which Influx should retain data in the current database. For
 	 * instance 7d, check the influx documentation for more details on the duration
-	 * format.
+	 * format. InfluxDB v1 only.
 	 */
 	private String retentionDuration;
 
 	/**
 	 * How many copies of the data are stored in the cluster. Must be 1 for a single node
-	 * instance.
+	 * instance. InfluxDB v1 only.
 	 */
 	private Integer retentionReplicationFactor;
 
 	/**
 	 * Time range covered by a shard group. For instance 2w, check the influx
-	 * documentation for more details on the duration format.
+	 * documentation for more details on the duration format. InfluxDB v1 only.
 	 */
 	private String retentionShardDuration;
 
@@ -89,9 +90,32 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	/**
 	 * Whether to create the Influx database if it does not exist before attempting to
-	 * publish metrics to it.
+	 * publish metrics to it. InfluxDB v1 only.
 	 */
 	private boolean autoCreateDb = true;
+
+	/**
+	 * API version of InfluxDB to use. Defaults to 'v1' unless an org is configured. If an
+	 * org is configured, defaults to 'v2'.
+	 */
+	private InfluxApiVersion apiVersion;
+
+	/**
+	 * Org to write metrics to. InfluxDB v2 only.
+	 */
+	private String org;
+
+	/**
+	 * Bucket for metrics. Use either the bucket name or ID. Defaults to the value of the
+	 * db property if not set. InfluxDB v2 only.
+	 */
+	private String bucket;
+
+	/**
+	 * Authentication token to use with calls to the InfluxDB backend. For InfluxDB v1,
+	 * the Bearer scheme is used. For v2, the Token scheme is used.
+	 */
+	private String token;
 
 	public String getDb() {
 		return this.db;
@@ -179,6 +203,38 @@ public class InfluxProperties extends StepRegistryProperties {
 
 	public void setAutoCreateDb(boolean autoCreateDb) {
 		this.autoCreateDb = autoCreateDb;
+	}
+
+	public InfluxApiVersion getApiVersion() {
+		return this.apiVersion;
+	}
+
+	public void setApiVersion(InfluxApiVersion apiVersion) {
+		this.apiVersion = apiVersion;
+	}
+
+	public String getOrg() {
+		return this.org;
+	}
+
+	public void setOrg(String org) {
+		this.org = org;
+	}
+
+	public String getBucket() {
+		return this.bucket;
+	}
+
+	public void setBucket(String bucket) {
+		this.bucket = bucket;
+	}
+
+	public String getToken() {
+		return this.token;
+	}
+
+	public void setToken(String token) {
+		this.token = token;
 	}
 
 }

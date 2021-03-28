@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.jar.JarOutputStream;
 import java.util.zip.ZipEntry;
@@ -34,7 +35,15 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.aop.framework.ProxyFactory;
+import org.springframework.aop.support.AopUtils;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
+import org.springframework.boot.test.context.runner.ApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.EnableAspectJAutoProxy;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.StreamUtils;
 
@@ -200,12 +209,63 @@ class RestartClassLoaderTests {
 		assertThat(loaded.getClassLoader()).isEqualTo(this.reloadClassLoader);
 	}
 
+	@Test
+	void proxyOnClassFromSystemClassLoaderDoesNotYieldWarning() {
+		ProxyFactory pf = new ProxyFactory(new HashMap<>());
+		pf.setProxyTargetClass(true);
+		pf.getProxy(this.reloadClassLoader);
+		// Warning would happen outside the boundary of the test
+	}
+
+	@Test
+	void packagePrivateClassLoadedByParentClassLoaderCanBeProxied() throws IOException {
+		try (RestartClassLoader restartClassLoader = new RestartClassLoader(ExampleTransactional.class.getClassLoader(),
+				new URL[] { this.sampleJarFile.toURI().toURL() }, this.updatedFiles)) {
+			new ApplicationContextRunner().withClassLoader(restartClassLoader)
+					.withUserConfiguration(ProxyConfiguration.class).run((context) -> {
+						assertThat(context).hasNotFailed();
+						ExampleTransactional transactional = context.getBean(ExampleTransactional.class);
+						assertThat(AopUtils.isCglibProxy(transactional)).isTrue();
+						assertThat(transactional.getClass().getClassLoader())
+								.isEqualTo(ExampleTransactional.class.getClassLoader());
+					});
+		}
+	}
+
 	private String readString(InputStream in) throws IOException {
 		return new String(FileCopyUtils.copyToByteArray(in));
 	}
 
 	private <T> List<T> toList(Enumeration<T> enumeration) {
 		return (enumeration != null) ? Collections.list(enumeration) : Collections.emptyList();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableAspectJAutoProxy(proxyTargetClass = true)
+	@EnableTransactionManagement
+	static class ProxyConfiguration {
+
+		@Bean
+		ExampleTransactional exampleTransactional() {
+			return new ExampleTransactional();
+		}
+
+	}
+
+	static class ExampleTransactional implements ExampleInterface {
+
+		@Override
+		@Transactional
+		public String doIt() {
+			return "hello";
+		}
+
+	}
+
+	interface ExampleInterface {
+
+		String doIt();
+
 	}
 
 }

@@ -16,6 +16,15 @@ The resulting response is similar to the following:
 
 include::{snippets}/prometheus/all/http-response.adoc[]
 
+The default response content type is `text/plain;version=0.0.4`.
+The endpoint can also produce `application/openmetrics-text;version=1.0.0` when called with an appropriate `Accept` header, as shown in the following curl-based example:
+
+include::{snippets}/prometheus/openmetrics/curl-request.adoc[]
+
+The resulting response is similar to the following:
+
+include::{snippets}/prometheus/openmetrics/http-response.adoc[]
+
 
 
 [[prometheus-retrieving-query-parameters]]

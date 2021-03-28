@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
+import org.springframework.core.env.CompositePropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.mock.env.MockEnvironment;
@@ -39,6 +40,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  * Tests for {@link DefaultPropertiesPropertySource}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  */
 @ExtendWith(MockitoExtension.class)
 class DefaultPropertiesPropertySourceTests {
@@ -102,6 +104,39 @@ class DefaultPropertiesPropertySourceTests {
 	void moveToEndWhenNotPresentDoesNothing() {
 		MockEnvironment environment = new MockEnvironment();
 		DefaultPropertiesPropertySource.moveToEnd(environment);
+	}
+
+	@Test
+	void addOrMergeWhenExistingNotFoundShouldAdd() {
+		MockEnvironment environment = new MockEnvironment();
+		MutablePropertySources propertySources = environment.getPropertySources();
+		DefaultPropertiesPropertySource.addOrMerge(Collections.singletonMap("spring", "boot"), propertySources);
+		assertThat(propertySources.contains(DefaultPropertiesPropertySource.NAME)).isTrue();
+		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("spring")).isEqualTo("boot");
+	}
+
+	@Test
+	void addOrMergeWhenExistingFoundShouldMerge() {
+		MockEnvironment environment = new MockEnvironment();
+		MutablePropertySources propertySources = environment.getPropertySources();
+		propertySources.addLast(new DefaultPropertiesPropertySource(Collections.singletonMap("spring", "boot")));
+		DefaultPropertiesPropertySource.addOrMerge(Collections.singletonMap("hello", "world"), propertySources);
+		assertThat(propertySources.contains(DefaultPropertiesPropertySource.NAME)).isTrue();
+		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("spring")).isEqualTo("boot");
+		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("hello")).isEqualTo("world");
+	}
+
+	@Test
+	void addOrMergeWhenExistingNotMapPropertySourceShouldNotMerge() {
+		MockEnvironment environment = new MockEnvironment();
+		MutablePropertySources propertySources = environment.getPropertySources();
+		CompositePropertySource composite = new CompositePropertySource(DefaultPropertiesPropertySource.NAME);
+		composite.addPropertySource(new DefaultPropertiesPropertySource(Collections.singletonMap("spring", "boot")));
+		propertySources.addFirst(composite);
+		DefaultPropertiesPropertySource.addOrMerge(Collections.singletonMap("hello", "world"), propertySources);
+		assertThat(propertySources.contains(DefaultPropertiesPropertySource.NAME)).isTrue();
+		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("spring")).isNull();
+		assertThat(propertySources.get(DefaultPropertiesPropertySource.NAME).getProperty("hello")).isEqualTo("world");
 	}
 
 	@Test

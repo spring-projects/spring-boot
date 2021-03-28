@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,8 @@
 
 package org.springframework.boot.buildpack.platform.build;
 
-import java.io.BufferedReader;
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.util.Collections;
-import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +27,7 @@ import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.tuple;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -55,6 +52,14 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		assertThat(metadata.getCreatedBy().getName()).isEqualTo("Pack CLI");
 		assertThat(metadata.getCreatedBy().getVersion())
 				.isEqualTo("v0.9.0 (git sha: d42c384a39f367588f2653f2a99702db910e5ad7)");
+		assertThat(metadata.getBuildpacks()).extracting(BuildpackMetadata::getId, BuildpackMetadata::getVersion)
+				.contains(tuple("paketo-buildpacks/java", "4.10.0"))
+				.contains(tuple("paketo-buildpacks/spring-boot", "3.5.0"))
+				.contains(tuple("paketo-buildpacks/executable-jar", "3.1.3"))
+				.contains(tuple("paketo-buildpacks/graalvm", "4.1.0"))
+				.contains(tuple("paketo-buildpacks/java-native-image", "4.7.0"))
+				.contains(tuple("paketo-buildpacks/spring-boot-native-image", "2.0.1"))
+				.contains(tuple("paketo-buildpacks/bellsoft-liberica", "6.2.0"));
 	}
 
 	@Test
@@ -122,11 +127,6 @@ class BuilderMetadataTests extends AbstractJsonTests {
 		BuilderMetadata metadataCopy = BuilderMetadata.fromJson(label);
 		assertThat(metadataCopy.getStack().getRunImage().getImage())
 				.isEqualTo(metadata.getStack().getRunImage().getImage());
-	}
-
-	private String getContentAsString(String name) {
-		return new BufferedReader(new InputStreamReader(getContent(name), StandardCharsets.UTF_8)).lines()
-				.collect(Collectors.joining("\n"));
 	}
 
 }

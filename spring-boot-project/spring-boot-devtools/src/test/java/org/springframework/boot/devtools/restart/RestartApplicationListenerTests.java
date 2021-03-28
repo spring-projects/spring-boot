@@ -88,6 +88,14 @@ class RestartApplicationListenerTests {
 		assertThat(output).contains("Restart disabled due to System property");
 	}
 
+	@Test
+	void enableWithSystemProperty(CapturedOutput output) {
+		System.setProperty(ENABLED_PROPERTY, "true");
+		testInitialize(false);
+		assertThat(Restarter.getInstance()).hasFieldOrPropertyWithValue("enabled", true);
+		assertThat(output).contains("Restart enabled irrespective of application packaging due to System property");
+	}
+
 	private void testInitialize(boolean failed) {
 		Restarter.clearInstance();
 		RestartApplicationListener listener = new RestartApplicationListener();

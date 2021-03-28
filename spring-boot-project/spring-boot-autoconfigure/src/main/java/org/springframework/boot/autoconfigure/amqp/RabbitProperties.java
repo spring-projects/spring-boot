@@ -363,6 +363,8 @@ public class RabbitProperties {
 
 	public class Ssl {
 
+		private static final String SUN_X509 = "SunX509";
+
 		/**
 		 * Whether to enable SSL support. Determined automatically if an address is
 		 * provided with the protocol (amqp:// vs. amqps://).
@@ -385,6 +387,11 @@ public class RabbitProperties {
 		private String keyStorePassword;
 
 		/**
+		 * Key store algorithm.
+		 */
+		private String keyStoreAlgorithm = SUN_X509;
+
+		/**
 		 * Trust store that holds SSL certificates.
 		 */
 		private String trustStore;
@@ -398,6 +405,11 @@ public class RabbitProperties {
 		 * Password used to access the trust store.
 		 */
 		private String trustStorePassword;
+
+		/**
+		 * Trust store algorithm.
+		 */
+		private String trustStoreAlgorithm = SUN_X509;
 
 		/**
 		 * SSL algorithm to use. By default, configured by the Rabbit client library.
@@ -462,6 +474,14 @@ public class RabbitProperties {
 			this.keyStorePassword = keyStorePassword;
 		}
 
+		public String getKeyStoreAlgorithm() {
+			return this.keyStoreAlgorithm;
+		}
+
+		public void setKeyStoreAlgorithm(String keyStoreAlgorithm) {
+			this.keyStoreAlgorithm = keyStoreAlgorithm;
+		}
+
 		public String getTrustStore() {
 			return this.trustStore;
 		}
@@ -484,6 +504,14 @@ public class RabbitProperties {
 
 		public void setTrustStorePassword(String trustStorePassword) {
 			this.trustStorePassword = trustStorePassword;
+		}
+
+		public String getTrustStoreAlgorithm() {
+			return this.trustStoreAlgorithm;
+		}
+
+		public void setTrustStoreAlgorithm(String trustStoreAlgorithm) {
+			this.trustStoreAlgorithm = trustStoreAlgorithm;
 		}
 
 		public String getAlgorithm() {

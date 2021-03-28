@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,11 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.core.NamedThreadLocal;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -42,6 +45,8 @@ import org.springframework.web.util.UriTemplateHandler;
  * @author Phillip Webb
  */
 class MetricsClientHttpRequestInterceptor implements ClientHttpRequestInterceptor {
+
+	private static final Log logger = LogFactory.getLog(MetricsClientHttpRequestInterceptor.class);
 
 	private static final ThreadLocal<Deque<String>> urlTemplate = new UrlTemplateThreadLocal();
 
@@ -82,8 +87,13 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 			return response;
 		}
 		finally {
-			getTimeBuilder(request, response).register(this.meterRegistry).record(System.nanoTime() - startTime,
-					TimeUnit.NANOSECONDS);
+			try {
+				getTimeBuilder(request, response).register(this.meterRegistry).record(System.nanoTime() - startTime,
+						TimeUnit.NANOSECONDS);
+			}
+			catch (Exception ex) {
+				logger.info("Failed to record metrics.", ex);
+			}
 			if (urlTemplate.get().isEmpty()) {
 				urlTemplate.remove();
 			}
@@ -91,27 +101,38 @@ class MetricsClientHttpRequestInterceptor implements ClientHttpRequestIntercepto
 	}
 
 	UriTemplateHandler createUriTemplateHandler(UriTemplateHandler delegate) {
-		return new UriTemplateHandler() {
-
-			@Override
-			public URI expand(String url, Map<String, ?> arguments) {
-				urlTemplate.get().push(url);
-				return delegate.expand(url, arguments);
-			}
-
-			@Override
-			public URI expand(String url, Object... arguments) {
-				urlTemplate.get().push(url);
-				return delegate.expand(url, arguments);
-			}
-
-		};
+		if (delegate instanceof RootUriTemplateHandler) {
+			return ((RootUriTemplateHandler) delegate).withHandlerWrapper(CapturingUriTemplateHandler::new);
+		}
+		return new CapturingUriTemplateHandler(delegate);
 	}
 
 	private Timer.Builder getTimeBuilder(HttpRequest request, ClientHttpResponse response) {
 		return this.autoTimer.builder(this.metricName)
 				.tags(this.tagProvider.getTags(urlTemplate.get().poll(), request, response))
 				.description("Timer of RestTemplate operation");
+	}
+
+	private static final class CapturingUriTemplateHandler implements UriTemplateHandler {
+
+		private final UriTemplateHandler delegate;
+
+		private CapturingUriTemplateHandler(UriTemplateHandler delegate) {
+			this.delegate = delegate;
+		}
+
+		@Override
+		public URI expand(String url, Map<String, ?> arguments) {
+			urlTemplate.get().push(url);
+			return this.delegate.expand(url, arguments);
+		}
+
+		@Override
+		public URI expand(String url, Object... arguments) {
+			urlTemplate.get().push(url);
+			return this.delegate.expand(url, arguments);
+		}
+
 	}
 
 	private static final class UrlTemplateThreadLocal extends NamedThreadLocal<Deque<String>> {

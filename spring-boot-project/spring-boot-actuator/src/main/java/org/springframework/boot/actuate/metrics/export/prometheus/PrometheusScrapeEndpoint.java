@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,10 +24,10 @@ import java.util.Set;
 
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.CollectorRegistry;
-import io.prometheus.client.exporter.common.TextFormat;
 
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.boot.actuate.endpoint.web.annotation.WebEndpoint;
 import org.springframework.lang.Nullable;
 
@@ -48,20 +48,19 @@ public class PrometheusScrapeEndpoint {
 		this.collectorRegistry = collectorRegistry;
 	}
 
-	@ReadOperation(produces = TextFormat.CONTENT_TYPE_004)
-	public String scrape(@Nullable Set<String> includedNames) {
+	@ReadOperation(producesFrom = TextOutputFormat.class)
+	public WebEndpointResponse<String> scrape(TextOutputFormat format, @Nullable Set<String> includedNames) {
 		try {
 			Writer writer = new StringWriter();
 			Enumeration<MetricFamilySamples> samples = (includedNames != null)
 					? this.collectorRegistry.filteredMetricFamilySamples(includedNames)
 					: this.collectorRegistry.metricFamilySamples();
-			TextFormat.write004(writer, samples);
-			return writer.toString();
+			format.write(writer, samples);
+			return new WebEndpointResponse<>(writer.toString(), format);
 		}
 		catch (IOException ex) {
-			// This actually never happens since StringWriter::write() doesn't throw any
-			// IOException
-			throw new RuntimeException("Writing metrics failed", ex);
+			// This actually never happens since StringWriter doesn't throw an IOException
+			throw new IllegalStateException("Writing metrics failed", ex);
 		}
 	}
 

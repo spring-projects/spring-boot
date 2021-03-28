@@ -1,0 +1,13 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+sourceCompatibility = '1.8'
+targetCompatibility = '1.8'
+
+bootBuildImage {
+	buildpacks = ["gcr.io/paketo-buildpacks/bellsoft-liberica:latest",
+				  "gcr.io/paketo-buildpacks/executable-jar:latest",
+				  "gcr.io/paketo-buildpacks/spring-boot:latest"]
+}

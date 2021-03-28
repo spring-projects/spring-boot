@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.stream.Stream;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 
@@ -50,6 +51,8 @@ import org.springframework.util.ObjectUtils;
  * @author Madhura Bhave
  */
 class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmentContributor> {
+
+	private static final Predicate<ConfigDataEnvironmentContributor> NO_CONTRIBUTOR_FILTER = (contributor) -> true;
 
 	private final Log logger;
 
@@ -115,16 +118,25 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 			ConfigDataLoaderContext loaderContext = new ContributorDataLoaderContext(this);
 			List<ConfigDataLocation> imports = contributor.getImports();
 			this.logger.trace(LogMessage.format("Processing imports %s", imports));
-			Map<ConfigDataResource, ConfigData> imported = importer.resolveAndLoad(activationContext,
+			Map<ConfigDataResolutionResult, ConfigData> imported = importer.resolveAndLoad(activationContext,
 					locationResolverContext, loaderContext, imports);
-			this.logger.trace(LogMessage.of(() -> imported.isEmpty() ? "Nothing imported" : "Imported "
-					+ imported.size() + " resource " + ((imported.size() != 1) ? "s" : "") + imported.keySet()));
+			this.logger.trace(LogMessage.of(() -> getImportedMessage(imported.keySet())));
 			ConfigDataEnvironmentContributor contributorAndChildren = contributor.withChildren(importPhase,
 					asContributors(imported));
 			result = new ConfigDataEnvironmentContributors(this.logger, this.bootstrapContext,
 					result.getRoot().withReplacement(contributor, contributorAndChildren));
 			processed++;
 		}
+	}
+
+	private CharSequence getImportedMessage(Set<ConfigDataResolutionResult> results) {
+		if (results.isEmpty()) {
+			return "Nothing imported";
+		}
+		StringBuilder message = new StringBuilder();
+		message.append("Imported " + results.size() + " resource" + ((results.size() != 1) ? "s " : " "));
+		message.append(results.stream().map(ConfigDataResolutionResult::getResource).collect(Collectors.toList()));
+		return message;
 	}
 
 	protected final ConfigurableBootstrapContext getBootstrapContext() {
@@ -147,11 +159,21 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return contributor.isActive(activationContext) && contributor.hasUnprocessedImports(importPhase);
 	}
 
-	private List<ConfigDataEnvironmentContributor> asContributors(Map<ConfigDataResource, ConfigData> imported) {
+	private List<ConfigDataEnvironmentContributor> asContributors(
+			Map<ConfigDataResolutionResult, ConfigData> imported) {
 		List<ConfigDataEnvironmentContributor> contributors = new ArrayList<>(imported.size() * 5);
-		imported.forEach((location, data) -> {
-			for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
-				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, data, i));
+		imported.forEach((resolutionResult, data) -> {
+			ConfigDataLocation location = resolutionResult.getLocation();
+			ConfigDataResource resource = resolutionResult.getResource();
+			boolean profileSpecific = resolutionResult.isProfileSpecific();
+			if (data.getPropertySources().isEmpty()) {
+				contributors.add(ConfigDataEnvironmentContributor.ofEmptyLocation(location, profileSpecific));
+			}
+			else {
+				for (int i = data.getPropertySources().size() - 1; i >= 0; i--) {
+					contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(location, resource,
+							profileSpecific, data, i));
+				}
 			}
 		});
 		return Collections.unmodifiableList(contributors);
@@ -166,13 +188,25 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 	}
 
 	/**
-	 * Return a {@link Binder} that works against all active contributors.
+	 * Return a {@link Binder} backed by the contributors.
 	 * @param activationContext the activation context
 	 * @param options binder options to apply
 	 * @return a binder instance
 	 */
 	Binder getBinder(ConfigDataActivationContext activationContext, BinderOption... options) {
-		return getBinder(activationContext, asBinderOptionsSet(options));
+		return getBinder(activationContext, NO_CONTRIBUTOR_FILTER, options);
+	}
+
+	/**
+	 * Return a {@link Binder} backed by the contributors.
+	 * @param activationContext the activation context
+	 * @param filter a filter used to limit the contributors
+	 * @param options binder options to apply
+	 * @return a binder instance
+	 */
+	Binder getBinder(ConfigDataActivationContext activationContext, Predicate<ConfigDataEnvironmentContributor> filter,
+			BinderOption... options) {
+		return getBinder(activationContext, filter, asBinderOptionsSet(options));
 	}
 
 	private Set<BinderOption> asBinderOptionsSet(BinderOption... options) {
@@ -180,10 +214,11 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 				: EnumSet.copyOf(Arrays.asList(options));
 	}
 
-	private Binder getBinder(ConfigDataActivationContext activationContext, Set<BinderOption> options) {
+	private Binder getBinder(ConfigDataActivationContext activationContext,
+			Predicate<ConfigDataEnvironmentContributor> filter, Set<BinderOption> options) {
 		boolean failOnInactiveSource = options.contains(BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		Iterable<ConfigurationPropertySource> sources = () -> getBinderSources(activationContext,
-				!options.contains(BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE));
+				filter.and((contributor) -> failOnInactiveSource || contributor.isActive(activationContext)));
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(this.root,
 				activationContext, failOnInactiveSource);
 		BindHandler bindHandler = !failOnInactiveSource ? null : new InactiveSourceChecker(activationContext);
@@ -191,13 +226,9 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 	}
 
 	private Iterator<ConfigurationPropertySource> getBinderSources(ConfigDataActivationContext activationContext,
-			boolean filterInactive) {
-		Stream<ConfigDataEnvironmentContributor> sources = this.root.stream()
-				.filter(this::hasConfigurationPropertySource);
-		if (filterInactive) {
-			sources = sources.filter((contributor) -> contributor.isActive(activationContext));
-		}
-		return sources.map(ConfigDataEnvironmentContributor::getConfigurationPropertySource).iterator();
+			Predicate<ConfigDataEnvironmentContributor> filter) {
+		return this.root.stream().filter(this::hasConfigurationPropertySource).filter(filter)
+				.map(ConfigDataEnvironmentContributor::getConfigurationPropertySource).iterator();
 	}
 
 	private boolean hasConfigurationPropertySource(ConfigDataEnvironmentContributor contributor) {

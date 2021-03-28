@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,6 +117,15 @@ class WebMvcEndpointIntegrationTests {
 		MockMvc mockMvc = doCreateMockMvc();
 		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isOk()).andExpect(jsonPath("_links",
 				both(hasKey("beans")).and(hasKey("servlet")).and(hasKey("restcontroller")).and(hasKey("controller"))));
+	}
+
+	@Test
+	void linksPageIsNotAvailableWhenDisabled() throws Exception {
+		this.context = new AnnotationConfigServletWebApplicationContext();
+		this.context.register(DefaultConfiguration.class, EndpointsConfiguration.class);
+		TestPropertyValues.of("management.endpoints.web.discovery.enabled=false").applyTo(this.context);
+		MockMvc mockMvc = doCreateMockMvc();
+		mockMvc.perform(get("/actuator").accept("*/*")).andExpect(status().isNotFound());
 	}
 
 	private MockMvc createSecureMockMvc() {

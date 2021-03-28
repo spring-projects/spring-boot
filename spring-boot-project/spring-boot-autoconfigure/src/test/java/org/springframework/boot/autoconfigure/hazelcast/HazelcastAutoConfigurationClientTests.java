@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -133,6 +133,18 @@ class HazelcastAutoConfigurationClientTests {
 						+ "boot/autoconfigure/hazelcast/hazelcast-client-instance.xml")
 				.run((context) -> assertThat(context).getBean(HazelcastInstance.class)
 						.extracting(HazelcastInstance::getName).isEqualTo("spring-boot"));
+	}
+
+	@Test
+	void autoConfiguredClientConfigUsesApplicationClassLoader() {
+		this.contextRunner.withPropertyValues("spring.hazelcast.config=org/springframework/boot/autoconfigure/"
+				+ "hazelcast/hazelcast-client-specific.xml").run((context) -> {
+					HazelcastInstance hazelcast = context.getBean(HazelcastInstance.class);
+					assertThat(hazelcast).isInstanceOf(HazelcastClientProxy.class);
+					ClientConfig clientConfig = ((HazelcastClientProxy) hazelcast).getClientConfig();
+					assertThat(clientConfig.getClassLoader())
+							.isSameAs(context.getSourceApplicationContext().getClassLoader());
+				});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertSpecificHazelcastClient(String label) {
