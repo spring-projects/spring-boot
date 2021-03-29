@@ -1,11 +1,11 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
- *      http://www.apache.org/licenses/LICENSE-2.0
+ *      https://www.apache.org/licenses/LICENSE-2.0
  *
  * Unless required by applicable law or agreed to in writing, software
  * distributed under the License is distributed on an "AS IS" BASIS,
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.actuate.autoconfigure.quartz;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.quartz.Scheduler;
 
 import org.springframework.boot.actuate.quartz.QuartzEndpoint;
@@ -32,30 +32,59 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link QuartzEndpointAutoConfiguration}.
  *
  * @author Vedran Pavic
+ * @author Stephane Nicoll
  */
-public class QuartzEndpointAutoConfigurationTests {
+class QuartzEndpointAutoConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withConfiguration(AutoConfigurations.of(QuartzEndpointAutoConfiguration.class))
-			.withUserConfiguration(QuartzConfiguration.class);
+			.withConfiguration(AutoConfigurations.of(QuartzEndpointAutoConfiguration.class));
 
 	@Test
-	public void runShouldHaveEndpointBean() {
-		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class));
+	void endpointIsAutoConfigured() {
+		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
+				.withPropertyValues("management.endpoints.web.exposure.include=quartz")
+				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class));
 	}
 
 	@Test
-	public void runWhenEnabledPropertyIsFalseShouldNotHaveEndpointBean() throws Exception {
-		this.contextRunner.withPropertyValues("management.endpoint.quartz.enabled:false")
+	void endpointIsNotAutoConfiguredIfSchedulerIsNotAvailable() {
+		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include=quartz")
 				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
 	}
 
-	@Configuration
-	static class QuartzConfiguration {
+	@Test
+	void endpointNotAutoConfiguredWhenNotExposed() {
+		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
+				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+	}
+
+	@Test
+	void endpointCanBeDisabled() {
+		this.contextRunner.withBean(Scheduler.class, () -> mock(Scheduler.class))
+				.withPropertyValues("management.endpoint.quartz.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(QuartzEndpoint.class));
+	}
+
+	@Test
+	void endpointBacksOffWhenUserProvidedEndpointIsPresent() {
+		this.contextRunner.withUserConfiguration(CustomEndpointConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(QuartzEndpoint.class).hasBean("customEndpoint"));
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomEndpointConfiguration {
 
 		@Bean
-		public Scheduler scheduler() {
-			return mock(Scheduler.class);
+		CustomEndpoint customEndpoint() {
+			return new CustomEndpoint();
+		}
+
+	}
+
+	private static final class CustomEndpoint extends QuartzEndpoint {
+
+		private CustomEndpoint() {
+			super(mock(Scheduler.class));
 		}
 
 	}
