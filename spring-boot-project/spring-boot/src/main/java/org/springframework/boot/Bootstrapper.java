@@ -24,7 +24,8 @@ package org.springframework.boot;
  * @since 2.4.0
  * @see SpringApplication#addBootstrapper(Bootstrapper)
  * @see BootstrapRegistry
- * @deprecated since 2.4.5 in favor of {@link BootstrapRegistryInitializer}
+ * @deprecated since 2.4.5 for removal in 2.6 in favor of
+ * {@link BootstrapRegistryInitializer}
  */
 @Deprecated
 public interface Bootstrapper {
@@ -41,7 +42,7 @@ public interface Bootstrapper {
 	/**
 	 * Initialize the given {@link BootstrapRegistry} with any required registrations.
 	 * @param registry the registry to initialize
-	 * @deprecated since 2.4.4 in favor of
+	 * @deprecated since 2.4.4 for removal in 2.6 in favor of
 	 * {@link Bootstrapper#initialize(BootstrapRegistry)}
 	 */
 	@Deprecated

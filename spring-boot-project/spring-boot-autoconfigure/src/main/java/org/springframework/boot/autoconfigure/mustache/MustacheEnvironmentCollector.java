@@ -34,8 +34,8 @@ import org.springframework.core.env.Environment;
  * @author Dave Syer
  * @author Madhura Bhave
  * @since 1.2.2
- * @deprecated since 2.5.0 in favour of direct addition of values from the Environment to
- * the model
+ * @deprecated since 2.5 for removal in 2.7 in favor of direct addition of values from the
+ * Environment to the model
  */
 @Deprecated
 public class MustacheEnvironmentCollector extends DefaultCollector implements EnvironmentAware {

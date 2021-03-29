@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link FlywayMigrationScriptMissingFailureAnalyzer}.
  *
  * @author Anand Shastri
- * @deprecated since 2.5.0 as location checking is deprecated
+ * @deprecated since 2.5 for removal in 2.7 as location checking is deprecated
  */
 @Deprecated
 class FlywayMigrationScriptMissingFailureAnalyzerTests {

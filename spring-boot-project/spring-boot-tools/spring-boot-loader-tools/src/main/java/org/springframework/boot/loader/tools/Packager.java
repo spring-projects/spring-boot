@@ -100,7 +100,7 @@ public abstract class Packager {
 	 * Create a new {@link Packager} instance.
 	 * @param source the source archive file to package
 	 * @param layoutFactory the layout factory to use or {@code null}
-	 * @deprecated since 2.5.0 in favor of {@link #Packager(File)} and
+	 * @deprecated since 2.3.10 for removal in 2.5 in favor of {@link #Packager(File)} and
 	 * {@link #setLayoutFactory(LayoutFactory)}
 	 */
 	@Deprecated

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @param errorAttributes the error attributes
 	 * @param resourceProperties the resource properties
 	 * @param applicationContext the application context
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link #AbstractErrorWebExceptionHandler(ErrorAttributes, Resources, ApplicationContext)}
 	 */
 	@Deprecated
@@ -157,7 +157,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 	 * @param request the source request
 	 * @param includeStackTrace whether to include the error stacktrace information
 	 * @return the error attributes as a Map
-	 * @deprecated since 2.3.0 in favor of
+	 * @deprecated since 2.3 for removal in 2.5 in favor of
 	 * {@link #getErrorAttributes(ServerRequest, ErrorAttributeOptions)}
 	 */
 	@Deprecated

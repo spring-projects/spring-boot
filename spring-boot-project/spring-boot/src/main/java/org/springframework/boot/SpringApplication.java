@@ -164,7 +164,8 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for non-web
 	 * environments.
-	 * @deprecated since 2.4.0 in favour of using a {@link ApplicationContextFactory}
+	 * @deprecated since 2.4 for removal in 2.6 in favor of using a
+	 * {@link ApplicationContextFactory}
 	 */
 	@Deprecated
 	public static final String DEFAULT_CONTEXT_CLASS = "org.springframework.context."
@@ -173,7 +174,8 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for web
 	 * environments.
-	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
+	 * @deprecated since 2.4 for removal in 2.6 in favor of using an
+	 * {@link ApplicationContextFactory}
 	 */
 	@Deprecated
 	public static final String DEFAULT_SERVLET_WEB_CONTEXT_CLASS = "org.springframework.boot."
@@ -182,7 +184,8 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for reactive web
 	 * environments.
-	 * @deprecated since 2.4.0 in favour of using an {@link ApplicationContextFactory}
+	 * @deprecated since 2.4 for removal in 2.6 in favor of using an
+	 * {@link ApplicationContextFactory}
 	 */
 	@Deprecated
 	public static final String DEFAULT_REACTIVE_WEB_CONTEXT_CLASS = "org.springframework."
@@ -1056,7 +1059,7 @@ public class SpringApplication {
 	 * {@link BootstrapRegistry}.
 	 * @param bootstrapper the bootstraper
 	 * @since 2.4.0
-	 * @deprecated since 2.4.5 in favor of
+	 * @deprecated since 2.4.5 for removal in 2.6 in favor of
 	 * {@link #addBootstrapRegistryInitializer(BootstrapRegistryInitializer)}
 	 */
 	@Deprecated
@@ -1230,7 +1233,7 @@ public class SpringApplication {
 	 * applications or {@link AnnotationConfigApplicationContext} for non web based
 	 * applications.
 	 * @param applicationContextClass the context class to set
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link #setApplicationContextFactory(ApplicationContextFactory)}
 	 */
 	@Deprecated

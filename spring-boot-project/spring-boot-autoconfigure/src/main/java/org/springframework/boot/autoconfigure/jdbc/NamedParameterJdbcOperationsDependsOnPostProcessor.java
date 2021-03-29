@@ -31,7 +31,8 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * @author Andrii Hrytsiuk
  * @since 2.1.4
  * @see BeanDefinition#setDependsOn(String[])
- * @deprecated since 2.5.0 in favor of {@link DependsOnDatabaseInitializationDetector}
+ * @deprecated since 2.5 for removal in 2.7 in favor of
+ * {@link DependsOnDatabaseInitializationDetector}
  */
 @Deprecated
 public class NamedParameterJdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {

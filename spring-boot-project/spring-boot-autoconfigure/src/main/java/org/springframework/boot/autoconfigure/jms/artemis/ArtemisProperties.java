@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ public class ArtemisProperties {
 	/**
 	 * Return the host of the broker.
 	 * @return the host
-	 * @deprecated as of 2.5.0 in favor of broker url
+	 * @deprecated since 2.5 for removal in 2.7 in favor of broker url
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.artemis.broker-url")
@@ -109,7 +109,7 @@ public class ArtemisProperties {
 	/**
 	 * Return the port of the broker.
 	 * @return the port
-	 * @deprecated as of 2.5.0 in favor of broker url
+	 * @deprecated since 2.5 for removal in 2.7 in favor of broker url
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.artemis.broker-url")

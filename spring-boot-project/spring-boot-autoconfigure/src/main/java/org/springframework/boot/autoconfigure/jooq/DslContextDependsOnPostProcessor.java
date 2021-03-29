@@ -30,7 +30,8 @@ import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializat
  * @author Eddú Meléndez
  * @since 2.3.9
  * @see BeanDefinition#setDependsOn(String[])
- * @deprecated since 2.5.0 in favor of {@link DependsOnDatabaseInitializationDetector}
+ * @deprecated since 2.5 for removal in 2.7 in favor of
+ * {@link DependsOnDatabaseInitializationDetector}
  */
 @Deprecated
 public class DslContextDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {

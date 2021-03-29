@@ -56,7 +56,7 @@ public class InvocationContext {
 	 * @param securityContext the current security context. Never {@code null}
 	 * @param arguments the arguments available to the operation. Never {@code null}
 	 * @since 2.2.0
-	 * @deprecated since 2.5.0 in favor of
+	 * @deprecated since 2.5 for removal in 2.7 in favor of
 	 * {@link #InvocationContext(SecurityContext, Map, OperationArgumentResolver[])}
 	 */
 	@Deprecated
@@ -98,7 +98,8 @@ public class InvocationContext {
 	/**
 	 * Return the security context to use for the invocation.
 	 * @return the security context
-	 * @deprecated since 2.5.0 in favor of {@link #resolveArgument(Class)}
+	 * @deprecated since 2.5 for removal in 2.7 in favor of
+	 * {@link #resolveArgument(Class)}
 	 */
 	@Deprecated
 	public SecurityContext getSecurityContext() {

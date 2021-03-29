@@ -83,7 +83,7 @@ public class LoggingSystemProperties {
 	/**
 	 * The name of the System property that contains the rolled-over log file name
 	 * pattern.
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_FILE_NAME_PATTERN}
 	 */
 	@Deprecated
@@ -91,7 +91,7 @@ public class LoggingSystemProperties {
 
 	/**
 	 * The name of the System property that contains the clean history on start flag.
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_CLEAN_HISTORY_ON_START}
 	 */
 	@Deprecated
@@ -99,7 +99,7 @@ public class LoggingSystemProperties {
 
 	/**
 	 * The name of the System property that contains the file log max size.
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_MAX_FILE_SIZE}
 	 */
 	@Deprecated
@@ -107,7 +107,7 @@ public class LoggingSystemProperties {
 
 	/**
 	 * The name of the System property that contains the file total size cap.
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_TOTAL_SIZE_CAP}
 	 */
 	@Deprecated
@@ -115,7 +115,7 @@ public class LoggingSystemProperties {
 
 	/**
 	 * The name of the System property that contains the file log max history.
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link org.springframework.boot.logging.logback.LogbackLoggingSystemProperties#ROLLINGPOLICY_MAX_HISTORY}
 	 */
 	@Deprecated

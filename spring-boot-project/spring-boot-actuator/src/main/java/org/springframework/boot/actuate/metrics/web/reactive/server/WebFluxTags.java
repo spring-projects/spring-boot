@@ -172,9 +172,10 @@ public final class WebFluxTags {
 	 * @param exchange the exchange
 	 * @return the outcome tag derived from the response status
 	 * @since 2.1.0
-	 * @deprecated as of 2.5.0 in favor of {@link #outcome(ServerWebExchange, Throwable)},
-	 * to be removed in 2.7.0
+	 * @deprecated since 2.5 for removal in 2.7 in favor of
+	 * {@link #outcome(ServerWebExchange, Throwable)}
 	 */
+	@Deprecated
 	public static Tag outcome(ServerWebExchange exchange) {
 		return outcome(exchange, null);
 	}

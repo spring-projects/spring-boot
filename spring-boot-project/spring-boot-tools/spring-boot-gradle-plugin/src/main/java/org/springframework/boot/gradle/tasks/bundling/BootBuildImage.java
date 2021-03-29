@@ -117,8 +117,9 @@ public class BootBuildImage extends DefaultTask {
 	/**
 	 * Returns the property for the archive file from which the image will be built.
 	 * @return the archive file property
-	 * @deprecated since 2.5.0 in favor of {@link #getArchiveFile()}
+	 * @deprecated since 2.5 for removal in 2.7 in favor of {@link #getArchiveFile()}
 	 */
+	@Deprecated
 	@Input
 	public RegularFileProperty getJar() {
 		return this.archiveFile;
