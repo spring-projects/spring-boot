@@ -71,7 +71,8 @@ public class DefaultWebFluxTagsProvider implements WebFluxTagsProvider {
 	@Override
 	public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable exception) {
 		Tags tags = Tags.of(WebFluxTags.method(exchange), WebFluxTags.uri(exchange, this.ignoreTrailingSlash),
-				WebFluxTags.exception(exception), WebFluxTags.status(exchange), WebFluxTags.outcome(exchange));
+				WebFluxTags.exception(exception), WebFluxTags.status(exchange),
+				WebFluxTags.outcome(exchange, exception));
 		for (WebFluxTagsContributor contributor : this.contributors) {
 			tags = tags.and(contributor.httpRequestTags(exchange, exception));
 		}

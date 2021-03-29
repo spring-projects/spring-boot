@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -75,28 +75,24 @@ public class MetricsWebFilter implements WebFilter {
 
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {
 		long start = System.nanoTime();
-		return call.doOnSuccess((done) -> onSuccess(exchange, start))
-				.doOnError((cause) -> onError(exchange, start, cause));
+		return call.doOnEach((signal) -> onTerminalSignal(exchange, signal.getThrowable(), start))
+				.doOnCancel(() -> onTerminalSignal(exchange, new CancelledServerWebExchangeException(), start));
 	}
 
-	private void onSuccess(ServerWebExchange exchange, long start) {
-		record(exchange, start, null);
-	}
-
-	private void onError(ServerWebExchange exchange, long start, Throwable cause) {
+	private void onTerminalSignal(ServerWebExchange exchange, Throwable cause, long start) {
 		ServerHttpResponse response = exchange.getResponse();
-		if (response.isCommitted()) {
-			record(exchange, start, cause);
+		if (response.isCommitted() || cause instanceof CancelledServerWebExchangeException) {
+			record(exchange, cause, start);
 		}
 		else {
 			response.beforeCommit(() -> {
-				record(exchange, start, cause);
+				record(exchange, cause, start);
 				return Mono.empty();
 			});
 		}
 	}
 
-	private void record(ServerWebExchange exchange, long start, Throwable cause) {
+	private void record(ServerWebExchange exchange, Throwable cause, long start) {
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
 		this.autoTimer.builder(this.metricName).tags(tags).register(this.registry).record(System.nanoTime() - start,
 				TimeUnit.NANOSECONDS);

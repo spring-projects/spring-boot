@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.io.EOFException;
 import java.time.Duration;
 
 import io.micrometer.core.instrument.MockClock;
@@ -24,6 +25,7 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
+import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -114,6 +116,32 @@ class MetricsWebFilterTests {
 		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag("uri", "/projects/{project}").timer().count())
 				.isEqualTo(2);
 		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag("status", "200").timer().count()).isEqualTo(2);
+	}
+
+	@Test
+	void cancelledConnectionsShouldProduceMetrics() {
+		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
+		Mono<Void> processing = this.webFilter.filter(exchange,
+				(serverWebExchange) -> exchange.getResponse().setComplete());
+		StepVerifier.create(processing).thenCancel().verify(Duration.ofSeconds(5));
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "200");
+		assertMetricsContainsTag("outcome", "UNKNOWN");
+	}
+
+	@Test
+	void disconnectedExceptionShouldProduceMetrics() {
+		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
+		Mono<Void> processing = this.webFilter
+				.filter(exchange, (serverWebExchange) -> Mono.error(new EOFException("Disconnected")))
+				.onErrorResume((t) -> {
+					exchange.getResponse().setRawStatusCode(500);
+					return exchange.getResponse().setComplete();
+				});
+		StepVerifier.create(processing).expectComplete().verify(Duration.ofSeconds(5));
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "500");
+		assertMetricsContainsTag("outcome", "UNKNOWN");
 	}
 
 	private MockServerWebExchange createExchange(String path, String pathPattern) {
