@@ -38,10 +38,16 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
 	@Autowired(required = false)
-	private Jackson2ObjectMapperBuilder objectMapperBuilder;
+	private final Jackson2ObjectMapperBuilder objectMapperBuilder;
 
 	@Autowired
-	private RepositoryRestProperties properties;
+	private final RepositoryRestProperties properties;
+
+	SpringBootRepositoryRestConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder,
+			RepositoryRestProperties properties) {
+		this.objectMapperBuilder = objectMapperBuilder;
+		this.properties = properties;
+	}
 
 	@Override
 	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config, CorsRegistry cors) {
