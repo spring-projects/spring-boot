@@ -21,19 +21,18 @@ import java.util.Set;
 
 import org.jooq.DSLContext;
 
-import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
-import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDependsOnDatabaseInitializationDetector;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
 
 /**
- * {@link DependsOnDataSourceInitializationDetector} for jOOQ.
+ * {@link DependsOnDatabaseInitializationDetector} for jOOQ.
  *
  * @author Andy Wilkinson
  */
-class JooqDependsOnDataSourceInitializationDetector
-		extends AbstractBeansOfTypeDependsOnDataSourceInitializationDetector {
+class JooqDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
 	@Override
-	protected Set<Class<?>> getDependsOnDataSourceInitializationBeanTypes() {
+	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		return Collections.singleton(DSLContext.class);
 	}
 

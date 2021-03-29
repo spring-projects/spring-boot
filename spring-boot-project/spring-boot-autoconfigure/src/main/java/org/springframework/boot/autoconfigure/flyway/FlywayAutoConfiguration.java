@@ -50,7 +50,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DatabaseDriver;
-import org.springframework.boot.jdbc.init.dependency.DataSourceInitializationDependencyConfigurer;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
@@ -88,7 +88,7 @@ import org.springframework.util.StringUtils;
 @ConditionalOnProperty(prefix = "spring.flyway", name = "enabled", matchIfMissing = true)
 @AutoConfigureAfter({ DataSourceAutoConfiguration.class, JdbcTemplateAutoConfiguration.class,
 		HibernateJpaAutoConfiguration.class })
-@Import(DataSourceInitializationDependencyConfigurer.class)
+@Import(DatabaseInitializationDependencyConfigurer.class)
 public class FlywayAutoConfiguration {
 
 	@Bean

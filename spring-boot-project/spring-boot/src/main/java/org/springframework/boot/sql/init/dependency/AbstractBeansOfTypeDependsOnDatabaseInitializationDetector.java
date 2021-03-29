@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init.dependency;
+package org.springframework.boot.sql.init.dependency;
 
 import java.util.Collections;
 import java.util.Set;
@@ -22,27 +22,27 @@ import java.util.Set;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
- * Base class for {@link DependsOnDataSourceInitializationDetector
- * InitializedDataSourceDependentDetector} that detect by type beans that depend upon data
- * source initialization.
+ * Base class for {@link DependsOnDatabaseInitializationDetector
+ * DependsOnDatabaseInitializationDetectors} that detect by type beans that depend upon
+ * database initialization.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
  */
-public abstract class AbstractBeansOfTypeDependsOnDataSourceInitializationDetector
-		implements DependsOnDataSourceInitializationDetector {
+public abstract class AbstractBeansOfTypeDependsOnDatabaseInitializationDetector
+		implements DependsOnDatabaseInitializationDetector {
 
 	/**
-	 * Returns the bean types that should be detected as depending on data source
+	 * Returns the bean types that should be detected as depending on database
 	 * initialization.
-	 * @return the data source initialization dependent bean types
+	 * @return the database initialization dependent bean types
 	 */
-	protected abstract Set<Class<?>> getDependsOnDataSourceInitializationBeanTypes();
+	protected abstract Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes();
 
 	@Override
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
 		try {
-			Set<Class<?>> types = getDependsOnDataSourceInitializationBeanTypes();
+			Set<Class<?>> types = getDependsOnDatabaseInitializationBeanTypes();
 			return new BeansOfTypeDetector(types).detect(beanFactory);
 		}
 		catch (Throwable ex) {

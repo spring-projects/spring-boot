@@ -2163,33 +2163,33 @@ See {spring-boot-autoconfigure-module-code}/liquibase/LiquibaseProperties.java[`
 
 
 [[howto-initialize-a-database-configuring-dependencies]]
-=== Depend Upon an Initialized DataSource
-DataSource initialization is performed while the application is starting up as part of application context refresh.
-To allow an initialized database to be accessed during startup, beans that act as DataSource initializers and beans that
-require that DataSource to have been initialized are detected automatically.
-Beans whose initialization depends upon the DataSource having been initialized are configured to depend upon those that initialize it.
-If, during startup, your application tries to access the database and it has not been initialized, you can configure additional detection of beans that initialize the DataSource and require the DataSource to have been initialized.
+=== Depend Upon an Initialized Database
+Database initialization is performed while the application is starting up as part of application context refresh.
+To allow an initialized database to be accessed during startup, beans that act as database initializers and beans that require that database to have been initialized are detected automatically.
+Beans whose initialization depends upon the database having been initialized are configured to depend upon those that initialize it.
+If, during startup, your application tries to access the database and it has not been initialized, you can configure additional detection of beans that initialize the database and require the database to have been initialized.
 
 
 
 [[howto-initialize-a-database-configuring-dependencies-initializer-detection]]
-==== Detect a DataSource Initializer
-Spring Boot will automatically detect beans of the following types that initialize a `DataSource`:
+==== Detect a Database Initializer
+Spring Boot will automatically detect beans of the following types that initialize an SQL database:
 
-- `DataSourceInitialization`
+- `DataSourceScriptDatabaseInitializer`
 - `EntityManagerFactory`
 - `Flyway`
 - `FlywayMigrationInitializer`
+- `R2dbcScriptDatabaseInitializer`
 - `SpringLiquibase`
 
-If you are using a third-party starter for a DataSource initialization library, it may provide a detector such that beans of other types are also detected automatically.
-To have other beans be detected, register an implementation of `DataSourceInitializerDetector` in `META-INF/spring-factories`.
+If you are using a third-party starter for a database initialization library, it may provide a detector such that beans of other types are also detected automatically.
+To have other beans be detected, register an implementation of `DatabaseInitializerDetector` in `META-INF/spring-factories`.
 
 
 
 [[howto-initialize-a-database-configuring-dependencies-depends-on-initialization-detection]]
-==== Detect a Bean That Depends On DataSource Initialization
-Spring Boot will automatically detect beans of the following types that depends upon `DataSource` initialization:
+==== Detect a Bean That Depends On Database Initialization
+Spring Boot will automatically detect beans of the following types that depends upon database initialization:
 
 - `AbstractEntityManagerFactoryBean` (unless configprop:spring.jpa.defer-datasource-initialization[] is set to `true`)
 - `DSLContext` (jOOQ)
@@ -2198,8 +2198,8 @@ Spring Boot will automatically detect beans of the following types that depends 
 - `NamedParameterJdbcOperations`
 
 If you are using a third-party starter data access library, it may provide a detector such that beans of other types are also detected automatically.
-To have other beans be detected, register an implementation of `DependsOnDataSourceInitializationDetector` in `META-INF/spring-factories`.
-Alternatively, annotate the bean's class or its `@Bean` method with `@DependsOnDataSourceInitializationDetector`.
+To have other beans be detected, register an implementation of `DependsOnDatabaseInitializationDetector` in `META-INF/spring-factories`.
+Alternatively, annotate the bean's class or its `@Bean` method with `@DependsOnDatabaseInitialization`.
 
 
 

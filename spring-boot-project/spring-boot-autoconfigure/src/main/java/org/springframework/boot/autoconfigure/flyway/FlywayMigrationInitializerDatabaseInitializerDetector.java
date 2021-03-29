@@ -19,18 +19,18 @@ package org.springframework.boot.autoconfigure.flyway;
 import java.util.Collections;
 import java.util.Set;
 
-import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
+import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDatabaseInitializerDetector;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 
 /**
- * A {@link DataSourceInitializerDetector} for {@link FlywayMigrationInitializer}.
+ * A {@link DatabaseInitializerDetector} for {@link FlywayMigrationInitializer}.
  *
  * @author Andy Wilkinson
  */
-class FlywayMigrationInitializerDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
+class FlywayMigrationInitializerDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	@Override
-	protected Set<Class<?>> getDataSourceInitializerBeanTypes() {
+	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(FlywayMigrationInitializer.class);
 	}
 

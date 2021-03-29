@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.r2dbc.init;
 
 import java.util.Collections;
 import java.util.Set;
@@ -23,15 +23,15 @@ import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDatabaseI
 import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 
 /**
- * A {@link DatabaseInitializerDetector} for {@link DataSourceScriptDatabaseInitializer}.
+ * A {@link DatabaseInitializerDetector} for {@link R2dbcScriptDatabaseInitializer}.
  *
  * @author Andy Wilkinson
  */
-class DataSourceScriptDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
+class R2dbcScriptDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	@Override
 	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
-		return Collections.singleton(DataSourceScriptDatabaseInitializer.class);
+		return Collections.singleton(R2dbcScriptDatabaseInitializer.class);
 	}
 
 }

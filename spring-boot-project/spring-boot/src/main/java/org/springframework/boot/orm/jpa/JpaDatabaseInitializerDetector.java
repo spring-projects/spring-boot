@@ -25,26 +25,26 @@ import javax.persistence.EntityManagerFactory;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
-import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
+import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDatabaseInitializerDetector;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 import org.springframework.core.env.Environment;
 import org.springframework.util.StringUtils;
 
 /**
- * A {@link DataSourceInitializerDetector} for JPA.
+ * A {@link DatabaseInitializerDetector} for JPA.
  *
  * @author Andy Wilkinson
  */
-class JpaDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
+class JpaDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	private final Environment environment;
 
-	JpaDataSourceInitializerDetector(Environment environment) {
+	JpaDatabaseInitializerDetector(Environment environment) {
 		this.environment = environment;
 	}
 
 	@Override
-	protected Set<Class<?>> getDataSourceInitializerBeanTypes() {
+	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		boolean deferred = this.environment.getProperty("spring.jpa.defer-datasource-initialization", boolean.class,
 				false);
 		return deferred ? Collections.singleton(EntityManagerFactory.class) : Collections.emptySet();
@@ -63,8 +63,8 @@ class JpaDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInit
 		while (iterator.hasNext()) {
 			String initializerName = iterator.next();
 			BeanDefinition initializerDefinition = beanFactory.getBeanDefinition(initializerName);
-			if (JpaDataSourceInitializerDetector.class.getName()
-					.equals(initializerDefinition.getAttribute(DataSourceInitializerDetector.class.getName()))) {
+			if (JpaDatabaseInitializerDetector.class.getName()
+					.equals(initializerDefinition.getAttribute(DatabaseInitializerDetector.class.getName()))) {
 				iterator.remove();
 				jpaInitializers.add(initializerName);
 			}

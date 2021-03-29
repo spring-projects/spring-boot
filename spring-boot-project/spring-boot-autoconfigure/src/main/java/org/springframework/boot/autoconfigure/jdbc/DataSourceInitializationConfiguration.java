@@ -42,8 +42,8 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
-import org.springframework.boot.jdbc.init.dependency.DataSourceInitializationDependencyConfigurer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.DependsOn;
@@ -85,7 +85,7 @@ class DataSourceInitializationConfiguration {
 	// Fully-qualified to work around javac bug in JDK 1.8
 	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	@org.springframework.context.annotation.Conditional(DifferentCredentialsCondition.class)
-	@org.springframework.context.annotation.Import(DataSourceInitializationDependencyConfigurer.class)
+	@org.springframework.context.annotation.Import(DatabaseInitializationDependencyConfigurer.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@ConditionalOnMissingBean(DataSourceScriptDatabaseInitializer.class)
 	static class InitializationSpecificCredentialsDataSourceInitializationConfiguration {
@@ -141,7 +141,7 @@ class DataSourceInitializationConfiguration {
 
 	// Fully-qualified to work around javac bug in JDK 1.8
 	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
-	@org.springframework.context.annotation.Import(DataSourceInitializationDependencyConfigurer.class)
+	@org.springframework.context.annotation.Import(DatabaseInitializationDependencyConfigurer.class)
 	@org.springframework.context.annotation.Conditional(DataSourceInitializationCondition.class)
 	@ConditionalOnSingleCandidate(DataSource.class)
 	@ConditionalOnMissingBean(DataSourceScriptDatabaseInitializer.class)

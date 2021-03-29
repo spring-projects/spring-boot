@@ -21,18 +21,18 @@ import java.util.Set;
 
 import org.flywaydb.core.Flyway;
 
-import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
+import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDatabaseInitializerDetector;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 
 /**
- * A {@link DataSourceInitializerDetector} for {@link Flyway}.
+ * A {@link DatabaseInitializerDetector} for {@link Flyway}.
  *
  * @author Andy Wilkinson
  */
-class FlywayDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
+class FlywayDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	@Override
-	protected Set<Class<?>> getDataSourceInitializerBeanTypes() {
+	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(Flyway.class);
 	}
 

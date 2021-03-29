@@ -23,27 +23,26 @@ import java.util.Set;
 
 import javax.persistence.EntityManagerFactory;
 
-import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
-import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDependsOnDatabaseInitializationDetector;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
 import org.springframework.core.env.Environment;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 
 /**
- * {@link DependsOnDataSourceInitializationDetector} for JPA.
+ * {@link DependsOnDatabaseInitializationDetector} for JPA.
  *
  * @author Andy Wilkinson
  */
-class JpaDependsOnDataSourceInitializationDetector
-		extends AbstractBeansOfTypeDependsOnDataSourceInitializationDetector {
+class JpaDependsOnDatabaseInitializationDetector extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
 	private final Environment environment;
 
-	JpaDependsOnDataSourceInitializationDetector(Environment environment) {
+	JpaDependsOnDatabaseInitializationDetector(Environment environment) {
 		this.environment = environment;
 	}
 
 	@Override
-	protected Set<Class<?>> getDependsOnDataSourceInitializationBeanTypes() {
+	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		boolean postpone = this.environment.getProperty("spring.jpa.defer-datasource-initialization", boolean.class,
 				false);
 		return postpone ? Collections.emptySet()

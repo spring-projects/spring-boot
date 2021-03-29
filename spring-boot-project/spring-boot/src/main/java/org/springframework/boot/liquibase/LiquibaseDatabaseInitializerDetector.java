@@ -21,18 +21,18 @@ import java.util.Set;
 
 import liquibase.integration.spring.SpringLiquibase;
 
-import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDataSourceInitializerDetector;
-import org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector;
+import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDatabaseInitializerDetector;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
 
 /**
- * A {@link DataSourceInitializerDetector} for Liquibase.
+ * A {@link DatabaseInitializerDetector} for Liquibase.
  *
  * @author Andy Wilkinson
  */
-class LiquibaseDataSourceInitializerDetector extends AbstractBeansOfTypeDataSourceInitializerDetector {
+class LiquibaseDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	@Override
-	protected Set<Class<?>> getDataSourceInitializerBeanTypes() {
+	protected Set<Class<?>> getDatabaseInitializerBeanTypes() {
 		return Collections.singleton(SpringLiquibase.class);
 	}
 

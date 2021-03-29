@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init.dependency;
+package org.springframework.boot.sql.init.dependency;
 
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-
-import javax.sql.DataSource;
 
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.NoSuchBeanDefinitionException;
@@ -40,93 +38,95 @@ import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.util.StringUtils;
 
 /**
- * Configures beans that depend upon DataSource initialization with
- * {@link BeanDefinition#getDependsOn()} dependencies upon beans that perform
- * {@link DataSource} initialization. Intended for {@link Import import} in configuration
- * classes that define {@code DataSource} initialization beans or that define beans that
- * require DataSource initialization to have completed before they are initialized.
+ * Configures beans that depend upon SQL database initialization with
+ * {@link BeanDefinition#getDependsOn() dependencies} upon beans that perform database
+ * initialization. Intended for {@link Import import} in configuration classes that define
+ * database initialization beans or that define beans that require database initialization
+ * to have completed before they are initialized.
  * <p>
- * Beans that initialize a {@link DataSource} are identified by
- * {@link DataSourceInitializerDetector DataSourceInitializerDetectors}. Beans that depend
- * upon DataSource initialization are identified by
- * {@link DependsOnDataSourceInitializationDetector
- * DependsOnDataSourceInitializationDetectors}.
+ * Beans that initialize a database are identified by {@link DatabaseInitializerDetector
+ * DatabaseInitializerDetectors}. Beans that depend upon database initialization are
+ * identified by {@link DependsOnDatabaseInitializationDetector
+ * DependsOnDatabaseInitializationDetectors}.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
- * @see DataSourceInitializerDetector
- * @see DependsOnDataSourceInitializationDetector
- * @see DependsOnDataSourceInitialization
+ * @see DatabaseInitializerDetector
+ * @see DependsOnDatabaseInitializationDetector
+ * @see DependsOnDatabaseInitialization
  */
-public class DataSourceInitializationDependencyConfigurer implements ImportBeanDefinitionRegistrar {
+public class DatabaseInitializationDependencyConfigurer implements ImportBeanDefinitionRegistrar {
 
 	private final Environment environment;
 
-	DataSourceInitializationDependencyConfigurer(Environment environment) {
+	DatabaseInitializationDependencyConfigurer(Environment environment) {
 		this.environment = environment;
 	}
 
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
-		if (registry.containsBeanDefinition(DependsOnDataSourceInitializationPostProcessor.class.getName())) {
+		if (registry.containsBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class.getName())) {
 			return;
 		}
-		registry.registerBeanDefinition(DependsOnDataSourceInitializationPostProcessor.class.getName(),
+		registry.registerBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class.getName(),
 				BeanDefinitionBuilder
-						.genericBeanDefinition(DependsOnDataSourceInitializationPostProcessor.class,
-								() -> new DependsOnDataSourceInitializationPostProcessor(this.environment))
+						.genericBeanDefinition(DependsOnDatabaseInitializationPostProcessor.class,
+								() -> new DependsOnDatabaseInitializationPostProcessor(this.environment))
 						.getBeanDefinition());
 	}
 
-	static class DependsOnDataSourceInitializationPostProcessor implements BeanFactoryPostProcessor {
+	static class DependsOnDatabaseInitializationPostProcessor implements BeanFactoryPostProcessor {
 
 		private final Environment environment;
 
-		DependsOnDataSourceInitializationPostProcessor(Environment environment) {
+		DependsOnDatabaseInitializationPostProcessor(Environment environment) {
 			this.environment = environment;
 		}
 
 		@Override
 		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
-			Set<String> detectedDataSourceInitializers = detectDataSourceInitializers(beanFactory);
-			for (String dependentDefinitionName : detectDependsOnDataSourceInitialization(beanFactory,
+			Set<String> detectedDatabaseInitializers = detectDatabaseInitializers(beanFactory);
+			if (detectedDatabaseInitializers.isEmpty()) {
+				return;
+			}
+			for (String dependentDefinitionName : detectDependsOnDatabaseInitialization(beanFactory,
 					this.environment)) {
 				BeanDefinition definition = getBeanDefinition(dependentDefinitionName, beanFactory);
 				String[] dependencies = definition.getDependsOn();
-				for (String dependencyName : detectedDataSourceInitializers) {
+				for (String dependencyName : detectedDatabaseInitializers) {
 					dependencies = StringUtils.addStringToArray(dependencies, dependencyName);
 				}
 				definition.setDependsOn(dependencies);
 			}
 		}
 
-		private Set<String> detectDataSourceInitializers(ConfigurableListableBeanFactory beanFactory) {
-			List<DataSourceInitializerDetector> detectors = instantiateDetectors(beanFactory, this.environment,
-					DataSourceInitializerDetector.class);
+		private Set<String> detectDatabaseInitializers(ConfigurableListableBeanFactory beanFactory) {
+			List<DatabaseInitializerDetector> detectors = instantiateDetectors(beanFactory, this.environment,
+					DatabaseInitializerDetector.class);
 			Set<String> detected = new HashSet<>();
-			for (DataSourceInitializerDetector detector : detectors) {
+			for (DatabaseInitializerDetector detector : detectors) {
 				for (String initializerName : detector.detect(beanFactory)) {
 					detected.add(initializerName);
 					beanFactory.getBeanDefinition(initializerName)
-							.setAttribute(DataSourceInitializerDetector.class.getName(), detector.getClass().getName());
+							.setAttribute(DatabaseInitializerDetector.class.getName(), detector.getClass().getName());
 				}
 			}
 			detected = Collections.unmodifiableSet(detected);
-			for (DataSourceInitializerDetector detector : detectors) {
+			for (DatabaseInitializerDetector detector : detectors) {
 				detector.detectionComplete(beanFactory, detected);
 			}
 			return detected;
 		}
 
-		private Collection<String> detectDependsOnDataSourceInitialization(ConfigurableListableBeanFactory beanFactory,
+		private Collection<String> detectDependsOnDatabaseInitialization(ConfigurableListableBeanFactory beanFactory,
 				Environment environment) {
-			List<DependsOnDataSourceInitializationDetector> detectors = instantiateDetectors(beanFactory, environment,
-					DependsOnDataSourceInitializationDetector.class);
-			Set<String> dependentUponDataSourceInitialization = new HashSet<>();
-			for (DependsOnDataSourceInitializationDetector detector : detectors) {
-				dependentUponDataSourceInitialization.addAll(detector.detect(beanFactory));
+			List<DependsOnDatabaseInitializationDetector> detectors = instantiateDetectors(beanFactory, environment,
+					DependsOnDatabaseInitializationDetector.class);
+			Set<String> dependentUponDatabaseInitialization = new HashSet<>();
+			for (DependsOnDatabaseInitializationDetector detector : detectors) {
+				dependentUponDatabaseInitialization.addAll(detector.detect(beanFactory));
 			}
-			return dependentUponDataSourceInitialization;
+			return dependentUponDatabaseInitialization;
 		}
 
 		private <T> List<T> instantiateDetectors(ConfigurableListableBeanFactory beanFactory, Environment environment,

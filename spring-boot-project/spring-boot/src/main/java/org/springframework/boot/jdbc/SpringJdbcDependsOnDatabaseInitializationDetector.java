@@ -20,21 +20,21 @@ import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.springframework.boot.jdbc.init.dependency.AbstractBeansOfTypeDependsOnDataSourceInitializationDetector;
-import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.sql.init.dependency.AbstractBeansOfTypeDependsOnDatabaseInitializationDetector;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 /**
- * {@link DependsOnDataSourceInitializationDetector} for Spring Framework's JDBC support.
+ * {@link DependsOnDatabaseInitializationDetector} for Spring Framework's JDBC support.
  *
  * @author Andy Wilkinson
  */
-class SpringJdbcDependsOnDataSourceInitializationDetector
-		extends AbstractBeansOfTypeDependsOnDataSourceInitializationDetector {
+class SpringJdbcDependsOnDatabaseInitializationDetector
+		extends AbstractBeansOfTypeDependsOnDatabaseInitializationDetector {
 
 	@Override
-	protected Set<Class<?>> getDependsOnDataSourceInitializationBeanTypes() {
+	protected Set<Class<?>> getDependsOnDatabaseInitializationBeanTypes() {
 		return new HashSet<>(Arrays.asList(JdbcOperations.class, NamedParameterJdbcOperations.class));
 	}
 

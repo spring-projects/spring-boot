@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init.dependency;
+package org.springframework.boot.sql.init.dependency;
 
 import java.util.Arrays;
 import java.util.HashSet;

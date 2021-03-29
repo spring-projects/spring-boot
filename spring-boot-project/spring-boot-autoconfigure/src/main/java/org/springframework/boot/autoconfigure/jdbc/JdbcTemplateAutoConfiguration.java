@@ -23,7 +23,7 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
-import org.springframework.boot.jdbc.init.dependency.DataSourceInitializationDependencyConfigurer;
+import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -44,7 +44,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 @ConditionalOnSingleCandidate(DataSource.class)
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @EnableConfigurationProperties(JdbcProperties.class)
-@Import({ DataSourceInitializationDependencyConfigurer.class, JdbcTemplateConfiguration.class,
+@Import({ DatabaseInitializationDependencyConfigurer.class, JdbcTemplateConfiguration.class,
 		NamedParameterJdbcTemplateConfiguration.class })
 public class JdbcTemplateAutoConfiguration {
 

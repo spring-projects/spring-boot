@@ -24,6 +24,7 @@ import javax.sql.DataSource;
 import io.r2dbc.spi.ConnectionFactory;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
@@ -31,6 +32,7 @@ import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
 import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -98,6 +100,28 @@ public class SqlInitializationAutoConfigurationTests {
 						.hasBean("customInitializer"));
 	}
 
+	@Test
+	void whenBeanIsAnnotatedAsDependingOnDatabaseInitializationThenItDependsOnR2dbcScriptDatabaseInitializer() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
+				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class).run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(
+							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+					assertThat(beanDefinition.getDependsOn())
+							.containsExactlyInAnyOrder("r2dbcScriptDatabaseInitializer");
+				});
+	}
+
+	@Test
+	void whenBeanIsAnnotatedAsDependingOnDatabaseInitializationThenItDependsOnDataSourceScriptDatabaseInitializer() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withUserConfiguration(DependsOnInitializedDatabaseConfiguration.class).run((context) -> {
+					BeanDefinition beanDefinition = context.getBeanFactory().getBeanDefinition(
+							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
+					assertThat(beanDefinition.getDependsOn())
+							.containsExactlyInAnyOrder("dataSourceScriptDatabaseInitializer");
+				});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class DatabaseInitializerConfiguration {
 
@@ -112,6 +136,16 @@ public class SqlInitializationAutoConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@DependsOnDatabaseInitialization
+	static class DependsOnInitializedDatabaseConfiguration {
+
+		DependsOnInitializedDatabaseConfiguration() {
+
 		}
 
 	}

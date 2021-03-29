@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init.dependency;
+package org.springframework.boot.sql.init.dependency;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -51,55 +51,54 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
 /**
- * Tests for {@link DataSourceInitializationDependencyConfigurer}.
+ * Tests for {@link DatabaseInitializationDependencyConfigurer}.
  *
  * @author Andy Wilkinson
  */
-class DataSourceInitializationDependencyConfigurerTests {
+class DatabaseInitializationDependencyConfigurerTests {
 
 	private final ConfigurableEnvironment environment = new MockEnvironment();
 
-	DataSourceInitializerDetector dataSourceInitializerDetector = MockedDataSourceInitializerDetector.mock;
+	DatabaseInitializerDetector databaseInitializerDetector = MockedDatabaseInitializerDetector.mock;
 
-	DependsOnDataSourceInitializationDetector dependsOnDataSourceInitializationDetector = MockedDependsOnDataSourceInitializationDetector.mock;
+	DependsOnDatabaseInitializationDetector dependsOnDatabaseInitializationDetector = MockedDependsOnDatabaseInitializationDetector.mock;
 
 	@TempDir
 	File temp;
 
 	@BeforeEach
 	void resetMocks() {
-		reset(MockedDataSourceInitializerDetector.mock, MockedDependsOnDataSourceInitializationDetector.mock);
+		reset(MockedDatabaseInitializerDetector.mock, MockedDependsOnDatabaseInitializationDetector.mock);
 	}
 
 	@Test
 	void whenDetectorsAreCreatedThenTheEnvironmentCanBeInjected() {
-		performDetection(Arrays.asList(ConstructorInjectionDataSourceInitializerDetector.class,
-				ConstructorInjectionDependsOnDataSourceInitializationDetector.class), (context) -> {
+		performDetection(Arrays.asList(ConstructorInjectionDatabaseInitializerDetector.class,
+				ConstructorInjectionDependsOnDatabaseInitializationDetector.class), (context) -> {
 					context.refresh();
-					assertThat(ConstructorInjectionDataSourceInitializerDetector.environment)
-							.isEqualTo(this.environment);
-					assertThat(ConstructorInjectionDependsOnDataSourceInitializationDetector.environment)
+					assertThat(ConstructorInjectionDatabaseInitializerDetector.environment).isEqualTo(this.environment);
+					assertThat(ConstructorInjectionDependsOnDatabaseInitializationDetector.environment)
 							.isEqualTo(this.environment);
 				});
 	}
 
 	@Test
-	void whenDependenciesAreConfiguredThenBeansThatDependUponDataSourceInitializationDependUponDetectedDataSourceInitializers() {
+	void whenDependenciesAreConfiguredThenBeansThatDependUponDatabaseInitializationDependUponDetectedDatabaseInitializers() {
 		BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
 		BeanDefinition bravo = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		performDetection(Arrays.asList(MockedDataSourceInitializerDetector.class,
-				MockedDependsOnDataSourceInitializationDetector.class), (context) -> {
+		performDetection(Arrays.asList(MockedDatabaseInitializerDetector.class,
+				MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
 					context.registerBeanDefinition("alpha", alpha);
 					context.registerBeanDefinition("bravo", bravo);
-					given(this.dataSourceInitializerDetector.detect(context.getBeanFactory()))
+					given(this.databaseInitializerDetector.detect(context.getBeanFactory()))
 							.willReturn(Collections.singleton("alpha"));
-					given(this.dependsOnDataSourceInitializationDetector.detect(context.getBeanFactory()))
+					given(this.dependsOnDatabaseInitializationDetector.detect(context.getBeanFactory()))
 							.willReturn(Collections.singleton("bravo"));
 					context.refresh();
-					assertThat(alpha.getAttribute(DataSourceInitializerDetector.class.getName()))
-							.isEqualTo(MockedDataSourceInitializerDetector.class.getName());
-					assertThat(bravo.getAttribute(DataSourceInitializerDetector.class.getName())).isNull();
-					verify(this.dataSourceInitializerDetector).detectionComplete(context.getBeanFactory(),
+					assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName()))
+							.isEqualTo(MockedDatabaseInitializerDetector.class.getName());
+					assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
+					verify(this.databaseInitializerDetector).detectionComplete(context.getBeanFactory(),
 							Collections.singleton("alpha"));
 					assertThat(bravo.getDependsOn()).containsExactly("alpha");
 				});
@@ -118,17 +117,17 @@ class DataSourceInitializationDependencyConfigurerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(DataSourceInitializationDependencyConfigurer.class)
+	@Import(DatabaseInitializationDependencyConfigurer.class)
 	static class DependencyConfigurerConfiguration {
 
 	}
 
-	static class ConstructorInjectionDataSourceInitializerDetector implements DataSourceInitializerDetector {
+	static class ConstructorInjectionDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
 		private static Environment environment;
 
-		ConstructorInjectionDataSourceInitializerDetector(Environment environment) {
-			ConstructorInjectionDataSourceInitializerDetector.environment = environment;
+		ConstructorInjectionDatabaseInitializerDetector(Environment environment) {
+			ConstructorInjectionDatabaseInitializerDetector.environment = environment;
 		}
 
 		@Override
@@ -138,13 +137,13 @@ class DataSourceInitializationDependencyConfigurerTests {
 
 	}
 
-	static class ConstructorInjectionDependsOnDataSourceInitializationDetector
-			implements DependsOnDataSourceInitializationDetector {
+	static class ConstructorInjectionDependsOnDatabaseInitializationDetector
+			implements DependsOnDatabaseInitializationDetector {
 
 		private static Environment environment;
 
-		ConstructorInjectionDependsOnDataSourceInitializationDetector(Environment environment) {
-			ConstructorInjectionDependsOnDataSourceInitializationDetector.environment = environment;
+		ConstructorInjectionDependsOnDatabaseInitializationDetector(Environment environment) {
+			ConstructorInjectionDependsOnDatabaseInitializationDetector.environment = environment;
 		}
 
 		@Override
@@ -154,40 +153,40 @@ class DataSourceInitializationDependencyConfigurerTests {
 
 	}
 
-	static class MockedDataSourceInitializerDetector implements DataSourceInitializerDetector {
+	static class MockedDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DataSourceInitializerDetector mock = Mockito.mock(DataSourceInitializerDetector.class);
+		private static DatabaseInitializerDetector mock = Mockito.mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-			return MockedDataSourceInitializerDetector.mock.detect(beanFactory);
+			return MockedDatabaseInitializerDetector.mock.detect(beanFactory);
 		}
 
 		@Override
 		public void detectionComplete(ConfigurableListableBeanFactory beanFactory,
-				Set<String> dataSourceInitializerNames) {
-			mock.detectionComplete(beanFactory, dataSourceInitializerNames);
+				Set<String> databaseInitializerNames) {
+			mock.detectionComplete(beanFactory, databaseInitializerNames);
 		}
 
 	}
 
-	static class MockedDependsOnDataSourceInitializationDetector implements DependsOnDataSourceInitializationDetector {
+	static class MockedDependsOnDatabaseInitializationDetector implements DependsOnDatabaseInitializationDetector {
 
-		private static DependsOnDataSourceInitializationDetector mock = Mockito
-				.mock(DependsOnDataSourceInitializationDetector.class);
+		private static DependsOnDatabaseInitializationDetector mock = Mockito
+				.mock(DependsOnDatabaseInitializationDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-			return MockedDependsOnDataSourceInitializationDetector.mock.detect(beanFactory);
+			return MockedDependsOnDatabaseInitializationDetector.mock.detect(beanFactory);
 		}
 
 	}
 
 	static class DetectorSpringFactoriesClassLoader extends ClassLoader {
 
-		private final Set<Class<DataSourceInitializerDetector>> dataSourceInitializerDetectors = new HashSet<>();
+		private final Set<Class<DatabaseInitializerDetector>> databaseInitializerDetectors = new HashSet<>();
 
-		private final Set<Class<DependsOnDataSourceInitializationDetector>> dependsOnDataSourceInitializationDetectors = new HashSet<>();
+		private final Set<Class<DependsOnDatabaseInitializationDetector>> dependsOnDatabaseInitializationDetectors = new HashSet<>();
 
 		private final File temp;
 
@@ -197,12 +196,12 @@ class DataSourceInitializationDependencyConfigurerTests {
 
 		@SuppressWarnings("unchecked")
 		void register(Class<?> detector) {
-			if (DataSourceInitializerDetector.class.isAssignableFrom(detector)) {
-				this.dataSourceInitializerDetectors.add((Class<DataSourceInitializerDetector>) detector);
+			if (DatabaseInitializerDetector.class.isAssignableFrom(detector)) {
+				this.databaseInitializerDetectors.add((Class<DatabaseInitializerDetector>) detector);
 			}
-			else if (DependsOnDataSourceInitializationDetector.class.isAssignableFrom(detector)) {
-				this.dependsOnDataSourceInitializationDetectors
-						.add((Class<DependsOnDataSourceInitializationDetector>) detector);
+			else if (DependsOnDatabaseInitializationDetector.class.isAssignableFrom(detector)) {
+				this.dependsOnDatabaseInitializationDetectors
+						.add((Class<DependsOnDatabaseInitializationDetector>) detector);
 			}
 			else {
 				throw new IllegalArgumentException("Unsupported detector type '" + detector.getName() + "'");
@@ -215,10 +214,10 @@ class DataSourceInitializationDependencyConfigurerTests {
 				return super.findResources(name);
 			}
 			Properties properties = new Properties();
-			properties.put(DataSourceInitializerDetector.class.getName(), String.join(",",
-					this.dataSourceInitializerDetectors.stream().map(Class::getName).collect(Collectors.toList())));
-			properties.put(DependsOnDataSourceInitializationDetector.class.getName(),
-					String.join(",", this.dependsOnDataSourceInitializationDetectors.stream().map(Class::getName)
+			properties.put(DatabaseInitializerDetector.class.getName(), String.join(",",
+					this.databaseInitializerDetectors.stream().map(Class::getName).collect(Collectors.toList())));
+			properties.put(DependsOnDatabaseInitializationDetector.class.getName(),
+					String.join(",", this.dependsOnDatabaseInitializationDetectors.stream().map(Class::getName)
 							.collect(Collectors.toList())));
 			File springFactories = new File(this.temp, "spring.factories");
 			try (FileWriter writer = new FileWriter(springFactories)) {

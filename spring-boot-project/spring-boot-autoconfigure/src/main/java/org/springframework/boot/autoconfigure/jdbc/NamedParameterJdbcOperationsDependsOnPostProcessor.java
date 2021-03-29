@@ -19,7 +19,7 @@ package org.springframework.boot.autoconfigure.jdbc;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
-import org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector;
+import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 
 /**
@@ -31,7 +31,7 @@ import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
  * @author Andrii Hrytsiuk
  * @since 2.1.4
  * @see BeanDefinition#setDependsOn(String[])
- * @deprecated since 2.5.0 in favor of {@link DependsOnDataSourceInitializationDetector}
+ * @deprecated since 2.5.0 in favor of {@link DependsOnDatabaseInitializationDetector}
  */
 @Deprecated
 public class NamedParameterJdbcOperationsDependsOnPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {

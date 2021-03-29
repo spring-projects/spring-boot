@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init.dependency;
+package org.springframework.boot.sql.init.dependency;
 
 import java.util.Set;
 
@@ -23,14 +23,14 @@ import javax.sql.DataSource;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 
 /**
- * Detects beans that initialize a {@link DataSource}. Implementations should be
- * registered in {@code META-INF/spring.factories} under the key
- * {@code org.springframework.boot.jdbc.init.DependsOnDataSourceInitializationDetector}.
+ * Detects beans that initialize an SQL database. Implementations should be registered in
+ * {@code META-INF/spring.factories} under the key
+ * {@code org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector}.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
  */
-public interface DataSourceInitializerDetector {
+public interface DatabaseInitializerDetector {
 
 	/**
 	 * Detect beans defined in the given {@code beanFactory} that initialize a

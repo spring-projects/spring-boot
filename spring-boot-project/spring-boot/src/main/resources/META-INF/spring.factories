@@ -79,16 +79,17 @@ org.springframework.boot.liquibase.LiquibaseChangelogMissingFailureAnalyzer
 org.springframework.boot.diagnostics.FailureAnalysisReporter=\
 org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter
 
-# DataSource Initializer Detectors
-org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector=\
-org.springframework.boot.flyway.FlywayDataSourceInitializerDetector,\
+# Database Initializer Detectors
+org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector=\
+org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
 org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector,\
-org.springframework.boot.liquibase.LiquibaseDataSourceInitializerDetector,\
-org.springframework.boot.orm.jpa.JpaDataSourceInitializerDetector
+org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector,\
+org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
 
-# Depends On DataSource Initialization Detectors
-org.springframework.boot.jdbc.init.dependency.DependsOnDataSourceInitializationDetector=\
-org.springframework.boot.jdbc.init.dependency.AnnotationDependsOnDataSourceInitializationDetector,\
-org.springframework.boot.jdbc.SpringJdbcDependsOnDataSourceInitializationDetector,\
-org.springframework.boot.jooq.JooqDependsOnDataSourceInitializationDetector,\
-org.springframework.boot.orm.jpa.JpaDependsOnDataSourceInitializationDetector
+# Depends On Database Initialization Detectors
+org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
+org.springframework.boot.sql.init.dependency.AnnotationDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.jdbc.SpringJdbcDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.jooq.JooqDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.orm.jpa.JpaDependsOnDatabaseInitializationDetector
