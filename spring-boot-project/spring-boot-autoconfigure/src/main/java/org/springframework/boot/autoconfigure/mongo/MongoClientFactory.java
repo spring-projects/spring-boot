@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,7 +43,7 @@ public class MongoClientFactory extends MongoClientFactorySupport<MongoClient> {
 	 * Construct a factory for creating a blocking {@link MongoClient}.
 	 * @param properties configuration properties
 	 * @param environment a Spring {@link Environment} containing configuration properties
-	 * @deprecated since 2.3.0 in favor of
+	 * @deprecated since 2.3 for removal in 2.5 in favor of
 	 * {@link #MongoClientFactory(MongoProperties, Environment, List)}
 	 */
 	@Deprecated

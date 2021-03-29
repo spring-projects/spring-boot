@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,8 +40,8 @@ import org.springframework.util.ObjectUtils;
  *
  * @author Stephane Nicoll
  * @since 1.4.0
- * @deprecated since 2.3.3 as this class is not intended for public use. It will be made
- * package-private in a future release
+ * @deprecated since 2.3.3 to be made package-private in 2.5 as this class is not intended
+ * for public use.
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ Cluster.class, CouchbaseClientFactory.class, CouchbaseCacheManager.class })

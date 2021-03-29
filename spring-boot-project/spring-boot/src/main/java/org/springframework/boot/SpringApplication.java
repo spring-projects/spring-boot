@@ -738,7 +738,7 @@ public class SpringApplication {
 	/**
 	 * Refresh the underlying {@link ApplicationContext}.
 	 * @param applicationContext the application context to refresh
-	 * @deprecated since 2.3.0 in favor of
+	 * @deprecated since 2.3 for removal in 2.5 in favor of
 	 * {@link #refresh(ConfigurableApplicationContext)}
 	 */
 	@Deprecated

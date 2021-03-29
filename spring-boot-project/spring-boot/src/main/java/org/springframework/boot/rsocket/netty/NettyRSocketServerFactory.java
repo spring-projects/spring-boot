@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,8 +94,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 * {@link ServerRSocketFactory} while building the server. Calling this method will
 	 * replace any existing processors.
 	 * @param socketFactoryProcessors processors to apply before the server starts
-	 * @deprecated in favor of {@link #setRSocketServerCustomizers(Collection)} as of
-	 * 2.2.7
+	 * @deprecated since 2.2.7 for removal in 2.4 in favor of
+	 * {@link #setRSocketServerCustomizers(Collection)}
 	 */
 	@Deprecated
 	public void setSocketFactoryProcessors(
@@ -108,8 +108,8 @@ public class NettyRSocketServerFactory implements RSocketServerFactory, Configur
 	 * Add {@link ServerRSocketFactoryProcessor}s that should be called to process the
 	 * {@link ServerRSocketFactory} while building the server.
 	 * @param socketFactoryProcessors processors to apply before the server starts
-	 * @deprecated in favor of
-	 * {@link #addRSocketServerCustomizers(RSocketServerCustomizer...)} as of 2.2.7
+	 * @deprecated since 2.2.7 for removal in 2.4 in favor of
+	 * {@link #addRSocketServerCustomizers(RSocketServerCustomizer...)}
 	 */
 	@Deprecated
 	public void addSocketFactoryProcessors(ServerRSocketFactoryProcessor... socketFactoryProcessors) {

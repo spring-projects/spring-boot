@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -143,7 +143,7 @@ public class SpringBootContextLoader extends AbstractContextLoader {
 	 * empty array.
 	 * @param config the source context configuration
 	 * @return the application arguments to use
-	 * @deprecated since 2.2.7
+	 * @deprecated since 2.2.7 for removal in 2.4
 	 * @see SpringApplication#run(String...)
 	 */
 	@Deprecated

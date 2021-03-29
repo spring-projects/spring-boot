@@ -40,7 +40,7 @@ import org.springframework.data.solr.repository.support.SolrRepositoryFactoryBea
  *
  * @author Christoph Strobl
  * @author Oliver Gierke
- * @deprecated since 2.3.9 as Spring Data Solr is deprecated
+ * @deprecated since 2.3.9 for removal in 2.5 as Spring Data Solr is deprecated
  * @since 1.1.0
  */
 @Configuration(proxyBeanMethods = false)

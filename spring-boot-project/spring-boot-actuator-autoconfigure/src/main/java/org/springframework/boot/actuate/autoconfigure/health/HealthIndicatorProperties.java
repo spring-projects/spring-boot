@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  *
  * @author Christian Dupuis
  * @since 2.0.0
- * @deprecated since 2.2.0 in favor of {@link HealthEndpointProperties}
+ * @deprecated since 2.2 for removal in 2.4 in favor of {@link HealthEndpointProperties}
  */
 @Deprecated
 @ConfigurationProperties(prefix = "management.health.status")

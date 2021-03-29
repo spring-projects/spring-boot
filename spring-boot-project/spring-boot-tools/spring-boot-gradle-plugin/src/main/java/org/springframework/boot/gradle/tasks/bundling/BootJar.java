@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -122,7 +122,8 @@ public class BootJar extends Jar implements BootArchive {
 	 * Returns the {@link Configuration Configurations} of the project associated with
 	 * this task.
 	 * @return the configurations
-	 * @deprecated since 2.3.5 in favor of {@link Project#getConfigurations}
+	 * @deprecated since 2.3.5 for removal in 2.5 in favor of
+	 * {@link Project#getConfigurations}
 	 */
 	@Internal
 	@Deprecated
