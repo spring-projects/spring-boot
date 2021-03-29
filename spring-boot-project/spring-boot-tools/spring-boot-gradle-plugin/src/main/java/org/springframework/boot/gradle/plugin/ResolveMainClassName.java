@@ -101,7 +101,7 @@ public class ResolveMainClassName extends DefaultTask {
 
 	/**
 	 * Returns the property for the explicitly configured main class name that should be
-	 * used in favour of resolving the main class name from the classpath.
+	 * used in favor of resolving the main class name from the classpath.
 	 * @return the configured main class name property
 	 */
 	@Input
