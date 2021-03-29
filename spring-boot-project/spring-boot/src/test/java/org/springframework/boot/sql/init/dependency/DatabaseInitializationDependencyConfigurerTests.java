@@ -75,6 +75,9 @@ class DatabaseInitializationDependencyConfigurerTests {
 	void whenDetectorsAreCreatedThenTheEnvironmentCanBeInjected() {
 		performDetection(Arrays.asList(ConstructorInjectionDatabaseInitializerDetector.class,
 				ConstructorInjectionDependsOnDatabaseInitializationDetector.class), (context) -> {
+					BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class)
+							.getBeanDefinition();
+					context.registerBeanDefinition("alpha", alpha);
 					context.refresh();
 					assertThat(ConstructorInjectionDatabaseInitializerDetector.environment).isEqualTo(this.environment);
 					assertThat(ConstructorInjectionDependsOnDatabaseInitializationDetector.environment)
@@ -132,7 +135,7 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-			return Collections.emptySet();
+			return Collections.singleton("alpha");
 		}
 
 	}
