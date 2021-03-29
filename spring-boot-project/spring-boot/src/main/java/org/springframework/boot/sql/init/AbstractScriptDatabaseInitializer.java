@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.sql.init;
 
 import java.io.IOException;
 import java.nio.charset.Charset;
@@ -23,52 +23,36 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.context.ResourceLoaderAware;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.ResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternUtils;
-import org.springframework.jdbc.datasource.init.DatabasePopulatorUtils;
-import org.springframework.jdbc.datasource.init.ResourceDatabasePopulator;
 import org.springframework.util.CollectionUtils;
 
 /**
- * {@link InitializingBean} that performs {@link DataSource} initialization using schema
- * (DDL) and data (DML) scripts.
+ * Base class for an {@link InitializingBean} that performs SQL database initialization
+ * using schema (DDL) and data (DML) scripts.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
  */
-public class ScriptDataSourceInitializer implements ResourceLoaderAware, InitializingBean {
+public abstract class AbstractScriptDatabaseInitializer implements ResourceLoaderAware, InitializingBean {
 
 	private static final String OPTIONAL_LOCATION_PREFIX = "optional:";
 
-	private final DataSource dataSource;
-
-	private final DataSourceInitializationSettings settings;
+	private final DatabaseInitializationSettings settings;
 
 	private volatile ResourceLoader resourceLoader;
 
 	/**
-	 * Creates a new {@link ScriptDataSourceInitializer} that will initialize the given
-	 * {@code DataSource} using the given settings.
-	 * @param dataSource data source to initialize
+	 * Creates a new {@link AbstractScriptDatabaseInitializer} that will initialize the
+	 * database using the given settings.
 	 * @param settings initialization settings
 	 */
-	public ScriptDataSourceInitializer(DataSource dataSource, DataSourceInitializationSettings settings) {
-		this.dataSource = dataSource;
+	protected AbstractScriptDatabaseInitializer(DatabaseInitializationSettings settings) {
 		this.settings = settings;
-	}
-
-	/**
-	 * Returns the {@code DataSource} that will be initialized.
-	 * @return the initialization data source
-	 */
-	protected final DataSource getDataSource() {
-		return this.dataSource;
 	}
 
 	@Override
@@ -148,18 +132,8 @@ public class ScriptDataSourceInitializer implements ResourceLoaderAware, Initial
 				this.settings.getEncoding());
 	}
 
-	protected void runScripts(List<Resource> resources, boolean continueOnError, String separator, Charset encoding) {
-		ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-		populator.setContinueOnError(continueOnError);
-		populator.setSeparator(separator);
-		if (encoding != null) {
-			populator.setSqlScriptEncoding(encoding.name());
-		}
-		for (Resource resource : resources) {
-			populator.addScript(resource);
-		}
-		DatabasePopulatorUtils.execute(populator, this.dataSource);
-	}
+	protected abstract void runScripts(List<Resource> resources, boolean continueOnError, String separator,
+			Charset encoding);
 
 	private static class ScriptLocationResolver {
 

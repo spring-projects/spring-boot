@@ -14,20 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.jdbc.init;
+package org.springframework.boot.sql.init;
 
 import java.nio.charset.Charset;
 import java.util.List;
 
-import javax.sql.DataSource;
-
 /**
- * Settings for initializing a database using a JDBC {@link DataSource}.
+ * Settings for initializing an SQL database.
  *
  * @author Andy Wilkinson
  * @since 2.5.0
  */
-public class DataSourceInitializationSettings {
+public class DatabaseInitializationSettings {
 
 	private List<String> schemaLocations;
 

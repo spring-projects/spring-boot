@@ -1573,7 +1573,6 @@ The following example shows how to define a data source by setting properties:
 ----
 
 Assuming that your `FancyDataSource` has regular JavaBean properties for the URL, the username, and the pool size, these settings are bound automatically before the `DataSource` is made available to other components.
-The regular <<howto-initialize-a-database-using-spring-jdbc,database initialization>> also happens (so the relevant sub-set of `spring.datasource.*` can still be used with your custom configuration).
 
 Spring Boot also provides a utility builder class, called `DataSourceBuilder`, that can be used to create one of the standard data sources (if it is on the classpath).
 The builder can detect the one to use based on what's available on the classpath.
@@ -2022,55 +2021,26 @@ It is a Hibernate feature (and has nothing to do with Spring).
 
 
 
-[[howto-initialize-a-database-using-spring-jdbc]]
+[[howto-initialize-a-database-using-basic-scripts]]
 === Initialize a Database using basic SQL scripts
-Spring Boot can automatically create the schema (DDL scripts) of your `DataSource` and initialize it (DML scripts).
+Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize it (DML scripts).
 It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
 In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of configprop:spring.sql.init.platform[].
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
+SQL database initialization can be disabled by setting configprop:spring.sql.init.enabled[] to `false`.
+By default, Spring Boot enables the fail-fast feature of its script-based database initializer.
+This means that, if the scripts cause exceptions, the application fails to start.
+You can tune that behavior by setting configprop:spring.sql.init.continue-on-error[].
 
-[NOTE]
-====
-When only basic SQL scripts are used, Spring Boot automatically initializes the `DataSource`.
-This initialization can be disabled by setting the configprop:spring.sql.init.enabled[] property to `false`.
-
-By default, script-based `DataSource` initialization is performed before any JPA `EntityManagerFactory` beans are created.
+Script-based `DataSource` initialization is performed, by default, before any JPA `EntityManagerFactory` beans are created.
 `schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
-We do not recommend using multiple data source initialization technologies.
-However, if you want script-based `DataSource` initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
+While do not recommend using multiple data source initialization technologies, if you want script-based `DataSource` initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
 This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
 `schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
 If you are using a <<spring-boot-features.adoc#howto-use-a-higher-level-database-migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
-====
-
-By default, Spring Boot enables the fail-fast feature of the Spring JDBC initializer.
-This means that, if the scripts cause exceptions, the application fails to start.
-You can tune that behavior by setting configprop:spring.sql.init.continue-on-error[].
-
-To take complete control over the script-based initialization of a `DataSource`, define your own `ScriptDataSourceInitializer` bean.
-Doing so will cause the auto-configuration of script-based initialization to back off.
-If you have multiple `DataSource`s in your application, you can define multiple `ScriptDataSourceInitializer` beans.
-
-
-
-[[howto-initialize-a-database-using-r2dbc]]
-=== Initialize a Database Using R2DBC
-If you are using R2DBC, the regular `DataSource` auto-configuration backs off so none of the options described above can be used.
-
-You can initialize the database on startup using SQL scripts as shown in the following example:
-
-[source,java,indent=0]
-----
-include::{include-howto}/dataaccess/R2dbcDatabaseInitializationConfiguration.java[tag=*]
-----
-
-Alternatively, you can configure either <<howto-execute-flyway-database-migrations-on-startup,Flyway>> or <<howto-execute-liquibase-database-migrations-on-startup,Liquibase>> to configure a `DataSource` for you for the duration of the migration.
-Both these libraries offer properties to set the `url`, `username` and `password` of the database to migrate.
-
-NOTE: When choosing this option, `org.springframework:spring-jdbc` is still a required dependency.
 
 
 

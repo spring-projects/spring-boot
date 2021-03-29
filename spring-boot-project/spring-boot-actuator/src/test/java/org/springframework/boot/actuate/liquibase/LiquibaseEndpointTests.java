@@ -32,8 +32,8 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
-import org.springframework.boot.jdbc.init.DataSourceInitializationSettings;
-import org.springframework.boot.jdbc.init.ScriptDataSourceInitializer;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -148,9 +148,10 @@ class LiquibaseEndpointTests {
 			DataSource dataSource = new EmbeddedDatabaseBuilder()
 					.setType(EmbeddedDatabaseConnection.get(getClass().getClassLoader()).getType())
 					.setName(UUID.randomUUID().toString()).build();
-			DataSourceInitializationSettings settings = new DataSourceInitializationSettings();
+			DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 			settings.setSchemaLocations(Arrays.asList("classpath:/db/create-custom-schema.sql"));
-			ScriptDataSourceInitializer initializer = new ScriptDataSourceInitializer(dataSource, settings);
+			DataSourceScriptDatabaseInitializer initializer = new DataSourceScriptDatabaseInitializer(dataSource,
+					settings);
 			initializer.initializeDatabase();
 			return dataSource;
 		}

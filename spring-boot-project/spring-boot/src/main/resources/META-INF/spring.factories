@@ -82,7 +82,7 @@ org.springframework.boot.diagnostics.LoggingFailureAnalysisReporter
 # DataSource Initializer Detectors
 org.springframework.boot.jdbc.init.dependency.DataSourceInitializerDetector=\
 org.springframework.boot.flyway.FlywayDataSourceInitializerDetector,\
-org.springframework.boot.jdbc.init.ScriptDataSourceInitializerDetector,\
+org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector,\
 org.springframework.boot.liquibase.LiquibaseDataSourceInitializerDetector,\
 org.springframework.boot.orm.jpa.JpaDataSourceInitializerDetector
 
