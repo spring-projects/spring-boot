@@ -107,7 +107,7 @@ For instance, to use a different version of the SLF4J library and the Spring Dat
 
 [[failsafe-plugin]]
 === Using Maven Failsafe Plugin without the Spring Boot Parent POM
-When using the Failsafe plugin, the Spring Boot Parent POM by default configures the <classesDirectory> to be ${project.build.outputDirectory}.
+When using the Failsafe plugin, the Spring Boot Parent POM by default configures the `<classesDirectory>` to be `${project.build.outputDirectory}`.
 This configures Failsafe to use the compiled classes rather than the repackaged jar as such:
 
 [source,xml,indent=0]
