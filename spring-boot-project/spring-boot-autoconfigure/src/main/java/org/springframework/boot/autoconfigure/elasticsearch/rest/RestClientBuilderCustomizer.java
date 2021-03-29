@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ import org.elasticsearch.client.RestClientBuilder;
  *
  * @author Brian Clozel
  * @since 2.1.0
- * @deprecated as of 2.3.1 in favor of
+ * @deprecated as of 2.3.1 for removal in 2.5 in favor of
  * {@link org.springframework.boot.autoconfigure.elasticsearch.RestClientBuilderCustomizer}
  */
 @FunctionalInterface

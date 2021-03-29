@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Venil Noronha
  * @author Kristine Jetzke
  * @since 1.1.0
- * @deprecated since 2.4.0 in favor of {@link WebProperties.Resources}
+ * @deprecated since 2.4 for removal in 2.6 in favor of {@link WebProperties.Resources}
  */
 @Deprecated
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)

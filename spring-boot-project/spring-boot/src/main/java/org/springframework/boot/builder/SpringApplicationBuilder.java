@@ -276,7 +276,7 @@ public class SpringApplicationBuilder {
 	 * Explicitly set the context class to be used.
 	 * @param cls the context class to use
 	 * @return the current builder
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4 for removal in 2.6 in favor of
 	 * {@link #contextFactory(ApplicationContextFactory)}
 	 */
 	@Deprecated
@@ -405,7 +405,7 @@ public class SpringApplicationBuilder {
 	 * @param bootstrapper the bootstraper
 	 * @return the current builder
 	 * @since 2.4.0
-	 * @deprecated since 2.4.5 in favor of
+	 * @deprecated since 2.4.5 for removal in 2.6 in favor of
 	 * {@link #addBootstrapRegistryInitializer(BootstrapRegistryInitializer)}
 	 */
 	@Deprecated

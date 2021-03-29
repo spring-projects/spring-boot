@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public interface BootArchive extends Task {
 	/**
 	 * Returns the fully-qualified main class name of the application.
 	 * @return the fully-qualified name of the application's main class
-	 * @deprecated since 2.4.0 in favor of {@link #getMainClass()}.
+	 * @deprecated since 2.4 for removal in 2.6 in favor of {@link #getMainClass()}.
 	 */
 	@Deprecated
 	@ReplacedBy("mainClass")
@@ -56,7 +56,7 @@ public interface BootArchive extends Task {
 	/**
 	 * Sets the fully-qualified main class name of the application.
 	 * @param mainClassName the fully-qualified name of the application's main class
-	 * @deprecated since 2.4.0 in favour of {@link #getMainClass} and
+	 * @deprecated since 2.4 for removal in 2.6 in favor of {@link #getMainClass} and
 	 * {@link Property#set(Object)}
 	 */
 	@Deprecated
@@ -133,8 +133,8 @@ public interface BootArchive extends Task {
 	 * {@code false}.
 	 * @return {@code true} if the Devtools jar should be excluded, or {@code false} if
 	 * not
-	 * @deprecated since 2.3.0 in favour of configuring a classpath that does not include
-	 * development-only dependencies
+	 * @deprecated since 2.3 for removal in 2.5 in favor of configuring a classpath that
+	 * does not include development-only dependencies
 	 */
 	@Input
 	@Deprecated
@@ -144,8 +144,8 @@ public interface BootArchive extends Task {
 	 * Sets whether or not the Devtools jar should be excluded.
 	 * @param excludeDevtools {@code true} if the Devtools jar should be excluded, or
 	 * {@code false} if not
-	 * @deprecated since 2.3.0 in favour of configuring a classpath that does not include
-	 * development-only dependencies
+	 * @deprecated since 2.3 for removal in 2.5 in favor of configuring a classpath that
+	 * does not include development-only dependencies
 	 */
 	@Deprecated
 	void setExcludeDevtools(boolean excludeDevtools);

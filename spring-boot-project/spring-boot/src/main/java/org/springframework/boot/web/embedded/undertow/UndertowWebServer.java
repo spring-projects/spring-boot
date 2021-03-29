@@ -92,7 +92,7 @@ public class UndertowWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 * @param closeable called when the server is stopped
 	 * @since 2.0.4
-	 * @deprecated since 2.3.0 in favor of
+	 * @deprecated since 2.3 for removal in 2.5 in favor of
 	 * {@link #UndertowWebServer(io.undertow.Undertow.Builder, Iterable, boolean)}
 	 */
 	@Deprecated

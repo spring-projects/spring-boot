@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ public interface Layout {
 	 * @param scope the scope of the library
 	 * @return the destination relative to the root of the archive (should end with '/')
 	 * or {@code null} if the library should not be included.
-	 * @deprecated since 2.3.0 in favor of {@link #getLibraryLocation}
+	 * @deprecated since 2.3 for removal in 2.5 in favor of {@link #getLibraryLocation}
 	 */
 	@Deprecated
 	String getLibraryDestination(String libraryName, LibraryScope scope);

@@ -133,7 +133,8 @@ public class BootJar extends Jar implements BootArchive {
 	 * Returns the {@link Configuration Configurations} of the project associated with
 	 * this task.
 	 * @return the configurations
-	 * @deprecated since 2.3.5 in favor of {@link Project#getConfigurations}
+	 * @deprecated since 2.3.5 for removal in 2.5 in favor of
+	 * {@link Project#getConfigurations}
 	 */
 	@Internal
 	@Deprecated
@@ -196,7 +197,7 @@ public class BootJar extends Jar implements BootArchive {
 	/**
 	 * Configures the jar to be layered using the default layering.
 	 * @since 2.3.0
-	 * @deprecated since 2.4.0 as layering as now enabled by default.
+	 * @deprecated since 2.4 for removal in 2.6 as layering as now enabled by default.
 	 */
 	@Deprecated
 	public void layered() {

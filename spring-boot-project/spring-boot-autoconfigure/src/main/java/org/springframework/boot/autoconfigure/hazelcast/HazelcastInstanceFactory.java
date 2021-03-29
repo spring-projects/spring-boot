@@ -36,7 +36,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 1.3.0
- * @deprecated since 2.3.4 in favor of using the Hazelcast API directly
+ * @deprecated since 2.4.3 for removal in 2.6 in favor of using the Hazelcast API directly
  */
 @Deprecated
 public class HazelcastInstanceFactory {
