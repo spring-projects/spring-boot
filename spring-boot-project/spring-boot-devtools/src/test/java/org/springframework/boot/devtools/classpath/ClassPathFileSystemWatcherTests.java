@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import java.util.Map;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
+import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcher;
 import org.springframework.boot.devtools.filewatch.FileSystemWatcherFactory;
 import org.springframework.context.ApplicationListener;
@@ -79,9 +80,9 @@ class ClassPathFileSystemWatcherTests {
 			}
 			Thread.sleep(500);
 		}
-		assertThat(events.size()).isEqualTo(1);
-		assertThat(events.get(0).getChangeSet().iterator().next().getFiles().iterator().next().getFile())
-				.isEqualTo(classFile);
+		assertThat(events).hasSize(1);
+		assertThat(events.get(0).getChangeSet().iterator().next()).extracting(ChangedFile::getFile)
+				.containsExactly(classFile);
 		context.close();
 	}
 
