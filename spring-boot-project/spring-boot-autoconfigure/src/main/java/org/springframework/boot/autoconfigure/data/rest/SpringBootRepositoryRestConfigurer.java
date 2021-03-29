@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -37,10 +36,8 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 @Order(0)
 class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
-	@Autowired(required = false)
 	private final Jackson2ObjectMapperBuilder objectMapperBuilder;
 
-	@Autowired
 	private final RepositoryRestProperties properties;
 
 	SpringBootRepositoryRestConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder,
