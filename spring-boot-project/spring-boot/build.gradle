@@ -117,11 +117,12 @@ dependencies {
 }
 
 task extractTomcatConfigProperties(type: Sync) {
-	dependsOn configurations.tomcatDistribution
 	destinationDir = file(tomcatConfigProperties)
-	from(zipTree(configurations.tomcatDistribution.incoming.files.singleFile).matching {
-		include '**/conf/catalina.properties'
-	}.singleFile)
+	from {
+		zipTree(configurations.tomcatDistribution.incoming.files.singleFile).matching {
+			include '**/conf/catalina.properties'
+		}.singleFile
+	}
 }
 
 sourceSets {

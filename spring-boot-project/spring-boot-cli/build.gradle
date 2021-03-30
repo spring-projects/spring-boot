@@ -106,8 +106,8 @@ task fullJar(type: Jar) {
 	from(sourceSets.main.output) {
 		into "BOOT-INF/classes"
 	}
-	into("") {
-		from(zipTree(configurations.loader.singleFile)) {
+	from {
+		zipTree(configurations.loader.singleFile).matching {
 			exclude "META-INF/LICENSE.txt"
 			exclude "META-INF/NOTICE.txt"
 		}
