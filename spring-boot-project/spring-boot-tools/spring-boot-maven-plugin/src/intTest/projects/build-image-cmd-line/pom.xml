@@ -3,7 +3,7 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>org.springframework.boot.maven.it</groupId>
-	<artifactId>build-image-custom-name</artifactId>
+	<artifactId>build-image</artifactId>
 	<version>0.0.1.BUILD-SNAPSHOT</version>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -21,12 +21,6 @@
 						<goals>
 							<goal>build-image</goal>
 						</goals>
-						<configuration>
-							<image>
-								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
-								<name>example.com/test/build-image:${project.version}</name>
-							</image>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

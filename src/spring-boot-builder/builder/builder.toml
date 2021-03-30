@@ -1,0 +1,18 @@
+# Buildpacks to include in builder
+[[buildpacks]]
+id = "spring-boot/test-info"
+version = "0.0.1"
+uri = "../buildpacks/test-info"
+
+# Order used for detection
+[[order]]
+[[order.group]]
+id = "spring-boot/test-info"
+version = "0.0.1"
+
+# Stack that will be used by the builder
+[stack]
+id = "io.paketo.stacks.tiny"
+build-image = "index.docker.io/paketobuildpacks/build:1.2.2-tiny-cnb"
+run-image = "index.docker.io/paketobuildpacks/run:tiny-cnb"
+run-image-mirrors = ["gcr.io/paketo-buildpacks/run:tiny-cnb"]

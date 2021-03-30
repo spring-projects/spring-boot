@@ -23,6 +23,7 @@
 						</goals>
 						<configuration>
 							<image>
+								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
 								<env>
 									<EMPTY_KEY></EMPTY_KEY>
 								</env>
