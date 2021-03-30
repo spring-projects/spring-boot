@@ -28,7 +28,7 @@ import org.springframework.test.context.ContextConfiguration;
  * @author Phillip Webb
  * @since 1.4.0
  * @see org.springframework.boot.context.config.ConfigFileApplicationListener
- * @deprecated since 2.4 for removal in 2.6 in favor of
+ * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
  * {@link ConfigDataApplicationContextInitializer}
  */
 @Deprecated

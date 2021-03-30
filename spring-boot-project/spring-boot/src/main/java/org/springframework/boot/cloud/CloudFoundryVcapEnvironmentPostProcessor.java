@@ -107,7 +107,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	/**
 	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #CloudFoundryVcapEnvironmentPostProcessor(Log)}
 	 */
 	@Deprecated
@@ -154,7 +154,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	/**
 	 * Event listener used to switch logging.
-	 * @deprecated since 2.4 for removal in 2.6 in favor of only using
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of only using
 	 * {@link EnvironmentPostProcessor} callbacks
 	 */
 	@Deprecated

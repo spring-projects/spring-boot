@@ -183,7 +183,7 @@ public class BootJar extends Jar implements BootArchive {
 	/**
 	 * Configures the jar to be layered using the default layering.
 	 * @since 2.3.0
-	 * @deprecated since 2.4 for removal in 2.6 as layering as now enabled by default.
+	 * @deprecated since 2.4.0 for removal in 2.6.0 as layering as now enabled by default.
 	 */
 	@Deprecated
 	public void layered() {

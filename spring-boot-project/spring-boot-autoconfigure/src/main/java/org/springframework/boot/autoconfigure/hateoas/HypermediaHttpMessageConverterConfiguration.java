@@ -42,7 +42,8 @@ import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandl
  *
  * @author Andy Wilkinson
  * @since 1.3.0
- * @deprecated since 2.5 for removal in 2.7 in favor of a {@link HalConfiguration} bean
+ * @deprecated since 2.5.0 for removal in 2.7.0 in favor of a {@link HalConfiguration}
+ * bean
  */
 @Deprecated
 @Configuration(proxyBeanMethods = false)

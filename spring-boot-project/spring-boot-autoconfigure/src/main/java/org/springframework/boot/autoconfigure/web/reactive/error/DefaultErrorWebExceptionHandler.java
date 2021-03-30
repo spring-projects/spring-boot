@@ -97,7 +97,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param resourceProperties the resources configuration properties
 	 * @param errorProperties the error configuration properties
 	 * @param applicationContext the current application context
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #DefaultErrorWebExceptionHandler(ErrorAttributes, Resources, ErrorProperties, ApplicationContext)}
 	 */
 	@Deprecated

@@ -546,7 +546,7 @@ public class FlywayProperties {
 	/**
 	 * Return if a new datasource is being created.
 	 * @return {@code true} if a new datasource is created
-	 * @deprecated since 2.5 for removal in 2.7 in favor of directly checking user and
+	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of directly checking user and
 	 * url.
 	 */
 	@Deprecated

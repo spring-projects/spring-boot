@@ -22,7 +22,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
  * {@link ConfigurationProperties @ConfigurationProperties} for the Netty engine.
  * <p>
  * These properties apply globally to the Netty library, used as a client or a server.
- * 
+ *
  * @author Brian Clozel
  * @since 2.5.0
  */

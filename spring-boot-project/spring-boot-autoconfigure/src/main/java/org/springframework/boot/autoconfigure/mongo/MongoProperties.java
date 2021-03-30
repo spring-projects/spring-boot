@@ -198,7 +198,8 @@ public class MongoProperties {
 	/**
 	 * Return the GridFS database name.
 	 * @return the GridFS database name
-	 * @deprecated since 2.4 for removal in 2.6 in favor of {@link Gridfs#getDatabase()}
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+	 * {@link Gridfs#getDatabase()}
 	 */
 	@DeprecatedConfigurationProperty(replacement = "spring.data.mongodb.gridfs.database")
 	@Deprecated

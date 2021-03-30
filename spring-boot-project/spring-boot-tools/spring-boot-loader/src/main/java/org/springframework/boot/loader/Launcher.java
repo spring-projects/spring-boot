@@ -63,7 +63,7 @@ public abstract class Launcher {
 	 * @param archives the archives
 	 * @return the classloader
 	 * @throws Exception if the classloader cannot be created
-	 * @deprecated since 2.3 for removal in 2.5 in favor of
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
 	 * {@link #createClassLoader(Iterator)}
 	 */
 	@Deprecated
@@ -140,7 +140,7 @@ public abstract class Launcher {
 	 * Returns the archives that will be used to construct the class path.
 	 * @return the class path archives
 	 * @throws Exception if the class path archives cannot be obtained
-	 * @deprecated since 2.3 for removal in 2.5 in favor of implementing
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of implementing
 	 * {@link #getClassPathArchivesIterator()}.
 	 */
 	@Deprecated

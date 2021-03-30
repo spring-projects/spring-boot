@@ -47,7 +47,7 @@ public interface BuildLog {
 	 * @param request the build request
 	 * @param imageReference the builder image reference
 	 * @return a consumer for progress update events
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #pullingImage(ImageReference, ImageType)}
 	 */
 	@Deprecated
@@ -57,7 +57,7 @@ public interface BuildLog {
 	 * Log that the builder image has been pulled.
 	 * @param request the build request
 	 * @param image the builder image that was pulled
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #pulledImage(Image, ImageType)}
 	 */
 	@Deprecated
@@ -68,7 +68,7 @@ public interface BuildLog {
 	 * @param request the build request
 	 * @param imageReference the run image reference
 	 * @return a consumer for progress update events
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #pullingImage(ImageReference, ImageType)}
 	 */
 	@Deprecated
@@ -78,7 +78,7 @@ public interface BuildLog {
 	 * Log that a run image has been pulled.
 	 * @param request the build request
 	 * @param image the run image that was pulled
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #pulledImage(Image, ImageType)}
 	 */
 	@Deprecated

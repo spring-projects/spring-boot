@@ -250,7 +250,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * Return if filters should be initialized eagerly.
 	 * @return {@code true} if filters are initialized eagerly, otherwise {@code false}.
 	 * @since 2.0.0
-	 * @deprecated since 2.4 for removal in 2.6 in favor of {@link #isEagerFilterInit()}
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+	 * {@link #isEagerFilterInit()}
 	 */
 	@Deprecated
 	public boolean isEagerInitFilters() {
@@ -262,7 +263,8 @@ public class UndertowServletWebServerFactory extends AbstractServletWebServerFac
 	 * @param eagerInitFilters {@code true} if filters are initialized eagerly, otherwise
 	 * {@code false}.
 	 * @since 2.0.0
-	 * @deprecated since 2.4 for removal in 2.6 in favor of {@link #isEagerFilterInit()}
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+	 * {@link #isEagerFilterInit()}
 	 */
 	@Deprecated
 	public void setEagerInitFilters(boolean eagerInitFilters) {
