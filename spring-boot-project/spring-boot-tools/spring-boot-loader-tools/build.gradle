@@ -42,6 +42,7 @@ sourceSets {
 }
 
 task reproducibleLoaderJar(type: Jar) {
+	dependsOn configurations.loader
 	from {
 		zipTree(configurations.loader.incoming.files.singleFile).matching {
 			exclude "META-INF/LICENSE.txt"
@@ -55,6 +56,7 @@ task reproducibleLoaderJar(type: Jar) {
 }
 
 task reproducibleJarModeLayerToolsJar(type: Jar) {
+	dependsOn configurations.jarmode
 	from {
 		zipTree(configurations.jarmode.incoming.files.singleFile).matching {
 			exclude "META-INF/LICENSE.txt"
