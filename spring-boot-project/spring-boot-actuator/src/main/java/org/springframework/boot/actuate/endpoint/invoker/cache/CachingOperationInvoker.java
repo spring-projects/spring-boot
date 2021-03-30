@@ -110,7 +110,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 	 * @param timeToLive the maximum time in milliseconds that a response can be cached
 	 * @return a caching version of the invoker or the original instance if caching is not
 	 * required
-	 * @deprecated as of 2.3 to make package-private in 2.4
+	 * @deprecated since 2.3 for removal in 2.5
 	 */
 	@Deprecated
 	public static OperationInvoker apply(OperationInvoker invoker, long timeToLive) {
