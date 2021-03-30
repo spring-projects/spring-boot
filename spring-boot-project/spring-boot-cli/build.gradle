@@ -99,6 +99,7 @@ test {
 }
 
 task fullJar(type: Jar) {
+	dependsOn configurations.loader
 	classifier = "full"
 	entryCompression = "stored"
 	from(configurations.runtimeClasspath) {
