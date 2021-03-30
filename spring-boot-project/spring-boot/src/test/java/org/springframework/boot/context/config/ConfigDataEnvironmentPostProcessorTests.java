@@ -48,6 +48,7 @@ import static org.mockito.Mockito.verifyNoInteractions;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nguyen Bao Sach
  */
 @ExtendWith(MockitoExtension.class)
 class ConfigDataEnvironmentPostProcessorTests {
@@ -82,6 +83,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
 		verify(this.configDataEnvironment).processAndApply();
 		assertThat(this.resourceLoaderCaptor.getValue()).isInstanceOf(DefaultResourceLoader.class);
+		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
 
 	@Test
@@ -93,6 +95,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
 		verify(this.configDataEnvironment).processAndApply();
 		assertThat(this.resourceLoaderCaptor.getValue()).isSameAs(resourceLoader);
+		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
 
 	@Test
@@ -103,6 +106,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 		verify(this.postProcessor).getConfigDataEnvironment(any(), any(), this.additionalProfilesCaptor.capture());
 		verify(this.configDataEnvironment).processAndApply();
 		assertThat(this.additionalProfilesCaptor.getValue()).containsExactly("dev");
+		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
 
 	@Test
@@ -115,6 +119,21 @@ class ConfigDataEnvironmentPostProcessorTests {
 		this.postProcessor.postProcessEnvironment(this.environment, this.application);
 		verifyNoInteractions(this.configDataEnvironment);
 		verify(legacyListener).addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
+		assertThat(this.environment.getActiveProfiles()).isEmpty();
+	}
+
+	@Test
+	void postProcessEnvironmentWhenHasAdditionalProfilesViaProgrammaticallySettingAndUseLegacyProcessing() {
+		this.application.setAdditionalProfiles("dev");
+		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
+				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
+		willThrow(new UseLegacyConfigProcessingException(null)).given(this.postProcessor)
+				.getConfigDataEnvironment(any(), any(), any());
+		willReturn(legacyListener).given(this.postProcessor).getLegacyListener();
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		verifyNoInteractions(this.configDataEnvironment);
+		verify(legacyListener).addPropertySources(eq(this.environment), any(DefaultResourceLoader.class));
+		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
 	}
 
 	@Test
