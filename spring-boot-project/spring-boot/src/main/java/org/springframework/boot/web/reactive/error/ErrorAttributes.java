@@ -41,7 +41,7 @@ public interface ErrorAttributes {
 	 * @param request the source request
 	 * @param includeStackTrace if stack trace attribute should be included
 	 * @return a map of error attributes
-	 * @deprecated since 2.3 for removal in 2.5 in favor of
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
 	 * {@link #getErrorAttributes(ServerRequest, ErrorAttributeOptions)}
 	 */
 	@Deprecated

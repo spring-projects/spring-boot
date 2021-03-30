@@ -164,7 +164,7 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for non-web
 	 * environments.
-	 * @deprecated since 2.4 for removal in 2.6 in favor of using a
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using a
 	 * {@link ApplicationContextFactory}
 	 */
 	@Deprecated
@@ -174,7 +174,7 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for web
 	 * environments.
-	 * @deprecated since 2.4 for removal in 2.6 in favor of using an
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using an
 	 * {@link ApplicationContextFactory}
 	 */
 	@Deprecated
@@ -184,7 +184,7 @@ public class SpringApplication {
 	/**
 	 * The class name of application context that will be used by default for reactive web
 	 * environments.
-	 * @deprecated since 2.4 for removal in 2.6 in favor of using an
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of using an
 	 * {@link ApplicationContextFactory}
 	 */
 	@Deprecated
@@ -765,7 +765,7 @@ public class SpringApplication {
 	/**
 	 * Refresh the underlying {@link ApplicationContext}.
 	 * @param applicationContext the application context to refresh
-	 * @deprecated since 2.3 for removal in 2.5 in favor of
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
 	 * {@link #refresh(ConfigurableApplicationContext)}
 	 */
 	@Deprecated
@@ -1221,7 +1221,7 @@ public class SpringApplication {
 	 * applications or {@link AnnotationConfigApplicationContext} for non web based
 	 * applications.
 	 * @param applicationContextClass the context class to set
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #setApplicationContextFactory(ApplicationContextFactory)}
 	 */
 	@Deprecated

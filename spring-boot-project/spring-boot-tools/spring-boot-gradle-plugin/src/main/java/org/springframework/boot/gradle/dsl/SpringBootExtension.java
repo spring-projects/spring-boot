@@ -68,7 +68,7 @@ public class SpringBootExtension {
 	/**
 	 * Returns the fully-qualified main class name of the application.
 	 * @return the fully-qualified name of the application's main class
-	 * @deprecated since 2.4 for removal in 2.6 in favor of {@link #getMainClass()}.
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of {@link #getMainClass()}.
 	 */
 	@Deprecated
 	@ReplacedBy("mainClass")
@@ -79,7 +79,7 @@ public class SpringBootExtension {
 	/**
 	 * Sets the fully-qualified main class name of the application.
 	 * @param mainClassName the fully-qualified name of the application's main class
-	 * @deprecated since 2.4 for removal in 2.6 in favor of {@link #getMainClass} and
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of {@link #getMainClass} and
 	 * {@link Property#set(Object)}
 	 */
 	@Deprecated

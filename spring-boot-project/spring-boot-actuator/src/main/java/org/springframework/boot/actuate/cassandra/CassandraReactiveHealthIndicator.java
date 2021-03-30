@@ -31,7 +31,7 @@ import org.springframework.util.Assert;
  *
  * @author Artsiom Yudovin
  * @since 2.1.0
- * @deprecated since 2.4 for removal in 2.6 in favor of
+ * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
  * {@link CassandraDriverHealthIndicator}
  */
 @Deprecated

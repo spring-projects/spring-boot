@@ -38,7 +38,7 @@ public class ReactiveMongoClientFactory extends MongoClientFactorySupport<MongoC
 	 * @param properties configuration properties
 	 * @param environment a Spring {@link Environment} containing configuration properties
 	 * @param builderCustomizers a list of configuration settings customizers
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #ReactiveMongoClientFactory(List)}
 	 */
 	@Deprecated

@@ -50,7 +50,7 @@ public class WebConversionService extends DefaultFormattingConversionService {
 	 * Create a new WebConversionService that configures formatters with the provided date
 	 * format, or register the default ones if no custom format is provided.
 	 * @param dateFormat the custom date format to use for date conversions
-	 * @deprecated since 2.3 for removal in 2.5 in favor of
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
 	 * {@link #WebConversionService(DateTimeFormatters)}
 	 */
 	@Deprecated

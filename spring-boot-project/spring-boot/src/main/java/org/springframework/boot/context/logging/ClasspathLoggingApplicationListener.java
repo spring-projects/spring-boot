@@ -38,7 +38,7 @@ import org.springframework.core.ResolvableType;
  *
  * @author Andy Wilkinson
  * @since 2.0.0
- * @deprecated since 2.4 for removal in 2.6 with no direct replacement.
+ * @deprecated since 2.4.0 for removal in 2.6.0 with no direct replacement.
  * {@link FailureAnalysis} is now the preferred approach for diagnosing and reporting
  * startup failures.
  */

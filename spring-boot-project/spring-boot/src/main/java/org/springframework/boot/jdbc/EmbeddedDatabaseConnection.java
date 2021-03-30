@@ -63,7 +63,7 @@ public enum EmbeddedDatabaseConnection {
 
 	/**
 	 * HSQL Database Connection.
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link EmbeddedDatabaseConnection#HSQLDB}.
 	 */
 	@Deprecated
@@ -141,7 +141,7 @@ public enum EmbeddedDatabaseConnection {
 	 * database type.
 	 * @param driverClass the driver class
 	 * @return true if the driver class is one of the embedded types
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #isEmbedded(String, String)}
 	 */
 	@Deprecated

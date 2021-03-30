@@ -70,7 +70,7 @@ public class ArtifactsLibraries implements Libraries {
 	 * @param artifacts the artifacts to represent as libraries
 	 * @param unpacks artifacts that should be unpacked on launch
 	 * @param log the log
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #ArtifactsLibraries(Set, Collection, Collection, Log)}
 	 */
 	@Deprecated

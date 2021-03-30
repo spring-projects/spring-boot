@@ -31,7 +31,8 @@ import org.springframework.boot.context.properties.DeprecatedConfigurationProper
  * @author Venil Noronha
  * @author Kristine Jetzke
  * @since 1.1.0
- * @deprecated since 2.4 for removal in 2.6 in favor of {@link WebProperties.Resources}
+ * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+ * {@link WebProperties.Resources}
  */
 @Deprecated
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)

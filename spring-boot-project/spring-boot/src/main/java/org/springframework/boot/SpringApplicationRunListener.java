@@ -47,7 +47,7 @@ public interface SpringApplicationRunListener {
 	/**
 	 * Called immediately when the run method has first started. Can be used for very
 	 * early initialization.
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #starting(ConfigurableBootstrapContext)}
 	 */
 	@Deprecated
@@ -69,7 +69,7 @@ public interface SpringApplicationRunListener {
 	 * Called once the environment has been prepared, but before the
 	 * {@link ApplicationContext} has been created.
 	 * @param environment the environment
-	 * @deprecated since 2.4 for removal in 2.6 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #environmentPrepared(ConfigurableBootstrapContext, ConfigurableEnvironment)}
 	 */
 	@Deprecated
