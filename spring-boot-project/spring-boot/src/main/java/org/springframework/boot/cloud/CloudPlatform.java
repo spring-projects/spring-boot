@@ -46,6 +46,23 @@ public enum CloudPlatform {
 	},
 
 	/**
+	 * Azure App Service platform.
+	 */
+	AZURE_APP_SERVICE {
+
+		private static final String WEBSITE_SITE_NAME = "WEBSITE_SITE_NAME";
+
+		private static final String WEBSITES_ENABLE_APP_SERVICE_STORAGE = "WEBSITES_ENABLE_APP_SERVICE_STORAGE";
+
+		@Override
+		public boolean isDetected(Environment environment) {
+			return environment.containsProperty(WEBSITE_SITE_NAME)
+					&& environment.containsProperty(WEBSITES_ENABLE_APP_SERVICE_STORAGE);
+		}
+
+	},
+
+	/**
 	 * Cloud Foundry platform.
 	 */
 	CLOUD_FOUNDRY {
