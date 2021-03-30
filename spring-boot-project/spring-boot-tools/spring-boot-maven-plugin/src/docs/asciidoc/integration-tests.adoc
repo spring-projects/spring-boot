@@ -36,6 +36,25 @@ If you need to configure the JMX port, see <<integration-tests-example-jmx-port,
 
 You could also configure a more advanced setup to skip the integration tests when a specific property has been set, see <<integration-tests-example-skip,the dedicated example>>.
 
+
+
+[[integration-tests-no-starter-parent]]
+=== Using Failsafe Without Spring Boot's Parent POM
+Spring Boot's Parent POM, `spring-boot-starter-parent`, configures Failsafe's `<classesDirectory>` to be `${project.build.outputDirectory}`.
+Without this configuration, which causes Failsafe to use the compiled classes rather than the repackaged jar, Failsafe cannot load your application's classes.
+If you are not using the parent POM, you should configure Failsafe in the same way, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<plugin>
+	<groupId>org.apache.maven.plugins</groupId>
+	<artifactId>maven-failsafe-plugin</artifactId>
+	<configuration>
+		<classesDirectory>${project.build.outputDirectory}</classesDirectory>
+	</configuration>
+</plugin>
+----
+
 include::goals/start.adoc[leveloffset=+1]
 
 include::goals/stop.adoc[leveloffset=+1]
