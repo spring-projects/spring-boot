@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Nguyen Bao Sach
  */
 @ExtendWith(UseLegacyProcessing.class)
 class ConfigFileApplicationListenerLegacyReproTests {
@@ -165,6 +166,17 @@ class ConfigFileApplicationListenerLegacyReproTests {
 		String configName = "--spring.config.name=activeprofilerepro-without-override";
 		this.context = application.run(configName, "--spring.profiles.active=C,A");
 		assertVersionProperty(this.context, "A", "C", "A");
+	}
+
+	@Test
+	void additionalProfilesViaProgrammaticallySetting() {
+		// gh-25704
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("dev");
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("dev"))).isTrue();
+		assertThat(this.context.getEnvironment().getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
 	}
 
 	private void assertVersionProperty(ConfigurableApplicationContext context, String expectedVersion,
