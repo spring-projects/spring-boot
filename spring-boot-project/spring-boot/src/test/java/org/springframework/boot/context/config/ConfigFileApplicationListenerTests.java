@@ -70,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Eddú Meléndez
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Nguyen Bao Sach
  */
 @Deprecated
 @ExtendWith({ OutputCaptureExtension.class, UseLegacyProcessing.class })
@@ -1148,6 +1149,46 @@ class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getProperty("fourth.property")).isNull();
+	}
+
+	@Test
+	void additionalProfilesCanBeIncludedFromProgrammaticallySetting() {
+		// gh-25704
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("dev");
+		this.context = application.run();
+		// Active profile should win over default
+		assertThat(this.context.getEnvironment().getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
+	}
+
+	@Test
+	void twoAdditionalProfilesCanBeIncludedFromProgrammaticallySetting() {
+		// gh-25704
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("other", "dev");
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
+	}
+
+	@Test
+	void includeProfilesOrder() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		this.context = application.run("--spring.profiles.active=bar,spam", "--spring.profiles.include=foo");
+		// Before Boot 2.4 included profiles should always be first
+		assertThat(this.context.getEnvironment().getActiveProfiles()).containsExactly("foo", "bar", "spam");
+	}
+
+	@Test
+	void addProfilesOrder() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("foo");
+		this.context = application.run("--spring.profiles.active=bar,spam");
+		// Before Boot 2.4 additional profiles should always be first
+		assertThat(this.context.getEnvironment().getActiveProfiles()).containsExactly("foo", "bar", "spam");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {

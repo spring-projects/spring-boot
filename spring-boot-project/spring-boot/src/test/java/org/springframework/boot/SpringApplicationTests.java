@@ -147,6 +147,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Brian Clozel
  * @author Artsiom Yudovin
  * @author Marten Deinum
+ * @author Nguyen Bao Sach
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -601,6 +602,17 @@ class SpringApplicationTests {
 		application.setEnvironment(environment);
 		this.context = application.run("--spring.profiles.active=bar,spam");
 		// Since Boot 2.4 additional should always be last
+		assertThat(environment.getActiveProfiles()).containsExactly("bar", "spam", "foo");
+	}
+
+	@Test
+	void includeProfilesOrder() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		ConfigurableEnvironment environment = new StandardEnvironment();
+		application.setEnvironment(environment);
+		this.context = application.run("--spring.profiles.active=bar,spam", "--spring.profiles.include=foo");
+		// Since Boot 2.4 included profiles should always be last
 		assertThat(environment.getActiveProfiles()).containsExactly("bar", "spam", "foo");
 	}
 
