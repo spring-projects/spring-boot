@@ -39,7 +39,7 @@ public class BatchProperties {
 	/**
 	 * Return the datasource schema.
 	 * @return the schema
-	 * @deprecated as of 2.5 for removal in 2.7 in favor of {@link Jdbc#getSchema()}
+	 * @deprecated since 2.5 for removal in 2.7 in favor of {@link Jdbc#getSchema()}
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.schema")
@@ -55,7 +55,7 @@ public class BatchProperties {
 	/**
 	 * Return the table prefix.
 	 * @return the table prefix
-	 * @deprecated as of 2.5 for removal in 2.7 in favor of {@link Jdbc#getTablePrefix()}
+	 * @deprecated since 2.5 for removal in 2.7 in favor of {@link Jdbc#getTablePrefix()}
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.table-prefix")
@@ -71,7 +71,7 @@ public class BatchProperties {
 	/**
 	 * Return whether the schema should be initialized.
 	 * @return the initialization mode
-	 * @deprecated as of 2.5 for removal in 2.7 in favor of
+	 * @deprecated since 2.5 for removal in 2.7 in favor of
 	 * {@link Jdbc#getInitializeSchema()}
 	 */
 	@Deprecated
