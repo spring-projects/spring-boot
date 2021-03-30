@@ -25,7 +25,7 @@ import org.elasticsearch.client.RestClientBuilder;
  *
  * @author Brian Clozel
  * @since 2.1.0
- * @deprecated as of 2.3.1 for removal in 2.5 in favor of
+ * @deprecated since 2.3.1 for removal in 2.5 in favor of
  * {@link org.springframework.boot.autoconfigure.elasticsearch.RestClientBuilderCustomizer}
  */
 @FunctionalInterface
