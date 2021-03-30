@@ -50,7 +50,14 @@ class CloudPlatformTests {
 		Environment environment = new MockEnvironment();
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
+	}
 
+	@Test
+	void getActiveWhenHasDynoShouldReturnAzure() {
+		Environment environment = new MockEnvironment().withProperty("WEBSITE_SITE_NAME", "---");
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isEqualTo(CloudPlatform.AZURE);
+		assertThat(platform.isActive(environment)).isTrue();
 	}
 
 	@Test

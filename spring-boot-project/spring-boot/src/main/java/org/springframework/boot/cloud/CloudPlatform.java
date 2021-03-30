@@ -46,6 +46,18 @@ public enum CloudPlatform {
 	},
 
 	/**
+	 * Azure App Service platform.
+	 */
+	AZURE {
+
+		@Override
+		public boolean isDetected(Environment environment) {
+			return environment.containsProperty("WEBSITE_SITE_NAME");
+		}
+
+	},
+
+	/**
 	 * Cloud Foundry platform.
 	 */
 	CLOUD_FOUNDRY {
