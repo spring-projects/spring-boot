@@ -8,6 +8,6 @@ targetCompatibility = '1.8'
 
 bootBuildImage {
 	imageName = "example/test-image-custom"
-	builder = "paketobuildpacks/builder:full"
-	runImage = "paketobuildpacks/run:full-cnb"
+	builder = "springci/spring-boot-cnb-builder:0.0.1"
+	runImage = "paketobuildpacks/run:tiny-cnb"
 }
