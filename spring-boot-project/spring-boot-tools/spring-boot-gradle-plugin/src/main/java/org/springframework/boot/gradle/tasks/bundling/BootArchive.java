@@ -118,8 +118,8 @@ public interface BootArchive extends Task {
 	 * {@code false}.
 	 * @return {@code true} if the Devtools jar should be excluded, or {@code false} if
 	 * not
-	 * @deprecated since 2.3 for removal in 2.5 in favor of configuring a classpath that
-	 * does not include development-only dependencies
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of configuring a classpath
+	 * that does not include development-only dependencies
 	 */
 	@Input
 	@Deprecated
@@ -129,8 +129,8 @@ public interface BootArchive extends Task {
 	 * Sets whether or not the Devtools jar should be excluded.
 	 * @param excludeDevtools {@code true} if the Devtools jar should be excluded, or
 	 * {@code false} if not
-	 * @deprecated since 2.3 for removal in 2.5 in favor of configuring a classpath that
-	 * does not include development-only dependencies
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of configuring a classpath
+	 * that does not include development-only dependencies
 	 */
 	@Deprecated
 	void setExcludeDevtools(boolean excludeDevtools);

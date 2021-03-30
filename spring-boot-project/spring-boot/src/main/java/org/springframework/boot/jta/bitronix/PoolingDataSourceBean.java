@@ -42,7 +42,7 @@ import org.springframework.util.StringUtils;
  * @author Josh Long
  * @author Andy Wilkinson
  * @since 1.2.0
- * @deprecated since 2.3 for removal in 2.5 as the Bitronix project is no longer being
+ * @deprecated since 2.3.0 for removal in 2.5.0 as the Bitronix project is no longer being
  * maintained
  */
 @Deprecated

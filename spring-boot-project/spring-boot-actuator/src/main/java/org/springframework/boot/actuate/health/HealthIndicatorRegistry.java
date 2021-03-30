@@ -28,7 +28,7 @@ import java.util.Map;
  * @author Stephane Nicoll
  * @since 2.1.0
  * @see HealthEndpoint
- * @deprecated since 2.2 for removal in 2.4 in favor of a
+ * @deprecated since 2.2.0 for removal in 2.4.0 in favor of a
  * {@link HealthContributorRegistry}
  */
 @Deprecated

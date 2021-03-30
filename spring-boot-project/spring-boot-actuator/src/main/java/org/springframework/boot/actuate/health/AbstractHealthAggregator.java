@@ -28,7 +28,7 @@ import java.util.stream.Collectors;
  * @author Christian Dupuis
  * @author Vedran Pavic
  * @since 1.1.0
- * @deprecated since 2.2 for removal in 2.4 as {@link HealthAggregator} has been
+ * @deprecated since 2.2.0 for removal in 2.4.0 as {@link HealthAggregator} has been
  * deprecated
  */
 @Deprecated

@@ -52,7 +52,8 @@ public interface Layout {
 	 * @param scope the scope of the library
 	 * @return the destination relative to the root of the archive (should end with '/')
 	 * or {@code null} if the library should not be included.
-	 * @deprecated since 2.3 for removal in 2.5 in favor of {@link #getLibraryLocation}
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
+	 * {@link #getLibraryLocation}
 	 */
 	@Deprecated
 	String getLibraryDestination(String libraryName, LibraryScope scope);

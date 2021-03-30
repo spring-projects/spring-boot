@@ -22,7 +22,7 @@ package org.springframework.boot.actuate.health;
  * @author Stephane Nicoll
  * @author Phillip Webb
  * @since 2.0.0
- * @deprecated since 2.2 for removal in 2.4 in favor of
+ * @deprecated since 2.2.0 for removal in 2.4.0 in favor of
  * {@link HealthContributorNameFactory}
  */
 @Deprecated

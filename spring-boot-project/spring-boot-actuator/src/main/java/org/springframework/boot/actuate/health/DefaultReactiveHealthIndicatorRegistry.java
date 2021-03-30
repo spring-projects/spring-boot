@@ -28,7 +28,8 @@ import org.springframework.util.Assert;
  * @author Vedran Pavic
  * @author Stephane Nicoll
  * @since 2.1.0
- * @deprecated since 2.2 for removal in 2.4 in favor of {@link DefaultContributorRegistry}
+ * @deprecated since 2.2.0 for removal in 2.4.0 in favor of
+ * {@link DefaultContributorRegistry}
  */
 @Deprecated
 public class DefaultReactiveHealthIndicatorRegistry implements ReactiveHealthIndicatorRegistry {

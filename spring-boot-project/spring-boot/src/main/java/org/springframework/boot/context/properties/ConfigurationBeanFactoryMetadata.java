@@ -38,7 +38,7 @@ import org.springframework.core.annotation.AnnotationUtils;
  *
  * @author Dave Syer
  * @since 1.1.0
- * @deprecated since 2.2 for removal in 2.4 in favor of
+ * @deprecated since 2.2.0 for removal in 2.4.0 in favor of
  * {@link ConfigurationPropertiesBean}
  */
 @Deprecated

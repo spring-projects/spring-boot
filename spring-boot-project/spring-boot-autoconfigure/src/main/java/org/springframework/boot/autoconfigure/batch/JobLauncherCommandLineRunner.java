@@ -30,7 +30,7 @@ import org.springframework.boot.ApplicationRunner;
  * @author Jean-Pierre Bergamin
  * @author Mahmoud Ben Hassine
  * @since 1.0.0
- * @deprecated since 2.3 for removal in 2.5 in favor of
+ * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
  * {@link JobLauncherApplicationRunner}
  */
 @Deprecated

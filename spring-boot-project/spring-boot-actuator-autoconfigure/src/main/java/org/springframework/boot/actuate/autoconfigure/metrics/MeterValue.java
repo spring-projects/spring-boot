@@ -97,7 +97,7 @@ public final class MeterValue {
 	 * Return a new {@link MeterValue} instance for the given long value.
 	 * @param value the source value
 	 * @return a {@link MeterValue} instance
-	 * @deprecated since 2.3 for removal in 2.5 in favor of {@link #valueOf(double)}
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of {@link #valueOf(double)}
 	 */
 	@Deprecated
 	public static MeterValue valueOf(long value) {

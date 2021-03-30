@@ -81,7 +81,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	/**
 	 * Create a new {@link DefaultErrorAttributes} instance.
 	 * @param includeException whether to include the "exception" attribute
-	 * @deprecated since 2.3 for removal in 2.5 in favor of
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
 	 * {@link ErrorAttributeOptions#including(Include...)}
 	 */
 	@Deprecated

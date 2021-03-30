@@ -26,7 +26,7 @@ import java.util.Map;
  * @author Phillip Webb
  * @author Christian Dupuis
  * @since 1.1.0
- * @deprecated since 2.2 for removal in 2.4 in favor of a
+ * @deprecated since 2.2.0 for removal in 2.4.0 in favor of a
  * {@link CompositeHealthContributor}
  */
 @Deprecated

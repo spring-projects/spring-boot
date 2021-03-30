@@ -43,7 +43,7 @@ public class MongoClientFactory extends MongoClientFactorySupport<MongoClient> {
 	 * Construct a factory for creating a blocking {@link MongoClient}.
 	 * @param properties configuration properties
 	 * @param environment a Spring {@link Environment} containing configuration properties
-	 * @deprecated since 2.3 for removal in 2.5 in favor of
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
 	 * {@link #MongoClientFactory(MongoProperties, Environment, List)}
 	 */
 	@Deprecated
