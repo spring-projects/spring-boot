@@ -163,7 +163,7 @@ In the following example, two arguments are available: `property1` and `property
 ==== Specify Active Profiles
 The active profiles to use for a particular application can be specified using the `profiles` argument.
 
-The following configuration enables the `foo` and `bar` profiles:
+The following configuration enables the `local` and `dev` profiles:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
@@ -174,7 +174,7 @@ The profiles to enable can be specified on the command line as well, make sure t
 
 [indent=0]
 ----
-	$ mvn spring-boot:run -Dspring-boot.run.profiles=foo,bar
+	$ mvn spring-boot:run -Dspring-boot.run.profiles=local,dev
 ----
 
 

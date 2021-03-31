@@ -8,8 +8,8 @@
 				<artifactId>spring-boot-maven-plugin</artifactId>
 				<configuration>
 					<profiles>
-						<profile>foo</profile>
-						<profile>bar</profile>
+						<profile>local</profile>
+						<profile>dev</profile>
 					</profiles>
 				</configuration>
 			</plugin>

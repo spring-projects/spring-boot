@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<artifactId>integration-tests</artifactId>
+	<build>
+		<plugins>
+			<!-- tag::failsafe[] -->
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+					<classesDirectory>${project.build.outputDirectory}</classesDirectory>
+				</configuration>
+			</plugin>
+			<!-- end::failsafe[] -->
+		</plugins>
+	</build>
+</project>
+

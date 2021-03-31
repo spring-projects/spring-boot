@@ -9,8 +9,8 @@
 				<configuration>
 					<excludes>
 						<exclude>
-							<groupId>com.foo</groupId>
-							<artifactId>bar</artifactId>
+							<groupId>com.example</groupId>
+							<artifactId>module1</artifactId>
 						</exclude>
 					</excludes>
 				</configuration>

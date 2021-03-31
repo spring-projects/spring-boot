@@ -169,7 +169,7 @@ Again, if you are using `spring-boot-starter-parent`, this can be simplified as 
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-include::../maven/packaging/classified-artifact-pom.xml[tags=classified-artifact]
+include::../maven/packaging/jar-plugin-first-pom.xml[tags=jar-plugin-first]
 ----
 
 
@@ -231,14 +231,14 @@ There are two ways one can exclude a dependency from being packaged/used at runt
 * Exclude a specific artifact identified by `groupId` and `artifactId`, optionally with a `classifier` if needed.
 * Exclude any artifact belonging to a given `groupId`.
 
-The following example excludes `com.foo:bar`, and only that artifact:
+The following example excludes `com.example:module1`, and only that artifact:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
 include::../maven/packaging/exclude-artifact-pom.xml[tags=exclude-artifact]
 ----
 
-This example excludes any artifact belonging to the `com.foo` group:
+This example excludes any artifact belonging to the `com.example` group:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----

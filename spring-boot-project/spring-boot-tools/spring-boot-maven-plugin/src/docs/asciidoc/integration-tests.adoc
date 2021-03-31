@@ -23,15 +23,9 @@ Spring Boot's Parent POM, `spring-boot-starter-parent`, configures Failsafe's `<
 Without this configuration, which causes Failsafe to use the compiled classes rather than the repackaged jar, Failsafe cannot load your application's classes.
 If you are not using the parent POM, you should configure Failsafe in the same way, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
-<plugin>
-	<groupId>org.apache.maven.plugins</groupId>
-	<artifactId>maven-failsafe-plugin</artifactId>
-	<configuration>
-		<classesDirectory>${project.build.outputDirectory}</classesDirectory>
-	</configuration>
-</plugin>
+include::../maven/integration-tests/failsafe-pom.xml[tags=failsafe]
 ----
 
 include::goals/start.adoc[leveloffset=+1]

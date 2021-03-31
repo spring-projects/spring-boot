@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- tag::repackage[] -->
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<artifactId>packaging</artifactId>
 	<!-- ... -->
+	<!-- tag::repackage[] -->
 	<build>
 		<plugins>
 			<plugin>
@@ -19,6 +19,5 @@
 			</plugin>
 		</plugins>
 	</build>
+	<!-- end::repackage[] -->
 </project>
-<!-- end::repackage[] -->
-

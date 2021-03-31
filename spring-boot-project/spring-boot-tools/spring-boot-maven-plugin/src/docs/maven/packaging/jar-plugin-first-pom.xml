@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- tag::classified-artifact[] -->
+<!-- tag::jar-plugin-first[] -->
 <project>
 	<build>
 		<plugins>
@@ -30,5 +30,5 @@
 		</plugins>
 	</build>
 </project>
-<!-- end::classified-artifact[] -->
+<!-- end::jar-plugin-first[] -->
 
