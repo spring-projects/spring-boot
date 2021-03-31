@@ -54,7 +54,10 @@ class CloudPlatformTests {
 
 	@Test
 	void getActiveWhenHasWebsiteSiteNameShouldReturnAzureAppService() {
-		Environment environment = new MockEnvironment().withProperty("WEBSITE_SITE_NAME", "---");
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("WEBSITE_SITE_NAME", "---");
+		envVars.put("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "false");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.AZURE_APP_SERVICE);
 		assertThat(platform.isActive(environment)).isTrue();

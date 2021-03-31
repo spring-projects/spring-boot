@@ -17,11 +17,7 @@
 package org.springframework.boot.cloud;
 
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.core.env.ConfigurableEnvironment;
-import org.springframework.core.env.EnumerablePropertySource;
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.PropertySource;
-import org.springframework.core.env.StandardEnvironment;
+import org.springframework.core.env.*;
 
 /**
  * Simple detection for well known cloud platforms. Detection can be forced using the
@@ -50,9 +46,14 @@ public enum CloudPlatform {
 	 */
 	AZURE_APP_SERVICE {
 
+		private static final String WEBSITE_SITE_NAME = "WEBSITE_SITE_NAME";
+
+		private static final String WEBSITES_ENABLE_APP_SERVICE_STORAGE = "WEBSITES_ENABLE_APP_SERVICE_STORAGE";
+
 		@Override
 		public boolean isDetected(Environment environment) {
-			return environment.containsProperty("WEBSITE_SITE_NAME");
+			return environment.containsProperty(WEBSITE_SITE_NAME) &&
+					environment.containsProperty(WEBSITES_ENABLE_APP_SERVICE_STORAGE);
 		}
 
 	},
