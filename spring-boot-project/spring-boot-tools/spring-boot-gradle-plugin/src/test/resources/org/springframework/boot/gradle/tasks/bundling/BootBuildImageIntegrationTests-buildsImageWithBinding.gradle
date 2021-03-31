@@ -7,5 +7,6 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 bootBuildImage {
+	builder = "springci/spring-boot-cnb-builder:0.0.1"
 	bindings = [ "${projectDir}/bindings/ca-certificates:/platform/bindings/certificates" ]
 }

@@ -23,8 +23,8 @@
 						</goals>
 						<configuration>
 							<image>
-								<builder>paketobuildpacks/builder:full</builder>
-								<runImage>paketobuildpacks/run:full-cnb</runImage>
+								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
+								<runImage>paketobuildpacks/run:tiny-cnb</runImage>
 							</image>
 						</configuration>
 					</execution>

@@ -23,6 +23,7 @@
 						</goals>
 						<configuration>
 							<image>
+								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
 								<buildpacks>
 									<buildpack>urn:cnb:builder:example/does-not-exist:0.0.1</buildpack>
 								</buildpacks>
