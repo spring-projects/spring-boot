@@ -38,6 +38,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * as primary.
  *
  * @author Stephane Nicoll
+ * @author Matej Nedic
  */
 class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
@@ -59,7 +60,7 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		BeanDefinition definition = getAutoConfiguredValidator(registry);
 		if (definition != null) {
-			definition.setPrimary(!hasPrimarySpringValidator(registry));
+			definition.setPrimary(!hasPrimarySpringValidator());
 		}
 	}
 
@@ -78,20 +79,27 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 		return this.beanFactory != null && this.beanFactory.isTypeMatch(name, type);
 	}
 
-	private boolean hasPrimarySpringValidator(BeanDefinitionRegistry registry) {
+	private boolean hasPrimarySpringValidator() {
 		String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Validator.class,
 				false, false);
 		for (String validatorBean : validatorBeans) {
-			try {
-				BeanDefinition definition = registry.getBeanDefinition(validatorBean);
-				if (definition.isPrimary()) {
-					return true;
-				}
-			}
-			catch (NoSuchBeanDefinitionException ignored) {
+			BeanDefinition definition = searchForBeanDefinition(this.beanFactory, validatorBean);
+			if (definition.isPrimary()) {
+				return true;
 			}
 		}
 		return false;
+	}
+
+	private BeanDefinition searchForBeanDefinition(ConfigurableListableBeanFactory clbf, String validatorBean) {
+		if (clbf.containsLocalBean(validatorBean)) {
+			return clbf.getBeanDefinition(validatorBean);
+		}
+		else if (clbf.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
+			return searchForBeanDefinition((ConfigurableListableBeanFactory) clbf.getParentBeanFactory(),
+					validatorBean);
+		}
+		throw new NoSuchBeanDefinitionException(validatorBean);
 	}
 
 }
