@@ -48,7 +48,7 @@ public enum CloudPlatform {
 	/**
 	 * Azure App Service platform.
 	 */
-	AZURE {
+	AZURE_APP_SERVICE {
 
 		@Override
 		public boolean isDetected(Environment environment) {

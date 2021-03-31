@@ -56,7 +56,7 @@ class CloudPlatformTests {
 	void getActiveWhenHasWebsiteSiteNameShouldReturnAzureAppService() {
 		Environment environment = new MockEnvironment().withProperty("WEBSITE_SITE_NAME", "---");
 		CloudPlatform platform = CloudPlatform.getActive(environment);
-		assertThat(platform).isEqualTo(CloudPlatform.AZURE);
+		assertThat(platform).isEqualTo(CloudPlatform.AZURE_APP_SERVICE);
 		assertThat(platform.isActive(environment)).isTrue();
 	}
 
