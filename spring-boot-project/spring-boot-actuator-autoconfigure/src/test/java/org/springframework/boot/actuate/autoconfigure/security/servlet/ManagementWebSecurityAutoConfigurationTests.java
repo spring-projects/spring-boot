@@ -17,9 +17,19 @@
 package org.springframework.boot.actuate.autoconfigure.security.servlet;
 
 import java.io.IOException;
+import java.util.Arrays;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
+import org.jetbrains.annotations.NotNull;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
+import org.springframework.beans.factory.config.BeanDefinitionHolder;
 import org.springframework.boot.actuate.autoconfigure.endpoint.EndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.env.EnvironmentEndpointAutoConfiguration;
@@ -27,14 +37,21 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.security.SecurityProperties;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.servlet.OAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.saml2.Saml2RelyingPartyAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.servlet.SecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
+import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.AnnotationAttributes;
+import org.springframework.core.annotation.AnnotationUtils;
+import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.web.MockFilterChain;
 import org.springframework.mock.web.MockHttpServletRequest;
@@ -45,6 +62,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.web.FilterChainProxy;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.context.WebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -121,7 +139,7 @@ class ManagementWebSecurityAutoConfigurationTests {
 	@Test
 	void backsOffIfSecurityFilterChainBeanIsPresent() {
 		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
-			assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(1);
+			assertThat(context.getBeansOfType(SecurityFilterChain.class)).isNotEmpty();
 			assertThat(context.containsBean("testSecurityFilterChain")).isTrue();
 		});
 	}
@@ -144,6 +162,28 @@ class ManagementWebSecurityAutoConfigurationTests {
 						"spring.security.saml2.relyingparty.registration.simplesamlphp.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location")
 				.run((context) -> assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class)
 						.doesNotHaveBean(MANAGEMENT_SECURITY_FILTER_CHAIN_BEAN));
+	}
+
+	@Test
+	void backOffIfRemoteDevToolsSecurityFilterChainIsPresent() {
+		this.contextRunner.withUserConfiguration(TestSecurityFilterChainConfig.class).run((context) -> {
+			List<String> beanNames = getOrderedBeanNames(context);
+
+			assertThat(beanNames).containsExactly("testRemoteDevToolsSecurityFilterChain", "testSecurityFilterChain");
+			assertThat(context.getBeansOfType(SecurityFilterChain.class).size()).isEqualTo(2);
+			assertThat(context).doesNotHaveBean(ManagementWebSecurityAutoConfiguration.class);
+			assertThat(context.containsBean("testRemoteDevToolsSecurityFilterChain")).isTrue();
+		});
+	}
+
+	@NotNull
+	private List<String> getOrderedBeanNames(AssertableWebApplicationContext context) {
+		return Arrays.stream(context.getBeanNamesForType(SecurityFilterChain.class))
+				.map((beanName) -> Optional.of(context).map(ConfigurableApplicationContext::getBeanFactory)
+						.map((beanFactory) -> beanFactory.getBeanDefinition(beanName))
+						.map((beanDefinition) -> new BeanDefinitionHolder(beanDefinition, beanName)).orElse(null))
+				.sorted(OrderAnnotatedBeanDefinitionComparator.INSTANCE).map(BeanDefinitionHolder::getBeanName)
+				.collect(Collectors.toList());
 	}
 
 	private HttpStatus getResponseStatus(AssertableWebApplicationContext context, String path)
@@ -181,6 +221,57 @@ class ManagementWebSecurityAutoConfigurationTests {
 		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
 			return http.antMatcher("/**").authorizeRequests((authorize) -> authorize.anyRequest().authenticated())
 					.build();
+		}
+
+		@Bean
+		@Order(SecurityProperties.BASIC_AUTH_ORDER - 1)
+		SecurityFilterChain testRemoteDevToolsSecurityFilterChain(HttpSecurity http) throws Exception {
+			return http.requestMatcher(new AntPathRequestMatcher("/**")).authorizeRequests().anyRequest().anonymous()
+					.and().csrf().disable().build();
+		}
+
+	}
+
+	static class OrderAnnotatedBeanDefinitionComparator implements Comparator<BeanDefinitionHolder> {
+
+		static final OrderAnnotatedBeanDefinitionComparator INSTANCE = new OrderAnnotatedBeanDefinitionComparator();
+
+		private final Map<String, Integer> beanNameToOrder = new ConcurrentHashMap<>();
+
+		@Override
+		public int compare(BeanDefinitionHolder beanOne, BeanDefinitionHolder beanTwo) {
+			return getOrder(beanOne).compareTo(getOrder(beanTwo));
+		}
+
+		private Integer getOrder(BeanDefinitionHolder bean) {
+			return this.beanNameToOrder.computeIfAbsent(bean.getBeanName(),
+					(beanName) -> Optional.of(bean).map(BeanDefinitionHolder::getBeanDefinition)
+							.filter(AnnotatedBeanDefinition.class::isInstance).map(AnnotatedBeanDefinition.class::cast)
+							.map(this::getOrderAnnotationAttributesFromFactoryMethod).map(this::getOrder)
+							.orElse(Ordered.LOWEST_PRECEDENCE));
+		}
+
+		private Integer getOrder(AnnotationAttributes annotationAttributes) {
+			return Optional.ofNullable(annotationAttributes)
+					.map((it) -> it.getOrDefault("value", Ordered.LOWEST_PRECEDENCE)).map(Integer.class::cast)
+					.orElse(Ordered.LOWEST_PRECEDENCE);
+		}
+
+		private AnnotationAttributes getOrderAnnotationAttributesFromFactoryMethod(
+				AnnotatedBeanDefinition beanDefinition) {
+			return Optional.of(beanDefinition).map(AnnotatedBeanDefinition::getFactoryMethodMetadata)
+					.filter((methodMetadata) -> methodMetadata.isAnnotated(Order.class.getName()))
+					.map((methodMetadata) -> methodMetadata.getAnnotationAttributes(Order.class.getName()))
+					.map(AnnotationAttributes::fromMap)
+					.orElseGet(() -> getOrderAnnotationAttributesFromBeanClass(beanDefinition));
+		}
+
+		private AnnotationAttributes getOrderAnnotationAttributesFromBeanClass(AnnotatedBeanDefinition beanDefinition) {
+			return Optional.of(beanDefinition).map(AnnotatedBeanDefinition::getResolvableType)
+					.map(ResolvableType::resolve).filter((beanType) -> beanType.isAnnotationPresent(Order.class))
+					.map((beanType) -> beanType.getAnnotation(Order.class))
+					.map(AnnotationUtils::getAnnotationAttributes).map(AnnotationAttributes::fromMap).orElse(null);
+
 		}
 
 	}
