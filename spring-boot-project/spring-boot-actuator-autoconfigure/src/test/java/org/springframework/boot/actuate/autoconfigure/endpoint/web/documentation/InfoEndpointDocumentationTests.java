@@ -80,7 +80,7 @@ class InfoEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 		@Bean
 		GitInfoContributor gitInfoContributor() {
 			Properties properties = new Properties();
-			properties.put("branch", "master");
+			properties.put("branch", "main");
 			properties.put("commit.id", "df027cf1ec5aeba2d4fedd7b8c42b88dc5ce38e5");
 			properties.put("commit.id.abbrev", "df027cf");
 			properties.put("commit.time", Long.toString(System.currentTimeMillis()));
