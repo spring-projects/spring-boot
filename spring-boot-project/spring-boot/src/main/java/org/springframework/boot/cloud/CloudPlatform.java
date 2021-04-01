@@ -17,7 +17,11 @@
 package org.springframework.boot.cloud;
 
 import org.springframework.boot.context.properties.bind.Binder;
-import org.springframework.core.env.*;
+import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.EnumerablePropertySource;
+import org.springframework.core.env.Environment;
+import org.springframework.core.env.PropertySource;
+import org.springframework.core.env.StandardEnvironment;
 
 /**
  * Simple detection for well known cloud platforms. Detection can be forced using the
