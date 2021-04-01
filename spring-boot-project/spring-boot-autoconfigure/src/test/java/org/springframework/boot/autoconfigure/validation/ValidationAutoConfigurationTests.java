@@ -26,6 +26,7 @@ import javax.validation.constraints.Size;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -127,6 +128,37 @@ class ValidationAutoConfigurationTests {
 					.isEqualTo(context.getBean("anotherCustomValidator"));
 			assertThat(isPrimaryBean(context, "defaultValidator")).isFalse();
 		});
+	}
+
+	@Test
+	void whenUserProvidesSpringValidatorInParentContextThenAutoConfiguredValidatorIsPrimary() {
+		new ApplicationContextRunner().withUserConfiguration(UserDefinedSpringValidatorConfig.class).run((parent) -> {
+			this.contextRunner.withParent(parent).run((context) -> {
+				assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
+				assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
+						.containsExactly("defaultValidator");
+				assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context.getBeanFactory(),
+						org.springframework.validation.Validator.class)).containsExactly("defaultValidator",
+								"customValidator", "anotherCustomValidator");
+				assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
+			});
+		});
+	}
+
+	@Test
+	void whenUserProvidesPrimarySpringValidatorInParentContextThenAutoConfiguredValidatorIsPrimary() {
+		new ApplicationContextRunner().withUserConfiguration(UserDefinedPrimarySpringValidatorConfig.class)
+				.run((parent) -> {
+					this.contextRunner.withParent(parent).run((context) -> {
+						assertThat(context.getBeanNamesForType(Validator.class)).containsExactly("defaultValidator");
+						assertThat(context.getBeanNamesForType(org.springframework.validation.Validator.class))
+								.containsExactly("defaultValidator");
+						assertThat(BeanFactoryUtils.beanNamesForTypeIncludingAncestors(context.getBeanFactory(),
+								org.springframework.validation.Validator.class)).containsExactly("defaultValidator",
+										"customValidator", "anotherCustomValidator");
+						assertThat(isPrimaryBean(context, "defaultValidator")).isTrue();
+					});
+				});
 	}
 
 	@Test
