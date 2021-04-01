@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.validation;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanFactoryUtils;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -37,6 +36,8 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  * as primary.
  *
  * @author Stephane Nicoll
+ * @author Matej Nedic
+ * @author Andy Wilkinson
  */
 class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
@@ -58,7 +59,7 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		BeanDefinition definition = getAutoConfiguredValidator(registry);
 		if (definition != null) {
-			definition.setPrimary(!hasPrimarySpringValidator(registry));
+			definition.setPrimary(!hasPrimarySpringValidator());
 		}
 	}
 
@@ -77,12 +78,11 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 		return this.beanFactory != null && this.beanFactory.isTypeMatch(name, type);
 	}
 
-	private boolean hasPrimarySpringValidator(BeanDefinitionRegistry registry) {
-		String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Validator.class,
-				false, false);
+	private boolean hasPrimarySpringValidator() {
+		String[] validatorBeans = this.beanFactory.getBeanNamesForType(Validator.class, false, false);
 		for (String validatorBean : validatorBeans) {
-			BeanDefinition definition = registry.getBeanDefinition(validatorBean);
-			if (definition != null && definition.isPrimary()) {
+			BeanDefinition definition = this.beanFactory.getBeanDefinition(validatorBean);
+			if (definition.isPrimary()) {
 				return true;
 			}
 		}
