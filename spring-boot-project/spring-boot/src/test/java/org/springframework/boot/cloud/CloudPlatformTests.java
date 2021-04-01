@@ -53,7 +53,7 @@ class CloudPlatformTests {
 	}
 
 	@Test
-	void getActiveWhenHasWebsiteSiteNameShouldReturnAzureAppService() {
+	void getActiveWhenHasWebsiteSiteNameAndWebsitesEnableAppServiceStorageShouldReturnAzureAppService() {
 		Map<String, Object> envVars = new HashMap<>();
 		envVars.put("WEBSITE_SITE_NAME", "---");
 		envVars.put("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "false");
@@ -61,6 +61,22 @@ class CloudPlatformTests {
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isEqualTo(CloudPlatform.AZURE_APP_SERVICE);
 		assertThat(platform.isActive(environment)).isTrue();
+	}
+
+	@Test
+	void getActiveWhenHasWebsiteSiteNameShouldReturnNull() {
+		Environment environment = getEnvironmentWithEnvVariables(
+				Collections.singletonMap("WEBSITE_SITE_NAME", "---"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@Test
+	void getActiveWhenHasWebsitesEnableAppServiceStorageShouldReturnNull() {
+		Environment environment = getEnvironmentWithEnvVariables(
+				Collections.singletonMap("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "---"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
 	}
 
 	@Test
