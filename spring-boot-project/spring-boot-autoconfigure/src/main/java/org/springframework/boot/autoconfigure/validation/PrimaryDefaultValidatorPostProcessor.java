@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@ package org.springframework.boot.autoconfigure.validation;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
-import org.springframework.beans.factory.BeanFactoryUtils;
-import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
@@ -39,6 +37,7 @@ import org.springframework.validation.beanvalidation.LocalValidatorFactoryBean;
  *
  * @author Stephane Nicoll
  * @author Matej Nedic
+ * @author Andy Wilkinson
  */
 class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegistrar, BeanFactoryAware {
 
@@ -80,26 +79,14 @@ class PrimaryDefaultValidatorPostProcessor implements ImportBeanDefinitionRegist
 	}
 
 	private boolean hasPrimarySpringValidator() {
-		String[] validatorBeans = BeanFactoryUtils.beanNamesForTypeIncludingAncestors(this.beanFactory, Validator.class,
-				false, false);
+		String[] validatorBeans = this.beanFactory.getBeanNamesForType(Validator.class, false, false);
 		for (String validatorBean : validatorBeans) {
-			BeanDefinition definition = searchForBeanDefinition(this.beanFactory, validatorBean);
+			BeanDefinition definition = this.beanFactory.getBeanDefinition(validatorBean);
 			if (definition.isPrimary()) {
 				return true;
 			}
 		}
 		return false;
-	}
-
-	private BeanDefinition searchForBeanDefinition(ConfigurableListableBeanFactory clbf, String validatorBean) {
-		if (clbf.containsLocalBean(validatorBean)) {
-			return clbf.getBeanDefinition(validatorBean);
-		}
-		else if (clbf.getParentBeanFactory() instanceof ConfigurableListableBeanFactory) {
-			return searchForBeanDefinition((ConfigurableListableBeanFactory) clbf.getParentBeanFactory(),
-					validatorBean);
-		}
-		throw new NoSuchBeanDefinitionException(validatorBean);
 	}
 
 }
