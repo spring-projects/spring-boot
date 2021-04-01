@@ -35,6 +35,14 @@ import org.springframework.web.servlet.ModelAndView;
 public interface ErrorAttributes {
 
 	/**
+	 * Name of the {@link javax.servlet.http.HttpServletRequest#getAttribute(String)
+	 * Request attribute} holding the error resolved by the {@code ErrorAttributes}
+	 * implementation.
+	 * @since 2.5.0
+	 */
+	String ERROR_ATTRIBUTE = ErrorAttributes.class.getName() + ".error";
+
+	/**
 	 * Returns a {@link Map} of the error attributes. The map can be used as the model of
 	 * an error page {@link ModelAndView}, or returned as a
 	 * {@link ResponseBody @ResponseBody}.

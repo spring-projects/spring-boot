@@ -35,6 +35,13 @@ import org.springframework.web.server.ServerWebExchange;
 public interface ErrorAttributes {
 
 	/**
+	 * Name of the {@link ServerRequest#attribute(String)} Request attribute} holding the
+	 * error resolved by the {@code ErrorAttributes} implementation.
+	 * @since 2.5.0
+	 */
+	String ERROR_ATTRIBUTE = ErrorAttributes.class.getName() + ".error";
+
+	/**
 	 * Return a {@link Map} of the error attributes. The map can be used as the model of
 	 * an error page, or returned as a {@link ServerResponse} body.
 	 * @param request the source request

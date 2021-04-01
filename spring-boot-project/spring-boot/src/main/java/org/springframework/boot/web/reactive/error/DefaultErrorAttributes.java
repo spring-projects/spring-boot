@@ -21,6 +21,7 @@ import java.io.StringWriter;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import org.springframework.boot.web.error.ErrorAttributeOptions;
 import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
@@ -61,7 +62,7 @@ import org.springframework.web.server.ServerWebExchange;
  */
 public class DefaultErrorAttributes implements ErrorAttributes {
 
-	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
+	private static final String ERROR_INTERNAL_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
 	@Override
 	public Map<String, Object> getErrorAttributes(ServerRequest request, ErrorAttributeOptions options) {
@@ -147,13 +148,15 @@ public class DefaultErrorAttributes implements ErrorAttributes {
 
 	@Override
 	public Throwable getError(ServerRequest request) {
-		return (Throwable) request.attribute(ERROR_ATTRIBUTE)
+		Optional<Object> error = request.attribute(ERROR_INTERNAL_ATTRIBUTE);
+		error.ifPresent((value) -> request.attributes().putIfAbsent(ErrorAttributes.ERROR_ATTRIBUTE, value));
+		return (Throwable) error
 				.orElseThrow(() -> new IllegalStateException("Missing exception attribute in ServerWebExchange"));
 	}
 
 	@Override
 	public void storeErrorInformation(Throwable error, ServerWebExchange exchange) {
-		exchange.getAttributes().putIfAbsent(ERROR_ATTRIBUTE, error);
+		exchange.getAttributes().putIfAbsent(ERROR_INTERNAL_ATTRIBUTE, error);
 	}
 
 }

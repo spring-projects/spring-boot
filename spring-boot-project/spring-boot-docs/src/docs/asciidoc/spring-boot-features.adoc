@@ -2566,7 +2566,13 @@ include::{include-springbootfeatures}/webapplications/servlet/MyControllerAdvice
 
 In the preceding example, if `YourException` is thrown by a controller defined in the same package as `AcmeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
 
+In some cases, errors handled at the controller level are not recorded by the <<production-ready-features.adoc#production-ready-metrics-spring-mvc, metrics infrastructure>>.
+Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{include-springbootfeatures}/webapplications/servlet/MyController.java[]
+----
 
 [[boot-features-error-handling-custom-error-pages]]
 ===== Custom Error Pages
@@ -2822,6 +2828,14 @@ include::{include-springbootfeatures}/webapplications/webflux/CustomErrorWebExce
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
+
+In some cases, errors handled at the controller or handler function level are not recorded by the <<production-ready-features.adoc#production-ready-metrics-web-flux, metrics infrastructure>>.
+Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{include-springbootfeatures}/webapplications/webflux/ExceptionHandlingController.java[]
+----
 
 
 

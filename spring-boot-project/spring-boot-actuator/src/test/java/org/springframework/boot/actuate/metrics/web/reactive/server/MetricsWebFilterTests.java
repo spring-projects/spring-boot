@@ -28,6 +28,7 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.HandlerMapping;
@@ -92,6 +93,18 @@ class MetricsWebFilterTests {
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "500");
 		assertMetricsContainsTag("exception", anonymous.getClass().getName());
+	}
+
+	@Test
+	void filterAddsTagsToRegistryForHandledExceptions() {
+		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
+		this.webFilter.filter(exchange, (serverWebExchange) -> {
+			exchange.getAttributes().put(ErrorAttributes.ERROR_ATTRIBUTE, new IllegalStateException("test error"));
+			return exchange.getResponse().setComplete();
+		}).block(Duration.ofSeconds(30));
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "200");
+		assertMetricsContainsTag("exception", "IllegalStateException");
 	}
 
 	@Test

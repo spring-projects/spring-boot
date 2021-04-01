@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,6 +33,7 @@ import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.core.annotation.MergedAnnotationCollectors;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.http.HttpStatus;
@@ -96,7 +97,7 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 				// If async was started by something further down the chain we wait
 				// until the second filter invocation (but we'll be using the
 				// TimingContext that was attached to the first)
-				Throwable exception = (Throwable) request.getAttribute(DispatcherServlet.EXCEPTION_ATTRIBUTE);
+				Throwable exception = fetchException(request);
 				record(timingContext, request, response, exception);
 			}
 		}
@@ -116,6 +117,14 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		TimingContext timingContext = new TimingContext(timerSample);
 		timingContext.attachTo(request);
 		return timingContext;
+	}
+
+	private Throwable fetchException(HttpServletRequest request) {
+		Throwable exception = (Throwable) request.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE);
+		if (exception == null) {
+			exception = (Throwable) request.getAttribute(DispatcherServlet.EXCEPTION_ATTRIBUTE);
+		}
+		return exception;
 	}
 
 	private void record(TimingContext timingContext, HttpServletRequest request, HttpServletResponse response,
