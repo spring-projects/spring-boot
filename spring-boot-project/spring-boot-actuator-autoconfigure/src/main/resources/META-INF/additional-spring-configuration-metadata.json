@@ -522,12 +522,12 @@
       }
     },
     {
-      "name": "management.metrics.mongo.commandlistener.enabled",
+      "name": "management.metrics.mongo.command.enabled",
       "description": "Whether to enable Mongo client command metrics.",
       "defaultValue": true
     },
     {
-      "name": "management.metrics.mongo.connectionpoollistener.enabled",
+      "name": "management.metrics.mongo.connectionpool.enabled",
       "description": "Whether to enable Mongo connection pool metrics.",
       "defaultValue": true
     },

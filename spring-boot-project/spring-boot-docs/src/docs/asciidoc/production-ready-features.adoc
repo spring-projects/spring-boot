@@ -2429,7 +2429,7 @@ If you want to disable the auto-configured command metrics, you can set the foll
 	management:
 	  metrics:
 	    mongo:
-	      commandlistener:
+	      command:
 	        enabled: false
 ----
 
@@ -2441,9 +2441,6 @@ The following gauge metrics are created for the connection pool:
 * `mongodb.driver.pool.size` that reports the current size of the connection pool, including idle and and in-use members
 * `mongodb.driver.pool.checkedout` that reports the count of connections that are currently in use
 * `mongodb.driver.pool.waitqueuesize` that reports the current size of the wait queue for a connection from the pool
-
-NOTE: The `waitqueuesize` metric was https://github.com/mongodb/specifications/blob/master/source/connection-monitoring-and-pooling/connection-monitoring-and-pooling.rst#why-are-waitqueuesize-and-waitqueuemultiple-deprecated[removed] in MongoDB 4.x
-and is being approximated by the connection pool listener and will most likely be removed in a future release.
 
 Each metric is tagged with the following information by default:
 |===
@@ -2474,7 +2471,7 @@ If you want to disable the auto-configured connection pool metrics, you can set 
 	management:
 	  metrics:
 	    mongo:
-	      connectionpoollistener:
+	      connectionpool:
 	        enabled: false
 ----
 

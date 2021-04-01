@@ -143,14 +143,14 @@ class MongoMetricsAutoConfigurationTests {
 	@Test
 	void whenMetricsCommandListenerEnabledPropertyFalseThenNoMetricsCommandListenerIsAdded() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.withPropertyValues("management.metrics.mongo.command-listener.enabled:false")
+				.withPropertyValues("management.metrics.mongo.command.enabled:false")
 				.run((context) -> assertThatMetricsCommandListenerNotAdded());
 	}
 
 	@Test
 	void whenMetricsConnectionPoolListenerEnabledPropertyFalseThenNoMetricsConnectionPoolListenerIsAdded() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.withPropertyValues("management.metrics.mongo.connection-pool-listener.enabled:false")
+				.withPropertyValues("management.metrics.mongo.connectionpool.enabled:false")
 				.run((context) -> assertThatMetricsConnectionPoolListenerNotAdded());
 	}
 
