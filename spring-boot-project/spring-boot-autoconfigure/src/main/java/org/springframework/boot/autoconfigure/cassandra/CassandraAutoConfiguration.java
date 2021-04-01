@@ -104,7 +104,7 @@ public class CassandraAutoConfiguration {
 		}
 	}
 
-	@Bean
+	@Bean(destroyMethod = "")
 	@ConditionalOnMissingBean
 	public DriverConfigLoader cassandraDriverConfigLoader(CassandraProperties properties,
 			ObjectProvider<DriverConfigLoaderBuilderCustomizer> builderCustomizers) {
