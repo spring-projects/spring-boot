@@ -36,7 +36,7 @@ import org.springframework.util.MimeTypeUtils;
 public enum TextOutputFormat implements Producible<TextOutputFormat> {
 
 	/**
-	 * Openmetrics text version 1.0.0.
+	 * OpenMetrics text version 1.0.0.
 	 */
 	CONTENT_TYPE_OPENMETRICS_100(TextFormat.CONTENT_TYPE_OPENMETRICS_100) {
 

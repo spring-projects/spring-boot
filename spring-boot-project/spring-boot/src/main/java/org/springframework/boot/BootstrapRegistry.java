@@ -139,7 +139,7 @@ public interface BootstrapRegistry {
 		}
 
 		/**
-		 * Factory method that can be used to create a {@link InstanceSupplier} for a
+		 * Factory method that can be used to create an {@link InstanceSupplier} for a
 		 * given instance.
 		 * @param <T> the instance type
 		 * @param instance the instance
@@ -150,7 +150,7 @@ public interface BootstrapRegistry {
 		}
 
 		/**
-		 * Factory method that can be used to create a {@link InstanceSupplier} from a
+		 * Factory method that can be used to create an {@link InstanceSupplier} from a
 		 * {@link Supplier}.
 		 * @param <T> the instance type
 		 * @param supplier the supplier that will provide the instance
