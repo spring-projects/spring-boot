@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN">
+	<Properties>
+
+		<Property name="LOG_EXCEPTION_CONVERSION_WORD">%xwEx</Property>
+		<Property name="LOG_LEVEL_PATTERN">%5p</Property>
+		<Property name="LOG_DATEFORMAT_PATTERN">yyyy-MM-dd HH:mm:ss.SSS</Property>
+		<SpringProfile name="dev">
+			<Property name="CONSOLE_LOG_PATTERN">[DEV] %clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+		</SpringProfile>
+		<SpringProfile name="!dev">
+			<Property name="CONSOLE_LOG_PATTERN">[!DEV] %clr{%d{${sys:LOG_DATEFORMAT_PATTERN}}}{faint} %clr{${sys:LOG_LEVEL_PATTERN}} %clr{%pid}{magenta} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n${sys:LOG_EXCEPTION_CONVERSION_WORD}</Property>
+		</SpringProfile>
+	</Properties>
+	<Appenders>
+		<SpringProfile name="dev">
+			<Console name="ConsoleDEV" target="SYSTEM_OUT">
+				<PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
+			</Console>
+		</SpringProfile>
+		<Console name="Console" target="SYSTEM_OUT">
+			<PatternLayout pattern="${CONSOLE_LOG_PATTERN}"/>
+		</Console>
+	</Appenders>
+	<Loggers>
+		<springProfile name="dev">
+			<Logger name="org.springframework.boot.logging.log4j2.SpringBootXmlConfigurationTests" level="trace" additivity="false">
+				<AppenderRef ref="ConsoleDEV" />
+			</Logger>
+		</springProfile>
+		<Root level="info">
+			<AppenderRef ref="Console" />
+		</Root>
+	</Loggers>
+</Configuration>

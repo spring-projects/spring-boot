@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ch.qos.logback.classic.joran.JoranConfigurator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
@@ -167,10 +168,10 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		if (logFile != null) {
-			loadConfiguration(getPackagedConfigFile("log4j2-file.xml"), logFile);
+			loadConfigurationInternal(initializationContext,getPackagedConfigFile("log4j2-file.xml"), logFile);
 		}
 		else {
-			loadConfiguration(getPackagedConfigFile("log4j2.xml"), logFile);
+			loadConfiguration(initializationContext,getPackagedConfigFile("log4j2.xml"), logFile);
 		}
 	}
 
@@ -178,16 +179,22 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
 		super.loadConfiguration(initializationContext, location, logFile);
-		loadConfiguration(location, logFile);
+		loadConfiguration(initializationContext,location, logFile);
 	}
 
-	protected void loadConfiguration(String location, LogFile logFile) {
+	protected void loadConfigurationInternal(LoggingInitializationContext initializationContext,String location, LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		try {
 			LoggerContext ctx = getLoggerContext();
 			URL url = ResourceUtils.getURL(location);
 			ConfigurationSource source = getConfigurationSource(url);
-			ctx.start(ConfigurationFactory.getInstance().getConfiguration(ctx, source));
+			Configuration configuration;
+			if (url.toString().endsWith("xml")) {
+				configuration = new SpringBootXmlConfiguration(initializationContext,ctx, source);
+			}else{
+				configuration = ConfigurationFactory.getInstance().getConfiguration(ctx, source);
+			}
+			ctx.start(configuration);
 		}
 		catch (Exception ex) {
 			throw new IllegalStateException("Could not initialize Log4J2 logging from " + location, ex);
