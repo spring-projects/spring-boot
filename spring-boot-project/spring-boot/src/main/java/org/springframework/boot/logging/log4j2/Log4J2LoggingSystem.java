@@ -26,7 +26,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import ch.qos.logback.classic.joran.JoranConfigurator;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Marker;
@@ -64,6 +63,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Alexander Heusingfeld
  * @author Ben Hale
+ * @author xin jiang
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
@@ -168,10 +168,10 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	@Override
 	protected void loadDefaults(LoggingInitializationContext initializationContext, LogFile logFile) {
 		if (logFile != null) {
-			loadConfigurationInternal(initializationContext,getPackagedConfigFile("log4j2-file.xml"), logFile);
+			loadConfigurationInternal(initializationContext, getPackagedConfigFile("log4j2-file.xml"), logFile);
 		}
 		else {
-			loadConfiguration(initializationContext,getPackagedConfigFile("log4j2.xml"), logFile);
+			loadConfiguration(initializationContext, getPackagedConfigFile("log4j2.xml"), logFile);
 		}
 	}
 
@@ -179,10 +179,11 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
 		super.loadConfiguration(initializationContext, location, logFile);
-		loadConfiguration(initializationContext,location, logFile);
+		loadConfiguration(initializationContext, location, logFile);
 	}
 
-	protected void loadConfigurationInternal(LoggingInitializationContext initializationContext,String location, LogFile logFile) {
+	protected void loadConfigurationInternal(LoggingInitializationContext initializationContext, String location,
+			LogFile logFile) {
 		Assert.notNull(location, "Location must not be null");
 		try {
 			LoggerContext ctx = getLoggerContext();
@@ -190,8 +191,9 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			ConfigurationSource source = getConfigurationSource(url);
 			Configuration configuration;
 			if (url.toString().endsWith("xml")) {
-				configuration = new SpringBootXmlConfiguration(initializationContext,ctx, source);
-			}else{
+				configuration = new SpringBootXmlConfiguration(initializationContext, ctx, source);
+			}
+			else {
 				configuration = ConfigurationFactory.getInstance().getConfiguration(ctx, source);
 			}
 			ctx.start(configuration);
