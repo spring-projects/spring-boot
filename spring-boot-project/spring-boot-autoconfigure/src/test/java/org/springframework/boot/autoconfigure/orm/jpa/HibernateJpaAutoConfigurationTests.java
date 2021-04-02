@@ -381,7 +381,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	@Test
-	void vendorPropertiesWithDdlAutoPropertyIsSet() {
+	void vendorPropertiesWhenDdlAutoPropertyIsSet() {
 		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=update")
 				.run(vendorProperties((vendorProperties) -> {
 					assertThat(vendorProperties).doesNotContainKeys(AvailableSettings.HBM2DDL_DATABASE_ACTION);
@@ -390,7 +390,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	@Test
-	void vendorPropertiesWithDdlAutoPropertyAndHibernatePropertiesAreSet() {
+	void vendorPropertiesWhenDdlAutoPropertyAndHibernatePropertiesAreSet() {
 		contextRunner()
 				.withPropertyValues("spring.jpa.hibernate.ddl-auto=update",
 						"spring.jpa.properties.hibernate.hbm2ddl.auto=create-drop")
@@ -401,7 +401,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	}
 
 	@Test
-	void vendorPropertiesWithDdlAutoPropertyIsSetToNone() {
+	void vendorPropertiesWhenDdlAutoPropertyIsSetToNone() {
 		contextRunner().withPropertyValues("spring.jpa.hibernate.ddl-auto=none")
 				.run(vendorProperties((vendorProperties) -> assertThat(vendorProperties).doesNotContainKeys(
 						AvailableSettings.HBM2DDL_DATABASE_ACTION, AvailableSettings.HBM2DDL_AUTO)));

@@ -21,7 +21,7 @@ import de.flapdoodle.embed.process.config.store.IDownloadConfig;
 
 /**
  * Callback interface that can be implemented by beans wishing to customize the
- * {@link IDownloadConfig} via a {@link DownloadConfigBuilder} whilst retaining default
+ * {@link IDownloadConfig} via an {@link DownloadConfigBuilder} whilst retaining default
  * auto-configuration.
  *
  * @author Michael Gmeiner

@@ -111,7 +111,7 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 	}
 
 	/**
-	 * Throw a {@link InactiveConfigDataAccessException} if the given
+	 * Throw an {@link InactiveConfigDataAccessException} if the given
 	 * {@link ConfigDataEnvironmentContributor} contains the property.
 	 * @param contributor the contributor to check
 	 * @param name the name to check

@@ -161,7 +161,7 @@ public class IntegrationAutoConfiguration {
 	protected static class IntegrationRSocketConfiguration {
 
 		/**
-		 * Check if either a {@link IntegrationRSocketEndpoint} or
+		 * Check if either an {@link IntegrationRSocketEndpoint} or
 		 * {@link RSocketOutboundGateway} bean is available.
 		 */
 		static class AnyRSocketChannelAdapterAvailable extends AnyNestedCondition {

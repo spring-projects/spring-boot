@@ -306,7 +306,7 @@ public final class ConditionMessage {
 	}
 
 	/**
-	 * Builder used to create a {@link ItemsBuilder} for a condition.
+	 * Builder used to create an {@link ItemsBuilder} for a condition.
 	 */
 	public final class ItemsBuilder {
 
