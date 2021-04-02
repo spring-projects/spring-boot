@@ -127,7 +127,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testNonDefaultConfigLocation(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(this.initializationContext, "classpath:log4j2-nondefault.xml", getLogFile(tmpDir() + "/tmp.log", null));
+		this.loggingSystem.initialize(this.initializationContext, "classpath:log4j2-nondefault.xml",
+				getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		Configuration configuration = this.loggingSystem.getConfiguration();
 		assertThat(output).contains("Hello world").contains(tmpDir() + "/tmp.log");
@@ -140,8 +141,8 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
-		assertThatIllegalStateException()
-				.isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext, "classpath:log4j2-nonexistent.xml", null));
+		assertThatIllegalStateException().isThrownBy(() -> this.loggingSystem.initialize(this.initializationContext,
+				"classpath:log4j2-nonexistent.xml", null));
 	}
 
 	@Test
