@@ -44,10 +44,12 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.logging.AbstractLoggingSystemTests;
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.logging.LoggerConfiguration;
+import org.springframework.boot.logging.LoggingInitializationContext;
 import org.springframework.boot.logging.LoggingSystem;
 import org.springframework.boot.logging.LoggingSystemProperties;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
@@ -77,8 +79,12 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 
 	private Configuration configuration;
 
+	private LoggingInitializationContext initializationContext;
+
 	@BeforeEach
 	void setup() {
+		MockEnvironment environment = new MockEnvironment();
+		this.initializationContext = new LoggingInitializationContext(environment);
 		LoggerContext loggerContext = (LoggerContext) LogManager.getContext(false);
 		this.configuration = loggerContext.getConfiguration();
 		this.loggingSystem.cleanUp();
@@ -97,7 +103,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void noFile(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.logger.info("Hello world");
 		Configuration configuration = this.loggingSystem.getConfiguration();
 		assertThat(output).contains("Hello world").doesNotContain("Hidden");
@@ -109,7 +115,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void withFile(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
 		this.logger.info("Hidden");
-		this.loggingSystem.initialize(null, getRelativeClasspathLocation("log4j2-file.xml"),
+		this.loggingSystem.initialize(initializationContext, getRelativeClasspathLocation("log4j2-file.xml"),
 				getLogFile(null, tmpDir()));
 		this.logger.info("Hello world");
 		Configuration configuration = this.loggingSystem.getConfiguration();
@@ -121,7 +127,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void testNonDefaultConfigLocation(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, "classpath:log4j2-nondefault.xml", getLogFile(tmpDir() + "/tmp.log", null));
+		this.loggingSystem.initialize(initializationContext, "classpath:log4j2-nondefault.xml", getLogFile(tmpDir() + "/tmp.log", null));
 		this.logger.info("Hello world");
 		Configuration configuration = this.loggingSystem.getConfiguration();
 		assertThat(output).contains("Hello world").contains(tmpDir() + "/tmp.log");
@@ -135,7 +141,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void testNonexistentConfigLocation() {
 		this.loggingSystem.beforeInitialize();
 		assertThatIllegalStateException()
-				.isThrownBy(() -> this.loggingSystem.initialize(null, "classpath:log4j2-nonexistent.xml", null));
+				.isThrownBy(() -> this.loggingSystem.initialize(initializationContext, "classpath:log4j2-nonexistent.xml", null));
 	}
 
 	@Test
@@ -146,7 +152,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void setLevel(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");
@@ -156,7 +162,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void setLevelToNull(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.logger.debug("Hello");
 		this.loggingSystem.setLogLevel("org.springframework.boot", LogLevel.DEBUG);
 		this.logger.debug("Hello");
@@ -168,7 +174,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void getLoggingConfigurations() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		List<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
@@ -179,7 +185,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void getLoggingConfigurationsShouldReturnAllLoggers() {
 		LogManager.getLogger("org.springframework.boot.logging.log4j2.Log4J2LoggingSystemTests$Nested");
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		List<LoggerConfiguration> configurations = this.loggingSystem.getLoggerConfigurations();
 		assertThat(configurations).isNotEmpty();
@@ -200,7 +206,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void getLoggingConfiguration() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration(getClass().getName());
 		assertThat(configuration)
@@ -210,7 +216,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void getLoggingConfigurationShouldReturnLoggerWithNullConfiguredLevel() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("org");
 		assertThat(configuration).isEqualTo(new LoggerConfiguration("org", null, LogLevel.INFO));
@@ -219,7 +225,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void getLoggingConfigurationForNonExistentLoggerShouldReturnNull() {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.loggingSystem.setLogLevel(getClass().getName(), LogLevel.DEBUG);
 		LoggerConfiguration configuration = this.loggingSystem.getLoggerConfiguration("doesnotexist");
 		assertThat(configuration).isEqualTo(null);
@@ -228,7 +234,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void setLevelOfUnconfiguredLoggerDoesNotAffectRootConfiguration(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		LogManager.getRootLogger().debug("Hello");
 		this.loggingSystem.setLogLevel("foo.bar.baz", LogLevel.DEBUG);
 		LogManager.getRootLogger().debug("Hello");
@@ -239,7 +245,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Disabled("Uses Logback unintentionally")
 	void loggingThatUsesJulIsCaptured(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		java.util.logging.Logger julLogger = java.util.logging.Logger.getLogger(getClass().getName());
 		julLogger.setLevel(Level.INFO);
 		julLogger.severe("Hello world");
@@ -287,7 +293,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	@Test
 	void exceptionsIncludeClassPackaging(CapturedOutput output) {
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, getRelativeClasspathLocation("log4j2-file.xml"),
+		this.loggingSystem.initialize(initializationContext, getRelativeClasspathLocation("log4j2-file.xml"),
 				getLogFile(null, tmpDir()));
 		this.logger.warn("Expected exception", new RuntimeException("Expected"));
 		String fileContents = contentOf(new File(tmpDir() + "/spring.log"));
@@ -299,7 +305,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 	void beforeInitializeFilterDisablesErrorLogging() {
 		this.loggingSystem.beforeInitialize();
 		assertThat(this.logger.isErrorEnabled()).isFalse();
-		this.loggingSystem.initialize(null, null, getLogFile(null, tmpDir()));
+		this.loggingSystem.initialize(initializationContext, null, getLogFile(null, tmpDir()));
 	}
 
 	@Test
@@ -308,7 +314,7 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		try {
 			this.loggingSystem.beforeInitialize();
 			this.logger.info("Hidden");
-			this.loggingSystem.initialize(null, getRelativeClasspathLocation("log4j2-file.xml"),
+			this.loggingSystem.initialize(initializationContext, getRelativeClasspathLocation("log4j2-file.xml"),
 					getLogFile(null, tmpDir()));
 			this.logger.warn("Expected exception", new RuntimeException("Expected", new RuntimeException("Cause")));
 			String fileContents = contentOf(new File(tmpDir() + "/spring.log"));
@@ -326,11 +332,11 @@ class Log4J2LoggingSystemTests extends AbstractLoggingSystemTests {
 		PropertyChangeListener listener = mock(PropertyChangeListener.class);
 		loggerContext.addPropertyChangeListener(listener);
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		this.loggingSystem.beforeInitialize();
-		this.loggingSystem.initialize(null, null, null);
+		this.loggingSystem.initialize(initializationContext, null, null);
 		verify(listener, times(2)).propertyChange(any(PropertyChangeEvent.class));
 		this.loggingSystem.cleanUp();
 		this.loggingSystem.beforeInitialize();

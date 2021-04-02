@@ -179,7 +179,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 	protected void loadConfiguration(LoggingInitializationContext initializationContext, String location,
 			LogFile logFile) {
 		super.loadConfiguration(initializationContext, location, logFile);
-		loadConfiguration(initializationContext, location, logFile);
+		loadConfigurationInternal(initializationContext, location, logFile);
 	}
 
 	protected void loadConfigurationInternal(LoggingInitializationContext initializationContext, String location,
@@ -190,7 +190,7 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 			URL url = ResourceUtils.getURL(location);
 			ConfigurationSource source = getConfigurationSource(url);
 			Configuration configuration;
-			if (url.toString().endsWith("xml")) {
+			if (url.toString().endsWith("xml") && initializationContext != null) {
 				configuration = new SpringBootXmlConfiguration(initializationContext, ctx, source);
 			}
 			else {
