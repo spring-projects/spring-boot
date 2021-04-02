@@ -63,7 +63,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  * @author Alexander Heusingfeld
  * @author Ben Hale
- * @author xin jiang
+ * @author Kong Wu
  * @since 1.2.0
  */
 public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
