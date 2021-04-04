@@ -405,8 +405,8 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 	}
 
 	/**
-	 * Nested exception used to wrap a {@link InvalidEndpointRequestException} and provide
-	 * a {@link HttpStatus#BAD_REQUEST} status.
+	 * Nested exception used to wrap an {@link InvalidEndpointRequestException} and
+	 * provide a {@link HttpStatus#BAD_REQUEST} status.
 	 */
 	private static class InvalidEndpointBadRequestException extends ResponseStatusException {
 
