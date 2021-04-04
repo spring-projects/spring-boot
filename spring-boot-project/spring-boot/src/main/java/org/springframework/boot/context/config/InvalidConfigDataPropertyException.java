@@ -101,7 +101,7 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 	}
 
 	/**
-	 * Throw a {@link InvalidConfigDataPropertyException} or log a warning if the given
+	 * Throw an {@link InvalidConfigDataPropertyException} or log a warning if the given
 	 * {@link ConfigDataEnvironmentContributor} contains any invalid property. A warning
 	 * is logged if the property is still supported, but not recommended. An error is
 	 * thrown if the property is completely unsupported.
