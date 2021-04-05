@@ -73,6 +73,7 @@ public abstract class AbstractErrorWebExceptionHandler implements ErrorWebExcept
 		exceptions.add("ClientAbortException");
 		exceptions.add("EOFException");
 		exceptions.add("EofException");
+		exceptions.add("PrematureCloseException");
 		DISCONNECTED_CLIENT_EXCEPTIONS = Collections.unmodifiableSet(exceptions);
 	}
 
