@@ -696,7 +696,6 @@ with the `key` listed in the table below.
 |===
 | Key | Name | Description
 
-=======
 | `cassandra`
 | {spring-boot-actuator-module-code}/cassandra/CassandraDriverHealthIndicator.java[`CassandraDriverHealthIndicator`]
 | Checks that a Cassandra database is up.
