@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.embedded.undertow;
 
+import java.io.InputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
@@ -181,7 +182,9 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider) : KeyStore.getInstance(type);
 		try {
 			URL url = ResourceUtils.getURL(resource);
-			store.load(url.openStream(), (password != null) ? password.toCharArray() : null);
+			try (InputStream inputStream = url.openStream()) {
+				store.load(inputStream, (password != null) ? password.toCharArray() : null);
+			}
 			return store;
 		}
 		catch (Exception ex) {
