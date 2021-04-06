@@ -269,7 +269,8 @@ class ConfigDataEnvironment {
 			ConfigDataActivationContext activationContext) {
 		this.logger.trace("Deducing profiles from current config data environment contributors");
 		Binder binder = contributors.getBinder(activationContext,
-				ConfigDataEnvironmentContributor::isNotIgnoringProfiles, BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
+				(contributor) -> !contributor.hasConfigDataOption(ConfigData.Option.IGNORE_PROFILES),
+				BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
 		try {
 			Set<String> additionalProfiles = new LinkedHashSet<>(this.additionalProfiles);
 			additionalProfiles.addAll(getIncludedProfiles(contributors, activationContext));
@@ -291,7 +292,7 @@ class ConfigDataEnvironment {
 		Set<String> result = new LinkedHashSet<>();
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			ConfigurationPropertySource source = contributor.getConfigurationPropertySource();
-			if (source != null && contributor.isNotIgnoringProfiles()) {
+			if (source != null && !contributor.hasConfigDataOption(ConfigData.Option.IGNORE_PROFILES)) {
 				Binder binder = new Binder(Collections.singleton(source), placeholdersResolver);
 				binder.bind(Profiles.INCLUDE_PROFILES, STRING_LIST).ifBound((includes) -> {
 					if (!contributor.isActive(activationContext)) {

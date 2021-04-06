@@ -43,7 +43,7 @@ public final class ConfigData {
 
 	private final List<PropertySource<?>> propertySources;
 
-	private final Set<Option> options;
+	private final PropertySourceOptions propertySourceOptions;
 
 	/**
 	 * A {@link ConfigData} instance that contains no data.
@@ -51,17 +51,30 @@ public final class ConfigData {
 	public static final ConfigData EMPTY = new ConfigData(Collections.emptySet());
 
 	/**
-	 * Create a new {@link ConfigData} instance.
+	 * Create a new {@link ConfigData} instance with the same options applied to each
+	 * source.
 	 * @param propertySources the config data property sources in ascending priority
 	 * order.
-	 * @param options the config data options
+	 * @param options the config data options applied to each source
+	 * @see #ConfigData(Collection, PropertySourceOptions)
 	 */
 	public ConfigData(Collection<? extends PropertySource<?>> propertySources, Option... options) {
+		this(propertySources, PropertySourceOptions.always(Options.of(options)));
+	}
+
+	/**
+	 * Create a new {@link ConfigData} instance with specific property source options.
+	 * @param propertySources the config data property sources in ascending priority
+	 * order.
+	 * @param propertySourceOptions the property source options
+	 * @since 2.4.5
+	 */
+	public ConfigData(Collection<? extends PropertySource<?>> propertySources,
+			PropertySourceOptions propertySourceOptions) {
 		Assert.notNull(propertySources, "PropertySources must not be null");
-		Assert.notNull(options, "Options must not be null");
+		Assert.notNull(propertySourceOptions, "PropertySourceOptions must not be null");
 		this.propertySources = Collections.unmodifiableList(new ArrayList<>(propertySources));
-		this.options = Collections.unmodifiableSet(
-				(options.length != 0) ? EnumSet.copyOf(Arrays.asList(options)) : EnumSet.noneOf(Option.class));
+		this.propertySourceOptions = propertySourceOptions;
 	}
 
 	/**
@@ -77,18 +90,167 @@ public final class ConfigData {
 	/**
 	 * Return a set of {@link Option config data options} for this source.
 	 * @return the config data options
+	 * @deprecated since 2.4.5 in favor of {@link #getOptions(PropertySource)}
 	 */
+	@Deprecated
 	public Set<Option> getOptions() {
-		return this.options;
+		Assert.state(this.propertySourceOptions instanceof AlwaysPropertySourceOptions, "No global options defined");
+		return this.propertySourceOptions.get(null).asSet();
 	}
 
 	/**
-	 * Option flags that can be applied config data.
+	 * Return the {@link Options config data options} that apply to the given source.
+	 * @param propertySource the property source to check
+	 * @return the options that apply
+	 * @since 2.4.5
+	 */
+	public Options getOptions(PropertySource<?> propertySource) {
+		Options options = this.propertySourceOptions.get(propertySource);
+		return (options != null) ? options : Options.NONE;
+	}
+
+	/**
+	 * Strategy interface used to supply {@link Options} for a given
+	 * {@link PropertySource}.
+	 *
+	 * @since 2.4.5
+	 */
+	@FunctionalInterface
+	public interface PropertySourceOptions {
+
+		/**
+		 * Return the options that should apply for the given property source.
+		 * @param propertySource the property source
+		 * @return the options to apply
+		 */
+		Options get(PropertySource<?> propertySource);
+
+		/**
+		 * Create a new {@link PropertySourceOptions} instance that always returns the
+		 * same options regardless of the property source.
+		 * @param options the options to return
+		 * @return a new {@link PropertySourceOptions} instance
+		 */
+		static PropertySourceOptions always(Option... options) {
+			return always(Options.of(options));
+		}
+
+		/**
+		 * Create a new {@link PropertySourceOptions} instance that always returns the
+		 * same options regardless of the property source.
+		 * @param options the options to return
+		 * @return a new {@link PropertySourceOptions} instance
+		 */
+		static PropertySourceOptions always(Options options) {
+			return new AlwaysPropertySourceOptions(options);
+		}
+
+	}
+
+	/**
+	 * {@link PropertySourceOptions} that always returns the same result.
+	 */
+	private static class AlwaysPropertySourceOptions implements PropertySourceOptions {
+
+		private final Options options;
+
+		AlwaysPropertySourceOptions(Options options) {
+			this.options = options;
+		}
+
+		@Override
+		public Options get(PropertySource<?> propertySource) {
+			return this.options;
+		}
+
+	}
+
+	/**
+	 * A set of {@link Option} flags.
+	 *
+	 * @since 2.4.5
+	 */
+	public static final class Options {
+
+		/**
+		 * No options.
+		 */
+		public static final Options NONE = Options.of();
+
+		private final Set<Option> options;
+
+		private Options(Set<Option> options) {
+			this.options = Collections.unmodifiableSet(options);
+		}
+
+		Set<Option> asSet() {
+			return this.options;
+		}
+
+		/**
+		 * Returns if the given option is contained in this set.
+		 * @param option the option to check
+		 * @return {@code true} of the option is present
+		 */
+		public boolean contains(Option option) {
+			return this.options.contains(option);
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			Options other = (Options) obj;
+			return this.options.equals(other.options);
+		}
+
+		@Override
+		public int hashCode() {
+			return this.options.hashCode();
+		}
+
+		@Override
+		public String toString() {
+			return this.options.toString();
+		}
+
+		/**
+		 * Create a new {@link Options} instance that contains the options in this set
+		 * excluding the given option.
+		 * @param option the option to exclude
+		 * @return a new {@link Options} instance
+		 */
+		Options without(Option option) {
+			EnumSet<Option> options = EnumSet.noneOf(Option.class);
+			options.addAll(this.options);
+			options.remove(option);
+			return new Options(options);
+		}
+
+		/**
+		 * Create a new instance with the given {@link Option} values.
+		 * @param options the options to include
+		 * @return a new {@link Options} instance
+		 */
+		public static Options of(Option... options) {
+			Assert.notNull(options, "Options must not be null");
+			return new Options(
+					(options.length != 0) ? EnumSet.copyOf(Arrays.asList(options)) : EnumSet.noneOf(Option.class));
+		}
+
+	}
+
+	/**
+	 * Option flags that can be applied.
 	 */
 	public enum Option {
 
 		/**
-		 * Ignore all imports properties from the sources.
+		 * Ignore all imports properties from the source.
 		 */
 		IGNORE_IMPORTS,
 
@@ -96,7 +258,14 @@ public final class ConfigData {
 		 * Ignore all profile activation and include properties.
 		 * @since 2.4.3
 		 */
-		IGNORE_PROFILES;
+		IGNORE_PROFILES,
+
+		/**
+		 * Indicates that the source is "profile specific" and should be included after
+		 * profile specific sibling imports.
+		 * @since 2.4.5
+		 */
+		PROFILE_SPECIFIC;
 
 	}
 

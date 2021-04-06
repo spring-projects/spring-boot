@@ -117,7 +117,8 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 					logger.warn(getMessage(property, false, replacement, contributor.getResource()));
 				}
 			});
-			if (contributor.isProfileSpecific() && contributor.isNotIgnoringProfiles()) {
+			if (contributor.isFromProfileSpecificImport()
+					&& !contributor.hasConfigDataOption(ConfigData.Option.IGNORE_PROFILES)) {
 				PROFILE_SPECIFIC_ERRORS.forEach((name) -> {
 					ConfigurationProperty property = propertySource.getConfigurationProperty(name);
 					if (property != null) {

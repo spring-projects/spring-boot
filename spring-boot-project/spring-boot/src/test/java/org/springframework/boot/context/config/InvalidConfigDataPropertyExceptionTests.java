@@ -16,9 +16,6 @@
 
 package org.springframework.boot.context.config;
 
-import java.util.Arrays;
-import java.util.HashSet;
-
 import org.apache.commons.logging.Log;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
@@ -148,7 +145,7 @@ class InvalidConfigDataPropertyExceptionTests {
 		propertySource.setProperty(name, "a");
 		ConfigDataEnvironmentContributor contributor = new ConfigDataEnvironmentContributor(Kind.BOUND_IMPORT, null,
 				null, true, propertySource, ConfigurationPropertySource.from(propertySource), null,
-				new HashSet<>(Arrays.asList(configDataOptions)), null);
+				ConfigData.Options.of(configDataOptions), null);
 		return contributor;
 	}
 
