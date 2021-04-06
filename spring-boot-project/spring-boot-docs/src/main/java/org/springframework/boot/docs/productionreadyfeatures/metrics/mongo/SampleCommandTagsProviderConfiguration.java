@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.productionreadyfeatures.metrics.mongo;
 
-// tag::code[]
 import com.mongodb.event.CommandEvent;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandTagsProvider;
@@ -33,7 +32,7 @@ public class SampleCommandTagsProviderConfiguration {
 	}
 
 }
-// end::code[]
+// @chomp:file
 
 class CustomCommandTagsProvider implements MongoMetricsCommandTagsProvider {
 

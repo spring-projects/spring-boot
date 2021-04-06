@@ -28,9 +28,8 @@ public class ExceptionHandlingController {
 
 	@GetMapping("/profile")
 	public Rendering userProfile() {
-		// ..
-		throw new IllegalStateException();
 		// ...
+		throw new IllegalStateException();
 	}
 
 	@ExceptionHandler(IllegalStateException.class)

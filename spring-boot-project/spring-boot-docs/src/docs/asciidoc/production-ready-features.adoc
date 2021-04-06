@@ -2234,6 +2234,8 @@ To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvi
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
 Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-webflux-error-handling, setting handled exceptions as request parameters>>.
 
+
+
 [[production-ready-metrics-jersey-server]]
 ==== Jersey Server Metrics
 When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
@@ -2428,7 +2430,7 @@ To replace the default metric tags, define a `MongoMetricsCommandTagsProvider` b
 
 [source,java,indent=0]
 ----
-include::{include-productionreadyfeatures}/metrics/mongo/SampleCommandTagsProviderConfiguration.java[tag=*]
+include::{include-productionreadyfeatures}/metrics/mongo/SampleCommandTagsProviderConfiguration.java[]
 ----
 
 To disable the auto-configured command metrics, set the following property:
@@ -2479,6 +2481,7 @@ To disable the auto-configured connection pool metrics, set the following proper
 	      connectionpool:
 	        enabled: false
 ----
+
 
 
 [[production-ready-metrics-custom]]

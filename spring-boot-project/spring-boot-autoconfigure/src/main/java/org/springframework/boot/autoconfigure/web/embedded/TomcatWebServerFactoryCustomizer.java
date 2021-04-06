@@ -148,7 +148,7 @@ public class TomcatWebServerFactoryCustomizer
 		factory.addConnectorCustomizers((connector) -> {
 			ProtocolHandler handler = connector.getProtocolHandler();
 			if (handler instanceof AbstractProtocol) {
-				final AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
+				AbstractProtocol<?> protocol = (AbstractProtocol<?>) handler;
 				protocol.setKeepAliveTimeout((int) keepAliveTimeout.toMillis());
 			}
 		});
