@@ -59,7 +59,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 		"management.endpoints.web.exposure.include=*", "spring.jackson.default-property-inclusion=non_null" })
 public abstract class AbstractEndpointDocumentationTests {
 
-	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
+	protected static String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
 				.map((constant) -> "`" + constant.name() + "`").collect(Collectors.toList()), ", ");
 	}

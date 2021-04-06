@@ -157,7 +157,12 @@ include::{snippets}/quartz/trigger-details-cron/curl-request.adoc[]
 
 The preceding example retrieves the details of trigger identified by the `samples` group and `example` name.
 
-The resulting response has a common structure and a specific additional object according to the trigger implementation.
+
+
+[[quartz-trigger-common-response-structure]]
+=== Common Response Structure
+
+The response has a common structure and an additional object that is specific to the trigger's type.
 There are five supported types:
 
 * `cron` for `CronTrigger`
@@ -166,9 +171,14 @@ There are five supported types:
 * `calendarInterval` for `CalendarIntervalTrigger`
 * `custom` for any other trigger implementations
 
+The following table describes the structure of the common elements of the response:
+
+[cols="2,1,3"]
+include::{snippets}/quartz/trigger-details-common/response-fields.adoc[]
 
 
-[[quartz-trigger-cron]]
+
+[[quartz-trigger-cron-response-structure]]
 === Cron Trigger Response Structure
 
 A cron trigger defines the cron expression that is used to determine when it has to fire.
@@ -177,14 +187,16 @@ The resulting response for such a trigger implementation is similar to the follo
 include::{snippets}/quartz/trigger-details-cron/http-response.adoc[]
 
 
-The following table describes the structure of the response:
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz-trigger-common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to cron triggers:
 
 [cols="2,1,3"]
 include::{snippets}/quartz/trigger-details-cron/response-fields.adoc[]
 
 
 
-[[quartz-trigger-simple]]
+[[quartz-trigger-simple-response-structure]]
 === Simple Trigger Response Structure
 
 A simple trigger is used to fire a Job at a given moment in time, and optionally repeated at a specified interval.
@@ -193,14 +205,16 @@ The resulting response for such a trigger implementation is similar to the follo
 include::{snippets}/quartz/trigger-details-simple/http-response.adoc[]
 
 
-The following table describes the structure of the response:
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz-trigger-common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to simple triggers:
 
 [cols="2,1,3"]
 include::{snippets}/quartz/trigger-details-simple/response-fields.adoc[]
 
 
 
-[[quartz-trigger-daily-time-interval]]
+[[quartz-trigger-daily-time-interval-response-structure]]
 === Daily Time Interval Trigger Response Structure
 
 A daily time interval trigger is used to fire a Job based upon daily repeating time intervals.
@@ -209,30 +223,34 @@ The resulting response for such a trigger implementation is similar to the follo
 include::{snippets}/quartz/trigger-details-daily-time-interval/http-response.adoc[]
 
 
-The following table describes the structure of the response:
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz-trigger-common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to daily time interval triggers:
 
 [cols="2,1,3"]
 include::{snippets}/quartz/trigger-details-daily-time-interval/response-fields.adoc[]
 
 
 
-[[quartz-trigger-calendar-interval]]
+[[quartz-trigger-calendar-interval-response-structure]]
 === Calendar Interval Trigger Response Structure
 
-A daily time interval trigger is used to fire a Job based upon repeating calendar time intervals.
+A calendar interval trigger is used to fire a Job based upon repeating calendar time intervals.
 The resulting response for such a trigger implementation is similar to the following:
 
 include::{snippets}/quartz/trigger-details-calendar-interval/http-response.adoc[]
 
 
-The following table describes the structure of the response:
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz-trigger-common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to calendar interval triggers:
 
 [cols="2,1,3"]
 include::{snippets}/quartz/trigger-details-calendar-interval/response-fields.adoc[]
 
 
 
-[[quartz-trigger-custom]]
+[[quartz-trigger-custom-response-structure]]
 === Custom Trigger Response Structure
 
 A custom trigger is any other implementation.
@@ -241,7 +259,9 @@ The resulting response for such a trigger implementation is similar to the follo
 include::{snippets}/quartz/trigger-details-custom/http-response.adoc[]
 
 
-The following table describes the structure of the response:
+Much of the response is common to all trigger types.
+The structure of the common elements of the response was <<quartz-trigger-common-response-structure,described previously>>.
+The following table describes the structure of the parts of the response that are specific to custom triggers:
 
 [cols="2,1,3"]
 include::{snippets}/quartz/trigger-details-custom/response-fields.adoc[]

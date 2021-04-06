@@ -67,7 +67,9 @@ import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
+import static org.springframework.restdocs.payload.PayloadDocumentation.relaxedResponseFields;
 import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.restdocs.payload.PayloadDocumentation.subsectionWithPath;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -88,24 +90,24 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	private static final JobDetail jobThree = JobBuilder.newJob(Job.class).withIdentity("jobThree", "tests").build();
 
-	private static final CronTrigger triggerOne = TriggerBuilder.newTrigger().forJob(jobOne).withPriority(3)
+	private static final CronTrigger cronTrigger = TriggerBuilder.newTrigger().forJob(jobOne).withPriority(3)
 			.withDescription("3AM on weekdays").withIdentity("3am-weekdays", "samples")
 			.withSchedule(
 					CronScheduleBuilder.atHourAndMinuteOnGivenDaysOfWeek(3, 0, 1, 2, 3, 4, 5).inTimeZone(timeZone))
 			.build();
 
-	private static final SimpleTrigger triggerTwo = TriggerBuilder.newTrigger().forJob(jobOne).withPriority(7)
+	private static final SimpleTrigger simpleTrigger = TriggerBuilder.newTrigger().forJob(jobOne).withPriority(7)
 			.withDescription("Once a day").withIdentity("every-day", "samples")
 			.withSchedule(SimpleScheduleBuilder.repeatHourlyForever(24)).build();
 
-	private static final CalendarIntervalTrigger triggerThree = TriggerBuilder.newTrigger().forJob(jobTwo)
+	private static final CalendarIntervalTrigger calendarIntervalTrigger = TriggerBuilder.newTrigger().forJob(jobTwo)
 			.withDescription("Once a week").withIdentity("once-a-week", "samples")
 			.withSchedule(CalendarIntervalScheduleBuilder.calendarIntervalSchedule().withIntervalInWeeks(1)
 					.inTimeZone(timeZone))
 			.build();
 
-	private static final DailyTimeIntervalTrigger triggerFour = TriggerBuilder.newTrigger().forJob(jobThree)
-			.withDescription("Every hour between 9AM and 6PM on Tuesday and Thursday")
+	private static final DailyTimeIntervalTrigger dailyTimeIntervalTrigger = TriggerBuilder.newTrigger()
+			.forJob(jobThree).withDescription("Every hour between 9AM and 6PM on Tuesday and Thursday")
 			.withIdentity("every-hour-tue-thu")
 			.withSchedule(DailyTimeIntervalScheduleBuilder.dailyTimeIntervalSchedule()
 					.onDaysOfTheWeek(Calendar.TUESDAY, Calendar.THURSDAY)
@@ -148,9 +150,10 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 			fieldWithPath("name").description("Name of the trigger."),
 			fieldWithPath("description").description("Description of the trigger, if any."),
 			fieldWithPath("state")
-					.description("State of the trigger, can be NONE, NORMAL, PAUSED, COMPLETE, ERROR, or BLOCKED."),
+					.description("State of the trigger (" + describeEnumValues(TriggerState.class) + ")."),
 			fieldWithPath("type").description(
-					"Type of the trigger, determine the key of the object containing implementation-specific details."),
+					"Type of the trigger (`calendarInterval`, `cron`, `custom`, `dailyTimeInterval`, `simple`). "
+							+ "Determines the key of the object containing type-specific details."),
 			fieldWithPath("calendarName").description("Name of the Calendar associated with this Trigger, if any."),
 			startTime(""), endTime(""), previousFireTime(""), nextFireTime(""), priority(""),
 			fieldWithPath("finalFireTime").optional().type(JsonFieldType.STRING)
@@ -164,7 +167,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzReport() throws Exception {
 		mockJobs(jobOne, jobTwo, jobThree);
-		mockTriggers(triggerOne, triggerTwo, triggerThree, triggerFour);
+		mockTriggers(cronTrigger, simpleTrigger, calendarIntervalTrigger, dailyTimeIntervalTrigger);
 		this.mockMvc.perform(get("/actuator/quartz")).andExpect(status().isOk())
 				.andDo(document("quartz/report",
 						responseFields(fieldWithPath("jobs.groups").description("An array of job group names."),
@@ -181,7 +184,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	@Test
 	void quartzTriggers() throws Exception {
-		mockTriggers(triggerOne, triggerTwo, triggerThree, triggerFour);
+		mockTriggers(cronTrigger, simpleTrigger, calendarIntervalTrigger, dailyTimeIntervalTrigger);
 		this.mockMvc.perform(get("/actuator/quartz/triggers")).andExpect(status().isOk())
 				.andDo(document("quartz/triggers",
 						responseFields(fieldWithPath("groups").description("Trigger groups keyed by name."),
@@ -202,16 +205,17 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 
 	@Test
 	void quartzTriggerGroup() throws Exception {
-		CronTrigger cron = triggerOne.getTriggerBuilder().startAt(fromUtc("2020-11-30T17:00:00Z"))
+		CronTrigger cron = cronTrigger.getTriggerBuilder().startAt(fromUtc("2020-11-30T17:00:00Z"))
 				.endAt(fromUtc("2020-12-30T03:00:00Z")).withIdentity("3am-week", "tests").build();
 		setPreviousNextFireTime(cron, "2020-12-04T03:00:00Z", "2020-12-07T03:00:00Z");
-		SimpleTrigger simple = triggerTwo.getTriggerBuilder().withIdentity("every-day", "tests").build();
+		SimpleTrigger simple = simpleTrigger.getTriggerBuilder().withIdentity("every-day", "tests").build();
 		setPreviousNextFireTime(simple, null, "2020-12-04T12:00:00Z");
-		CalendarIntervalTrigger calendarInterval = triggerThree.getTriggerBuilder().withIdentity("once-a-week", "tests")
-				.startAt(fromUtc("2019-07-10T14:00:00Z")).endAt(fromUtc("2023-01-01T12:00:00Z")).build();
+		CalendarIntervalTrigger calendarInterval = calendarIntervalTrigger.getTriggerBuilder()
+				.withIdentity("once-a-week", "tests").startAt(fromUtc("2019-07-10T14:00:00Z"))
+				.endAt(fromUtc("2023-01-01T12:00:00Z")).build();
 		setPreviousNextFireTime(calendarInterval, "2020-12-02T14:00:00Z", "2020-12-08T14:00:00Z");
-		DailyTimeIntervalTrigger tueThuTrigger = triggerFour.getTriggerBuilder().withIdentity("tue-thu", "tests")
-				.build();
+		DailyTimeIntervalTrigger tueThuTrigger = dailyTimeIntervalTrigger.getTriggerBuilder()
+				.withIdentity("tue-thu", "tests").build();
 		Trigger customTrigger = mock(Trigger.class);
 		given(customTrigger.getKey()).willReturn(TriggerKey.triggerKey("once-a-year-custom", "tests"));
 		given(customTrigger.toString()).willReturn("com.example.CustomTrigger@fdsfsd");
@@ -242,9 +246,9 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	@Test
 	void quartzJob() throws Exception {
 		mockJobs(jobOne);
-		CronTrigger firstTrigger = triggerOne.getTriggerBuilder().build();
+		CronTrigger firstTrigger = cronTrigger.getTriggerBuilder().build();
 		setPreviousNextFireTime(firstTrigger, null, "2020-12-07T03:00:00Z");
-		SimpleTrigger secondTrigger = triggerTwo.getTriggerBuilder().build();
+		SimpleTrigger secondTrigger = simpleTrigger.getTriggerBuilder().build();
 		setPreviousNextFireTime(secondTrigger, "2020-12-04T03:00:00Z", "2020-12-04T12:00:00Z");
 		mockTriggers(firstTrigger, secondTrigger);
 		given(this.scheduler.getTriggersOfJob(jobOne.getKey()))
@@ -267,52 +271,70 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 	}
 
 	@Test
+	void quartzTriggerCommon() throws Exception {
+		setupTriggerDetails(cronTrigger.getTriggerBuilder(), TriggerState.NORMAL);
+		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
+				.andDo(document("quartz/trigger-details-common", responseFields(commonCronDetails).and(
+						subsectionWithPath("calendarInterval").description(
+								"Calendar time interval trigger details, if any. Present when `type` is `calendarInterval`.")
+								.optional().type(JsonFieldType.OBJECT),
+						subsectionWithPath("custom")
+								.description("Custom trigger details, if any. Present when `type` is `custom`.")
+								.optional().type(JsonFieldType.OBJECT),
+						subsectionWithPath("cron")
+								.description("Cron trigger details, if any. Present when `type` is `cron`.").optional()
+								.type(JsonFieldType.OBJECT),
+						subsectionWithPath("dailyTimeInterval").description(
+								"Daily time interval trigger details, if any. Present when `type` is `dailyTimeInterval`.")
+								.optional().type(JsonFieldType.OBJECT),
+						subsectionWithPath("simple")
+								.description("Simple trigger details, if any. Present when `type` is `simple`.")
+								.optional().type(JsonFieldType.OBJECT))));
+	}
+
+	@Test
 	void quartzTriggerCron() throws Exception {
-		setupTriggerDetails(triggerOne.getTriggerBuilder(), TriggerState.NORMAL);
+		setupTriggerDetails(cronTrigger.getTriggerBuilder(), TriggerState.NORMAL);
 		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-cron",
-						responseFields(commonCronDetails)
-								.and(fieldWithPath("cron").description("Cron trigger specific details."))
+						relaxedResponseFields(fieldWithPath("cron").description("Cron trigger specific details."))
 								.andWithPrefix("cron.", cronTriggerSummary)));
 	}
 
 	@Test
 	void quartzTriggerSimple() throws Exception {
-		setupTriggerDetails(triggerTwo.getTriggerBuilder(), TriggerState.NORMAL);
+		setupTriggerDetails(simpleTrigger.getTriggerBuilder(), TriggerState.NORMAL);
 		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-simple",
-						responseFields(commonCronDetails)
-								.and(fieldWithPath("simple").description("Simple trigger specific details."))
+						relaxedResponseFields(fieldWithPath("simple").description("Simple trigger specific details."))
 								.andWithPrefix("simple.", simpleTriggerSummary)
 								.and(repeatCount("simple."), timesTriggered("simple."))));
 	}
 
 	@Test
 	void quartzTriggerCalendarInterval() throws Exception {
-		setupTriggerDetails(triggerThree.getTriggerBuilder(), TriggerState.NORMAL);
+		setupTriggerDetails(calendarIntervalTrigger.getTriggerBuilder(), TriggerState.NORMAL);
 		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
-				.andDo(document("quartz/trigger-details-calendar-interval", responseFields(commonCronDetails)
-						.and(fieldWithPath("calendarInterval")
-								.description("Calendar interval trigger specific details."))
-						.andWithPrefix("calendarInterval.", calendarIntervalTriggerSummary)
-						.and(timesTriggered("calendarInterval."),
-								fieldWithPath("calendarInterval.preserveHourOfDayAcrossDaylightSavings").description(
-										"Whether to fire the trigger at the same time of day, regardless of daylight "
-												+ "saving time transitions."),
-								fieldWithPath("calendarInterval.skipDayIfHourDoesNotExist").description(
-										"Whether to skip if the hour of the day does not exist on a given day."))));
+				.andDo(document("quartz/trigger-details-calendar-interval", relaxedResponseFields(
+						fieldWithPath("calendarInterval").description("Calendar interval trigger specific details."))
+								.andWithPrefix("calendarInterval.", calendarIntervalTriggerSummary)
+								.and(timesTriggered("calendarInterval."), fieldWithPath(
+										"calendarInterval.preserveHourOfDayAcrossDaylightSavings").description(
+												"Whether to fire the trigger at the same time of day, regardless of daylight "
+														+ "saving time transitions."),
+										fieldWithPath("calendarInterval.skipDayIfHourDoesNotExist").description(
+												"Whether to skip if the hour of the day does not exist on a given day."))));
 	}
 
 	@Test
 	void quartzTriggerDailyTimeInterval() throws Exception {
-		setupTriggerDetails(triggerFour.getTriggerBuilder(), TriggerState.PAUSED);
+		setupTriggerDetails(dailyTimeIntervalTrigger.getTriggerBuilder(), TriggerState.PAUSED);
 		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-daily-time-interval",
-						responseFields(commonCronDetails)
-								.and(fieldWithPath("dailyTimeInterval")
-										.description("Daily time interval trigger specific details."))
-								.andWithPrefix("dailyTimeInterval.", dailyTimeIntervalTriggerSummary)
-								.and(repeatCount("dailyTimeInterval."), timesTriggered("dailyTimeInterval."))));
+						relaxedResponseFields(fieldWithPath("dailyTimeInterval")
+								.description("Daily time interval trigger specific details."))
+										.andWithPrefix("dailyTimeInterval.", dailyTimeIntervalTriggerSummary)
+										.and(repeatCount("dailyTimeInterval."), timesTriggered("dailyTimeInterval."))));
 	}
 
 	@Test
@@ -331,8 +353,7 @@ class QuartzEndpointDocumentationTests extends MockMvcEndpointDocumentationTests
 		mockTriggers(trigger);
 		this.mockMvc.perform(get("/actuator/quartz/triggers/samples/example")).andExpect(status().isOk())
 				.andDo(document("quartz/trigger-details-custom",
-						responseFields(commonCronDetails)
-								.and(fieldWithPath("custom").description("Custom trigger specific details."))
+						relaxedResponseFields(fieldWithPath("custom").description("Custom trigger specific details."))
 								.andWithPrefix("custom.", customTriggerSummary)));
 	}
 
