@@ -99,7 +99,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customizeKeepAliveTimeout() {
+	void customKeepAliveTimeout() {
 		bind("server.tomcat.keep-alive-timeout=30ms");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractProtocol<?>) server.getTomcat().getConnector().getProtocolHandler()).getKeepAliveTimeout())
@@ -107,7 +107,7 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customizeMaxKeepAliveRequests() {
+	void customMaxKeepAliveRequests() {
 		bind("server.tomcat.max-keep-alive-requests=-1");
 		customizeAndRunServer((server) -> assertThat(
 				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())

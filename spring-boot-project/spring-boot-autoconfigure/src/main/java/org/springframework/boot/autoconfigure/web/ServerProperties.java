@@ -372,18 +372,15 @@ public class ServerProperties {
 		private int processorCache = 200;
 
 		/**
-		 * The number of milliseconds this Connector will wait for another HTTP request
-		 * before closing the connection. The default value is to use the value that has
-		 * been set for the connectionTimeout attribute. Use a value of -1 to indicate no
-		 * (i.e. infinite) timeout.
+		 * Time to wait for another HTTP request before the connection is closed. When not
+		 * set the connectionTimeout is used. When set to -1 there will be no timeout.
 		 */
 		private Duration keepAliveTimeout;
 
 		/**
-		 * The maximum number of HTTP requests which can be pipelined until the connection
-		 * is closed by the server./ Setting this attribute to 1 will disable HTTP/1.0
-		 * keep-alive as well as HTTP/1.1 keep-alive and pipelining. Setting this to -1
-		 * will allow an unlimited amount of pipelined or keep-alive HTTP requests.
+		 * Maximum number of HTTP requests that can be pipelined before the connection is
+		 * closed. When set to 0 or 1, keep-alive and pipelining are disabled. When set to
+		 * -1, an unlimited number of pipelined or keep-alive requests is allowed.
 		 */
 		private int maxKeepAliveRequests = 100;
 

@@ -233,6 +233,12 @@ class ServerPropertiesTests {
 
 	@Test
 	void customizeMaxKeepAliveRequests() {
+		bind("server.tomcat.max-keep-alive-requests", "200");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(200);
+	}
+
+	@Test
+	void customizeMaxKeepAliveRequestsWithInfinite() {
 		bind("server.tomcat.max-keep-alive-requests", "-1");
 		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(-1);
 	}
