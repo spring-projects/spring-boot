@@ -80,6 +80,7 @@ dependencies {
 	implementation("org.glassfish.jersey.core:jersey-server")
 	implementation("org.hibernate:hibernate-jcache")
 	implementation("org.jooq:jooq")
+	implementation("org.mongodb:mongodb-driver-sync")
 	implementation("org.slf4j:jul-to-slf4j")
 	implementation("org.springframework:spring-jdbc")
 	implementation("org.springframework:spring-test")

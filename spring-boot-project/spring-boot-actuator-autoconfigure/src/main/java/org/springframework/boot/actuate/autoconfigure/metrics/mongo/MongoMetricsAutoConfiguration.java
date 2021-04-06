@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics;
+package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
 
 import com.mongodb.MongoClientSettings;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -25,6 +25,8 @@ import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandTagsProvi
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolTagsProvider;
 
+import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;

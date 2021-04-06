@@ -46,7 +46,6 @@ org.springframework.boot.actuate.autoconfigure.metrics.Log4J2MetricsAutoConfigur
 org.springframework.boot.actuate.autoconfigure.metrics.LogbackMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfiguration,\
-org.springframework.boot.actuate.autoconfigure.metrics.MongoMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration,\
@@ -71,6 +70,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.export.wavefront.Wavefron
 org.springframework.boot.actuate.autoconfigure.metrics.integration.IntegrationMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.jdbc.DataSourcePoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.jersey.JerseyServerMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.mongo.MongoMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.orm.jpa.HibernateMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.r2dbc.ConnectionPoolMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.web.client.HttpClientMetricsAutoConfiguration,\

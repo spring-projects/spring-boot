@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.autoconfigure.metrics;
+package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
 
 import java.util.List;
 

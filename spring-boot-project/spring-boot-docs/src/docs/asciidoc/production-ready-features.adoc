@@ -2400,8 +2400,11 @@ For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Nativ
 [[production-ready-metrics-mongodb]]
 ==== MongoDB Metrics
 
+
+
+[[production-ready-metrics-mongodb-command]]
 ===== Command Metrics
-Auto-configuration will register a `MongoMetricsCommandListener` for the auto-configured MongoClient.
+Auto-configuration will register a `MongoMetricsCommandListener` with the auto-configured `MongoClient`.
 
 A timer metric with the name `mongodb.driver.commands` is created for each command issued to the underlying MongoDB driver.
 Each metric is tagged with the following information by default:
@@ -2421,17 +2424,14 @@ Each metric is tagged with the following information by default:
 | Outcome of the command - one of (`SUCCESS`, `FAILED`)
 |===
 
-You can replace the default metric tags by providing a `MongoMetricsCommandTagsProvider` bean, as shown in the following example:
+To replace the default metric tags, define a `MongoMetricsCommandTagsProvider` bean, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Bean
-	MongoMetricsCommandTagsProvider mongoMetricsCommandTagsProvider() {
-		return new MyCustomMongoMetricsCommandTagsProvider();
-	}
+include::{include-productionreadyfeatures}/metrics/mongo/SampleCommandTagsProviderConfiguration.java[tag=*]
 ----
 
-If you want to disable the auto-configured command metrics, you can set the following property:
+To disable the auto-configured command metrics, set the following property:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----
@@ -2443,7 +2443,7 @@ If you want to disable the auto-configured command metrics, you can set the foll
 ----
 
 ===== Connection Pool Metrics
-Auto-configuration will register a `MongoMetricsConnectionPoolListener` for the auto-configured MongoClient.
+Auto-configuration will register a `MongoMetricsConnectionPoolListener` with the auto-configured `MongoClient`.
 
 The following gauge metrics are created for the connection pool:
 
@@ -2462,18 +2462,14 @@ Each metric is tagged with the following information by default:
 | Address of the server the connection pool corresponds to
 |===
 
-You can replace the default metric tags by providing a `MongoMetricsConnectionPoolTagsProvider` bean, as shown in the following example:
+To replace the default metric tags, define a `MongoMetricsConnectionPoolTagsProvider` bean, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-    @Bean
-    @ConditionalOnMissingBean
-    MongoMetricsConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider() {
-        return new DefaultMongoMetricsConnectionPoolTagsProvider();
-    }
+include::{include-productionreadyfeatures}/metrics/mongo/SampleConnectionPoolTagsProviderConfiguration.java[tag=*]
 ----
 
-If you want to disable the auto-configured connection pool metrics, you can set the following property:
+To disable the auto-configured connection pool metrics, set the following property:
 
 [source,yaml,indent=0,configprops,configblocks]
 ----
