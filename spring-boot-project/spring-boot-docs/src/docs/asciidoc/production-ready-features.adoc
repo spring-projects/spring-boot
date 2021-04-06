@@ -2135,6 +2135,7 @@ Spring Boot registers the following core metrics when applicable:
 * Kafka consumer, producer, and streams metrics
 * Log4j2 metrics: record the number of events logged to Log4j2 at each level
 * Logback metrics: record the number of events logged to Logback at each level
+* MongoDB metrics for all commands issued from the client and for client connection pool information
 * Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
 * Tomcat metrics (`server.tomcat.mbeanregistry.enabled` must be set to `true` for all Tomcat metrics to be registered)
 * {spring-integration-docs}system-management.html#micrometer-integration[Spring Integration] metrics
@@ -2394,6 +2395,90 @@ Auto-configuration will register a `MicrometerConsumerListener` and `MicrometerP
 It will also register a `KafkaStreamsMicrometerListener` for `StreamsBuilderFactoryBean`.
 For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Native Metrics] section of the Spring Kafka documentation.
 
+
+
+[[production-ready-metrics-mongodb]]
+==== MongoDB Metrics
+
+
+
+[[production-ready-metrics-mongodb-command]]
+===== Command Metrics
+Auto-configuration will register a `MongoMetricsCommandListener` with the auto-configured `MongoClient`.
+
+A timer metric with the name `mongodb.driver.commands` is created for each command issued to the underlying MongoDB driver.
+Each metric is tagged with the following information by default:
+|===
+| Tag | Description
+
+| `command`
+| Name of the command issued
+
+| `cluster.id`
+| Identifier of the cluster the command was sent to
+
+| `server.address`
+| Address of the server the command was sent to
+
+| `status`
+| Outcome of the command - one of (`SUCCESS`, `FAILED`)
+|===
+
+To replace the default metric tags, define a `MongoMetricsCommandTagsProvider` bean, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{include-productionreadyfeatures}/metrics/mongo/SampleCommandTagsProviderConfiguration.java[tag=*]
+----
+
+To disable the auto-configured command metrics, set the following property:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	management:
+	  metrics:
+	    mongo:
+	      command:
+	        enabled: false
+----
+
+===== Connection Pool Metrics
+Auto-configuration will register a `MongoMetricsConnectionPoolListener` with the auto-configured `MongoClient`.
+
+The following gauge metrics are created for the connection pool:
+
+* `mongodb.driver.pool.size` that reports the current size of the connection pool, including idle and and in-use members
+* `mongodb.driver.pool.checkedout` that reports the count of connections that are currently in use
+* `mongodb.driver.pool.waitqueuesize` that reports the current size of the wait queue for a connection from the pool
+
+Each metric is tagged with the following information by default:
+|===
+| Tag | Description
+
+| `cluster.id`
+| Identifier of the cluster the connection pool corresponds to
+
+| `server.address`
+| Address of the server the connection pool corresponds to
+|===
+
+To replace the default metric tags, define a `MongoMetricsConnectionPoolTagsProvider` bean, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{include-productionreadyfeatures}/metrics/mongo/SampleConnectionPoolTagsProviderConfiguration.java[tag=*]
+----
+
+To disable the auto-configured connection pool metrics, set the following property:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	management:
+	  metrics:
+	    mongo:
+	      connectionpool:
+	        enabled: false
+----
 
 
 [[production-ready-metrics-custom]]
