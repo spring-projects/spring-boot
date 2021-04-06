@@ -38,6 +38,7 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -82,6 +83,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
  * @author Chris Bono
+ * @author Parviz Rozikov
  */
 class ServerPropertiesTests {
 
@@ -214,6 +216,31 @@ class ServerPropertiesTests {
 	void testCustomizeTomcatMaxThreads() {
 		bind("server.tomcat.threads.max", "10");
 		assertThat(this.properties.getTomcat().getThreads().getMax()).isEqualTo(10);
+	}
+
+	@Test
+	void testCustomizeTomcatKeepAliveTimeout() {
+		bind("server.tomcat.keep-alive-timeout", "30s");
+		assertThat(this.properties.getTomcat().getKeepAliveTimeout()).hasSeconds(30);
+	}
+
+	@Test
+	void testCustomizeTomcatKeepAliveTimeoutWithInfinite() {
+		bind("server.tomcat.keep-alive-timeout", "-1");
+		assertThat(this.properties.getTomcat().getKeepAliveTimeout().toMillis()).isEqualTo(-1);
+		assertThat(this.properties.getTomcat().getKeepAliveTimeout()).hasMillis(-1);
+	}
+
+	@Test
+	void customizeMaxKeepAliveRequests() {
+		bind("server.tomcat.max-keep-alive-requests", "200");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(200);
+	}
+
+	@Test
+	void customizeMaxKeepAliveRequestsWithInfinite() {
+		bind("server.tomcat.max-keep-alive-requests", "-1");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(-1);
 	}
 
 	@Test
@@ -382,6 +409,14 @@ class ServerPropertiesTests {
 	@Test
 	void tomcatUseRelativeRedirectsDefaultsToFalse() {
 		assertThat(this.properties.getTomcat().isUseRelativeRedirects()).isFalse();
+	}
+
+	@Test
+	void tomcatMaxKeepAliveRequestsDefault() throws Exception {
+		AbstractEndpoint<?, ?> endpoint = (AbstractEndpoint<?, ?>) ReflectionTestUtils.getField(getDefaultProtocol(),
+				"endpoint");
+		int defaultMaxKeepAliveRequests = (int) ReflectionTestUtils.getField(endpoint, "maxKeepAliveRequests");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(defaultMaxKeepAliveRequests);
 	}
 
 	@Test
