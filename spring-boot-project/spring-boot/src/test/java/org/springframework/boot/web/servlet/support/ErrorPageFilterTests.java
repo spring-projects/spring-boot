@@ -399,7 +399,7 @@ class ErrorPageFilterTests {
 		assertThat(((HttpServletResponseWrapper) this.chain.getResponse()).getStatus()).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_STATUS_CODE)).isEqualTo(500);
 		assertThat(this.request.getAttribute(RequestDispatcher.ERROR_MESSAGE))
-				.isEqualTo("Required string parameter 'test' is not present");
+				.isEqualTo("Required request parameter 'test' for method parameter type string is not present");
 		Map<String, Object> requestAttributes = getAttributesForDispatch("/500");
 		assertThat(requestAttributes.get(RequestDispatcher.ERROR_EXCEPTION_TYPE))
 				.isEqualTo(MissingServletRequestParameterException.class);
