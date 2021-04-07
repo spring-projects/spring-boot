@@ -21,6 +21,8 @@ dependencies {
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.1.0")
 	implementation("org.asciidoctor:asciidoctor-gradle-jvm-pdf:3.1.0")
 	implementation("org.gradle:test-retry-gradle-plugin:1.1.9")
+	implementation("org.jetbrains.kotlin:kotlin-gradle-plugin:1.4.31")
+	implementation("org.jetbrains.kotlin:kotlin-compiler-embeddable:1.4.31")
 	implementation("org.springframework:spring-core:5.2.2.RELEASE")
 	implementation("org.springframework:spring-web:5.2.2.RELEASE")
 	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
