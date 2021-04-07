@@ -23,9 +23,10 @@
 						</goals>
 						<configuration>
 							<image>
-								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
 								<buildpacks>
-									<buildpack>spring-boot/test-info</buildpack>
+									<buildpack>gcr.io/paketo-buildpacks/bellsoft-liberica:latest</buildpack>
+									<buildpack>gcr.io/paketo-buildpacks/executable-jar:latest</buildpack>
+									<buildpack>gcr.io/paketo-buildpacks/spring-boot:latest</buildpack>
 								</buildpacks>
 							</image>
 						</configuration>
