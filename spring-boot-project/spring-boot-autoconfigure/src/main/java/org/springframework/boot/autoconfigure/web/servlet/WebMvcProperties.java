@@ -251,10 +251,6 @@ public class WebMvcProperties {
 				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
 						"spring.mvc.pathmatch.use-registered-suffix-pattern");
 			}
-			if (!this.getServlet().getServletMapping().equals("/")) {
-				throw new IncompatibleConfigurationException("spring.mvc.pathmatch.matching-strategy",
-						"spring.mvc.servlet.path");
-			}
 		}
 	}
 

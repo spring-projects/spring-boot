@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -76,14 +76,6 @@ class WebMvcPropertiesTests {
 	void incompatiblePathMatchRegisteredSuffixConfig() {
 		this.properties.getPathmatch().setMatchingStrategy(WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER);
 		this.properties.getPathmatch().setUseRegisteredSuffixPattern(true);
-		assertThatExceptionOfType(IncompatibleConfigurationException.class)
-				.isThrownBy(this.properties::checkConfiguration);
-	}
-
-	@Test
-	void incompatiblePathMatchServletPathConfig() {
-		this.properties.getPathmatch().setMatchingStrategy(WebMvcProperties.MatchingStrategy.PATH_PATTERN_PARSER);
-		this.properties.getServlet().setPath("/test");
 		assertThatExceptionOfType(IncompatibleConfigurationException.class)
 				.isThrownBy(this.properties::checkConfiguration);
 	}
