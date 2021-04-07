@@ -434,7 +434,7 @@ public class WebMvcProperties {
 		/**
 		 * Choice of strategy for matching request paths against registered mappings.
 		 */
-		private MatchingStrategy matchingStrategy = MatchingStrategy.PATH_PATTERN_PARSER;
+		private MatchingStrategy matchingStrategy = MatchingStrategy.ANT_PATH_MATCHER;
 
 		/**
 		 * Whether to use suffix pattern match (".*") when matching patterns to requests.
