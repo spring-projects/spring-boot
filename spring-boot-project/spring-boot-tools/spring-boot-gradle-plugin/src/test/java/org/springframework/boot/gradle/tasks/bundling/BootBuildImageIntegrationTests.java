@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2021 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,8 @@ import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.testcontainers.containers.GenericContainer;
+import org.testcontainers.containers.wait.strategy.Wait;
 
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
@@ -59,10 +61,14 @@ class BootBuildImageIntegrationTests {
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
-		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("env: BP_JVM_VERSION=8.*");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
-		removeImage(projectName);
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder");
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
 	}
 
 	@TestTemplate
@@ -72,10 +78,14 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-name");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("env: BP_JVM_VERSION=8.*");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
-		removeImage("example/test-image-name");
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-name"));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
 	}
 
 	@TestTemplate
@@ -85,11 +95,15 @@ class BootBuildImageIntegrationTests {
 		BuildResult result = this.gradleBuild.build("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-custom");
-		assertThat(result.getOutput()).contains("springci/spring-boot-cnb-builder:0.0.1");
-		assertThat(result.getOutput()).contains("paketobuildpacks/run:tiny-cnb");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
-		removeImage("example/test-image-custom");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder:full");
+		assertThat(result.getOutput()).contains("paketobuildpacks/run:full-cnb");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-custom"));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
 	}
 
 	@TestTemplate
@@ -97,14 +111,18 @@ class BootBuildImageIntegrationTests {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.build("bootBuildImage", "--imageName=example/test-image-cmd",
-				"--builder=springci/spring-boot-cnb-builder:0.0.1", "--runImage=paketobuildpacks/run:tiny-cnb");
+				"--builder=paketobuildpacks/builder:full", "--runImage=paketobuildpacks/run:full-cnb");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("example/test-image-cmd");
-		assertThat(result.getOutput()).contains("springci/spring-boot-cnb-builder:0.0.1");
-		assertThat(result.getOutput()).contains("paketobuildpacks/run:tiny-cnb");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
-		removeImage("example/test-image-cmd");
+		assertThat(result.getOutput()).contains("paketobuildpacks/builder:full");
+		assertThat(result.getOutput()).contains("paketobuildpacks/run:full-cnb");
+		ImageReference imageReference = ImageReference.of(ImageName.of("example/test-image-cmd"));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
 	}
 
 	@TestTemplate
@@ -122,7 +140,6 @@ class BootBuildImageIntegrationTests {
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
-		assertThat(result.getOutput()).contains("Forced builder failure");
 		assertThat(result.getOutput()).containsPattern("Builder lifecycle '.*' failed with status code");
 	}
 
@@ -153,12 +170,17 @@ class BootBuildImageIntegrationTests {
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
-		assertThat(result.getOutput()).contains("---> Test Info buildpack building");
-		assertThat(result.getOutput()).contains("---> Test Info buildpack done");
+		assertThat(result.getOutput()).contains("paketo-buildpacks/builder");
 		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
 		assertThat(buildLibs.listFiles())
 				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
-		removeImage(projectName);
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
 	}
 
 	private void writeMainClass() {
@@ -198,11 +220,6 @@ class BootBuildImageIntegrationTests {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
-	}
-
-	private void removeImage(String name) throws IOException {
-		ImageReference imageReference = ImageReference.of(ImageName.of(name));
-		new DockerApi().image().remove(imageReference, false);
 	}
 
 }

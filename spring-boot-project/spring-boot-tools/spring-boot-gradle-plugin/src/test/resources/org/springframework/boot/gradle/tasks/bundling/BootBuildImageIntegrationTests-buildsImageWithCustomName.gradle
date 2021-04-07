@@ -8,5 +8,4 @@ targetCompatibility = '1.8'
 
 bootBuildImage {
 	imageName = "example/test-image-name"
-	builder = "springci/spring-boot-cnb-builder:0.0.1"
 }
