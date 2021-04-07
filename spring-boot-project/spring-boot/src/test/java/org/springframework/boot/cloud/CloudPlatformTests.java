@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,6 @@ class CloudPlatformTests {
 		Environment environment = new MockEnvironment();
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
-
 	}
 
 	@Test
@@ -127,6 +126,32 @@ class CloudPlatformTests {
 	void getActiveWhenHasServiceHostAndNoServicePortShouldNotReturnKubernetes() {
 		Environment environment = getEnvironmentWithEnvVariables(
 				Collections.singletonMap("EXAMPLE_SERVICE_HOST", "---"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@Test
+	void getActiveWhenHasWebsiteSiteNameAndWebsitesEnableAppServiceStorageShouldReturnAzureAppService() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("WEBSITE_SITE_NAME", "---");
+		envVars.put("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "false");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isEqualTo(CloudPlatform.AZURE_APP_SERVICE);
+		assertThat(platform.isActive(environment)).isTrue();
+	}
+
+	@Test
+	void getActiveWhenHasWebsiteSiteNameAndNoWebsitesEnableAppServiceStorageShouldNotReturnAzureAppService() {
+		Environment environment = getEnvironmentWithEnvVariables(Collections.singletonMap("WEBSITE_SITE_NAME", "---"));
+		CloudPlatform platform = CloudPlatform.getActive(environment);
+		assertThat(platform).isNull();
+	}
+
+	@Test
+	void getActiveWhenHasWebsitesEnableAppServiceStorageAndNoWebsiteNameShouldNotReturnAzureAppService() {
+		Environment environment = getEnvironmentWithEnvVariables(
+				Collections.singletonMap("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "---"));
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
 	}
