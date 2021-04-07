@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.boot.actuate.endpoint.invoke.reflect.OperationMethod;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.Assert;

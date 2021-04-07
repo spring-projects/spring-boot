@@ -25,8 +25,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
@@ -78,7 +78,7 @@ public class CachingOperationInvoker implements OperationInvoker {
 			return this.invoker.invoke(context);
 		}
 		long accessTime = System.currentTimeMillis();
-		ApiVersion contextApiVersion = context.getApiVersion();
+		ApiVersion contextApiVersion = context.resolveArgument(ApiVersion.class);
 		Principal principal = context.resolveArgument(Principal.class);
 		CacheKey cacheKey = new CacheKey(contextApiVersion, principal);
 		CachedResponse cached = this.cachedResponses.get(cacheKey);

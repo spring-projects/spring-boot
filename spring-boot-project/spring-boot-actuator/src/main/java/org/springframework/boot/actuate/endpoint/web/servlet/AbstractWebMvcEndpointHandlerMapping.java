@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -287,7 +287,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			try {
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						new ProducibleOperationArgumentResolver(headers));
+						new ProducibleOperationArgumentResolver(() -> headers.get("Accept")));
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {

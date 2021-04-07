@@ -21,8 +21,6 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
-
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.Mockito.mock;
@@ -42,13 +40,14 @@ class InvocationContextTests {
 	@SuppressWarnings("deprecation")
 	void createWhenApiVersionIsNullUsesLatestVersion() {
 		InvocationContext context = new InvocationContext(null, this.securityContext, this.arguments);
-		assertThat(context.getApiVersion()).isEqualTo(ApiVersion.LATEST);
+		assertThat(context.getApiVersion()).isEqualTo(org.springframework.boot.actuate.endpoint.http.ApiVersion.LATEST);
 	}
 
 	@Test
+	@Deprecated
 	void whenCreatedWithoutApiVersionThenGetApiVersionReturnsLatestVersion() {
 		InvocationContext context = new InvocationContext(this.securityContext, this.arguments);
-		assertThat(context.getApiVersion()).isEqualTo(ApiVersion.LATEST);
+		assertThat(context.getApiVersion()).isEqualTo(org.springframework.boot.actuate.endpoint.http.ApiVersion.LATEST);
 	}
 
 	@Test
@@ -72,8 +71,9 @@ class InvocationContextTests {
 	@Test
 	@SuppressWarnings("deprecation")
 	void getApiVersionReturnsApiVersion() {
-		InvocationContext context = new InvocationContext(ApiVersion.V2, this.securityContext, this.arguments);
-		assertThat(context.getApiVersion()).isEqualTo(ApiVersion.V2);
+		InvocationContext context = new InvocationContext(org.springframework.boot.actuate.endpoint.http.ApiVersion.V2,
+				this.securityContext, this.arguments);
+		assertThat(context.getApiVersion()).isEqualTo(org.springframework.boot.actuate.endpoint.http.ApiVersion.V2);
 	}
 
 	@Test

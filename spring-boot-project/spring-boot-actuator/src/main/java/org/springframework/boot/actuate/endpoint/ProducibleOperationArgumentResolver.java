@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.http;
+package org.springframework.boot.actuate.endpoint;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Supplier;
 
-import org.springframework.boot.actuate.endpoint.OperationArgumentResolver;
-import org.springframework.boot.actuate.endpoint.annotation.Producible;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
@@ -35,10 +33,14 @@ import org.springframework.util.MimeTypeUtils;
  */
 public class ProducibleOperationArgumentResolver implements OperationArgumentResolver {
 
-	private final Map<String, List<String>> headers;
+	private final Supplier<List<String>> accepts;
 
-	public ProducibleOperationArgumentResolver(Map<String, List<String>> headers) {
-		this.headers = headers;
+	/**
+	 * Create a new {@link ProducibleOperationArgumentResolver} instance.
+	 * @param accepts supplier that returns accepted mime types
+	 */
+	public ProducibleOperationArgumentResolver(Supplier<List<String>> accepts) {
+		this.accepts = accepts;
 	}
 
 	@Override
@@ -53,7 +55,7 @@ public class ProducibleOperationArgumentResolver implements OperationArgumentRes
 	}
 
 	private Enum<? extends Producible<?>> resolveProducible(Class<Enum<? extends Producible<?>>> type) {
-		List<String> accepts = this.headers.get("Accept");
+		List<String> accepts = this.accepts.get();
 		List<Enum<? extends Producible<?>>> values = Arrays.asList(type.getEnumConstants());
 		Collections.reverse(values);
 		if (CollectionUtils.isEmpty(accepts)) {

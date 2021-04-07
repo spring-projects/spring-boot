@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.endpoint.http;
+package org.springframework.boot.actuate.endpoint;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
+import java.util.function.Supplier;
 
 import org.junit.jupiter.api.Test;
 
@@ -31,6 +30,10 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Andy Wilkinson
  */
 class ProducibleOperationArgumentResolverTests {
+
+	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
+
+	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	@Test
 	void whenAcceptHeaderIsEmptyThenHighestOrdinalIsReturned() {
@@ -49,31 +52,29 @@ class ProducibleOperationArgumentResolverTests {
 
 	@Test
 	void whenSingleValueIsAcceptableThenMatchingEnumValueIsReturned() {
-		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(ActuatorMediaType.V2_JSON))
-				.resolve(ApiVersion.class)).isEqualTo(ApiVersion.V2);
-		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(ActuatorMediaType.V3_JSON))
-				.resolve(ApiVersion.class)).isEqualTo(ApiVersion.V3);
+		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(V2_JSON)).resolve(ApiVersion.class))
+				.isEqualTo(ApiVersion.V2);
+		assertThat(new ProducibleOperationArgumentResolver(acceptHeader(V3_JSON)).resolve(ApiVersion.class))
+				.isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
 	void whenMultipleValuesAreAcceptableThenHighestOrdinalIsReturned() {
-		assertThat(resolve(acceptHeader(ActuatorMediaType.V2_JSON, ActuatorMediaType.V3_JSON)))
-				.isEqualTo(ApiVersion.V3);
+		assertThat(resolve(acceptHeader(V2_JSON, V3_JSON))).isEqualTo(ApiVersion.V3);
 	}
 
 	@Test
 	void whenMultipleValuesAreAcceptableAsSingleHeaderThenHighestOrdinalIsReturned() {
-		assertThat(resolve(acceptHeader(ActuatorMediaType.V2_JSON + "," + ActuatorMediaType.V3_JSON)))
-				.isEqualTo(ApiVersion.V3);
+		assertThat(resolve(acceptHeader(V2_JSON + "," + V3_JSON))).isEqualTo(ApiVersion.V3);
 	}
 
-	private Map<String, List<String>> acceptHeader(String... types) {
+	private Supplier<List<String>> acceptHeader(String... types) {
 		List<String> value = Arrays.asList(types);
-		return value.isEmpty() ? Collections.emptyMap() : Collections.singletonMap("Accept", value);
+		return () -> (value.isEmpty() ? null : value);
 	}
 
-	private ApiVersion resolve(Map<String, List<String>> httpHeaders) {
-		return new ProducibleOperationArgumentResolver(httpHeaders).resolve(ApiVersion.class);
+	private ApiVersion resolve(Supplier<List<String>> accepts) {
+		return new ProducibleOperationArgumentResolver(accepts).resolve(ApiVersion.class);
 	}
 
 }

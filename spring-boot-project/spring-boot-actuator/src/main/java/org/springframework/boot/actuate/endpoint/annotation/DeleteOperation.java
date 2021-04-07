@@ -22,6 +22,8 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
+import org.springframework.boot.actuate.endpoint.Producible;
+
 /**
  * Identifies a method on an {@link Endpoint @Endpoint} as being a delete operation.
  *
