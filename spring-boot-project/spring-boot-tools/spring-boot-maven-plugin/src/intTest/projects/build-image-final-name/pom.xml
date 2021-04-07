@@ -24,9 +24,6 @@
 						</goals>
 						<configuration>
 							<finalName>final-name</finalName>
-							<image>
-								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
-							</image>
 						</configuration>
 					</execution>
 				</executions>
