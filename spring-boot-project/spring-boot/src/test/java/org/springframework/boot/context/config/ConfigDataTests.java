@@ -130,6 +130,22 @@ class ConfigDataTests {
 	}
 
 	@Test
+	void optionsWithoutReturnsNewOptions() {
+		Options options = Options.of(Option.IGNORE_IMPORTS, Option.IGNORE_PROFILES);
+		Options without = options.without(Option.IGNORE_PROFILES);
+		assertThat(options.asSet()).containsExactly(Option.IGNORE_IMPORTS, Option.IGNORE_PROFILES);
+		assertThat(without.asSet()).containsExactly(Option.IGNORE_IMPORTS);
+	}
+
+	@Test
+	void optionsWithReturnsNewOptions() {
+		Options options = Options.of(Option.IGNORE_IMPORTS);
+		Options with = options.with(Option.IGNORE_PROFILES);
+		assertThat(options.asSet()).containsExactly(Option.IGNORE_IMPORTS);
+		assertThat(with.asSet()).containsExactly(Option.IGNORE_IMPORTS, Option.IGNORE_PROFILES);
+	}
+
+	@Test
 	void propertySourceOptionsAlwaysReturnsSameOptionsEachTime() {
 		PropertySourceOptions options = PropertySourceOptions.always(Option.IGNORE_IMPORTS, Option.IGNORE_PROFILES);
 		assertThat(options.get(mock(PropertySource.class)).asSet()).containsExactly(Option.IGNORE_IMPORTS,

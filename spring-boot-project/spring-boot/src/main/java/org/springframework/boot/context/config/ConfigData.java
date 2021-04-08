@@ -23,6 +23,7 @@ import java.util.Collections;
 import java.util.EnumSet;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Consumer;
 
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.PropertySource;
@@ -224,10 +225,24 @@ public final class ConfigData {
 		 * @param option the option to exclude
 		 * @return a new {@link Options} instance
 		 */
-		Options without(Option option) {
+		public Options without(Option option) {
+			return copy((options) -> options.remove(option));
+		}
+
+		/**
+		 * Create a new {@link Options} instance that contains the options in this set
+		 * including the given option.
+		 * @param option the option to include
+		 * @return a new {@link Options} instance
+		 */
+		public Options with(Option option) {
+			return copy((options) -> options.add(option));
+		}
+
+		private Options copy(Consumer<EnumSet<Option>> processor) {
 			EnumSet<Option> options = EnumSet.noneOf(Option.class);
 			options.addAll(this.options);
-			options.remove(option);
+			processor.accept(options);
 			return new Options(options);
 		}
 
