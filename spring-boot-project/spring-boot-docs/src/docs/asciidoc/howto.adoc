@@ -1460,21 +1460,16 @@ The following example shows how to set up the starters in Maven:
 	</dependency>
 ----
 
-And the following example shows one way to set up the starters in Gradle:
+And the following example shows one way to set up the starters in https://docs.gradle.org/current/userguide/resolution_rules.html#sec:module_replacement[Gradle]:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web'
-	}
-
-	configurations.all {
-		resolutionStrategy.dependencySubstitution.all { dependency ->
-			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-logging') {
-				dependency.useTarget("org.springframework.boot:spring-boot-starter-log4j2:$dependency.requested.version", 'Use Log4j2 instead of Logback')
-			}
-		}
-	}
+dependencies {
+  modules {
+    module("org.springframework.boot:spring-boot-starter-logging") {
+      replacedBy("org.springframework.boot:spring-boot-starter-log4j2")
+    }
+  }
 }
 ----
 
