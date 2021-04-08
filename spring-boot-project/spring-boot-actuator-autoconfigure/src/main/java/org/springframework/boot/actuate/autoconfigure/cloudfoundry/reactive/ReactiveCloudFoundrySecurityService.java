@@ -20,10 +20,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.AccessLevel;
@@ -66,14 +66,13 @@ class ReactiveCloudFoundrySecurityService {
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
-		HttpClient client = HttpClient.create()
-				.secure((sslContextSpec) -> sslContextSpec.sslContext(createSslContext()));
+		HttpClient client = HttpClient.create().secure((spec) -> spec.sslContext(createSslContextSpec()));
 		return new ReactorClientHttpConnector(client);
 	}
 
-	private SslContextBuilder createSslContext() {
-		return SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
-				.trustManager(InsecureTrustManagerFactory.INSTANCE);
+	private Http11SslContextSpec createSslContextSpec() {
+		return Http11SslContextSpec.forClient().configure(
+				(builder) -> builder.sslProvider(SslProvider.JDK).trustManager(InsecureTrustManagerFactory.INSTANCE));
 	}
 
 	/**
