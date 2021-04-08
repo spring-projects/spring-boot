@@ -109,6 +109,9 @@ public class Profiles implements Iterable<String> {
 		if (!StringUtils.hasLength(propertyValue)) {
 			return !unset.equals(profiles);
 		}
+		if (unset.equals(profiles)) {
+			return false;
+		}
 		Set<String> propertyProfiles = StringUtils
 				.commaDelimitedListToSet(StringUtils.trimAllWhitespace(propertyValue));
 		return !propertyProfiles.equals(profiles);

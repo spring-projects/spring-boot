@@ -14,28 +14,25 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.web.reactive.context;
+package org.springframework.boot;
 
-import org.springframework.core.env.Environment;
-import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
- * {@link Environment} implementation to be used by {@code Reactive}-based web
- * applications. All web-related (reactive-based) {@code ApplicationContext} classes
- * initialize an instance by default.
+ * {@link StandardEnvironment} for typical use in a typical {@link SpringApplication}.
  *
  * @author Phillip Webb
- * @since 2.0.0
  */
-public class StandardReactiveWebEnvironment extends StandardEnvironment implements ConfigurableReactiveWebEnvironment {
+class ApplicationEnvironment extends StandardEnvironment {
 
-	public StandardReactiveWebEnvironment() {
-		super();
+	@Override
+	protected String doGetActiveProfilesProperty() {
+		return null;
 	}
 
-	protected StandardReactiveWebEnvironment(MutablePropertySources propertySources) {
-		super(propertySources);
+	@Override
+	protected String doGetDefaultProfilesProperty() {
+		return null;
 	}
 
 }
