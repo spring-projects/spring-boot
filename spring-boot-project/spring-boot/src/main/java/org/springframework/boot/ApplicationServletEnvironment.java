@@ -16,6 +16,9 @@
 
 package org.springframework.boot;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.core.env.ConfigurablePropertyResolver;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.web.context.support.StandardServletEnvironment;
 
 /**
@@ -34,6 +37,11 @@ class ApplicationServletEnvironment extends StandardServletEnvironment {
 	@Override
 	protected String doGetDefaultProfilesProperty() {
 		return null;
+	}
+
+	@Override
+	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
+		return ConfigurationPropertySources.createPropertyResolver(propertySources);
 	}
 
 }

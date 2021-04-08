@@ -16,7 +16,10 @@
 
 package org.springframework.boot;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.web.reactive.context.StandardReactiveWebEnvironment;
+import org.springframework.core.env.ConfigurablePropertyResolver;
+import org.springframework.core.env.MutablePropertySources;
 
 /**
  * {@link StandardReactiveWebEnvironment} for typical use in a typical
@@ -34,6 +37,11 @@ class ApplicationReactiveWebEnvironment extends StandardReactiveWebEnvironment {
 	@Override
 	protected String doGetDefaultProfilesProperty() {
 		return null;
+	}
+
+	@Override
+	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
+		return ConfigurationPropertySources.createPropertyResolver(propertySources);
 	}
 
 }

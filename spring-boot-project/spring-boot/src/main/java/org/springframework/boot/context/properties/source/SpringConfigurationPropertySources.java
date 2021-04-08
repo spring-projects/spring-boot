@@ -51,6 +51,10 @@ class SpringConfigurationPropertySources implements Iterable<ConfigurationProper
 		this.sources = sources;
 	}
 
+	boolean isUsingSources(Iterable<PropertySource<?>> sources) {
+		return this.sources == sources;
+	}
+
 	@Override
 	public Iterator<ConfigurationPropertySource> iterator() {
 		return new SourcesIterator(this.sources.iterator(), this::adapt);

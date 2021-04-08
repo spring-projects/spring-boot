@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,10 @@ import java.util.Collections;
 import java.util.stream.Stream;
 
 import org.springframework.core.env.ConfigurableEnvironment;
+import org.springframework.core.env.ConfigurablePropertyResolver;
 import org.springframework.core.env.Environment;
 import org.springframework.core.env.MutablePropertySources;
+import org.springframework.core.env.PropertyResolver;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.PropertySource.StubPropertySource;
 import org.springframework.core.env.PropertySources;
@@ -42,6 +44,19 @@ public final class ConfigurationPropertySources {
 	private static final String ATTACHED_PROPERTY_SOURCE_NAME = "configurationProperties";
 
 	private ConfigurationPropertySources() {
+	}
+
+	/**
+	 * Create a new {@link PropertyResolver} that resolves property values against an
+	 * underlying set of {@link PropertySources}. Provides an
+	 * {@link ConfigurationPropertySource} aware and optimized alternative to
+	 * {@link PropertySourcesPropertyResolver}.
+	 * @param propertySources the set of {@link PropertySource} objects to use
+	 * @return a {@link ConfigurablePropertyResolver} implementation
+	 * @since 2.5.0
+	 */
+	public static ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
+		return new ConfigurationPropertySourcesPropertyResolver(propertySources);
 	}
 
 	/**
@@ -71,7 +86,7 @@ public final class ConfigurationPropertySources {
 	public static void attach(Environment environment) {
 		Assert.isInstanceOf(ConfigurableEnvironment.class, environment);
 		MutablePropertySources sources = ((ConfigurableEnvironment) environment).getPropertySources();
-		PropertySource<?> attached = sources.get(ATTACHED_PROPERTY_SOURCE_NAME);
+		PropertySource<?> attached = getAttached(sources);
 		if (attached != null && attached.getSource() != sources) {
 			sources.remove(ATTACHED_PROPERTY_SOURCE_NAME);
 			attached = null;
@@ -80,6 +95,10 @@ public final class ConfigurationPropertySources {
 			sources.addFirst(new ConfigurationPropertySourcesPropertySource(ATTACHED_PROPERTY_SOURCE_NAME,
 					new SpringConfigurationPropertySources(sources)));
 		}
+	}
+
+	static PropertySource<?> getAttached(MutablePropertySources sources) {
+		return (sources != null) ? sources.get(ATTACHED_PROPERTY_SOURCE_NAME) : null;
 	}
 
 	/**

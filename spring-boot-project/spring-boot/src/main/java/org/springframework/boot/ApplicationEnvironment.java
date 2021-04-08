@@ -16,6 +16,9 @@
 
 package org.springframework.boot;
 
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
+import org.springframework.core.env.ConfigurablePropertyResolver;
+import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
 
 /**
@@ -33,6 +36,11 @@ class ApplicationEnvironment extends StandardEnvironment {
 	@Override
 	protected String doGetDefaultProfilesProperty() {
 		return null;
+	}
+
+	@Override
+	protected ConfigurablePropertyResolver createPropertyResolver(MutablePropertySources propertySources) {
+		return ConfigurationPropertySources.createPropertyResolver(propertySources);
 	}
 
 }
