@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -80,7 +80,7 @@ public class ZipFileTarArchive implements TarArchive {
 					+ "' is not compatible with buildpacks; ensure jar file is valid and launch script is not enabled");
 		}
 		catch (IOException ex) {
-			throw new IllegalStateException("File is not readable", ex);
+			throw new IllegalStateException("File '" + jarFile + "' is not readable", ex);
 		}
 	}
 
@@ -99,6 +99,7 @@ public class ZipFileTarArchive implements TarArchive {
 		tarEntry.setUserId(this.owner.getUid());
 		tarEntry.setGroupId(this.owner.getGid());
 		tarEntry.setModTime(NORMALIZED_MOD_TIME);
+		tarEntry.setMode(zipEntry.getUnixMode());
 		if (!zipEntry.isDirectory()) {
 			tarEntry.setSize(zipEntry.getSize());
 		}
