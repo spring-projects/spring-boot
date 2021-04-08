@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -220,8 +220,8 @@ class SslConnectorCustomizerTests {
 	private KeyStore loadStore() throws KeyStoreException, IOException, NoSuchAlgorithmException, CertificateException {
 		KeyStore keyStore = KeyStore.getInstance("JKS");
 		Resource resource = new ClassPathResource("test.jks");
-		try (InputStream inputStream = resource.getInputStream()) {
-			keyStore.load(inputStream, "secret".toCharArray());
+		try (InputStream stream = resource.getInputStream()) {
+			keyStore.load(stream, "secret".toCharArray());
 			return keyStore;
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -182,8 +182,8 @@ class SslBuilderCustomizer implements UndertowBuilderCustomizer {
 		KeyStore store = (provider != null) ? KeyStore.getInstance(type, provider) : KeyStore.getInstance(type);
 		try {
 			URL url = ResourceUtils.getURL(resource);
-			try (InputStream inputStream = url.openStream()) {
-				store.load(inputStream, (password != null) ? password.toCharArray() : null);
+			try (InputStream stream = url.openStream()) {
+				store.load(stream, (password != null) ? password.toCharArray() : null);
 			}
 			return store;
 		}

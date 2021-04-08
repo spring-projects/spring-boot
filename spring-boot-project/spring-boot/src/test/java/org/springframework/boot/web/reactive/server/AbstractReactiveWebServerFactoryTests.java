@@ -16,8 +16,8 @@
 
 package org.springframework.boot.web.reactive.server;
 
-import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
 import java.security.KeyStore;
@@ -228,7 +228,9 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 
 	protected ReactorClientHttpConnector buildTrustAllSslWithClientKeyConnector() throws Exception {
 		KeyStore clientKeyStore = KeyStore.getInstance(KeyStore.getDefaultType());
-		clientKeyStore.load(new FileInputStream(new File("src/test/resources/test.jks")), "secret".toCharArray());
+		try (InputStream stream = new FileInputStream("src/test/resources/test.jks")) {
+			clientKeyStore.load(stream, "secret".toCharArray());
+		}
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
