@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.couchbase;
 
+import java.io.InputStream;
 import java.net.URL;
 import java.security.KeyStore;
 
@@ -107,7 +108,9 @@ public class CouchbaseAutoConfiguration {
 	private KeyStore loadKeyStore(String resource, String keyStorePassword) throws Exception {
 		KeyStore store = KeyStore.getInstance(KeyStore.getDefaultType());
 		URL url = ResourceUtils.getURL(resource);
-		store.load(url.openStream(), (keyStorePassword != null) ? keyStorePassword.toCharArray() : null);
+		try (InputStream stream = url.openStream()) {
+			store.load(stream, (keyStorePassword != null) ? keyStorePassword.toCharArray() : null);
+		}
 		return store;
 	}
 
