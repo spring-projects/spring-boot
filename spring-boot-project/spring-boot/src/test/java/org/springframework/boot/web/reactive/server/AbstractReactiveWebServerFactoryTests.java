@@ -37,7 +37,6 @@ import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponse;
-import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
@@ -47,6 +46,7 @@ import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
 import reactor.core.publisher.Sinks;
 import reactor.netty.NettyPipeline;
+import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
 import reactor.test.StepVerifier;
 
@@ -195,10 +195,9 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	protected ReactorClientHttpConnector buildTrustAllSslConnector() {
-		SslContextBuilder builder = SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
-				.trustManager(InsecureTrustManagerFactory.INSTANCE);
-		HttpClient client = HttpClient.create().wiretap(true)
-				.secure((sslContextSpec) -> sslContextSpec.sslContext(builder));
+		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient().configure(
+				(builder) -> builder.sslProvider(SslProvider.JDK).trustManager(InsecureTrustManagerFactory.INSTANCE));
+		HttpClient client = HttpClient.create().wiretap(true).secure((spec) -> spec.sslContext(sslContextSpec));
 		return new ReactorClientHttpConnector(client);
 	}
 
@@ -232,10 +231,11 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		KeyManagerFactory clientKeyManagerFactory = KeyManagerFactory
 				.getInstance(KeyManagerFactory.getDefaultAlgorithm());
 		clientKeyManagerFactory.init(clientKeyStore, "password".toCharArray());
-		SslContextBuilder builder = SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
-				.trustManager(InsecureTrustManagerFactory.INSTANCE).keyManager(clientKeyManagerFactory);
-		HttpClient client = HttpClient.create().wiretap(true)
-				.secure((sslContextSpec) -> sslContextSpec.sslContext(builder));
+
+		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient()
+				.configure((builder) -> builder.sslProvider(SslProvider.JDK)
+						.trustManager(InsecureTrustManagerFactory.INSTANCE).keyManager(clientKeyManagerFactory));
+		HttpClient client = HttpClient.create().wiretap(true).secure((spec) -> spec.sslContext(sslContextSpec));
 		return new ReactorClientHttpConnector(client);
 	}
 

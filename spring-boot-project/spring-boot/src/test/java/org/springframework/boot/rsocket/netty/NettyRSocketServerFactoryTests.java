@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.concurrent.Callable;
 
 import io.netty.buffer.PooledByteBufAllocator;
-import io.netty.handler.ssl.SslContextBuilder;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
 import io.rsocket.ConnectionSetupPayload;
@@ -37,6 +36,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InOrder;
 import reactor.core.publisher.Mono;
+import reactor.netty.http.Http11SslContextSpec;
 import reactor.netty.http.client.HttpClient;
 import reactor.netty.tcp.TcpClient;
 import reactor.test.StepVerifier;
@@ -224,9 +224,9 @@ class NettyRSocketServerFactoryTests {
 
 	private HttpClient createSecureHttpClient() {
 		HttpClient httpClient = createHttpClient();
-		SslContextBuilder builder = SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
-				.trustManager(InsecureTrustManagerFactory.INSTANCE);
-		return httpClient.secure((spec) -> spec.sslContext(builder));
+		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient().configure(
+				(builder) -> builder.sslProvider(SslProvider.JDK).trustManager(InsecureTrustManagerFactory.INSTANCE));
+		return httpClient.secure((spec) -> spec.sslContext(sslContextSpec));
 	}
 
 	private HttpClient createHttpClient() {
@@ -237,9 +237,9 @@ class NettyRSocketServerFactoryTests {
 
 	private TcpClient createSecureTcpClient() {
 		TcpClient tcpClient = createTcpClient();
-		SslContextBuilder builder = SslContextBuilder.forClient().sslProvider(SslProvider.JDK)
-				.trustManager(InsecureTrustManagerFactory.INSTANCE);
-		return tcpClient.secure((spec) -> spec.sslContext(builder));
+		Http11SslContextSpec sslContextSpec = Http11SslContextSpec.forClient().configure(
+				(builder) -> builder.sslProvider(SslProvider.JDK).trustManager(InsecureTrustManagerFactory.INSTANCE));
+		return tcpClient.secure((spec) -> spec.sslContext(sslContextSpec));
 	}
 
 	private TcpClient createTcpClient() {
