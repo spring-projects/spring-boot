@@ -2161,9 +2161,9 @@ Alternatively, when set to `false`, you can enable instrumentation by adding `@T
 
 	}
 ----
-<1> A controller class to enable timings on every request handler in the controller.
+<1> A controller class to enable timings on every request handler in the controller not directly annotated with `@Timed`.
 <2> A method to enable for an individual endpoint.
-    This is not necessary if you have it on the class, but can be used to further customize the timer for this particular endpoint.
+    This is not necessary if you have it on the class, but can be used to customize the timer for this particular endpoint.
 <3> A method with `longTask = true` to enable a long task timer for the method.
     Long task timers require a separate metric name, and can be stacked with a short task timer.
 
@@ -2199,9 +2199,12 @@ TIP: In some cases, exceptions handled in Web controllers are not recorded as re
 Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-error-handling, setting handled exceptions as request parameters>>.
 
 
+
 [[production-ready-metrics-web-flux]]
 ==== Spring WebFlux Metrics
 Auto-configuration enables the instrumentation of all requests handled by WebFlux controllers and functional handlers.
+When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
+Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method in the same way the Spring MVC example above.
 
 By default, metrics are generated with the name `http.server.requests`.
 You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
