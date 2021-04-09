@@ -1656,7 +1656,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Batch", "4.2.5.RELEASE") {
+	library("Spring Batch", "4.2.6.RELEASE") {
 		group("org.springframework.batch") {
 			modules = [
 				"spring-batch-core",
