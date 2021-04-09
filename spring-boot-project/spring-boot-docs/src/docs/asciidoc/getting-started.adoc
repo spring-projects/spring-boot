@@ -41,7 +41,7 @@ Explicit build support is provided for the following build tools:
 | 3.3+
 
 | Gradle
-| 6 (6.3 or later). 5.6.x is also supported but in a deprecated form
+| 6 (6.3 or later)
 |===
 
 
