@@ -1764,7 +1764,7 @@ bom {
 			]
 		}
 	}
-	library("Sun Mail", "1.6.5") {
+	library("Sun Mail", "1.6.7") {
 		group("com.sun.mail") {
 			modules = [
 				"jakarta.mail"
