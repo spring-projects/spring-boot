@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.metrics.web.reactive.server;
 import java.io.EOFException;
 import java.time.Duration;
 
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
@@ -31,6 +32,8 @@ import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
+import org.springframework.util.ReflectionUtils;
+import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.util.pattern.PathPatternParser;
 
@@ -45,6 +48,8 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MetricsWebFilterTests {
 
 	private static final String REQUEST_METRICS_NAME = "http.server.requests";
+
+	private static final String REQUEST_METRICS_NAME_PERCENTILE = REQUEST_METRICS_NAME + ".percentile";
 
 	private SimpleMeterRegistry registry;
 
@@ -157,6 +162,59 @@ class MetricsWebFilterTests {
 		assertMetricsContainsTag("outcome", "UNKNOWN");
 	}
 
+	@Test
+	void filterAddsStandardTags() {
+		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timed");
+		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
+				.block(Duration.ofSeconds(30));
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "200");
+	}
+
+	@Test
+	void filterAddsExtraTags() {
+		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timedExtraTags");
+		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
+				.block(Duration.ofSeconds(30));
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "200");
+		assertMetricsContainsTag("tag1", "value1");
+		assertMetricsContainsTag("tag2", "value2");
+	}
+
+	@Test
+	void filterAddsExtraTagsAndException() {
+		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timedExtraTags");
+		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(new IllegalStateException("test error")))
+				.onErrorResume((ex) -> {
+					exchange.getResponse().setRawStatusCode(500);
+					return exchange.getResponse().setComplete();
+				}).block(Duration.ofSeconds(30));
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "500");
+		assertMetricsContainsTag("exception", "IllegalStateException");
+		assertMetricsContainsTag("tag1", "value1");
+		assertMetricsContainsTag("tag2", "value2");
+	}
+
+	@Test
+	void filterAddsPercentileMeters() {
+		MockServerWebExchange exchange = createTimedHandlerMethodExchange("timedPercentiles");
+		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
+				.block(Duration.ofSeconds(30));
+		assertMetricsContainsTag("uri", "/projects/{project}");
+		assertMetricsContainsTag("status", "200");
+		assertThat(this.registry.get(REQUEST_METRICS_NAME_PERCENTILE).tag("phi", "0.95").gauge().value()).isNotZero();
+		assertThat(this.registry.get(REQUEST_METRICS_NAME_PERCENTILE).tag("phi", "0.5").gauge().value()).isNotZero();
+	}
+
+	private MockServerWebExchange createTimedHandlerMethodExchange(String methodName) {
+		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
+		exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE,
+				new HandlerMethod(this, ReflectionUtils.findMethod(Handlers.class, methodName)));
+		return exchange;
+	}
+
 	private MockServerWebExchange createExchange(String path, String pathPattern) {
 		PathPatternParser parser = new PathPatternParser();
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get(path).build());
@@ -166,6 +224,25 @@ class MetricsWebFilterTests {
 
 	private void assertMetricsContainsTag(String tagKey, String tagValue) {
 		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag(tagKey, tagValue).timer().count()).isEqualTo(1);
+	}
+
+	static class Handlers {
+
+		@Timed
+		Mono<String> timed() {
+			return Mono.just("test");
+		}
+
+		@Timed(extraTags = { "tag1", "value1", "tag2", "value2" })
+		Mono<String> timedExtraTags() {
+			return Mono.just("test");
+		}
+
+		@Timed(percentiles = { 0.5, 0.95 })
+		Mono<String> timedPercentiles() {
+			return Mono.just("test");
+		}
+
 	}
 
 }
