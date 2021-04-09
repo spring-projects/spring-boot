@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Jean-Baptiste Nizet
+ * @author Scott Frederick
  */
 @ExtendWith(GradleMultiDslExtension.class)
 class PackagingDocumentationTests {
@@ -223,14 +224,14 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootBuildImageWithCustomBuildpackJvmVersion() throws IOException {
+	void bootBuildImageWithCustomBuildpackJvmVersion() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env")
 				.build("bootBuildImageEnvironment");
 		assertThat(result.getOutput()).contains("BP_JVM_VERSION=8.*");
 	}
 
 	@TestTemplate
-	void bootBuildImageWithCustomProxySettings() throws IOException {
+	void bootBuildImageWithCustomProxySettings() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-proxy")
 				.build("bootBuildImageEnvironment");
 		assertThat(result.getOutput()).contains("HTTP_PROXY=http://proxy.example.com")
@@ -238,7 +239,15 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
-	void bootBuildImageWithCustomImageName() throws IOException {
+	void bootBuildImageWithCustomRuntimeConfiguration() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-runtime")
+				.build("bootBuildImageEnvironment");
+		assertThat(result.getOutput()).contains("BPE_DELIM_JAVA_TOOL_OPTIONS= ")
+				.contains("BPE_APPEND_JAVA_TOOL_OPTIONS=-XX:+HeapDumpOnOutOfMemoryError");
+	}
+
+	@TestTemplate
+	void bootBuildImageWithCustomImageName() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-name")
 				.build("bootBuildImageName");
 		assertThat(result.getOutput()).contains("example.com/library/" + this.gradleBuild.getProjectDir().getName());
