@@ -217,7 +217,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 	private Binder getBinder(ConfigDataActivationContext activationContext,
 			Predicate<ConfigDataEnvironmentContributor> filter, Set<BinderOption> options) {
 		boolean failOnInactiveSource = options.contains(BinderOption.FAIL_ON_BIND_TO_INACTIVE_SOURCE);
-		Iterable<ConfigurationPropertySource> sources = () -> getBinderSources(activationContext,
+		Iterable<ConfigurationPropertySource> sources = () -> getBinderSources(
 				filter.and((contributor) -> failOnInactiveSource || contributor.isActive(activationContext)));
 		PlaceholdersResolver placeholdersResolver = new ConfigDataEnvironmentContributorPlaceholdersResolver(this.root,
 				activationContext, failOnInactiveSource);
@@ -225,8 +225,7 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 		return new Binder(sources, placeholdersResolver, null, null, bindHandler);
 	}
 
-	private Iterator<ConfigurationPropertySource> getBinderSources(ConfigDataActivationContext activationContext,
-			Predicate<ConfigDataEnvironmentContributor> filter) {
+	private Iterator<ConfigurationPropertySource> getBinderSources(Predicate<ConfigDataEnvironmentContributor> filter) {
 		return this.root.stream().filter(this::hasConfigurationPropertySource).filter(filter)
 				.map(ConfigDataEnvironmentContributor::getConfigurationPropertySource).iterator();
 	}

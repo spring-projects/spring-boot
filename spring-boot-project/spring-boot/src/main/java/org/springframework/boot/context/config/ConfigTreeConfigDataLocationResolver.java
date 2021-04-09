@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,15 +52,14 @@ public class ConfigTreeConfigDataLocationResolver implements ConfigDataLocationR
 	public List<ConfigTreeConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location) {
 		try {
-			return resolve(context, location.getNonPrefixedValue(PREFIX));
+			return resolve(location.getNonPrefixedValue(PREFIX));
 		}
 		catch (IOException ex) {
 			throw new ConfigDataLocationNotFoundException(location, ex);
 		}
 	}
 
-	private List<ConfigTreeConfigDataResource> resolve(ConfigDataLocationResolverContext context, String location)
-			throws IOException {
+	private List<ConfigTreeConfigDataResource> resolve(String location) throws IOException {
 		Assert.isTrue(location.endsWith("/"),
 				() -> String.format("Config tree location '%s' must end with '/'", location));
 		if (!this.resourceLoader.isPattern(location)) {

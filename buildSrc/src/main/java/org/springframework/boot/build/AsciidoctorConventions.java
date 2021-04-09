@@ -110,7 +110,7 @@ class AsciidoctorConventions {
 		asciidoctorTask.baseDirFollowsSourceDir();
 		createSyncDocumentationSourceTask(project, asciidoctorTask);
 		if (asciidoctorTask instanceof AsciidoctorTask) {
-			configureAsciidoctorHtmlTask(project, (AsciidoctorTask) asciidoctorTask);
+			configureAsciidoctorHtmlTask((AsciidoctorTask) asciidoctorTask);
 		}
 	}
 
@@ -144,7 +144,7 @@ class AsciidoctorConventions {
 		return syncDocumentationSource;
 	}
 
-	private void configureAsciidoctorHtmlTask(Project project, AsciidoctorTask asciidoctorTask) {
+	private void configureAsciidoctorHtmlTask(AsciidoctorTask asciidoctorTask) {
 		asciidoctorTask.outputOptions((outputOptions) -> outputOptions.backends("spring-html"));
 	}
 
