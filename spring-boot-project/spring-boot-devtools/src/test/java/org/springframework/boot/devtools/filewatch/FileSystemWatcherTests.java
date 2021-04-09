@@ -284,8 +284,7 @@ class FileSystemWatcherTests {
 		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
-		Set<ChangedFile> actual = changedFiles.getFiles();
+		Set<ChangedFile> actual = getAllFileChanges();
 		Set<ChangedFile> expected = new HashSet<>();
 		expected.add(new ChangedFile(directory, recreate, Type.ADD));
 		assertThat(actual).isEqualTo(expected);
