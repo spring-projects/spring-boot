@@ -19,7 +19,7 @@ package org.springframework.boot.docs.productionreadyfeatures.metrics.mongo;
 // tag::code[]
 import com.mongodb.event.ConnectionPoolCreatedEvent;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -28,14 +28,14 @@ import org.springframework.context.annotation.Configuration;
 public class SampleConnectionPoolTagsProviderConfiguration {
 
 	@Bean
-	MongoMetricsConnectionPoolTagsProvider customConnectionPoolTagsProvider() {
+	MongoConnectionPoolTagsProvider customConnectionPoolTagsProvider() {
 		return new CustomConnectionPoolTagsProvider();
 	}
 
 }
 // end::code[]
 
-class CustomConnectionPoolTagsProvider implements MongoMetricsConnectionPoolTagsProvider {
+class CustomConnectionPoolTagsProvider implements MongoConnectionPoolTagsProvider {
 
 	@Override
 	public Iterable<Tag> connectionPoolTags(ConnectionPoolCreatedEvent event) {

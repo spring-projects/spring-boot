@@ -18,12 +18,12 @@ package org.springframework.boot.actuate.autoconfigure.metrics.mongo;
 
 import com.mongodb.MongoClientSettings;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsCommandTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolTagsProvider;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
@@ -61,14 +61,14 @@ public class MongoMetricsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		MongoMetricsCommandListener mongoMetricsCommandListener(MeterRegistry meterRegistry,
-				MongoMetricsCommandTagsProvider mongoMetricsCommandTagsProvider) {
-			return new MongoMetricsCommandListener(meterRegistry, mongoMetricsCommandTagsProvider);
+				MongoCommandTagsProvider mongoCommandTagsProvider) {
+			return new MongoMetricsCommandListener(meterRegistry, mongoCommandTagsProvider);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		MongoMetricsCommandTagsProvider mongoMetricsCommandTagsProvider() {
-			return new DefaultMongoMetricsCommandTagsProvider();
+		MongoCommandTagsProvider mongoCommandTagsProvider() {
+			return new DefaultMongoCommandTagsProvider();
 		}
 
 		@Bean
@@ -87,14 +87,14 @@ public class MongoMetricsAutoConfiguration {
 		@Bean
 		@ConditionalOnMissingBean
 		MongoMetricsConnectionPoolListener mongoMetricsConnectionPoolListener(MeterRegistry meterRegistry,
-				MongoMetricsConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider) {
-			return new MongoMetricsConnectionPoolListener(meterRegistry, mongoMetricsConnectionPoolTagsProvider);
+				MongoConnectionPoolTagsProvider mongoConnectionPoolTagsProvider) {
+			return new MongoMetricsConnectionPoolListener(meterRegistry, mongoConnectionPoolTagsProvider);
 		}
 
 		@Bean
 		@ConditionalOnMissingBean
-		MongoMetricsConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider() {
-			return new DefaultMongoMetricsConnectionPoolTagsProvider();
+		MongoConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider() {
+			return new DefaultMongoConnectionPoolTagsProvider();
 		}
 
 		@Bean

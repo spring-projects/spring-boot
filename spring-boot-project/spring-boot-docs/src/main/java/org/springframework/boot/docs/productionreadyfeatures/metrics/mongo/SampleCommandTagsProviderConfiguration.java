@@ -18,7 +18,7 @@ package org.springframework.boot.docs.productionreadyfeatures.metrics.mongo;
 
 import com.mongodb.event.CommandEvent;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -27,14 +27,14 @@ import org.springframework.context.annotation.Configuration;
 public class SampleCommandTagsProviderConfiguration {
 
 	@Bean
-	MongoMetricsCommandTagsProvider customCommandTagsProvider() {
+	MongoCommandTagsProvider customCommandTagsProvider() {
 		return new CustomCommandTagsProvider();
 	}
 
 }
 // @chomp:file
 
-class CustomCommandTagsProvider implements MongoMetricsCommandTagsProvider {
+class CustomCommandTagsProvider implements MongoCommandTagsProvider {
 
 	@Override
 	public Iterable<Tag> commandTags(CommandEvent commandEvent) {

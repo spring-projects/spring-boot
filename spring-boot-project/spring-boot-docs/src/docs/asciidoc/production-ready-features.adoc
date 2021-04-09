@@ -2429,7 +2429,7 @@ Each metric is tagged with the following information by default:
 | Outcome of the command - one of (`SUCCESS`, `FAILED`)
 |===
 
-To replace the default metric tags, define a `MongoMetricsCommandTagsProvider` bean, as shown in the following example:
+To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
@@ -2467,7 +2467,7 @@ Each metric is tagged with the following information by default:
 | Address of the server the connection pool corresponds to
 |===
 
-To replace the default metric tags, define a `MongoMetricsConnectionPoolTagsProvider` bean, as shown in the following example:
+To replace the default metric tags, define a `MongoConnectionPoolTagsProvider` bean, as shown in the following example:
 
 [source,java,indent=0]
 ----

@@ -22,12 +22,12 @@ import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
 import com.mongodb.connection.ConnectionPoolSettings;
 import com.mongodb.event.ConnectionPoolListener;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsCommandTagsProvider;
-import io.micrometer.core.instrument.binder.mongodb.DefaultMongoMetricsConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.DefaultMongoConnectionPoolTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoCommandTagsProvider;
+import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandListener;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsCommandTagsProvider;
 import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolListener;
-import io.micrometer.core.instrument.binder.mongodb.MongoMetricsConnectionPoolTagsProvider;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
@@ -60,8 +60,8 @@ class MongoMetricsAutoConfigurationTests {
 					assertThat(getActualMongoClientSettingsUsedToConstructClient(context)).isNotNull()
 							.extracting(MongoClientSettings::getCommandListeners).asList()
 							.containsExactly(context.getBean(MongoMetricsCommandListener.class));
-					assertThat(getMongoMetricsCommandTagsProviderUsedToConstructListener(context))
-							.isInstanceOf(DefaultMongoMetricsCommandTagsProvider.class);
+					assertThat(getMongoCommandTagsProviderUsedToConstructListener(context))
+							.isInstanceOf(DefaultMongoCommandTagsProvider.class);
 				});
 	}
 
@@ -72,8 +72,8 @@ class MongoMetricsAutoConfigurationTests {
 					assertThat(context).hasSingleBean(MongoMetricsConnectionPoolListener.class);
 					assertThat(getConnectionPoolListenersFromClient(context))
 							.containsExactly(context.getBean(MongoMetricsConnectionPoolListener.class));
-					assertThat(getMongoMetricsConnectionPoolTagsProviderUsedToConstructListener(context))
-							.isInstanceOf(DefaultMongoMetricsConnectionPoolTagsProvider.class);
+					assertThat(getMongoConnectionPoolTagsProviderUsedToConstructListener(context))
+							.isInstanceOf(DefaultMongoConnectionPoolTagsProvider.class);
 				});
 	}
 
@@ -91,24 +91,22 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsACustomMetricsCommandTagsProviderItIsUsed() {
-		final MongoMetricsCommandTagsProvider customTagsProvider = mock(MongoMetricsCommandTagsProvider.class);
+		final MongoCommandTagsProvider customTagsProvider = mock(MongoCommandTagsProvider.class);
 		this.contextRunner.with(MetricsRun.simple())
 				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.withBean("customMongoMetricsCommandTagsProvider", MongoMetricsCommandTagsProvider.class,
-						() -> customTagsProvider)
-				.run((context) -> assertThat(getMongoMetricsCommandTagsProviderUsedToConstructListener(context))
+				.withBean("customMongoCommandTagsProvider", MongoCommandTagsProvider.class, () -> customTagsProvider)
+				.run((context) -> assertThat(getMongoCommandTagsProviderUsedToConstructListener(context))
 						.isSameAs(customTagsProvider));
 	}
 
 	@Test
 	void whenThereIsACustomMetricsConnectionPoolTagsProviderItIsUsed() {
-		final MongoMetricsConnectionPoolTagsProvider customTagsProvider = mock(
-				MongoMetricsConnectionPoolTagsProvider.class);
+		final MongoConnectionPoolTagsProvider customTagsProvider = mock(MongoConnectionPoolTagsProvider.class);
 		this.contextRunner.with(MetricsRun.simple())
 				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.withBean("customMongoMetricsConnectionPoolTagsProvider", MongoMetricsConnectionPoolTagsProvider.class,
+				.withBean("customMongoConnectionPoolTagsProvider", MongoConnectionPoolTagsProvider.class,
 						() -> customTagsProvider)
-				.run((context) -> assertThat(getMongoMetricsConnectionPoolTagsProviderUsedToConstructListener(context))
+				.run((context) -> assertThat(getMongoConnectionPoolTagsProviderUsedToConstructListener(context))
 						.isSameAs(customTagsProvider));
 	}
 
@@ -185,16 +183,16 @@ class MongoMetricsAutoConfigurationTests {
 		return listeners;
 	}
 
-	private MongoMetricsCommandTagsProvider getMongoMetricsCommandTagsProviderUsedToConstructListener(
+	private MongoCommandTagsProvider getMongoCommandTagsProviderUsedToConstructListener(
 			final AssertableApplicationContext context) {
 		MongoMetricsCommandListener listener = context.getBean(MongoMetricsCommandListener.class);
-		return (MongoMetricsCommandTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
+		return (MongoCommandTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
 	}
 
-	private MongoMetricsConnectionPoolTagsProvider getMongoMetricsConnectionPoolTagsProviderUsedToConstructListener(
+	private MongoConnectionPoolTagsProvider getMongoConnectionPoolTagsProviderUsedToConstructListener(
 			final AssertableApplicationContext context) {
 		MongoMetricsConnectionPoolListener listener = context.getBean(MongoMetricsConnectionPoolListener.class);
-		return (MongoMetricsConnectionPoolTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
+		return (MongoConnectionPoolTagsProvider) ReflectionTestUtils.getField(listener, "tagsProvider");
 	}
 
 }
