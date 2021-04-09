@@ -17,7 +17,6 @@
 package org.springframework.boot.actuate.metrics.web.servlet;
 
 import java.io.IOException;
-import java.lang.reflect.AnnotatedElement;
 import java.util.Collections;
 import java.util.Set;
 
@@ -33,9 +32,8 @@ import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.actuate.metrics.web.method.HandlerMethodTimedAnnotations;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
-import org.springframework.core.annotation.MergedAnnotationCollectors;
-import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
 import org.springframework.web.method.HandlerMethod;
@@ -130,7 +128,8 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private void record(TimingContext timingContext, HttpServletRequest request, HttpServletResponse response,
 			Throwable exception) {
 		Object handler = getHandler(request);
-		Set<Timed> annotations = getTimedAnnotations(handler);
+		Set<Timed> annotations = (handler instanceof HandlerMethod)
+				? HandlerMethodTimedAnnotations.get((HandlerMethod) handler) : Collections.emptySet();
 		Timer.Sample timerSample = timingContext.getTimerSample();
 		if (annotations.isEmpty()) {
 			if (this.autoTimer.isEnabled()) {
@@ -148,29 +147,6 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private Object getHandler(HttpServletRequest request) {
 		return request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
-	}
-
-	private Set<Timed> getTimedAnnotations(Object handler) {
-		if (!(handler instanceof HandlerMethod)) {
-			return Collections.emptySet();
-		}
-		return getTimedAnnotations((HandlerMethod) handler);
-	}
-
-	private Set<Timed> getTimedAnnotations(HandlerMethod handler) {
-		Set<Timed> methodAnnotations = findTimedAnnotations(handler.getMethod());
-		if (!methodAnnotations.isEmpty()) {
-			return methodAnnotations;
-		}
-		return findTimedAnnotations(handler.getBeanType());
-	}
-
-	private Set<Timed> findTimedAnnotations(AnnotatedElement element) {
-		MergedAnnotations annotations = MergedAnnotations.from(element);
-		if (!annotations.isPresent(Timed.class)) {
-			return Collections.emptySet();
-		}
-		return annotations.stream(Timed.class).collect(MergedAnnotationCollectors.toAnnotationSet());
 	}
 
 	private Timer getTimer(Builder builder, Object handler, HttpServletRequest request, HttpServletResponse response,
