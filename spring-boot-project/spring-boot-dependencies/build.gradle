@@ -1453,7 +1453,7 @@ bom {
 			]
 		}
 	}
-	library("RSocket", "1.0.3") {
+	library("RSocket", "1.0.4") {
 		group("io.rsocket") {
 			imports = [
 				"rsocket-bom"
