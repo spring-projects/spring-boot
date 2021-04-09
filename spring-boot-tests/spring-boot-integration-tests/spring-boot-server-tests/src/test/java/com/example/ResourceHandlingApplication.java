@@ -56,8 +56,16 @@ public class ResourceHandlingApplication {
 	}
 
 	public static void main(String[] args) {
-		new SpringApplicationBuilder(ResourceHandlingApplication.class).properties("server.port:0")
-				.listeners(new WebServerPortFileWriter(args[0])).run(args);
+		try {
+			Class.forName("org.springframework.web.servlet.DispatcherServlet");
+			System.err.println("Spring MVC must not be present, otherwise its static resource handling "
+					+ "will be used rather than the embedded containers'");
+			System.exit(1);
+		}
+		catch (Throwable ex) {
+			new SpringApplicationBuilder(ResourceHandlingApplication.class).properties("server.port:0")
+					.listeners(new WebServerPortFileWriter(args[0])).run(args);
+		}
 	}
 
 	private static final class GetResourcePathsServlet extends HttpServlet {
