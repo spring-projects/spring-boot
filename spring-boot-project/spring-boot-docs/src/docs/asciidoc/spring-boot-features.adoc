@@ -2029,7 +2029,7 @@ To help with the customization, some other properties are transferred from the S
 | The current process ID (discovered if possible and when not already defined as an OS environment variable).
 |===
 
-If you're using Logback, the following properties are also transfered:
+If you're using Logback, the following properties are also transferred:
 
 |===
 | Spring Environment | System Property | Comments
@@ -3669,7 +3669,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 * HikariCP
 * Tomcat pooling `Datasource`
 * Commons DBCP2
-* Orale UCP & `OracleDataSource`
+* Oracle UCP & `OracleDataSource`
 * Spring Framework's `SimpleDriverDataSource`
 * H2 `JdbcDataSource`
 * PostgreSQL `PGSimpleDataSource`
@@ -3773,7 +3773,7 @@ To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.rep
 When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
 If more than one exists, the one named `applicationTaskExecutor` will be used.
 
-NOTE: When using deferred or lazy bootstraping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
+NOTE: When using deferred or lazy bootstrapping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
 
 TIP: We have barely scratched the surface of Spring Data JPA.
 For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
@@ -6286,7 +6286,7 @@ For instance, it is possible to customize the name of the table for the JDBC sto
 ----
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
-If that property is not set with a Servlet web appplication, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+If that property is not set with a Servlet web application, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
 
 
 You can take control over Spring Session's configuration using `@Enable*HttpSession` (Servlet) or `@Enable*WebSession` (Reactive).
