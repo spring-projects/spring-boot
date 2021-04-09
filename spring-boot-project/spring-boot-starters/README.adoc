@@ -55,6 +55,9 @@ do as they were designed before this was clarified.
 | https://docs.microsoft.com/en-us/azure/application-insights/app-insights-overview[Azure Application Insights]
 | https://github.com/Microsoft/ApplicationInsights-Java/tree/master/azure-application-insights-spring-boot-starter
 
+| https://github.com/bitcoin/bitcoin[Bitcoin]
+| https://github.com/theborakompanioni/bitcoin-spring-boot-starter
+
 | https://github.com/vladimir-bukhtoyarov/bucket4j/[Bucket4j]
 | https://github.com/MarcGiffing/bucket4j-spring-boot-starter
 
