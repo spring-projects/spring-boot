@@ -46,6 +46,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link MongoMetricsAutoConfiguration}.
  *
  * @author Chris Bono
+ * @author Johnny Lim
  */
 class MongoMetricsAutoConfigurationTests {
 
@@ -80,13 +81,13 @@ class MongoMetricsAutoConfigurationTests {
 	@Test
 	void whenThereIsNoMeterRegistryThenNoMetricsCommandListenerIsAdded() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.run((context) -> assertThatMetricsCommandListenerNotAdded());
+				.run(assertThatMetricsCommandListenerNotAdded());
 	}
 
 	@Test
 	void whenThereIsNoMeterRegistryThenNoMetricsConnectionPoolListenerIsAdded() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
-				.run((context) -> assertThatMetricsConnectionPoolListenerNotAdded());
+				.run(assertThatMetricsConnectionPoolListenerNotAdded());
 	}
 
 	@Test
@@ -112,44 +113,50 @@ class MongoMetricsAutoConfigurationTests {
 
 	@Test
 	void whenThereIsNoMongoClientSettingsOnClasspathThenNoMetricsCommandListenerIsAdded() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(MongoClientSettings.class))
-				.run((context) -> assertThatMetricsCommandListenerNotAdded());
+				.run(assertThatMetricsCommandListenerNotAdded());
 	}
 
 	@Test
 	void whenThereIsNoMongoClientSettingsOnClasspathThenNoMetricsConnectionPoolListenerIsAdded() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(MongoClientSettings.class))
-				.run((context) -> assertThatMetricsConnectionPoolListenerNotAdded());
+				.run(assertThatMetricsConnectionPoolListenerNotAdded());
 	}
 
 	@Test
 	void whenThereIsNoMongoMetricsCommandListenerOnClasspathThenNoMetricsCommandListenerIsAdded() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(MongoMetricsCommandListener.class))
-				.run((context) -> assertThatMetricsCommandListenerNotAdded());
+				.run(assertThatMetricsCommandListenerNotAdded());
 	}
 
 	@Test
 	void whenThereIsNoMongoMetricsConnectionPoolListenerOnClasspathThenNoMetricsConnectionPoolListenerIsAdded() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withClassLoader(new FilteredClassLoader(MongoMetricsConnectionPoolListener.class))
-				.run((context) -> assertThatMetricsConnectionPoolListenerNotAdded());
+				.run(assertThatMetricsConnectionPoolListenerNotAdded());
 	}
 
 	@Test
 	void whenMetricsCommandListenerEnabledPropertyFalseThenNoMetricsCommandListenerIsAdded() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withPropertyValues("management.metrics.mongo.command.enabled:false")
-				.run((context) -> assertThatMetricsCommandListenerNotAdded());
+				.run(assertThatMetricsCommandListenerNotAdded());
 	}
 
 	@Test
 	void whenMetricsConnectionPoolListenerEnabledPropertyFalseThenNoMetricsConnectionPoolListenerIsAdded() {
-		this.contextRunner.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
+		this.contextRunner.with(MetricsRun.simple())
+				.withConfiguration(AutoConfigurations.of(MongoAutoConfiguration.class))
 				.withPropertyValues("management.metrics.mongo.connectionpool.enabled:false")
-				.run((context) -> assertThatMetricsConnectionPoolListenerNotAdded());
+				.run(assertThatMetricsConnectionPoolListenerNotAdded());
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertThatMetricsCommandListenerNotAdded() {
