@@ -264,6 +264,14 @@ class PackagingDocumentationTests {
 	}
 
 	@TestTemplate
+	void bootBuildImageWithCustomRuntimeConfiguration() {
+		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-env-runtime")
+				.build("bootBuildImageEnvironment");
+		assertThat(result.getOutput()).contains("BPE_DELIM_JAVA_TOOL_OPTIONS= ")
+				.contains("BPE_APPEND_JAVA_TOOL_OPTIONS=-XX:+HeapDumpOnOutOfMemoryError");
+	}
+
+	@TestTemplate
 	void bootBuildImageWithCustomImageName() {
 		BuildResult result = this.gradleBuild.script("src/docs/gradle/packaging/boot-build-image-name")
 				.build("bootBuildImageName");
