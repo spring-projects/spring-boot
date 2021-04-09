@@ -563,9 +563,11 @@ TIP: Use the prefix `optional:` if the <<boot-features-external-config-optional-
 WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
 
-If `spring.config.location` contains directories (as opposed to files), they should end in `/` (at runtime they will be appended with the names generated from `spring.config.name` before being loaded).
-Files specified in `spring.config.location` are used as-is.
-Whether specified directly or contained in a directory, configuration files must include a file extension in their name.
+If `spring.config.location` contains directories (as opposed to files), they must end in `/` or the system-dependent `File.separator`.
+At runtime they will be appended with the names generated from `spring.config.name` before being loaded.
+If `spring.config.location` contains files, they are used as-is.
+
+Whether specified directly or contained in a directory, files references must include a file extension in their name.
 Typical extensions that are supported out-of-the-box are `.properties`, `.yaml`, and `.yml`.
 
 When multiple locations are specified, the later ones can override the values of earlier ones.

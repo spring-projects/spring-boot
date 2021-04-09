@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -26,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-import java.io.File;
 
 import org.apache.commons.logging.Log;
 
