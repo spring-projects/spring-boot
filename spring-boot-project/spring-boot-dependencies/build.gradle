@@ -1831,7 +1831,7 @@ bom {
 			]
 		}
 	}
-	library("Undertow", "2.1.6.Final") {
+	library("Undertow", "2.1.7.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
