@@ -2122,55 +2122,56 @@ You can also change the interval at which metrics are sent to Wavefront:
 
 
 [[production-ready-metrics-meter]]
-=== Supported Metrics
-Spring Boot registers the following core metrics when applicable:
+=== Supported Metrics and Meters
+Spring Boot provides automatic meter registration for a wide variety of technologies.
+In most situations, the out-of-the-box defaults will provide sensible metrics that can be published to any of the supported monioring systems.
 
-* JVM metrics, report utilization of:
-** Various memory and buffer pools
-** Statistics related to garbage collection
-** Threads utilization
-** Number of classes loaded/unloaded
+
+
+[[production-ready-metrics-jvm]]
+==== JVM Metrics
+Auto-configuration will enable JVM Metrics using core Micrometer classes.
+JVM metrics are published under the `jvm.` meter name.
+
+The following JVM metrics are provided:
+
+* Various memory and buffer pool details
+* Statistics related to garbage collection
+* Threads utilization
+* The Number of classes loaded/unloaded
+
+
+
+[[production-ready-metrics-system]]
+==== System Metrics
+Auto-configuration will enable system metrics using core Micrometer classes.
+System are published under the `system.` and `process.` meter names.
+
+The following system metrics are provided:
+
 * CPU metrics
 * File descriptor metrics
-* Kafka consumer, producer, and streams metrics
-* Log4j2 metrics: record the number of events logged to Log4j2 at each level
-* Logback metrics: record the number of events logged to Logback at each level
-* MongoDB metrics for all commands issued from the client and for client connection pool information
-* Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
-* Tomcat metrics (`server.tomcat.mbeanregistry.enabled` must be set to `true` for all Tomcat metrics to be registered)
-* {spring-integration-docs}system-management.html#micrometer-integration[Spring Integration] metrics
+* Uptime metrics (both the amount of time the application has been running as well as a fixed gauge of the absolute start time)
+
+
+
+[[production-ready-metrics-logger]]
+==== Logger Metrics
+Auto-configuration enables the event metrics for both Logback and Log4J2.
+Details are published under the `log4j2.events.` or `logback.events.` meter names.
 
 
 
 [[production-ready-metrics-spring-mvc]]
 ==== Spring MVC Metrics
-Auto-configuration enables the instrumentation of requests handled by Spring MVC.
-When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
-Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
-
-[source,java,pending-extract=true,indent=0]
-----
-	@RestController
-	@Timed <1>
-	public class MyController {
-
-		@GetMapping("/api/people")
-		@Timed(extraTags = { "region", "us-east-1" }) <2>
-		@Timed(value = "all.people", longTask = true) <3>
-		public List<Person> listPeople() { ... }
-
-	}
-----
-<1> A controller class to enable timings on every request handler in the controller not directly annotated with `@Timed`.
-<2> A method to enable for an individual endpoint.
-    This is not necessary if you have it on the class, but can be used to customize the timer for this particular endpoint.
-<3> A method with `longTask = true` to enable a long task timer for the method.
-    Long task timers require a separate metric name, and can be stacked with a short task timer.
-
+Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
 The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
-By default, Spring MVC-related metrics are tagged with the following information:
+`@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all Spring MVC requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+
+By default, Spring MVC related metrics are tagged with the following information:
 
 |===
 | Tag | Description
@@ -2202,14 +2203,14 @@ Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boo
 
 [[production-ready-metrics-web-flux]]
 ==== Spring WebFlux Metrics
-Auto-configuration enables the instrumentation of all requests handled by WebFlux controllers and functional handlers.
-When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
-Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method in the same way the Spring MVC example above.
+Auto-configuration enables the instrumentation of all requests handled by Spring WebFlux controllers and functional handlers.
+By default, metrics are generated with the name, `http.server.requests`.
+The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
-By default, metrics are generated with the name `http.server.requests`.
-You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+`@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all Spring WebFlux requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
 
-By default, WebFlux-related metrics are tagged with the following information:
+By default, WebFlux related metrics are tagged with the following information:
 
 |===
 | Tag | Description
@@ -2241,30 +2242,12 @@ Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boo
 
 [[production-ready-metrics-jersey-server]]
 ==== Jersey Server Metrics
-When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
-When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
-Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
-
-[source,java,pending-extract=true,indent=0]
-----
-	@Component
-	@Path("/api/people")
-	@Timed <1>
-	public class Endpoint {
-		@GET
-		@Timed(extraTags = { "region", "us-east-1" }) <2>
-		@Timed(value = "all.people", longTask = true) <3>
-		public List<Person> listPeople() { ... }
-	}
-----
-<1> On a resource class to enable timings on every request handler in the resource.
-<2> On a method to enable for an individual endpoint.
-    This is not necessary if you have it on the class, but can be used to further customize the timer for this particular endpoint.
-<3> On a method with `longTask = true` to enable a long task timer for the method.
-    Long task timers require a separate metric name, and can be stacked with a short task timer.
-
+Auto-configuration enables the instrumentation of all requests handled by the Jersey JAX-RS implementation whenever Micrometer's `micrometer-jersey2` module is on the classpath.
 By default, metrics are generated with the name, `http.server.requests`.
 The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+
+`@Timed` annotations are supported on request-handling classes and methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all Jersey requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
 
 By default, Jersey server metrics are tagged with the following information:
 
@@ -2332,6 +2315,14 @@ There are convenience static functions in `RestTemplateExchangeTags` and `WebCli
 
 
 
+==== Tomcat Metrics
+Auto-configuration will enable the instrumentation of Tomcat only when an `MBeanRegistry` is enabled.
+By default, the `MBeanRegistry` is disabled, but you can enable it by setting configprop:server.tomcat.mbeanregistry.enabled[] to `true`.
+
+Tomcat metrics are published under the `tomcat.` meter name.
+
+
+
 [[production-ready-metrics-cache]]
 ==== Cache Metrics
 Auto-configuration enables the instrumentation of all available ``Cache``s on startup with metrics prefixed with `cache`.
@@ -2394,6 +2385,14 @@ Auto-configuration will enable the instrumentation of all available RabbitMQ con
 
 
 
+
+[[production-ready-metrics-integration]]
+==== Spring Integration Metrics
+Spring Integration provides {spring-integration-docs}system-management.html#micrometer-integration[Micrometer support] automatically whenever a `MeterRegistry` bean is available.
+Metrics are published under the `spring.integration.` meter name.
+
+
+
 [[production-ready-metrics-kafka]]
 ==== Kafka Metrics
 Auto-configuration will register a `MicrometerConsumerListener` and `MicrometerProducerListener` for the auto-configured consumer factory and producer factory respectively.
@@ -2447,6 +2446,9 @@ To disable the auto-configured command metrics, set the following property:
 	        enabled: false
 ----
 
+
+
+[[production-ready-metrics-mongodb-connectionpool]]
 ===== Connection Pool Metrics
 Auto-configuration will register a `MongoMetricsConnectionPoolListener` with the auto-configured `MongoClient`.
 
@@ -2484,6 +2486,69 @@ To disable the auto-configured connection pool metrics, set the following proper
 	      connectionpool:
 	        enabled: false
 ----
+
+
+
+[[production-ready-metrics-timed-annotation]]
+==== @Timed Annotation Support
+The `@Timed` annotation from the `io.micrometer.core.annotation` package can be used with several of the supported technologies listed above.
+If supported, the annotation can be used either at the class-level or the method-level.
+
+For example, the following code shows how the annotation can be used to instrument all request mappings in a `@RestController`:
+
+[source,java,pending-extract=true,indent=0]
+----
+	@RestController
+	@Timed
+	public class MyController {
+
+		@GetMapping("/api/addresses")
+		public List<Person> listAddress() { ... }
+
+		@GetMapping("/api/people")
+		public List<Person> listPeople() { ... }
+
+	}
+----
+
+If you only want to instrument a single mapping, you can use the annotation on the method instead of the class:
+
+[source,java,pending-extract=true,indent=0]
+----
+	@RestController
+	public class MyController {
+
+		@GetMapping("/api/addresses")
+		public List<Person> listAddress() { ... }
+
+		@GetMapping("/api/people")
+		@Timed
+		public List<Person> listPeople() { ... }
+
+	}
+----
+
+You can also combine class-level and method-level annotations if you want to change timing details for a specific method:
+
+[source,java,pending-extract=true,indent=0]
+----
+	@RestController
+	@Timed
+	public class MyController {
+
+		@GetMapping("/api/addresses")
+		public List<Person> listPeople() { ... }
+
+		@GetMapping("/api/people")
+		@Timed(extraTags = { "region", "us-east-1" })
+		@Timed(value = "all.people", longTask = true)
+		public List<Person> listPeople() { ... }
+
+	}
+----
+
+NOTE: A `@Timed` annotation with `longTask = true` will enable a long task timer for the method.
+Long task timers require a separate metric name, and can be stacked with a short task timer.
 
 
 
