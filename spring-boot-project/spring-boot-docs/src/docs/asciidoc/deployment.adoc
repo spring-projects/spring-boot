@@ -648,7 +648,7 @@ If you find you cannot customize something that you need to, use the `embeddedLa
 
 
 [[deployment-script-customization-when-it-written]]
-===== Customizing the Start Script when It Is Written
+===== Customizing the Start Script When It Is Written
 It often makes sense to customize elements of the start script as it is written into the jar file.
 For example, init.d scripts can provide a "`description`".
 Since you know the description up front (and it need not change), you may as well provide it when the jar is generated.

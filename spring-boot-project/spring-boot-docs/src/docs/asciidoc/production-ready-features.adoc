@@ -530,7 +530,7 @@ This will happen automatically if you are using Spring Boot's Gradle plugin or i
 
 
 [[production-ready-endpoints-custom-input-conversion]]
-===== Input type conversion
+===== Input Type Conversion
 The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
 Before calling an operation method, the input received via JMX or an HTTP request is converted to the required types using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
 
@@ -633,7 +633,7 @@ The latter is typically used to perform authorization checks using its `isUserIn
 
 
 [[production-ready-endpoints-custom-servlet]]
-==== Servlet endpoints
+==== Servlet Endpoints
 A `Servlet` can be exposed as an endpoint by implementing a class annotated with `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`.
 Servlet endpoints provide deeper integration with the Servlet container but at the expense of portability.
 They are intended to be used to expose an existing `Servlet` as an endpoint.
@@ -642,7 +642,7 @@ For new endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be pref
 
 
 [[production-ready-endpoints-custom-controller]]
-==== Controller endpoints
+==== Controller Endpoints
 `@ControllerEndpoint` and `@RestControllerEndpoint` can be used to implement an endpoint that is only exposed by Spring MVC or Spring WebFlux.
 Methods are mapped using the standard annotations for Spring MVC and Spring WebFlux such as `@RequestMapping` and `@GetMapping`, with the endpoint's ID being used as a prefix for the path.
 Controller endpoints provide deeper integration with Spring's web frameworks but at the expense of portability.
@@ -1033,7 +1033,7 @@ In this case, a probe check could be successful even if the main application doe
 
 
 [[production-ready-kubernetes-probes-external-state]]
-==== Checking external state with Kubernetes Probes
+==== Checking External State with Kubernetes Probes
 Actuator configures the "liveness" and "readiness" probes as Health Groups; this means that all the <<production-ready-health-groups, Health Groups features>> are available for them.
 You can, for example, configure additional Health Indicators:
 
@@ -1070,7 +1070,7 @@ Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run
 
 
 [[production-ready-kubernetes-probes-lifecycle]]
-==== Application lifecycle and Probes states
+==== Application Lifecycle and Probe States
 An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
 There is a significant difference between the `AvailabilityState` which is the in-memory, internal state of the application
 and the actual Probe which exposes that state: depending on the phase of application lifecycle, the Probe might not be available.
@@ -1653,7 +1653,7 @@ Spring Boot also <<production-ready-metrics-meter,configures built-in instrument
 
 
 [[production-ready-metrics-export]]
-=== Supported monitoring systems
+=== Supported Monitoring Systems
 
 
 
@@ -2488,7 +2488,7 @@ To disable the auto-configured connection pool metrics, set the following proper
 
 
 [[production-ready-metrics-custom]]
-=== Registering custom metrics
+=== Registering Custom Metrics
 To register custom metrics, inject `MeterRegistry` into your component, as shown in the following example:
 
 [source,java,indent=0]
@@ -2510,7 +2510,7 @@ A `MeterBinder` implementation can also be useful if you find that you repeatedl
 
 
 [[production-ready-metrics-per-meter-properties]]
-=== Customizing individual metrics
+=== Customizing Individual Metrics
 If you need to apply customizations to specific `Meter` instances you can use the `io.micrometer.core.instrument.config.MeterFilter` interface.
 By default, all `MeterFilter` beans will be automatically applied to the micrometer `MeterRegistry.Config`.
 
@@ -2524,7 +2524,7 @@ include::{include-productionreadyfeatures}/metrics/MetricsFilterConfiguration.ja
 
 
 [[production-ready-metrics-common-tags]]
-==== Common tags
+==== Common Tags
 Common tags are generally used for dimensional drill-down on the operating environment like host, instance, region, stack, etc.
 Commons tags are applied to all meters and can be configured as shown in the following example:
 
@@ -2544,7 +2544,7 @@ As the order of common tags cannot be guaranteed using this approach, Graphite u
 
 
 
-==== Per-meter properties
+==== Per-meter Properties
 In addition to `MeterFilter` beans, it's also possible to apply a limited set of customization on a per-meter basis using properties.
 Per-meter customizations apply to any all meter IDs that start with the given name.
 For example, the following will disable any meters that have an ID starting with `example.remote`
@@ -2585,7 +2585,7 @@ For more details on concepts behind `percentiles-histogram`, `percentiles` and `
 
 
 [[production-ready-metrics-endpoint]]
-=== Metrics endpoint
+=== Metrics Endpoint
 Spring Boot provides a `metrics` endpoint that can be used diagnostically to examine the metrics collected by an application.
 The endpoint is not available by default and must be exposed, see <<production-ready-endpoints-exposing-endpoints,exposing endpoints>> for more details.
 
@@ -2726,7 +2726,7 @@ If your Cloud Foundry UAA or Cloud Controller services use self-signed certifica
 
 
 
-=== Custom context path
+=== Custom Context Path
 If the server's context-path has been configured to anything other than `/`, the Cloud Foundry endpoints will not be available at the root of the application.
 For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at `/app/cloudfoundryapplication/*`.
 
