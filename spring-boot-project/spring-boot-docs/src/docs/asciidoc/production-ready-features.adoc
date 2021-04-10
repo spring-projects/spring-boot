@@ -2379,6 +2379,37 @@ You can enable that on the auto-configured `EntityManagerFactory` as shown in th
 
 
 
+[[production-ready-metrics-data-repository]]
+==== Spring Data Repository Metrics
+Auto-configuration enables the instrumentation of all Spring Data `Repository` method invocations.
+By default, metrics are generated with the name, `spring.data.repository.invocations`.
+The name can be customized by setting the configprop:management.metrics.data.repository.metric-name[] property.
+
+`@Timed` annotations are supported on `Repository` classes and methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all `Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+
+By default, repository invocation related metrics are tagged with the following information:
+
+|===
+| Tag | Description
+
+| `repository`
+| Simple class name of the source `Repository`.
+
+| `method`
+| The name of the `Repository` method that was invoked.
+
+| `state`
+| The result state (`SUCCESS`, `ERROR`, `CANCELED` or `RUNNING`).
+
+| `exception`
+| Simple class name of any exception that was thrown from the invocation.
+|===
+
+To replace the default tags, provide a `@Bean` that implements `RepositoryTagsProvider`.
+
+
+
 [[production-ready-metrics-rabbitmq]]
 ==== RabbitMQ Metrics
 Auto-configuration will enable the instrumentation of all available RabbitMQ connection factories with a metric named `rabbitmq`.

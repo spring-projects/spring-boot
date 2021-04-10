@@ -95,6 +95,7 @@ dependencies {
 	optional("org.springframework.amqp:spring-rabbit")
 	optional("org.springframework.data:spring-data-cassandra")
 	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-jpa")
 	optional("org.springframework.data:spring-data-ldap")
 	optional("org.springframework.data:spring-data-mongodb")
 	optional("org.springframework.data:spring-data-redis")
