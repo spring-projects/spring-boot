@@ -166,9 +166,7 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 			server = server.bindAddress(this::getListenAddress);
 		}
 		if (getSsl() != null && getSsl().isEnabled()) {
-			SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getHttp2(),
-					getSslStoreProvider());
-			server = sslServerCustomizer.apply(server);
+			server = customizeSslConfiguration(server);
 		}
 		if (getCompression() != null && getCompression().getEnabled()) {
 			CompressionCustomizer compressionCustomizer = new CompressionCustomizer(getCompression());
@@ -176,6 +174,12 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		}
 		server = server.protocol(listProtocols()).forwarded(this.useForwardHeaders);
 		return applyCustomizers(server);
+	}
+
+	@SuppressWarnings("deprecation")
+	private HttpServer customizeSslConfiguration(HttpServer httpServer) {
+		SslServerCustomizer sslServerCustomizer = new SslServerCustomizer(getSsl(), getHttp2(), getSslStoreProvider());
+		return sslServerCustomizer.apply(httpServer);
 	}
 
 	private HttpProtocol[] listProtocols() {

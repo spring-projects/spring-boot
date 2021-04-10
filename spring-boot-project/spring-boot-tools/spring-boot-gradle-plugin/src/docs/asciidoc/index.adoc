@@ -34,7 +34,8 @@ Andy Wilkinson, Scott Frederick
 :boot-run-javadoc: {api-documentation}/org/springframework/boot/gradle/tasks/run/BootRun.html
 :github-code: https://github.com/spring-projects/spring-boot/tree/{github-tag}
 :buildpacks-reference: https://buildpacks.io/docs
-:paketo-java-reference: https://paketo.io/docs/buildpacks/language-family-buildpacks/java
+:paketo-reference: https://paketo.io/docs
+:paketo-java-reference: {paketo-reference}/buildpacks/language-family-buildpacks/java
 
 
 [[introduction]]
