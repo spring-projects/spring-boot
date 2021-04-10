@@ -15,6 +15,6 @@
  */
 
 /**
- * Support classes HTTP-related metrics.
+ * Support classes for HTTP-related metrics.
  */
 package org.springframework.boot.actuate.metrics.http;

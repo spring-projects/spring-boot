@@ -41,7 +41,8 @@ import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 /**
- * Intercepts incoming HTTP requests handled by Spring WebFlux handlers.
+ * Intercepts incoming HTTP requests handled by Spring WebFlux handlers and records
+ * metrics about execution time and results.
  *
  * @author Jon Schneider
  * @author Brian Clozel
