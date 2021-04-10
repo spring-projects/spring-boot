@@ -23,13 +23,11 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
-import io.micrometer.core.instrument.Timer;
-import io.micrometer.core.instrument.Timer.Builder;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
-import org.springframework.boot.actuate.metrics.web.method.HandlerMethodTimedAnnotations;
+import org.springframework.boot.actuate.metrics.annotation.TimedAnnotations;
 import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
@@ -102,22 +100,19 @@ public class MetricsWebFilter implements WebFilter {
 	private void record(ServerWebExchange exchange, Throwable cause, long start) {
 		cause = (cause != null) ? cause : exchange.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE);
 		Object handler = exchange.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
-		Set<Timed> annotations = (handler instanceof HandlerMethod)
-				? HandlerMethodTimedAnnotations.get((HandlerMethod) handler) : Collections.emptySet();
+		Set<Timed> annotations = getTimedAnnotations(handler);
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
 		long duration = System.nanoTime() - start;
-		if (annotations.isEmpty()) {
-			if (this.autoTimer.isEnabled()) {
-				Builder builder = this.autoTimer.builder(this.metricName);
-				builder.tags(tags).register(this.registry).record(duration, TimeUnit.NANOSECONDS);
-			}
+		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
+				(builder) -> builder.tags(tags).register(this.registry).record(duration, TimeUnit.NANOSECONDS));
+	}
+
+	private Set<Timed> getTimedAnnotations(Object handler) {
+		if (handler instanceof HandlerMethod) {
+			HandlerMethod handlerMethod = (HandlerMethod) handler;
+			return TimedAnnotations.get(handlerMethod.getMethod(), handlerMethod.getBeanType());
 		}
-		else {
-			for (Timed annotation : annotations) {
-				Builder builder = Timer.builder(annotation, this.metricName);
-				builder.tags(tags).register(this.registry).record(duration, TimeUnit.NANOSECONDS);
-			}
-		}
+		return Collections.emptySet();
 	}
 
 }

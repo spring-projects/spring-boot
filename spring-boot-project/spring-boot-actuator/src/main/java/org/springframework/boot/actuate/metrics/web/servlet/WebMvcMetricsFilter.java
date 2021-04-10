@@ -32,7 +32,7 @@ import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
-import org.springframework.boot.actuate.metrics.web.method.HandlerMethodTimedAnnotations;
+import org.springframework.boot.actuate.metrics.annotation.TimedAnnotations;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -42,8 +42,8 @@ import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.util.NestedServletException;
 
 /**
- * Intercepts incoming HTTP requests and records metrics about Spring MVC execution time
- * and results.
+ * Intercepts incoming HTTP requests handled by Spring MVC handlers and records metrics
+ * about execution time and results.
  *
  * @author Jon Schneider
  * @author Phillip Webb
@@ -128,25 +128,22 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private void record(TimingContext timingContext, HttpServletRequest request, HttpServletResponse response,
 			Throwable exception) {
 		Object handler = getHandler(request);
-		Set<Timed> annotations = (handler instanceof HandlerMethod)
-				? HandlerMethodTimedAnnotations.get((HandlerMethod) handler) : Collections.emptySet();
+		Set<Timed> annotations = getTimedAnnotations(handler);
 		Timer.Sample timerSample = timingContext.getTimerSample();
-		if (annotations.isEmpty()) {
-			if (this.autoTimer.isEnabled()) {
-				Builder builder = this.autoTimer.builder(this.metricName);
-				timerSample.stop(getTimer(builder, handler, request, response, exception));
-			}
-		}
-		else {
-			for (Timed annotation : annotations) {
-				Builder builder = Timer.builder(annotation, this.metricName);
-				timerSample.stop(getTimer(builder, handler, request, response, exception));
-			}
-		}
+		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
+				(builder) -> timerSample.stop(getTimer(builder, handler, request, response, exception)));
 	}
 
 	private Object getHandler(HttpServletRequest request) {
 		return request.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
+	}
+
+	private Set<Timed> getTimedAnnotations(Object handler) {
+		if (handler instanceof HandlerMethod) {
+			HandlerMethod handlerMethod = (HandlerMethod) handler;
+			return TimedAnnotations.get(handlerMethod.getMethod(), handlerMethod.getBeanType());
+		}
+		return Collections.emptySet();
 	}
 
 	private Timer getTimer(Builder builder, Object handler, HttpServletRequest request, HttpServletResponse response,

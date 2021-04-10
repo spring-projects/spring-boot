@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.web.method;
+package org.springframework.boot.actuate.metrics.annotation;
 
 import java.lang.reflect.AnnotatedElement;
+import java.lang.reflect.Method;
 import java.util.Collections;
 import java.util.Map;
 import java.util.Set;
@@ -26,30 +27,39 @@ import io.micrometer.core.annotation.Timed;
 import org.springframework.core.annotation.MergedAnnotationCollectors;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.util.ConcurrentReferenceHashMap;
-import org.springframework.web.method.HandlerMethod;
 
 /**
- * Utility used to obtain {@link Timed @Timed} annotations from a {@link HandlerMethod}.
+ * Utility used to obtain {@link Timed @Timed} annotations from bean methods.
  *
  * @author Phillip Webb
  * @since 2.5.0
  */
-public final class HandlerMethodTimedAnnotations {
+public final class TimedAnnotations {
 
 	private static Map<AnnotatedElement, Set<Timed>> cache = new ConcurrentReferenceHashMap<>();
 
-	private HandlerMethodTimedAnnotations() {
+	private TimedAnnotations() {
 	}
 
-	public static Set<Timed> get(HandlerMethod handler) {
-		Set<Timed> methodAnnotations = findTimedAnnotations(handler.getMethod());
+	/**
+	 * Return {@link Timed} annotation that should be used for the given {@code method}
+	 * and {@code type}.
+	 * @param method the source method
+	 * @param type the source type
+	 * @return the {@link Timed} annotations to use or an empty set
+	 */
+	public static Set<Timed> get(Method method, Class<?> type) {
+		Set<Timed> methodAnnotations = findTimedAnnotations(method);
 		if (!methodAnnotations.isEmpty()) {
 			return methodAnnotations;
 		}
-		return findTimedAnnotations(handler.getBeanType());
+		return findTimedAnnotations(type);
 	}
 
 	private static Set<Timed> findTimedAnnotations(AnnotatedElement element) {
+		if (element == null) {
+			return Collections.emptySet();
+		}
 		Set<Timed> result = cache.get(element);
 		if (result != null) {
 			return result;

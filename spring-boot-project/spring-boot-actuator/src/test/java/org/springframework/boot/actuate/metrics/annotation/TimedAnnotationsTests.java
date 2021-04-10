@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.actuate.metrics.web.method;
+package org.springframework.boot.actuate.metrics.annotation;
 
 import java.lang.reflect.Method;
 import java.util.Set;
@@ -23,22 +23,21 @@ import io.micrometer.core.annotation.Timed;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.util.ReflectionUtils;
-import org.springframework.web.method.HandlerMethod;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link HandlerMethodTimedAnnotations}.
+ * Tests for {@link TimedAnnotations}.
  *
  * @author Phillip Webb
  */
-class HandlerMethodTimedAnnotationsTests {
+class TimedAnnotationsTests {
 
 	@Test
 	void getWhenNoneReturnsEmptySet() {
 		Object bean = new None();
 		Method method = ReflectionUtils.findMethod(bean.getClass(), "handle");
-		Set<Timed> annotations = HandlerMethodTimedAnnotations.get(new HandlerMethod(bean, method));
+		Set<Timed> annotations = TimedAnnotations.get(method, bean.getClass());
 		assertThat(annotations).isEmpty();
 	}
 
@@ -46,7 +45,7 @@ class HandlerMethodTimedAnnotationsTests {
 	void getWhenOnMethodReturnsMethodAnnotations() {
 		Object bean = new OnMethod();
 		Method method = ReflectionUtils.findMethod(bean.getClass(), "handle");
-		Set<Timed> annotations = HandlerMethodTimedAnnotations.get(new HandlerMethod(bean, method));
+		Set<Timed> annotations = TimedAnnotations.get(method, bean.getClass());
 		assertThat(annotations).extracting(Timed::value).containsOnly("y", "z");
 	}
 
@@ -54,7 +53,7 @@ class HandlerMethodTimedAnnotationsTests {
 	void getWhenNonOnMethodReturnsBeanAnnotations() {
 		Object bean = new OnBean();
 		Method method = ReflectionUtils.findMethod(bean.getClass(), "handle");
-		Set<Timed> annotations = HandlerMethodTimedAnnotations.get(new HandlerMethod(bean, method));
+		Set<Timed> annotations = TimedAnnotations.get(method, bean.getClass());
 		assertThat(annotations).extracting(Timed::value).containsOnly("y", "z");
 	}
 
