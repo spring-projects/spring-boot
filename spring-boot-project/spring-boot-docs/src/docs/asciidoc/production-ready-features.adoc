@@ -989,6 +989,15 @@ TIP: You can use `@Qualifier("groupname")` if you need to register custom `Statu
 
 
 
+[[production-ready-health-datasource]]
+==== DataSource Health
+The `DataSource` health indicator shows the health of both standard data source and routing data source beans.
+The health of a routing data source includes the health of each of its target data sources.
+In the health endpoint's response, each of a routing data source's targets is named using its routing key.
+If you prefer not to include routing data sources in the indicator's output, set configprop:management.health.db.ignore-routing-data-sources[] to `true`.
+
+
+
 [[production-ready-kubernetes-probes]]
 === Kubernetes Probes
 Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
