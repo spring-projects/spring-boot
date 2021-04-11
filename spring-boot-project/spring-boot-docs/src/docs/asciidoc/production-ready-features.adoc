@@ -2140,7 +2140,7 @@ In most situations, the out-of-the-box defaults will provide sensible metrics th
 [[production-ready-metrics-jvm]]
 ==== JVM Metrics
 Auto-configuration will enable JVM Metrics using core Micrometer classes.
-JVM metrics are published under the `jvm.` meter name.
+JVM metrics are published under the `jvm.` and `disk.` meter names.
 
 The following JVM metrics are provided:
 
@@ -2148,6 +2148,7 @@ The following JVM metrics are provided:
 * Statistics related to garbage collection
 * Threads utilization
 * The Number of classes loaded/unloaded
+* Disk space available
 
 
 
