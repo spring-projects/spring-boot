@@ -49,53 +49,48 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresJvmMetrics() {
-		this.contextRunner.run((context) -> validateBaseJvmMetricsBeansArePresent());
+		this.contextRunner.run(validateBaseJvmMetricsBeansArePresentWithCustomBean(null));
 	}
 
 	@Test
 	void allowsCustomJvmGcMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class).run((context) -> {
-			validateBaseJvmMetricsBeansArePresent();
-			assertThat(context).hasBean("customJvmGcMetrics");
-		});
+		this.contextRunner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class).run(
+		        validateBaseJvmMetricsBeansArePresentWithCustomBean("customJvmGcMetrics"));
 	}
 
 	@Test
 	void allowsCustomJvmMemoryMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class).run((context) -> {
-			validateBaseJvmMetricsBeansArePresent();
-			assertThat(context).hasBean("customJvmMemoryMetrics");
-		});
+		this.contextRunner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class).run(
+                validateBaseJvmMetricsBeansArePresentWithCustomBean("customJvmMemoryMetrics"));
 	}
 
 	@Test
 	void allowsCustomJvmThreadMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class).run((context) -> {
-			validateBaseJvmMetricsBeansArePresent();
-			assertThat(context).hasBean("customJvmThreadMetrics");
-		});
+		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class).run(
+                validateBaseJvmMetricsBeansArePresentWithCustomBean("customJvmThreadMetrics"));
 	}
 
 	@Test
 	void allowsCustomClassLoaderMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class).run((context) -> {
-			validateBaseJvmMetricsBeansArePresent();
-			assertThat(context).hasBean("customClassLoaderMetrics");
-		});
+		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class).run(
+                validateBaseJvmMetricsBeansArePresentWithCustomBean("customClassLoaderMetrics"));
 	}
 
 	@Test
 	void allowsCustomDiskSpaceMetricsToBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class).run((context) -> {
-			validateBaseJvmMetricsBeansArePresent();
-			assertThat(context).hasBean("customDiskSpaceMetrics");
-		});
+		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class).run(
+                validateBaseJvmMetricsBeansArePresentWithCustomBean("customDiskSpaceMetrics"));
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateBaseJvmMetricsBeansArePresent() {
-		return (context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-                .hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class)
-                .hasSingleBean(DiskSpaceMetrics.class);
+	private ContextConsumer<AssertableApplicationContext> validateBaseJvmMetricsBeansArePresentWithCustomBean(String customBean) {
+		return (context) -> {
+		    assertThat(context).hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
+                    .hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class)
+                    .hasSingleBean(DiskSpaceMetrics.class);
+		    if (customBean != null) {
+		        assertThat(context).hasBean(customBean);
+            }
+        };
 	}
 
 	@Configuration(proxyBeanMethods = false)
