@@ -16,7 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics;
 
+import java.io.File;
+
 import io.micrometer.core.instrument.binder.jvm.ClassLoaderMetrics;
+import io.micrometer.core.instrument.binder.jvm.DiskSpaceMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmGcMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmMemoryMetrics;
 import io.micrometer.core.instrument.binder.jvm.JvmThreadMetrics;
@@ -35,6 +38,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class JvmMetricsAutoConfigurationTests {
 
@@ -43,9 +47,9 @@ class JvmMetricsAutoConfigurationTests {
 
 	@Test
 	void autoConfiguresJvmMetrics() {
-		this.contextRunner.run(
-				(context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class).hasSingleBean(JvmMemoryMetrics.class)
-						.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class));
+		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+				.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
+				.hasSingleBean(ClassLoaderMetrics.class).hasSingleBean(DiskSpaceMetrics.class));
 	}
 
 	@Test
@@ -53,7 +57,7 @@ class JvmMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomJvmGcMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class).hasBean("customJvmGcMetrics")
 						.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
-						.hasSingleBean(ClassLoaderMetrics.class));
+						.hasSingleBean(ClassLoaderMetrics.class).hasSingleBean(DiskSpaceMetrics.class));
 	}
 
 	@Test
@@ -61,7 +65,8 @@ class JvmMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomJvmMemoryMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class).hasBean("customJvmMemoryMetrics")
-						.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class));
+						.hasSingleBean(JvmThreadMetrics.class).hasSingleBean(ClassLoaderMetrics.class)
+						.hasSingleBean(DiskSpaceMetrics.class));
 	}
 
 	@Test
@@ -69,7 +74,8 @@ class JvmMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomJvmThreadMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
-						.hasSingleBean(ClassLoaderMetrics.class).hasBean("customJvmThreadMetrics"));
+						.hasBean("customJvmThreadMetrics").hasSingleBean(ClassLoaderMetrics.class)
+						.hasSingleBean(DiskSpaceMetrics.class));
 	}
 
 	@Test
@@ -77,7 +83,17 @@ class JvmMetricsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomClassLoaderMetricsConfiguration.class)
 				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
 						.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
-						.hasSingleBean(ClassLoaderMetrics.class).hasBean("customClassLoaderMetrics"));
+						.hasSingleBean(ClassLoaderMetrics.class).hasBean("customClassLoaderMetrics")
+						.hasSingleBean(DiskSpaceMetrics.class));
+	}
+
+	@Test
+	void allowsCustomDiskSpaceMetricsToBeUsed() {
+		this.contextRunner.withUserConfiguration(CustomDiskSpaceMetricsConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(JvmGcMetrics.class)
+						.hasSingleBean(JvmMemoryMetrics.class).hasSingleBean(JvmThreadMetrics.class)
+						.hasSingleBean(ClassLoaderMetrics.class).hasSingleBean(DiskSpaceMetrics.class)
+						.hasBean("customDiskSpaceMetrics"));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -116,6 +132,16 @@ class JvmMetricsAutoConfigurationTests {
 		@Bean
 		ClassLoaderMetrics customClassLoaderMetrics() {
 			return new ClassLoaderMetrics();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDiskSpaceMetricsConfiguration {
+
+		@Bean
+		DiskSpaceMetrics customDiskSpaceMetrics() {
+			return new DiskSpaceMetrics(new File(System.getProperty("user.dir")));
 		}
 
 	}
