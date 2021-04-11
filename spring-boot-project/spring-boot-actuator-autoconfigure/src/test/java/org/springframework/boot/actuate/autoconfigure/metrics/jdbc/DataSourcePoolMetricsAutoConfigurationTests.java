@@ -42,7 +42,6 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
@@ -203,8 +202,8 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 	void routingDataSourcesCanBeInstrumented() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withUserConfiguration(RoutingDataSourceConfiguration.class).run((context) -> {
-					validateRoutingDataSource();
-					validateMetricsAvailableForDataSources("routing.one", "routing.two");
+					validateRoutingDataSource(context);
+					validateMetricsAvailableForDataSources(context, "routing.one", "routing.two");
 				});
 	}
 
@@ -213,8 +212,8 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withUserConfiguration(RoutingDataSourceConfiguration.class)
 				.withPropertyValues("management.metrics.jdbc.ignore-routing-data-sources: true").run((context) -> {
-					validateRoutingDataSource();
-					validateMetricsNotAvailableForDataSources("routing.one", "routing.two");
+					validateRoutingDataSource(context);
+					validateMetricsNotAvailableForDataSources(context, "routing.one", "routing.two");
 				});
 	}
 
@@ -224,10 +223,10 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 				.withUserConfiguration(TwoDataSourcesConfiguration.class,
 						RoutingDataSourceWithRegisteredTargetsConfiguration.class)
 				.withPropertyValues("management.metrics.jdbc.deduplicate-routing-data-sources: true").run((context) -> {
-					validateRoutingDataSource();
-					validateDataSources("firstDataSource", "secondOne");
-					validateMetricsNotAvailableForDataSources("routing.one", "routing.two");
-					validateMetricsAvailableForDataSources("first", "secondOne");
+					validateRoutingDataSource(context);
+					validateDataSources(context, "firstDataSource", "secondOne");
+					validateMetricsNotAvailableForDataSources(context, "routing.one", "routing.two");
+					validateMetricsAvailableForDataSources(context, "first", "secondOne");
 				});
 	}
 
@@ -236,10 +235,10 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withUserConfiguration(MixedDataSourcesConfiguration.class, RoutingDataSourceConfiguration.class)
 				.run((context) -> {
-					validateRoutingDataSource();
-					validateDataSources("firstDataSource", "secondOne");
-					validateMetricsAvailableForDataSources("routing.one", "routing.two");
-					validateMetricsAvailableForDataSources("first", "secondOne");
+					validateRoutingDataSource(context);
+					validateDataSources(context, "firstDataSource", "secondOne");
+					validateMetricsAvailableForDataSources(context, "routing.one", "routing.two");
+					validateMetricsAvailableForDataSources(context, "first", "secondOne");
 				});
 	}
 
@@ -248,10 +247,10 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withUserConfiguration(MixedDataSourcesConfiguration.class, RoutingDataSourceConfiguration.class)
 				.withPropertyValues("management.metrics.jdbc.ignore-routing-data-sources: true").run((context) -> {
-					validateRoutingDataSource();
-					validateDataSources("firstDataSource", "secondOne");
-					validateMetricsNotAvailableForDataSources("routing.one", "routing.two");
-					validateMetricsAvailableForDataSources("first", "secondOne");
+					validateRoutingDataSource(context);
+					validateDataSources(context, "firstDataSource", "secondOne");
+					validateMetricsNotAvailableForDataSources(context, "routing.one", "routing.two");
+					validateMetricsAvailableForDataSources(context, "first", "secondOne");
 				});
 	}
 
@@ -262,46 +261,38 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 						RoutingDataSourceWithRegisteredTargetsConfiguration.class)
 				.withClassLoader(new FilteredClassLoader(org.apache.tomcat.jdbc.pool.DataSource.class))
 				.run((context) -> {
-					validateRoutingDataSource();
+					validateRoutingDataSource(context);
 					// secondOne is a tomcat datasource - no metrics
-					validateDataSources("firstDataSource", "secondOne");
-					validateMetricsAvailableForDataSources("routing.one", "first");
-					validateMetricsNotAvailableForDataSources("routing.two", "secondOne");
+					validateDataSources(context, "firstDataSource", "secondOne");
+					validateMetricsAvailableForDataSources(context, "routing.one", "first");
+					validateMetricsNotAvailableForDataSources(context, "routing.two", "secondOne");
 				});
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateRoutingDataSource() {
-		return (context) -> {
-			assertThat(context).hasSingleBean(AbstractRoutingDataSource.class);
-			assertThat(context.getBean(AbstractRoutingDataSource.class).getResolvedDataSources().values())
-					.map(DataSource::getConnection).map(Connection::getMetaData).isNotNull();
-		};
+	private void validateRoutingDataSource(AssertableApplicationContext context) {
+		assertThat(context).hasSingleBean(AbstractRoutingDataSource.class);
+		assertThat(context.getBean(AbstractRoutingDataSource.class).getResolvedDataSources().values())
+				.map(DataSource::getConnection).map(Connection::getMetaData).isNotNull();
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateDataSources(String... beanNames) {
-		return (context) -> {
-			for (String beanName : beanNames) {
-				context.getBean(beanName, DataSource.class).getConnection().getMetaData();
-			}
-		};
+	private void validateDataSources(AssertableApplicationContext context, String... beanNames) throws SQLException {
+		for (String beanName : beanNames) {
+			context.getBean(beanName, DataSource.class).getConnection().getMetaData();
+		}
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateMetricsAvailableForDataSources(String... names) {
-		return (context) -> {
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			for (String name : names) {
-				registry.get("jdbc.connections.max").tags("name", name).meter();
-			}
-		};
+	private void validateMetricsAvailableForDataSources(AssertableApplicationContext context, String... names) {
+		MeterRegistry registry = context.getBean(MeterRegistry.class);
+		for (String name : names) {
+			registry.get("jdbc.connections.max").tags("name", name).meter();
+		}
 	}
 
-	private ContextConsumer<AssertableApplicationContext> validateMetricsNotAvailableForDataSources(String... names) {
-		return (context) -> {
-			MeterRegistry registry = context.getBean(MeterRegistry.class);
-			for (String name : names) {
-				assertThat(registry.find("jdbc.connections.max").tags("name", name).meter()).isNull();
-			}
-		};
+	private void validateMetricsNotAvailableForDataSources(AssertableApplicationContext context, String... names) {
+		MeterRegistry registry = context.getBean(MeterRegistry.class);
+		for (String name : names) {
+			assertThat(registry.find("jdbc.connections.max").tags("name", name).meter()).isNull();
+		}
 	}
 
 	private static HikariDataSource createHikariDataSource(String poolName) {
