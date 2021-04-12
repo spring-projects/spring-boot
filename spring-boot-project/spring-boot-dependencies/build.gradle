@@ -494,7 +494,7 @@ bom {
 		}
 	}
 	library("HttpCore", "4.4.14") {
-		group("org.apache.httpcomponents.core5") {
+		group("org.apache.httpcomponents") {
 			modules = [
 				"httpcore",
 				"httpcore-nio"
@@ -502,7 +502,7 @@ bom {
 		}
 	}
 	library("HttpCore5", "5.1") {
-		group("org.apache.httpcomponents") {
+		group("org.apache.httpcomponents.core5") {
 			modules = [
 				"httpcore5",
 				"httpcore5-h2",
