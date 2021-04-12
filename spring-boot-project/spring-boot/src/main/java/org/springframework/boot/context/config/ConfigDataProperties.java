@@ -57,11 +57,6 @@ class ConfigDataProperties {
 	 * @param activate the activate properties
 	 */
 	ConfigDataProperties(@Name("import") List<ConfigDataLocation> imports, Activate activate) {
-		this(imports, activate, Collections.emptyList());
-	}
-
-	private ConfigDataProperties(List<ConfigDataLocation> imports, Activate activate,
-			List<ConfigurationProperty> boundProperties) {
 		this.imports = (imports != null) ? imports : Collections.emptyList();
 		this.activate = activate;
 	}

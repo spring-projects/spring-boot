@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import org.gradle.api.attributes.Usage;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
+import org.gradle.api.publish.VariantVersionMappingStrategy;
 import org.gradle.api.publish.maven.MavenPom;
 import org.gradle.api.publish.maven.MavenPomDeveloperSpec;
 import org.gradle.api.publish.maven.MavenPomIssueManagement;
@@ -78,8 +79,7 @@ class MavenPublishingConventions {
 
 	private void customizeMavenPublication(MavenPublication publication, Project project) {
 		customizePom(publication.getPom(), project);
-		project.getPlugins().withType(JavaPlugin.class)
-				.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
+		project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> customizeJavaMavenPublication(publication));
 	}
 
 	private void customizePom(MavenPom pom, Project project) {
@@ -97,11 +97,11 @@ class MavenPublishingConventions {
 		}
 	}
 
-	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
+	private void customizeJavaMavenPublication(MavenPublication publication) {
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
 				.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
-		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_RUNTIME,
-				(mappingStrategy) -> mappingStrategy.fromResolutionResult()));
+		publication.versionMapping(
+				(strategy) -> strategy.usage(Usage.JAVA_RUNTIME, VariantVersionMappingStrategy::fromResolutionResult));
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {
