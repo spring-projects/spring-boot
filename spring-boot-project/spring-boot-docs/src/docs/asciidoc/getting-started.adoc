@@ -41,7 +41,7 @@ Explicit build support is provided for the following build tools:
 | 3.3+
 
 | Gradle
-| 6 (6.3 or later)
+| 6.8.x and 7.x
 |===
 
 
@@ -117,7 +117,7 @@ More details on getting started with Spring Boot and Maven can be found in the {
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 6 (6.3 or later).
+Spring Boot is compatible with Gradle 6.8 and 7.x.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
