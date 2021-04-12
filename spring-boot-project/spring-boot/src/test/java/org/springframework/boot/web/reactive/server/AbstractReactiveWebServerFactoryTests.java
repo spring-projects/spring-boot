@@ -17,6 +17,7 @@
 package org.springframework.boot.web.reactive.server;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.InetSocketAddress;
 import java.nio.charset.StandardCharsets;
@@ -28,6 +29,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
@@ -39,6 +41,13 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequests;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.core5.concurrent.FutureCallback;
+import org.apache.hc.core5.http.ContentType;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
@@ -52,6 +61,7 @@ import reactor.test.StepVerifier;
 
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.GracefulShutdownResult;
+import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.Shutdown;
 import org.springframework.boot.web.server.Ssl;
 import org.springframework.boot.web.server.WebServer;
@@ -446,6 +456,39 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 			// Continue
 		}
 		blockingHandler.completeOne();
+	}
+
+	@Test
+	void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
+			throws InterruptedException, ExecutionException, IOException {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		Http2 http2 = new Http2();
+		http2.setEnabled(true);
+		factory.setHttp2(http2);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.createHttp2Default()) {
+			http2Client.start();
+			SimpleHttpRequest request = SimpleHttpRequests.post("http://localhost:" + this.webServer.getPort());
+			request.setBody("Hello World", ContentType.TEXT_PLAIN);
+			SimpleHttpResponse response = http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
+
+				@Override
+				public void failed(Exception ex) {
+				}
+
+				@Override
+				public void completed(SimpleHttpResponse result) {
+				}
+
+				@Override
+				public void cancelled() {
+				}
+
+			}).get();
+			assertThat(response.getCode() == HttpStatus.OK.value());
+			assertThat(response.getBodyText()).isEqualTo("Hello World");
+		}
 	}
 
 	protected WebClient prepareCompressionTest() {

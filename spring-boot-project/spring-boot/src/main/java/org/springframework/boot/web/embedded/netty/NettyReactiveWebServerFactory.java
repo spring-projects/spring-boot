@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -183,10 +183,17 @@ public class NettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 	}
 
 	private HttpProtocol[] listProtocols() {
-		if (getHttp2() != null && getHttp2().isEnabled() && getSsl() != null && getSsl().isEnabled()) {
-			return new HttpProtocol[] { HttpProtocol.H2, HttpProtocol.HTTP11 };
+		List<HttpProtocol> protocols = new ArrayList<>();
+		protocols.add(HttpProtocol.HTTP11);
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			if (getSsl() != null && getSsl().isEnabled()) {
+				protocols.add(HttpProtocol.H2);
+			}
+			else {
+				protocols.add(HttpProtocol.H2C);
+			}
 		}
-		return new HttpProtocol[] { HttpProtocol.HTTP11 };
+		return protocols.toArray(new HttpProtocol[0]);
 	}
 
 	private InetSocketAddress getListenAddress() {

@@ -47,6 +47,7 @@ dependencies {
 	optional("junit:junit")
 	optional("org.apache.commons:commons-dbcp2")
 	optional("org.apache.httpcomponents:httpclient")
+	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.logging.log4j:log4j-api")
 	optional("org.apache.logging.log4j:log4j-core")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")

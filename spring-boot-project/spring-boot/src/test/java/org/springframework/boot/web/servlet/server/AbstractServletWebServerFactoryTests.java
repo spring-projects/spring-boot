@@ -49,6 +49,7 @@ import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.BrokenBarrierException;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
 import java.util.concurrent.FutureTask;
 import java.util.concurrent.RunnableFuture;
@@ -78,6 +79,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
+import org.apache.hc.client5.http.async.methods.SimpleHttpRequests;
+import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
+import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
+import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
+import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
@@ -112,6 +119,7 @@ import org.springframework.boot.testsupport.web.servlet.ExampleServlet;
 import org.springframework.boot.web.server.Compression;
 import org.springframework.boot.web.server.ErrorPage;
 import org.springframework.boot.web.server.GracefulShutdownResult;
+import org.springframework.boot.web.server.Http2;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.PortInUseException;
 import org.springframework.boot.web.server.Shutdown;
@@ -1118,6 +1126,39 @@ public abstract class AbstractServletWebServerFactoryTests {
 		}
 		catch (RuntimeException ex) {
 
+		}
+	}
+
+	@Test
+	void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
+			throws InterruptedException, ExecutionException, IOException {
+		AbstractServletWebServerFactory factory = getFactory();
+		Http2 http2 = new Http2();
+		http2.setEnabled(true);
+		factory.setHttp2(http2);
+		this.webServer = factory.getWebServer(exampleServletRegistration());
+		this.webServer.start();
+		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.createHttp2Default()) {
+			http2Client.start();
+			SimpleHttpRequest request = SimpleHttpRequests
+					.get("http://localhost:" + this.webServer.getPort() + "/hello");
+			SimpleHttpResponse response = http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
+
+				@Override
+				public void failed(Exception ex) {
+				}
+
+				@Override
+				public void completed(SimpleHttpResponse result) {
+				}
+
+				@Override
+				public void cancelled() {
+				}
+
+			}).get();
+			assertThat(response.getCode()).isEqualTo(HttpStatus.OK.value());
+			assertThat(response.getBodyText()).isEqualTo("Hello World");
 		}
 	}
 

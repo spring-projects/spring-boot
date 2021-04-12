@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -158,12 +158,12 @@ class UndertowWebServerFactoryDelegate {
 		if (this.directBuffers != null) {
 			builder.setDirectBuffers(this.directBuffers);
 		}
+		Http2 http2 = factory.getHttp2();
+		if (http2 != null) {
+			builder.setServerOption(UndertowOptions.ENABLE_HTTP2, http2.isEnabled());
+		}
 		if (ssl != null && ssl.isEnabled()) {
 			new SslBuilderCustomizer(factory.getPort(), address, ssl, factory.getSslStoreProvider()).customize(builder);
-			Http2 http2 = factory.getHttp2();
-			if (http2 != null) {
-				builder.setServerOption(UndertowOptions.ENABLE_HTTP2, http2.isEnabled());
-			}
 		}
 		else {
 			builder.addHttpListener(port, (address != null) ? address.getHostAddress() : "0.0.0.0");
