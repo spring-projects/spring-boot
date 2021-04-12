@@ -209,13 +209,13 @@ class WebFluxTagsTests {
 	}
 
 	@Test
-	void outcomeTagIsClientErrorWhenExceptionIsDisconnectedClient() {
+	void outcomeTagIsUnknownWhenExceptionIsDisconnectedClient() {
 		Tag tag = WebFluxTags.outcome(this.exchange, new EOFException("broken pipe"));
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 
 	@Test
-	void outcomeTagIsClientErrorWhenExceptionIsCancelledExchange() {
+	void outcomeTagIsUnknownWhenExceptionIsCancelledExchange() {
 		Tag tag = WebFluxTags.outcome(this.exchange, new CancelledServerWebExchangeException());
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}

@@ -35,7 +35,7 @@ import org.springframework.web.server.ServerWebExchange;
 public interface ErrorAttributes {
 
 	/**
-	 * Name of the {@link ServerRequest#attribute(String)} Request attribute} holding the
+	 * Name of the {@link ServerRequest#attribute(String) request attribute} holding the
 	 * error resolved by the {@code ErrorAttributes} implementation.
 	 * @since 2.5.0
 	 */

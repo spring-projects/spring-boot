@@ -2206,7 +2206,7 @@ To add to the default tags, provide one or more ``@Bean``s that implement `WebMv
 To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
 TIP: In some cases, exceptions handled in Web controllers are not recorded as request metrics tags.
-Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-error-handling, setting handled exceptions as request parameters>>.
+Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-error-handling, setting handled exceptions as request attributes>>.
 
 
 
@@ -2245,7 +2245,7 @@ To add to the default tags, provide one or more ``@Bean``s that implement `WebFl
 To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
-Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-webflux-error-handling, setting handled exceptions as request parameters>>.
+Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-webflux-error-handling, setting handled exceptions as request attributes>>.
 
 
 

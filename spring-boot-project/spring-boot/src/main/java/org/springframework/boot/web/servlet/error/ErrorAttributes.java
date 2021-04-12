@@ -36,7 +36,7 @@ public interface ErrorAttributes {
 
 	/**
 	 * Name of the {@link javax.servlet.http.HttpServletRequest#getAttribute(String)
-	 * Request attribute} holding the error resolved by the {@code ErrorAttributes}
+	 * request attribute} holding the error resolved by the {@code ErrorAttributes}
 	 * implementation.
 	 * @since 2.5.0
 	 */
