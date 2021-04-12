@@ -74,6 +74,19 @@ The project can be built from the root directory using the standard Gradle comma
 
 
 
+== Updating the Reference Documentation
+The reference documentation is stored in this repository, see `spring-boot-project/spring-boot-docs/src/docs/asciidoc`.
+We use https://asciidoctor.org/docs/asciidoc-writers-guide/[Asciidoc] and you can build the documentation locally using this command:
+
+[indent=0]
+----
+	$ ./gradlew spring-boot-project:spring-boot-docs:asciidoc
+----
+
+NOTE: The generated HTML documentation is available from `spring-boot-project/spring-boot-docs/build/docs/asciidoc/`.
+
+
+
 === Importing into Eclipse
 You can import the Spring Boot code into any Eclipse 2019-12-based distribution.
 The easiest way to setup a new environment is to use the Eclipse Installer with the provided `spring-boot-project.setup` file (in the `/eclipse` folder).
