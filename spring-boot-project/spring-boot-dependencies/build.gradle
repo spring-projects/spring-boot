@@ -451,7 +451,7 @@ bom {
 			]
 		}
 	}
-	library("HtmlUnit", "2.47.1") {
+	library("HtmlUnit", "2.49.1") {
 		group("net.sourceforge.htmlunit") {
 			modules = [
 				"htmlunit" {
