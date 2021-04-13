@@ -1738,7 +1738,7 @@ bom {
 			]
 		}
 	}
-	library("Sun Mail", "1.6.6") {
+	library("Sun Mail", "1.6.7") {
 		prohibit("[2.0.0-RC1,)") {
 			because "it uses the jakarta.* namespace"
 		}
