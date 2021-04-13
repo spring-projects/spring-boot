@@ -445,9 +445,9 @@ bom {
 		}
 	}
 	library("HSQLDB", "2.5.2") {
-        prohibit("[2.6.0,)") {
-            because "it requires Java 11"
-        }
+		prohibit("[2.6.0,)") {
+			because "it requires Java 11"
+		}
 		group("org.hsqldb") {
 			modules = [
 				"hsqldb"
