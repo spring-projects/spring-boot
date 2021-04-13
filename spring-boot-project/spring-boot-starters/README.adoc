@@ -124,6 +124,9 @@ do as they were designed before this was clarified.
 | https://www.hyperledger.org/use/fabric[Hyperledger Fabric]
 | https://github.com/bxforce/hyperledger-fabric-spring-boot
 
+| https://www.ibm.com/products/mq[IBM MQ]
+| https://github.com/ibm-messaging/mq-jms-spring
+
 | https://infinispan.org/[Infinispan]
 | https://github.com/infinispan/infinispan-spring-boot
 
