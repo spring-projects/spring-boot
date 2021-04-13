@@ -54,4 +54,10 @@ public class Jetty10ServletWebServerFactoryTests extends JettyServletWebServerFa
 	protected void jettyConfigurations() throws Exception {
 	}
 
+	@Override
+	@Disabled("https://github.com/eclipse/jetty.project/issues/6164")
+	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed() {
+
+	}
+
 }

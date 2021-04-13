@@ -1130,7 +1130,7 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
+	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
 			throws InterruptedException, ExecutionException, IOException {
 		AbstractServletWebServerFactory factory = getFactory();
 		Http2 http2 = new Http2();
