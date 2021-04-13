@@ -270,7 +270,7 @@ bom {
 			]
 		}
 	}
-	library("Elasticsearch", "7.11.1") {
+	library("Elasticsearch", "7.12.0") {
 		group("org.elasticsearch") {
 			modules = [
 				"elasticsearch"
