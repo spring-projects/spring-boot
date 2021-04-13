@@ -35,11 +35,12 @@ import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @EnabledForJreRange(min = JRE.JAVA_11)
-@ClassPathExclusions({ "jetty-*.jar", "tomcat-embed*.jar" })
-@ClassPathOverrides({ "org.slf4j:slf4j-api:1.7.25", "org.eclipse.jetty:jetty-io:10.0.2",
-		"org.eclipse.jetty:jetty-server:10.0.2", "org.eclipse.jetty:jetty-servlet:10.0.2",
-		"org.eclipse.jetty:jetty-util:10.0.2", "org.eclipse.jetty:jetty-webapp:10.0.2",
-		"org.eclipse.jetty.http2:http2-common:10.0.2", "org.eclipse.jetty.http2:http2-hpack:10.0.2",
+@ClassPathExclusions({ "jetty-*.jar", "tomcat-embed*.jar", "http2-*.jar" })
+@ClassPathOverrides({ "org.slf4j:slf4j-api:1.7.25", "org.eclipse.jetty:jetty-client:10.0.2",
+		"org.eclipse.jetty:jetty-io:10.0.2", "org.eclipse.jetty:jetty-server:10.0.2",
+		"org.eclipse.jetty:jetty-servlet:10.0.2", "org.eclipse.jetty:jetty-util:10.0.2",
+		"org.eclipse.jetty:jetty-webapp:10.0.2", "org.eclipse.jetty.http2:http2-common:10.0.2",
+		"org.eclipse.jetty.http2:http2-hpack:10.0.2", "org.eclipse.jetty.http2:http2-http-client-transport:10.0.2",
 		"org.eclipse.jetty.http2:http2-server:10.0.2", "org.mortbay.jasper:apache-jsp:8.5.40" })
 @interface TestWithJetty10 {
 

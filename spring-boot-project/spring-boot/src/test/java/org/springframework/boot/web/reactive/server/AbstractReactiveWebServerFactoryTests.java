@@ -41,15 +41,12 @@ import io.netty.handler.codec.http.HttpHeaderNames;
 import io.netty.handler.codec.http.HttpResponse;
 import io.netty.handler.ssl.SslProvider;
 import io.netty.handler.ssl.util.InsecureTrustManagerFactory;
-import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
-import org.apache.hc.client5.http.async.methods.SimpleHttpRequests;
-import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
-import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
-import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
-import org.apache.hc.core5.concurrent.FutureCallback;
-import org.apache.hc.core5.http.ContentType;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.client.util.StringContentProvider;
+import org.eclipse.jetty.http2.client.HTTP2Client;
+import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Mono;
@@ -459,35 +456,24 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
-			throws InterruptedException, ExecutionException, IOException {
+	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed() throws Exception {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		Http2 http2 = new Http2();
 		http2.setEnabled(true);
 		factory.setHttp2(http2);
 		this.webServer = factory.getWebServer(new EchoHandler());
 		this.webServer.start();
-		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.createHttp2Default()) {
-			http2Client.start();
-			SimpleHttpRequest request = SimpleHttpRequests.post("http://localhost:" + this.webServer.getPort());
-			request.setBody("Hello World", ContentType.TEXT_PLAIN);
-			SimpleHttpResponse response = http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
-
-				@Override
-				public void failed(Exception ex) {
-				}
-
-				@Override
-				public void completed(SimpleHttpResponse result) {
-				}
-
-				@Override
-				public void cancelled() {
-				}
-
-			}).get();
-			assertThat(response.getCode() == HttpStatus.OK.value());
-			assertThat(response.getBodyText()).isEqualTo("Hello World");
+		org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
+				new HttpClientTransportOverHTTP2(new HTTP2Client()));
+		client.start();
+		try {
+			ContentResponse response = client.POST("http://localhost:" + this.webServer.getPort())
+					.content(new StringContentProvider("Hello World"), "text/plain").send();
+			assertThat(response.getStatus() == HttpStatus.OK.value());
+			assertThat(response.getContentAsString()).isEqualTo("Hello World");
+		}
+		finally {
+			client.stop();
 		}
 	}
 

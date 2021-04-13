@@ -43,11 +43,4 @@ class Jetty10ReactiveWebServerFactoryTests extends JettyReactiveWebServerFactory
 
 	}
 
-	@Test
-	@Override
-	@Disabled("https://github.com/eclipse/jetty.project/issues/6164")
-	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed() {
-
-	}
-
 }

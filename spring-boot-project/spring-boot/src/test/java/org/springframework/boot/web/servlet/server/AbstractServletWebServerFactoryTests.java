@@ -79,12 +79,6 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
-import org.apache.hc.client5.http.async.methods.SimpleHttpRequest;
-import org.apache.hc.client5.http.async.methods.SimpleHttpRequests;
-import org.apache.hc.client5.http.async.methods.SimpleHttpResponse;
-import org.apache.hc.client5.http.impl.async.CloseableHttpAsyncClient;
-import org.apache.hc.client5.http.impl.async.HttpAsyncClients;
-import org.apache.hc.core5.concurrent.FutureCallback;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.entity.InputStreamFactory;
@@ -103,6 +97,9 @@ import org.apache.jasper.EmbeddedServletOptions;
 import org.apache.jasper.servlet.JspServlet;
 import org.assertj.core.api.ThrowableAssert.ThrowingCallable;
 import org.awaitility.Awaitility;
+import org.eclipse.jetty.client.api.ContentResponse;
+import org.eclipse.jetty.http2.client.HTTP2Client;
+import org.eclipse.jetty.http2.client.http.HttpClientTransportOverHTTP2;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assumptions;
 import org.junit.jupiter.api.Test;
@@ -1130,35 +1127,22 @@ public abstract class AbstractServletWebServerFactoryTests {
 	}
 
 	@Test
-	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
-			throws InterruptedException, ExecutionException, IOException {
+	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed() throws Exception {
 		AbstractServletWebServerFactory factory = getFactory();
 		Http2 http2 = new Http2();
 		http2.setEnabled(true);
 		factory.setHttp2(http2);
 		this.webServer = factory.getWebServer(exampleServletRegistration());
 		this.webServer.start();
-		try (CloseableHttpAsyncClient http2Client = HttpAsyncClients.createHttp2Default()) {
-			http2Client.start();
-			SimpleHttpRequest request = SimpleHttpRequests
-					.get("http://localhost:" + this.webServer.getPort() + "/hello");
-			SimpleHttpResponse response = http2Client.execute(request, new FutureCallback<SimpleHttpResponse>() {
-
-				@Override
-				public void failed(Exception ex) {
-				}
-
-				@Override
-				public void completed(SimpleHttpResponse result) {
-				}
-
-				@Override
-				public void cancelled() {
-				}
-
-			}).get();
-			assertThat(response.getCode()).isEqualTo(HttpStatus.OK.value());
-			assertThat(response.getBodyText()).isEqualTo("Hello World");
+		org.eclipse.jetty.client.HttpClient client = new org.eclipse.jetty.client.HttpClient(
+				new HttpClientTransportOverHTTP2(new HTTP2Client()));
+		client.start();
+		try {
+			ContentResponse response = client.GET("http://localhost:" + this.webServer.getPort() + "/hello");
+			assertThat(response.getStatus() == HttpStatus.OK.value());
+		}
+		finally {
+			client.stop();
 		}
 	}
 
