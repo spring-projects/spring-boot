@@ -1225,7 +1225,7 @@ bom {
 			]
 		}
 	}
-	library("MongoDB", "4.2.2") {
+	library("MongoDB", "4.2.3") {
 		group("org.mongodb") {
 			modules = [
 				"bson",
