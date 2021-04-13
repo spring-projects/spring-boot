@@ -25,8 +25,11 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
  * plugin. When the plugin is applied:
  *
  * <ul>
- * <li>{@link KotlinCompile} tasks are configured to use {@code apiVersion} and
- * {@code languageVersion} 1.3.
+ * <li>{@link KotlinCompile} tasks are configured to:
+ * <ul>
+ * <li>Use {@code apiVersion} and {@code languageVersion} 1.3.
+ * <li>Treat all warnings as errors
+ * </ul>
  * </ul>
  *
  * <p/>
@@ -41,6 +44,7 @@ class KotlinConventions {
 				KotlinJvmOptions kotlinOptions = compile.getKotlinOptions();
 				kotlinOptions.setApiVersion("1.3");
 				kotlinOptions.setLanguageVersion("1.3");
+				kotlinOptions.setAllWarningsAsErrors(true);
 			});
 		});
 	}
