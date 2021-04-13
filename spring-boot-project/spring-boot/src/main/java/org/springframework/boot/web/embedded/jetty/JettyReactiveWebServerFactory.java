@@ -26,7 +26,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Handler;
@@ -199,10 +199,10 @@ public class JettyReactiveWebServerFactory extends AbstractReactiveWebServerFact
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSendServerVersion(false);
 		List<ConnectionFactory> connectionFactories = new ArrayList<>();
-		if (getHttp2() != null && getHttp2().isEnabled()) {
-			connectionFactories.add(new HTTP2ServerConnectionFactory(httpConfiguration));
-		}
 		connectionFactories.add(new HttpConnectionFactory(httpConfiguration));
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			connectionFactories.add(new HTTP2CServerConnectionFactory(httpConfiguration));
+		}
 		JettyResourceFactory resourceFactory = getResourceFactory();
 		ServerConnector connector;
 		if (resourceFactory != null) {

@@ -491,6 +491,21 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		}
 	}
 
+	@Test
+	protected void whenHttp2IsEnabledAndSslIsDisabledThenHttp11CanStillBeUsed()
+			throws InterruptedException, ExecutionException, IOException {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		Http2 http2 = new Http2();
+		http2.setEnabled(true);
+		factory.setHttp2(http2);
+		this.webServer = factory.getWebServer(new EchoHandler());
+		this.webServer.start();
+		Mono<String> result = getWebClient(this.webServer.getPort()).build().post().uri("/test")
+				.contentType(MediaType.TEXT_PLAIN).body(BodyInserters.fromValue("Hello World")).retrieve()
+				.bodyToMono(String.class);
+		assertThat(result.block(Duration.ofSeconds(30))).isEqualTo("Hello World");
+	}
+
 	protected WebClient prepareCompressionTest() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);

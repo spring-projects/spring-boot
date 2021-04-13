@@ -34,7 +34,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.eclipse.jetty.http.MimeTypes;
-import org.eclipse.jetty.http2.server.HTTP2ServerConnectionFactory;
+import org.eclipse.jetty.http2.server.HTTP2CServerConnectionFactory;
 import org.eclipse.jetty.server.AbstractConnector;
 import org.eclipse.jetty.server.ConnectionFactory;
 import org.eclipse.jetty.server.Connector;
@@ -180,10 +180,10 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 		HttpConfiguration httpConfiguration = new HttpConfiguration();
 		httpConfiguration.setSendServerVersion(false);
 		List<ConnectionFactory> connectionFactories = new ArrayList<>();
-		if (getHttp2() != null && getHttp2().isEnabled()) {
-			connectionFactories.add(new HTTP2ServerConnectionFactory(httpConfiguration));
-		}
 		connectionFactories.add(new HttpConnectionFactory(httpConfiguration));
+		if (getHttp2() != null && getHttp2().isEnabled()) {
+			connectionFactories.add(new HTTP2CServerConnectionFactory(httpConfiguration));
+		}
 		ServerConnector connector = new ServerConnector(server, this.acceptors, this.selectors,
 				connectionFactories.toArray(new ConnectionFactory[0]));
 		connector.setHost(address.getHostString());
