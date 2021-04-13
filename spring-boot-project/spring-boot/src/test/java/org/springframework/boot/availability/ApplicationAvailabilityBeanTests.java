@@ -16,9 +16,14 @@
 
 package org.springframework.boot.availability;
 
+import java.io.IOException;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -29,6 +34,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Brian Clozel
  * @author Phillip Webb
  */
+@ExtendWith(OutputCaptureExtension.class)
 class ApplicationAvailabilityBeanTests {
 
 	private AnnotationConfigApplicationContext context;
@@ -87,6 +93,28 @@ class ApplicationAvailabilityBeanTests {
 		assertThat(this.availability.getLastChangeEvent(TestState.class)).isNotNull();
 	}
 
+	@Test
+	void stateChangesAreLogged(CapturedOutput output) {
+		AvailabilityChangeEvent.publish(this.context, LivenessState.CORRECT);
+		assertThat(output).contains("Application availability state LivenessState changed to CORRECT\n");
+		AvailabilityChangeEvent.publish(this.context, LivenessState.BROKEN);
+		assertThat(output).contains("Application availability state LivenessState changed from CORRECT to BROKEN\n");
+	}
+
+	@Test
+	void stateChangesAreLoggedWithExceptionSource(CapturedOutput output) {
+		AvailabilityChangeEvent.publish(this.context, new IOException("connection error"), LivenessState.BROKEN);
+		assertThat(output).contains("Application availability state LivenessState changed to BROKEN: "
+				+ "java.io.IOException: connection error\n");
+	}
+
+	@Test
+	void stateChangesAreLoggedWithOtherSource(CapturedOutput output) {
+		AvailabilityChangeEvent.publish(this.context, new CustomEventSource(), LivenessState.BROKEN);
+		assertThat(output).contains("Application availability state LivenessState changed to BROKEN: "
+				+ CustomEventSource.class.getName() + "\n");
+	}
+
 	enum TestState implements AvailabilityState {
 
 		ONE {
@@ -104,6 +132,10 @@ class ApplicationAvailabilityBeanTests {
 		};
 
 		abstract String test();
+
+	}
+
+	static class CustomEventSource {
 
 	}
 

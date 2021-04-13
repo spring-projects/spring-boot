@@ -19,6 +19,10 @@ package org.springframework.boot.availability;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
 
@@ -33,6 +37,8 @@ import org.springframework.util.Assert;
  */
 public class ApplicationAvailabilityBean
 		implements ApplicationAvailability, ApplicationListener<AvailabilityChangeEvent<?>> {
+
+	private static final Log logger = LogFactory.getLog(ApplicationAvailability.class);
 
 	private final Map<Class<? extends AvailabilityState>, AvailabilityChangeEvent<?>> events = new HashMap<>();
 
@@ -58,8 +64,29 @@ public class ApplicationAvailabilityBean
 
 	@Override
 	public void onApplicationEvent(AvailabilityChangeEvent<?> event) {
+		logStateChange(event);
 		Class<? extends AvailabilityState> stateType = getStateType(event.getState());
 		this.events.put(stateType, event);
+	}
+
+	private void logStateChange(AvailabilityChangeEvent<?> event) {
+		Class<? extends AvailabilityState> stateType = getStateType(event.getState());
+		StringBuilder message = new StringBuilder(
+				"Application availability state " + stateType.getSimpleName() + " changed");
+		AvailabilityChangeEvent<? extends AvailabilityState> lastChangeEvent = getLastChangeEvent(stateType);
+		if (lastChangeEvent != null) {
+			message.append(" from " + lastChangeEvent.getState());
+		}
+		message.append(" to " + event.getState());
+		if (event.getSource() != null) {
+			if (event.getSource() instanceof Throwable) {
+				message.append(": " + event.getSource());
+			}
+			else if (!(event.getSource() instanceof ApplicationEventPublisher)) {
+				message.append(": " + event.getSource().getClass().getName());
+			}
+		}
+		logger.info(message);
 	}
 
 	@SuppressWarnings("unchecked")
