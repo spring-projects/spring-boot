@@ -162,7 +162,11 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	@Deprecated
 	private Charset sqlScriptEncoding;
 
-	private EmbeddedDatabaseConnection embeddedDatabaseConnection = EmbeddedDatabaseConnection.NONE;
+	/**
+	 * Connection details for an embedded database. Defaults to the most suitable embedded
+	 * database that is available on the classpath.
+	 */
+	private EmbeddedDatabaseConnection embeddedDatabaseConnection;
 
 	private Xa xa = new Xa();
 
@@ -175,7 +179,9 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 
 	@Override
 	public void afterPropertiesSet() throws Exception {
-		this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(this.classLoader);
+		if (this.embeddedDatabaseConnection == null) {
+			this.embeddedDatabaseConnection = EmbeddedDatabaseConnection.get(this.classLoader);
+		}
 	}
 
 	/**
@@ -504,6 +510,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	@Deprecated
 	public void setSqlScriptEncoding(Charset sqlScriptEncoding) {
 		this.sqlScriptEncoding = sqlScriptEncoding;
+	}
+
+	public EmbeddedDatabaseConnection getEmbeddedDatabaseConnection() {
+		return this.embeddedDatabaseConnection;
+	}
+
+	public void setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection embeddedDatabaseConnection) {
+		this.embeddedDatabaseConnection = embeddedDatabaseConnection;
 	}
 
 	public ClassLoader getClassLoader() {

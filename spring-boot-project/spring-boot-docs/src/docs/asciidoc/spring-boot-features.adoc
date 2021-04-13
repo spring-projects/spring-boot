@@ -3565,6 +3565,8 @@ TIP: The "`How-to`" section includes a <<howto.adoc#howto-database-initializatio
 Spring Boot can auto-configure embedded https://www.h2database.com[H2], http://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use.
+If there are multiple embedded databases on the classpath, set the configprop:spring.datasource.embedded-database-connection[] configuration property to control which one is used.
+Setting the property to `none` disables auto-configuration of an embedded database.
 
 [NOTE]
 ====

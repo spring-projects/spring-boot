@@ -70,6 +70,24 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
+	void determineUrlWithSpecificEmbeddedConnection() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(false);
+		properties.setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection.HSQLDB);
+		properties.afterPropertiesSet();
+		assertThat(properties.determineUrl()).isEqualTo(EmbeddedDatabaseConnection.HSQLDB.getUrl("testdb"));
+	}
+
+	@Test
+	void whenEmbeddedConnectionIsNoneAndNoUrlIsConfiguredThenDetermineUrlThrows() throws Exception {
+		DataSourceProperties properties = new DataSourceProperties();
+		properties.setGenerateUniqueName(false);
+		properties.setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection.NONE);
+		assertThatExceptionOfType(DataSourceProperties.DataSourceBeanCreationException.class)
+				.isThrownBy(properties::determineUrl).withMessageContaining("Failed to determine suitable jdbc url");
+	}
+
+	@Test
 	void determineUrlWithExplicitConfig() throws Exception {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setUrl("jdbc:mysql://mydb");
