@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import javax.net.ssl.TrustManager;
 
 import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Connection;
+import com.rabbitmq.client.JDKSaslConfig;
 import com.rabbitmq.client.SslContextFactory;
 import com.rabbitmq.client.TrustEverythingTrustManager;
 import com.rabbitmq.client.impl.CredentialsProvider;
@@ -33,6 +34,7 @@ import com.rabbitmq.client.impl.CredentialsRefreshService;
 import com.rabbitmq.client.impl.DefaultCredentialsProvider;
 import org.aopalliance.aop.Advice;
 import org.junit.jupiter.api.Test;
+import org.mockito.InOrder;
 
 import org.springframework.amqp.core.AcknowledgeMode;
 import org.springframework.amqp.core.AmqpAdmin;
@@ -60,6 +62,8 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.Ordered;
+import org.springframework.core.annotation.Order;
 import org.springframework.retry.RetryPolicy;
 import org.springframework.retry.backoff.BackOffPolicy;
 import org.springframework.retry.backoff.ExponentialBackOffPolicy;
@@ -75,6 +79,7 @@ import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.ArgumentMatchers.isNull;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.inOrder;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 
@@ -822,6 +827,29 @@ class RabbitAutoConfigurationTests {
 						.isNull());
 	}
 
+	@Test
+	void whenAConnectionFactoryCustomizerIsDefinedThenItCustomizesTheConnectionFactory() {
+		this.contextRunner.withUserConfiguration(SaslConfigCustomizerConfiguration.class)
+				.run((context) -> assertThat(getTargetConnectionFactory(context).getSaslConfig())
+						.isInstanceOf(JDKSaslConfig.class));
+	}
+
+	@Test
+	void whenMultipleConnectionFactoryCustomizersAreDefinedThenTheyAreCalledInOrder() {
+		this.contextRunner.withUserConfiguration(MultipleConnectionFactoryCustomizersConfiguration.class)
+				.run((context) -> {
+					ConnectionFactoryCustomizer firstCustomizer = context.getBean("firstCustomizer",
+							ConnectionFactoryCustomizer.class);
+					ConnectionFactoryCustomizer secondCustomizer = context.getBean("secondCustomizer",
+							ConnectionFactoryCustomizer.class);
+					InOrder inOrder = inOrder(firstCustomizer, secondCustomizer);
+					com.rabbitmq.client.ConnectionFactory targetConnectionFactory = getTargetConnectionFactory(context);
+					inOrder.verify(firstCustomizer).customize(targetConnectionFactory);
+					inOrder.verify(secondCustomizer).customize(targetConnectionFactory);
+					inOrder.verifyNoMoreInteractions();
+				});
+	}
+
 	private TrustManager getTrustManager(com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory) {
 		SslContextFactory sslContextFactory = (SslContextFactory) ReflectionTestUtils.getField(rabbitConnectionFactory,
 				"sslContextFactory");
@@ -1067,6 +1095,33 @@ class RabbitAutoConfigurationTests {
 		@Bean
 		CredentialsRefreshService credentialsRefreshService2() {
 			return mock(CredentialsRefreshService.class);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SaslConfigCustomizerConfiguration {
+
+		@Bean
+		ConnectionFactoryCustomizer connectionFactoryCustomizer() {
+			return (connectionFactory) -> connectionFactory.setSaslConfig(new JDKSaslConfig(connectionFactory));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleConnectionFactoryCustomizersConfiguration {
+
+		@Bean
+		@Order(Ordered.LOWEST_PRECEDENCE)
+		ConnectionFactoryCustomizer secondCustomizer() {
+			return mock(ConnectionFactoryCustomizer.class);
+		}
+
+		@Bean
+		@Order(0)
+		ConnectionFactoryCustomizer firstCustomizer() {
+			return mock(ConnectionFactoryCustomizer.class);
 		}
 
 	}
