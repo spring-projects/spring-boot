@@ -23,16 +23,15 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@JettyServletWebServerFactory} with Jetty 10.
+ * Tests for {@JettyReactiveWebServerFactory} with Jetty 10.
  *
  * @author Andy Wilkinson
  */
 @TestWithJetty10
-public class Jetty10ServletWebServerFactoryTests extends JettyServletWebServerFactoryTests {
+class Jetty10ReactiveWebServerFactoryTests extends JettyReactiveWebServerFactoryTests {
 
 	@Test
-	@Override
-	protected void correctVersionOfJettyUsed() {
+	void correctVersionOfJettyUsed() {
 		String jettyVersion = ErrorHandler.class.getPackage().getImplementationVersion();
 		assertThat(jettyVersion).startsWith("10.0");
 	}
@@ -42,12 +41,6 @@ public class Jetty10ServletWebServerFactoryTests extends JettyServletWebServerFa
 	@Disabled("Jetty 10 does not support User-Agent-based compression")
 	protected void noCompressionForUserAgent() {
 
-	}
-
-	@Test
-	@Override
-	@Disabled("Jetty 10 adds methods to Configuration that we can't mock while compiling against 9")
-	protected void jettyConfigurations() throws Exception {
 	}
 
 	@Test

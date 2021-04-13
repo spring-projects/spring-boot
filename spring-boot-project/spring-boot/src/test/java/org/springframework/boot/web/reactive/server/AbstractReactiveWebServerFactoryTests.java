@@ -340,7 +340,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	void noCompressionForUserAgent() {
+	protected void noCompressionForUserAgent() {
 		Compression compression = new Compression();
 		compression.setEnabled(true);
 		compression.setExcludedUserAgents(new String[] { "testUserAgent" });
@@ -459,7 +459,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
-	void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
+	protected void whenHttp2IsEnabledAndSslIsDisabledThenH2cCanBeUsed()
 			throws InterruptedException, ExecutionException, IOException {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		Http2 http2 = new Http2();
