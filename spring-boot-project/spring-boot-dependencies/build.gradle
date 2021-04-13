@@ -1273,7 +1273,7 @@ bom {
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.36.Final") {
+	library("Netty tcNative", "2.0.38.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative",
