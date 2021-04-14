@@ -630,7 +630,7 @@ The following example shows how to specify two locations:
 
 TIP: Use the prefix `optional:` if the <<boot-features-external-config-optional-prefix,locations are optional>> and you don't mind if they don't exist.
 
-WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
+WARNING: `spring.config.name`, `spring.config.location`, and `spring.config.additional-location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
 
 If `spring.config.location` contains directories (as opposed to files), they should end in `/` (at runtime they will be appended with the names generated from `spring.config.name` before being loaded).
