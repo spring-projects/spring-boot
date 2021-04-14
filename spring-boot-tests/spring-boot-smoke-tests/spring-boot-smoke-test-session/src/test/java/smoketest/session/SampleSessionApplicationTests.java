@@ -51,14 +51,14 @@ class SampleSessionApplicationTests {
 		String cookie = firstResponse.getHeaders().getFirst("Set-Cookie");
 		String sessionId2 = nextRequest(restTemplate, uri, cookie).getBody();
 		assertThat(sessionId1).isEqualTo(sessionId2);
-		Thread.sleep(1000);
+		Thread.sleep(2100);
 		String loginPage = nextRequest(restTemplate, uri, cookie).getBody();
 		assertThat(loginPage).containsIgnoringCase("login");
 	}
 
 	private ConfigurableApplicationContext createContext() {
 		ConfigurableApplicationContext context = new SpringApplicationBuilder().sources(SampleSessionApplication.class)
-				.properties("server.port:0", "server.servlet.session.timeout:1")
+				.properties("server.port:0", "server.servlet.session.timeout:2")
 				.initializers(new ServerPortInfoApplicationContextInitializer()).run();
 		return context;
 	}
