@@ -352,7 +352,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish JAXB", "2.3.3") {
+	library("Glassfish JAXB", "2.3.4") {
 		group("org.glassfish.jaxb") {
 			modules = [
 				"codemodel",
