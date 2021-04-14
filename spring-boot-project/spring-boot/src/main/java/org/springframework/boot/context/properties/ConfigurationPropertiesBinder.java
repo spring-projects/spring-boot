@@ -166,7 +166,7 @@ class ConfigurationPropertiesBinder {
 	private Binder getBinder() {
 		if (this.binder == null) {
 			this.binder = new Binder(getConfigurationPropertySources(), getPropertySourcesPlaceholdersResolver(),
-					getConversionService(), getPropertyEditorInitializer(), null,
+					getConversionServices(), getPropertyEditorInitializer(), null,
 					ConfigurationPropertiesBindConstructorProvider.INSTANCE);
 		}
 		return this.binder;
@@ -180,8 +180,8 @@ class ConfigurationPropertiesBinder {
 		return new PropertySourcesPlaceholdersResolver(this.propertySources);
 	}
 
-	private ConversionService getConversionService() {
-		return new ConversionServiceDeducer(this.applicationContext).getConversionService();
+	private List<ConversionService> getConversionServices() {
+		return new ConversionServiceDeducer(this.applicationContext).getConversionServices();
 	}
 
 	private Consumer<PropertyEditorRegistry> getPropertyEditorInitializer() {

@@ -76,6 +76,7 @@ import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.GenericConverter;
+import org.springframework.core.convert.support.DefaultConversionService;
 import org.springframework.core.env.MapPropertySource;
 import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.StandardEnvironment;
@@ -643,6 +644,20 @@ class ConfigurationPropertiesTests {
 		Person person = this.context.getBean(PersonProperties.class).getPerson();
 		assertThat(person.firstName).isEqualTo("John");
 		assertThat(person.lastName).isEqualTo("Smith");
+	}
+
+	@Test
+	void loadWhenBeanFactoryConversionServiceAndConverterBean() {
+		DefaultConversionService conversionService = new DefaultConversionService();
+		conversionService.addConverter(new AlienConverter());
+		this.context.getBeanFactory().setConversionService(conversionService);
+		load(new Class<?>[] { ConverterConfiguration.class, PersonAndAlienProperties.class }, "test.person=John Smith",
+				"test.alien=Alf Tanner");
+		PersonAndAlienProperties properties = this.context.getBean(PersonAndAlienProperties.class);
+		assertThat(properties.getPerson().firstName).isEqualTo("John");
+		assertThat(properties.getPerson().lastName).isEqualTo("Smith");
+		assertThat(properties.getAlien().firstName).isEqualTo("Alf");
+		assertThat(properties.getAlien().lastName).isEqualTo("Tanner");
 	}
 
 	@Test
@@ -1909,6 +1924,32 @@ class ConfigurationPropertiesTests {
 	}
 
 	@EnableConfigurationProperties
+	@ConfigurationProperties(prefix = "test")
+	static class PersonAndAlienProperties {
+
+		private Person person;
+
+		private Alien alien;
+
+		Person getPerson() {
+			return this.person;
+		}
+
+		void setPerson(Person person) {
+			this.person = person;
+		}
+
+		Alien getAlien() {
+			return this.alien;
+		}
+
+		void setAlien(Alien alien) {
+			this.alien = alien;
+		}
+
+	}
+
+	@EnableConfigurationProperties
 	@ConfigurationProperties(prefix = "sample")
 	static class MapWithNumericKeyProperties {
 
@@ -2201,6 +2242,16 @@ class ConfigurationPropertiesTests {
 
 	}
 
+	static class AlienConverter implements Converter<String, Alien> {
+
+		@Override
+		public Alien convert(String source) {
+			String[] content = StringUtils.split(source, " ");
+			return new Alien(content[0], content[1]);
+		}
+
+	}
+
 	static class GenericPersonConverter implements GenericConverter {
 
 		@Override
@@ -2248,6 +2299,27 @@ class ConfigurationPropertiesTests {
 		private final String lastName;
 
 		Person(String firstName, String lastName) {
+			this.firstName = firstName;
+			this.lastName = lastName;
+		}
+
+		String getFirstName() {
+			return this.firstName;
+		}
+
+		String getLastName() {
+			return this.lastName;
+		}
+
+	}
+
+	static class Alien {
+
+		private final String firstName;
+
+		private final String lastName;
+
+		Alien(String firstName, String lastName) {
 			this.firstName = firstName;
 			this.lastName = lastName;
 		}
