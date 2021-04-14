@@ -19,7 +19,10 @@ package org.springframework.boot.build;
 import org.apache.maven.artifact.repository.MavenArtifactRepository;
 import org.gradle.api.Project;
 import org.gradle.api.attributes.Usage;
+import org.gradle.api.component.AdhocComponentWithVariants;
+import org.gradle.api.component.ConfigurationVariantDetails;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.publish.PublishingExtension;
 import org.gradle.api.publish.VariantVersionMappingStrategy;
@@ -50,8 +53,6 @@ import org.gradle.api.publish.maven.plugins.MavenPublishPlugin;
  * </ul>
  * </ul>
  *
- * <p/>
- *
  * @author Andy Wilkinson
  * @author Christoph Dreis
  * @author Mike Smithson
@@ -79,7 +80,9 @@ class MavenPublishingConventions {
 
 	private void customizeMavenPublication(MavenPublication publication, Project project) {
 		customizePom(publication.getPom(), project);
-		project.getPlugins().withType(JavaPlugin.class).all((javaPlugin) -> customizeJavaMavenPublication(publication));
+		project.getPlugins().withType(JavaPlugin.class)
+				.all((javaPlugin) -> customizeJavaMavenPublication(publication, project));
+		suppressMavenOptionalFeatureWarnings(publication);
 	}
 
 	private void customizePom(MavenPom pom, Project project) {
@@ -97,11 +100,34 @@ class MavenPublishingConventions {
 		}
 	}
 
-	private void customizeJavaMavenPublication(MavenPublication publication) {
+	private void customizeJavaMavenPublication(MavenPublication publication, Project project) {
+		addMavenOptionalFeature(project);
 		publication.versionMapping((strategy) -> strategy.usage(Usage.JAVA_API, (mappingStrategy) -> mappingStrategy
 				.fromResolutionOf(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME)));
 		publication.versionMapping(
 				(strategy) -> strategy.usage(Usage.JAVA_RUNTIME, VariantVersionMappingStrategy::fromResolutionResult));
+	}
+
+	/**
+	 * Add a feature that allows maven plugins to declare optional dependencies that
+	 * appear in the POM. This is required to make m2e in Eclipse happy.
+	 * @param project the project to add the feature to
+	 */
+	private void addMavenOptionalFeature(Project project) {
+		JavaPluginExtension extension = project.getExtensions().getByType(JavaPluginExtension.class);
+		JavaPluginConvention convention = project.getConvention().getPlugin(JavaPluginConvention.class);
+		extension.registerFeature("mavenOptional",
+				(feature) -> feature.usingSourceSet(convention.getSourceSets().getByName("main")));
+		AdhocComponentWithVariants javaComponent = (AdhocComponentWithVariants) project.getComponents()
+				.findByName("java");
+		javaComponent.addVariantsFromConfiguration(
+				project.getConfigurations().findByName("mavenOptionalRuntimeElements"),
+				ConfigurationVariantDetails::mapToOptional);
+	}
+
+	private void suppressMavenOptionalFeatureWarnings(MavenPublication publication) {
+		publication.suppressPomMetadataWarningsFor("mavenOptionalApiElements");
+		publication.suppressPomMetadataWarningsFor("mavenOptionalRuntimeElements");
 	}
 
 	private void customizeOrganization(MavenPomOrganization organization) {
