@@ -32,7 +32,7 @@ dependencies {
 	intTestImplementation("org.junit.jupiter:junit-jupiter")
 	intTestImplementation("org.testcontainers:testcontainers")
 
-	optional("org.apache.maven.plugins:maven-shade-plugin")
+	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin")
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
