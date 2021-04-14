@@ -18,6 +18,7 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
+org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
 # AutoConfigureDataJpa auto-configuration imports
@@ -29,6 +30,7 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConf
 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
 org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration,\
+org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
 # AutoConfigureDataLdap auto-configuration imports
@@ -79,6 +81,7 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
+org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
 # AutoConfigureTestDatabase auto-configuration imports
@@ -93,6 +96,7 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration,\
 org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration,\
 org.springframework.boot.autoconfigure.jooq.JooqAutoConfiguration,\
 org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration,\
+org.springframework.boot.autoconfigure.sql.init.SqlInitializationAutoConfiguration,\
 org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration
 
 # AutoConfigureJson auto-configuration imports
