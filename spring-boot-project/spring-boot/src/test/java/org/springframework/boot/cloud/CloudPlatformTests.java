@@ -151,9 +151,9 @@ class CloudPlatformTests {
 	}
 
 	@Test
-	void getActiveWhenHasWebsitesEnableAppServiceStorageAndNoWebsiteNameShouldNotReturnAzureAppService() {
+	void getActiveWhenHasWebsitesEnableAppServiceStorageAndNoWebsiteSiteNameShouldNotReturnAzureAppService() {
 		Environment environment = getEnvironmentWithEnvVariables(
-				Collections.singletonMap("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "---"));
+				Collections.singletonMap("WEBSITES_ENABLE_APP_SERVICE_STORAGE", "false"));
 		CloudPlatform platform = CloudPlatform.getActive(environment);
 		assertThat(platform).isNull();
 	}

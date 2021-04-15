@@ -227,7 +227,6 @@ class ServerPropertiesTests {
 	@Test
 	void testCustomizeTomcatKeepAliveTimeoutWithInfinite() {
 		bind("server.tomcat.keep-alive-timeout", "-1");
-		assertThat(this.properties.getTomcat().getKeepAliveTimeout().toMillis()).isEqualTo(-1);
 		assertThat(this.properties.getTomcat().getKeepAliveTimeout()).hasMillis(-1);
 	}
 
