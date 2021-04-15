@@ -451,6 +451,7 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: M
+      privileged: true
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
   - put: artifactory-repo
@@ -471,6 +472,7 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RC
+      privileged: true
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
   - put: artifactory-repo
@@ -491,6 +493,7 @@ jobs:
     file: git-repo/ci/tasks/stage.yml
     params:
       RELEASE_TYPE: RELEASE
+      privileged: true
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
   - put: artifactory-repo
