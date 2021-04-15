@@ -2154,7 +2154,7 @@ The following JVM metrics are provided:
 [[production-ready-metrics-system]]
 ==== System Metrics
 Auto-configuration will enable system metrics using core Micrometer classes.
-System are published under the `system.` and `process.` meter names.
+System metrics are published under the `system.` and `process.` meter names.
 
 The following system metrics are provided:
 

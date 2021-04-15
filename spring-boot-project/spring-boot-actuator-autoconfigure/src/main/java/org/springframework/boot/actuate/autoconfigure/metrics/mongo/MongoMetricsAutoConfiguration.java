@@ -93,7 +93,7 @@ public class MongoMetricsAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean
-		MongoConnectionPoolTagsProvider mongoMetricsConnectionPoolTagsProvider() {
+		MongoConnectionPoolTagsProvider mongoConnectionPoolTagsProvider() {
 			return new DefaultMongoConnectionPoolTagsProvider();
 		}
 
