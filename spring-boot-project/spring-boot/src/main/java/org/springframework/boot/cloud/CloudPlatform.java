@@ -140,7 +140,8 @@ public enum CloudPlatform {
 	 * @return if the platform is active.
 	 */
 	public boolean isActive(Environment environment) {
-		return isEnforced(environment) || (isAutoDetectionEnabled(environment) && isDetected(environment));
+		String platformProperty = environment.getProperty(PROPERTY_NAME);
+		return isEnforced(platformProperty) || (platformProperty == null && isDetected(environment));
 	}
 
 	/**
@@ -151,7 +152,10 @@ public enum CloudPlatform {
 	 * @since 2.3.0
 	 */
 	public boolean isEnforced(Environment environment) {
-		String platform = environment.getProperty(PROPERTY_NAME);
+		return isEnforced(environment.getProperty(PROPERTY_NAME));
+	}
+
+	private boolean isEnforced(String platform) {
 		return name().equalsIgnoreCase(platform);
 	}
 
@@ -163,16 +167,6 @@ public enum CloudPlatform {
 	 * @since 2.3.0
 	 */
 	public abstract boolean isDetected(Environment environment);
-
-	/**
-	 * Determines if it is enabled that the platform is detected by looking for
-	 * platform-specific environment variables.
-	 * @param environment the environment
-	 * @return if the platform auto-detection is enabled.
-	 */
-	private boolean isAutoDetectionEnabled(Environment environment) {
-		return environment.getProperty(PROPERTY_NAME) == null;
-	}
 
 	/**
 	 * Returns if the platform is behind a load balancer and uses

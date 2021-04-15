@@ -18,9 +18,7 @@ package org.springframework.boot.cloud;
 
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
@@ -148,9 +146,8 @@ class CloudPlatformTests {
 		envVars.put("EXAMPLE_SERVICE_PORT", "8080");
 		Environment environment = getEnvironmentWithEnvVariables(envVars);
 		((MockEnvironment) environment).setProperty("spring.main.cloud-platform", "none");
-		List<CloudPlatform> activeCloudPlatforms = Stream.of(CloudPlatform.values())
-				.filter((cloudPlatform) -> cloudPlatform.isActive(environment)).collect(Collectors.toList());
-		assertThat(activeCloudPlatforms).containsExactly(CloudPlatform.NONE);
+		assertThat(Stream.of(CloudPlatform.values()).filter((platform) -> platform.isActive(environment)))
+				.containsExactly(CloudPlatform.NONE);
 	}
 
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {
