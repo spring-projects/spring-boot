@@ -49,6 +49,7 @@ org.springframework.boot.actuate.autoconfigure.metrics.MetricsEndpointAutoConfig
 org.springframework.boot.actuate.autoconfigure.metrics.SystemMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.amqp.RabbitMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.cache.CacheMetricsAutoConfiguration,\
+org.springframework.boot.actuate.autoconfigure.metrics.data.RepositoryMetricsAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.appoptics.AppOpticsMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.atlas.AtlasMetricsExportAutoConfiguration,\
 org.springframework.boot.actuate.autoconfigure.metrics.export.datadog.DatadogMetricsExportAutoConfiguration,\
