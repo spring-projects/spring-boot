@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.core.env.StandardEnvironment;
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Nguyen Sach
  * @since 1.3.0
  */
 public enum CloudPlatform {
@@ -131,13 +132,16 @@ public enum CloudPlatform {
 
 	};
 
+	private static final String PROPERTY_NAME = "spring.main.cloud-platform";
+
 	/**
 	 * Determines if the platform is active (i.e. the application is running in it).
 	 * @param environment the environment
 	 * @return if the platform is active.
 	 */
 	public boolean isActive(Environment environment) {
-		return isEnforced(environment) || isDetected(environment);
+		String platformProperty = environment.getProperty(PROPERTY_NAME);
+		return isEnforced(platformProperty) || (platformProperty == null && isDetected(environment));
 	}
 
 	/**
@@ -148,7 +152,10 @@ public enum CloudPlatform {
 	 * @since 2.3.0
 	 */
 	public boolean isEnforced(Environment environment) {
-		String platform = environment.getProperty("spring.main.cloud-platform");
+		return isEnforced(environment.getProperty(PROPERTY_NAME));
+	}
+
+	private boolean isEnforced(String platform) {
 		return name().equalsIgnoreCase(platform);
 	}
 
