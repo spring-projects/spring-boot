@@ -82,9 +82,8 @@
 :spring-data-redis: https://spring.io/projects/spring-data-redis
 :spring-data-rest-api: https://docs.spring.io/spring-data/rest/docs/{spring-data-rest-version}/api/org/springframework/data/rest
 :spring-framework: https://spring.io/projects/spring-framework
-:spring-framework-api: https://docs.spring.io/spring/docs/{spring-framework-version}/javadoc-api/org/springframework
-:spring-framework-docs: https://docs.spring.io/spring/docs/{spring-framework-version}/reference/html
-:spring-initializr-docs: https://docs.spring.io/initializr/docs/current/reference/html
+:spring-framework-api: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/javadoc-api/org/springframework
+:spring-framework-docs: https://docs.spring.io/spring-framework/docs/{spring-framework-version}/reference/html
 :spring-integration: https://spring.io/projects/spring-integration
 :spring-integration-docs: https://docs.spring.io/spring-integration/docs/{spring-integration-version}/reference/html/
 :spring-kafka-docs: https://docs.spring.io/spring-kafka/docs/{spring-kafka-version}/reference/html/

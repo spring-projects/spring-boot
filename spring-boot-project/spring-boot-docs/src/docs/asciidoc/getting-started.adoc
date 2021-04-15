@@ -346,7 +346,7 @@ If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
 Doing so generates a new project structure so that you can <<getting-started-first-application-code,start coding right away>>.
-Check the {spring-initializr-docs}/#user-guide[Spring Initializr documentation] for more details.
+Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 
 Before we begin, open a terminal and run the following commands to ensure that you have valid versions of Java and Maven installed:
