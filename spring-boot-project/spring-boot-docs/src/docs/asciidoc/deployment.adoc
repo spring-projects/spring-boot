@@ -842,7 +842,7 @@ To learn about securing this file appropriately, see <<deployment-initd-service-
 === Microsoft Windows Services
 A Spring Boot application can be started as a Windows service by using https://github.com/kohsuke/winsw[`winsw`].
 
-A (https://github.com/snicoll-scratches/spring-boot-daemon[separately maintained sample]) describes step-by-step how you can create a Windows service for your Spring Boot application.
+A (https://github.com/snicoll/spring-boot-daemon[separately maintained sample]) describes step-by-step how you can create a Windows service for your Spring Boot application.
 
 
 
