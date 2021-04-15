@@ -19,6 +19,7 @@ package org.springframework.boot.cloud;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.stream.Stream;
 
 import org.junit.jupiter.api.Test;
 
@@ -36,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link CloudPlatform}.
  *
  * @author Phillip Webb
+ * @author Nguyen Sach
  */
 class CloudPlatformTests {
 
@@ -200,6 +202,16 @@ class CloudPlatformTests {
 	void isEnforcedWhenBinderPropertyIsMissingReturnsFalse() {
 		Binder binder = new Binder(new MockConfigurationPropertySource());
 		assertThat(CloudPlatform.KUBERNETES.isEnforced(binder)).isFalse();
+	}
+
+	void isActiveWhenNoCloudPlatformIsEnforcedAndHasKubernetesServiceHostAndKubernetesServicePort() {
+		Map<String, Object> envVars = new HashMap<>();
+		envVars.put("EXAMPLE_SERVICE_HOST", "---");
+		envVars.put("EXAMPLE_SERVICE_PORT", "8080");
+		Environment environment = getEnvironmentWithEnvVariables(envVars);
+		((MockEnvironment) environment).setProperty("spring.main.cloud-platform", "none");
+		assertThat(Stream.of(CloudPlatform.values()).filter((platform) -> platform.isActive(environment)))
+				.containsExactly(CloudPlatform.NONE);
 	}
 
 	private Environment getEnvironmentWithEnvVariables(Map<String, Object> environmentVariables) {

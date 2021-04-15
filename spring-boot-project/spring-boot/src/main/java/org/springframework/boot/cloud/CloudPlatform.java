@@ -29,6 +29,7 @@ import org.springframework.core.env.StandardEnvironment;
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Nguyen Sach
  * @since 1.3.0
  */
 public enum CloudPlatform {
@@ -157,7 +158,8 @@ public enum CloudPlatform {
 	 * @return if the platform is active.
 	 */
 	public boolean isActive(Environment environment) {
-		return isEnforced(environment) || isDetected(environment);
+		String platformProperty = environment.getProperty(PROPERTY_NAME);
+		return isEnforced(platformProperty) || (platformProperty == null && isDetected(environment));
 	}
 
 	/**
