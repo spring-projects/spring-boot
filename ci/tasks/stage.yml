@@ -14,10 +14,4 @@ params:
 caches:
 - path: gradle
 run:
-  path: bash
-  args:
-    - -ec
-    - |
-      source /docker-lib.sh
-      start_docker
-      ${PWD}/git-repo/ci/scripts/stage.sh
+  path: git-repo/ci/scripts/stage.sh
