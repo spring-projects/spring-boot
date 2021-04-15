@@ -74,6 +74,15 @@ public class StandardConfigDataResource extends ConfigDataResource {
 		return this.resource;
 	}
 
+	/**
+	 * Return the profile or {@code null} if the resource is not profile specific.
+	 * @return the profile or {@code null}
+	 * @since 2.4.6
+	 */
+	public String getProfile() {
+		return this.reference.getProfile();
+	}
+
 	boolean isEmptyDirectory() {
 		return this.emptyDirectory;
 	}

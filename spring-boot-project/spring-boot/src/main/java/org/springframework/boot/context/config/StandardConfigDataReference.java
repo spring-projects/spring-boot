@@ -74,6 +74,10 @@ class StandardConfigDataReference {
 		return this.directory;
 	}
 
+	String getProfile() {
+		return this.profile;
+	}
+
 	boolean isSkippable() {
 		return this.configDataLocation.isOptional() || this.directory != null || this.profile != null;
 	}

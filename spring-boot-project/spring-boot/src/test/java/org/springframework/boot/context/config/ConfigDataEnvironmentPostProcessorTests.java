@@ -127,6 +127,13 @@ class ConfigDataEnvironmentPostProcessorTests {
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
 		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
 		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
+		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
+				.isTrue();
+	}
+
+	private boolean hasDevProfile(ConfigDataResource resource) {
+		return (resource instanceof StandardConfigDataResource)
+				&& "dev".equals(((StandardConfigDataResource) resource).getProfile());
 	}
 
 }
