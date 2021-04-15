@@ -1963,7 +1963,7 @@ It is a Hibernate feature (and has nothing to do with Spring).
 
 
 [[howto-initialize-a-database-using-basic-scripts]]
-=== Initialize a Database using basic SQL scripts
+=== Initialize a Database Using Basic SQL Scripts
 Spring Boot can automatically create the schema (DDL scripts) of your JDBC `DataSource` or R2DBC `ConnectionFactory` and initialize it (DML scripts).
 It loads SQL from the standard root classpath locations: `schema.sql` and `data.sql`, respectively.
 In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of configprop:spring.sql.init.platform[].
@@ -1976,7 +1976,7 @@ You can tune that behavior by setting configprop:spring.sql.init.continue-on-err
 
 Script-based `DataSource` initialization is performed, by default, before any JPA `EntityManagerFactory` beans are created.
 `schema.sql` can be used to create the schema for JPA-managed entities and `data.sql` can be used to populate it.
-While do not recommend using multiple data source initialization technologies, if you want script-based `DataSource` initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
+While we do not recommend using multiple data source initialization technologies, if you want script-based `DataSource` initialization to be able to build upon the schema creation performed by Hibernate, set configprop:spring.jpa.defer-datasource-initialization[] to `true`.
 This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
 `schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
