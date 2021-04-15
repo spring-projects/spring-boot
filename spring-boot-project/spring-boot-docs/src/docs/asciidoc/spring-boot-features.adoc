@@ -567,7 +567,7 @@ If `spring.config.location` contains directories (as opposed to files), they mus
 At runtime they will be appended with the names generated from `spring.config.name` before being loaded.
 If `spring.config.location` contains files, they are used as-is.
 
-Whether specified directly or contained in a directory, files references must include a file extension in their name.
+Whether specified directly or contained in a directory, file references must include a file extension in their name.
 Typical extensions that are supported out-of-the-box are `.properties`, `.yaml`, and `.yml`.
 
 When multiple locations are specified, the later ones can override the values of earlier ones.

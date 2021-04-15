@@ -86,7 +86,7 @@ dependencies {
 	optional("org.mongodb:mongodb-driver-reactivestreams")
 	optional("org.mongodb:mongodb-driver-sync")
 	optional("org.neo4j.driver:neo4j-java-driver")
-    optional("org.quartz-scheduler:quartz")
+	optional("org.quartz-scheduler:quartz")
 	optional("org.springframework:spring-jdbc")
 	optional("org.springframework:spring-jms")
 	optional("org.springframework:spring-messaging")

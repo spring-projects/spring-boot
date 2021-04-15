@@ -36,13 +36,13 @@ import org.springframework.util.ConcurrentReferenceHashMap;
  */
 public final class TimedAnnotations {
 
-	private static Map<AnnotatedElement, Set<Timed>> cache = new ConcurrentReferenceHashMap<>();
+	private static final Map<AnnotatedElement, Set<Timed>> cache = new ConcurrentReferenceHashMap<>();
 
 	private TimedAnnotations() {
 	}
 
 	/**
-	 * Return {@link Timed} annotation that should be used for the given {@code method}
+	 * Return {@link Timed} annotations that should be used for the given {@code method}
 	 * and {@code type}.
 	 * @param method the source method
 	 * @param type the source type

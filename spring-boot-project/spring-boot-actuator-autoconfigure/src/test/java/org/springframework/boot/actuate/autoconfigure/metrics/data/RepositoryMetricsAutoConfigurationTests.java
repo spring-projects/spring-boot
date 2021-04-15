@@ -28,7 +28,6 @@ import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
-import org.springframework.boot.actuate.autoconfigure.metrics.web.TestController;
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.boot.actuate.metrics.data.DefaultRepositoryTagsProvider;
 import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
@@ -93,8 +92,8 @@ class RepositoryMetricsAutoConfigurationTests {
 
 	@Test
 	void metricNameCanBeConfigured() {
-		this.contextRunner.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.data.repository.metric-name=datarepo").run((context) -> {
+		this.contextRunner.withPropertyValues("management.metrics.data.repository.metric-name=datarepo")
+				.run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context, ExampleRepository.class);
 					Timer timer = registry.get("datarepo").timer();
 					assertThat(timer).isNotNull();
@@ -103,11 +102,8 @@ class RepositoryMetricsAutoConfigurationTests {
 
 	@Test
 	void autoTimeRequestsCanBeConfigured() {
-		this.contextRunner.withUserConfiguration(TestController.class)
-				.withPropertyValues("management.metrics.data.repository.autotime.enabled=true",
-						"management.metrics.data.repository.autotime.percentiles=0.5,0.7",
-						"management.metrics.data.repository.autotime.percentiles-histogram=true")
-				.run((context) -> {
+		this.contextRunner.withPropertyValues("management.metrics.data.repository.autotime.enabled=true",
+				"management.metrics.data.repository.autotime.percentiles=0.5,0.7").run((context) -> {
 					MeterRegistry registry = getInitializedMeterRegistry(context, ExampleRepository.class);
 					Timer timer = registry.get("spring.data.repository.invocations").timer();
 					HistogramSnapshot snapshot = timer.takeSnapshot();
@@ -130,7 +126,7 @@ class RepositoryMetricsAutoConfigurationTests {
 	}
 
 	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context,
-			Class<?> repositoryInterface) throws Exception {
+			Class<?> repositoryInterface) {
 		MetricsRepositoryMethodInvocationListener listener = context
 				.getBean(MetricsRepositoryMethodInvocationListener.class);
 		ReflectionUtils.doWithLocalMethods(repositoryInterface, (method) -> {

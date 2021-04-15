@@ -380,7 +380,7 @@ public class ServerProperties {
 		/**
 		 * Maximum number of HTTP requests that can be pipelined before the connection is
 		 * closed. When set to 0 or 1, keep-alive and pipelining are disabled. When set to
-		 * -1, an unlimited number of pipelined or keep-alive requests is allowed.
+		 * -1, an unlimited number of pipelined or keep-alive requests are allowed.
 		 */
 		private int maxKeepAliveRequests = 100;
 
