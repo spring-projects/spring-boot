@@ -71,13 +71,13 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 
 	private DataSourcePoolMetadataProvider poolMetadataProvider;
 
-	public DataSourceHealthContributorAutoConfiguration(Map<String, DataSource> dataSources,
+	public DataSourceHealthContributorAutoConfiguration(
 			ObjectProvider<DataSourcePoolMetadataProvider> metadataProviders) {
 		this.metadataProviders = metadataProviders.orderedStream().collect(Collectors.toList());
 	}
 
 	@Override
-	public void afterPropertiesSet() throws Exception {
+	public void afterPropertiesSet() {
 		this.poolMetadataProvider = new CompositeDataSourcePoolMetadataProvider(this.metadataProviders);
 	}
 
@@ -97,15 +97,15 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	private HealthContributor createContributor(Map<String, DataSource> beans) {
 		Assert.notEmpty(beans, "Beans must not be empty");
 		if (beans.size() == 1) {
-			return createIndicator(beans.values().iterator().next());
+			return createContributor(beans.values().iterator().next());
 		}
-		return CompositeHealthContributor.fromMap(beans, this::createIndicator);
+		return CompositeHealthContributor.fromMap(beans, this::createContributor);
 	}
 
-	private HealthContributor createIndicator(DataSource source) {
+	private HealthContributor createContributor(DataSource source) {
 		if (source instanceof AbstractRoutingDataSource) {
 			AbstractRoutingDataSource routingDataSource = (AbstractRoutingDataSource) source;
-			return new RoutingDataSourceHealthIndicator(routingDataSource, this::createIndicator);
+			return new RoutingDataSourceHealthContributor(routingDataSource, this::createContributor);
 		}
 		return new DataSourceHealthIndicator(source, getValidationQuery(source));
 	}
@@ -120,15 +120,15 @@ public class DataSourceHealthContributorAutoConfiguration implements Initializin
 	 * where the overall health is composed of a {@link DataSourceHealthIndicator} for
 	 * each routed datasource.
 	 */
-	static class RoutingDataSourceHealthIndicator implements CompositeHealthContributor {
+	static class RoutingDataSourceHealthContributor implements CompositeHealthContributor {
 
-		private CompositeHealthContributor delegate;
+		private final CompositeHealthContributor delegate;
 
-		RoutingDataSourceHealthIndicator(AbstractRoutingDataSource routingDataSource,
-				Function<DataSource, HealthContributor> indicatorFunction) {
+		RoutingDataSourceHealthContributor(AbstractRoutingDataSource routingDataSource,
+				Function<DataSource, HealthContributor> contributorFunction) {
 			Map<String, DataSource> routedDataSources = routingDataSource.getResolvedDataSources().entrySet().stream()
 					.collect(Collectors.toMap((e) -> e.getKey().toString(), Map.Entry::getValue));
-			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, indicatorFunction);
+			this.delegate = CompositeHealthContributor.fromMap(routedDataSources, contributorFunction);
 		}
 
 		@Override
