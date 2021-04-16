@@ -270,7 +270,7 @@ class ConfigurationPropertiesBinder {
 		 */
 		private boolean isNestedClassOfConfigurationProperty(final Class<?> target) {
 			Class<?> enclosingClass = target.getEnclosingClass();
-			while (enclosingClass != null) {
+			while (enclosingClass != null && enclosingClass.getDeclaredConstructors().length > 1) {
 				if (hasConfigurationProperty(enclosingClass)) {
 					return Boolean.TRUE;
 				}
