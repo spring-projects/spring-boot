@@ -96,23 +96,25 @@ class ApplicationAvailabilityBeanTests {
 	@Test
 	void stateChangesAreLogged(CapturedOutput output) {
 		AvailabilityChangeEvent.publish(this.context, LivenessState.CORRECT);
-		assertThat(output).contains("Application availability state LivenessState changed to CORRECT\n");
+		assertThat(output)
+				.contains("Application availability state LivenessState changed to CORRECT" + System.lineSeparator());
 		AvailabilityChangeEvent.publish(this.context, LivenessState.BROKEN);
-		assertThat(output).contains("Application availability state LivenessState changed from CORRECT to BROKEN\n");
+		assertThat(output).contains(
+				"Application availability state LivenessState changed from CORRECT to BROKEN" + System.lineSeparator());
 	}
 
 	@Test
 	void stateChangesAreLoggedWithExceptionSource(CapturedOutput output) {
 		AvailabilityChangeEvent.publish(this.context, new IOException("connection error"), LivenessState.BROKEN);
 		assertThat(output).contains("Application availability state LivenessState changed to BROKEN: "
-				+ "java.io.IOException: connection error\n");
+				+ "java.io.IOException: connection error" + System.lineSeparator());
 	}
 
 	@Test
 	void stateChangesAreLoggedWithOtherSource(CapturedOutput output) {
 		AvailabilityChangeEvent.publish(this.context, new CustomEventSource(), LivenessState.BROKEN);
 		assertThat(output).contains("Application availability state LivenessState changed to BROKEN: "
-				+ CustomEventSource.class.getName() + "\n");
+				+ CustomEventSource.class.getName() + System.lineSeparator());
 	}
 
 	enum TestState implements AvailabilityState {
