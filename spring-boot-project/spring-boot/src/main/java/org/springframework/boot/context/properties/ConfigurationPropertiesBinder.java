@@ -264,9 +264,9 @@ class ConfigurationPropertiesBinder {
 		 * Iterates over the nested classes till top level class is found or a class with
 		 * {@link ConfigurationProperties} is found.
 		 * @param target the nested class
-		 * @return
-		 * {@link Boolean TRUE} When {@link ConfigurationProperties} annotation is found.
-		 * {@link Boolean FALSE} When {@link ConfigurationProperties} annotation is not found.
+		 * @return {@link Boolean TRUE} When {@link ConfigurationProperties} annotation is
+		 * found. {@link Boolean FALSE} When {@link ConfigurationProperties} annotation is
+		 * not found.
 		 */
 		private boolean isNestedClassOfConfigurationProperty(final Class<?> target) {
 			Class<?> enclosingClass = target.getEnclosingClass();
