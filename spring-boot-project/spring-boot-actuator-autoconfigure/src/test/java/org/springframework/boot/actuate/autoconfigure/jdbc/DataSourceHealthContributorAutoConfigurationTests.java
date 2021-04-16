@@ -24,7 +24,7 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.autoconfigure.health.HealthContributorAutoConfiguration;
-import org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration.RoutingDataSourceHealthIndicator;
+import org.springframework.boot.actuate.autoconfigure.jdbc.DataSourceHealthContributorAutoConfiguration.RoutingDataSourceHealthContributor;
 import org.springframework.boot.actuate.health.CompositeHealthContributor;
 import org.springframework.boot.actuate.health.NamedContributor;
 import org.springframework.boot.actuate.jdbc.DataSourceHealthIndicator;
@@ -82,7 +82,7 @@ class DataSourceHealthContributorAutoConfigurationTests {
 					CompositeHealthContributor composite = context.getBean(CompositeHealthContributor.class);
 					assertThat(composite.getContributor("dataSource")).isInstanceOf(DataSourceHealthIndicator.class);
 					assertThat(composite.getContributor("routingDataSource"))
-							.isInstanceOf(RoutingDataSourceHealthIndicator.class);
+							.isInstanceOf(RoutingDataSourceHealthContributor.class);
 				});
 	}
 
@@ -92,16 +92,16 @@ class DataSourceHealthContributorAutoConfigurationTests {
 				.withPropertyValues("management.health.db.ignore-routing-datasources:true").run((context) -> {
 					assertThat(context).doesNotHaveBean(CompositeHealthContributor.class);
 					assertThat(context).hasSingleBean(DataSourceHealthIndicator.class);
-					assertThat(context).doesNotHaveBean(RoutingDataSourceHealthIndicator.class);
+					assertThat(context).doesNotHaveBean(RoutingDataSourceHealthContributor.class);
 				});
 	}
 
 	@Test
 	void runWithOnlyRoutingDataSourceShouldIncludeRoutingDataSourceWithComposedIndicators() {
 		this.contextRunner.withUserConfiguration(RoutingDataSourceConfig.class).run((context) -> {
-			assertThat(context).hasSingleBean(RoutingDataSourceHealthIndicator.class);
-			RoutingDataSourceHealthIndicator routingHealthContributor = context
-					.getBean(RoutingDataSourceHealthIndicator.class);
+			assertThat(context).hasSingleBean(RoutingDataSourceHealthContributor.class);
+			RoutingDataSourceHealthContributor routingHealthContributor = context
+					.getBean(RoutingDataSourceHealthContributor.class);
 			assertThat(routingHealthContributor.getContributor("one")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.getContributor("two")).isInstanceOf(DataSourceHealthIndicator.class);
 			assertThat(routingHealthContributor.iterator()).toIterable().extracting("name")
