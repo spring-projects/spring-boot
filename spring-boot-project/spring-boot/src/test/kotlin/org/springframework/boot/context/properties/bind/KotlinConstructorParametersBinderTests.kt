@@ -17,16 +17,16 @@ class KotlinConstructorParametersBinderTests {
 	@Test
 	fun `Bind to class should create bound bean`() {
 		val source = MockConfigurationPropertySource(mapOf("foo.int-value" to "12",
-															"foo.int-value" to "12",
-															"foo.long-value" to "34",
-															"foo.boolean-value" to "true",
-															"foo.string-value" to "foo",
-															"foo.enum-value" to "foo-bar"))
+				"foo.int-value" to "12",
+				"foo.long-value" to "34",
+				"foo.boolean-value" to "true",
+				"foo.string-value" to "foo",
+				"foo.enum-value" to "foo-bar"))
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleValueBean::class.java)).get()
 		assertThat(bean.intValue).isEqualTo(12)
 		assertThat(bean.longValue).isEqualTo(34)
-		assertThat(bean.booleanValue).isTrue
+		assertThat(bean.booleanValue).isTrue()
 		assertThat(bean.stringValue).isEqualTo("foo")
 		assertThat(bean.enumValue).isEqualTo(ExampleEnum.FOO_BAR)
 	}
@@ -34,16 +34,16 @@ class KotlinConstructorParametersBinderTests {
 	@Test
 	fun `Bind to class when has no prefix should create bound bean`() {
 		val source = MockConfigurationPropertySource(mapOf("int-value" to "12",
-															"long-value" to "34",
-															"boolean-value" to "true",
-															"string-value" to "foo",
-															"enum-value" to "foo-bar"))
+				"long-value" to "34",
+				"boolean-value" to "true",
+				"string-value" to "foo",
+				"enum-value" to "foo-bar"))
 		val binder = Binder(source)
 		val bean = binder.bind(ConfigurationPropertyName.of(""),
 				Bindable.of(ExampleValueBean::class.java)).get()
 		assertThat(bean.intValue).isEqualTo(12)
 		assertThat(bean.longValue).isEqualTo(34)
-		assertThat(bean.booleanValue).isTrue
+		assertThat(bean.booleanValue).isTrue()
 		assertThat(bean.stringValue).isEqualTo("foo")
 		assertThat(bean.enumValue).isEqualTo(ExampleEnum.FOO_BAR)
 	}
@@ -51,17 +51,17 @@ class KotlinConstructorParametersBinderTests {
 	@Test
 	fun `Bind to data class should create bound bean`() {
 		val source = MockConfigurationPropertySource(mapOf("foo.int-value" to "12",
-															"foo.long-value" to "34",
-															"foo.boolean-value" to "true",
-															"foo.string-value" to "foo",
-															"foo.enum-value" to "foo-bar"))
+				"foo.long-value" to "34",
+				"foo.boolean-value" to "true",
+				"foo.string-value" to "foo",
+				"foo.enum-value" to "foo-bar"))
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleDataClassBean::class.java)).get()
 		val expectedBean = ExampleDataClassBean(intValue = 12,
-												longValue = 34,
-												booleanValue = true,
-												stringValue = "foo",
-												enumValue = ExampleEnum.FOO_BAR)
+				longValue = 34,
+				booleanValue = true,
+				stringValue = "foo",
+				enumValue = ExampleEnum.FOO_BAR)
 		assertThat(bean).isEqualTo(expectedBean)
 	}
 
@@ -71,7 +71,7 @@ class KotlinConstructorParametersBinderTests {
 		val binder = Binder(source)
 		val bindable = binder.bind("foo", Bindable.of(
 				MultipleConstructorsWithPrimaryConstructorBean::class.java))
-		assertThat(bindable.isBound).isTrue
+		assertThat(bindable.isBound).isTrue()
 		assertThat(bindable.get().intValue).isEqualTo(12)
 	}
 
@@ -81,7 +81,7 @@ class KotlinConstructorParametersBinderTests {
 		val binder = Binder(source)
 		val bindable = binder.bind("foo", Bindable.of(
 				MultipleConstructorsBean::class.java))
-		assertThat(bindable.isBound).isFalse
+		assertThat(bindable.isBound).isFalse()
 	}
 
 	@Test
@@ -90,20 +90,20 @@ class KotlinConstructorParametersBinderTests {
 		val binder = Binder(source)
 		val bindable = binder.bind("foo", Bindable.of(
 				DefaultConstructorBean::class.java))
-		assertThat(bindable.isBound).isFalse
+		assertThat(bindable.isBound).isFalse()
 	}
 
 	@Test
 	fun `Bind to class should bind nested`() {
 		val source = MockConfigurationPropertySource(mapOf("foo.value-bean.int-value" to "123",
-															"foo.value-bean.long-value" to "34",
-															"foo.value-bean.boolean-value" to "true",
-															"foo.value-bean.string-value" to "foo"))
+				"foo.value-bean.long-value" to "34",
+				"foo.value-bean.boolean-value" to "true",
+				"foo.value-bean.string-value" to "foo"))
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleNestedBean::class.java)).get()
 		assertThat(bean.valueBean.intValue).isEqualTo(123)
 		assertThat(bean.valueBean.longValue).isEqualTo(34)
-		assertThat(bean.valueBean.booleanValue).isTrue
+		assertThat(bean.valueBean.booleanValue).isTrue()
 		assertThat(bean.valueBean.stringValue).isEqualTo("foo")
 		assertThat(bean.valueBean.enumValue).isNull()
 	}
@@ -129,7 +129,7 @@ class KotlinConstructorParametersBinderTests {
 				ExamplePrimitiveDefaultBean::class.java)).get()
 		assertThat(bean.intValue).isEqualTo(0)
 		assertThat(bean.longValue).isEqualTo(0)
-		assertThat(bean.booleanValue).isFalse
+		assertThat(bean.booleanValue).isFalse()
 		assertThat(bean.stringValue).isEqualTo("foo")
 		assertThat(bean.enumValue).isNull()
 	}
@@ -139,7 +139,7 @@ class KotlinConstructorParametersBinderTests {
 		val source = MockConfigurationPropertySource("foo.string-value", "foo")
 		val binder = Binder(source)
 		assertThat(binder.bind("foo", Bindable.of(
-				ExampleDefaultValueBean::class.java)).isBound).isFalse
+				ExampleDefaultValueBean::class.java)).isBound).isFalse()
 	}
 
 	@Test
@@ -159,10 +159,10 @@ class KotlinConstructorParametersBinderTests {
 		val binder = Binder(source)
 		val bean = binder.bind("foo", Bindable.of(ExampleDataClassBean::class.java)).get()
 		val expectedBean = ExampleDataClassBean(intValue = 5,
-												longValue = 42,
-												booleanValue = false,
-												stringValue = "my data",
-												enumValue = ExampleEnum.FOO_BAR)
+				longValue = 42,
+				booleanValue = false,
+				stringValue = "my data",
+				enumValue = ExampleEnum.FOO_BAR)
 		assertThat(bean).isEqualTo(expectedBean)
 	}
 
@@ -244,4 +244,5 @@ class KotlinConstructorParametersBinderTests {
 	object ExampleSingletonBean {
 		var stringValue: String? = null
 	}
+
 }
