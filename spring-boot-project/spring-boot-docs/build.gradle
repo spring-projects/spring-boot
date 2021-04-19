@@ -80,6 +80,7 @@ dependencies {
 	implementation("org.assertj:assertj-core")
 	implementation("org.glassfish.jersey.core:jersey-server")
 	implementation("org.hibernate:hibernate-jcache")
+	implementation("org.springframework:spring-orm")
 	implementation("org.springframework:spring-test")
 	implementation("org.springframework:spring-web")
 	implementation("org.springframework:spring-webflux")

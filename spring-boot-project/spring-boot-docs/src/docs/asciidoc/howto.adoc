@@ -1853,45 +1853,27 @@ Spring Boot auto-configuration switches off its entity manager in the presence o
 
 
 [[howto-use-two-entity-managers]]
-=== Use Two EntityManagers
-Even if the default `EntityManagerFactory` works fine, you need to define a new one, otherwise the presence of the second bean of that type switches off the default.
-You can use the `EntityManagerBuilder` provided by Spring Boot to help you to create one.
-Alternatively, you can use the `LocalContainerEntityManagerFactoryBean` directly from Spring ORM, as shown in the following example:
+[[howto-use-multiple-entity-managers]]
+=== Using Multiple EntityManagerFactories
+If you need to use JPA against multiple data sources, you likely need one `EntityManagerFactory` per data source.
+The `LocalContainerEntityManagerFactoryBean` from Spring ORM allows you to configure an `EntityManagerFactory` for your needs.
+You can also reuse `JpaProperties` to bind settings for each `EntityManagerFactory`, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	// add two data sources configured as above
-
-	@Bean
-	public LocalContainerEntityManagerFactoryBean customerEntityManagerFactory(
-			EntityManagerFactoryBuilder builder) {
-		return builder
-				.dataSource(customerDataSource())
-				.packages(Customer.class)
-				.persistenceUnit("customers")
-				.build();
-	}
-
-	@Bean
-	public LocalContainerEntityManagerFactoryBean orderEntityManagerFactory(
-			EntityManagerFactoryBuilder builder) {
-		return builder
-				.dataSource(orderDataSource())
-				.packages(Order.class)
-				.persistenceUnit("orders")
-				.build();
-	}
+include::{code-examples}/jpa/CustomEntityManagerFactoryExample.java[tag=configuration]
 ----
+
+The example above creates an `EntityManagerFactory` using a `DataSource` bean named `firstDataSource`.
+It scans entities located in the same package as `Order`.
+It is possible to map additional JPA properties using the `app.first.jpa` namespace.
 
 NOTE: When you create a bean for `LocalContainerEntityManagerFactoryBean` yourself, any customization that was applied during the creation of the auto-configured `LocalContainerEntityManagerFactoryBean` is lost.
 For example, in case of Hibernate, any properties under the `spring.jpa.hibernate` prefix will not be automatically applied to your `LocalContainerEntityManagerFactoryBean`.
 If you were relying on these properties for configuring things like the naming strategy or the DDL mode, you will need to explicitly configure that when creating the `LocalContainerEntityManagerFactoryBean` bean.
-On the other hand, properties that get applied to the auto-configured `EntityManagerFactoryBuilder`, which are specified via `spring.jpa.properties`, will automatically be applied, provided you use the auto-configured `EntityManagerFactoryBuilder` to build the `LocalContainerEntityManagerFactoryBean` bean.
 
-The configuration above almost works on its own.
-To complete the picture, you need to configure `TransactionManagers` for the two `EntityManagers` as well.
-If you mark one of them as `@Primary`, it could be picked up by the default `JpaTransactionManager` in Spring Boot.
-The other would have to be explicitly injected into a new instance.
+You should provide a similar configuration for any additional data sources for which you need JPA access.
+To complete the picture, you need to configure a `JpaTransactionManager` for each `EntityManagerFactory` as well.
 Alternatively, you might be able to use a JTA transaction manager that spans both.
 
 If you use Spring Data, you need to configure `@EnableJpaRepositories` accordingly, as shown in the following example:
@@ -1899,16 +1881,16 @@ If you use Spring Data, you need to configure `@EnableJpaRepositories` according
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	@Configuration(proxyBeanMethods = false)
-	@EnableJpaRepositories(basePackageClasses = Customer.class,
-			entityManagerFactoryRef = "customerEntityManagerFactory")
-	public class CustomerConfiguration {
+	@EnableJpaRepositories(basePackageClasses = Order.class,
+			entityManagerFactoryRef = "firstEntityManagerFactory")
+	public class OrderConfiguration {
 		...
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@EnableJpaRepositories(basePackageClasses = Order.class,
-			entityManagerFactoryRef = "orderEntityManagerFactory")
-	public class OrderConfiguration {
+	@EnableJpaRepositories(basePackageClasses = Customer.class,
+			entityManagerFactoryRef = "secondEntityManagerFactory")
+	public class CustomerConfiguration {
 		...
 	}
 ----
