@@ -83,6 +83,7 @@ dependencies {
 	implementation("org.mongodb:mongodb-driver-sync")
 	implementation("org.slf4j:jul-to-slf4j")
 	implementation("org.springframework:spring-jdbc")
+	implementation("org.springframework:spring-orm")
 	implementation("org.springframework:spring-test")
 	implementation("org.springframework:spring-web")
 	implementation("org.springframework:spring-webmvc")
