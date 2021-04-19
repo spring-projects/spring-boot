@@ -414,7 +414,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.ddlScriptLocations")
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.schema-locations")
 	public List<String> getSchema() {
 		return this.schema;
 	}
@@ -447,7 +447,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.dmlScriptLocations")
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.data-locations")
 	public List<String> getData() {
 		return this.data;
 	}
