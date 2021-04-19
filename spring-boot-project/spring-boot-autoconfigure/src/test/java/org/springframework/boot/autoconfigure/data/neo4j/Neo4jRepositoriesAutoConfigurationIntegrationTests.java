@@ -47,7 +47,7 @@ public class Neo4jRepositoriesAutoConfigurationIntegrationTests {
 
 	@Container
 	private static final Neo4jContainer<?> neo4jServer = new Neo4jContainer<>(DockerImageNames.neo4j())
-			.withStartupTimeout(Duration.ofMinutes(10));
+			.withStartupAttempts(5).withStartupTimeout(Duration.ofMinutes(10));
 
 	@DynamicPropertySource
 	static void neo4jProperties(DynamicPropertyRegistry registry) {

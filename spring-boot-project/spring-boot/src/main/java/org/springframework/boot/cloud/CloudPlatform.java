@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.core.env.StandardEnvironment;
  *
  * @author Phillip Webb
  * @author Brian Clozel
+ * @author Nguyen Sach
  * @since 1.3.0
  */
 public enum CloudPlatform {
@@ -140,7 +141,8 @@ public enum CloudPlatform {
 	 * @return if the platform is active.
 	 */
 	public boolean isActive(Environment environment) {
-		return isEnforced(environment) || isDetected(environment);
+		String platformProperty = environment.getProperty(PROPERTY_NAME);
+		return isEnforced(platformProperty) || (platformProperty == null && isDetected(environment));
 	}
 
 	/**

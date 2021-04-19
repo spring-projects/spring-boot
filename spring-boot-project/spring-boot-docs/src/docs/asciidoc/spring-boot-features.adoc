@@ -630,7 +630,7 @@ The following example shows how to specify two locations:
 
 TIP: Use the prefix `optional:` if the <<boot-features-external-config-optional-prefix,locations are optional>> and you don't mind if they don't exist.
 
-WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
+WARNING: `spring.config.name`, `spring.config.location`, and `spring.config.additional-location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
 
 If `spring.config.location` contains directories (as opposed to files), they should end in `/` (at runtime they will be appended with the names generated from `spring.config.name` before being loaded).
@@ -4325,7 +4325,12 @@ To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.rep
 When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
 If more than one exists, the one named `applicationTaskExecutor` will be used.
 
-NOTE: When using deferred or lazy bootstrapping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
+[NOTE]
+====
+When using deferred or lazy bootstrapping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
+You can use `SmartInitializingSingleton` to invoke any initialization that requires the JPA infrastructure.
+For JPA components (such as converters) that are created as Spring beans, use `ObjectProvider` to delay the resolution of dependencies, if any.
+====
 
 TIP: We have barely scratched the surface of Spring Data JPA.
 For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
@@ -7522,6 +7527,9 @@ The following example shows a typical setup for using Cassandra tests in Spring 
 You can use the `@DataJpaTest` annotation to test JPA applications.
 By default, it scans for `@Entity` classes and configures Spring Data JPA repositories.
 If an embedded database is available on the classpath, it configures one as well.
+SQL queries are logged by default by setting the `spring.jpa.show-sql` property to `true`.
+This can be disabled using the `showSql()` attribute of the annotation.
+
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 

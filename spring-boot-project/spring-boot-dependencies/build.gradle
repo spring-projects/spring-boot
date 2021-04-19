@@ -60,7 +60,7 @@ bom {
 			]
 		}
 	}
-	library("AppEngine SDK", "1.9.87") {
+	library("AppEngine SDK", "1.9.88") {
 		group("com.google.appengine") {
 			modules = [
 				"appengine-api-1.0-sdk"
@@ -248,7 +248,7 @@ bom {
 			]
 		}
 	}
-	library("Dropwizard Metrics", "4.1.18") {
+	library("Dropwizard Metrics", "4.1.19") {
 		group("io.dropwizard.metrics") {
 			imports = [
 				"metrics-bom"
@@ -338,7 +338,7 @@ bom {
 			]
 		}
 	}
-	library("Glassfish JAXB", "2.3.3") {
+	library("Glassfish JAXB", "2.3.4") {
 		group("org.glassfish.jaxb") {
 			modules = [
 				"codemodel",
@@ -398,7 +398,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.4.29.Final") {
+	library("Hibernate", "5.4.30.Final") {
 		group("org.hibernate") {
 			modules = [
 				"hibernate-c3p0",
@@ -433,7 +433,7 @@ bom {
 			]
 		}
 	}
-	library("HSQLDB", "2.5.1") {
+	library("HSQLDB", "2.5.2") {
 		group("org.hsqldb") {
 			modules = [
 				"hsqldb"
@@ -541,7 +541,7 @@ bom {
 			]
 		}
 	}
-	library("Jakarta Mail", "1.6.6") {
+	library("Jakarta Mail", "1.6.7") {
 		group("jakarta.mail") {
 			modules = [
 				"jakarta.mail-api"
@@ -732,7 +732,7 @@ bom {
 			]
 		}
 	}
-	library("Jaybird", "3.0.10") {
+	library("Jaybird", "3.0.11") {
 		group("org.firebirdsql.jdbc") {
 			modules = [
 				"jaybird-jdk17",
@@ -789,14 +789,14 @@ bom {
 			]
 		}
 	}
-	library("Jetty Reactive HTTPClient", "1.1.6") {
+	library("Jetty Reactive HTTPClient", "1.1.7") {
 		group("org.eclipse.jetty") {
 			modules = [
 				"jetty-reactive-httpclient"
 			]
 		}
 	}
-	library("Jetty", "9.4.38.v20210224") {
+	library("Jetty", "9.4.39.v20210325") {
 		group("org.eclipse.jetty") {
 			imports = [
 				"jetty-bom"
@@ -934,7 +934,7 @@ bom {
 			]
 		}
 	}
-	library("Lettuce", "6.0.3.RELEASE") {
+	library("Lettuce", "6.0.4.RELEASE") {
 		group("io.lettuce") {
 			modules = [
 				"lettuce-core"
@@ -972,7 +972,7 @@ bom {
 			]
 		}
 	}
-	library("Lombok", "1.18.18") {
+	library("Lombok", "1.18.20") {
 		group("org.projectlombok") {
 			modules = [
 				"lombok"
@@ -1112,7 +1112,7 @@ bom {
 			]
 		}
 	}
-	library("Micrometer", "1.6.5") {
+	library("Micrometer", "1.6.6") {
 		group("io.micrometer") {
 			modules = [
 				"micrometer-registry-stackdriver" {
@@ -1124,7 +1124,7 @@ bom {
 			]
 		}
 	}
-	library("MIMEPull", "1.9.13") {
+	library("MIMEPull", "1.9.14") {
 		group("org.jvnet.mimepull") {
 			modules = [
 				"mimepull"
@@ -1181,14 +1181,14 @@ bom {
 			]
 		}
 	}
-	library("Netty", "4.1.60.Final") {
+	library("Netty", "4.1.63.Final") {
 		group("io.netty") {
 			imports = [
 				"netty-bom"
 			]
 		}
 	}
-	library("Netty tcNative", "2.0.36.Final") {
+	library("Netty tcNative", "2.0.38.Final") {
 		group("io.netty") {
 			modules = [
 				"netty-tcnative",
@@ -1322,7 +1322,7 @@ bom {
 			]
 		}
 	}
-	library("Reactor Bom", "2020.0.6-SNAPSHOT") {
+	library("Reactor Bom", "2020.0.6") {
 		group("io.projectreactor") {
 			imports = [
 				"reactor-bom"
@@ -1448,7 +1448,7 @@ bom {
 			]
 		}
 	}
-	library("SAAJ Impl", "1.5.2") {
+	library("SAAJ Impl", "1.5.3") {
 		group("com.sun.xml.messaging.saaj") {
 			modules = [
 				"saaj-impl"
@@ -1558,14 +1558,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Data Bom", "2020.0.8-SNAPSHOT") {
+	library("Spring Data Bom", "2020.0.8") {
 		group("org.springframework.data") {
 			imports = [
 				"spring-data-bom"
 			]
 		}
 	}
-	library("Spring Framework", "5.3.6-SNAPSHOT") {
+	library("Spring Framework", "5.3.6") {
 		group("org.springframework") {
 			imports = [
 				"spring-framework-bom"
@@ -1579,7 +1579,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Integration", "5.4.5") {
+	library("Spring Integration", "5.4.6") {
 		group("org.springframework.integration") {
 			imports = [
 				"spring-integration-bom"
@@ -1624,14 +1624,14 @@ bom {
 			]
 		}
 	}
-	library("Spring Security", "5.4.6-SNAPSHOT") {
+	library("Spring Security", "5.4.6") {
 		group("org.springframework.security") {
 			imports = [
 				"spring-security-bom"
 			]
 		}
 	}
-	library("Spring Session Bom", "2020.0.4-SNAPSHOT") {
+	library("Spring Session Bom", "2020.0.4") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
@@ -1656,7 +1656,7 @@ bom {
 			]
 		}
 	}
-	library("Sun Mail", "1.6.6") {
+	library("Sun Mail", "1.6.7") {
 		group("com.sun.mail") {
 			modules = [
 				"jakarta.mail"
@@ -1723,7 +1723,7 @@ bom {
 			]
 		}
 	}
-	library("Undertow", "2.2.5.Final") {
+	library("Undertow", "2.2.7.Final") {
 		group("io.undertow") {
 			modules = [
 				"undertow-core",
