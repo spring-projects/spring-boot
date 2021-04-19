@@ -2182,6 +2182,28 @@
       ]
     },
     {
+      "name": "spring.sql.init.data-locations",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
+        }
+      ]
+    },
+    {
+      "name": "spring.sql.init.schema-locations",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.util.List<org.springframework.core.io.Resource>"
+          }
+        }
+      ]
+    },
+    {
       "name": "spring.webflux.format.date",
       "values": [
         {
