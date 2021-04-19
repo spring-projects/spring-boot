@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
+import java.util.Map;
+
+import io.micrometer.dynatrace.DynatraceApiVersion;
 import io.micrometer.dynatrace.DynatraceConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
@@ -24,6 +27,7 @@ import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.
  * Adapter to convert {@link DynatraceProperties} to a {@link DynatraceConfig}.
  *
  * @author Andy Wilkinson
+ * @author Georg Pirklbauer
  */
 class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapter<DynatraceProperties>
 		implements DynatraceConfig {
@@ -62,4 +66,24 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 		return get(DynatraceProperties::getGroup, DynatraceConfig.super::group);
 	}
 
+	@Override
+	public DynatraceApiVersion apiVersion() {
+		return get(DynatraceProperties::getApiVersion, DynatraceConfig.super::apiVersion);
+	}
+
+	@Override
+	public String metricKeyPrefix() {
+		return get(DynatraceProperties::getMetricKeyPrefix, DynatraceConfig.super::metricKeyPrefix);
+	}
+
+	@Override
+	public Map<String, String> defaultDimensions() {
+		return get(DynatraceProperties::getDefaultDimensions, DynatraceConfig.super::defaultDimensions);
+	}
+
+	@Override
+	public boolean enrichWithDynatraceMetadata() {
+		return get(DynatraceProperties::getEnrichWithDynatraceMetadata,
+				DynatraceConfig.super::enrichWithDynatraceMetadata);
+	}
 }
