@@ -1139,7 +1139,8 @@ public abstract class AbstractServletWebServerFactoryTests {
 		client.start();
 		try {
 			ContentResponse response = client.GET("http://localhost:" + this.webServer.getPort() + "/hello");
-			assertThat(response.getStatus() == HttpStatus.OK.value());
+			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
+			assertThat(response.getContentAsString()).isEqualTo("Hello World");
 		}
 		finally {
 			client.stop();
