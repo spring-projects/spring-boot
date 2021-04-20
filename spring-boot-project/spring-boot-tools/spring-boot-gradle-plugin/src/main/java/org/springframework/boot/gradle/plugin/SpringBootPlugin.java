@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -95,11 +95,9 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	private void verifyGradleVersion() {
 		GradleVersion currentVersion = GradleVersion.current();
-		if (currentVersion.compareTo(GradleVersion.version("5.6")) < 0
-				|| (currentVersion.getBaseVersion().compareTo(GradleVersion.version("6.0")) >= 0
-						&& currentVersion.compareTo(GradleVersion.version("6.3")) < 0)) {
-			throw new GradleException("Spring Boot plugin requires Gradle 5 (5.6.x only) or Gradle 6 (6.3 or later). "
-					+ "The current version is " + currentVersion);
+		if (currentVersion.compareTo(GradleVersion.version("6.8")) < 0) {
+			throw new GradleException(
+					"Spring Boot plugin requires Gradle 6.8.x or 7.x. " + "The current version is " + currentVersion);
 		}
 	}
 
@@ -116,6 +114,7 @@ public class SpringBootPlugin implements Plugin<Project> {
 
 	private void registerPluginActions(Project project, Configuration bootArchives) {
 		SinglePublishedArtifact singlePublishedArtifact = new SinglePublishedArtifact(bootArchives.getArtifacts());
+		@SuppressWarnings("deprecation")
 		List<PluginApplicationAction> actions = Arrays.asList(new JavaPluginAction(singlePublishedArtifact),
 				new WarPluginAction(singlePublishedArtifact), new MavenPluginAction(bootArchives.getUploadTaskName()),
 				new DependencyManagementPluginAction(), new ApplicationPluginAction(), new KotlinPluginAction());

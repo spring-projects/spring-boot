@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,9 @@
 
 package org.springframework.boot.actuate.endpoint.web;
 
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.boot.actuate.endpoint.web.annotation.EndpointWebExtension;
+import org.springframework.util.MimeType;
 
 /**
  * A {@code WebEndpointResponse} can be returned by an operation on a
@@ -70,6 +72,8 @@ public final class WebEndpointResponse<T> {
 
 	private final int status;
 
+	private final MimeType contentType;
+
 	/**
 	 * Creates a new {@code WebEndpointResponse} with no body and a 200 (OK) status.
 	 */
@@ -87,7 +91,7 @@ public final class WebEndpointResponse<T> {
 	}
 
 	/**
-	 * Creates a new {@code WebEndpointResponse} with then given body and a 200 (OK)
+	 * Creates a new {@code WebEndpointResponse} with the given body and a 200 (OK)
 	 * status.
 	 * @param body the body
 	 */
@@ -96,13 +100,55 @@ public final class WebEndpointResponse<T> {
 	}
 
 	/**
-	 * Creates a new {@code WebEndpointResponse} with then given body and status.
+	 * Creates a new {@code WebEndpointResponse} with the given body and content type and
+	 * a 200 (OK) status.
+	 * @param body the body
+	 * @param producible the producible providing the content type
+	 * @since 2.5.0
+	 */
+	public WebEndpointResponse(T body, Producible<?> producible) {
+		this(body, STATUS_OK, producible.getProducedMimeType());
+	}
+
+	/**
+	 * Creates a new {@code WebEndpointResponse} with the given body and content type and
+	 * a 200 (OK) status.
+	 * @param body the body
+	 * @param contentType the content type of the response
+	 * @since 2.5.0
+	 */
+	public WebEndpointResponse(T body, MimeType contentType) {
+		this(body, STATUS_OK, contentType);
+	}
+
+	/**
+	 * Creates a new {@code WebEndpointResponse} with the given body and status.
 	 * @param body the body
 	 * @param status the HTTP status
 	 */
 	public WebEndpointResponse(T body, int status) {
+		this(body, status, null);
+	}
+
+	/**
+	 * Creates a new {@code WebEndpointResponse} with the given body and status.
+	 * @param body the body
+	 * @param status the HTTP status
+	 * @param contentType the content type of the response
+	 * @since 2.5.0
+	 */
+	public WebEndpointResponse(T body, int status, MimeType contentType) {
 		this.body = body;
 		this.status = status;
+		this.contentType = contentType;
+	}
+
+	/**
+	 * Returns the content type of the response.
+	 * @return the content type;
+	 */
+	public MimeType getContentType() {
+		return this.contentType;
 	}
 
 	/**

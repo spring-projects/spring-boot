@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,18 +45,6 @@ public class WebConversionService extends DefaultFormattingConversionService {
 
 	private static final boolean JSR_354_PRESENT = ClassUtils.isPresent("javax.money.MonetaryAmount",
 			WebConversionService.class.getClassLoader());
-
-	/**
-	 * Create a new WebConversionService that configures formatters with the provided date
-	 * format, or register the default ones if no custom format is provided.
-	 * @param dateFormat the custom date format to use for date conversions
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #WebConversionService(DateTimeFormatters)}
-	 */
-	@Deprecated
-	public WebConversionService(String dateFormat) {
-		this(new DateTimeFormatters().dateFormat(dateFormat));
-	}
 
 	/**
 	 * Create a new WebConversionService that configures formatters with the provided

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -38,10 +37,8 @@ import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security when actuator is
- * on the classpath. It allows unauthenticated access to the {@link HealthEndpoint} and
- * {@link InfoEndpoint}. If the user specifies their own
- * {@link org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter
- * WebSecurityConfigurerAdapter} or {@link SecurityFilterChain} bean, this will back-off
+ * on the classpath. It allows unauthenticated access to the {@link HealthEndpoint}. If
+ * the user specifies their own{@link SecurityFilterChain} bean, this will back-off
  * completely and the user should specify all the bits that they want to configure as part
  * of the custom security configuration.
  *
@@ -60,7 +57,7 @@ public class ManagementWebSecurityAutoConfiguration {
 	@Bean
 	SecurityFilterChain managementSecurityFilterChain(HttpSecurity http) throws Exception {
 		http.authorizeRequests((requests) -> {
-			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class)).permitAll();
+			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 			requests.anyRequest().authenticated();
 		});
 		http.formLogin(Customizer.withDefaults());

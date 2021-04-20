@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -231,6 +231,36 @@ class TestRestTemplateTests {
 		TestRestTemplate basicAuthTemplate = originalTemplate.withBasicAuth("user", "password");
 		assertThat(basicAuthTemplate.getRestTemplate().getErrorHandler()).isInstanceOf(
 				Class.forName("org.springframework.boot.test.web.client.TestRestTemplate$NoOpResponseErrorHandler"));
+	}
+
+	@Test
+	void exchangeWithRelativeTemplatedUrlRequestEntity() throws Exception {
+		RequestEntity<Void> entity = RequestEntity.get("/a/b/c.{ext}", "txt").build();
+		TestRestTemplate template = new TestRestTemplate();
+		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
+		MockClientHttpRequest request = new MockClientHttpRequest();
+		request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
+		URI absoluteUri = URI.create("http://localhost:8080/a/b/c.txt");
+		given(requestFactory.createRequest(eq(absoluteUri), eq(HttpMethod.GET))).willReturn(request);
+		template.getRestTemplate().setRequestFactory(requestFactory);
+		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(new MockEnvironment());
+		template.setUriTemplateHandler(uriTemplateHandler);
+		template.exchange(entity, String.class);
+		verify(requestFactory).createRequest(eq(absoluteUri), eq(HttpMethod.GET));
+	}
+
+	@Test
+	void exchangeWithAbsoluteTemplatedUrlRequestEntity() throws Exception {
+		RequestEntity<Void> entity = RequestEntity.get("https://api.example.com/a/b/c.{ext}", "txt").build();
+		TestRestTemplate template = new TestRestTemplate();
+		ClientHttpRequestFactory requestFactory = mock(ClientHttpRequestFactory.class);
+		MockClientHttpRequest request = new MockClientHttpRequest();
+		request.setResponse(new MockClientHttpResponse(new byte[0], HttpStatus.OK));
+		URI absoluteUri = URI.create("https://api.example.com/a/b/c.txt");
+		given(requestFactory.createRequest(eq(absoluteUri), eq(HttpMethod.GET))).willReturn(request);
+		template.getRestTemplate().setRequestFactory(requestFactory);
+		template.exchange(entity, String.class);
+		verify(requestFactory).createRequest(eq(absoluteUri), eq(HttpMethod.GET));
 	}
 
 	@Test

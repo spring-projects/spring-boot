@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -100,9 +100,13 @@ public class RabbitAutoConfiguration {
 		public CachingConnectionFactory rabbitConnectionFactory(RabbitProperties properties,
 				ResourceLoader resourceLoader, ObjectProvider<CredentialsProvider> credentialsProvider,
 				ObjectProvider<CredentialsRefreshService> credentialsRefreshService,
-				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy) throws Exception {
-			CachingConnectionFactory factory = new CachingConnectionFactory(getRabbitConnectionFactoryBean(properties,
-					resourceLoader, credentialsProvider, credentialsRefreshService).getObject());
+				ObjectProvider<ConnectionNameStrategy> connectionNameStrategy,
+				ObjectProvider<ConnectionFactoryCustomizer> connectionFactoryCustomizers) throws Exception {
+			com.rabbitmq.client.ConnectionFactory connectionFactory = getRabbitConnectionFactoryBean(properties,
+					resourceLoader, credentialsProvider, credentialsRefreshService).getObject();
+			connectionFactoryCustomizers.orderedStream()
+					.forEach((customizer) -> customizer.customize(connectionFactory));
+			CachingConnectionFactory factory = new CachingConnectionFactory(connectionFactory);
 			PropertyMapper map = PropertyMapper.get();
 			map.from(properties::determineAddresses).to(factory::setAddresses);
 			map.from(properties::getAddressShuffleMode).whenNonNull().to(factory::setAddressShuffleMode);

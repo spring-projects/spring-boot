@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,8 +32,8 @@ import javax.servlet.http.HttpServletResponse;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -44,6 +44,7 @@ import org.springframework.boot.actuate.endpoint.web.WebOperationRequestPredicat
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.util.AntPathMatcher;
@@ -53,9 +54,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.HandlerMapping;
 import org.springframework.web.servlet.handler.MatchableHandlerMapping;
 import org.springframework.web.servlet.handler.RequestMatchResult;
@@ -284,13 +285,13 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 			HttpHeaders headers = new ServletServerHttpRequest(request).getHeaders();
 			Map<String, Object> arguments = getArguments(request, body);
 			try {
-				ApiVersion apiVersion = ApiVersion.fromHttpHeaders(headers);
 				ServletSecurityContext securityContext = new ServletSecurityContext(request);
-				InvocationContext invocationContext = new InvocationContext(apiVersion, securityContext, arguments);
+				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
+						new ProducibleOperationArgumentResolver(() -> headers.get("Accept")));
 				return handleResult(this.operation.invoke(invocationContext), HttpMethod.resolve(request.getMethod()));
 			}
 			catch (InvalidEndpointRequestException ex) {
-				throw new BadOperationRequestException(ex.getReason());
+				throw new InvalidEndpointBadRequestException(ex);
 			}
 		}
 
@@ -352,7 +353,9 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 				return result;
 			}
 			WebEndpointResponse<?> response = (WebEndpointResponse<?>) result;
-			return ResponseEntity.status(response.getStatus()).body(response.getBody());
+			MediaType contentType = (response.getContentType() != null) ? new MediaType(response.getContentType())
+					: null;
+			return ResponseEntity.status(response.getStatus()).contentType(contentType).body(response.getBody());
 		}
 
 	}
@@ -401,11 +404,14 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 
 	}
 
-	@ResponseStatus(code = HttpStatus.BAD_REQUEST)
-	private static class BadOperationRequestException extends RuntimeException {
+	/**
+	 * Nested exception used to wrap an {@link InvalidEndpointRequestException} and
+	 * provide a {@link HttpStatus#BAD_REQUEST} status.
+	 */
+	private static class InvalidEndpointBadRequestException extends ResponseStatusException {
 
-		BadOperationRequestException(String message) {
-			super(message);
+		InvalidEndpointBadRequestException(InvalidEndpointRequestException cause) {
+			super(HttpStatus.BAD_REQUEST, cause.getReason(), cause);
 		}
 
 	}

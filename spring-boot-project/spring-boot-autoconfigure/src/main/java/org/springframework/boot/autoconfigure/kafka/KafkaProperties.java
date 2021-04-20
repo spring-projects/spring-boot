@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -917,7 +917,7 @@ public class KafkaProperties {
 		 * Whether to suppress the entire record from being written to the log when
 		 * retries are being attempted.
 		 */
-		private boolean onlyLogRecordMetadata;
+		private boolean onlyLogRecordMetadata = true;
 
 		/**
 		 * Whether the container should fail to start if at least one of the configured
@@ -1264,7 +1264,7 @@ public class KafkaProperties {
 		/**
 		 * Cleanup the application’s local state directory on shutdown.
 		 */
-		private boolean onShutdown = true;
+		private boolean onShutdown = false;
 
 		public boolean isOnStartup() {
 			return this.onStartup;

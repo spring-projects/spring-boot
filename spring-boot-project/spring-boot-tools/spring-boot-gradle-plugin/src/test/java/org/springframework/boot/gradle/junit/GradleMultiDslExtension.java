@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
+import org.gradle.api.JavaVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
@@ -59,7 +60,12 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 
 		@Override
 		public List<Extension> getAdditionalExtensions() {
-			return Arrays.asList(new GradleBuildFieldSetter(new GradleBuild(this.dsl)), new GradleBuildExtension());
+			GradleBuild gradleBuild = new GradleBuild(this.dsl);
+			JavaVersion javaVersion = JavaVersion.current();
+			if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
+				gradleBuild.gradleVersion("7.0");
+			}
+			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 
 		@Override

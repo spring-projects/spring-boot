@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,12 +26,13 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.metrics.StartupStep;
+import org.springframework.restdocs.payload.FieldDescriptor;
 import org.springframework.restdocs.payload.JsonFieldType;
-import org.springframework.restdocs.payload.ResponseFieldsSnippet;
+import org.springframework.restdocs.payload.PayloadDocumentation;
 
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWithPath;
-import static org.springframework.restdocs.payload.PayloadDocumentation.responseFields;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
@@ -39,6 +40,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * Tests for generating documentation describing {@link StartupEndpoint}.
  *
  * @author Brian Clozel
+ * @author Stephane Nicoll
  */
 class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTests {
 
@@ -54,8 +56,19 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	}
 
 	@Test
+	void startupSnapshot() throws Exception {
+		this.mockMvc.perform(get("/actuator/startup")).andExpect(status().isOk())
+				.andDo(document("startup-snapshot", PayloadDocumentation.responseFields(responseFields())));
+	}
+
+	@Test
 	void startup() throws Exception {
-		ResponseFieldsSnippet responseFields = responseFields(
+		this.mockMvc.perform(post("/actuator/startup")).andExpect(status().isOk())
+				.andDo(document("startup", PayloadDocumentation.responseFields(responseFields())));
+	}
+
+	private FieldDescriptor[] responseFields() {
+		return new FieldDescriptor[] {
 				fieldWithPath("springBootVersion").type(JsonFieldType.STRING)
 						.description("Spring Boot version for this application.").optional(),
 				fieldWithPath("timeline.startTime").description("Start time of the application."),
@@ -73,10 +86,7 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 				fieldWithPath("timeline.events.[].startupStep.tags[].key")
 						.description("The key of the StartupStep Tag."),
 				fieldWithPath("timeline.events.[].startupStep.tags[].value")
-						.description("The value of the StartupStep Tag."));
-
-		this.mockMvc.perform(post("/actuator/startup")).andExpect(status().isOk())
-				.andDo(document("startup", responseFields));
+						.description("The value of the StartupStep Tag.") };
 	}
 
 	@Configuration(proxyBeanMethods = false)

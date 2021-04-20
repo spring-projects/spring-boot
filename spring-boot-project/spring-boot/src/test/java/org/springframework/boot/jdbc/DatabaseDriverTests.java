@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -69,9 +69,10 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("HSQL Database Engine")).isEqualTo(DatabaseDriver.HSQLDB);
 		assertThat(DatabaseDriver.fromProductName("SQLite")).isEqualTo(DatabaseDriver.SQLITE);
 		assertThat(DatabaseDriver.fromProductName("MySQL")).isEqualTo(DatabaseDriver.MYSQL);
+		assertThat(DatabaseDriver.fromProductName("MariaDB")).isEqualTo(DatabaseDriver.MARIADB);
 		assertThat(DatabaseDriver.fromProductName("Oracle")).isEqualTo(DatabaseDriver.ORACLE);
 		assertThat(DatabaseDriver.fromProductName("PostgreSQL")).isEqualTo(DatabaseDriver.POSTGRESQL);
-		assertThat(DatabaseDriver.fromProductName("Amazon Redshift")).isEqualTo(DatabaseDriver.REDSHIFT);
+		assertThat(DatabaseDriver.fromProductName("Redshift")).isEqualTo(DatabaseDriver.REDSHIFT);
 		assertThat(DatabaseDriver.fromProductName("Microsoft SQL Server")).isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("SQL SERVER")).isEqualTo(DatabaseDriver.SQLSERVER);
 		assertThat(DatabaseDriver.fromProductName("DB2")).isEqualTo(DatabaseDriver.DB2);

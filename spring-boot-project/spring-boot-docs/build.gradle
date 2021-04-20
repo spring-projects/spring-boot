@@ -10,9 +10,6 @@ description = "Spring Boot Docs"
 
 configurations {
 	actuatorApiDocumentation
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	autoConfiguration
 	configurationProperties
 	gradlePluginDocumentation
@@ -46,7 +43,6 @@ plugins.withType(EclipsePlugin) {
 dependencies {
 	actuatorApiDocumentation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure", configuration: "documentation"))
 
-	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-spring-boot")
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	asciidoctorExtensions(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
@@ -69,18 +65,28 @@ dependencies {
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
+	implementation("ch.qos.logback:logback-classic")
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-core")
 	implementation("io.projectreactor.netty:reactor-netty-http")
+	implementation("io.undertow:undertow-core")
+	implementation("jakarta.annotation:jakarta.annotation-api")
 	implementation("jakarta.servlet:jakarta.servlet-api")
 	implementation("org.apache.commons:commons-dbcp2")
 	implementation("org.apache.kafka:kafka-streams")
+	implementation("org.apache.logging.log4j:log4j-to-slf4j")
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 	implementation("org.assertj:assertj-core")
 	implementation("org.glassfish.jersey.core:jersey-server")
 	implementation("org.hibernate:hibernate-jcache")
+	implementation("org.jooq:jooq")
+	implementation("org.mongodb:mongodb-driver-sync")
+	implementation("org.slf4j:jul-to-slf4j")
+	implementation("org.springframework:spring-jdbc")
+	implementation("org.springframework:spring-orm")
 	implementation("org.springframework:spring-test")
 	implementation("org.springframework:spring-web")
+	implementation("org.springframework:spring-webmvc")
 	implementation("org.springframework:spring-webflux")
 	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-neo4j")
@@ -90,8 +96,10 @@ dependencies {
 	implementation("org.springframework.restdocs:spring-restdocs-restassured")
 	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	implementation("org.springframework.security:spring-security-config")
+	implementation("org.springframework.security:spring-security-oauth2-client")
 	implementation("org.springframework.security:spring-security-web")
 	implementation("org.junit.jupiter:junit-jupiter")
+	implementation("org.yaml:snakeyaml")
 
 	mavenPluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "documentation"))
 
@@ -185,7 +193,6 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	configurations "asciidoctorExtensions"
 	baseDirFollowsSourceDir()
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
@@ -205,7 +212,6 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-data-neo4j-version": versionConstraints["org.springframework.data:spring-data-neo4j"],
 					"spring-data-r2dbc-version": versionConstraints["org.springframework.data:spring-data-r2dbc"],
 					"spring-data-rest-version": versionConstraints["org.springframework.data:spring-data-rest-core"],
-					"spring-data-solr-version": versionConstraints["org.springframework.data:spring-data-solr"],
 					"spring-framework-version": versionConstraints["org.springframework:spring-core"],
 					"spring-kafka-version": versionConstraints["org.springframework.kafka:spring-kafka"],
 					"spring-integration-version": versionConstraints["org.springframework.integration:spring-integration-core"],
@@ -331,7 +337,7 @@ artifacts {
 
 publishing {
 	publications {
-		deployment(MavenPublication) {
+		maven(MavenPublication) {
 			artifact zip
 		}
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,7 +31,7 @@ import org.springframework.beans.factory.support.BeanNameGenerator;
 import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.Banner;
 import org.springframework.boot.BootstrapRegistry;
-import org.springframework.boot.Bootstrapper;
+import org.springframework.boot.BootstrapRegistryInitializer;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.boot.convert.ApplicationConversionService;
@@ -276,7 +276,7 @@ public class SpringApplicationBuilder {
 	 * Explicitly set the context class to be used.
 	 * @param cls the context class to use
 	 * @return the current builder
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #contextFactory(ApplicationContextFactory)}
 	 */
 	@Deprecated
@@ -400,14 +400,30 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Adds a {@link Bootstrapper} that can be used to initialize the
-	 * {@link BootstrapRegistry}.
+	 * Adds a {@link org.springframework.boot.Bootstrapper} that can be used to initialize
+	 * the {@link BootstrapRegistry}.
 	 * @param bootstrapper the bootstraper
 	 * @return the current builder
 	 * @since 2.4.0
+	 * @deprecated since 2.4.5 for removal in 2.6 in favor of
+	 * {@link #addBootstrapRegistryInitializer(BootstrapRegistryInitializer)}
 	 */
-	public SpringApplicationBuilder addBootstrapper(Bootstrapper bootstrapper) {
+	@Deprecated
+	public SpringApplicationBuilder addBootstrapper(org.springframework.boot.Bootstrapper bootstrapper) {
 		this.application.addBootstrapper(bootstrapper);
+		return this;
+	}
+
+	/**
+	 * Adds {@link BootstrapRegistryInitializer} instances that can be used to initialize
+	 * the {@link BootstrapRegistry}.
+	 * @param bootstrapRegistryInitializer the bootstrap registry initializer to add
+	 * @return the current builder
+	 * @since 2.4.5
+	 */
+	public SpringApplicationBuilder addBootstrapRegistryInitializer(
+			BootstrapRegistryInitializer bootstrapRegistryInitializer) {
+		this.application.addBootstrapRegistryInitializer(bootstrapRegistryInitializer);
 		return this;
 	}
 
@@ -531,6 +547,18 @@ public class SpringApplicationBuilder {
 	public SpringApplicationBuilder environment(ConfigurableEnvironment environment) {
 		this.application.setEnvironment(environment);
 		this.environment = environment;
+		return this;
+	}
+
+	/**
+	 * Prefix that should be applied when obtaining configuration properties from the
+	 * system environment.
+	 * @param environmentPrefix the environment property prefix to set
+	 * @return the current builder
+	 * @since 2.5.0
+	 */
+	public SpringApplicationBuilder environmentPrefix(String environmentPrefix) {
+		this.application.setEnvironmentPrefix(environmentPrefix);
 		return this;
 	}
 

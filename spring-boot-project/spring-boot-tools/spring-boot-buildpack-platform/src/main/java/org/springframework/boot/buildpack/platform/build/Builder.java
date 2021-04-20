@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.buildpack.platform.build;
 
 import java.io.IOException;
+import java.util.List;
 import java.util.function.Consumer;
 
 import org.springframework.boot.buildpack.platform.build.BuilderMetadata.Stack;
@@ -29,6 +30,8 @@ import org.springframework.boot.buildpack.platform.docker.configuration.DockerCo
 import org.springframework.boot.buildpack.platform.docker.transport.DockerEngineException;
 import org.springframework.boot.buildpack.platform.docker.type.Image;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
+import org.springframework.boot.buildpack.platform.io.IOBiConsumer;
+import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
 
@@ -92,33 +95,35 @@ public class Builder {
 	public void build(BuildRequest request) throws DockerEngineException, IOException {
 		Assert.notNull(request, "Request must not be null");
 		this.log.start(request);
-		Image builderImage = getImage(request, ImageType.BUILDER);
+		String domain = request.getBuilder().getDomain();
+		PullPolicy pullPolicy = request.getPullPolicy();
+		ImageFetcher imageFetcher = new ImageFetcher(domain, getBuilderAuthHeader(), pullPolicy);
+		Image builderImage = imageFetcher.fetchImage(ImageType.BUILDER, request.getBuilder());
 		BuilderMetadata builderMetadata = BuilderMetadata.fromImage(builderImage);
+		request = withRunImageIfNeeded(request, builderMetadata.getStack());
+		Image runImage = imageFetcher.fetchImage(ImageType.RUNNER, request.getRunImage());
+		assertStackIdsMatch(runImage, builderImage);
 		BuildOwner buildOwner = BuildOwner.fromEnv(builderImage.getConfig().getEnv());
-		request = determineRunImage(request, builderImage, builderMetadata.getStack());
-		EphemeralBuilder builder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata, request.getCreator(),
-				request.getEnv());
-		this.docker.image().load(builder.getArchive(), UpdateListener.none());
+		Buildpacks buildpacks = getBuildpacks(request, imageFetcher, builderMetadata);
+		EphemeralBuilder ephemeralBuilder = new EphemeralBuilder(buildOwner, builderImage, builderMetadata,
+				request.getCreator(), request.getEnv(), buildpacks);
+		this.docker.image().load(ephemeralBuilder.getArchive(), UpdateListener.none());
 		try {
-			executeLifecycle(request, builder);
+			executeLifecycle(request, ephemeralBuilder);
 			if (request.isPublish()) {
 				pushImage(request.getName());
 			}
 		}
 		finally {
-			this.docker.image().remove(builder.getName(), true);
+			this.docker.image().remove(ephemeralBuilder.getName(), true);
 		}
 	}
 
-	private BuildRequest determineRunImage(BuildRequest request, Image builderImage, Stack builderStack)
-			throws IOException {
-		if (request.getRunImage() == null) {
-			ImageReference runImage = getRunImageReferenceForStack(builderStack);
-			request = request.withRunImage(runImage);
+	private BuildRequest withRunImageIfNeeded(BuildRequest request, Stack builderStack) {
+		if (request.getRunImage() != null) {
+			return request;
 		}
-		Image runImage = getImage(request, ImageType.RUNNER);
-		assertStackIdsMatch(runImage, builderImage);
-		return request;
+		return request.withRunImage(getRunImageReferenceForStack(builderStack));
 	}
 
 	private ImageReference getRunImageReferenceForStack(Stack stack) {
@@ -127,32 +132,22 @@ public class Builder {
 		return ImageReference.of(name).inTaggedOrDigestForm();
 	}
 
-	private Image getImage(BuildRequest request, ImageType imageType) throws IOException {
-		ImageReference imageReference = (imageType == ImageType.BUILDER) ? request.getBuilder() : request.getRunImage();
-
-		if (request.getPullPolicy() == PullPolicy.ALWAYS) {
-			return pullImage(imageReference, imageType);
-		}
-
-		try {
-			return this.docker.image().inspect(imageReference);
-		}
-		catch (DockerEngineException exception) {
-			if (request.getPullPolicy() == PullPolicy.IF_NOT_PRESENT && exception.getStatusCode() == 404) {
-				return pullImage(imageReference, imageType);
-			}
-			else {
-				throw exception;
-			}
-		}
+	private void assertStackIdsMatch(Image runImage, Image builderImage) {
+		StackId runImageStackId = StackId.fromImage(runImage);
+		StackId builderImageStackId = StackId.fromImage(builderImage);
+		Assert.state(runImageStackId.equals(builderImageStackId), () -> "Run image stack '" + runImageStackId
+				+ "' does not match builder stack '" + builderImageStackId + "'");
 	}
 
-	private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
-		Consumer<TotalProgressEvent> progressConsumer = this.log.pullingImage(reference, imageType);
-		TotalProgressPullListener listener = new TotalProgressPullListener(progressConsumer);
-		Image image = this.docker.image().pull(reference, listener, getBuilderAuthHeader());
-		this.log.pulledImage(image, imageType);
-		return image;
+	private Buildpacks getBuildpacks(BuildRequest request, ImageFetcher imageFetcher, BuilderMetadata builderMetadata) {
+		BuildpackResolverContext resolverContext = new BuilderResolverContext(imageFetcher, builderMetadata);
+		return BuildpackResolvers.resolveAll(resolverContext, request.getBuildpacks());
+	}
+
+	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {
+		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, request, builder)) {
+			lifecycle.execute();
+		}
 	}
 
 	private void pushImage(ImageReference reference) throws IOException {
@@ -172,17 +167,83 @@ public class Builder {
 				? this.dockerConfiguration.getPublishRegistryAuthentication().getAuthHeader() : null;
 	}
 
-	private void assertStackIdsMatch(Image runImage, Image builderImage) {
-		StackId runImageStackId = StackId.fromImage(runImage);
-		StackId builderImageStackId = StackId.fromImage(builderImage);
-		Assert.state(runImageStackId.equals(builderImageStackId), () -> "Run image stack '" + runImageStackId
-				+ "' does not match builder stack '" + builderImageStackId + "'");
+	/**
+	 * Internal utility class used to fetch images.
+	 */
+	private class ImageFetcher {
+
+		private final String domain;
+
+		private final String authHeader;
+
+		private final PullPolicy pullPolicy;
+
+		ImageFetcher(String domain, String authHeader, PullPolicy pullPolicy) {
+			this.domain = domain;
+			this.authHeader = authHeader;
+			this.pullPolicy = pullPolicy;
+		}
+
+		Image fetchImage(ImageType type, ImageReference reference) throws IOException {
+			Assert.notNull(type, "Type must not be null");
+			Assert.notNull(reference, "Reference must not be null");
+			Assert.state(this.authHeader == null || reference.getDomain().equals(this.domain),
+					() -> String.format("%s '%s' must be pulled from the '%s' authenticated registry",
+							StringUtils.capitalize(type.getDescription()), reference, this.domain));
+			if (this.pullPolicy == PullPolicy.ALWAYS) {
+				return pullImage(reference, type);
+			}
+			try {
+				return Builder.this.docker.image().inspect(reference);
+			}
+			catch (DockerEngineException ex) {
+				if (this.pullPolicy == PullPolicy.IF_NOT_PRESENT && ex.getStatusCode() == 404) {
+					return pullImage(reference, type);
+				}
+				throw ex;
+			}
+		}
+
+		private Image pullImage(ImageReference reference, ImageType imageType) throws IOException {
+			TotalProgressPullListener listener = new TotalProgressPullListener(
+					Builder.this.log.pullingImage(reference, imageType));
+			Image image = Builder.this.docker.image().pull(reference, listener, this.authHeader);
+			Builder.this.log.pulledImage(image, imageType);
+			return image;
+		}
+
 	}
 
-	private void executeLifecycle(BuildRequest request, EphemeralBuilder builder) throws IOException {
-		try (Lifecycle lifecycle = new Lifecycle(this.log, this.docker, request, builder)) {
-			lifecycle.execute();
+	/**
+	 * {@link BuildpackResolverContext} implementation for the {@link Builder}.
+	 */
+	private class BuilderResolverContext implements BuildpackResolverContext {
+
+		private final ImageFetcher imageFetcher;
+
+		private final BuilderMetadata builderMetadata;
+
+		BuilderResolverContext(ImageFetcher imageFetcher, BuilderMetadata builderMetadata) {
+			this.imageFetcher = imageFetcher;
+			this.builderMetadata = builderMetadata;
 		}
+
+		@Override
+		public List<BuildpackMetadata> getBuildpackMetadata() {
+			return this.builderMetadata.getBuildpacks();
+		}
+
+		@Override
+		public Image fetchImage(ImageReference reference, ImageType imageType) throws IOException {
+			return this.imageFetcher.fetchImage(imageType, reference);
+		}
+
+		@Override
+		public void exportImageLayers(ImageReference reference, IOBiConsumer<String, TarArchive> exports)
+				throws IOException {
+			Builder.this.docker.image().exportLayers(reference, exports);
+		}
+
 	}
 
 }

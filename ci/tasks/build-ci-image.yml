@@ -13,7 +13,6 @@ caches:
 params:
   CONTEXT: ci-images-git-repo/ci/images
   DOCKERFILE: ci-images-git-repo/ci/images/((ci-image-name))/Dockerfile
-  REGISTRY_MIRRORS: ((docker-hub-mirror))
   DOCKER_HUB_AUTH: ((docker-hub-auth))
 run:
   path: /bin/sh

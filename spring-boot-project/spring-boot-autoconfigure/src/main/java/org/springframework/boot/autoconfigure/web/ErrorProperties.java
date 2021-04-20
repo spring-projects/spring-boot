@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,6 +102,28 @@ public class ErrorProperties {
 	}
 
 	/**
+	 * Include Stacktrace attribute options.
+	 */
+	public enum IncludeStacktrace {
+
+		/**
+		 * Never add stacktrace information.
+		 */
+		NEVER,
+
+		/**
+		 * Always add stacktrace information.
+		 */
+		ALWAYS,
+
+		/**
+		 * Add stacktrace attribute when the appropriate request parameter is not "false".
+		 */
+		ON_PARAM
+
+	}
+
+	/**
 	 * Include error attributes options.
 	 */
 	public enum IncludeAttribute {
@@ -117,7 +139,7 @@ public class ErrorProperties {
 		ALWAYS,
 
 		/**
-		 * Add error attribute when the appropriate request parameter is "true".
+		 * Add error attribute when the appropriate request parameter is not "false".
 		 */
 		ON_PARAM
 

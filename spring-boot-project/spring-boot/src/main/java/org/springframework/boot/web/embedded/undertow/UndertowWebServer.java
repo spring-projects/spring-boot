@@ -83,21 +83,7 @@ public class UndertowWebServer implements WebServer {
 	 * @param autoStart if the server should be started
 	 */
 	public UndertowWebServer(Undertow.Builder builder, boolean autoStart) {
-		this(builder, autoStart, null);
-	}
-
-	/**
-	 * Create a new {@link UndertowWebServer} instance.
-	 * @param builder the builder
-	 * @param autoStart if the server should be started
-	 * @param closeable called when the server is stopped
-	 * @since 2.0.4
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link #UndertowWebServer(io.undertow.Undertow.Builder, Iterable, boolean)}
-	 */
-	@Deprecated
-	public UndertowWebServer(Undertow.Builder builder, boolean autoStart, Closeable closeable) {
-		this(builder, Collections.singleton(new CloseableHttpHandlerFactory(closeable)), autoStart);
+		this(builder, Collections.singleton(new CloseableHttpHandlerFactory(null)), autoStart);
 	}
 
 	/**

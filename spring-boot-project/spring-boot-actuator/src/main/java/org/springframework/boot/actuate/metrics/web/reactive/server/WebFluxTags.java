@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.util.Arrays;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.regex.Pattern;
 
 import io.micrometer.core.instrument.Tag;
@@ -35,6 +38,7 @@ import org.springframework.web.util.pattern.PathPattern;
  * @author Jon Schneider
  * @author Andy Wilkinson
  * @author Michael McFadyen
+ * @author Brian Clozel
  * @since 2.0.0
  */
 public final class WebFluxTags {
@@ -50,6 +54,9 @@ public final class WebFluxTags {
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
 	private static final Pattern FORWARD_SLASHES_PATTERN = Pattern.compile("//+");
+
+	private static final Set<String> DISCONNECTED_CLIENT_EXCEPTIONS = new HashSet<>(
+			Arrays.asList("AbortedException", "ClientAbortException", "EOFException", "EofException"));
 
 	private WebFluxTags() {
 	}
@@ -165,8 +172,29 @@ public final class WebFluxTags {
 	 * @param exchange the exchange
 	 * @return the outcome tag derived from the response status
 	 * @since 2.1.0
+	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
+	 * {@link #outcome(ServerWebExchange, Throwable)}
 	 */
+	@Deprecated
 	public static Tag outcome(ServerWebExchange exchange) {
+		return outcome(exchange, null);
+	}
+
+	/**
+	 * Creates an {@code outcome} tag based on the response status of the given
+	 * {@code exchange} and the exception thrown during request processing.
+	 * @param exchange the exchange
+	 * @param exception the termination signal sent by the publisher
+	 * @return the outcome tag derived from the response status
+	 * @since 2.5.0
+	 */
+	public static Tag outcome(ServerWebExchange exchange, Throwable exception) {
+		if (exception != null) {
+			if (exception instanceof CancelledServerWebExchangeException
+					|| DISCONNECTED_CLIENT_EXCEPTIONS.contains(exception.getClass().getSimpleName())) {
+				return Outcome.UNKNOWN.asTag();
+			}
+		}
 		Integer statusCode = extractStatusCode(exchange);
 		Outcome outcome = (statusCode != null) ? Outcome.forStatus(statusCode) : Outcome.SUCCESS;
 		return outcome.asTag();

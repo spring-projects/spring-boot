@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,12 +20,17 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Instant;
 import java.time.OffsetDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.compress.archivers.ArchiveEntry;
@@ -40,6 +45,7 @@ import org.springframework.boot.buildpack.platform.docker.type.ImageArchive;
 import org.springframework.boot.buildpack.platform.docker.type.ImageConfig;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
 import org.springframework.boot.buildpack.platform.json.AbstractJsonTests;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -62,7 +68,9 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	private Map<String, String> env;
 
-	private Creator creator = Creator.withVersion("dev");
+	private Buildpacks buildpacks;
+
+	private final Creator creator = Creator.withVersion("dev");
 
 	@BeforeEach
 	void setup() throws Exception {
@@ -75,15 +83,18 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getNameHasRandomName() throws Exception {
-		EphemeralBuilder b1 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
-		EphemeralBuilder b2 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder b1 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env,
+				this.buildpacks);
+		EphemeralBuilder b2 = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env,
+				this.buildpacks);
 		assertThat(b1.getName().toString()).startsWith("pack.local/builder/").endsWith(":latest");
 		assertThat(b1.getName().toString()).isNotEqualTo(b2.getName().toString());
 	}
 
 	@Test
 	void getArchiveHasCreatedByConfig() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env,
+				this.buildpacks);
 		ImageConfig config = builder.getArchive().getImageConfig();
 		BuilderMetadata ephemeralMetadata = BuilderMetadata.fromImageConfig(config);
 		assertThat(ephemeralMetadata.getCreatedBy().getName()).isEqualTo("Spring Boot");
@@ -92,14 +103,16 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getArchiveHasTag() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env,
+				this.buildpacks);
 		ImageReference tag = builder.getArchive().getTag();
 		assertThat(tag.toString()).startsWith("pack.local/builder/").endsWith(":latest");
 	}
 
 	@Test
 	void getArchiveHasFixedCreateDate() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env,
+				this.buildpacks);
 		Instant createInstant = builder.getArchive().getCreateDate();
 		OffsetDateTime createDateTime = OffsetDateTime.ofInstant(createInstant, ZoneId.of("UTC"));
 		assertThat(createDateTime.getYear()).isEqualTo(1980);
@@ -112,10 +125,33 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 
 	@Test
 	void getArchiveContainsEnvLayer() throws Exception {
-		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, this.env,
+				this.buildpacks);
 		File directory = unpack(getLayer(builder.getArchive(), 0), "env");
 		assertThat(new File(directory, "platform/env/spring")).usingCharset(StandardCharsets.UTF_8).hasContent("boot");
 		assertThat(new File(directory, "platform/env/empty")).usingCharset(StandardCharsets.UTF_8).hasContent("");
+	}
+
+	@Test
+	void getArchiveContainsBuildpackLayers() throws Exception {
+		List<Buildpack> buildpackList = new ArrayList<>();
+		buildpackList.add(new TestBuildpack("example/buildpack1", "0.0.1"));
+		buildpackList.add(new TestBuildpack("example/buildpack2", "0.0.2"));
+		buildpackList.add(new TestBuildpack("example/buildpack3", "0.0.3"));
+		this.buildpacks = Buildpacks.of(buildpackList);
+		EphemeralBuilder builder = new EphemeralBuilder(this.owner, this.image, this.metadata, this.creator, null,
+				this.buildpacks);
+		assertBuildpackLayerContent(builder, 0, "/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
+		assertBuildpackLayerContent(builder, 1, "/cnb/buildpacks/example_buildpack2/0.0.2/buildpack.toml");
+		assertBuildpackLayerContent(builder, 2, "/cnb/buildpacks/example_buildpack3/0.0.3/buildpack.toml");
+		File orderDirectory = unpack(getLayer(builder.getArchive(), 3), "order");
+		assertThat(new File(orderDirectory, "cnb/order.toml")).usingCharset(StandardCharsets.UTF_8)
+				.hasContent(content("order.toml"));
+	}
+
+	private void assertBuildpackLayerContent(EphemeralBuilder builder, int index, String s) throws Exception {
+		File buildpackDirectory = unpack(getLayer(builder.getArchive(), index), "buildpack");
+		assertThat(new File(buildpackDirectory, s)).usingCharset(StandardCharsets.UTF_8).hasContent("[test]");
 	}
 
 	private TarArchiveInputStream getLayer(ImageArchive archive, int index) throws Exception {
@@ -146,6 +182,11 @@ class EphemeralBuilderTests extends AbstractJsonTests {
 			entry = archive.getNextEntry();
 		}
 		return directory;
+	}
+
+	private String content(String fileName) throws IOException {
+		InputStream in = getClass().getResourceAsStream(fileName);
+		return FileCopyUtils.copyToString(new InputStreamReader(in, StandardCharsets.UTF_8));
 	}
 
 }

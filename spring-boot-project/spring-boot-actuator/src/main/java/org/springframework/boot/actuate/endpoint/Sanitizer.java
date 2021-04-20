@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public class Sanitizer {
 			"key", "token", ".*credentials.*", "vcap_services", "sun.java.command"));
 
 	private static final Set<String> URI_USERINFO_KEYS = new LinkedHashSet<>(
-			Arrays.asList("uri", "uris", "address", "addresses"));
+			Arrays.asList("uri", "uris", "url", "urls", "address", "addresses"));
 
 	private static final Pattern URI_USERINFO_PATTERN = Pattern.compile("\\[?[A-Za-z]+://.+:(.*)@.+$");
 
@@ -67,8 +67,8 @@ public class Sanitizer {
 	}
 
 	/**
-	 * Keys that should be sanitized. Keys can be simple strings that the property ends
-	 * with or regular expressions.
+	 * Set the keys that should be sanitized, overwriting any existing configuration. Keys
+	 * can be simple strings that the property ends with or regular expressions.
 	 * @param keysToSanitize the keys to sanitize
 	 */
 	public void setKeysToSanitize(String... keysToSanitize) {
@@ -76,6 +76,21 @@ public class Sanitizer {
 		this.keysToSanitize = new Pattern[keysToSanitize.length];
 		for (int i = 0; i < keysToSanitize.length; i++) {
 			this.keysToSanitize[i] = getPattern(keysToSanitize[i]);
+		}
+	}
+
+	/**
+	 * Adds keys that should be sanitized. Keys can be simple strings that the property
+	 * ends with or regular expressions.
+	 * @param keysToSanitize the keys to sanitize
+	 * @since 2.5.0
+	 */
+	public void keysToSanitize(String... keysToSanitize) {
+		Assert.notNull(keysToSanitize, "KeysToSanitize must not be null");
+		int existingKeys = this.keysToSanitize.length;
+		this.keysToSanitize = Arrays.copyOf(this.keysToSanitize, this.keysToSanitize.length + keysToSanitize.length);
+		for (int i = 0; i < keysToSanitize.length; i++) {
+			this.keysToSanitize[i + existingKeys] = getPattern(keysToSanitize[i]);
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,7 +82,7 @@ class FileSessionPersistenceTests {
 		this.persistence.persistSessions("test", sessionData);
 		Map<String, PersistentSession> restored = this.persistence.loadSessionAttributes("test", this.classLoader);
 		assertThat(restored).isNotNull();
-		assertThat(restored.containsKey("abc")).isFalse();
+		assertThat(restored).doesNotContainKey("abc");
 	}
 
 	@Test

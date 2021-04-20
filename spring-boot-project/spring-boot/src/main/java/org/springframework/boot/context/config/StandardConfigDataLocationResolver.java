@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Deque;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -171,11 +174,22 @@ public class StandardConfigDataLocationResolver
 			String directory, String profile) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
 		for (String name : this.configNames) {
-			for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
-				for (String extension : propertySourceLoader.getFileExtensions()) {
-					StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation,
-							directory, directory + name, profile, extension, propertySourceLoader);
-					references.add(reference);
+			Deque<StandardConfigDataReference> referencesForName = getReferencesForConfigName(name, configDataLocation,
+					directory, profile);
+			references.addAll(referencesForName);
+		}
+		return references;
+	}
+
+	private Deque<StandardConfigDataReference> getReferencesForConfigName(String name,
+			ConfigDataLocation configDataLocation, String directory, String profile) {
+		Deque<StandardConfigDataReference> references = new ArrayDeque<>();
+		for (PropertySourceLoader propertySourceLoader : this.propertySourceLoaders) {
+			for (String extension : propertySourceLoader.getFileExtensions()) {
+				StandardConfigDataReference reference = new StandardConfigDataReference(configDataLocation, directory,
+						directory + name, profile, extension, propertySourceLoader);
+				if (!references.contains(reference)) {
+					references.addFirst(reference);
 				}
 			}
 		}
@@ -199,7 +213,7 @@ public class StandardConfigDataLocationResolver
 			}
 		}
 		throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
-				+ "If the location is meant to reference a directory, it must end in '/'");
+				+ "If the location is meant to reference a directory, it must end in '/' or File.separator");
 	}
 
 	private String getLoadableFileExtension(PropertySourceLoader loader, String file) {
@@ -212,7 +226,7 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private boolean isDirectory(String resourceLocation) {
-		return resourceLocation.endsWith("/");
+		return resourceLocation.endsWith("/") || resourceLocation.endsWith(File.separator);
 	}
 
 	private List<StandardConfigDataResource> resolve(Set<StandardConfigDataReference> references) {

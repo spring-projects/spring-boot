@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,13 +24,28 @@ package org.springframework.boot;
  * @since 2.4.0
  * @see SpringApplication#addBootstrapper(Bootstrapper)
  * @see BootstrapRegistry
+ * @deprecated since 2.4.5 for removal in 2.6 in favor of
+ * {@link BootstrapRegistryInitializer}
  */
+@Deprecated
 public interface Bootstrapper {
 
 	/**
 	 * Initialize the given {@link BootstrapRegistry} with any required registrations.
 	 * @param registry the registry to initialize
+	 * @since 2.4.4
 	 */
+	default void initialize(BootstrapRegistry registry) {
+		intitialize(registry);
+	}
+
+	/**
+	 * Initialize the given {@link BootstrapRegistry} with any required registrations.
+	 * @param registry the registry to initialize
+	 * @deprecated since 2.4.4 for removal in 2.6 in favor of
+	 * {@link Bootstrapper#initialize(BootstrapRegistry)}
+	 */
+	@Deprecated
 	void intitialize(BootstrapRegistry registry);
 
 }

@@ -209,7 +209,7 @@ The following listing shows a typical layout:
 
 The `Application.java` file would declare the `main` method, along with the basic `@SpringBootApplication`, as follows:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapplication;
 
@@ -282,7 +282,7 @@ Doing so enables debug logs for a selection of core loggers and logs a condition
 === Disabling Specific Auto-configuration Classes
 If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of `@SpringBootApplication` to disable them, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	import org.springframework.boot.autoconfigure.*;
 	import org.springframework.boot.autoconfigure.jdbc.*;
@@ -313,7 +313,7 @@ All of your application components (`@Component`, `@Service`, `@Repository`, `@C
 
 The following example shows a `@Service` Bean that uses constructor injection to obtain a required `RiskAssessor` bean:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.service;
 
@@ -337,7 +337,7 @@ The following example shows a `@Service` Bean that uses constructor injection to
 
 If a bean has one constructor, you can omit the `@Autowired`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	@Service
 	public class DatabaseAccountService implements AccountService {
@@ -366,7 +366,7 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 * `@ComponentScan`: enable `@Component` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
 * `@Configuration`: allow to register extra beans in the context or import additional configuration classes
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapplication;
 
@@ -390,7 +390,7 @@ NOTE: `@SpringBootApplication` also provides aliases to customize the attributes
 None of these features are mandatory and you may choose to replace this single annotation by any of the features that it enables.
 For instance, you may not want to use component scan or configuration properties scan in your application:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	package com.example.myapplication;
 
@@ -593,7 +593,7 @@ The way in which you cause the classpath to be updated depends on the IDE that y
 
 * In Eclipse, saving a modified file causes the classpath to be updated and triggers a restart.
 * In IntelliJ IDEA, building the project (`Build +->+ Build Project`) has the same effect.
-* If using a build plugin, running `mvn compile` for Maven or `gradle build` for Gradle will trigger a restart. 
+* If using a build plugin, running `mvn compile` for Maven or `gradle build` for Gradle will trigger a restart.
 ****
 
 NOTE: If you are restarting with Maven or Gradle using the build plugin you must leave the `forking` set to `enabled`.
@@ -677,7 +677,7 @@ In most cases, you can set this property in your `application.properties` (doing
 
 If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the configprop:spring.devtools.restart.enabled[] `System` property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,pending-extract=true,indent=0]
 ----
 	public static void main(String[] args) {
 		System.setProperty("spring.devtools.restart.enabled", "false");

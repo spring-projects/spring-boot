@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.apache.catalina.core.StandardEngine;
 import org.apache.catalina.valves.AccessLogValve;
 import org.apache.catalina.valves.RemoteIpValve;
 import org.apache.coyote.AbstractProtocol;
+import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
@@ -82,6 +83,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author HaiTao Zhang
  * @author Rafiullah Hamedy
  * @author Chris Bono
+ * @author Parviz Rozikov
  */
 class ServerPropertiesTests {
 
@@ -216,23 +218,33 @@ class ServerPropertiesTests {
 		assertThat(this.properties.getTomcat().getThreads().getMax()).isEqualTo(10);
 	}
 
-	@Deprecated
 	@Test
-	void testCustomizeTomcatMaxThreadsDeprecated() {
-		bind("server.tomcat.maxThreads", "10");
-		assertThat(this.properties.getTomcat().getThreads().getMax()).isEqualTo(10);
+	void testCustomizeTomcatKeepAliveTimeout() {
+		bind("server.tomcat.keep-alive-timeout", "30s");
+		assertThat(this.properties.getTomcat().getKeepAliveTimeout()).hasSeconds(30);
+	}
+
+	@Test
+	void testCustomizeTomcatKeepAliveTimeoutWithInfinite() {
+		bind("server.tomcat.keep-alive-timeout", "-1");
+		assertThat(this.properties.getTomcat().getKeepAliveTimeout()).hasMillis(-1);
+	}
+
+	@Test
+	void customizeMaxKeepAliveRequests() {
+		bind("server.tomcat.max-keep-alive-requests", "200");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(200);
+	}
+
+	@Test
+	void customizeMaxKeepAliveRequestsWithInfinite() {
+		bind("server.tomcat.max-keep-alive-requests", "-1");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(-1);
 	}
 
 	@Test
 	void testCustomizeTomcatMinSpareThreads() {
 		bind("server.tomcat.threads.min-spare", "10");
-		assertThat(this.properties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
-	}
-
-	@Deprecated
-	@Test
-	void testCustomizeTomcatMinSpareThreadsDeprecated() {
-		bind("server.tomcat.min-spare-threads", "10");
 		assertThat(this.properties.getTomcat().getThreads().getMinSpare()).isEqualTo(10);
 	}
 
@@ -242,24 +254,9 @@ class ServerPropertiesTests {
 		assertThat(this.properties.getJetty().getThreads().getAcceptors()).isEqualTo(10);
 	}
 
-	@Deprecated
-	@Test
-	void testCustomizeJettyAcceptorsDeprecated() {
-		bind("server.jetty.acceptors", "10");
-		assertThat(this.properties.getJetty().getThreads().getAcceptors()).isEqualTo(10);
-	}
-
 	@Test
 	void testCustomizeJettySelectors() {
 		bind("server.jetty.threads.selectors", "10");
-		assertThat(this.properties.getJetty().getThreads().getSelectors()).isEqualTo(10);
-	}
-
-	@Deprecated
-	@Test
-	void testCustomizeJettySelectorsDeprecated() {
-		bind("server.jetty.selectors", "10");
-		assertThat(this.properties.getJetty().getSelectors()).isEqualTo(10);
 		assertThat(this.properties.getJetty().getThreads().getSelectors()).isEqualTo(10);
 	}
 
@@ -269,23 +266,9 @@ class ServerPropertiesTests {
 		assertThat(this.properties.getJetty().getThreads().getMax()).isEqualTo(10);
 	}
 
-	@Deprecated
-	@Test
-	void testCustomizeJettyMaxThreadsDeprecated() {
-		bind("server.jetty.maxThreads", "10");
-		assertThat(this.properties.getJetty().getThreads().getMax()).isEqualTo(10);
-	}
-
 	@Test
 	void testCustomizeJettyMinThreads() {
 		bind("server.jetty.threads.min", "10");
-		assertThat(this.properties.getJetty().getThreads().getMin()).isEqualTo(10);
-	}
-
-	@Deprecated
-	@Test
-	void testCustomizeJettyMinThreadsDeprecated() {
-		bind("server.jetty.minThreads", "10");
 		assertThat(this.properties.getJetty().getThreads().getMin()).isEqualTo(10);
 	}
 
@@ -295,23 +278,9 @@ class ServerPropertiesTests {
 		assertThat(this.properties.getJetty().getThreads().getIdleTimeout()).isEqualTo(Duration.ofSeconds(10));
 	}
 
-	@Deprecated
-	@Test
-	void testCustomizeJettyIdleTimeoutDeprecated() {
-		bind("server.jetty.thread-idle-timeout", "10s");
-		assertThat(this.properties.getJetty().getThreads().getIdleTimeout()).hasSeconds(10);
-	}
-
 	@Test
 	void testCustomizeJettyMaxQueueCapacity() {
 		bind("server.jetty.threads.max-queue-capacity", "5150");
-		assertThat(this.properties.getJetty().getThreads().getMaxQueueCapacity()).isEqualTo(5150);
-	}
-
-	@Deprecated
-	@Test
-	void testCustomizeJettyMaxQueueCapacityDeprecated() {
-		bind("server.jetty.max-queue-capacity", "5150");
 		assertThat(this.properties.getJetty().getThreads().getMaxQueueCapacity()).isEqualTo(5150);
 	}
 
@@ -335,23 +304,9 @@ class ServerPropertiesTests {
 		assertThat(this.properties.getUndertow().getThreads().getIo()).isEqualTo(4);
 	}
 
-	@Deprecated
-	@Test
-	void testCustomizeUndertowIoThreadsDeprecated() {
-		bind("server.undertow.ioThreads", "4");
-		assertThat(this.properties.getUndertow().getThreads().getIo()).isEqualTo(4);
-	}
-
 	@Test
 	void testCustomizeUndertowWorkerThreads() {
 		bind("server.undertow.threads.worker", "10");
-		assertThat(this.properties.getUndertow().getThreads().getWorker()).isEqualTo(10);
-	}
-
-	@Deprecated
-	@Test
-	void testCustomizeUndertowWorkerThreadsDeprecated() {
-		bind("server.undertow.workerThreads", "10");
 		assertThat(this.properties.getUndertow().getThreads().getWorker()).isEqualTo(10);
 	}
 
@@ -453,6 +408,14 @@ class ServerPropertiesTests {
 	@Test
 	void tomcatUseRelativeRedirectsDefaultsToFalse() {
 		assertThat(this.properties.getTomcat().isUseRelativeRedirects()).isFalse();
+	}
+
+	@Test
+	void tomcatMaxKeepAliveRequestsDefault() throws Exception {
+		AbstractEndpoint<?, ?> endpoint = (AbstractEndpoint<?, ?>) ReflectionTestUtils.getField(getDefaultProtocol(),
+				"endpoint");
+		int defaultMaxKeepAliveRequests = (int) ReflectionTestUtils.getField(endpoint, "maxKeepAliveRequests");
+		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(defaultMaxKeepAliveRequests);
 	}
 
 	@Test

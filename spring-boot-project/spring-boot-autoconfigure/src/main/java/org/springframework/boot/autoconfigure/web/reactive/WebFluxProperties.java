@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 import org.springframework.util.StringUtils;
 
 /**
@@ -35,6 +34,8 @@ public class WebFluxProperties {
 	private String basePath;
 
 	private final Format format = new Format();
+
+	private final Session session = new Session();
 
 	/**
 	 * Path pattern used for static resources.
@@ -62,19 +63,12 @@ public class WebFluxProperties {
 		return candidate;
 	}
 
-	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.webflux.format.date")
-	public String getDateFormat() {
-		return this.format.getDate();
-	}
-
-	@Deprecated
-	public void setDateFormat(String dateFormat) {
-		this.format.setDate(dateFormat);
-	}
-
 	public Format getFormat() {
 		return this.format;
+	}
+
+	public Session getSession() {
+		return this.session;
 	}
 
 	public String getStaticPathPattern() {
@@ -124,6 +118,64 @@ public class WebFluxProperties {
 
 		public void setDateTime(String dateTime) {
 			this.dateTime = dateTime;
+		}
+
+	}
+
+	public static class Session {
+
+		private final Cookie cookie = new Cookie();
+
+		public Cookie getCookie() {
+			return this.cookie;
+		}
+
+	}
+
+	public static class Cookie {
+
+		/**
+		 * SameSite attribute value for session Cookies.
+		 */
+		private SameSite sameSite = SameSite.LAX;
+
+		public SameSite getSameSite() {
+			return this.sameSite;
+		}
+
+		public void setSameSite(SameSite sameSite) {
+			this.sameSite = sameSite;
+		}
+
+	}
+
+	public enum SameSite {
+
+		/**
+		 * Cookies are sent in both first-party and cross-origin requests.
+		 */
+		NONE("None"),
+
+		/**
+		 * Cookies are sent in a first-party context, also when following a link to the
+		 * origin site.
+		 */
+		LAX("Lax"),
+
+		/**
+		 * Cookies are only sent in a first-party context (i.e. not when following a link
+		 * to the origin site).
+		 */
+		STRICT("Strict");
+
+		private final String attribute;
+
+		SameSite(String attribute) {
+			this.attribute = attribute;
+		}
+
+		public String attribute() {
+			return this.attribute;
 		}
 
 	}

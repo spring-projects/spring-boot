@@ -14,7 +14,8 @@ Stephane Nicoll, Andy Wilkinson, Scott Frederick
 :spring-boot-api: {spring-boot-docs}/api/org/springframework/boot
 :spring-boot-reference: {spring-boot-docs}/reference/htmlsingle
 :version-properties-appendix: {spring-boot-reference}/#dependency-versions-properties
-:paketo-java-reference: https://paketo.io/docs/buildpacks/language-family-buildpacks/java
+:paketo-reference: https://paketo.io/docs
+:paketo-java-reference: {paketo-reference}/buildpacks/language-family-buildpacks/java
 
 
 [[introduction]]

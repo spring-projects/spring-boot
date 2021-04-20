@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,8 @@
 
 package org.springframework.boot.autoconfigure.r2dbc;
 
-import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.Wrapped;
 
 import org.springframework.boot.autoconfigure.r2dbc.SimpleConnectionFactoryProvider.SimpleTestConnectionFactory;
 import org.springframework.r2dbc.core.binding.BindMarkersFactory;
@@ -38,9 +38,10 @@ public class SimpleBindMarkerFactoryProvider implements BindMarkerFactoryProvide
 		return null;
 	}
 
+	@SuppressWarnings("unchecked")
 	private ConnectionFactory unwrapIfNecessary(ConnectionFactory connectionFactory) {
-		if (connectionFactory instanceof ConnectionPool) {
-			return ((ConnectionPool) connectionFactory).unwrap();
+		if (connectionFactory instanceof Wrapped) {
+			return unwrapIfNecessary(((Wrapped<ConnectionFactory>) connectionFactory).unwrap());
 		}
 		return connectionFactory;
 	}

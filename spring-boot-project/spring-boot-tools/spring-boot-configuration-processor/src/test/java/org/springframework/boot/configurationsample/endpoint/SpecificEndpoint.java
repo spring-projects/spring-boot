@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,17 +16,17 @@
 
 package org.springframework.boot.configurationsample.endpoint;
 
-import org.springframework.boot.configurationsample.MetaEndpoint;
 import org.springframework.boot.configurationsample.ReadOperation;
+import org.springframework.boot.configurationsample.WebEndpoint;
 import org.springframework.lang.Nullable;
 
 /**
- * A meta-annotated endpoint similar to {@code @WebEndpoint} or {@code @JmxEndpoint} in
- * Spring Boot. Also with a package private read operation that has an optional argument.
+ * A meta-annotated endpoint. Also with a package private read operation that has an
+ * optional argument.
  *
  * @author Stephane Nicoll
  */
-@MetaEndpoint(id = "specific", enableByDefault = true)
+@WebEndpoint(id = "specific", enableByDefault = true)
 public class SpecificEndpoint {
 
 	@ReadOperation

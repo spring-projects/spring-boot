@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package smoketest.data.elasticsearch;
 
 import org.springframework.data.annotation.Id;
 import org.springframework.data.elasticsearch.annotations.Document;
+import org.springframework.data.elasticsearch.annotations.Setting;
 
-@Document(indexName = "customer", shards = 1, replicas = 0, refreshInterval = "-1")
+@Document(indexName = "customer")
+@Setting(shards = 1, replicas = 0, refreshInterval = "-1")
 public class Customer {
 
 	@Id

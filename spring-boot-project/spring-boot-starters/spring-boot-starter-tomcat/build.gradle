@@ -9,7 +9,7 @@ dependencies {
 	api("org.apache.tomcat.embed:tomcat-embed-core") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}
-	api("org.glassfish:jakarta.el")
+	api("org.apache.tomcat.embed:tomcat-embed-el")
 	api("org.apache.tomcat.embed:tomcat-embed-websocket") {
 		exclude group: "org.apache.tomcat", module: "tomcat-annotations-api"
 	}

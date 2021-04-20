@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,14 +17,14 @@
 package org.springframework.boot.autoconfigure.web.servlet;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Locale;
 import java.util.Map;
-import java.util.Optional;
+import java.util.function.Consumer;
 
 import javax.servlet.Servlet;
+import javax.servlet.ServletContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -74,7 +74,6 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.task.AsyncTaskExecutor;
 import org.springframework.format.FormatterRegistry;
 import org.springframework.format.support.FormattingConversionService;
-import org.springframework.http.CacheControl;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.util.ClassUtils;
@@ -88,12 +87,15 @@ import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.context.request.RequestAttributes;
 import org.springframework.web.context.request.RequestContextListener;
+import org.springframework.web.context.support.ServletContextResource;
 import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
+import org.springframework.web.servlet.FlashMapManager;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.LocaleResolver;
+import org.springframework.web.servlet.ThemeResolver;
 import org.springframework.web.servlet.View;
 import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
@@ -134,6 +136,7 @@ import org.springframework.web.util.pattern.PathPatternParser;
  * @author Kristine Jetzke
  * @author Bruce Brouwer
  * @author Artsiom Yudovin
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -155,7 +158,7 @@ public class WebMvcAutoConfiguration {
 	 */
 	public static final String DEFAULT_SUFFIX = "";
 
-	private static final String[] SERVLET_LOCATIONS = { "/" };
+	private static final String SERVLET_LOCATION = "/";
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
@@ -171,13 +174,6 @@ public class WebMvcAutoConfiguration {
 		return new OrderedFormContentFilter();
 	}
 
-	static String[] getResourceLocations(String[] staticLocations) {
-		String[] locations = new String[staticLocations.length + SERVLET_LOCATIONS.length];
-		System.arraycopy(staticLocations, 0, locations, 0, staticLocations.length);
-		System.arraycopy(SERVLET_LOCATIONS, 0, locations, staticLocations.length, SERVLET_LOCATIONS.length);
-		return locations;
-	}
-
 	// Defined as a nested config to ensure WebMvcConfigurer is not read when not
 	// on the classpath
 	@SuppressWarnings("deprecation")
@@ -187,10 +183,6 @@ public class WebMvcAutoConfiguration {
 			org.springframework.boot.autoconfigure.web.ResourceProperties.class, WebProperties.class })
 	@Order(0)
 	public static class WebMvcAutoConfigurationAdapter implements WebMvcConfigurer {
-
-		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
-
-		private final Resources resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
 
@@ -204,15 +196,11 @@ public class WebMvcAutoConfiguration {
 
 		final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
 
-		public WebMvcAutoConfigurationAdapter(
-				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
-				WebProperties webProperties, WebMvcProperties mvcProperties, ListableBeanFactory beanFactory,
-				ObjectProvider<HttpMessageConverters> messageConvertersProvider,
+		public WebMvcAutoConfigurationAdapter(WebProperties webProperties, WebMvcProperties mvcProperties,
+				ListableBeanFactory beanFactory, ObjectProvider<HttpMessageConverters> messageConvertersProvider,
 				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
 				ObjectProvider<DispatcherServletPath> dispatcherServletPath,
 				ObjectProvider<ServletRegistrationBean<?>> servletRegistrations) {
-			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
-					: webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.beanFactory = beanFactory;
 			this.messageConvertersProvider = messageConvertersProvider;
@@ -324,39 +312,6 @@ public class WebMvcAutoConfiguration {
 			ApplicationConversionService.addBeans(registry, this.beanFactory);
 		}
 
-		@Override
-		public void addResourceHandlers(ResourceHandlerRegistry registry) {
-			if (!this.resourceProperties.isAddMappings()) {
-				logger.debug("Default resource handling disabled");
-				return;
-			}
-			Duration cachePeriod = this.resourceProperties.getCache().getPeriod();
-			CacheControl cacheControl = this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl();
-			if (!registry.hasMappingForPattern("/webjars/**")) {
-				customizeResourceHandlerRegistration(registry.addResourceHandler("/webjars/**")
-						.addResourceLocations("classpath:/META-INF/resources/webjars/")
-						.setCachePeriod(getSeconds(cachePeriod)).setCacheControl(cacheControl)
-						.setUseLastModified(this.resourceProperties.getCache().isUseLastModified()));
-			}
-			String staticPathPattern = this.mvcProperties.getStaticPathPattern();
-			if (!registry.hasMappingForPattern(staticPathPattern)) {
-				customizeResourceHandlerRegistration(registry.addResourceHandler(staticPathPattern)
-						.addResourceLocations(getResourceLocations(this.resourceProperties.getStaticLocations()))
-						.setCachePeriod(getSeconds(cachePeriod)).setCacheControl(cacheControl)
-						.setUseLastModified(this.resourceProperties.getCache().isUseLastModified()));
-			}
-		}
-
-		private Integer getSeconds(Duration cachePeriod) {
-			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
-		}
-
-		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
-			if (this.resourceHandlerRegistrationCustomizer != null) {
-				this.resourceHandlerRegistrationCustomizer.customize(registration);
-			}
-		}
-
 		@Bean
 		@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 		@ConditionalOnMissingFilterBean(RequestContextFilter.class)
@@ -373,6 +328,8 @@ public class WebMvcAutoConfiguration {
 	@EnableConfigurationProperties(WebProperties.class)
 	public static class EnableWebMvcConfiguration extends DelegatingWebMvcConfiguration implements ResourceLoaderAware {
 
+		private static final Log logger = LogFactory.getLog(WebMvcConfigurer.class);
+
 		private final Resources resourceProperties;
 
 		private final WebMvcProperties mvcProperties;
@@ -383,18 +340,23 @@ public class WebMvcAutoConfiguration {
 
 		private final WebMvcRegistrations mvcRegistrations;
 
+		private final ResourceHandlerRegistrationCustomizer resourceHandlerRegistrationCustomizer;
+
 		private ResourceLoader resourceLoader;
 
 		@SuppressWarnings("deprecation")
 		public EnableWebMvcConfiguration(
 				org.springframework.boot.autoconfigure.web.ResourceProperties resourceProperties,
 				WebMvcProperties mvcProperties, WebProperties webProperties,
-				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider, ListableBeanFactory beanFactory) {
+				ObjectProvider<WebMvcRegistrations> mvcRegistrationsProvider,
+				ObjectProvider<ResourceHandlerRegistrationCustomizer> resourceHandlerRegistrationCustomizerProvider,
+				ListableBeanFactory beanFactory) {
 			this.resourceProperties = resourceProperties.hasBeenCustomized() ? resourceProperties
 					: webProperties.getResources();
 			this.mvcProperties = mvcProperties;
 			this.webProperties = webProperties;
 			this.mvcRegistrations = mvcRegistrationsProvider.getIfUnique();
+			this.resourceHandlerRegistrationCustomizer = resourceHandlerRegistrationCustomizerProvider.getIfAvailable();
 			this.beanFactory = beanFactory;
 		}
 
@@ -434,6 +396,49 @@ public class WebMvcAutoConfiguration {
 					resourceUrlProvider);
 		}
 
+		@Override
+		protected void addResourceHandlers(ResourceHandlerRegistry registry) {
+			super.addResourceHandlers(registry);
+			if (!this.resourceProperties.isAddMappings()) {
+				logger.debug("Default resource handling disabled");
+				return;
+			}
+			ServletContext servletContext = getServletContext();
+			addResourceHandler(registry, "/webjars/**", "classpath:/META-INF/resources/webjars/");
+			addResourceHandler(registry, this.mvcProperties.getStaticPathPattern(), (registration) -> {
+				registration.addResourceLocations(this.resourceProperties.getStaticLocations());
+				if (servletContext != null) {
+					registration.addResourceLocations(new ServletContextResource(servletContext, SERVLET_LOCATION));
+				}
+			});
+		}
+
+		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern, String... locations) {
+			addResourceHandler(registry, pattern, (registration) -> registration.addResourceLocations(locations));
+		}
+
+		private void addResourceHandler(ResourceHandlerRegistry registry, String pattern,
+				Consumer<ResourceHandlerRegistration> customizer) {
+			if (registry.hasMappingForPattern(pattern)) {
+				return;
+			}
+			ResourceHandlerRegistration registration = registry.addResourceHandler(pattern);
+			customizer.accept(registration);
+			registration.setCachePeriod(getSeconds(this.resourceProperties.getCache().getPeriod()));
+			registration.setCacheControl(this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl());
+			customizeResourceHandlerRegistration(registration);
+		}
+
+		private Integer getSeconds(Duration cachePeriod) {
+			return (cachePeriod != null) ? (int) cachePeriod.getSeconds() : null;
+		}
+
+		private void customizeResourceHandlerRegistration(ResourceHandlerRegistration registration) {
+			if (this.resourceHandlerRegistrationCustomizer != null) {
+				this.resourceHandlerRegistrationCustomizer.customize(registration);
+			}
+		}
+
 		@Bean
 		public WelcomePageHandlerMapping welcomePageHandlerMapping(ApplicationContext applicationContext,
 				FormattingConversionService mvcConversionService, ResourceUrlProvider mvcResourceUrlProvider) {
@@ -463,22 +468,48 @@ public class WebMvcAutoConfiguration {
 			return localeResolver;
 		}
 
-		private Optional<Resource> getWelcomePage() {
-			String[] locations = getResourceLocations(this.resourceProperties.getStaticLocations());
-			return Arrays.stream(locations).map(this::getIndexHtml).filter(this::isReadable).findFirst();
+		@Override
+		@Bean
+		@ConditionalOnMissingBean(name = DispatcherServlet.THEME_RESOLVER_BEAN_NAME)
+		public ThemeResolver themeResolver() {
+			return super.themeResolver();
+		}
+
+		@Override
+		@Bean
+		@ConditionalOnMissingBean(name = DispatcherServlet.FLASH_MAP_MANAGER_BEAN_NAME)
+		public FlashMapManager flashMapManager() {
+			return super.flashMapManager();
+		}
+
+		private Resource getWelcomePage() {
+			for (String location : this.resourceProperties.getStaticLocations()) {
+				Resource indexHtml = getIndexHtml(location);
+				if (indexHtml != null) {
+					return indexHtml;
+				}
+			}
+			ServletContext servletContext = getServletContext();
+			if (servletContext != null) {
+				return getIndexHtml(new ServletContextResource(servletContext, SERVLET_LOCATION));
+			}
+			return null;
 		}
 
 		private Resource getIndexHtml(String location) {
-			return this.resourceLoader.getResource(location + "index.html");
+			return getIndexHtml(this.resourceLoader.getResource(location));
 		}
 
-		private boolean isReadable(Resource resource) {
+		private Resource getIndexHtml(Resource location) {
 			try {
-				return resource.exists() && (resource.getURL() != null);
+				Resource resource = location.createRelative("index.html");
+				if (resource.exists() && (resource.getURL() != null)) {
+					return resource;
+				}
 			}
 			catch (Exception ex) {
-				return false;
 			}
+			return null;
 		}
 
 		@Bean

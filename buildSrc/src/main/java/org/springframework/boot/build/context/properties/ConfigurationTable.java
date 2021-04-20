@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class ConfigurationTable {
 
 	String toAsciidocTable() {
 		AsciidocBuilder builder = new AsciidocBuilder();
-		builder.appendln("[cols=\"2,1,1\", options=\"header\"]");
+		builder.appendln("[cols=\"4,3,3\", options=\"header\"]");
 		builder.appendln("|===");
 		builder.appendln("|Key|Default Value|Description");
 		builder.appendln();

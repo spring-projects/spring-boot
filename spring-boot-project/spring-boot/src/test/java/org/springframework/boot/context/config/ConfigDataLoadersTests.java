@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -55,6 +55,20 @@ class ConfigDataLoadersTests {
 	void createWhenLoaderHasLogParameterInjectsLog() {
 		new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
 				Arrays.asList(LoggingConfigDataLoader.class.getName()));
+	}
+
+	@Test
+	void createWhenLoaderHasDeferredLogFactoryParameterInjectsDeferredLogFactory() {
+		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
+				Arrays.asList(DeferredLogFactoryConfigDataLoader.class.getName()));
+		assertThat(loaders).extracting("loaders").asList()
+				.satisfies(this::containsValidDeferredLogFactoryConfigDataLoader);
+	}
+
+	private void containsValidDeferredLogFactoryConfigDataLoader(List<?> list) {
+		assertThat(list).hasSize(1);
+		DeferredLogFactoryConfigDataLoader loader = (DeferredLogFactoryConfigDataLoader) list.get(0);
+		assertThat(loader.getLogFactory()).isSameAs(this.logFactory);
 	}
 
 	@Test
@@ -140,6 +154,26 @@ class ConfigDataLoadersTests {
 		@Override
 		public ConfigData load(ConfigDataLoaderContext context, ConfigDataResource resource) throws IOException {
 			throw new AssertionError("Unexpected call");
+		}
+
+	}
+
+	static class DeferredLogFactoryConfigDataLoader implements ConfigDataLoader<ConfigDataResource> {
+
+		private final DeferredLogFactory logFactory;
+
+		DeferredLogFactoryConfigDataLoader(DeferredLogFactory logFactory) {
+			assertThat(logFactory).isNotNull();
+			this.logFactory = logFactory;
+		}
+
+		@Override
+		public ConfigData load(ConfigDataLoaderContext context, ConfigDataResource resource) throws IOException {
+			throw new AssertionError("Unexpected call");
+		}
+
+		DeferredLogFactory getLogFactory() {
+			return this.logFactory;
 		}
 
 	}

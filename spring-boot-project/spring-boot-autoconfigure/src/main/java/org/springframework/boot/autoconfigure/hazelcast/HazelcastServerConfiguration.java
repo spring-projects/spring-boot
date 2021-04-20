@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,11 @@
 package org.springframework.boot.autoconfigure.hazelcast;
 
 import java.io.IOException;
+import java.net.URL;
 
 import com.hazelcast.config.Config;
+import com.hazelcast.config.XmlConfigBuilder;
+import com.hazelcast.config.YamlConfigBuilder;
 import com.hazelcast.core.Hazelcast;
 import com.hazelcast.core.HazelcastInstance;
 
@@ -28,6 +31,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.core.io.ResourceLoader;
+import org.springframework.util.ResourceUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * Configuration for Hazelcast server.
@@ -41,18 +47,45 @@ class HazelcastServerConfiguration {
 
 	static final String CONFIG_SYSTEM_PROPERTY = "hazelcast.config";
 
+	private static HazelcastInstance getHazelcastInstance(Config config) {
+		if (StringUtils.hasText(config.getInstanceName())) {
+			return Hazelcast.getOrCreateHazelcastInstance(config);
+		}
+		return Hazelcast.newHazelcastInstance(config);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMissingBean(Config.class)
 	@Conditional(ConfigAvailableCondition.class)
 	static class HazelcastServerConfigFileConfiguration {
 
 		@Bean
-		HazelcastInstance hazelcastInstance(HazelcastProperties properties) throws IOException {
-			Resource config = properties.resolveConfigLocation();
-			if (config != null) {
-				return new HazelcastInstanceFactory(config).getHazelcastInstance();
+		HazelcastInstance hazelcastInstance(HazelcastProperties properties, ResourceLoader resourceLoader)
+				throws IOException {
+			Resource configLocation = properties.resolveConfigLocation();
+			Config config = (configLocation != null) ? loadConfig(configLocation) : Config.load();
+			config.setClassLoader(resourceLoader.getClassLoader());
+			return getHazelcastInstance(config);
+		}
+
+		private Config loadConfig(Resource configLocation) throws IOException {
+			URL configUrl = configLocation.getURL();
+			Config config = loadConfig(configUrl);
+			if (ResourceUtils.isFileURL(configUrl)) {
+				config.setConfigurationFile(configLocation.getFile());
 			}
-			return Hazelcast.newHazelcastInstance();
+			else {
+				config.setConfigurationUrl(configUrl);
+			}
+			return config;
+		}
+
+		private static Config loadConfig(URL configUrl) throws IOException {
+			String configFileName = configUrl.getPath();
+			if (configFileName.endsWith(".yaml")) {
+				return new YamlConfigBuilder(configUrl).build();
+			}
+			return new XmlConfigBuilder(configUrl).build();
 		}
 
 	}
@@ -63,7 +96,7 @@ class HazelcastServerConfiguration {
 
 		@Bean
 		HazelcastInstance hazelcastInstance(Config config) {
-			return new HazelcastInstanceFactory(config).getHazelcastInstance();
+			return getHazelcastInstance(config);
 		}
 
 	}

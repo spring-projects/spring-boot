@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.springframework.beans.NotReadablePropertyException;
 import org.springframework.boot.context.properties.bind.AbstractBindHandler;
 import org.springframework.boot.context.properties.bind.BindContext;
 import org.springframework.boot.context.properties.bind.BindHandler;
@@ -33,6 +34,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.core.ResolvableType;
 import org.springframework.util.ObjectUtils;
 import org.springframework.validation.AbstractBindingResult;
+import org.springframework.validation.BeanPropertyBindingResult;
 import org.springframework.validation.Validator;
 
 /**
@@ -143,14 +145,14 @@ public class ValidationBindHandler extends AbstractBindHandler {
 	/**
 	 * {@link AbstractBindingResult} implementation backed by the bound properties.
 	 */
-	private class ValidationResult extends AbstractBindingResult {
+	private class ValidationResult extends BeanPropertyBindingResult {
 
 		private final ConfigurationPropertyName name;
 
-		private Object target;
+		private final Object target;
 
 		protected ValidationResult(ConfigurationPropertyName name, Object target) {
-			super(null);
+			super(target, null);
 			this.name = name;
 			this.target = target;
 		}
@@ -158,11 +160,6 @@ public class ValidationBindHandler extends AbstractBindHandler {
 		@Override
 		public String getObjectName() {
 			return this.name.toString();
-		}
-
-		@Override
-		public Object getTarget() {
-			return this.target;
 		}
 
 		@Override
@@ -177,7 +174,29 @@ public class ValidationBindHandler extends AbstractBindHandler {
 
 		@Override
 		protected Object getActualFieldValue(String field) {
-			return getBoundField(ValidationBindHandler.this.boundResults, field);
+			Object boundField = getBoundField(ValidationBindHandler.this.boundResults, field);
+			if (boundField != null) {
+				return boundField;
+			}
+			try {
+				return super.getActualFieldValue(field);
+			}
+			catch (Exception ex) {
+				if (isPropertyNotReadable(ex)) {
+					return null;
+				}
+				throw ex;
+			}
+		}
+
+		private boolean isPropertyNotReadable(Throwable ex) {
+			while (ex != null) {
+				if (ex instanceof NotReadablePropertyException) {
+					return true;
+				}
+				ex = ex.getCause();
+			}
+			return false;
 		}
 
 		private <T> T getBoundField(Map<ConfigurationPropertyName, T> boundFields, String field) {

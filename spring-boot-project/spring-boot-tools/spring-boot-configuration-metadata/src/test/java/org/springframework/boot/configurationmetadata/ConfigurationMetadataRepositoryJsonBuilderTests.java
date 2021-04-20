@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.configurationmetadata;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Arrays;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
@@ -63,53 +64,77 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 
 	@Test
 	void severalRepositoriesNoConflict() throws IOException {
-		try (InputStream foo = getInputStreamFor("foo")) {
-			try (InputStream bar = getInputStreamFor("bar")) {
-				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, bar)
-						.build();
-				validateFoo(repo);
-				validateBar(repo);
-				assertThat(repo.getAllGroups()).hasSize(2);
-				contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
-						"spring.bar.name", "spring.bar.description", "spring.bar.counter");
-				assertThat(repo.getAllProperties()).hasSize(6);
-			}
+		try (InputStream foo = getInputStreamFor("foo"); InputStream bar = getInputStreamFor("bar")) {
+			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, bar).build();
+			validateFoo(repo);
+			validateBar(repo);
+			assertThat(repo.getAllGroups()).hasSize(2);
+			contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
+					"spring.bar.name", "spring.bar.description", "spring.bar.counter");
+			assertThat(repo.getAllProperties()).hasSize(6);
 		}
 	}
 
 	@Test
 	void repositoryWithRoot() throws IOException {
-		try (InputStream foo = getInputStreamFor("foo")) {
-			try (InputStream root = getInputStreamFor("root")) {
-				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, root)
-						.build();
-				validateFoo(repo);
-				assertThat(repo.getAllGroups()).hasSize(2);
+		try (InputStream foo = getInputStreamFor("foo"); InputStream root = getInputStreamFor("root")) {
+			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, root).build();
+			validateFoo(repo);
+			assertThat(repo.getAllGroups()).hasSize(2);
 
-				contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
-						"spring.root.name", "spring.root2.name");
-				assertThat(repo.getAllProperties()).hasSize(5);
-			}
+			contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
+					"spring.root.name", "spring.root2.name");
+			assertThat(repo.getAllProperties()).hasSize(5);
 		}
 	}
 
 	@Test
 	void severalRepositoriesIdenticalGroups() throws IOException {
-		try (InputStream foo = getInputStreamFor("foo")) {
-			try (InputStream foo2 = getInputStreamFor("foo2")) {
-				ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo2)
-						.build();
-				assertThat(repo.getAllGroups()).hasSize(1);
-				ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
-				contains(group.getSources(), "org.acme.Foo", "org.acme.Foo2", "org.springframework.boot.FooProperties");
-				assertThat(group.getSources()).hasSize(3);
-				contains(group.getProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
-						"spring.foo.enabled", "spring.foo.type");
-				assertThat(group.getProperties()).hasSize(5);
-				contains(repo.getAllProperties(), "spring.foo.name", "spring.foo.description", "spring.foo.counter",
-						"spring.foo.enabled", "spring.foo.type");
-				assertThat(repo.getAllProperties()).hasSize(5);
-			}
+		try (InputStream foo = getInputStreamFor("foo"); InputStream foo2 = getInputStreamFor("foo2")) {
+			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo2).build();
+			Iterable<String> allKeys = Arrays.asList("spring.foo.name", "spring.foo.description", "spring.foo.counter",
+					"spring.foo.enabled", "spring.foo.type");
+			assertThat(repo.getAllProperties()).containsOnlyKeys(allKeys);
+			assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");
+			ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
+			assertThat(group.getProperties()).containsOnlyKeys(allKeys);
+			assertThat(group.getSources()).containsOnlyKeys("org.acme.Foo", "org.acme.Foo2",
+					"org.springframework.boot.FooProperties");
+			assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys("spring.foo.name",
+					"spring.foo.description");
+			assertThat(group.getSources().get("org.acme.Foo2").getProperties()).containsOnlyKeys("spring.foo.enabled",
+					"spring.foo.type");
+			assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
+					.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+		}
+	}
+
+	@Test
+	void severalRepositoriesIdenticalGroupsWithSameType() throws IOException {
+		try (InputStream foo = getInputStreamFor("foo"); InputStream foo3 = getInputStreamFor("foo3")) {
+			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo3).build();
+			Iterable<String> allKeys = Arrays.asList("spring.foo.name", "spring.foo.description", "spring.foo.counter",
+					"spring.foo.enabled", "spring.foo.type");
+			assertThat(repo.getAllProperties()).containsOnlyKeys(allKeys);
+			assertThat(repo.getAllGroups()).containsOnlyKeys("spring.foo");
+			ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
+			assertThat(group.getProperties()).containsOnlyKeys(allKeys);
+			assertThat(group.getSources()).containsOnlyKeys("org.acme.Foo", "org.springframework.boot.FooProperties");
+			assertThat(group.getSources().get("org.acme.Foo").getProperties()).containsOnlyKeys("spring.foo.name",
+					"spring.foo.description", "spring.foo.enabled", "spring.foo.type");
+			assertThat(group.getSources().get("org.springframework.boot.FooProperties").getProperties())
+					.containsOnlyKeys("spring.foo.name", "spring.foo.counter");
+		}
+	}
+
+	@Test
+	void severalRepositoriesIdenticalGroupsWithSameTypeDoesNotOverrideSource() throws IOException {
+		try (InputStream foo = getInputStreamFor("foo"); InputStream foo3 = getInputStreamFor("foo3")) {
+			ConfigurationMetadataRepository repo = ConfigurationMetadataRepositoryJsonBuilder.create(foo, foo3).build();
+			ConfigurationMetadataGroup group = repo.getAllGroups().get("spring.foo");
+			ConfigurationMetadataSource fooSource = group.getSources().get("org.acme.Foo");
+			assertThat(fooSource.getSourceMethod()).isEqualTo("foo()");
+			assertThat(fooSource.getDescription()).isEqualTo("This is Foo.");
 		}
 	}
 
@@ -144,22 +169,19 @@ class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurat
 
 	@Test
 	void builderInstancesAreIsolated() throws IOException {
-		try (InputStream foo = getInputStreamFor("foo")) {
-			try (InputStream bar = getInputStreamFor("bar")) {
-				ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder
-						.create();
-				ConfigurationMetadataRepository firstRepo = builder.withJsonResource(foo).build();
-				validateFoo(firstRepo);
-				ConfigurationMetadataRepository secondRepo = builder.withJsonResource(bar).build();
-				validateFoo(secondRepo);
-				validateBar(secondRepo);
-				// first repo not impacted by second build
-				assertThat(secondRepo).isNotEqualTo(firstRepo);
-				assertThat(firstRepo.getAllGroups()).hasSize(1);
-				assertThat(firstRepo.getAllProperties()).hasSize(3);
-				assertThat(secondRepo.getAllGroups()).hasSize(2);
-				assertThat(secondRepo.getAllProperties()).hasSize(6);
-			}
+		try (InputStream foo = getInputStreamFor("foo"); InputStream bar = getInputStreamFor("bar")) {
+			ConfigurationMetadataRepositoryJsonBuilder builder = ConfigurationMetadataRepositoryJsonBuilder.create();
+			ConfigurationMetadataRepository firstRepo = builder.withJsonResource(foo).build();
+			validateFoo(firstRepo);
+			ConfigurationMetadataRepository secondRepo = builder.withJsonResource(bar).build();
+			validateFoo(secondRepo);
+			validateBar(secondRepo);
+			// first repo not impacted by second build
+			assertThat(secondRepo).isNotEqualTo(firstRepo);
+			assertThat(firstRepo.getAllGroups()).hasSize(1);
+			assertThat(firstRepo.getAllProperties()).hasSize(3);
+			assertThat(secondRepo.getAllGroups()).hasSize(2);
+			assertThat(secondRepo.getAllProperties()).hasSize(6);
 		}
 	}
 

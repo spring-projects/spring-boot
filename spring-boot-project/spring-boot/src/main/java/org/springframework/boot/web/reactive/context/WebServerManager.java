@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.web.reactive.server.ReactiveWebServerFactory;
+import org.springframework.boot.web.server.GracefulShutdownCallback;
 import org.springframework.boot.web.server.WebServer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.http.server.reactive.ServerHttpRequest;
@@ -56,8 +57,8 @@ class WebServerManager {
 				.publishEvent(new ReactiveWebServerInitializedEvent(this.webServer, this.applicationContext));
 	}
 
-	void shutDownGracefully(Runnable callback) {
-		this.webServer.shutDownGracefully((result) -> callback.run());
+	void shutDownGracefully(GracefulShutdownCallback callback) {
+		this.webServer.shutDownGracefully(callback);
 	}
 
 	void stop() {

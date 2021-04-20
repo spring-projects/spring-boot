@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,7 @@ public interface BuildLog {
 	 * @param request the build request
 	 * @param imageReference the builder image reference
 	 * @return a consumer for progress update events
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #pullingImage(ImageReference, ImageType)}
 	 */
 	@Deprecated
@@ -57,7 +57,8 @@ public interface BuildLog {
 	 * Log that the builder image has been pulled.
 	 * @param request the build request
 	 * @param image the builder image that was pulled
-	 * @deprecated since 2.4.0 in favor of {@link #pulledImage(Image, ImageType)}
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+	 * {@link #pulledImage(Image, ImageType)}
 	 */
 	@Deprecated
 	void pulledBuilder(BuildRequest request, Image image);
@@ -67,7 +68,7 @@ public interface BuildLog {
 	 * @param request the build request
 	 * @param imageReference the run image reference
 	 * @return a consumer for progress update events
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #pullingImage(ImageReference, ImageType)}
 	 */
 	@Deprecated
@@ -77,7 +78,8 @@ public interface BuildLog {
 	 * Log that a run image has been pulled.
 	 * @param request the build request
 	 * @param image the run image that was pulled
-	 * @deprecated since 2.4.0 in favor of {@link #pulledImage(Image, ImageType)}
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+	 * {@link #pulledImage(Image, ImageType)}
 	 */
 	@Deprecated
 	void pulledRunImage(BuildRequest request, Image image);

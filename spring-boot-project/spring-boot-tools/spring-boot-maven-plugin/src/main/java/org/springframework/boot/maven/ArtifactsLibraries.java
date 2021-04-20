@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,7 +70,7 @@ public class ArtifactsLibraries implements Libraries {
 	 * @param artifacts the artifacts to represent as libraries
 	 * @param unpacks artifacts that should be unpacked on launch
 	 * @param log the log
-	 * @deprecated since 2.4.0 in favour of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #ArtifactsLibraries(Set, Collection, Collection, Log)}
 	 */
 	@Deprecated

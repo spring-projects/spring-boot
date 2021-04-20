@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -119,10 +119,10 @@ class ElasticsearchRestClientConfigurations {
 		@ConditionalOnMissingBean
 		Sniffer elasticsearchSniffer(RestHighLevelClient client, ElasticsearchRestClientProperties properties) {
 			SnifferBuilder builder = Sniffer.builder(client.getLowLevelClient());
-			PropertyMapper get = PropertyMapper.get().alwaysApplyingWhenNonNull();
-			get.from(properties.getSniffer().getInterval()).asInt(Duration::toMillis)
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(properties.getSniffer().getInterval()).asInt(Duration::toMillis)
 					.to(builder::setSniffIntervalMillis);
-			get.from(properties.getSniffer().getDelayAfterFailure()).asInt(Duration::toMillis)
+			map.from(properties.getSniffer().getDelayAfterFailure()).asInt(Duration::toMillis)
 					.to(builder::setSniffAfterFailureDelayMillis);
 			return builder.build();
 		}

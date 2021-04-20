@@ -13,6 +13,7 @@ dependencies {
 	api("org.apache.commons:commons-compress:1.19")
 	api("org.apache.httpcomponents:httpclient")
 	api("org.springframework:spring-core")
+	api("org.tomlj:tomlj:1.0.0")
 	
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation("com.jayway.jsonpath:json-path")

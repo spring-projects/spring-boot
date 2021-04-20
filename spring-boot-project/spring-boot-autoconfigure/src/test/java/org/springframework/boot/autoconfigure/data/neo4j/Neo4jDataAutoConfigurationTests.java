@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -98,6 +98,15 @@ class Neo4jDataAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldProvideNeo4jClientWithCustomDatabaseSelectionProvider() {
+		this.contextRunner.withUserConfiguration(CustomDatabaseSelectionProviderConfiguration.class).run((context) -> {
+			assertThat(context).hasSingleBean(Neo4jClient.class);
+			assertThat(context.getBean(Neo4jClient.class)).extracting("databaseSelectionProvider")
+					.isSameAs(context.getBean(DatabaseSelectionProvider.class));
+		});
+	}
+
+	@Test
 	void shouldReuseExistingNeo4jClient() {
 		this.contextRunner.withBean("myCustomClient", Neo4jClient.class, () -> mock(Neo4jClient.class))
 				.run((context) -> assertThat(context).hasSingleBean(Neo4jClient.class).hasBean("myCustomClient"));
@@ -105,11 +114,8 @@ class Neo4jDataAutoConfigurationTests {
 
 	@Test
 	void shouldProvideNeo4jTemplate() {
-		this.contextRunner.withUserConfiguration(CustomDatabaseSelectionProviderConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(Neo4jTemplate.class);
-			assertThat(context.getBean(Neo4jTemplate.class)).extracting("databaseSelectionProvider")
-					.isSameAs(context.getBean(DatabaseSelectionProvider.class));
-		});
+		this.contextRunner.withUserConfiguration(CustomDatabaseSelectionProviderConfiguration.class)
+				.run((context) -> assertThat(context).hasSingleBean(Neo4jTemplate.class));
 	}
 
 	@Test
@@ -148,7 +154,7 @@ class Neo4jDataAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
 			Neo4jMappingContext mappingContext = context.getBean(Neo4jMappingContext.class);
 			assertThat(mappingContext.hasPersistentEntityFor(TestNode.class)).isTrue();
-			assertThat(mappingContext.hasPersistentEntityFor(TestPersistent.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestPersistent.class)).isFalse();
 			assertThat(mappingContext.hasPersistentEntityFor(TestRelationshipProperties.class)).isTrue();
 			assertThat(mappingContext.hasPersistentEntityFor(TestNonAnnotated.class)).isFalse();
 		});
