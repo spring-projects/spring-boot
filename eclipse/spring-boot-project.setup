@@ -91,7 +91,7 @@
     <requirement
         name="org.eclipse.buildship.oomph.feature.group"/>
     <repository
-        url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
+        url="https://repo.spring.io/javaformat-eclipse-update-site/"/>
     <repository
         url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository

@@ -111,7 +111,7 @@ Spring Boot includes project specific source formatting settings, in order to ha
 
 ===== Install the Spring Formatter plugin
 * Select "`Help`" -> "`Install New Software`".
-* Add `https://dl.bintray.com/spring/javaformat-eclipse/` as a site.
+* Add `https://repo.spring.io/javaformat-eclipse-update-site/` as a site.
 * Install "Spring Java Format".
 
 NOTE: The plugin is optional.
