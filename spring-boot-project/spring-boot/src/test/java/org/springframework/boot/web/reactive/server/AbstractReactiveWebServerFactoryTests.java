@@ -469,7 +469,7 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 		try {
 			ContentResponse response = client.POST("http://localhost:" + this.webServer.getPort())
 					.content(new StringContentProvider("Hello World"), "text/plain").send();
-			assertThat(response.getStatus() == HttpStatus.OK.value());
+			assertThat(response.getStatus()).isEqualTo(HttpStatus.OK.value());
 			assertThat(response.getContentAsString()).isEqualTo("Hello World");
 		}
 		finally {
