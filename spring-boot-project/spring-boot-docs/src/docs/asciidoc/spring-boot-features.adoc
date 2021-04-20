@@ -8145,7 +8145,7 @@ Alternatively, you can specify a source for your test, which disables the behavi
 If you wish to use Spock to test a Spring Boot application, you should add a dependency on Spock's `spock-spring` module to your application's build.
 `spock-spring` integrates Spring's test framework into Spock.
 It is recommended that you use Spock 1.2 or later to benefit from a number of improvements to Spock's Spring Framework and Spring Boot integration.
-See http://spockframework.org/spock/docs/1.2/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
+See https://spockframework.org/spock/docs/1.2/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
 
 
 
