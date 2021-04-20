@@ -918,6 +918,12 @@
       "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
     },
     {
+      "name": "spring.profiles.group",
+      "type": "java.util.Map<java.lang.String,java.util.List<java.lang.String>>",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
+      "description": "Profile groups to define a logical name for a related group of profiles."
+    },
+    {
       "name": "spring.reactor.debug-agent.enabled",
       "type": "java.lang.Boolean",
       "sourceType": "org.springframework.boot.reactor.DebugAgentEnvironmentPostProcessor",
