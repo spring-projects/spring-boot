@@ -299,10 +299,13 @@ public class SpringApplication {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		ConfigurableApplicationContext context = null;
+		// 自定义SpringApplication启动错误的回调接口
 		Collection<SpringBootExceptionReporter> exceptionReporters = new ArrayList<>();
+		// 设置jdk系统属性java.awt.headless，默认情况为true即开启
 		configureHeadlessProperty();
-		// .创建了应用的监听器SpringApplicationRunListeners并开始监听
+		// 创建了应用的监听器SpringApplicationRunListeners并开始监听
 		SpringApplicationRunListeners listeners = getRunListeners(args);
+		// 触发启动事件，相应的监听器会被调用
 		listeners.starting();
 		try {
 			ApplicationArguments applicationArguments = new DefaultApplicationArguments(args);

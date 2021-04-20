@@ -24,4 +24,6 @@ dependencies {
 
     testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
     testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-configuration-metadata"))
+    compileOnly group: 'org.projectlombok', name: 'lombok', version: '1.18.16'
+
 }
