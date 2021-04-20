@@ -76,7 +76,7 @@ anchors:
     uri: ((homebrew-tap-repo))
     username: ((github-username))
     password: ((github-password))
-    branch: master
+    branch: main
 resource_types:
 - name: artifactory-resource
   type: registry-image
