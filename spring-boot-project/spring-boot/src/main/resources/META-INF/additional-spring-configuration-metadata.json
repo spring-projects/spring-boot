@@ -851,7 +851,7 @@
     {
       "name": "spring.profiles.include",
       "type": "java.util.List<java.lang.String>",
-      "sourceType": "org.springframework.boot.context.config.ConfigFileApplicationListener",
+      "sourceType": "org.springframework.boot.context.config.Profiles",
       "description": "Unconditionally activate the specified comma-separated list of profiles (or list of profiles if using YAML)."
     },
     {
