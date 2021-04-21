@@ -2139,15 +2139,15 @@ include::{code-examples}/actuate/metrics/SampleMeterBinderConfiguration.java[tag
 ----
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
-By default, metrics from all `MeterBinder` beans will be automatically bound to the Spring-managed `MeterRegistry`.
 A `MeterBinder` implementation can also be useful if you find that you repeatedly instrument a suite of metrics across components or applications.
+
+NOTE: By default, metrics from all `MeterBinder` beans will be automatically bound to the Spring-managed `MeterRegistry`.
 
 
 
 [[production-ready-metrics-per-meter-properties]]
 === Customizing individual metrics
 If you need to apply customizations to specific `Meter` instances you can use the `io.micrometer.core.instrument.config.MeterFilter` interface.
-By default, all `MeterFilter` beans will be automatically applied to the micrometer `MeterRegistry.Config`.
 
 For example, if you want to rename the `mytag.region` tag to `mytag.area` for all meter IDs beginning with `com.example`, you can do the following:
 
@@ -2155,6 +2155,10 @@ For example, if you want to rename the `mytag.region` tag to `mytag.area` for al
 ----
 include::{code-examples}/actuate/metrics/MetricsFilterBeanExample.java[tag=configuration]
 ----
+
+NOTE: By default, all `MeterFilter` beans will be automatically bound to the Spring-managed `MeterRegistry`.
+Make sure to register your metrics using the Spring-managed `MeterRegistry` and not any of the static methods on `Metrics`.
+These use the global registry that is not Spring-managed.
 
 
 
