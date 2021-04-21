@@ -155,10 +155,11 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithPool() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
-				"spring.redis.lettuce.pool.max-idle:4", "spring.redis.lettuce.pool.max-active:16",
-				"spring.redis.lettuce.pool.max-wait:2000", "spring.redis.lettuce.pool.time-between-eviction-runs:30000",
+	void testRedisConfigurationWithPoolEnabled() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.enabled:true",
+				"spring.redis.lettuce.pool.min-idle:1", "spring.redis.lettuce.pool.max-idle:4",
+				"spring.redis.lettuce.pool.max-active:16", "spring.redis.lettuce.pool.max-wait:2000",
+				"spring.redis.lettuce.pool.time-between-eviction-runs:30000",
 				"spring.redis.lettuce.shutdown-timeout:1000").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
@@ -169,6 +170,19 @@ class RedisAutoConfigurationTests {
 					assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(2000);
 					assertThat(poolConfig.getTimeBetweenEvictionRunsMillis()).isEqualTo(30000);
 					assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
+				});
+	}
+
+	@Test
+	void testRedisConfigurationWithPoolDisabledOfDefault() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
+				"spring.redis.lettuce.pool.max-idle:4", "spring.redis.lettuce.pool.max-active:16",
+				"spring.redis.lettuce.pool.max-wait:2000", "spring.redis.lettuce.pool.time-between-eviction-runs:30000",
+				"spring.redis.lettuce.shutdown-timeout:1000").run((context) -> {
+					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(ReflectionTestUtils.getField(cf, "clientConfiguration"))
+							.isNotInstanceOf(LettucePoolingClientConfiguration.class);
 				});
 	}
 

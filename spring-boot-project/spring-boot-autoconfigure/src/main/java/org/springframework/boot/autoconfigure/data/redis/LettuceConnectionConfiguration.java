@@ -104,7 +104,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
-		if (pool == null) {
+		if (!pool.isEnabled()) {
 			return LettuceClientConfiguration.builder();
 		}
 		return new PoolBuilderFactory().createBuilder(pool);

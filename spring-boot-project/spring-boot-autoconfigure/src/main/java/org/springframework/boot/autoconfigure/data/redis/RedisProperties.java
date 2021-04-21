@@ -234,6 +234,12 @@ public class RedisProperties {
 	public static class Pool {
 
 		/**
+		 * Whether pooling is enabled. If use the "lettuce" client and enable it, make
+		 * sure "commons-pool2" exists on the classpath.
+		 */
+		private boolean enabled = false;
+
+		/**
 		 * Maximum number of "idle" connections in the pool. Use a negative value to
 		 * indicate an unlimited number of idle connections.
 		 */
@@ -264,6 +270,14 @@ public class RedisProperties {
 		 * object evictor thread starts, otherwise no idle object eviction is performed.
 		 */
 		private Duration timeBetweenEvictionRuns;
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
+		}
 
 		public int getMaxIdle() {
 			return this.maxIdle;
@@ -396,14 +410,10 @@ public class RedisProperties {
 		/**
 		 * Jedis pool configuration.
 		 */
-		private Pool pool;
+		private final Pool pool = new Pool();
 
 		public Pool getPool() {
 			return this.pool;
-		}
-
-		public void setPool(Pool pool) {
-			this.pool = pool;
 		}
 
 	}
@@ -421,7 +431,7 @@ public class RedisProperties {
 		/**
 		 * Lettuce pool configuration.
 		 */
-		private Pool pool;
+		private final Pool pool = new Pool();
 
 		private final Cluster cluster = new Cluster();
 
@@ -435,10 +445,6 @@ public class RedisProperties {
 
 		public Pool getPool() {
 			return this.pool;
-		}
-
-		public void setPool(Pool pool) {
-			this.pool = pool;
 		}
 
 		public Cluster getCluster() {

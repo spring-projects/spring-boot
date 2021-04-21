@@ -28,6 +28,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -128,11 +130,11 @@ class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithPool() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.min-idle:1",
-				"spring.redis.jedis.pool.max-idle:4", "spring.redis.jedis.pool.max-active:16",
-				"spring.redis.jedis.pool.max-wait:2000", "spring.redis.jedis.pool.time-between-eviction-runs:30000")
-				.run((context) -> {
+	void testRedisConfigurationWithPoolEnabled() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.enabled:true",
+				"spring.redis.jedis.pool.min-idle:1", "spring.redis.jedis.pool.max-idle:4",
+				"spring.redis.jedis.pool.max-active:16", "spring.redis.jedis.pool.max-wait:2000",
+				"spring.redis.jedis.pool.time-between-eviction-runs:30000").run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getPoolConfig().getMinIdle()).isEqualTo(1);
@@ -140,6 +142,16 @@ class RedisAutoConfigurationJedisTests {
 					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
 					assertThat(cf.getPoolConfig().getMaxWaitMillis()).isEqualTo(2000);
 					assertThat(cf.getPoolConfig().getTimeBetweenEvictionRunsMillis()).isEqualTo(30000);
+				});
+	}
+
+	@Test
+	void testRedisConfigurationWithPoolDisabledOfDefault() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.enabled:false",
+				"spring.redis.jedis.pool.max-active:16").run((context) -> {
+					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(8).isNotEqualTo(16);
 				});
 	}
 
