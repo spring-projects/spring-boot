@@ -41,7 +41,7 @@ Explicit build support is provided for the following build tools:
 | 3.3+
 
 | Gradle
-| 6 (6.3 or later). 5.6.x is also supported but in a deprecated form
+| 6.8.x and 7.x
 |===
 
 
@@ -117,7 +117,7 @@ More details on getting started with Spring Boot and Maven can be found in the {
 
 [[getting-started-gradle-installation]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 6 (6.3 or later).
+Spring Boot is compatible with Gradle 6.8 and 7.x.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
@@ -346,7 +346,7 @@ If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
 Doing so generates a new project structure so that you can <<getting-started-first-application-code,start coding right away>>.
-Check the {spring-initializr-docs}/#user-guide[Spring Initializr documentation] for more details.
+Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 
 Before we begin, open a terminal and run the following commands to ensure that you have valid versions of Java and Maven installed:

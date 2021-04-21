@@ -560,12 +560,14 @@ The following example shows how to specify two locations:
 
 TIP: Use the prefix `optional:` if the <<boot-features-external-config-optional-prefix,locations are optional>> and you don't mind if they don't exist.
 
-WARNING: `spring.config.name` and `spring.config.location` are used very early to determine which files have to be loaded.
+WARNING: `spring.config.name`, `spring.config.location`, and `spring.config.additional-location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
 
-If `spring.config.location` contains directories (as opposed to files), they should end in `/` (at runtime they will be appended with the names generated from `spring.config.name` before being loaded).
-Files specified in `spring.config.location` are used as-is.
-Whether specified directly or contained in a directory, configuration files must include a file extension in their name.
+If `spring.config.location` contains directories (as opposed to files), they must end in `/` or the system-dependent `File.separator`.
+At runtime they will be appended with the names generated from `spring.config.name` before being loaded.
+If `spring.config.location` contains files, they are used as-is.
+
+Whether specified directly or contained in a directory, file references must include a file extension in their name.
 Typical extensions that are supported out-of-the-box are `.properties`, `.yaml`, and `.yml`.
 
 When multiple locations are specified, the later ones can override the values of earlier ones.
@@ -2027,7 +2029,7 @@ To help with the customization, some other properties are transferred from the S
 | The current process ID (discovered if possible and when not already defined as an OS environment variable).
 |===
 
-If you're using Logback, the following properties are also transfered:
+If you're using Logback, the following properties are also transferred:
 
 |===
 | Spring Environment | System Property | Comments
@@ -2566,7 +2568,13 @@ include::{include-springbootfeatures}/webapplications/servlet/MyControllerAdvice
 
 In the preceding example, if `YourException` is thrown by a controller defined in the same package as `AcmeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
 
+In some cases, errors handled at the controller level are not recorded by the <<production-ready-features.adoc#production-ready-metrics-spring-mvc, metrics infrastructure>>.
+Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{include-springbootfeatures}/webapplications/servlet/MyController.java[]
+----
 
 [[boot-features-error-handling-custom-error-pages]]
 ===== Custom Error Pages
@@ -2822,6 +2830,14 @@ include::{include-springbootfeatures}/webapplications/webflux/CustomErrorWebExce
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
+
+In some cases, errors handled at the controller or handler function level are not recorded by the <<production-ready-features.adoc#production-ready-metrics-web-flux, metrics infrastructure>>.
+Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
+
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{include-springbootfeatures}/webapplications/webflux/ExceptionHandlingController.java[]
+----
 
 
 
@@ -3549,6 +3565,8 @@ TIP: The "`How-to`" section includes a <<howto.adoc#howto-database-initializatio
 Spring Boot can auto-configure embedded https://www.h2database.com[H2], http://hsqldb.org/[HSQL], and https://db.apache.org/derby/[Derby] databases.
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use.
+If there are multiple embedded databases on the classpath, set the configprop:spring.datasource.embedded-database-connection[] configuration property to control which one is used.
+Setting the property to `none` disables auto-configuration of an embedded database.
 
 [NOTE]
 ====
@@ -3653,7 +3671,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 * HikariCP
 * Tomcat pooling `Datasource`
 * Commons DBCP2
-* Orale UCP & `OracleDataSource`
+* Oracle UCP & `OracleDataSource`
 * Spring Framework's `SimpleDriverDataSource`
 * H2 `JdbcDataSource`
 * PostgreSQL `PGSimpleDataSource`
@@ -3757,7 +3775,12 @@ To enable deferred or lazy bootstrapping, set the configprop:spring.data.jpa.rep
 When using deferred or lazy bootstrapping, the auto-configured `EntityManagerFactoryBuilder` will use the context's `AsyncTaskExecutor`, if any, as the bootstrap executor.
 If more than one exists, the one named `applicationTaskExecutor` will be used.
 
-NOTE: When using deferred or lazy bootstraping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
+[NOTE]
+====
+When using deferred or lazy bootstrapping, make sure to defer any access to the JPA infrastructure after the application context bootstrap phase.
+You can use `SmartInitializingSingleton` to invoke any initialization that requires the JPA infrastructure.
+For JPA components (such as converters) that are created as Spring beans, use `ObjectProvider` to delay the resolution of dependencies, if any.
+====
 
 TIP: We have barely scratched the surface of Spring Data JPA.
 For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
@@ -5410,8 +5433,10 @@ Alternatively, you could configure the same connection using the `addresses` att
 NOTE: When specifying addresses that way, the `host` and `port` properties are ignored.
 If the address uses the `amqps` protocol, SSL support is enabled automatically.
 
-If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to name connections created by the auto-configured `ConnectionFactory`.
-See {spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[`RabbitProperties`] for more of the supported options.
+See {spring-boot-autoconfigure-module-code}/amqp/RabbitProperties.java[`RabbitProperties`] for more of the supported property-based configuration options.
+To configure lower-level details of the RabbitMQ `ConnectionFactory` that is used by Spring AMQP, define a `ConnectionFactoryCustomizer` bean.
+
+If a `ConnectionNameStrategy` bean exists in the context, it will be automatically used to name connections created by the auto-configured `CachingConnectionFactory`.
 
 TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-by-rabbitmq/[Understanding AMQP, the protocol used by RabbitMQ] for more details.
 
@@ -6270,7 +6295,7 @@ For instance, it is possible to customize the name of the table for the JDBC sto
 ----
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.
-If that property is not set with a Servlet web appplication, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
+If that property is not set with a Servlet web application, the auto-configuration falls back to the value of configprop:server.servlet.session.timeout[].
 
 
 You can take control over Spring Session's configuration using `@Enable*HttpSession` (Servlet) or `@Enable*WebSession` (Reactive).
@@ -6922,6 +6947,9 @@ The following example shows a typical setup for using Cassandra tests in Spring 
 You can use the `@DataJpaTest` annotation to test JPA applications.
 By default, it scans for `@Entity` classes and configures Spring Data JPA repositories.
 If an embedded database is available on the classpath, it configures one as well.
+SQL queries are logged by default by setting the `spring.jpa.show-sql` property to `true`.
+This can be disabled using the `showSql()` attribute of the annotation.
+
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
@@ -7536,7 +7564,7 @@ Alternatively, you can specify a source for your test, which disables the behavi
 ==== Using Spock to Test Spring Boot Applications
 If you wish to use Spock to test a Spring Boot application, you should add a dependency on Spock's `spock-spring` module to your application's build.
 `spock-spring` integrates Spring's test framework into Spock.
-See http://spockframework.org/spock/docs/2.0-M4/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
+See https://spockframework.org/spock/docs/2.0-M4/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
 
 NOTE: As of Spring Boot 2.5.x and its support for Groovy 3.x you have two options to make use of Spock:
 Either use the latest Spock 2.0 milestone or release that is compatible with Groovy 3.x or stick with Spock 1.3 and downgrade Spring Boot's Groovy version to 2.5.x.

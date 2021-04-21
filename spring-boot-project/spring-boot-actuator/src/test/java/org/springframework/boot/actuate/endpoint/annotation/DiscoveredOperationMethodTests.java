@@ -21,6 +21,7 @@ import java.lang.reflect.Method;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.util.MimeType;
 import org.springframework.util.ReflectionUtils;

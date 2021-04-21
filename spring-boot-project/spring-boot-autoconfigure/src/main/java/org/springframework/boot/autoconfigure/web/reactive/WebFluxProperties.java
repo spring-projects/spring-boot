@@ -35,6 +35,8 @@ public class WebFluxProperties {
 
 	private final Format format = new Format();
 
+	private final Session session = new Session();
+
 	/**
 	 * Path pattern used for static resources.
 	 */
@@ -63,6 +65,10 @@ public class WebFluxProperties {
 
 	public Format getFormat() {
 		return this.format;
+	}
+
+	public Session getSession() {
+		return this.session;
 	}
 
 	public String getStaticPathPattern() {
@@ -112,6 +118,64 @@ public class WebFluxProperties {
 
 		public void setDateTime(String dateTime) {
 			this.dateTime = dateTime;
+		}
+
+	}
+
+	public static class Session {
+
+		private final Cookie cookie = new Cookie();
+
+		public Cookie getCookie() {
+			return this.cookie;
+		}
+
+	}
+
+	public static class Cookie {
+
+		/**
+		 * SameSite attribute value for session Cookies.
+		 */
+		private SameSite sameSite = SameSite.LAX;
+
+		public SameSite getSameSite() {
+			return this.sameSite;
+		}
+
+		public void setSameSite(SameSite sameSite) {
+			this.sameSite = sameSite;
+		}
+
+	}
+
+	public enum SameSite {
+
+		/**
+		 * Cookies are sent in both first-party and cross-origin requests.
+		 */
+		NONE("None"),
+
+		/**
+		 * Cookies are sent in a first-party context, also when following a link to the
+		 * origin site.
+		 */
+		LAX("Lax"),
+
+		/**
+		 * Cookies are only sent in a first-party context (i.e. not when following a link
+		 * to the origin site).
+		 */
+		STRICT("Strict");
+
+		private final String attribute;
+
+		SameSite(String attribute) {
+			this.attribute = attribute;
+		}
+
+		public String attribute() {
+			return this.attribute;
 		}
 
 	}

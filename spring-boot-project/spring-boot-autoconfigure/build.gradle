@@ -56,6 +56,7 @@ dependencies {
 	optional("org.apache.activemq:artemis-jms-client")
 	optional("org.apache.activemq:artemis-jms-server")
 	optional("org.apache.commons:commons-dbcp2")
+	optional("org.apache.httpcomponents.client5:httpclient5")
 	optional("org.apache.kafka:kafka-streams")
 	optional("org.apache.solr:solr-solrj")
 	optional("org.apache.tomcat.embed:tomcat-embed-core")

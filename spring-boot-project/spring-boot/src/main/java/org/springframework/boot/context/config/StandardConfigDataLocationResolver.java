@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.io.File;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -212,7 +213,7 @@ public class StandardConfigDataLocationResolver
 			}
 		}
 		throw new IllegalStateException("File extension is not known to any PropertySourceLoader. "
-				+ "If the location is meant to reference a directory, it must end in '/'");
+				+ "If the location is meant to reference a directory, it must end in '/' or File.separator");
 	}
 
 	private String getLoadableFileExtension(PropertySourceLoader loader, String file) {
@@ -225,7 +226,7 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private boolean isDirectory(String resourceLocation) {
-		return resourceLocation.endsWith("/");
+		return resourceLocation.endsWith("/") || resourceLocation.endsWith(File.separator);
 	}
 
 	private List<StandardConfigDataResource> resolve(Set<StandardConfigDataReference> references) {

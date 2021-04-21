@@ -23,7 +23,7 @@ import java.util.Enumeration;
 import io.prometheus.client.Collector.MetricFamilySamples;
 import io.prometheus.client.exporter.common.TextFormat;
 
-import org.springframework.boot.actuate.endpoint.annotation.Producible;
+import org.springframework.boot.actuate.endpoint.Producible;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 
@@ -36,7 +36,7 @@ import org.springframework.util.MimeTypeUtils;
 public enum TextOutputFormat implements Producible<TextOutputFormat> {
 
 	/**
-	 * Openmetrics text version 1.0.0.
+	 * OpenMetrics text version 1.0.0.
 	 */
 	CONTENT_TYPE_OPENMETRICS_100(TextFormat.CONTENT_TYPE_OPENMETRICS_100) {
 

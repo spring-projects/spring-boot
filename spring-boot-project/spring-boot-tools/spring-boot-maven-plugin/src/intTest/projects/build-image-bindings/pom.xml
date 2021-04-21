@@ -23,7 +23,6 @@
 						</goals>
 						<configuration>
 							<image>
-								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
 								<bindings>
 									<binding>${basedir}/bindings/ca-certificates:/platform/bindings/ca-certificates</binding>
 								</bindings>

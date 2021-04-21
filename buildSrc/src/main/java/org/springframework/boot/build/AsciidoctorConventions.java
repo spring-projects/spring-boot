@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2021 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -110,7 +110,7 @@ class AsciidoctorConventions {
 		asciidoctorTask.baseDirFollowsSourceDir();
 		createSyncDocumentationSourceTask(project, asciidoctorTask);
 		if (asciidoctorTask instanceof AsciidoctorTask) {
-			configureAsciidoctorHtmlTask(project, (AsciidoctorTask) asciidoctorTask);
+			configureAsciidoctorHtmlTask((AsciidoctorTask) asciidoctorTask);
 		}
 	}
 
@@ -139,11 +139,12 @@ class AsciidoctorConventions {
 		syncDocumentationSource.setDestinationDir(syncedSource);
 		syncDocumentationSource.from("src/docs/");
 		asciidoctorTask.dependsOn(syncDocumentationSource);
+		asciidoctorTask.getInputs().dir(syncedSource);
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
 		return syncDocumentationSource;
 	}
 
-	private void configureAsciidoctorHtmlTask(Project project, AsciidoctorTask asciidoctorTask) {
+	private void configureAsciidoctorHtmlTask(AsciidoctorTask asciidoctorTask) {
 		asciidoctorTask.outputOptions((outputOptions) -> outputOptions.backends("spring-html"));
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ public class InactiveConfigDataAccessException extends ConfigDataException {
 	}
 
 	/**
-	 * Throw a {@link InactiveConfigDataAccessException} if the given
+	 * Throw an {@link InactiveConfigDataAccessException} if the given
 	 * {@link ConfigDataEnvironmentContributor} contains the property.
 	 * @param contributor the contributor to check
 	 * @param name the name to check

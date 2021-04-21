@@ -101,7 +101,7 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 	}
 
 	/**
-	 * Throw a {@link InvalidConfigDataPropertyException} or log a warning if the given
+	 * Throw an {@link InvalidConfigDataPropertyException} or log a warning if the given
 	 * {@link ConfigDataEnvironmentContributor} contains any invalid property. A warning
 	 * is logged if the property is still supported, but not recommended. An error is
 	 * thrown if the property is completely unsupported.
@@ -117,7 +117,8 @@ public class InvalidConfigDataPropertyException extends ConfigDataException {
 					logger.warn(getMessage(property, false, replacement, contributor.getResource()));
 				}
 			});
-			if (contributor.isProfileSpecific() && contributor.isNotIgnoringProfiles()) {
+			if (contributor.isFromProfileSpecificImport()
+					&& !contributor.hasConfigDataOption(ConfigData.Option.IGNORE_PROFILES)) {
 				PROFILE_SPECIFIC_ERRORS.forEach((name) -> {
 					ConfigurationProperty property = propertySource.getConfigurationProperty(name);
 					if (property != null) {

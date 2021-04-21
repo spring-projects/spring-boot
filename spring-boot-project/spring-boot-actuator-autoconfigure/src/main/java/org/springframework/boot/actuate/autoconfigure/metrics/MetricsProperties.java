@@ -54,6 +54,8 @@ public class MetricsProperties {
 
 	private final Web web = new Web();
 
+	private final Data data = new Data();
+
 	private final Distribution distribution = new Distribution();
 
 	public boolean isUseGlobalRegistry() {
@@ -74,6 +76,10 @@ public class MetricsProperties {
 
 	public Web getWeb() {
 		return this.web;
+	}
+
+	public Data getData() {
+		return this.data;
 	}
 
 	public Distribution getDistribution() {
@@ -207,6 +213,43 @@ public class MetricsProperties {
 					this.ignoreTrailingSlash = ignoreTrailingSlash;
 				}
 
+			}
+
+		}
+
+	}
+
+	public static class Data {
+
+		private final Repository repository = new Repository();
+
+		public Repository getRepository() {
+			return this.repository;
+		}
+
+		public static class Repository {
+
+			/**
+			 * Name of the metric for sent requests.
+			 */
+			private String metricName = "spring.data.repository.invocations";
+
+			/**
+			 * Auto-timed request settings.
+			 */
+			@NestedConfigurationProperty
+			private final AutoTimeProperties autotime = new AutoTimeProperties();
+
+			public String getMetricName() {
+				return this.metricName;
+			}
+
+			public void setMetricName(String metricName) {
+				this.metricName = metricName;
+			}
+
+			public AutoTimeProperties getAutotime() {
+				return this.autotime;
 			}
 
 		}

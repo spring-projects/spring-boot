@@ -32,8 +32,8 @@ import reactor.core.scheduler.Schedulers;
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
 import org.springframework.boot.actuate.endpoint.OperationType;
+import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -307,7 +307,8 @@ public abstract class AbstractWebFluxEndpointHandlerMapping extends RequestMappi
 			}
 			return this.securityContextSupplier.get()
 					.map((securityContext) -> new InvocationContext(securityContext, arguments,
-							new ProducibleOperationArgumentResolver(exchange.getRequest().getHeaders())))
+							new ProducibleOperationArgumentResolver(
+									() -> exchange.getRequest().getHeaders().get("Accept"))))
 					.flatMap((invocationContext) -> handleResult((Publisher<?>) this.invoker.invoke(invocationContext),
 							exchange.getRequest().getMethod()));
 		}

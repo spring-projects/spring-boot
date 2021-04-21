@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,10 +23,10 @@ import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -44,6 +44,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link FileSystemWatcher}.
  *
  * @author Phillip Webb
+ * @author Andy Wilkinson
  */
 class FileSystemWatcherTests {
 
@@ -120,9 +121,8 @@ class FileSystemWatcherTests {
 		File directory = startWithNewDirectory();
 		File file = touch(new File(directory, "test.txt"));
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
-		assertThat(changedFiles.getFiles()).contains(expected);
+		assertThat(getAllFileChanges()).containsExactly(expected);
 	}
 
 	@Test
@@ -130,9 +130,8 @@ class FileSystemWatcherTests {
 		File directory = startWithNewDirectory();
 		File file = touch(new File(new File(directory, "sub"), "text.txt"));
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
-		assertThat(changedFiles.getFiles()).contains(expected);
+		assertThat(getAllFileChanges()).containsExactly(expected);
 	}
 
 	@Test
@@ -144,9 +143,8 @@ class FileSystemWatcherTests {
 		directory.mkdirs();
 		File file = touch(new File(directory, "text.txt"));
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
-		assertThat(changedFiles.getFiles()).contains(expected);
+		assertThat(getAllFileChanges()).containsExactly(expected);
 	}
 
 	@Test
@@ -171,8 +169,7 @@ class FileSystemWatcherTests {
 			Thread.sleep(10);
 		}
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
-		assertThat(changedFiles.getFiles()).hasSize(100);
+		assertThat(getAllFileChanges()).hasSize(100);
 	}
 
 	@Test
@@ -184,9 +181,8 @@ class FileSystemWatcherTests {
 		this.watcher.start();
 		File file = touch(new File(directory, "test2.txt"));
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
-		assertThat(changedFiles.getFiles()).contains(expected);
+		assertThat(getAllFileChanges()).contains(expected);
 	}
 
 	@Test
@@ -201,7 +197,7 @@ class FileSystemWatcherTests {
 		File file1 = touch(new File(directory1, "test.txt"));
 		File file2 = touch(new File(directory2, "test.txt"));
 		this.watcher.stopAfter(1);
-		Set<ChangedFiles> change = getSingleOnChange();
+		Set<ChangedFiles> change = this.changes.stream().flatMap(Set<ChangedFiles>::stream).collect(Collectors.toSet());
 		assertThat(change.size()).isEqualTo(2);
 		for (ChangedFiles changedFiles : change) {
 			if (changedFiles.getSourceDirectory().equals(directory1)) {
@@ -219,16 +215,16 @@ class FileSystemWatcherTests {
 	void multipleListeners() throws Exception {
 		File directory = new File(this.tempDir, UUID.randomUUID().toString());
 		directory.mkdir();
-		final Set<ChangedFiles> listener2Changes = new LinkedHashSet<>();
+		final List<Set<ChangedFiles>> listener2Changes = new ArrayList<>();
 		this.watcher.addSourceDirectory(directory);
-		this.watcher.addListener(listener2Changes::addAll);
+		this.watcher.addListener(listener2Changes::add);
 		this.watcher.start();
 		File file = touch(new File(directory, "test.txt"));
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
 		ChangedFile expected = new ChangedFile(directory, file, Type.ADD);
-		assertThat(changedFiles.getFiles()).contains(expected);
-		assertThat(listener2Changes).isEqualTo(this.changes.get(0));
+		Set<ChangedFile> changeSet = getAllFileChanges();
+		assertThat(changeSet).contains(expected);
+		assertThat(getAllFileChanges(listener2Changes)).isEqualTo(changeSet);
 	}
 
 	@Test
@@ -243,8 +239,7 @@ class FileSystemWatcherTests {
 		delete.delete();
 		File add = touch(new File(directory, "add.txt"));
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
-		Set<ChangedFile> actual = changedFiles.getFiles();
+		Set<ChangedFile> actual = getAllFileChanges();
 		Set<ChangedFile> expected = new HashSet<>();
 		expected.add(new ChangedFile(directory, modify, Type.MODIFY));
 		expected.add(new ChangedFile(directory, delete, Type.DELETE));
@@ -266,8 +261,7 @@ class FileSystemWatcherTests {
 		assertThat(this.changes).isEmpty();
 		FileCopyUtils.copy("abc".getBytes(), trigger);
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
-		Set<ChangedFile> actual = changedFiles.getFiles();
+		Set<ChangedFile> actual = getAllFileChanges();
 		Set<ChangedFile> expected = new HashSet<>();
 		expected.add(new ChangedFile(directory, file, Type.MODIFY));
 		assertThat(actual).isEqualTo(expected);
@@ -290,8 +284,7 @@ class FileSystemWatcherTests {
 		this.watcher.addSourceDirectory(directory);
 		this.watcher.start();
 		this.watcher.stopAfter(1);
-		ChangedFiles changedFiles = getSingleChangedFiles();
-		Set<ChangedFile> actual = changedFiles.getFiles();
+		Set<ChangedFile> actual = getAllFileChanges();
 		Set<ChangedFile> expected = new HashSet<>();
 		expected.add(new ChangedFile(directory, recreate, Type.ADD));
 		assertThat(actual).isEqualTo(expected);
@@ -315,15 +308,13 @@ class FileSystemWatcherTests {
 		return directory;
 	}
 
-	private ChangedFiles getSingleChangedFiles() {
-		Set<ChangedFiles> singleChange = getSingleOnChange();
-		assertThat(singleChange).hasSize(1);
-		return singleChange.iterator().next();
+	private Set<ChangedFile> getAllFileChanges() {
+		return getAllFileChanges(this.changes);
 	}
 
-	private Set<ChangedFiles> getSingleOnChange() {
-		assertThat(this.changes).hasSize(1);
-		return this.changes.get(0);
+	private Set<ChangedFile> getAllFileChanges(List<Set<ChangedFiles>> changes) {
+		return changes.stream().flatMap(Set<ChangedFiles>::stream)
+				.flatMap((changedFiles) -> changedFiles.getFiles().stream()).collect(Collectors.toSet());
 	}
 
 	private File touch(File file) throws IOException {

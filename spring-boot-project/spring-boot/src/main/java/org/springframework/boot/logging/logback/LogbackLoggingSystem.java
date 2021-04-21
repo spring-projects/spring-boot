@@ -151,7 +151,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 		new LogbackLoggingSystemProperties(environment, context::putProperty).apply(logFile);
 		LogbackConfigurator configurator = debug ? new DebugLogbackConfigurator(context)
 				: new LogbackConfigurator(context);
-		new DefaultLogbackConfiguration(initializationContext, logFile).apply(configurator);
+		new DefaultLogbackConfiguration(logFile).apply(configurator);
 		context.setPackagingDataEnabled(true);
 	}
 

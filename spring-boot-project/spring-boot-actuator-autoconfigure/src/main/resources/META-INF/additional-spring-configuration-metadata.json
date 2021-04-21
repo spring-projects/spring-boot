@@ -522,6 +522,16 @@
       }
     },
     {
+      "name": "management.metrics.mongo.command.enabled",
+      "description": "Whether to enable Mongo client command metrics.",
+      "defaultValue": true
+    },
+    {
+      "name": "management.metrics.mongo.connectionpool.enabled",
+      "description": "Whether to enable Mongo connection pool metrics.",
+      "defaultValue": true
+    },
+    {
       "name": "management.metrics.web.client.request.autotime.enabled",
       "description": "Whether to automatically time web client requests.",
       "defaultValue": true

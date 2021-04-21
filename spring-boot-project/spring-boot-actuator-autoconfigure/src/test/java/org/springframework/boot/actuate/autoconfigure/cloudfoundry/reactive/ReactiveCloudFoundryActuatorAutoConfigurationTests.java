@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,10 @@ import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoC
 import org.springframework.boot.actuate.autoconfigure.info.InfoContributorAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.web.server.ManagementContextAutoConfiguration;
+import org.springframework.boot.actuate.endpoint.ApiVersion;
 import org.springframework.boot.actuate.endpoint.EndpointId;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
-import org.springframework.boot.actuate.endpoint.http.ActuatorMediaType;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.ExposableWebEndpoint;
 import org.springframework.boot.actuate.endpoint.web.WebOperation;
@@ -79,6 +79,10 @@ import static org.mockito.Mockito.mock;
  * @author Madhura Bhave
  */
 class ReactiveCloudFoundryActuatorAutoConfigurationTests {
+
+	private static final String V2_JSON = ApiVersion.V2.getProducedMimeType().toString();
+
+	private static final String V3_JSON = ApiVersion.V3.getProducedMimeType().toString();
 
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(ReactiveSecurityAutoConfiguration.class,
@@ -120,7 +124,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
 					WebTestClient webTestClient = WebTestClient.bindToApplicationContext(context).build();
 					webTestClient.get().uri("/cloudfoundryapplication").header("Content-Type",
-							ActuatorMediaType.V2_JSON + ";charset=UTF-8");
+							V2_JSON + ";charset=UTF-8");
 				});
 	}
 
@@ -301,8 +305,7 @@ class ReactiveCloudFoundryActuatorAutoConfigurationTests {
 	private WebOperation findOperationWithRequestPath(ExposableWebEndpoint endpoint, String requestPath) {
 		for (WebOperation operation : endpoint.getOperations()) {
 			WebOperationRequestPredicate predicate = operation.getRequestPredicate();
-			if (predicate.getPath().equals(requestPath)
-					&& predicate.getProduces().contains(ActuatorMediaType.V3_JSON)) {
+			if (predicate.getPath().equals(requestPath) && predicate.getProduces().contains(V3_JSON)) {
 				return operation;
 			}
 		}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,8 +104,9 @@ class EmbeddedServletContainerWarPackagingIntegrationTests {
 
 	@TestTemplate
 	void conditionalOnWarDeploymentBeanIsNotAvailableForEmbeddedServer(RestTemplate rest) {
-		ResponseEntity<String> entity = rest.getForEntity("/actuator/war", String.class);
-		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
+		assertThat(rest.getForEntity("/always", String.class).getStatusCode()).isEqualTo(HttpStatus.OK);
+		assertThat(rest.getForEntity("/conditionalOnWar", String.class).getStatusCode())
+				.isEqualTo(HttpStatus.NOT_FOUND);
 	}
 
 	private List<String> readLines(String input) {

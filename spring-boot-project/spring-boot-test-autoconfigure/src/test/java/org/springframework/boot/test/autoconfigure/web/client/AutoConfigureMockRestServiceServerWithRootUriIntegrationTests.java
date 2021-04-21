@@ -42,7 +42,7 @@ import static org.springframework.test.web.client.response.MockRestResponseCreat
  *
  * @author Andy Wilkinson
  */
-@SpringBootTest(properties = "debug=true")
+@SpringBootTest
 @AutoConfigureMockRestServiceServer
 class AutoConfigureMockRestServiceServerWithRootUriIntegrationTests {
 

@@ -22,11 +22,6 @@
 						<goals>
 							<goal>build-image</goal>
 						</goals>
-						<configuration>
-							<image>
-								<builder>springci/spring-boot-cnb-builder:0.0.1</builder>
-							</image>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

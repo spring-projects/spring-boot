@@ -60,9 +60,7 @@ public class Binder {
 
 	private final PlaceholdersResolver placeholdersResolver;
 
-	private final ConversionService conversionService;
-
-	private final Consumer<PropertyEditorRegistry> propertyEditorInitializer;
+	private final BindConverter bindConverter;
 
 	private final BindHandler defaultBindHandler;
 
@@ -159,12 +157,34 @@ public class Binder {
 	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
 			ConversionService conversionService, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
 			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
+		this(sources, placeholdersResolver,
+				(conversionService != null) ? Collections.singletonList(conversionService)
+						: (List<ConversionService>) null,
+				propertyEditorInitializer, defaultBindHandler, constructorProvider);
+	}
+
+	/**
+	 * Create a new {@link Binder} instance for the specified sources.
+	 * @param sources the sources used for binding
+	 * @param placeholdersResolver strategy to resolve any property placeholders
+	 * @param conversionServices the conversion services to convert values (or
+	 * {@code null} to use {@link ApplicationConversionService})
+	 * @param propertyEditorInitializer initializer used to configure the property editors
+	 * that can convert values (or {@code null} if no initialization is required). Often
+	 * used to call {@link ConfigurableListableBeanFactory#copyRegisteredEditorsTo}.
+	 * @param defaultBindHandler the default bind handler to use if none is specified when
+	 * binding
+	 * @param constructorProvider the constructor provider which provides the bind
+	 * constructor to use when binding
+	 * @since 2.5.0
+	 */
+	public Binder(Iterable<ConfigurationPropertySource> sources, PlaceholdersResolver placeholdersResolver,
+			List<ConversionService> conversionServices, Consumer<PropertyEditorRegistry> propertyEditorInitializer,
+			BindHandler defaultBindHandler, BindConstructorProvider constructorProvider) {
 		Assert.notNull(sources, "Sources must not be null");
 		this.sources = sources;
 		this.placeholdersResolver = (placeholdersResolver != null) ? placeholdersResolver : PlaceholdersResolver.NONE;
-		this.conversionService = (conversionService != null) ? conversionService
-				: ApplicationConversionService.getSharedInstance();
-		this.propertyEditorInitializer = propertyEditorInitializer;
+		this.bindConverter = BindConverter.get(conversionServices, propertyEditorInitializer);
 		this.defaultBindHandler = (defaultBindHandler != null) ? defaultBindHandler : BindHandler.DEFAULT;
 		if (constructorProvider == null) {
 			constructorProvider = BindConstructorProvider.DEFAULT;
@@ -513,8 +533,6 @@ public class Binder {
 	 */
 	final class Context implements BindContext {
 
-		private final BindConverter converter;
-
 		private int depth;
 
 		private final List<ConfigurationPropertySource> source = Arrays.asList((ConfigurationPropertySource) null);
@@ -526,10 +544,6 @@ public class Binder {
 		private final Deque<Class<?>> constructorBindings = new ArrayDeque<>();
 
 		private ConfigurationProperty configurationProperty;
-
-		Context() {
-			this.converter = BindConverter.get(Binder.this.conversionService, Binder.this.propertyEditorInitializer);
-		}
 
 		private void increaseDepth() {
 			this.depth++;
@@ -602,7 +616,7 @@ public class Binder {
 		}
 
 		BindConverter getConverter() {
-			return this.converter;
+			return Binder.this.bindConverter;
 		}
 
 		@Override

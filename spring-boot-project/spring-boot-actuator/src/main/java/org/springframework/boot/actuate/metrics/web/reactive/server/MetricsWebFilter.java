@@ -16,23 +16,31 @@
 
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
+import java.util.Collections;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
+import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.actuate.metrics.annotation.TimedAnnotations;
+import org.springframework.boot.web.reactive.error.ErrorAttributes;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.server.reactive.ServerHttpResponse;
+import org.springframework.web.method.HandlerMethod;
+import org.springframework.web.reactive.HandlerMapping;
 import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.server.WebFilter;
 import org.springframework.web.server.WebFilterChain;
 
 /**
- * Intercepts incoming HTTP requests handled by Spring WebFlux handlers.
+ * Intercepts incoming HTTP requests handled by Spring WebFlux handlers and records
+ * metrics about execution time and results.
  *
  * @author Jon Schneider
  * @author Brian Clozel
@@ -67,9 +75,6 @@ public class MetricsWebFilter implements WebFilter {
 
 	@Override
 	public Mono<Void> filter(ServerWebExchange exchange, WebFilterChain chain) {
-		if (!this.autoTimer.isEnabled()) {
-			return chain.filter(exchange);
-		}
 		return chain.filter(exchange).transformDeferred((call) -> filter(exchange, call));
 	}
 
@@ -93,9 +98,21 @@ public class MetricsWebFilter implements WebFilter {
 	}
 
 	private void record(ServerWebExchange exchange, Throwable cause, long start) {
+		cause = (cause != null) ? cause : exchange.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE);
+		Object handler = exchange.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
+		Set<Timed> annotations = getTimedAnnotations(handler);
 		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
-		this.autoTimer.builder(this.metricName).tags(tags).register(this.registry).record(System.nanoTime() - start,
-				TimeUnit.NANOSECONDS);
+		long duration = System.nanoTime() - start;
+		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
+				(builder) -> builder.tags(tags).register(this.registry).record(duration, TimeUnit.NANOSECONDS));
+	}
+
+	private Set<Timed> getTimedAnnotations(Object handler) {
+		if (handler instanceof HandlerMethod) {
+			HandlerMethod handlerMethod = (HandlerMethod) handler;
+			return TimedAnnotations.get(handlerMethod.getMethod(), handlerMethod.getBeanType());
+		}
+		return Collections.emptySet();
 	}
 
 }

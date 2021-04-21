@@ -42,8 +42,8 @@ import reactor.core.publisher.Mono;
 
 import org.springframework.boot.actuate.endpoint.InvalidEndpointRequestException;
 import org.springframework.boot.actuate.endpoint.InvocationContext;
+import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.SecurityContext;
-import org.springframework.boot.actuate.endpoint.http.ProducibleOperationArgumentResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointLinksResolver;
 import org.springframework.boot.actuate.endpoint.web.EndpointMapping;
 import org.springframework.boot.actuate.endpoint.web.EndpointMediaTypes;
@@ -153,7 +153,7 @@ public class JerseyEndpointResourceFactory {
 			try {
 				JerseySecurityContext securityContext = new JerseySecurityContext(data.getSecurityContext());
 				InvocationContext invocationContext = new InvocationContext(securityContext, arguments,
-						new ProducibleOperationArgumentResolver(data.getHeaders()));
+						new ProducibleOperationArgumentResolver(() -> data.getHeaders().get("Accept")));
 				Object response = this.operation.invoke(invocationContext);
 				return convertToJaxRsResponse(response, data.getRequest().getMethod());
 			}

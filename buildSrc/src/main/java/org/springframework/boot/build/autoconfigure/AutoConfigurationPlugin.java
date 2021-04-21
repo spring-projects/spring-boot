@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -66,8 +66,10 @@ public class AutoConfigurationPlugin implements Plugin<Project> {
 					.add(project.getDependencies().project(Collections.singletonMap("path",
 							":spring-boot-project:spring-boot-tools:spring-boot-configuration-processor")));
 			project.getTasks().create("autoConfigurationMetadata", AutoConfigurationMetadata.class, (task) -> {
-				task.setSourceSet(project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
-						.getByName(SourceSet.MAIN_SOURCE_SET_NAME));
+				SourceSet main = project.getConvention().getPlugin(JavaPluginConvention.class).getSourceSets()
+						.getByName(SourceSet.MAIN_SOURCE_SET_NAME);
+				task.setSourceSet(main);
+				task.dependsOn(main.getClassesTaskName());
 				task.setOutputFile(new File(project.getBuildDir(), "auto-configuration-metadata.properties"));
 				project.getArtifacts().add(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME,
 						project.provider((Callable<File>) task::getOutputFile), (artifact) -> artifact.builtBy(task));

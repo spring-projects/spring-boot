@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 import org.springframework.boot.actuate.endpoint.invoke.OperationInvoker;
 import org.springframework.util.Assert;
 
@@ -60,8 +59,10 @@ public class InvocationContext {
 	 * {@link #InvocationContext(SecurityContext, Map, OperationArgumentResolver[])}
 	 */
 	@Deprecated
-	public InvocationContext(ApiVersion apiVersion, SecurityContext securityContext, Map<String, Object> arguments) {
-		this(securityContext, arguments, OperationArgumentResolver.of(ApiVersion.class, () -> apiVersion));
+	public InvocationContext(org.springframework.boot.actuate.endpoint.http.ApiVersion apiVersion,
+			SecurityContext securityContext, Map<String, Object> arguments) {
+		this(securityContext, arguments, OperationArgumentResolver.of(ApiVersion.class,
+				() -> (apiVersion != null) ? ApiVersion.valueOf(apiVersion.name()) : null));
 	}
 
 	/**
@@ -90,9 +91,16 @@ public class InvocationContext {
 	 * Return the API version in use.
 	 * @return the apiVersion the API version
 	 * @since 2.2.0
+	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
+	 * {@link #resolveArgument(Class)} using
+	 * {@link org.springframework.boot.actuate.endpoint.ApiVersion}
 	 */
-	public ApiVersion getApiVersion() {
-		return resolveArgument(ApiVersion.class);
+	@Deprecated
+	public org.springframework.boot.actuate.endpoint.http.ApiVersion getApiVersion() {
+		ApiVersion version = resolveArgument(ApiVersion.class);
+		System.out.println(version);
+		return (version != null) ? org.springframework.boot.actuate.endpoint.http.ApiVersion.valueOf(version.name())
+				: org.springframework.boot.actuate.endpoint.http.ApiVersion.LATEST;
 	}
 
 	/**

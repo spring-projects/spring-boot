@@ -1,6 +1,6 @@
 [[managing-dependencies]]
 == Managing Dependencies
-To manage dependencies in your Spring Boot application, you can either apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin or, if you are using Gradle 6 or later, use Gradle's native bom support.
+To manage dependencies in your Spring Boot application, you can either apply the {dependency-management-plugin}[`io.spring.dependency-management`] plugin or use Gradle's native bom support.
 The primary benefit of the former is that it offers property-based customization of managed versions, while using the latter will likely result in faster builds.
 
 

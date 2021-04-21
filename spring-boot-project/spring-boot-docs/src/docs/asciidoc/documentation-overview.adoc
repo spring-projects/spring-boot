@@ -41,7 +41,7 @@ If you find problems with the docs or if you want to improve them, please {sprin
 
 
 [[boot-documentation-upgrading]]
-== Upgrading from an Earlier Version
+== Upgrading From an Earlier Version
 Instructions for how to upgrade from earlier versions of Spring Boot are provided on the project {github-wiki}[wiki].
 Follow the links in the {github-wiki}#release-notes[release notes] section to find the version that you want to upgrade to.
 
@@ -73,7 +73,7 @@ Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, 
 
 
 
-== Learning about Spring Boot Features
+== Learning About Spring Boot Features
 Need more details about Spring Boot's core features?
 <<spring-boot-features.adoc#boot-features, The following content is for you>>:
 

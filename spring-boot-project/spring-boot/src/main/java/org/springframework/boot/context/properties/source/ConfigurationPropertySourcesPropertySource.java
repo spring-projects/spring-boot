@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,11 @@ class ConfigurationPropertySourcesPropertySource extends PropertySource<Iterable
 	}
 
 	@Override
+	public boolean containsProperty(String name) {
+		return findConfigurationProperty(name) != null;
+	}
+
+	@Override
 	public Object getProperty(String name) {
 		ConfigurationProperty configurationProperty = findConfigurationProperty(name);
 		return (configurationProperty != null) ? configurationProperty.getValue() : null;
@@ -57,7 +62,7 @@ class ConfigurationPropertySourcesPropertySource extends PropertySource<Iterable
 		}
 	}
 
-	private ConfigurationProperty findConfigurationProperty(ConfigurationPropertyName name) {
+	ConfigurationProperty findConfigurationProperty(ConfigurationPropertyName name) {
 		if (name == null) {
 			return null;
 		}

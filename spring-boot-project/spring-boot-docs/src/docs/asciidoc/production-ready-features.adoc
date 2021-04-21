@@ -112,6 +112,9 @@ The following technology-agnostic endpoints are available:
 | `mappings`
 | Displays a collated list of all `@RequestMapping` paths.
 
+|`quartz`
+|Shows information about Quartz Scheduler jobs.
+
 | `scheduledtasks`
 | Displays the scheduled tasks in your application.
 
@@ -270,6 +273,10 @@ The following table shows the default exposure for the built-in endpoints:
 
 | `prometheus`
 | N/A
+| No
+
+| `quartz`
+| Yes
 | No
 
 | `scheduledtasks`
@@ -523,7 +530,7 @@ This will happen automatically if you are using Spring Boot's Gradle plugin or i
 
 
 [[production-ready-endpoints-custom-input-conversion]]
-===== Input type conversion
+===== Input Type Conversion
 The parameters passed to endpoint operation methods are, if necessary, automatically converted to the required type.
 Before calling an operation method, the input received via JMX or an HTTP request is converted to the required types using an instance of `ApplicationConversionService` as well as any `Converter` or `GenericConverter` beans qualified with `@EndpointConverter`.
 
@@ -626,7 +633,7 @@ The latter is typically used to perform authorization checks using its `isUserIn
 
 
 [[production-ready-endpoints-custom-servlet]]
-==== Servlet endpoints
+==== Servlet Endpoints
 A `Servlet` can be exposed as an endpoint by implementing a class annotated with `@ServletEndpoint` that also implements `Supplier<EndpointServlet>`.
 Servlet endpoints provide deeper integration with the Servlet container but at the expense of portability.
 They are intended to be used to expose an existing `Servlet` as an endpoint.
@@ -635,7 +642,7 @@ For new endpoints, the `@Endpoint` and `@WebEndpoint` annotations should be pref
 
 
 [[production-ready-endpoints-custom-controller]]
-==== Controller endpoints
+==== Controller Endpoints
 `@ControllerEndpoint` and `@RestControllerEndpoint` can be used to implement an endpoint that is only exposed by Spring MVC or Spring WebFlux.
 Methods are mapped using the standard annotations for Spring MVC and Spring WebFlux such as `@RequestMapping` and `@GetMapping`, with the endpoint's ID being used as a prefix for the path.
 Controller endpoints provide deeper integration with Spring's web frameworks but at the expense of portability.
@@ -696,7 +703,6 @@ with the `key` listed in the table below.
 |===
 | Key | Name | Description
 
-=======
 | `cassandra`
 | {spring-boot-actuator-module-code}/cassandra/CassandraDriverHealthIndicator.java[`CassandraDriverHealthIndicator`]
 | Checks that a Cassandra database is up.
@@ -983,6 +989,15 @@ TIP: You can use `@Qualifier("groupname")` if you need to register custom `Statu
 
 
 
+[[production-ready-health-datasource]]
+==== DataSource Health
+The `DataSource` health indicator shows the health of both standard data source and routing data source beans.
+The health of a routing data source includes the health of each of its target data sources.
+In the health endpoint's response, each of a routing data source's targets is named using its routing key.
+If you prefer not to include routing data sources in the indicator's output, set configprop:management.health.db.ignore-routing-data-sources[] to `true`.
+
+
+
 [[production-ready-kubernetes-probes]]
 === Kubernetes Probes
 Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
@@ -1027,7 +1042,7 @@ In this case, a probe check could be successful even if the main application doe
 
 
 [[production-ready-kubernetes-probes-external-state]]
-==== Checking external state with Kubernetes Probes
+==== Checking External State with Kubernetes Probes
 Actuator configures the "liveness" and "readiness" probes as Health Groups; this means that all the <<production-ready-health-groups, Health Groups features>> are available for them.
 You can, for example, configure additional Health Indicators:
 
@@ -1064,7 +1079,7 @@ Also, if an application is using Kubernetes https://kubernetes.io/docs/tasks/run
 
 
 [[production-ready-kubernetes-probes-lifecycle]]
-==== Application lifecycle and Probes states
+==== Application Lifecycle and Probe States
 An important aspect of the Kubernetes Probes support is its consistency with the application lifecycle.
 There is a significant difference between the `AvailabilityState` which is the in-memory, internal state of the application
 and the actual Probe which exposes that state: depending on the phase of application lifecycle, the Probe might not be available.
@@ -1647,7 +1662,7 @@ Spring Boot also <<production-ready-metrics-meter,configures built-in instrument
 
 
 [[production-ready-metrics-export]]
-=== Supported monitoring systems
+=== Supported Monitoring Systems
 
 
 
@@ -2116,54 +2131,56 @@ You can also change the interval at which metrics are sent to Wavefront:
 
 
 [[production-ready-metrics-meter]]
-=== Supported Metrics
-Spring Boot registers the following core metrics when applicable:
+=== Supported Metrics and Meters
+Spring Boot provides automatic meter registration for a wide variety of technologies.
+In most situations, the out-of-the-box defaults will provide sensible metrics that can be published to any of the supported monioring systems.
 
-* JVM metrics, report utilization of:
-** Various memory and buffer pools
-** Statistics related to garbage collection
-** Threads utilization
-** Number of classes loaded/unloaded
+
+
+[[production-ready-metrics-jvm]]
+==== JVM Metrics
+Auto-configuration will enable JVM Metrics using core Micrometer classes.
+JVM metrics are published under the `jvm.` meter name.
+
+The following JVM metrics are provided:
+
+* Various memory and buffer pool details
+* Statistics related to garbage collection
+* Threads utilization
+* The Number of classes loaded/unloaded
+
+
+
+[[production-ready-metrics-system]]
+==== System Metrics
+Auto-configuration will enable system metrics using core Micrometer classes.
+System metrics are published under the `system.` and `process.` meter names.
+
+The following system metrics are provided:
+
 * CPU metrics
 * File descriptor metrics
-* Kafka consumer, producer, and streams metrics
-* Log4j2 metrics: record the number of events logged to Log4j2 at each level
-* Logback metrics: record the number of events logged to Logback at each level
-* Uptime metrics: report a gauge for uptime and a fixed gauge representing the application's absolute start time
-* Tomcat metrics (`server.tomcat.mbeanregistry.enabled` must be set to `true` for all Tomcat metrics to be registered)
-* {spring-integration-docs}system-management.html#micrometer-integration[Spring Integration] metrics
+* Uptime metrics (both the amount of time the application has been running as well as a fixed gauge of the absolute start time)
+
+
+
+[[production-ready-metrics-logger]]
+==== Logger Metrics
+Auto-configuration enables the event metrics for both Logback and Log4J2.
+Details are published under the `log4j2.events.` or `logback.events.` meter names.
 
 
 
 [[production-ready-metrics-spring-mvc]]
 ==== Spring MVC Metrics
-Auto-configuration enables the instrumentation of requests handled by Spring MVC.
-When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
-Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
-
-[source,java,pending-extract=true,indent=0]
-----
-	@RestController
-	@Timed <1>
-	public class MyController {
-
-		@GetMapping("/api/people")
-		@Timed(extraTags = { "region", "us-east-1" }) <2>
-		@Timed(value = "all.people", longTask = true) <3>
-		public List<Person> listPeople() { ... }
-
-	}
-----
-<1> A controller class to enable timings on every request handler in the controller.
-<2> A method to enable for an individual endpoint.
-    This is not necessary if you have it on the class, but can be used to further customize the timer for this particular endpoint.
-<3> A method with `longTask = true` to enable a long task timer for the method.
-    Long task timers require a separate metric name, and can be stacked with a short task timer.
-
+Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
 By default, metrics are generated with the name, `http.server.requests`.
 The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
-By default, Spring MVC-related metrics are tagged with the following information:
+`@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all Spring MVC requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+
+By default, Spring MVC related metrics are tagged with the following information:
 
 |===
 | Tag | Description
@@ -2188,16 +2205,21 @@ By default, Spring MVC-related metrics are tagged with the following information
 To add to the default tags, provide one or more ``@Bean``s that implement `WebMvcTagsContributor`.
 To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
+TIP: In some cases, exceptions handled in Web controllers are not recorded as request metrics tags.
+Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-error-handling, setting handled exceptions as request attributes>>.
+
 
 
 [[production-ready-metrics-web-flux]]
 ==== Spring WebFlux Metrics
-Auto-configuration enables the instrumentation of all requests handled by WebFlux controllers and functional handlers.
+Auto-configuration enables the instrumentation of all requests handled by Spring WebFlux controllers and functional handlers.
+By default, metrics are generated with the name, `http.server.requests`.
+The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
 
-By default, metrics are generated with the name `http.server.requests`.
-You can customize the name by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+`@Timed` annotations are supported on `@Controller` classes and `@RequestMapping` methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all Spring WebFlux requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
 
-By default, WebFlux-related metrics are tagged with the following information:
+By default, WebFlux related metrics are tagged with the following information:
 
 |===
 | Tag | Description
@@ -2222,34 +2244,19 @@ By default, WebFlux-related metrics are tagged with the following information:
 To add to the default tags, provide one or more ``@Bean``s that implement `WebFluxTagsContributor`.
 To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
+TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
+Applications can opt-in and record exceptions by <<spring-boot-features.adoc#boot-features-webflux-error-handling, setting handled exceptions as request attributes>>.
+
 
 
 [[production-ready-metrics-jersey-server]]
 ==== Jersey Server Metrics
-When Micrometer's `micrometer-jersey2` module is on the classpath, auto-configuration enables the instrumentation of requests handled by the Jersey JAX-RS implementation.
-When `management.metrics.web.server.request.autotime.enabled` is `true`, this instrumentation occurs for all requests.
-Alternatively, when set to `false`, you can enable instrumentation by adding `@Timed` to a request-handling method:
-
-[source,java,pending-extract=true,indent=0]
-----
-	@Component
-	@Path("/api/people")
-	@Timed <1>
-	public class Endpoint {
-		@GET
-		@Timed(extraTags = { "region", "us-east-1" }) <2>
-		@Timed(value = "all.people", longTask = true) <3>
-		public List<Person> listPeople() { ... }
-	}
-----
-<1> On a resource class to enable timings on every request handler in the resource.
-<2> On a method to enable for an individual endpoint.
-    This is not necessary if you have it on the class, but can be used to further customize the timer for this particular endpoint.
-<3> On a method with `longTask = true` to enable a long task timer for the method.
-    Long task timers require a separate metric name, and can be stacked with a short task timer.
-
+Auto-configuration enables the instrumentation of all requests handled by the Jersey JAX-RS implementation whenever Micrometer's `micrometer-jersey2` module is on the classpath.
 By default, metrics are generated with the name, `http.server.requests`.
 The name can be customized by setting the configprop:management.metrics.web.server.request.metric-name[] property.
+
+`@Timed` annotations are supported on request-handling classes and methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all Jersey requests, you can set configprop:management.metrics.web.server.request.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
 
 By default, Jersey server metrics are tagged with the following information:
 
@@ -2317,6 +2324,14 @@ There are convenience static functions in `RestTemplateExchangeTags` and `WebCli
 
 
 
+==== Tomcat Metrics
+Auto-configuration will enable the instrumentation of Tomcat only when an `MBeanRegistry` is enabled.
+By default, the `MBeanRegistry` is disabled, but you can enable it by setting configprop:server.tomcat.mbeanregistry.enabled[] to `true`.
+
+Tomcat metrics are published under the `tomcat.` meter name.
+
+
+
 [[production-ready-metrics-cache]]
 ==== Cache Metrics
 Auto-configuration enables the instrumentation of all available ``Cache``s on startup with metrics prefixed with `cache`.
@@ -2356,7 +2371,7 @@ Each metric is tagged by the name of the Pool (can be controlled with `spring.da
 
 [[production-ready-metrics-hibernate]]
 ==== Hibernate Metrics
-If `org.hibernate:hibernate-micrometer` is on the classpath, all available Hibernate `EntityManagerFactory` instances that have statistics enabled with a metric named `hibernate` are instrumented.
+If `org.hibernate:hibernate-micrometer` is on the classpath, all available Hibernate `EntityManagerFactory` instances that have statistics enabled are instrumented with a metric named `hibernate`.
 
 Metrics are also tagged by the name of the `EntityManagerFactory` that is derived from the bean name.
 
@@ -2373,9 +2388,48 @@ You can enable that on the auto-configured `EntityManagerFactory` as shown in th
 
 
 
+[[production-ready-metrics-data-repository]]
+==== Spring Data Repository Metrics
+Auto-configuration enables the instrumentation of all Spring Data `Repository` method invocations.
+By default, metrics are generated with the name, `spring.data.repository.invocations`.
+The name can be customized by setting the configprop:management.metrics.data.repository.metric-name[] property.
+
+`@Timed` annotations are supported on `Repository` classes and methods (see <<production-ready-metrics-timed-annotation>> for details).
+If you don't want to record metrics for all `Repository` invocations, you can set configprop:management.metrics.data.repository.autotime.enabled[] to `false` and exclusively use `@Timed` annotations instead.
+
+By default, repository invocation related metrics are tagged with the following information:
+
+|===
+| Tag | Description
+
+| `repository`
+| Simple class name of the source `Repository`.
+
+| `method`
+| The name of the `Repository` method that was invoked.
+
+| `state`
+| The result state (`SUCCESS`, `ERROR`, `CANCELED` or `RUNNING`).
+
+| `exception`
+| Simple class name of any exception that was thrown from the invocation.
+|===
+
+To replace the default tags, provide a `@Bean` that implements `RepositoryTagsProvider`.
+
+
+
 [[production-ready-metrics-rabbitmq]]
 ==== RabbitMQ Metrics
 Auto-configuration will enable the instrumentation of all available RabbitMQ connection factories with a metric named `rabbitmq`.
+
+
+
+
+[[production-ready-metrics-integration]]
+==== Spring Integration Metrics
+Spring Integration provides {spring-integration-docs}system-management.html#micrometer-integration[Micrometer support] automatically whenever a `MeterRegistry` bean is available.
+Metrics are published under the `spring.integration.` meter name.
 
 
 
@@ -2387,8 +2441,159 @@ For more details refer to {spring-kafka-docs}#micrometer-native[Micrometer Nativ
 
 
 
+[[production-ready-metrics-mongodb]]
+==== MongoDB Metrics
+
+
+
+[[production-ready-metrics-mongodb-command]]
+===== Command Metrics
+Auto-configuration will register a `MongoMetricsCommandListener` with the auto-configured `MongoClient`.
+
+A timer metric with the name `mongodb.driver.commands` is created for each command issued to the underlying MongoDB driver.
+Each metric is tagged with the following information by default:
+|===
+| Tag | Description
+
+| `command`
+| Name of the command issued
+
+| `cluster.id`
+| Identifier of the cluster the command was sent to
+
+| `server.address`
+| Address of the server the command was sent to
+
+| `status`
+| Outcome of the command - one of (`SUCCESS`, `FAILED`)
+|===
+
+To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{include-productionreadyfeatures}/metrics/mongo/SampleCommandTagsProviderConfiguration.java[]
+----
+
+To disable the auto-configured command metrics, set the following property:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	management:
+	  metrics:
+	    mongo:
+	      command:
+	        enabled: false
+----
+
+
+
+[[production-ready-metrics-mongodb-connectionpool]]
+===== Connection Pool Metrics
+Auto-configuration will register a `MongoMetricsConnectionPoolListener` with the auto-configured `MongoClient`.
+
+The following gauge metrics are created for the connection pool:
+
+* `mongodb.driver.pool.size` that reports the current size of the connection pool, including idle and and in-use members
+* `mongodb.driver.pool.checkedout` that reports the count of connections that are currently in use
+* `mongodb.driver.pool.waitqueuesize` that reports the current size of the wait queue for a connection from the pool
+
+Each metric is tagged with the following information by default:
+|===
+| Tag | Description
+
+| `cluster.id`
+| Identifier of the cluster the connection pool corresponds to
+
+| `server.address`
+| Address of the server the connection pool corresponds to
+|===
+
+To replace the default metric tags, define a `MongoConnectionPoolTagsProvider` bean, as shown in the following example:
+
+[source,java,indent=0]
+----
+include::{include-productionreadyfeatures}/metrics/mongo/SampleConnectionPoolTagsProviderConfiguration.java[tag=*]
+----
+
+To disable the auto-configured connection pool metrics, set the following property:
+
+[source,yaml,indent=0,configprops,configblocks]
+----
+	management:
+	  metrics:
+	    mongo:
+	      connectionpool:
+	        enabled: false
+----
+
+
+
+[[production-ready-metrics-timed-annotation]]
+==== @Timed Annotation Support
+The `@Timed` annotation from the `io.micrometer.core.annotation` package can be used with several of the supported technologies listed above.
+If supported, the annotation can be used either at the class-level or the method-level.
+
+For example, the following code shows how the annotation can be used to instrument all request mappings in a `@RestController`:
+
+[source,java,pending-extract=true,indent=0]
+----
+	@RestController
+	@Timed
+	public class MyController {
+
+		@GetMapping("/api/addresses")
+		public List<Person> listAddress() { ... }
+
+		@GetMapping("/api/people")
+		public List<Person> listPeople() { ... }
+
+	}
+----
+
+If you only want to instrument a single mapping, you can use the annotation on the method instead of the class:
+
+[source,java,pending-extract=true,indent=0]
+----
+	@RestController
+	public class MyController {
+
+		@GetMapping("/api/addresses")
+		public List<Person> listAddress() { ... }
+
+		@GetMapping("/api/people")
+		@Timed
+		public List<Person> listPeople() { ... }
+
+	}
+----
+
+You can also combine class-level and method-level annotations if you want to change timing details for a specific method:
+
+[source,java,pending-extract=true,indent=0]
+----
+	@RestController
+	@Timed
+	public class MyController {
+
+		@GetMapping("/api/addresses")
+		public List<Person> listPeople() { ... }
+
+		@GetMapping("/api/people")
+		@Timed(extraTags = { "region", "us-east-1" })
+		@Timed(value = "all.people", longTask = true)
+		public List<Person> listPeople() { ... }
+
+	}
+----
+
+NOTE: A `@Timed` annotation with `longTask = true` will enable a long task timer for the method.
+Long task timers require a separate metric name, and can be stacked with a short task timer.
+
+
+
 [[production-ready-metrics-custom]]
-=== Registering custom metrics
+=== Registering Custom Metrics
 To register custom metrics, inject `MeterRegistry` into your component, as shown in the following example:
 
 [source,java,indent=0]
@@ -2404,15 +2609,15 @@ include::{include-productionreadyfeatures}/metrics/SampleMeterBinderConfiguratio
 ----
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
-By default, metrics from all `MeterBinder` beans will be automatically bound to the Spring-managed `MeterRegistry`.
 A `MeterBinder` implementation can also be useful if you find that you repeatedly instrument a suite of metrics across components or applications.
+
+NOTE: By default, metrics from all `MeterBinder` beans will be automatically bound to the Spring-managed `MeterRegistry`.
 
 
 
 [[production-ready-metrics-per-meter-properties]]
-=== Customizing individual metrics
+=== Customizing Individual Metrics
 If you need to apply customizations to specific `Meter` instances you can use the `io.micrometer.core.instrument.config.MeterFilter` interface.
-By default, all `MeterFilter` beans will be automatically applied to the micrometer `MeterRegistry.Config`.
 
 For example, if you want to rename the `mytag.region` tag to `mytag.area` for all meter IDs beginning with `com.example`, you can do the following:
 
@@ -2421,10 +2626,14 @@ For example, if you want to rename the `mytag.region` tag to `mytag.area` for al
 include::{include-productionreadyfeatures}/metrics/MetricsFilterConfiguration.java[tag=*]
 ----
 
+NOTE: By default, all `MeterFilter` beans will be automatically bound to the Spring-managed `MeterRegistry`.
+Make sure to register your metrics using the Spring-managed `MeterRegistry` and not any of the static methods on `Metrics`.
+These use the global registry that is not Spring-managed.
+
 
 
 [[production-ready-metrics-common-tags]]
-==== Common tags
+==== Common Tags
 Common tags are generally used for dimensional drill-down on the operating environment like host, instance, region, stack, etc.
 Commons tags are applied to all meters and can be configured as shown in the following example:
 
@@ -2444,7 +2653,7 @@ As the order of common tags cannot be guaranteed using this approach, Graphite u
 
 
 
-==== Per-meter properties
+==== Per-meter Properties
 In addition to `MeterFilter` beans, it's also possible to apply a limited set of customization on a per-meter basis using properties.
 Per-meter customizations apply to any all meter IDs that start with the given name.
 For example, the following will disable any meters that have an ID starting with `example.remote`
@@ -2485,7 +2694,7 @@ For more details on concepts behind `percentiles-histogram`, `percentiles` and `
 
 
 [[production-ready-metrics-endpoint]]
-=== Metrics endpoint
+=== Metrics Endpoint
 Spring Boot provides a `metrics` endpoint that can be used diagnostically to examine the metrics collected by an application.
 The endpoint is not available by default and must be exposed, see <<production-ready-endpoints-exposing-endpoints,exposing endpoints>> for more details.
 
@@ -2626,7 +2835,7 @@ If your Cloud Foundry UAA or Cloud Controller services use self-signed certifica
 
 
 
-=== Custom context path
+=== Custom Context Path
 If the server's context-path has been configured to anything other than `/`, the Cloud Foundry endpoints will not be available at the root of the application.
 For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at `/app/cloudfoundryapplication/*`.
 
