@@ -38,7 +38,7 @@ import org.springframework.util.Assert;
 public class ApplicationAvailabilityBean
 		implements ApplicationAvailability, ApplicationListener<AvailabilityChangeEvent<?>> {
 
-	private static final Log logger = LogFactory.getLog(ApplicationAvailability.class);
+	private static final Log logger = LogFactory.getLog(ApplicationAvailabilityBean.class);
 
 	private final Map<Class<? extends AvailabilityState>, AvailabilityChangeEvent<?>> events = new HashMap<>();
 
@@ -70,6 +70,13 @@ public class ApplicationAvailabilityBean
 	}
 
 	private void logStateChange(AvailabilityChangeEvent<?> event) {
+		if (logger.isInfoEnabled()) {
+			StringBuilder message = createStateChangeMessage(event);
+			logger.info(message);
+		}
+	}
+
+	private StringBuilder createStateChangeMessage(AvailabilityChangeEvent<?> event) {
 		Class<? extends AvailabilityState> stateType = getStateType(event.getState());
 		StringBuilder message = new StringBuilder(
 				"Application availability state " + stateType.getSimpleName() + " changed");
@@ -78,15 +85,16 @@ public class ApplicationAvailabilityBean
 			message.append(" from " + lastChangeEvent.getState());
 		}
 		message.append(" to " + event.getState());
-		if (event.getSource() != null) {
-			if (event.getSource() instanceof Throwable) {
-				message.append(": " + event.getSource());
+		Object source = event.getSource();
+		if (source != null) {
+			if (source instanceof Throwable) {
+				message.append(": " + source);
 			}
-			else if (!(event.getSource() instanceof ApplicationEventPublisher)) {
-				message.append(": " + event.getSource().getClass().getName());
+			else if (!(source instanceof ApplicationEventPublisher)) {
+				message.append(": " + source.getClass().getName());
 			}
 		}
-		logger.info(message);
+		return message;
 	}
 
 	@SuppressWarnings("unchecked")

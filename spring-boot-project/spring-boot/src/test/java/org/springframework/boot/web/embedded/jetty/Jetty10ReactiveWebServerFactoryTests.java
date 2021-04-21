@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@JettyReactiveWebServerFactory} with Jetty 10.
+ * Tests for {@link JettyReactiveWebServerFactory} with Jetty 10.
  *
  * @author Andy Wilkinson
  */

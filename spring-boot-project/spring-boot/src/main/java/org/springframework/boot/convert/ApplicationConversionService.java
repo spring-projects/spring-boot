@@ -55,7 +55,7 @@ public class ApplicationConversionService extends FormattingConversionService {
 
 	private static volatile ApplicationConversionService sharedInstance;
 
-	private boolean unmodifiable;
+	private final boolean unmodifiable;
 
 	public ApplicationConversionService() {
 		this(null);
