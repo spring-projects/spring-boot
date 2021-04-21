@@ -28,8 +28,6 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.jedis.JedisClientConfiguration.JedisClientConfigurationBuilder;
 import org.springframework.data.redis.connection.jedis.JedisConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
-import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -130,11 +128,11 @@ class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithPoolEnabled() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.enabled:true",
-				"spring.redis.jedis.pool.min-idle:1", "spring.redis.jedis.pool.max-idle:4",
-				"spring.redis.jedis.pool.max-active:16", "spring.redis.jedis.pool.max-wait:2000",
-				"spring.redis.jedis.pool.time-between-eviction-runs:30000").run((context) -> {
+	void testRedisConfigurationWithPool() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.min-idle:1",
+				"spring.redis.jedis.pool.max-idle:4", "spring.redis.jedis.pool.max-active:16",
+				"spring.redis.jedis.pool.max-wait:2000", "spring.redis.jedis.pool.time-between-eviction-runs:30000")
+				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
 					assertThat(cf.getPoolConfig().getMinIdle()).isEqualTo(1);
@@ -146,24 +144,14 @@ class RedisAutoConfigurationJedisTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithPoolDisabledOfDefault() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.enabled:false",
-				"spring.redis.jedis.pool.max-active:16").run((context) -> {
-					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
-					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(8).isNotEqualTo(16);
-				});
-	}
-
-	@Test
 	void testRedisConfigurationWithTimeoutAndConnectTimeout() {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.timeout:250",
 				"spring.redis.connect-timeout:1000").run((context) -> {
-					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
-					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(cf.getTimeout()).isEqualTo(250);
-					assertThat(cf.getClientConfiguration().getConnectTimeout().toMillis()).isEqualTo(1000);
-				});
+			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+			assertThat(cf.getHostName()).isEqualTo("foo");
+			assertThat(cf.getTimeout()).isEqualTo(250);
+			assertThat(cf.getClientConfiguration().getConnectTimeout().toMillis()).isEqualTo(1000);
+		});
 	}
 
 	@Test
@@ -192,9 +180,9 @@ class RedisAutoConfigurationJedisTests {
 				.withPropertyValues("spring.redis.sentinel.master:mymaster",
 						"spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
 				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
-				});
+			assertThat(context).hasFailed();
+			assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
+		});
 	}
 
 	@Test
@@ -202,11 +190,11 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner.withPropertyValues("spring.redis.username=user", "spring.redis.password=password",
 				"spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
 				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-					assertThat(context).hasFailed();
-					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
-					assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
-					assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");
-				});
+			assertThat(context).hasFailed();
+			assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
+			assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
+			assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");
+		});
 	}
 
 	@Test
