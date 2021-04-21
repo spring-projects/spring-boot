@@ -76,7 +76,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
 		RedisProperties.Pool pool = getProperties().getJedis().getPool();
-		if (pool.isEnabled()) {
+		if (pool != null) {
 			applyPooling(pool, builder);
 		}
 		if (StringUtils.hasText(getProperties().getUrl())) {

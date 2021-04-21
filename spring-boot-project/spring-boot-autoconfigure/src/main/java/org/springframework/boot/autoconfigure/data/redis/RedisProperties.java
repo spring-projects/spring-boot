@@ -410,10 +410,14 @@ public class RedisProperties {
 		/**
 		 * Jedis pool configuration.
 		 */
-		private final Pool pool = new Pool();
+		private Pool pool;
 
 		public Pool getPool() {
 			return this.pool;
+		}
+
+		public void setPool(Pool pool) {
+			this.pool = pool;
 		}
 
 	}
