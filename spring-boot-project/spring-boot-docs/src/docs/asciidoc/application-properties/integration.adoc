@@ -1,0 +1,3 @@
+[[application-properties.integration]]
+== Integration Properties [[integration-properties]]
+include::documented-application-properties/integration.adoc[]

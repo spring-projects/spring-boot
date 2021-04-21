@@ -426,6 +426,7 @@ public class WebMvcAutoConfiguration {
 			customizer.accept(registration);
 			registration.setCachePeriod(getSeconds(this.resourceProperties.getCache().getPeriod()));
 			registration.setCacheControl(this.resourceProperties.getCache().getCachecontrol().toHttpCacheControl());
+			registration.setUseLastModified(this.resourceProperties.getCache().isUseLastModified());
 			customizeResourceHandlerRegistration(registration);
 		}
 

@@ -18,8 +18,9 @@ package smoketest.data.redis;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
-import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.data.redis.core.ValueOperations;
 
@@ -40,8 +41,10 @@ public class SampleRedisApplication implements CommandLineRunner {
 	}
 
 	public static void main(String[] args) {
+		ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleRedisApplication.class)
+				.properties("spring.redis.lettuce.pool.enabled:false").run(args);
 		// Close the context so it doesn't stay awake listening for redis
-		SpringApplication.run(SampleRedisApplication.class, args).close();
+		context.close();
 	}
 
 }

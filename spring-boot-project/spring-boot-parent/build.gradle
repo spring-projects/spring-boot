@@ -148,14 +148,15 @@ bom {
 			]
 		}
 	}
-	library("Spring Asciidoctor Extensions", "0.5.1") {
+	library("Spring Asciidoctor Extensions", "0.6.0-SNAPSHOT") {
 		group("io.spring.asciidoctor") {
 			modules = [
-				"spring-asciidoctor-extensions-spring-boot"
+				"spring-asciidoctor-extensions-spring-boot",
+				"spring-asciidoctor-extensions-section-ids"
 			]
 		}
 	}
-	library("Testcontainers", "1.15.2") {
+	library("Testcontainers", "1.15.3") {
 		group("org.testcontainers") {
 			imports = [
 				"testcontainers-bom"

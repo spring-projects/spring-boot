@@ -24,16 +24,20 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import io.spring.javaformat.gradle.CheckTask;
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
+import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.quality.Checkstyle;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
@@ -58,7 +62,12 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied
- * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
+ * <li>{@link Test} tasks are configured:
+ * <ul>
+ * <li>to use JUnit Platform
+ * <li>with a max heap of 1024M
+ * <li>to run after any Checkstyle and format checking tasks
+ * </ul>
  * <li>A {@code testRuntimeOnly} dependency upon
  * {@code org.junit.platform:junit-platform-launcher} is added to projects with the
  * {@link JavaPlugin} applied
@@ -147,6 +156,15 @@ class JavaConventions {
 		project.getTasks().withType(Test.class, (test) -> {
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
+			if (buildingWithJava8(project)) {
+				CopyJdk8156584SecurityProperties copyJdk8156584SecurityProperties = new CopyJdk8156584SecurityProperties(
+						project);
+				test.systemProperty("java.security.properties",
+						"file:" + test.getWorkingDir().toPath().relativize(copyJdk8156584SecurityProperties.output));
+				test.doFirst(copyJdk8156584SecurityProperties);
+			}
+			project.getTasks().withType(Checkstyle.class, (checkstyle) -> test.mustRunAfter(checkstyle));
+			project.getTasks().withType(CheckTask.class, (checkFormat) -> test.mustRunAfter(checkFormat));
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
@@ -157,6 +175,10 @@ class JavaConventions {
 					testRetry.getFailOnPassedAfterRetry().set(true);
 					testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 				}));
+	}
+
+	private boolean buildingWithJava8(Project project) {
+		return (!project.hasProperty("buildJavaHome")) && JavaVersion.current() == JavaVersion.VERSION_1_8;
 	}
 
 	private boolean isCi() {

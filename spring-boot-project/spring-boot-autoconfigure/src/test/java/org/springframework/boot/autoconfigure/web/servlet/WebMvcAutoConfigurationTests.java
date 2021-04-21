@@ -1009,7 +1009,7 @@ class WebMvcAutoConfigurationTests {
 			Consumer<ResourceHttpRequestHandler> handlerConsumer) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
 		assertThat(handlerMap).hasSize(2);
-		for (Object handler : handlerMap.keySet()) {
+		for (Object handler : handlerMap.values()) {
 			if (handler instanceof ResourceHttpRequestHandler) {
 				handlerConsumer.accept((ResourceHttpRequestHandler) handler);
 			}

@@ -1,0 +1,11 @@
+[[documentation.features]]
+== Learning About Spring Boot Features
+Need more details about Spring Boot's core features?
+<<features#features, The following content is for you>>:
+
+* *Core Features:* <<features#features.spring-application, SpringApplication>> | <<features#features.external-config, External Configuration>> | <<features#features.profiles, Profiles>> | <<features#features.logging, Logging>>
+* *Web Applications:* <<features#features.developing-web-applications.spring-mvc, MVC>> | <<features#features.developing-web-applications.embedded-container, Embedded Containers>>
+* *Working with data:* <<features#features.sql, SQL>> | <<features#features.nosql, NO-SQL>>
+* *Messaging:* <<features#features.messaging, Overview>> | <<features#features.messaging.jms, JMS>>
+* *Testing:* <<features#features.testing, Overview>> | <<features#features.testing.spring-boot-applications, Boot Applications>> | <<features#features.testing.utilities, Utils>>
+* *Extending:* <<features#features.developing-auto-configuration, Auto-configuration>> | <<features#features.developing-auto-configuration.condition-annotations, @Conditions>>

@@ -96,7 +96,7 @@ class AsciidoctorConventions {
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration asciidoctorExtensions = configurations.maybeCreate(EXTENSIONS_CONFIGURATION);
 		asciidoctorExtensions.getDependencies().add(project.getDependencies()
-				.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.1-M1"));
+				.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.1-SNAPSHOT"));
 		Configuration dependencyManagement = configurations.findByName("dependencyManagement");
 		if (dependencyManagement != null) {
 			asciidoctorExtensions.extendsFrom(dependencyManagement);
@@ -125,7 +125,7 @@ class AsciidoctorConventions {
 
 	private String determineGitHubTag(Project project) {
 		String version = "v" + project.getVersion();
-		return (version.endsWith("-SNAPSHOT")) ? "master" : version;
+		return (version.endsWith("-SNAPSHOT")) ? "main" : version;
 	}
 
 	private void configureOptions(AbstractAsciidoctorTask asciidoctorTask) {

@@ -31,6 +31,7 @@ import java.util.concurrent.Callable;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Task;
 import org.gradle.api.tasks.OutputFile;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.TaskAction;
 
@@ -52,8 +53,10 @@ public class AutoConfigurationMetadata extends DefaultTask {
 	private File outputFile;
 
 	public AutoConfigurationMetadata() {
-		getInputs().file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
-				"META-INF/spring.factories"));
+		getInputs()
+				.file((Callable<File>) () -> new File(this.sourceSet.getOutput().getResourcesDir(),
+						"META-INF/spring.factories"))
+				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("spring.factories");
 		dependsOn((Callable<String>) () -> this.sourceSet.getProcessResourcesTaskName());
 		getProject().getConfigurations()
 				.maybeCreate(AutoConfigurationPlugin.AUTO_CONFIGURATION_METADATA_CONFIGURATION_NAME);

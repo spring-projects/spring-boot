@@ -1,0 +1,5 @@
+[[auto-configuration-classes.actuator]]
+== spring-boot-actuator-autoconfigure
+The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
+
+include::documented-auto-configuration-classes/spring-boot-actuator-autoconfigure.adoc[]

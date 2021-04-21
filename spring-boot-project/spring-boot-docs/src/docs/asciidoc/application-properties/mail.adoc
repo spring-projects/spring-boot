@@ -1,0 +1,3 @@
+[[application-properties.mail]]
+== Mail Properties [[mail-properties]]
+include::documented-application-properties/mail.adoc[]

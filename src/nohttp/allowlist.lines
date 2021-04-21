@@ -1,0 +1,8 @@
+^http://exslt.org/common.*
+^http://ganglia.sourceforge.net.*
+^http://hsqldb.org.*
+^http://livereload.com/.*
+^http://logback.qos.ch/manual/loggingSeparation.html
+^http://schemas.xmlsoap.org/.*
+^http://www.jdotsoft.com.*
+^http://www.liquibase.org/xml/ns/dbchangelog/.*

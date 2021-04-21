@@ -1,0 +1,3 @@
+[[application-properties.rsocket]]
+== RSocket Properties [[rsocket-properties]]
+include::documented-application-properties/rsocket.adoc[]

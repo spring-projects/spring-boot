@@ -1,0 +1,67 @@
+[[howto.hotswapping]]
+== Hot Swapping
+Spring Boot supports hot swapping.
+This section answers questions about how it works.
+
+
+
+[[howto.hotswapping.reload-static-content]]
+=== Reload Static Content
+There are several options for hot reloading.
+The recommended approach is to use <<using#using.devtools,`spring-boot-devtools`>>, as it provides additional development-time features, such as support for fast application restarts and LiveReload as well as sensible development-time configuration (such as template caching).
+Devtools works by monitoring the classpath for changes.
+This means that static resource changes must be "built" for the change to take effect.
+By default, this happens automatically in Eclipse when you save your changes.
+In IntelliJ IDEA, the Make Project command triggers the necessary build.
+Due to the <<using#using.devtools.restart.excluding-resources, default restart exclusions>>, changes to static resources do not trigger a restart of your application.
+They do, however, trigger a live reload.
+
+Alternatively, running in an IDE (especially with debugging on) is a good way to do development (all modern IDEs allow reloading of static resources and usually also allow hot-swapping of Java class changes).
+
+Finally, the <<build-tool-plugins#build-tool-plugins, Maven and Gradle plugins>> can be configured (see the `addResources` property) to support running from the command line with reloading of static files directly from source.
+You can use that with an external css/js compiler process if you are writing that code with higher-level tools.
+
+
+
+[[howto.hotswapping.reload-templates]]
+=== Reload Templates without Restarting the Container
+Most of the templating technologies supported by Spring Boot include a configuration option to disable caching (described later in this document).
+If you use the `spring-boot-devtools` module, these properties are <<using#using.devtools.property-defaults,automatically configured>> for you at development time.
+
+
+
+[[howto.hotswapping.reload-templates.thymeleaf]]
+==== Thymeleaf Templates
+If you use Thymeleaf, set `spring.thymeleaf.cache` to `false`.
+See {spring-boot-autoconfigure-module-code}/thymeleaf/ThymeleafAutoConfiguration.java[`ThymeleafAutoConfiguration`] for other Thymeleaf customization options.
+
+
+
+[[howto.hotswapping.reload-templates.freemarker]]
+==== FreeMarker Templates
+If you use FreeMarker, set `spring.freemarker.cache` to `false`.
+See {spring-boot-autoconfigure-module-code}/freemarker/FreeMarkerAutoConfiguration.java[`FreeMarkerAutoConfiguration`] for other FreeMarker customization options.
+
+
+
+[[howto.hotswapping.reload-templates.groovy]]
+==== Groovy Templates
+If you use Groovy templates, set `spring.groovy.template.cache` to `false`.
+See {spring-boot-autoconfigure-module-code}/groovy/template/GroovyTemplateAutoConfiguration.java[`GroovyTemplateAutoConfiguration`] for other Groovy customization options.
+
+
+
+[[howto.hotswapping.fast-application-restarts]]
+=== Fast Application Restarts
+The `spring-boot-devtools` module includes support for automatic application restarts.
+While not as fast as technologies such as https://www.jrebel.com/products/jrebel[JRebel] it is usually significantly faster than a "`cold start`".
+You should probably give it a try before investigating some of the more complex reload options discussed later in this document.
+
+For more details, see the <<using#using.devtools>> section.
+
+
+
+[[howto.hotswapping.reload-java-classes-without-restarting]]
+=== Reload Java Classes without Restarting the Container
+Many modern IDEs (Eclipse, IDEA, and others) support hot swapping of bytecode.
+Consequently, if you make a change that does not affect class or method signatures, it should reload cleanly with no side effects.
