@@ -72,7 +72,7 @@ public class JvmMetricsAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	public DiskSpaceMetrics diskSpaceMetrics() {
-		return new DiskSpaceMetrics(new File(System.getProperty("user.dir")));
+		return new DiskSpaceMetrics(new File("."));
 	}
 
 }
