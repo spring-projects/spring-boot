@@ -586,6 +586,13 @@ Details are published under the `log4j2.events.` or `logback.events.` meter name
 
 
 
+[[actuator.metrics.supported.tasks]]
+==== Task Execution and Scheduling Metrics
+Auto-configuration enables the instrumentation of all available `ThreadPoolTaskExecutor` and `ThreadPoolTaskScheduler` beans, as long as the underling `ThreadPoolExecutor` is available.
+Metrics are tagged by the name of the executor that is derived from the bean name.
+
+
+
 [[actuator.metrics.supported.spring-mvc]]
 ==== Spring MVC Metrics
 Auto-configuration enables the instrumentation of all requests handled by Spring MVC controllers and functional handlers.
