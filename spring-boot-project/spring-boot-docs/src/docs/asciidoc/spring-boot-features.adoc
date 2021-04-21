@@ -7528,7 +7528,7 @@ You can use the `@DataJpaTest` annotation to test JPA applications.
 By default, it scans for `@Entity` classes and configures Spring Data JPA repositories.
 If an embedded database is available on the classpath, it configures one as well.
 SQL queries are logged by default by setting the `spring.jpa.show-sql` property to `true`.
-This can be disabled using the `showSql()` attribute of the annotation.
+This can be disabled by using the `showSql()` attribute of the annotation.
 
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
