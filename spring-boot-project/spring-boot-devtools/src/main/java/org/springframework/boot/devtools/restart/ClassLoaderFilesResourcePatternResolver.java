@@ -22,10 +22,12 @@ import java.lang.reflect.Field;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
@@ -109,13 +111,9 @@ final class ClassLoaderFilesResourcePatternResolver implements ResourcePatternRe
 
 	@Override
 	public Resource[] getResources(String locationPattern) throws IOException {
-		List<Resource> resources = new ArrayList<>();
+		List<Resource> resources;
 		Resource[] candidates = this.patternResolverDelegate.getResources(locationPattern);
-		for (Resource candidate : candidates) {
-			if (!isDeleted(candidate)) {
-				resources.add(candidate);
-			}
-		}
+		resources = Arrays.stream(candidates).filter(candidate -> !isDeleted(candidate)).collect(Collectors.toList());
 		resources.addAll(getAdditionalResources(locationPattern));
 		return resources.toArray(new Resource[0]);
 	}

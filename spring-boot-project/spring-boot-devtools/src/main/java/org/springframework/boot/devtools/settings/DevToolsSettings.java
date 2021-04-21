@@ -82,12 +82,7 @@ public class DevToolsSettings {
 	}
 
 	private boolean isMatch(String url, List<Pattern> patterns) {
-		for (Pattern pattern : patterns) {
-			if (pattern.matcher(url).find()) {
-				return true;
-			}
-		}
-		return false;
+		return patterns.stream().anyMatch(pattern -> pattern.matcher(url).find());
 	}
 
 	public static DevToolsSettings get() {

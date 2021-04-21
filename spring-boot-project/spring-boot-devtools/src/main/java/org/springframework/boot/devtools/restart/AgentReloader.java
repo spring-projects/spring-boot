@@ -53,12 +53,7 @@ public abstract class AgentReloader {
 	}
 
 	private static boolean isActive(ClassLoader classLoader) {
-		for (String agentClass : AGENT_CLASSES) {
-			if (ClassUtils.isPresent(agentClass, classLoader)) {
-				return true;
-			}
-		}
-		return false;
+		return AGENT_CLASSES.stream().anyMatch(agentClass -> ClassUtils.isPresent(agentClass, classLoader));
 	}
 
 }
