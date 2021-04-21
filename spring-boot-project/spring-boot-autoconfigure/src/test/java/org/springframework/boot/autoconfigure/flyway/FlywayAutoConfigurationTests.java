@@ -579,7 +579,7 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void vaultUrlIsCorrectlyMapped() {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.vault-url=http://foo.com/secrets")
+				.withPropertyValues("spring.flyway.vault-url=https://example.com/secrets")
 				.run(validateFlywayTeamsPropertyOnly("vaultUrl"));
 	}
 
