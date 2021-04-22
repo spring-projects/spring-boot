@@ -270,7 +270,8 @@ class ConfigDataEnvironmentTests {
 
 	@ParameterizedTest
 	@CsvSource({ "spring.config.activate.on-profile", "spring.profiles.include", "spring.profiles.include[0]" })
-	void processAndApplyDoseNotThrowExceptionWhenActivateProfileWithoutProfileInclude(String property, TestInfo info) {
+	void processAndApplyDoseNotThrowExceptionWhenUsingEitherActivateProfileOrProfileInclude(String property,
+			TestInfo info) {
 		this.environment.setProperty("spring.config.location", getConfigLocation(info));
 		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
 				this.environment, this.resourceLoader, this.additionalProfiles, null) {
