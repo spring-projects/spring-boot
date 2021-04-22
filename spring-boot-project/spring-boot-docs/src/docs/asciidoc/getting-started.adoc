@@ -38,7 +38,7 @@ Explicit build support is provided for the following build tools:
 | Build Tool | Version
 
 | Maven
-| 3.3+
+| 3.5+
 
 | Gradle
 | 6 (6.3 or later). 5.6.x is also supported but in a deprecated form
