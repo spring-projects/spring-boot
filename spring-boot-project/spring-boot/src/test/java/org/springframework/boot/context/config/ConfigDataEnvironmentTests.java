@@ -27,6 +27,8 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestInfo;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.CsvSource;
 
 import org.springframework.boot.ConfigurableBootstrapContext;
 import org.springframework.boot.DefaultBootstrapContext;
@@ -45,6 +47,7 @@ import org.springframework.mock.env.MockPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -214,6 +217,53 @@ class ConfigDataEnvironmentTests {
 		};
 		configDataEnvironment.processAndApply();
 		assertThat(this.environment.getActiveProfiles()).containsExactly("test");
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "include", "include[0]" })
+	void processAndApplyThrowExceptionWhenActivateProfileWithProfileInclude(String property, TestInfo info) {
+		this.environment.setProperty("spring.config.location", getConfigLocation(info));
+		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
+				this.environment, this.resourceLoader, this.additionalProfiles, null) {
+
+			@Override
+			protected ConfigDataEnvironmentContributors createContributors(
+					List<ConfigDataEnvironmentContributor> contributors) {
+				Map<String, Object> source = new LinkedHashMap<>();
+				source.put("spring.config.activate.on-profile", "activate");
+				source.put("spring.profiles." + property, "include");
+				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)));
+				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
+						mock(ConfigDataResource.class), false, data, 0));
+				return super.createContributors(contributors);
+			}
+		};
+
+		assertThatExceptionOfType(InactiveConfigDataAccessException.class)
+				.isThrownBy(configDataEnvironment::processAndApply);
+	}
+
+	@ParameterizedTest
+	@CsvSource({ "spring.config.activate.on-profile", "spring.profiles.include", "spring.profiles.include[0]" })
+	void processAndApplyDoseNotThrowExceptionWhenUsingEitherActivateProfileOrProfileInclude(String property,
+			TestInfo info) {
+		this.environment.setProperty("spring.config.location", getConfigLocation(info));
+		ConfigDataEnvironment configDataEnvironment = new ConfigDataEnvironment(this.logFactory, this.bootstrapContext,
+				this.environment, this.resourceLoader, this.additionalProfiles, null) {
+
+			@Override
+			protected ConfigDataEnvironmentContributors createContributors(
+					List<ConfigDataEnvironmentContributor> contributors) {
+				Map<String, Object> source = new LinkedHashMap<>();
+				source.put(property, "only");
+				ConfigData data = new ConfigData(Collections.singleton(new MapPropertySource("test", source)));
+				contributors.add(ConfigDataEnvironmentContributor.ofUnboundImport(ConfigDataLocation.of("test"),
+						mock(ConfigDataResource.class), false, data, 0));
+				return super.createContributors(contributors);
+			}
+		};
+
+		assertThatNoException().isThrownBy(configDataEnvironment::processAndApply);
 	}
 
 	@Test
