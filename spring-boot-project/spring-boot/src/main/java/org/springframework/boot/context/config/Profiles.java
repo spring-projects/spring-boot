@@ -27,6 +27,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Supplier;
+import java.util.stream.Stream;
 
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -46,6 +47,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nguyen Bao Sach
  * @since 2.4.0
  */
 public class Profiles implements Iterable<String> {
@@ -86,22 +88,29 @@ public class Profiles implements Iterable<String> {
 
 	private List<String> getActivatedProfiles(Environment environment, Binder binder,
 			Collection<String> additionalProfiles) {
-		return asUniqueItemList(get(environment, binder, environment::getActiveProfiles,
-				AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, UNSET_ACTIVE), additionalProfiles);
+		String propertyValue = environment.getProperty(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME);
+		String[] profiles = binder.bind(AbstractEnvironment.ACTIVE_PROFILES_PROPERTY_NAME, String[].class)
+				.orElseGet(() -> StringUtils.toStringArray(UNSET_ACTIVE));
+		if (hasExplicit(environment::getActiveProfiles, propertyValue, UNSET_ACTIVE)) {
+			profiles = Stream.concat(Stream.of(environment.getActiveProfiles()), Stream.of(profiles))
+					.toArray(String[]::new);
+		}
+
+		return asUniqueItemList(profiles, additionalProfiles);
 	}
 
 	private List<String> getDefaultProfiles(Environment environment, Binder binder) {
-		return asUniqueItemList(get(environment, binder, environment::getDefaultProfiles,
-				AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, UNSET_DEFAULT));
-	}
-
-	private String[] get(Environment environment, Binder binder, Supplier<String[]> supplier, String propertyName,
-			Set<String> unset) {
-		String propertyValue = environment.getProperty(propertyName);
-		if (hasExplicit(supplier, propertyValue, unset)) {
-			return supplier.get();
+		String[] profiles;
+		String propertyValue = environment.getProperty(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME);
+		if (hasExplicit(environment::getDefaultProfiles, propertyValue, UNSET_DEFAULT)) {
+			profiles = environment.getDefaultProfiles();
 		}
-		return binder.bind(propertyName, String[].class).orElseGet(() -> StringUtils.toStringArray(unset));
+		else {
+			profiles = binder.bind(AbstractEnvironment.DEFAULT_PROFILES_PROPERTY_NAME, String[].class)
+					.orElseGet(() -> StringUtils.toStringArray(UNSET_DEFAULT));
+		}
+
+		return asUniqueItemList(profiles);
 	}
 
 	private boolean hasExplicit(Supplier<String[]> supplier, String propertyValue, Set<String> unset) {

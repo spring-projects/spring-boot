@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nguyen Bao Sach
  */
 class ProfilesTests {
 
@@ -69,7 +70,7 @@ class ProfilesTests {
 		Binder binder = new Binder(
 				new MapConfigurationPropertySource(Collections.singletonMap("spring.profiles.active", "d,e,f")));
 		Profiles profiles = new Profiles(environment, binder, null);
-		assertThat(profiles.getActive()).containsExactly("a", "b", "c");
+		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 
 	@Test
@@ -79,7 +80,7 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.active", "d,e,f");
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
-		assertThat(profiles.getActive()).containsExactly("a", "b", "c");
+		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 
 	@Test
@@ -102,7 +103,7 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.active[2]", "f");
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
-		assertThat(profiles.getActive()).containsExactly("a", "b", "c");
+		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 
 	@Test
