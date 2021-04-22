@@ -69,11 +69,13 @@ public class BuildInfoMojo extends AbstractMojo {
 
 	/**
 	 * The value used for the {@code build.time} property in a form suitable for
-	 * {@link Instant#parse(CharSequence)}. Defaults to {@code session.request.startTime}.
-	 * To disable the {@code build.time} property entirely, use {@code 'off'}.
+	 * {@link Instant#parse(CharSequence)}. Defaults to
+	 * {@code project.build.outputTimestamp} otherwise {@code session.request.startTime}
+	 * if property is not set. To disable the {@code build.time} property entirely, use
+	 * {@code 'off'}.
 	 * @since 2.2.0
 	 */
-	@Parameter
+	@Parameter(defaultValue = "${project.build.outputTimestamp}")
 	private String time;
 
 	/**
