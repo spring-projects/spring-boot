@@ -170,7 +170,6 @@ public class JacksonAutoConfiguration {
 
 			@Override
 			public void customize(Jackson2ObjectMapperBuilder builder) {
-
 				if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
 					builder.serializationInclusion(this.jacksonProperties.getDefaultPropertyInclusion());
 				}
