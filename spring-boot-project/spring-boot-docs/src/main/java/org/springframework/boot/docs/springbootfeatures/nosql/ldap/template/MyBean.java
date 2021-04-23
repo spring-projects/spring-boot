@@ -14,25 +14,31 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.ldap.template;
 
-import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+@Component
+public class MyBean {
 
-	private final List<MyPojo> list = new ArrayList<>();
+	private final LdapTemplate template;
 
-	public List<MyPojo> getList() {
-		return this.list;
+	public MyBean(LdapTemplate template) {
+		this.template = template;
 	}
+
+	// @fold:on // ...
+	public List<User> someMethod() {
+		return this.template.findAll(User.class);
+	}
+	// @fold:off
 
 }
 // @chomp:file
 
-class MyPojo {
+class User {
 
 }

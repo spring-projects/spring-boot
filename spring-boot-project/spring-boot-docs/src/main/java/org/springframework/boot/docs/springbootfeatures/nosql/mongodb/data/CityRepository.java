@@ -14,25 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.mongodb.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.repository.Repository;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+public interface CityRepository extends Repository<City, Long> {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+	Page<City> findAll(Pageable pageable);
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
-	}
-
-}
-// @chomp:file
-
-class MyPojo {
+	City findByNameAndStateAllIgnoringCase(String name, String state);
 
 }

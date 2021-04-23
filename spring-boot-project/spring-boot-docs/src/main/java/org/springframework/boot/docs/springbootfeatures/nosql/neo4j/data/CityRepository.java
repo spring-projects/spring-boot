@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.neo4j.data;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Optional;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.neo4j.repository.Neo4jRepository;
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+public interface CityRepository extends Neo4jRepository<City, Long> {
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
-	}
-
-}
-// @chomp:file
-
-class MyPojo {
+	Optional<City> findOneByNameAndState(String name, String state);
 
 }

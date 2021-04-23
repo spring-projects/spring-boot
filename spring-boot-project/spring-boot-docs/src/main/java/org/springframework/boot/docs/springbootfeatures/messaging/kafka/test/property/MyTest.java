@@ -14,25 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.messaging.kafka.test.property;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.kafka.test.EmbeddedKafkaBroker;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@SpringBootTest
+public class MyTest {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
-
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	// tag::code[]
+	static {
+		System.setProperty(EmbeddedKafkaBroker.BROKER_LIST_PROPERTY, "spring.kafka.bootstrap-servers");
 	}
-
-}
-// @chomp:file
-
-class MyPojo {
+	// end::code[]
 
 }

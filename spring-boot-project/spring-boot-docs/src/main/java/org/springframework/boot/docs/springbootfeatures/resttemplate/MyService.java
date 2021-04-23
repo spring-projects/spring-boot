@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.resttemplate;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Service
+public class MyService {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+	private final RestTemplate restTemplate;
 
-	private final List<MyPojo> list = new ArrayList<>();
+	public MyService(RestTemplateBuilder restTemplateBuilder) {
+		this.restTemplate = restTemplateBuilder.build();
+	}
 
-	public List<MyPojo> getList() {
-		return this.list;
+	public Details someRestCall(String name) {
+		return this.restTemplate.getForObject("/{name}/details", Details.class, name);
 	}
 
 }
 // @chomp:file
 
-class MyPojo {
+class Details {
 
 }

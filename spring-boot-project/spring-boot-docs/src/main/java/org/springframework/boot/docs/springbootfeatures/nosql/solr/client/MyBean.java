@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.solr.client;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.io.IOException;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.apache.solr.client.solrj.SolrClient;
+import org.apache.solr.client.solrj.SolrServerException;
+import org.apache.solr.client.solrj.response.SolrPingResponse;
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+import org.springframework.stereotype.Component;
 
-	private final List<MyPojo> list = new ArrayList<>();
+@Component
+public class MyBean {
 
-	public List<MyPojo> getList() {
-		return this.list;
+	private SolrClient solr;
+
+	public MyBean(SolrClient solr) {
+		this.solr = solr;
 	}
 
-}
-// @chomp:file
-
-class MyPojo {
+	// @fold:on // ...
+	public SolrPingResponse someMethod() throws SolrServerException, IOException {
+		return this.solr.ping("users");
+	}
+	// @fold:off
 
 }

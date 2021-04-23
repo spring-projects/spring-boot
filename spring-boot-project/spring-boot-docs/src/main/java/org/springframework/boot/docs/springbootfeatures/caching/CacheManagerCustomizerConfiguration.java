@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.caching;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.boot.autoconfigure.cache.CacheManagerCustomizer;
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Configuration
+public class CacheManagerCustomizerConfiguration {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
-
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	@Bean
+	public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
+		return (cacheManager) -> cacheManager.setAllowNullValues(false);
 	}
-
-}
-// @chomp:file
-
-class MyPojo {
 
 }

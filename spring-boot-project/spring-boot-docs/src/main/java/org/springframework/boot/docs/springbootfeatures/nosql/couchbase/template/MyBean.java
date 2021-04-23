@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.couchbase.template;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.couchbase.core.CouchbaseTemplate;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Component
+public class MyBean {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+	private final CouchbaseTemplate template;
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	public MyBean(CouchbaseTemplate template) {
+		this.template = template;
 	}
 
-}
-// @chomp:file
-
-class MyPojo {
+	// @fold:on // ...
+	public String someMethod() {
+		return this.template.getBucketName();
+	}
+	// @fold:off
 
 }

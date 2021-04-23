@@ -14,25 +14,22 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.sql.r2dbc;
 
-import java.util.ArrayList;
-import java.util.List;
+import io.r2dbc.spi.ConnectionFactoryOptions;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+@Configuration
+public class CustomizeR2dbcPortConfiguration {
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	// tag::code[]
+	@Bean
+	public ConnectionFactoryOptionsBuilderCustomizer connectionFactoryPortCustomizer() {
+		return (builder) -> builder.option(ConnectionFactoryOptions.PORT, 5432);
 	}
-
-}
-// @chomp:file
-
-class MyPojo {
+	// end::code[]
 
 }

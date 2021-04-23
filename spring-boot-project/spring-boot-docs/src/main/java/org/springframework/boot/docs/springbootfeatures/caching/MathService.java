@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.caching;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.cache.annotation.Cacheable;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Component
+public class MathService {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
-
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	@Cacheable("piDecimals")
+	public int computePiDecimal(int precision) {
+		/**/ return 0;
 	}
-
-}
-// @chomp:file
-
-class MyPojo {
 
 }

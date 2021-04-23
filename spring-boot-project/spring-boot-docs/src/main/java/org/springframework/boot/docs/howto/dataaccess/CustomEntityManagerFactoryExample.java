@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.jpa;
+package org.springframework.boot.docs.howto.dataaccess;
 
 import javax.sql.DataSource;
 

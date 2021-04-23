@@ -3964,25 +3964,16 @@ TIP: The "`How-to`" section includes a <<howto.adoc#howto-initialize-a-database-
 To customize the connections created by a `ConnectionFactory`, i.e., set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Bean
-	public ConnectionFactoryOptionsBuilderCustomizer connectionFactoryPortCustomizer() {
-		return (builder) -> builder.option(PORT, 5432);
-	}
+include::{include-springbootfeatures}/sql/r2dbc/CustomizeR2dbcPortConfiguration.java[tag=*]
 ----
 
 The following examples show how to set some PostgreSQL connection options:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Bean
-	public ConnectionFactoryOptionsBuilderCustomizer postgresCustomizer() {
-		Map<String, String> options = new HashMap<>();
-		options.put("lock_timeout", "30s");
-		options.put("statement_timeout", "60s");
-		return (builder) -> builder.option(OPTIONS, options);
-	}
+include::{include-springbootfeatures}/sql/r2dbc/CustomizeR2dbcPostgresOptionsConfiguration.java[tag=*]
 ----
 
 When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
@@ -4017,25 +4008,9 @@ If you want to make sure that each context has a separate embedded database, you
 ==== Using DatabaseClient
 A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.data.r2dbc.function.DatabaseClient;
-	import org.springframework.stereotype.Component;
-
-	@Component
-	public class MyBean {
-
-		private final DatabaseClient databaseClient;
-
-		@Autowired
-		public MyBean(DatabaseClient databaseClient) {
-			this.databaseClient = databaseClient;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/sql/r2dbc/databaseclient/MyBean.java[tag=*]
 ----
 
 
@@ -4053,19 +4028,9 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	package com.example.myapp.domain;
-
-	import org.springframework.data.domain.*;
-	import org.springframework.data.repository.*;
-	import reactor.core.publisher.Mono;
-
-	public interface CityRepository extends Repository<City, Long> {
-
-		Mono<City> findByNameAndStateAllIgnoringCase(String name, String state);
-
-	}
+include::{include-springbootfeatures}/sql/r2dbc/CityRepository.java[tag=*]
 ----
 
 TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].
@@ -4110,21 +4075,9 @@ You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate
 By default, the instance tries to connect to a Redis server at `localhost:6379`.
 The following listing shows an example of such a bean:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private StringRedisTemplate template;
-
-		@Autowired
-		public MyBean(StringRedisTemplate template) {
-			this.template = template;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/redis/MyBean.java[]
 ----
 
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
@@ -4148,29 +4101,9 @@ To access MongoDB databases, you can inject an auto-configured `org.springframew
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.data.mongodb.MongoDatabaseFactory;
-	import com.mongodb.client.MongoDatabase;
-
-	@Component
-	public class MyBean {
-
-		private final MongoDatabaseFactory mongo;
-
-		@Autowired
-		public MyBean(MongoDatabaseFactory mongo) {
-			this.mongo = mongo;
-		}
-
-		// ...
-
-		public void example() {
-			MongoDatabase db = mongo.getMongoDatabase();
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/nosql/mongodb/databasefactory/MyBean.java[]
 ----
 
 If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
@@ -4219,23 +4152,9 @@ The auto-configuration configures this factory automatically if Netty is availab
 {spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.data.mongodb.core.MongoTemplate;
-	import org.springframework.stereotype.Component;
-
-	@Component
-	public class MyBean {
-
-		private final MongoTemplate mongoTemplate;
-
-		public MyBean(MongoTemplate mongoTemplate) {
-			this.mongoTemplate = mongoTemplate;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/mongodb/template/MyBean.java[]
 ----
 
 See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
@@ -4251,20 +4170,9 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	package com.example.myapp.domain;
-
-	import org.springframework.data.domain.*;
-	import org.springframework.data.repository.*;
-
-	public interface CityRepository extends Repository<City, Long> {
-
-		Page<City> findAll(Pageable pageable);
-
-		City findByNameAndStateAllIgnoringCase(String name, String state);
-
-	}
+include::{include-springbootfeatures}/nosql/mongodb/data/CityRepository.java[]
 ----
 
 TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
@@ -4304,21 +4212,9 @@ To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Dr
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
 The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private final Driver driver;
-
-		@Autowired
-		public MyBean(Driver driver) {
-			this.driver = driver;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/neo4j/driver/MyBean.java[]
 ----
 
 You can configure various aspects of the driver using `spring.neo4j.*` properties.
@@ -4348,19 +4244,9 @@ For complete details of Spring Data Neo4j, refer to the {spring-data-neo4j-docs}
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
 You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	package com.example.myapp.domain;
-
-	import java.util.Optional;
-
-	import org.springframework.data.neo4j.repository.*;
-
-	public interface CityRepository extends Neo4jRepository<City, Long> {
-
-		Optional<City> findOneByNameAndState(String name, String state);
-
-	}
+include::{include-springbootfeatures}/nosql/neo4j/data/CityRepository.java[]
 ----
 
 The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
@@ -4395,21 +4281,9 @@ You can inject an auto-configured `SolrClient` instance as you would any other S
 By default, the instance tries to connect to a server at `http://localhost:8983/solr`.
 The following example shows how to inject a Solr bean:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private SolrClient solr;
-
-		@Autowired
-		public MyBean(SolrClient solr) {
-			this.solr = solr;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/solr/client/MyBean.java[]
 ----
 
 If you add your own `@Bean` of type `SolrClient`, it replaces the default.
@@ -4505,20 +4379,9 @@ With this configuration in place, an
 `ElasticsearchRestTemplate` can be injected like any other Spring bean,
 as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private final ElasticsearchRestTemplate template;
-
-		public MyBean(ElasticsearchRestTemplate template) {
-			this.template = template;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/elasticsearch/template/MyBean.java[]
 ----
 
 In the presence of `spring-data-elasticsearch` and the required dependencies for using a `WebClient` (typically `spring-boot-starter-webflux`), Spring Boot can also auto-configure a <<boot-features-connecting-to-elasticsearch-reactive-rest,ReactiveElasticsearchClient>> and a `ReactiveElasticsearchTemplate` as beans.
@@ -4608,20 +4471,9 @@ NOTE: If you're using `CqlSessionBuilder` to create multiple `CqlSession` beans,
 
 The following code listing shows how to inject a Cassandra bean:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private final CassandraTemplate template;
-
-		public MyBean(CassandraTemplate template) {
-			this.template = template;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/cassandra/template/MyBean.java[]
 ----
 
 If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default.
@@ -4698,21 +4550,9 @@ This happens when a `Cluster` is available, as described above, and a bucket nam
 
 The following examples shows how to inject a `CouchbaseTemplate` bean:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private final CouchbaseTemplate template;
-
-		@Autowired
-		public MyBean(CouchbaseTemplate template) {
-			this.template = template;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/couchbase/template/MyBean.java[]
 ----
 
 There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
@@ -4724,19 +4564,9 @@ There are a few beans that you can define in your own configuration to override 
 To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class SomeConfiguration {
-
-		@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
-		public CustomConversions myCustomConversions() {
-			return new CustomConversions(...);
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/couchbase/CouchbaseConversionsConfiguration.java[]
 ----
 
 
@@ -4781,21 +4611,9 @@ For complete details of Spring Data LDAP, refer to the https://docs.spring.io/sp
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		private final LdapTemplate template;
-
-		@Autowired
-		public MyBean(LdapTemplate template) {
-			this.template = template;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/nosql/ldap/template/MyBean.java[]
 ----
 
 
@@ -4876,20 +4694,9 @@ NOTE: Check the {spring-framework-docs}/integration.html#cache[relevant section]
 
 In a nutshell, to add caching to an operation of your service add the relevant annotation to its method, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.cache.annotation.Cacheable;
-	import org.springframework.stereotype.Component;
-
-	@Component
-	public class MathService {
-
-		@Cacheable("piDecimals")
-		public int computePiDecimal(int i) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/caching/MathService.java[]
 ----
 
 This example demonstrates the use of caching on a potentially costly operation.
@@ -4937,19 +4744,9 @@ If you add dependencies manually, you must include `spring-context-support` in o
 If the `CacheManager` is auto-configured by Spring Boot, you can further tune its configuration before it is fully initialized by exposing a bean that implements the `CacheManagerCustomizer` interface.
 The following example sets a flag to say that `null` values should be passed down to the underlying map:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Bean
-	public CacheManagerCustomizer<ConcurrentMapCacheManager> cacheManagerCustomizer() {
-		return new CacheManagerCustomizer<ConcurrentMapCacheManager>() {
-
-			@Override
-			public void customize(ConcurrentMapCacheManager cacheManager) {
-				cacheManager.setAllowNullValues(false);
-			}
-
-		};
-	}
+include::{include-springbootfeatures}/caching/CacheManagerCustomizerConfiguration.java[]
 ----
 
 NOTE: In the preceding example, an auto-configured `ConcurrentMapCacheManager` is expected.
@@ -5300,25 +5097,9 @@ You can use the configprop:spring.jms.jndi-name[] property if you need to specif
 ==== Sending a Message
 Spring's `JmsTemplate` is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.jms.core.JmsTemplate;
-	import org.springframework.stereotype.Component;
-
-	@Component
-	public class MyBean {
-
-		private final JmsTemplate jmsTemplate;
-
-		@Autowired
-		public MyBean(JmsTemplate jmsTemplate) {
-			this.jmsTemplate = jmsTemplate;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/messaging/jms/template/MyBean.java[]
 ----
 
 NOTE: {spring-framework-api}/jms/core/JmsMessagingTemplate.html[`JmsMessagingTemplate`] can be injected in a similar manner.
@@ -5341,17 +5122,9 @@ This also includes sending response messages that have been performed on the sam
 
 The following component creates a listener endpoint on the `someQueue` destination:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		@JmsListener(destination = "someQueue")
-		public void processMessage(String content) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/messaging/jms/receiving/MyBean.java[]
 ----
 
 TIP: See {spring-framework-api}/jms/annotation/EnableJms.html[the Javadoc of `@EnableJms`] for more details.
@@ -5360,37 +5133,16 @@ If you need to create more `JmsListenerContainerFactory` instances or if you wan
 
 For instance, the following example exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	static class JmsConfiguration {
-
-		@Bean
-		public DefaultJmsListenerContainerFactory myFactory(
-				DefaultJmsListenerContainerFactoryConfigurer configurer) {
-			DefaultJmsListenerContainerFactory factory =
-					new DefaultJmsListenerContainerFactory();
-			configurer.configure(factory, connectionFactory());
-			factory.setMessageConverter(myMessageConverter());
-			return factory;
-		}
-
-	}
+include::{include-springbootfeatures}/messaging/jms/receiving/custom/JmsConfiguration.java[]
 ----
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes"]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		@JmsListener(destination = "someQueue", **containerFactory="myFactory"**)
-		public void processMessage(String content) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/messaging/jms/receiving/custom/MyBean.java[]
 ----
 
 
@@ -5446,28 +5198,9 @@ TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-
 ==== Sending a Message
 Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.amqp.core.AmqpAdmin;
-	import org.springframework.amqp.core.AmqpTemplate;
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.stereotype.Component;
-
-	@Component
-	public class MyBean {
-
-		private final AmqpAdmin amqpAdmin;
-		private final AmqpTemplate amqpTemplate;
-
-		@Autowired
-		public MyBean(AmqpAdmin amqpAdmin, AmqpTemplate amqpTemplate) {
-			this.amqpAdmin = amqpAdmin;
-			this.amqpTemplate = amqpTemplate;
-		}
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/messaging/amqp/sending/MyBean.java[]
 ----
 
 NOTE: {spring-amqp-api}/rabbit/core/RabbitMessagingTemplate.html[`RabbitMessagingTemplate`] can be injected in a similar manner.
@@ -5502,17 +5235,9 @@ If a `MessageConverter` or a `MessageRecoverer` bean is defined, it is automatic
 
 The following sample component creates a listener endpoint on the `someQueue` queue:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		@RabbitListener(queues = "someQueue")
-		public void processMessage(String content) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/messaging/amqp/receiving/MyBean.java[]
 ----
 
 TIP: See {spring-amqp-api}/rabbit/annotation/EnableRabbit.html[the Javadoc of `@EnableRabbit`] for more details.
@@ -5524,38 +5249,16 @@ Those two beans are exposed by the auto-configuration.
 
 For instance, the following configuration class exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	static class RabbitConfiguration {
-
-		@Bean
-		public SimpleRabbitListenerContainerFactory myFactory(
-				SimpleRabbitListenerContainerFactoryConfigurer configurer) {
-			SimpleRabbitListenerContainerFactory factory =
-					new SimpleRabbitListenerContainerFactory();
-			configurer.configure(factory, connectionFactory);
-			factory.setMessageConverter(myMessageConverter());
-			return factory;
-		}
-
-	}
+include::{include-springbootfeatures}/messaging/amqp/receiving/custom/RabbitConfiguration.java[]
 ----
 
 Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
 
-[source,java,pending-extract=true,indent=0]
-[subs="verbatim,quotes"]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		@RabbitListener(queues = "someQueue", **containerFactory="myFactory"**)
-		public void processMessage(String content) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/messaging/amqp/receiving/custom/MyBean.java[]
 ----
 
 You can enable retries to handle situations where your listener throws an exception.
@@ -5597,21 +5300,9 @@ See {spring-boot-autoconfigure-module-code}/kafka/KafkaProperties.java[`KafkaPro
 ==== Sending a Message
 Spring's `KafkaTemplate` is auto-configured, and you can autowire it directly in your own beans, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-@Component
-public class MyBean {
-
-	private final KafkaTemplate kafkaTemplate;
-
-	@Autowired
-	public MyBean(KafkaTemplate kafkaTemplate) {
-		this.kafkaTemplate = kafkaTemplate;
-	}
-
-	// ...
-
-}
+include::{include-springbootfeatures}/messaging/kafka/sending/MyBean.java[]
 ----
 
 NOTE: If the property configprop:spring.kafka.producer.transaction-id-prefix[] is defined, a `KafkaTransactionManager` is automatically configured.
@@ -5626,17 +5317,9 @@ If no `KafkaListenerContainerFactory` has been defined, a default one is automat
 
 The following component creates a listener endpoint on the `someTopic` topic:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyBean {
-
-		@KafkaListener(topics = "someTopic")
-		public void processMessage(String content) {
-			// ...
-		}
-
-	}
+include::{include-springbootfeatures}/messaging/kafka/receiving/MyBean.java[]
 ----
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
@@ -5748,19 +5431,16 @@ There are several ways to do that:
 
 * Provide a system property to map embedded broker addresses into configprop:spring.kafka.bootstrap-servers[] in the test class:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	static {
-	    System.setProperty(EmbeddedKafkaBroker.BROKER_LIST_PROPERTY, "spring.kafka.bootstrap-servers");
-	}
+include::{include-springbootfeatures}/messaging/kafka/test/property/MyTest.java[tag=*]
 ----
 
 * Configure a property name on the `@EmbeddedKafka` annotation:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@EmbeddedKafka(topics = "someTopic",
-	        bootstrapServersProperty = "spring.kafka.bootstrap-servers")
+include::{include-springbootfeatures}/messaging/kafka/test/annotation/MyTest.java[]
 ----
 
 * Use a placeholder in configuration properties:
@@ -5783,22 +5463,9 @@ The auto-configured `RestTemplateBuilder` ensures that sensible `HttpMessageConv
 
 The following code shows a typical example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Service
-	public class MyService {
-
-		private final RestTemplate restTemplate;
-
-		public MyService(RestTemplateBuilder restTemplateBuilder) {
-			this.restTemplate = restTemplateBuilder.build();
-		}
-
-		public Details someRestCall(String name) {
-			return this.restTemplate.getForObject("/{name}/details", Details.class, name);
-		}
-
-	}
+include::{include-springbootfeatures}/resttemplate/MyService.java[]
 ----
 
 TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.

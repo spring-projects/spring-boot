@@ -14,25 +14,17 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.messaging.amqp.receiving;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.amqp.rabbit.annotation.RabbitListener;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Component
+public class MyBean {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
-
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	@RabbitListener(queues = "someQueue")
+	public void processMessage(String content) {
+		// ...
 	}
-
-}
-// @chomp:file
-
-class MyPojo {
 
 }

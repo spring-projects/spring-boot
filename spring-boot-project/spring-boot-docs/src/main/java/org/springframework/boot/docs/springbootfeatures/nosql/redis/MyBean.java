@@ -14,25 +14,24 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.redis;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.redis.core.StringRedisTemplate;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Component
+public class MyBean {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+	private StringRedisTemplate template;
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	public MyBean(StringRedisTemplate template) {
+		this.template = template;
 	}
 
-}
-// @chomp:file
-
-class MyPojo {
+	// @fold:on // ...
+	public Boolean someMethod() {
+		return this.template.hasKey("spring");
+	}
+	// @fold:off
 
 }

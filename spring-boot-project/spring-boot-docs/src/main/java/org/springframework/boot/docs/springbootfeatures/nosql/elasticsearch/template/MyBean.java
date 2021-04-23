@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.elasticsearch.template;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Component
+public class MyBean {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+	private final ElasticsearchRestTemplate template;
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	public MyBean(ElasticsearchRestTemplate template) {
+		this.template = template;
 	}
+
+	// @fold:on // ...
+	public boolean someMethod(String id) {
+		return this.template.exists(id, User.class);
+	}
+	// @fold:off
 
 }
 // @chomp:file
 
-class MyPojo {
+class User {
 
 }

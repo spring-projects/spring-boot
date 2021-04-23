@@ -14,25 +14,26 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.messaging.kafka.sending;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Component
+public class MyBean {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+	private final KafkaTemplate<String, String> kafkaTemplate;
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	@Autowired
+	public MyBean(KafkaTemplate<String, String> kafkaTemplate) {
+		this.kafkaTemplate = kafkaTemplate;
 	}
 
-}
-// @chomp:file
-
-class MyPojo {
+	// @fold:on // ...
+	public void someMethod() {
+		this.kafkaTemplate.send("someTopic", "Hello");
+	}
+	// @fold:off
 
 }

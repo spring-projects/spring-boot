@@ -14,25 +14,29 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.cassandra.template;
 
-import java.util.ArrayList;
-import java.util.List;
+import org.springframework.data.cassandra.core.CassandraTemplate;
+import org.springframework.stereotype.Component;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+@Component
+public class MyBean {
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+	private final CassandraTemplate template;
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
+	public MyBean(CassandraTemplate template) {
+		this.template = template;
 	}
+
+	// @fold:on // ...
+	public long someMethod() {
+		return this.template.count(User.class);
+	}
+	// @fold:off
 
 }
 // @chomp:file
 
-class MyPojo {
+class User {
 
 }

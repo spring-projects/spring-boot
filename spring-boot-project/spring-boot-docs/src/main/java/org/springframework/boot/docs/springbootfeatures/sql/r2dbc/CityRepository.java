@@ -14,25 +14,14 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.sql.r2dbc;
 
-import java.util.ArrayList;
-import java.util.List;
+import reactor.core.publisher.Mono;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.repository.Repository;
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+public interface CityRepository extends Repository<City, Long> {
 
-	private final List<MyPojo> list = new ArrayList<>();
-
-	public List<MyPojo> getList() {
-		return this.list;
-	}
-
-}
-// @chomp:file
-
-class MyPojo {
+	Mono<City> findByNameAndStateAllIgnoringCase(String name, String state);
 
 }

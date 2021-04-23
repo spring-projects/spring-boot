@@ -14,25 +14,27 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.nosql.mongodb.template;
 
-import java.util.ArrayList;
-import java.util.List;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.stereotype.Component;
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+@Component
+public class MyBean {
 
-	private final List<MyPojo> list = new ArrayList<>();
+	private final MongoTemplate mongoTemplate;
 
-	public List<MyPojo> getList() {
-		return this.list;
+	public MyBean(MongoTemplate mongoTemplate) {
+		this.mongoTemplate = mongoTemplate;
 	}
 
-}
-// @chomp:file
-
-class MyPojo {
+	// @fold:on // ...
+	public MongoCollection<Document> someMethod() {
+		return this.mongoTemplate.getCollection("users");
+	}
+	// @fold:off
 
 }

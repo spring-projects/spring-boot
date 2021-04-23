@@ -14,25 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.externalizedconfiguration.merge.list;
+package org.springframework.boot.docs.springbootfeatures.sql.r2dbc.databaseclient;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Map;
 
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import reactor.core.publisher.Flux;
 
-@ConfigurationProperties("acme")
-public class AcmeProperties {
+import org.springframework.r2dbc.core.DatabaseClient;
+import org.springframework.stereotype.Component;
 
-	private final List<MyPojo> list = new ArrayList<>();
+@Component
+public class MyBean {
 
-	public List<MyPojo> getList() {
-		return this.list;
+	private final DatabaseClient databaseClient;
+
+	public MyBean(DatabaseClient databaseClient) {
+		this.databaseClient = databaseClient;
 	}
 
-}
-// @chomp:file
-
-class MyPojo {
+	// @fold: on // ...
+	public Flux<Map<String, Object>> someMethod() {
+		return this.databaseClient.sql("select * from user").fetch().all();
+	}
+	// @fold: off
 
 }
