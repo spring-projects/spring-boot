@@ -14,27 +14,48 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.springbootfeatures.testing;
+package org.springframework.boot.docs.springbootfeatures.testing.applications.mocking;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
-import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
-@SpringBootTest(webEnvironment = WebEnvironment.RANDOM_PORT)
-class RandomPortWebTestClientTests {
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.mockito.BDDMockito.given;
+
+@SpringBootTest
+class MyTests {
+
+	@Autowired
+	private Reverser reverser;
+
+	@MockBean
+	private RemoteService remoteService;
 
 	@Test
-	void exampleTest(@Autowired WebTestClient webClient) {
-		// @formatter:off
-		webClient
-			.get().uri("/")
-			.exchange()
-			.expectStatus().isOk()
-			.expectBody(String.class).isEqualTo("Hello World");
-		// @formatter:on
+	void exampleTest() {
+		given(this.remoteService.getValue()).willReturn("spring");
+		String reverse = this.reverser.getReverseValue(); // Calls injected RemoteService
+		assertThat(reverse).isEqualTo("gnirps");
+	}
+
+}
+// @chomp:file
+
+class RemoteService {
+
+	Object getValue() {
+		return null;
+	}
+
+}
+
+class Reverser {
+
+	String getReverseValue() {
+		return null;
 	}
 
 }

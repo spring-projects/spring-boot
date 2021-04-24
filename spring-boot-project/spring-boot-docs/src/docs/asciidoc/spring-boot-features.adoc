@@ -5515,23 +5515,9 @@ Spring Boot is configuring that builder to share HTTP resources, reflect codecs 
 
 The following code shows a typical example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Service
-	public class MyService {
-
-		private final WebClient webClient;
-
-		public MyService(WebClient.Builder webClientBuilder) {
-			this.webClient = webClientBuilder.baseUrl("https://example.org").build();
-		}
-
-		public Mono<Details> someRestCall(String name) {
-			return this.webClient.get().uri("/{name}/details", name)
-							.retrieve().bodyToMono(Details.class);
-		}
-
-	}
+include::{include-springbootfeatures}/webclient/MyService.java[]
 ----
 
 
@@ -5576,18 +5562,9 @@ Target classes with such annotated methods need to be annotated with the `@Valid
 
 For instance, the following service triggers the validation of the first argument, making sure its size is between 8 and 10:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Service
-	@Validated
-	public class MyBean {
-
-		public Archive findByCodeAndAuthor(@Size(min = 8, max = 10) String code,
-				Author author) {
-			...
-		}
-
-	}
+include::{include-springbootfeatures}/validation/MyBean.java[]
 ----
 
 
@@ -5668,29 +5645,28 @@ Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at 
 [[boot-features-jta-mixed-jms]]
 === Mixing XA and Non-XA JMS Connections
 When using JTA, the primary JMS `ConnectionFactory` bean is XA-aware and participates in distributed transactions.
+You can inject into your bean without needing to use any `@Qualifier`:
+
+[source,java,indent=0]
+----
+include::{include-springbootfeatures}/jta/primary/MyBean.java[tags=*]
+----
+
 In some situations, you might want to process certain JMS messages by using a non-XA `ConnectionFactory`.
 For example, your JMS processing logic might take longer than the XA timeout.
 
-If you want to use a non-XA `ConnectionFactory`, you can inject the `nonXaJmsConnectionFactory` bean rather than the `@Primary` `jmsConnectionFactory` bean.
-For consistency, the `jmsConnectionFactory` bean is also provided by using the bean alias `xaJmsConnectionFactory`.
+If you want to use a non-XA `ConnectionFactory`, you can the `nonXaJmsConnectionFactory` bean:
 
-The following example shows how to inject `ConnectionFactory` instances:
-
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0]
 ----
-	// Inject the primary (XA aware) ConnectionFactory
-	@Autowired
-	private ConnectionFactory defaultConnectionFactory;
+include::{include-springbootfeatures}/jta/nonxa/MyBean.java[tags=*]
+----
 
-	// Inject the XA aware ConnectionFactory (uses the alias and injects the same as above)
-	@Autowired
-	@Qualifier("xaJmsConnectionFactory")
-	private ConnectionFactory xaConnectionFactory;
+For consistency, the `jmsConnectionFactory` bean is also provided by using the bean alias `xaJmsConnectionFactory`:
 
-	// Inject the non-XA aware ConnectionFactory
-	@Autowired
-	@Qualifier("nonXaJmsConnectionFactory")
-	private ConnectionFactory nonXaConnectionFactory;
+[source,java,indent=0]
+----
+include::{include-springbootfeatures}/jta/xa/MyBean.java[tags=*]
 ----
 
 
@@ -5794,27 +5770,9 @@ If you need to customize the task executor, consider implementing `SchedulerFact
 Jobs can define setters to inject data map properties.
 Regular beans can also be injected in a similar manner, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	public class SampleJob extends QuartzJobBean {
-
-		private MyService myService;
-
-		private String name;
-
-		// Inject "MyService" bean
-		public void setMyService(MyService myService) { ... }
-
-		// Inject the "name" job data property
-		public void setName(String name) { ... }
-
-		@Override
-		protected void executeInternal(JobExecutionContext context)
-				throws JobExecutionException {
-			...
-		}
-
-	}
+include::{include-springbootfeatures}/quartz/SampleJob.java[]
 ----
 
 
@@ -6090,10 +6048,9 @@ If you have only Spring WebFlux, we'll detect that and configure a WebFlux-based
 If both are present, Spring MVC takes precedence.
 If you want to test a reactive web application in this scenario, you must set the configprop:spring.main.web-application-type[] property:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@SpringBootTest(properties = "spring.main.web-application-type=reactive")
-	class MyWebFluxTests { ... }
+include::{include-springbootfeatures}/testing/applications/detection/MyWebFluxTests.java[]
 ----
 
 
@@ -6134,18 +6091,9 @@ As we <<boot-features-testing-spring-boot-applications-detecting-config,have see
 When placed on a top-level class, `@TestConfiguration` indicates that classes in `src/test/java` should not be picked up by scanning.
 You can then import that class explicitly where it is required, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@SpringBootTest
-	@Import(MyTestsConfiguration.class)
-	class MyTests {
-
-		@Test
-		void exampleTest() {
-			...
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/excluding/MyTests.java[]
 ----
 
 NOTE: If you directly use `@ComponentScan` (that is, not through `@SpringBootApplication`) you need to register the `TypeExcludeFilter` with it.
@@ -6264,43 +6212,18 @@ Mock beans are automatically reset after each test method.
 If your test uses one of Spring Boot's test annotations (such as `@SpringBootTest`), this feature is automatically enabled.
 To use this feature with a different arrangement, listeners must be explicitly added, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@TestExecutionListeners({ MockitoTestExecutionListener.class, ResetMocksTestExecutionListener.class })
+include::{include-springbootfeatures}/testing/applications/mocking/listener/MyTests.java[]
 ----
 
 ====
 
 The following example replaces an existing `RemoteService` bean with a mock implementation:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-	import org.springframework.beans.factory.annotation.*;
-	import org.springframework.boot.test.context.*;
-	import org.springframework.boot.test.mock.mockito.*;
-
-	import static org.assertj.core.api.Assertions.*;
-	import static org.mockito.BDDMockito.*;
-
-	@SpringBootTest
-	class MyTests {
-
-		@MockBean
-		private RemoteService remoteService;
-
-		@Autowired
-		private Reverser reverser;
-
-		@Test
-		void exampleTest() {
-			// RemoteService has been injected into the reverser bean
-			given(this.remoteService.someCall()).willReturn("mock");
-			String reverse = reverser.reverseSomeCall();
-			assertThat(reverse).isEqualTo("kcom");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/mocking/MyTests.java[]
 ----
 
 NOTE: `@MockBean` cannot be used to mock the behavior of a bean that's exercised during application context refresh.
@@ -6364,42 +6287,9 @@ The `JacksonTester`, `GsonTester`, `JsonbTester`, and `BasicJsonTester` classes 
 Any helper fields on the test class can be `@Autowired` when using `@JsonTest`.
 The following example shows a test class for Jackson:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-	import org.springframework.beans.factory.annotation.*;
-	import org.springframework.boot.test.autoconfigure.json.*;
-	import org.springframework.boot.test.context.*;
-	import org.springframework.boot.test.json.*;
-
-	import static org.assertj.core.api.Assertions.*;
-
-	@JsonTest
-	class MyJsonTests {
-
-		@Autowired
-		private JacksonTester<VehicleDetails> json;
-
-		@Test
-		void testSerialize() throws Exception {
-			VehicleDetails details = new VehicleDetails("Honda", "Civic");
-			// Assert against a `.json` file in the same package as the test
-			assertThat(this.json.write(details)).isEqualToJson("expected.json");
-			// Or use JSON path based assertions
-			assertThat(this.json.write(details)).hasJsonPathStringValue("@.make");
-			assertThat(this.json.write(details)).extractingJsonPathStringValue("@.make")
-					.isEqualTo("Honda");
-		}
-
-		@Test
-		void testDeserialize() throws Exception {
-			String content = "{\"make\":\"Ford\",\"model\":\"Focus\"}";
-			assertThat(this.json.parse(content))
-					.isEqualTo(new VehicleDetails("Ford", "Focus"));
-			assertThat(this.json.parseObject(content).getMake()).isEqualTo("Ford");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/json/MyJsonTests.java[]
 ----
 
 NOTE: JSON helper classes can also be used directly in standard unit tests.
@@ -6409,11 +6299,9 @@ If you're using Spring Boot's AssertJ-based helpers to assert on a number value 
 Instead, you can use AssertJ's `satisfies` to assert that the value matches the given condition.
 For instance, the following example asserts that the actual number is a float value close to `0.15` within an offset of `0.01`.
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	assertThat(json.write(message))
-		.extractingJsonPathNumberValue("@.test.numberValue")
-		.satisfies((number) -> assertThat(number.floatValue()).isCloseTo(0.15f, within(0.01f)));
+include::{include-springbootfeatures}/testing/applications/json/AssertJ.java[tags=*]
 ----
 
 

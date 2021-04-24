@@ -29,7 +29,13 @@ class MockWebTestClientTests {
 
 	@Test
 	void exampleTest(@Autowired WebTestClient webClient) {
-		webClient.get().uri("/").exchange().expectStatus().isOk().expectBody(String.class).isEqualTo("Hello World");
+		// @formatter:off
+		webClient
+			.get().uri("/")
+			.exchange()
+			.expectStatus().isOk()
+			.expectBody(String.class).isEqualTo("Hello World");
+		// @formatter:on
 	}
 
 }
