@@ -6325,36 +6325,9 @@ Mock MVC offers a powerful way to quickly test MVC controllers without needing t
 TIP: You can also auto-configure `MockMvc` in a non-`@WebMvcTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureMockMvc`.
 The following example uses `MockMvc`:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.*;
-	import org.springframework.beans.factory.annotation.*;
-	import org.springframework.boot.test.autoconfigure.web.servlet.*;
-	import org.springframework.boot.test.mock.mockito.*;
-
-	import static org.assertj.core.api.Assertions.*;
-	import static org.mockito.BDDMockito.*;
-	import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
-	import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-	@WebMvcTest(UserVehicleController.class)
-	class MyControllerTests {
-
-		@Autowired
-		private MockMvc mvc;
-
-		@MockBean
-		private UserVehicleService userVehicleService;
-
-		@Test
-		void testExample() throws Exception {
-			given(this.userVehicleService.getVehicleDetails("sboot"))
-					.willReturn(new VehicleDetails("Honda", "Civic"));
-			this.mvc.perform(get("/sboot/vehicle").accept(MediaType.TEXT_PLAIN))
-					.andExpect(status().isOk()).andExpect(content().string("Honda Civic"));
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/mvc/MyControllerTests.java[]
 ----
 
 TIP: If you need to configure elements of the auto-configuration (for example, when servlet filters should be applied) you can use attributes in the `@AutoConfigureMockMvc` annotation.
@@ -6362,35 +6335,9 @@ TIP: If you need to configure elements of the auto-configuration (for example, w
 If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import com.gargoylesoftware.htmlunit.*;
-	import org.junit.jupiter.api.*;
-	import org.springframework.beans.factory.annotation.*;
-	import org.springframework.boot.test.autoconfigure.web.servlet.*;
-	import org.springframework.boot.test.mock.mockito.*;
-
-	import static org.assertj.core.api.Assertions.*;
-	import static org.mockito.BDDMockito.*;
-
-	@WebMvcTest(UserVehicleController.class)
-	class MyHtmlUnitTests {
-
-		@Autowired
-		private WebClient webClient;
-
-		@MockBean
-		private UserVehicleService userVehicleService;
-
-		@Test
-		void testExample() throws Exception {
-			given(this.userVehicleService.getVehicleDetails("sboot"))
-					.willReturn(new VehicleDetails("Honda", "Civic"));
-			HtmlPage page = this.webClient.getPage("/sboot/vehicle.html");
-			assertThat(page.getBody().getTextContent()).isEqualTo("Honda Civic");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/mvc/MyHtmlUnitTests.java[]
 ----
 
 NOTE: By default, Spring Boot puts `WebDriver` beans in a special "`scope`" to ensure that the driver exits after each test and that a new instance is injected.
@@ -6425,35 +6372,9 @@ Often, `@WebFluxTest` is limited to a single controller and used in combination 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`.
 The following example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.web.reactive.WebFluxTest;
-	import org.springframework.http.MediaType;
-	import org.springframework.test.web.reactive.server.WebTestClient;
-
-	@WebFluxTest(UserVehicleController.class)
-	class MyControllerTests {
-
-		@Autowired
-		private WebTestClient webClient;
-
-		@MockBean
-		private UserVehicleService userVehicleService;
-
-		@Test
-		void testExample() throws Exception {
-			given(this.userVehicleService.getVehicleDetails("sboot"))
-					.willReturn(new VehicleDetails("Honda", "Civic"));
-			this.webClient.get().uri("/sboot/vehicle").accept(MediaType.TEXT_PLAIN)
-					.exchange()
-					.expectStatus().isOk()
-					.expectBody(String.class).isEqualTo("Honda Civic");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/webflux/MyControllerTests.java[]
 ----
 
 TIP: This setup is only supported by WebFlux applications as using `WebTestClient` in a mocked web application only works with WebFlux at the moment.
@@ -6480,19 +6401,9 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataCassand
 
 The following example shows a typical setup for using Cassandra tests in Spring Boot:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.data.cassandra.DataCassandraTest;
-
-	@DataCassandraTest
-	class ExampleDataCassandraTests {
-
-		@Autowired
-		private YourRepository repository;
-
-		//
-	}
+include::{include-springbootfeatures}/testing/applications/data/cassandra/MyDataCassandraTests.java[]
 ----
 
 
@@ -6514,18 +6425,9 @@ By default, data JPA tests are transactional and roll back at the end of each te
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-	import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-	import org.springframework.transaction.annotation.Propagation;
-	import org.springframework.transaction.annotation.Transactional;
-
-	@DataJpaTest
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	class ExampleNonTransactionalTests {
-
-	}
+include::{include-springbootfeatures}/testing/applications/data/jpa/MyNonTransactionalTests.java[]
 ----
 
 Data JPA tests may also inject a {spring-boot-test-autoconfigure-module-code}/orm/jpa/TestEntityManager.java[`TestEntityManager`] bean, which provides an alternative to the standard JPA `EntityManager` that is specifically designed for tests.
@@ -6533,45 +6435,17 @@ If you want to use `TestEntityManager` outside of `@DataJpaTest` instances, you 
 A `JdbcTemplate` is also available if you need that.
 The following example shows the `@DataJpaTest` annotation in use:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-	import org.springframework.boot.test.autoconfigure.orm.jpa.*;
-
-	import static org.assertj.core.api.Assertions.*;
-
-	@DataJpaTest
-	class ExampleRepositoryTests {
-
-		@Autowired
-		private TestEntityManager entityManager;
-
-		@Autowired
-		private UserRepository repository;
-
-		@Test
-		void testExample() throws Exception {
-			this.entityManager.persist(new User("sboot", "1234"));
-			User user = this.repository.findByUsername("sboot");
-			assertThat(user.getUsername()).isEqualTo("sboot");
-			assertThat(user.getVin()).isEqualTo("1234");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/data/jpa/MyRepositoryTests.java[]
 ----
 
 In-memory embedded databases generally work well for tests, since they are fast and do not require any installation.
 If, however, you prefer to run tests against a real database you can use the `@AutoConfigureTestDatabase` annotation, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@DataJpaTest
-	@AutoConfigureTestDatabase(replace=Replace.NONE)
-	class ExampleRepositoryTests {
-
-		// ...
-
-	}
+include::{include-springbootfeatures}/testing/applications/data/jpa/db/MyRepositoryTests.java[]
 ----
 
 
@@ -6589,18 +6463,9 @@ By default, JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-	import org.springframework.boot.test.autoconfigure.jdbc.JdbcTest;
-	import org.springframework.transaction.annotation.Propagation;
-	import org.springframework.transaction.annotation.Transactional;
-
-	@JdbcTest
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	class ExampleNonTransactionalTests {
-
-	}
+include::{include-springbootfeatures}/testing/applications/data/jdbc/MyTransactionalTests.java[]
 ----
 
 If you prefer your test to run against a real database, you can use the `@AutoConfigureTestDatabase` annotation in the same way as for `DataJpaTest`.
@@ -6640,18 +6505,9 @@ TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<
 `@JooqTest` configures a `DSLContext`.
 The following example shows the `@JooqTest` annotation in use:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.jooq.DSLContext;
-	import org.junit.jupiter.api.Test;
-	import org.springframework.boot.test.autoconfigure.jooq.JooqTest;
-
-	@JooqTest
-	class ExampleJooqTests {
-
-		@Autowired
-		private DSLContext dslContext;
-	}
+include::{include-springbootfeatures}/testing/applications/jooq/MyJooqTests.java[]
 ----
 
 JOOQ tests are transactional and roll back at the end of each test by default.
@@ -6671,34 +6527,17 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTe
 
 The following class shows the `@DataMongoTest` annotation in use:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-	import org.springframework.data.mongodb.core.MongoTemplate;
-
-	@DataMongoTest
-	class ExampleDataMongoTests {
-
-		@Autowired
-		private MongoTemplate mongoTemplate;
-
-		//
-	}
+include::{include-springbootfeatures}/testing/applications/data/mongodb/MyDataMongoDbTests.java[]
 ----
 
 In-memory embedded MongoDB generally works well for tests, since it is fast and does not require any developer installation.
 If, however, you prefer to run tests against a real MongoDB server, you should exclude the embedded MongoDB auto-configuration, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongoAutoConfiguration;
-	import org.springframework.boot.test.autoconfigure.data.mongo.DataMongoTest;
-
-	@DataMongoTest(excludeAutoConfiguration = EmbeddedMongoAutoConfiguration.class)
-	class ExampleDataMongoNonEmbeddedTests {
-
-	}
+include::{include-springbootfeatures}/testing/applications/data/mongodb/db/MyDataMongoDbTests.java[]
 ----
 
 
@@ -6715,36 +6554,18 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTe
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
-
-	@DataNeo4jTest
-	class ExampleDataNeo4jTests {
-
-		@Autowired
-		private YourRepository repository;
-
-		//
-	}
+include::{include-springbootfeatures}/testing/applications/data/neo4j/MyDataNeo4jTests.java[]
 ----
 
 By default, Data Neo4j tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.test.autoconfigure.data.neo4j.DataNeo4jTest;
-	import org.springframework.transaction.annotation.Propagation;
-	import org.springframework.transaction.annotation.Transactional;
-
-	@DataNeo4jTest
-	@Transactional(propagation = Propagation.NOT_SUPPORTED)
-	class ExampleNonTransactionalTests {
-
-	}
+include::{include-springbootfeatures}/testing/applications/data/neo4j/tx/MyDataNeo4jTests.java[]
 ----
 
 NOTE: Transactional tests are not supported with reactive access.
@@ -6764,19 +6585,9 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTe
 
 The following example shows the `@DataRedisTest` annotation in use:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.data.redis.DataRedisTest;
-
-	@DataRedisTest
-	class ExampleDataRedisTests {
-
-		@Autowired
-		private YourRepository repository;
-
-		//
-	}
+include::{include-springbootfeatures}/testing/applications/data/redis/MyDataRedisTests.java[]
 ----
 
 
@@ -6793,34 +6604,17 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTes
 
 The following example shows the `@DataLdapTest` annotation in use:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
-	import org.springframework.ldap.core.LdapTemplate;
-
-	@DataLdapTest
-	class ExampleDataLdapTests {
-
-		@Autowired
-		private LdapTemplate ldapTemplate;
-
-		//
-	}
+include::{include-springbootfeatures}/testing/applications/data/ldap/MyDataLdapTests.java[]
 ----
 
 In-memory embedded LDAP generally works well for tests, since it is fast and does not require any developer installation.
 If, however, you prefer to run tests against a real LDAP server, you should exclude the embedded LDAP auto-configuration, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapAutoConfiguration;
-	import org.springframework.boot.test.autoconfigure.data.ldap.DataLdapTest;
-
-	@DataLdapTest(excludeAutoConfiguration = EmbeddedLdapAutoConfiguration.class)
-	class ExampleDataLdapNonEmbeddedTests {
-
-	}
+include::{include-springbootfeatures}/testing/applications/data/ldap/server/MyDataLdapTests.java[]
 ----
 
 
@@ -6836,27 +6630,9 @@ TIP: A list of the auto-configuration settings that are enabled by `@RestClientT
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@RestClientTest(RemoteVehicleDetailsService.class)
-	class ExampleRestClientTest {
-
-		@Autowired
-		private RemoteVehicleDetailsService service;
-
-		@Autowired
-		private MockRestServiceServer server;
-
-		@Test
-		void getVehicleDetailsWhenResultIsSuccessShouldReturnDetails()
-				throws Exception {
-			this.server.expect(requestTo("/greet/details"))
-					.andRespond(withSuccess("hello", MediaType.TEXT_PLAIN));
-			String greeting = this.service.callRestService();
-			assertThat(greeting).isEqualTo("hello");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/restclient/MyRestClientTests.java[]
 ----
 
 

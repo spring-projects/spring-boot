@@ -74,6 +74,7 @@ dependencies {
 	implementation("jakarta.annotation:jakarta.annotation-api")
 	implementation("jakarta.jms:jakarta.jms-api")
 	implementation("jakarta.servlet:jakarta.servlet-api")
+	implementation("net.sourceforge.htmlunit:htmlunit")
 	implementation("org.apache.commons:commons-dbcp2")
 	implementation("org.apache.kafka:kafka-streams")
 	implementation("org.apache.logging.log4j:log4j-to-slf4j")
