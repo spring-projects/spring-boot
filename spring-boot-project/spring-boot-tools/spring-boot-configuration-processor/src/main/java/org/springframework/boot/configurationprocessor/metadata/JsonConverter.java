@@ -161,8 +161,7 @@ class JsonConverter {
 	private static class ItemMetadataComparator implements Comparator<ItemMetadata> {
 
 		private final Comparator<ItemMetadata> itemComparator = Comparator.comparing(this::isDeprecated)
-				.thenComparing(ItemMetadata::getName)
-				.thenComparing(ItemMetadata::getSourceType);
+				.thenComparing(ItemMetadata::getName).thenComparing(ItemMetadata::getSourceType);
 
 		private final Comparator<ItemMetadata> groupComparator = Comparator.comparing(ItemMetadata::getName)
 				.thenComparing(ItemMetadata::getSourceType);
