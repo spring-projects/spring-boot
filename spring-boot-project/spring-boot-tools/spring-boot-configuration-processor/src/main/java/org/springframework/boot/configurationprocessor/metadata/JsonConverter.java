@@ -170,9 +170,9 @@ class JsonConverter {
 		@Override
 		public int compare(ItemMetadata o1, ItemMetadata o2) {
 			if (o1.isOfItemType(ItemType.GROUP)) {
-				return groupComparator.compare(o1, o2);
+				return this.groupComparator.compare(o1, o2);
 			}
-			return itemComparator.compare(o1, o2);
+			return this.itemComparator.compare(o1, o2);
 		}
 
 		private boolean isDeprecated(ItemMetadata item) {

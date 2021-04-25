@@ -106,7 +106,7 @@ class JsonMarshallerTests {
 	}
 
 	@Test
-	void orderingForSameGroupNames() throws IOException{
+	void orderingForSameGroupNames() throws IOException {
 		ConfigurationMetadata metadata = new ConfigurationMetadata();
 		metadata.add(ItemMetadata.newGroup("com.acme.alpha", null, "com.example.Foo", null));
 		metadata.add(ItemMetadata.newGroup("com.acme.alpha", null, "com.example.Bar", null));
