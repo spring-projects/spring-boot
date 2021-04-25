@@ -160,26 +160,18 @@ class JsonConverter {
 
 	private static class ItemMetadataComparator implements Comparator<ItemMetadata> {
 
+		private final Comparator<ItemMetadata> itemComparator = Comparator.comparing(this::isDeprecated)
+				.thenComparing(ItemMetadata::getName).thenComparing(ItemMetadata::getSourceType);
+
+		private final Comparator<ItemMetadata> groupComparator = Comparator.comparing(ItemMetadata::getName)
+				.thenComparing(ItemMetadata::getSourceType);
+
 		@Override
 		public int compare(ItemMetadata o1, ItemMetadata o2) {
 			if (o1.isOfItemType(ItemType.GROUP)) {
-				return compareGroup(o1, o2);
+				return this.groupComparator.compare(o1, o2);
 			}
-			return compareProperty(o1, o2);
-		}
-
-		private int compareGroup(ItemMetadata o1, ItemMetadata o2) {
-			return o1.getName().compareTo(o2.getName());
-		}
-
-		private int compareProperty(ItemMetadata o1, ItemMetadata o2) {
-			if (isDeprecated(o1) && !isDeprecated(o2)) {
-				return 1;
-			}
-			if (isDeprecated(o2) && !isDeprecated(o1)) {
-				return -1;
-			}
-			return o1.getName().compareTo(o2.getName());
+			return this.itemComparator.compare(o1, o2);
 		}
 
 		private boolean isDeprecated(ItemMetadata item) {
