@@ -265,12 +265,17 @@ public class SpringApplication {
 	 */
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public SpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
-		this.resourceLoader = resourceLoader;
+		this.resourceLoader = resourceLoader; // 初始化资源加载器，一般为null
 		Assert.notNull(primarySources, "PrimarySources must not be null");
+		// 初始化 主要加载资源类，并去重
 		this.primarySources = new LinkedHashSet<>(Arrays.asList(primarySources));
+		// 推断当前的应用类型：REACTIVE、NONE还是SERVLET
 		this.webApplicationType = WebApplicationType.deduceFromClasspath();
+		// 设置 应用上下文初始化器
 		setInitializers((Collection) getSpringFactoriesInstances(ApplicationContextInitializer.class));
+		// 设置 监听器
 		setListeners((Collection) getSpringFactoriesInstances(ApplicationListener.class));
+		// 推断 主入口程序类
 		this.mainApplicationClass = deduceMainApplicationClass();
 	}
 
@@ -312,6 +317,7 @@ public class SpringApplication {
 			ConfigurableEnvironment environment = prepareEnvironment(listeners, applicationArguments);
 			configureIgnoreBeanInfo(environment);
 			Banner printedBanner = printBanner(environment);
+			// 根据应用类型来创建相应的 应用上下文
 			context = createApplicationContext();
 			exceptionReporters = getSpringFactoriesInstances(SpringBootExceptionReporter.class,
 					new Class[] { ConfigurableApplicationContext.class }, context);

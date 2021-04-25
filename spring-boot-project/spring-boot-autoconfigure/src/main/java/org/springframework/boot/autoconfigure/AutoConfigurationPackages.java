@@ -52,6 +52,9 @@ public abstract class AutoConfigurationPackages {
 
 	private static final Log logger = LogFactory.getLog(AutoConfigurationPackages.class);
 
+	// AutoConfigurationPackages 类
+	// 定义Bean的名称
+	// org.springframework.boot.autoconfigure.AutoConfigurationPackages
 	private static final String BEAN = AutoConfigurationPackages.class.getName();
 
 	/**
@@ -91,6 +94,8 @@ public abstract class AutoConfigurationPackages {
 	 * @param packageNames the package names to set
 	 */
 	public static void register(BeanDefinitionRegistry registry, String... packageNames) {
+		// 这里参数 packageNames 缺省情况下就是一个字符串（一个包名），是使用了注解 @SpringBootApplication 的 Spring Boot 应用程序入口类所在的包
+
 		if (registry.containsBeanDefinition(BEAN)) {
 			BeanDefinition beanDefinition = registry.getBeanDefinition(BEAN);
 			ConstructorArgumentValues constructorArguments = beanDefinition.getConstructorArgumentValues();
@@ -121,6 +126,7 @@ public abstract class AutoConfigurationPackages {
 
 		@Override
 		public void registerBeanDefinitions(AnnotationMetadata metadata, BeanDefinitionRegistry registry) {
+			// 将注解标注的元信息传入，获取到相应的包名
 			register(registry, new PackageImports(metadata).getPackageNames().toArray(new String[0]));
 		}
 

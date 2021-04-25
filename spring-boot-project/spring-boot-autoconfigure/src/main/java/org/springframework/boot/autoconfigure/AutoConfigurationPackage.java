@@ -33,12 +33,14 @@ import org.springframework.context.annotation.Import;
  * @author Phillip Webb
  * @since 1.3.0
  * @see AutoConfigurationPackages
+ *
+ * @apiNote 将主程序类（@SpringBootApplication注解所标注的类）在包及所有子包下的组件到扫描到spring容器中
  */
 @Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
 @Inherited
-@Import(AutoConfigurationPackages.Registrar.class)
+@Import(AutoConfigurationPackages.Registrar.class) // 导入 Registrar 中注册的组件
 public @interface AutoConfigurationPackage {
 
 	/**
