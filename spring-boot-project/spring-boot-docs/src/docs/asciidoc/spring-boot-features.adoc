@@ -5649,7 +5649,7 @@ You can inject into your bean without needing to use any `@Qualifier`:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/jta/primary/MyBean.java[tags=*]
+include::{include-springbootfeatures}/jta/primary/MyBean.java[tag=*]
 ----
 
 In some situations, you might want to process certain JMS messages by using a non-XA `ConnectionFactory`.
@@ -5659,14 +5659,14 @@ If you want to use a non-XA `ConnectionFactory`, you can the `nonXaJmsConnection
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/jta/nonxa/MyBean.java[tags=*]
+include::{include-springbootfeatures}/jta/nonxa/MyBean.java[tag=*]
 ----
 
 For consistency, the `jmsConnectionFactory` bean is also provided by using the bean alias `xaJmsConnectionFactory`:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/jta/xa/MyBean.java[tags=*]
+include::{include-springbootfeatures}/jta/xa/MyBean.java[tag=*]
 ----
 
 
@@ -6301,7 +6301,7 @@ For instance, the following example asserts that the actual number is a float va
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/applications/json/AssertJ.java[tags=*]
+include::{include-springbootfeatures}/testing/applications/json/AssertJ.java[tag=*]
 ----
 
 
@@ -6652,67 +6652,25 @@ It can also be used to configure the host, scheme, and port that appears in any 
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.junit.jupiter.api.Test;
-
-	import org.springframework.beans.factory.annotation.Autowired;
-	import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-	import org.springframework.http.MediaType;
-	import org.springframework.test.web.servlet.MockMvc;
-
-	import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
-	import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-	import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
-	@WebMvcTest(UserController.class)
-	@AutoConfigureRestDocs
-	class UserDocumentationTests {
-
-		@Autowired
-		private MockMvc mvc;
-
-		@Test
-		void listUsers() throws Exception {
-			this.mvc.perform(get("/users").accept(MediaType.TEXT_PLAIN))
-					.andExpect(status().isOk())
-					.andDo(document("list-users"));
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/restdocs/mvc/UserDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsMockMvcConfigurationCustomizer` bean, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@TestConfiguration
-	static class CustomizationConfiguration
-			implements RestDocsMockMvcConfigurationCustomizer {
-
-		@Override
-		public void customize(MockMvcRestDocumentationConfigurer configurer) {
-			configurer.snippets().withTemplateFormat(TemplateFormats.markdown());
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/restdocs/mvc/CustomizationConfiguration.java[]
 ----
 
 If you want to make use of Spring REST Docs support for a parameterized output directory, you can create a `RestDocumentationResultHandler` bean.
 The auto-configuration calls `alwaysDo` with this result handler, thereby causing each `MockMvc` call to automatically generate the default snippets.
 The following example shows a `RestDocumentationResultHandler` being defined:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@TestConfiguration(proxyBeanMethods = false)
-	static class ResultHandlerConfiguration {
-
-		@Bean
-		public RestDocumentationResultHandler restDocumentation() {
-			return MockMvcRestDocumentation.document("{method-name}");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/restdocs/mvc/ResultHandlerConfiguration.java[]
 ----
 
 
@@ -6766,25 +6724,9 @@ TIP: A list of the auto-configuration settings that are enabled by `@WebServiceC
 
 The following example shows the `@WebServiceClientTest` annotation in use:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@WebServiceClientTest(ExampleWebServiceClient.class)
-	class WebServiceClientIntegrationTests {
-
-		@Autowired
-		private MockWebServiceServer server;
-
-		@Autowired
-		private ExampleWebServiceClient client;
-
-		@Test
-		void mockServerCall() {
-			this.server.expect(payload(new StringSource("<request/>"))).andRespond(
-					withPayload(new StringSource("<response><status>200</status></response>")));
-			assertThat(this.client.test()).extracting(Response::getStatus).isEqualTo(200);
-		}
-
-	}
+include::{include-springbootfeatures}/testing/applications/webservices/MyWebServiceClientTests.java[]
 ----
 
 
@@ -6794,13 +6736,9 @@ The following example shows the `@WebServiceClientTest` annotation in use:
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
 Additional auto-configurations can be added on a test-by-test basis by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@JdbcTest
-	@ImportAutoConfiguration(IntegrationAutoConfiguration.class)
-	class ExampleJdbcTests {
-
-	}
+include::{include-springbootfeatures}/testing/applications/slicing/ExampleJdbcTests.java[]
 ----
 
 NOTE: Make sure to not use the regular `@Import` annotation to import auto-configurations as they are handled in a specific way by Spring Boot.
@@ -6825,21 +6763,17 @@ It then becomes important not to litter the application's main class with config
 Assume that you are using Spring Batch and you rely on the auto-configuration for it.
 You could define your `@SpringBootApplication` as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@SpringBootApplication
-	@EnableBatchProcessing
-	public class SampleApplication { ... }
+include::{include-springbootfeatures}/testing/applications/slicing/SampleApplication.java[]
 ----
 
 Because this class is the source configuration for the test, any slice test actually tries to start Spring Batch, which is definitely not what you want to do.
 A recommended approach is to move that area-specific configuration to a separate `@Configuration` class at the same level as your application, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	@EnableBatchProcessing
-	public class BatchConfiguration { ... }
+include::{include-springbootfeatures}/testing/applications/slicing/BatchConfiguration.java[]
 ----
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
@@ -6848,38 +6782,25 @@ The latter approach lets you enable it in one of your tests, if necessary, with 
 Test slices exclude `@Configuration` classes from scanning.
 For example, for a `@WebMvcTest`, the following configuration will not include the given `WebMvcConfigurer` bean in the application context loaded by the test slice:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration
-	public class WebConfiguration {
-		@Bean
-		public WebMvcConfigurer testConfigurer() {
-			return new WebMvcConfigurer() {
-				...
-			};
-		}
-	}
+include::{include-springbootfeatures}/testing/applications/slicing/WebConfiguration.java[]
 ----
 
 The configuration below will, however, cause the custom `WebMvcConfigurer` to be loaded by the test slice.
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class TestWebMvcConfigurer implements WebMvcConfigurer {
-		...
-	}
+include::{include-springbootfeatures}/testing/applications/slicing/TestWebMvcConfigurer.java[]
 ----
 
 Another source of confusion is classpath scanning.
 Assume that, while you structured your code in a sensible way, you need to scan an additional package.
 Your application may resemble the following code:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@SpringBootApplication
-	@ComponentScan({ "com.example.app", "org.acme.another" })
-	public class SampleApplication { ... }
+include::{include-springbootfeatures}/testing/applications/slicing/scan/SampleApplication.java[]
 ----
 
 Doing so effectively overrides the default component scan directive with the side effect of scanning those two packages regardless of the slice that you chose.
@@ -6909,17 +6830,16 @@ A few test utility classes that are generally useful when testing your applicati
 
 
 [[boot-features-configfileapplicationcontextinitializer-test-utility]]
-==== ConfigFileApplicationContextInitializer
-`ConfigFileApplicationContextInitializer` is an `ApplicationContextInitializer` that you can apply to your tests to load Spring Boot `application.properties` files.
+==== ConfigDataApplicationContextInitializer
+`ConfigDataApplicationContextInitializer` is an `ApplicationContextInitializer` that you can apply to your tests to load Spring Boot `application.properties` files.
 You can use it when you do not need the full set of features provided by `@SpringBootTest`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ContextConfiguration(classes = Config.class,
-		initializers = ConfigFileApplicationContextInitializer.class)
+include::{include-springbootfeatures}/testing/utils/MyConfigFileTests.java[]
 ----
 
-NOTE: Using `ConfigFileApplicationContextInitializer` alone does not provide support for `@Value("${...}")` injection.
+NOTE: Using `ConfigDataApplicationContextInitializer` alone does not provide support for `@Value("${...}")` injection.
 Its only job is to ensure that `application.properties` files are loaded into Spring's `Environment`.
 For `@Value` support, you need to either additionally configure a `PropertySourcesPlaceholderConfigurer` or use `@SpringBootTest`, which auto-configures one for you.
 
@@ -6930,9 +6850,9 @@ For `@Value` support, you need to either additionally configure a `PropertySourc
 `TestPropertyValues` lets you quickly add properties to a `ConfigurableEnvironment` or `ConfigurableApplicationContext`.
 You can call it with `key=value` strings, as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	TestPropertyValues.of("org=Spring", "name=Boot").applyTo(env);
+include::{include-springbootfeatures}/testing/utils/MyEnvironmentTests.java[tag=*]
 ----
 
 
@@ -6967,20 +6887,9 @@ If you do use Apache's HTTP client, some additional test-friendly features are e
 
 `TestRestTemplate` can be instantiated directly in your integration tests, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	public class MyTest {
-
-		private TestRestTemplate template = new TestRestTemplate();
-
-		@Test
-		public void testRequest() throws Exception {
-			HttpHeaders headers = this.template.getForEntity(
-					"https://myhost.example.com/example", String.class).getHeaders();
-			assertThat(headers.getLocation()).hasHost("other.example.com");
-		}
-
-	}
+include::{include-springbootfeatures}/testing/utils/testresttemplate/MyTest.java[]
 ----
 
 Alternatively, if you use the `@SpringBootTest` annotation with `WebEnvironment.RANDOM_PORT` or `WebEnvironment.DEFINED_PORT`, you can inject a fully configured `TestRestTemplate` and start using it.
@@ -7040,34 +6949,17 @@ It does, however, auto-configure a `WebServiceTemplateBuilder`, which can be use
 
 The following code shows a typical example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Service
-	public class MyService {
-
-		private final WebServiceTemplate webServiceTemplate;
-
-		public MyService(WebServiceTemplateBuilder webServiceTemplateBuilder) {
-			this.webServiceTemplate = webServiceTemplateBuilder.build();
-		}
-
-		public DetailsResp someWsCall(DetailsReq detailsReq) {
-			 return (DetailsResp) this.webServiceTemplate.marshalSendAndReceive(detailsReq, new SoapActionCallback(ACTION));
-		}
-
-	}
+include::{include-springbootfeatures}/webservices/MyService.java[]
 ----
 
 By default, `WebServiceTemplateBuilder` detects a suitable HTTP-based `WebServiceMessageSender` using the available HTTP client libraries on the classpath.
 You can also customize read and connection timeouts as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Bean
-	public WebServiceTemplate webServiceTemplate(WebServiceTemplateBuilder builder) {
-		return builder.messageSenders(new HttpWebServiceMessageSenderBuilder()
-				.setConnectTimeout(5000).setReadTimeout(2000).build()).build();
-	}
+include::{include-springbootfeatures}/webservices/MyWebServiceTemplateConfiguration.java[]
 ----
 
 
@@ -7150,25 +7042,9 @@ This mechanism does not apply the same way to `@Bean` methods where typically th
 
 To handle this scenario, a separate `@Configuration` class can be used to isolate the condition, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	// Some conditions
-	public class MyAutoConfiguration {
-
-		// Auto-configured beans
-
-		@Configuration(proxyBeanMethods = false)
-		@ConditionalOnClass(EmbeddedAcmeService.class)
-		static class EmbeddedConfiguration {
-
-			@Bean
-			@ConditionalOnMissingBean
-			public EmbeddedAcmeService embeddedAcmeService() { ... }
-
-		}
-
-	}
+include::{include-springbootfeatures}/creatingautoconfiguration/classconditions/MyAutoConfiguration.java[]
 ----
 
 TIP: If you use `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a meta-annotation to compose your own composed annotations, you must use `name` as referring to the class in such a case is not handled.
@@ -7183,16 +7059,9 @@ The `search` attribute lets you limit the `ApplicationContext` hierarchy that sh
 
 When placed on a `@Bean` method, the target type defaults to the return type of the method, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Configuration(proxyBeanMethods = false)
-	public class MyAutoConfiguration {
-
-		@Bean
-		@ConditionalOnMissingBean
-		public MyService myService() { ... }
-
-	}
+include::{include-springbootfeatures}/creatingautoconfiguration/beanconditions/MyAutoConfiguration.java[]
 ----
 
 In the preceding example, the `myService` bean is going to be created if no bean of type `MyService` is already contained in the `ApplicationContext`.
@@ -7278,17 +7147,9 @@ The runner can also be used to display the `ConditionEvaluationReport`.
 The report can be printed at `INFO` or `DEBUG` level.
 The following example shows how to use the `ConditionEvaluationReportLoggingListener` to print the report in auto-configuration tests.
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Test
-	void autoConfigTest() {
-		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
-				LogLevel.INFO);
-		ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-				.withInitializer(initializer).run((context) -> {
-						// Do something...
-				});
-	}
+include::{include-springbootfeatures}/testing/ConditionEvaluationReportTests.java[tag=*]
 ----
 
 
@@ -7352,24 +7213,9 @@ As a rule of thumb, prefix all your keys with a namespace that you own (e.g. `ac
 
 Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties("acme")
-	public class AcmeProperties {
-
-		/**
-		 * Whether to check the location of acme resources.
-		 */
-		private boolean checkLocation = true;
-
-		/**
-		 * Timeout for establishing a connection to the acme server.
-		 */
-		private Duration loginTimeout = Duration.ofSeconds(3);
-
-		// getters & setters
-
-	}
+include::{include-springbootfeatures}/creatingautoconfiguration/configurationkeys/AcmeProperties.java[]
 ----
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
