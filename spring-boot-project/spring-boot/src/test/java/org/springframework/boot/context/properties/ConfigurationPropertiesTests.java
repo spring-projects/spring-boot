@@ -65,6 +65,7 @@ import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.convert.PeriodFormat;
 import org.springframework.boot.convert.PeriodStyle;
 import org.springframework.boot.convert.PeriodUnit;
+import org.springframework.boot.env.RandomValuePropertySource;
 import org.springframework.boot.testsupport.system.CapturedOutput;
 import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
@@ -1059,6 +1060,18 @@ class ConfigurationPropertiesTests {
 		load(WithPublicStringConstructorPropertiesConfiguration.class);
 		WithPublicStringConstructorProperties bean = this.context.getBean(WithPublicStringConstructorProperties.class);
 		assertThat(bean.getA()).isEqualTo("baz");
+	}
+
+	@Test // gh-26201
+	void loadWhenBoundToRandomPropertyPlaceholder() {
+		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
+		sources.addFirst(new RandomValuePropertySource());
+		Map<String, Object> source = new HashMap<>();
+		source.put("com.example.bar", "${random.int}");
+		sources.addLast(new MapPropertySource("test", source));
+		load(SimplePrefixedProperties.class);
+		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
+		assertThat(bean.getBar()).isNotNull().containsOnlyDigits();
 	}
 
 	@Test
