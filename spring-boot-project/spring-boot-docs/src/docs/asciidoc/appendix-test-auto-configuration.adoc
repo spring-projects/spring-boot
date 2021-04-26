@@ -5,6 +5,8 @@ include::attributes.adoc[]
 
 This appendix describes the `@…Test` auto-configuration annotations that Spring Boot provides to test slices of your application.
 
+
+
 [[test-auto-configuration-slices]]
 == Test Slices
 

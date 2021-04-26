@@ -333,6 +333,8 @@ To improve the user experience and further assist the user in configuring a give
 * Associates a provider, to attach a well defined semantic to a property, so that a tool can discover the list of potential values based on the project's context.
 
 
+
+[[configuration-metadata-providing-manual-hints-value-hint]]
 === Value Hint
 The `name` attribute of each hint refers to the `name` of a property.
 In the <<configuration-metadata-format,initial example shown earlier>>, we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
@@ -378,6 +380,7 @@ If your IDE supports it, this is by far the most effective approach to auto-comp
 
 
 
+[[configuration-metadata-providing-manual-hints-value-providers]]
 === Value Providers
 Providers are a powerful way to attach semantics to a property.
 In this section, we define the official providers that you can use for your own hints.
@@ -421,6 +424,7 @@ If no provider for a given property is supported, no special content assistance 
 
 
 
+[[configuration-metadata-providing-manual-hints-any]]
 ==== Any
 The special **any** provider value permits any additional values to be provided.
 Regular value validation based on the property type should be applied if this is supported.
@@ -453,6 +457,9 @@ The following example offers `on` and `off` as auto-completion values for `syste
 
 Note that, in the preceding example, any other value is also allowed.
 
+
+
+[[configuration-metadata-providing-manual-hints-class-reference]]
 ==== Class Reference
 The **class-reference** provider auto-completes classes available in the project.
 This provider supports the following parameters:
@@ -496,6 +503,7 @@ The following metadata snippet corresponds to the standard `server.servlet.jsp.c
 
 
 
+[[configuration-metadata-providing-manual-hints-handle-as]]
 ==== Handle As
 The **handle-as** provider lets you substitute the type of the property to a more high-level type.
 This typically happens when the property has a `java.lang.String` type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
@@ -545,6 +553,7 @@ It is actually used internally as a `org.springframework.core.io.Resource` but c
 
 
 
+[[configuration-metadata-providing-manual-hints-logger-name]]
 ==== Logger Name
 The **logger-name** provider auto-completes valid logger names and <<spring-boot-features.adoc#boot-features-custom-log-groups,logger groups>>.
 Typically, package and class names available in the current project can be auto-completed.
@@ -631,6 +640,7 @@ As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints
 
 
 
+[[configuration-metadata-providing-manual-hints-spring-bean-reference]]
 ==== Spring Bean Reference
 The **spring-bean-reference** provider auto-completes the beans that are defined in the configuration of the current project.
 This provider supports the following parameters:
@@ -670,6 +680,7 @@ If you provide that hint, you still need to transform the bean name into an actu
 
 
 
+[[configuration-metadata-providing-manual-hints-spring-profile-name]]
 ==== Spring Profile Name
 The **spring-profile-name** provider auto-completes the Spring profiles that are defined in the configuration of the current project.
 
@@ -861,6 +872,7 @@ In order to document default values for properties in the class above, you could
 ----
 
 NOTE: Only the `name` of the property is required to document additional metadata for existing properties.
+
 
 
 [[configuration-metadata-annotation-processor-metadata-generation-nested]]

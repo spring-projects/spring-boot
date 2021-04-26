@@ -290,12 +290,14 @@ In this document, we describe to approach using AWS Elastic Beanstalk.
 
 
 
+[[cloud-deployment-aws-beanstalk]]
 ==== AWS Elastic Beanstalk
 As described in the official https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/create_deploy_Java.html[Elastic Beanstalk Java guide], there are two main options to deploy a Java application.
 You can either use the "`Tomcat Platform`" or the "`Java SE platform`".
 
 
 
+[[cloud-deployment-aws-tomcat-platform]]
 ===== Using the Tomcat Platform
 This option applies to Spring Boot projects that produce a war file.
 No special configuration is required.
@@ -303,6 +305,7 @@ You need only follow the official guide.
 
 
 
+[[cloud-deployment-aws-java-se-platform]]
 ===== Using the Java SE Platform
 This option applies to Spring Boot projects that produce a jar file and run an embedded web container.
 Elastic Beanstalk environments run an nginx instance on port 80 to proxy the actual application, running on port 5000.
@@ -344,6 +347,7 @@ You can also create single instance environments by using the CLI and the follow
 
 
 
+[[cloud-deployment-aws-summary]]
 ==== Summary
 This is one of the easiest ways to get to AWS, but there are more things to cover, such as how to integrate Elastic Beanstalk into any CI / CD tool, use the Elastic Beanstalk Maven plugin instead of the CLI, and others.
 There is a https://exampledriven.wordpress.com/2017/01/09/spring-boot-aws-elastic-beanstalk-example/[blog post] covering these topics more in detail.

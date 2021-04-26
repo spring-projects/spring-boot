@@ -20,6 +20,7 @@ Please refer to the plugin's documentation to learn more:
 * {spring-boot-maven-plugin-api}[API]
 
 
+
 [[build-tool-plugins-gradle-plugin]]
 == Spring Boot Gradle Plugin
 The Spring Boot Gradle Plugin provides Spring Boot support in Gradle, letting you package executable jar or war archives, run Spring Boot applications, and use the dependency management provided by `spring-boot-dependencies`.
@@ -101,7 +102,6 @@ The following nested elements can be used with the task:
 | `lib`
 | One or more {ant-docs}/Types/resources.html#collection[Resource Collections] that should be added to the set of jar libraries that make up the runtime dependency classpath of the application.
 |====
-
 
 
 
