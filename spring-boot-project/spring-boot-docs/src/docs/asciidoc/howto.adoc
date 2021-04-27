@@ -597,7 +597,7 @@ You can enable HTTP/2 support in your Spring Boot application with the configpro
 Both `h2` (HTTP/2 over TLS) and `h2c` (HTTP/2 over TCP) are supported.
 To use `h2`, SSL must also be enabled.
 When SSL is not enabled, `h2c` will be used.
-The details of the `h2` support depend on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by all JDK 8 releases. 
+The details of the `h2` support depend on the chosen web server and the application environment, since that protocol is not supported out-of-the-box by all JDK 8 releases.
 
 
 
@@ -618,6 +618,7 @@ Starting Tomcat 9.0.x on JDK 8 with HTTP/2 and SSL enabled but without that nati
 ----
 
 This error is not fatal, and the application still starts with HTTP/1.1 SSL support.
+
 
 
 [[howto-configure-http2-jetty]]
@@ -1271,6 +1272,8 @@ The following example configures `HttpComponentsClientRequestFactory` with an `H
 include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[tag=*]
 ----
 
+
+
 [[howto-webclient-reactor-netty-customization]]
 === Configure the TcpClient used by a Reactor Netty-based WebClient
 When Reactor Netty is on the classpath a Reactor Netty-based `WebClient` is auto-configured.
@@ -1284,6 +1287,7 @@ include::{include-howto}/httpclients/CustomizeReactorNettyClientConfiguration.ja
 
 TIP: Note the use of `ReactorResourceFactory` for the connection provider and event loop resources.
 This ensures efficient sharing of resources for the server receiving requests and the client making requests.
+
 
 
 [[howto-logging]]
@@ -1868,6 +1872,7 @@ Spring Boot provides properties in the `spring.data.web` namespace for customizi
 Note that if you are using Spring Data REST, you must use the properties in the `spring.data.rest` namespace instead.
 
 
+
 [[howto-use-exposing-spring-data-repositories-rest-endpoint]]
 === Expose Spring Data Repositories as REST Endpoint
 Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
@@ -2307,6 +2312,7 @@ For more about Spring Security, see the {spring-security}[Spring Security projec
 [[howto-switch-off-spring-boot-security-configuration]]
 === Switch off the Spring Boot Security Configuration
 If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` or a `SecurityFilterChain` bean in your application, it switches off the default webapp security settings in Spring Boot.
+
 
 
 [[howto-change-the-user-details-service-and-add-user-accounts]]

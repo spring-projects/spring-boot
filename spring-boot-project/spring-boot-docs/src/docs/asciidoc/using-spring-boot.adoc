@@ -642,6 +642,7 @@ To disable the logging of the report, set the following property:
 ----
 
 
+
 [[using-boot-devtools-restart-exclude]]
 ==== Excluding Resources
 Certain resources do not necessarily need to trigger a restart when they are changed.
@@ -870,6 +871,7 @@ The client component must be launched manually.
 
 
 
+[[running-remote-client-application]]
 ==== Running the Remote Client Application
 The remote client application is designed to be run from within your IDE.
 You need to run `org.springframework.boot.devtools.RemoteSpringApplication` with the same classpath as the remote project that you connect to.
