@@ -1067,7 +1067,7 @@ class ConfigurationPropertiesTests {
 		MutablePropertySources sources = this.context.getEnvironment().getPropertySources();
 		sources.addFirst(new RandomValuePropertySource());
 		Map<String, Object> source = new HashMap<>();
-		source.put("com.example.bar", "${random.int}");
+		source.put("com.example.bar", "${random.int[100,200]}");
 		sources.addLast(new MapPropertySource("test", source));
 		load(SimplePrefixedProperties.class);
 		SimplePrefixedProperties bean = this.context.getBean(SimplePrefixedProperties.class);
