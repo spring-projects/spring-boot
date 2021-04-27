@@ -155,7 +155,7 @@ include::starters/technical-starters.adoc[]
 
 To learn how to swap technical facets, please see the how-to documentation for <<howto.adoc#howto-use-another-web-server, swapping web server>> and <<howto.adoc#howto-configure-log4j-for-logging, logging system>>.
 
-TIP: For a list of additional community contributed starters, see the {spring-boot-master-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
+TIP: For a list of additional community contributed starters, see the {spring-boot-latest-code}/spring-boot-project/spring-boot-starters/README.adoc[README file] in the `spring-boot-starters` module on GitHub.
 
 
 
