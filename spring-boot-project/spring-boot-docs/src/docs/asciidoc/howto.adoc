@@ -603,6 +603,7 @@ If you still choose to use `h2c`, you can check <<howto-configure-http2-h2c, the
 ====
 
 
+
 [[howto-configure-http2-tomcat]]
 ==== HTTP/2 with Tomcat
 Spring Boot ships by default with Tomcat 9.0.x which supports HTTP/2 out of the box when using JDK 9 or later.
@@ -620,6 +621,7 @@ Starting Tomcat 9.0.x on JDK 8 without that native support logs the following er
 ----
 
 This error is not fatal, and the application still starts with HTTP/1.1 SSL support.
+
 
 
 [[howto-configure-http2-jetty]]
@@ -1329,6 +1331,8 @@ The following example configures `HttpComponentsClientRequestFactory` with an `H
 include::{code-examples}/web/client/RestTemplateProxyCustomizationExample.java[tag=customizer]
 ----
 
+
+
 [[howto-webclient-reactor-netty-customization]]
 === Configure the TcpClient used by a Reactor Netty-based WebClient
 When Reactor Netty is on the classpath a Reactor Netty-based `WebClient` is auto-configured.
@@ -1342,6 +1346,7 @@ include::{code-examples}/web/reactive/function/client/ReactorNettyClientCustomiz
 
 TIP: Note the use of `ReactorResourceFactory` for the connection provider and event loop resources.
 This ensures efficient sharing of resources for the server receiving requests and the client making requests.
+
 
 
 [[howto-logging]]
@@ -1927,6 +1932,7 @@ Spring Boot provides properties in the `spring.data.web` namespace for customizi
 Note that if you are using Spring Data REST, you must use the properties in the `spring.data.rest` namespace instead.
 
 
+
 [[howto-use-exposing-spring-data-repositories-rest-endpoint]]
 === Expose Spring Data Repositories as REST Endpoint
 Spring Data REST can expose the `Repository` implementations as REST endpoints for you,
@@ -2349,6 +2355,7 @@ For more about Spring Security, see the {spring-security}[Spring Security projec
 [[howto-switch-off-spring-boot-security-configuration]]
 === Switch off the Spring Boot Security Configuration
 If you define a `@Configuration` with a `WebSecurityConfigurerAdapter` or a `SecurityFilterChain` bean in your application, it switches off the default webapp security settings in Spring Boot.
+
 
 
 [[howto-change-the-user-details-service-and-add-user-accounts]]

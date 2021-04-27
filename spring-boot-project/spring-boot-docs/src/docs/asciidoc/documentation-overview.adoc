@@ -62,6 +62,7 @@ If you are getting started with Spring Boot or 'Spring' in general, start with <
 
 
 
+[[boot-documentation-workingwith]]
 == Working with Spring Boot
 Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, We have you covered>>:
 
@@ -73,6 +74,7 @@ Ready to actually start using Spring Boot? <<using-spring-boot.adoc#using-boot, 
 
 
 
+[[boot-documentation-learning]]
 == Learning about Spring Boot Features
 Need more details about Spring Boot's core features?
 <<spring-boot-features.adoc#boot-features, The following content is for you>>:
@@ -86,6 +88,7 @@ Need more details about Spring Boot's core features?
 
 
 
+[[boot-documentation-production]]
 == Moving to Production
 When you are ready to push your Spring Boot application to production, we have <<production-ready-features.adoc#production-ready, some tricks>> that you might like:
 
@@ -95,6 +98,7 @@ When you are ready to push your Spring Boot application to production, we have <
 
 
 
+[[boot-documentation-advanced]]
 == Advanced Topics
 Finally, we have a few topics for more advanced users:
 

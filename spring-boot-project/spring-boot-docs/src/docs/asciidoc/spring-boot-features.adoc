@@ -47,6 +47,7 @@ This will also turn off logging of the application's active profiles.
 TIP: To add additional logging during startup, you can override `logStartupInfo(boolean)` in a subclass of `SpringApplication`.
 
 
+
 [[boot-features-startup-failure]]
 === Startup Failure
 If your application fails to start, registered `FailureAnalyzers` get a chance to provide a dedicated error message and a concrete action to fix the problem.
@@ -487,6 +488,8 @@ Spring Boot ships with the `BufferingApplicationStartup` variant; this implement
 Applications can ask for the bean of type `BufferingApplicationStartup` in any component.
 Additionally, Spring Boot Actuator will {spring-boot-actuator-restapi-docs}/#startup[expose a `startup` endpoint to expose this information as a JSON document].
 
+
+
 [[boot-features-external-config]]
 == Externalized Configuration
 Spring Boot lets you externalize your configuration so that you can work with the same application code in different environments.
@@ -782,6 +785,7 @@ If you want to support your own locations, see the `ConfigDataLocationResolver` 
 
 
 
+[[boot-features-external-config-files-importing-extensionless]]
 ==== Importing Extensionless Files
 Some cloud platforms cannot add a file extension to volume mounted files.
 To import these extensionless files, you need to give Spring Boot a hint so that it knows how to load them.
@@ -1001,6 +1005,9 @@ The `SpringApplication` class automatically supports YAML as an alternative to p
 
 NOTE: If you use "`Starters`", SnakeYAML is automatically provided by `spring-boot-starter`.
 
+
+
+[[boot-features-external-config-yaml-to-properties]]
 ==== Mapping YAML to Properties
 YAML documents need to be converted from their hierarchical format to a flat structure that can be used with the Spring `Environment`.
 For example, consider the following YAML document:
@@ -1061,6 +1068,7 @@ Spring Framework provides two convenient classes that can be used to load YAML d
 The `YamlPropertiesFactoryBean` loads YAML as `Properties` and the `YamlMapFactoryBean` loads YAML as a `Map`.
 
 You can also use the `YamlPropertySourceLoader` class if you want to load YAML as a Spring `PropertySource`.
+
 
 
 [[boot-features-external-config-random-values]]
@@ -1911,6 +1919,7 @@ See the `setAdditionalProfiles()` method in {spring-boot-module-api}/SpringAppli
 Profile groups, which are described in the <<boot-features-profiles-groups,next section>> can also be used to add active profiles if a given profile is active.
 
 
+
 [[boot-features-profiles-groups]]
 === Profile Groups
 Occasionally the profiles that you define and use in your application are too fine-grained and become cumbersome to use.
@@ -1964,6 +1973,7 @@ Generally, you do not need to change your logging dependencies and the Spring Bo
 
 TIP: When you deploy your application to a servlet container or application server, logging performed via the Java Util Logging API is not routed into your application's logs.
 This prevents logging performed by the container or other applications that have been deployed to it from appearing in your application's logs.
+
 
 
 [[boot-features-logging-format]]
@@ -2381,6 +2391,7 @@ If you attempt to do so, making changes to the configuration file results in an 
 
 
 
+[[boot-features-logback-extensions-profile-specific]]
 ==== Profile-specific Configuration
 The `<springProfile>` tag lets you optionally include or exclude sections of configuration based on the active Spring profiles.
 Profile sections are supported anywhere within the `<configuration>` element.
@@ -2407,6 +2418,7 @@ The following listing shows three sample profiles:
 
 
 
+[[boot-features-logback-environment-properties]]
 ==== Environment Properties
 The `<springProperty>` tag lets you expose properties from the Spring `Environment` for use within Logback.
 Doing so can be useful if you want to access values from your `application.properties` file in your Logback configuration.
@@ -2732,6 +2744,8 @@ See {spring-boot-autoconfigure-module-code}/web/ResourceProperties.java[`Resourc
 This feature has been thoroughly described in a dedicated https://spring.io/blog/2014/07/24/spring-framework-4-1-handling-static-web-resources[blog post] and in Spring Framework's {spring-framework-docs}/web.html#mvc-config-static-resources[reference documentation].
 ====
 
+
+
 [[boot-features-spring-mvc-welcome-page]]
 ==== Welcome Page
 Spring Boot supports both static and templated welcome pages.
@@ -3024,7 +3038,6 @@ To do so, set the `spring.security.filter.dispatcher-types` property to `async, 
 
 
 
-
 [[boot-features-spring-hateoas]]
 ==== Spring HATEOAS
 If you develop a RESTful API that makes use of hypermedia, Spring Boot provides auto-configuration for Spring HATEOAS that works well with most applications.
@@ -3212,6 +3225,7 @@ In addition to the "`standard`" static resource locations listed earlier, a spec
 Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
 
 TIP: Spring WebFlux applications do not strictly depend on the Servlet API, so they cannot be deployed as war files and do not use the `src/main/webapp` directory.
+
 
 
 [[boot-features-webflux-welcome-page]]
@@ -3607,6 +3621,7 @@ The `spring-messaging` module of the Spring Framework provides support for RSock
 See the {spring-framework-docs}/web-reactive.html#rsocket-spring[RSocket section] of the Spring Framework reference for more details, including an overview of the RSocket protocol.
 
 
+
 [[boot-features-rsocket-strategies-auto-configuration]]
 === RSocket Strategies Auto-configuration
 Spring Boot auto-configures an `RSocketStrategies` bean that provides all the required infrastructure for encoding and decoding RSocket payloads.
@@ -3620,6 +3635,7 @@ Check out the <<boot-features-json-jackson,Jackson support section>> to know mor
 
 Developers can customize the `RSocketStrategies` component by creating beans that implement the `RSocketStrategiesCustomizer` interface.
 Note that their `@Order` is important, as it determines the order of codecs.
+
 
 
 [[boot-features-rsocket-server-auto-configuration]]
@@ -3940,10 +3956,12 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 
 
+[[boot-features-security-authorization-server]]
 ==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0 Authorization Server.
 However, this functionality is available from the {spring-security-oauth2}[Spring Security OAuth] project, which will eventually be superseded by Spring Security completely.
 Until then, you can use the `spring-security-oauth2-autoconfigure` module to easily set up an OAuth 2.0 authorization server; see its https://docs.spring.io/spring-security-oauth2-boot/[documentation] for instructions.
+
 
 
 [[boot-features-security-saml]]
@@ -4413,6 +4431,7 @@ Both the commercial and open source editions can be used with Spring Boot.
 
 
 
+[[boot-features-jooq-codegen]]
 ==== Code Generation
 In order to use jOOQ type-safe queries, you need to generate Java classes from your database schema.
 You can follow the instructions in the {jooq-docs}/#jooq-in-7-steps-step3[jOOQ user manual].
@@ -4449,6 +4468,7 @@ The following listing shows an example:
 
 
 
+[[boot-features-jooq-dslcontext]]
 ==== Using DSLContext
 The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` interface.
 Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
@@ -4484,6 +4504,7 @@ You can then use the `DSLContext` to construct your queries, as shown in the fol
 
 
 
+[[boot-features-jooq-sqldialect]]
 ==== jOOQ SQL Dialect
 Unless the configprop:spring.jooq.sql-dialect[] property has been configured, Spring Boot determines the SQL dialect to use for your datasource.
 If Spring Boot could not detect the dialect, it uses `DEFAULT`.
@@ -4492,6 +4513,7 @@ NOTE: Spring Boot can only auto-configure dialects supported by the open source 
 
 
 
+[[boot-features-jooq-customizing]]
 ==== Customizing jOOQ
 More advanced customizations can be achieved by defining your own `@Bean` definitions, which is used when the jOOQ `Configuration` is created.
 You can define beans for the following jOOQ Types:
@@ -4967,6 +4989,7 @@ There is a `spring-boot-starter-data-solr` "`Starter`" for collecting the depend
 NOTE: As of Spring Boot 2.3, support for Spring Data Solr has been deprecated and will be removed in a future release.
 
 
+
 [[boot-features-connecting-to-solr]]
 ==== Connecting to Solr
 You can inject an auto-configured `SolrClient` instance as you would any other Spring bean.
@@ -5129,6 +5152,7 @@ You can choose to disable the repositories support with the following property:
           repositories:
             enabled: false
 ----
+
 
 
 [[boot-features-cassandra]]
@@ -5671,7 +5695,6 @@ The following example shows a customizer that configures a specific time to live
 ----
 include::{code-examples}/cache/RedisCacheManagerCustomizationExample.java[tag=configuration]
 ----
-
 
 
 
@@ -6883,6 +6906,7 @@ This will cause the auto-configuration to back off.
 Spring Session can then be configured using the annotation's attributes rather than the previously described configuration properties.
 
 
+
 [[boot-features-jmx]]
 == Monitoring and Management over JMX
 Java Management Extensions (JMX) provide a standard mechanism to monitor and manage applications.
@@ -7063,7 +7087,6 @@ You can then import that class explicitly where it is required, as shown in the 
 
 NOTE: If you directly use `@ComponentScan` (that is, not through `@SpringBootApplication`) you need to register the `TypeExcludeFilter` with it.
 See {spring-boot-module-api}/context/TypeExcludeFilter.html[the Javadoc] for details.
-
 
 
 
@@ -8540,11 +8563,13 @@ The following example shows how to use the `ConditionEvaluationReportLoggingList
 
 
 
+[[boot-features-test-autoconfig-simulating-web-context]]
 ==== Simulating a Web Context
 If you need to test an auto-configuration that only operates in a Servlet or Reactive web application context, use the `WebApplicationContextRunner` or `ReactiveWebApplicationContextRunner` respectively.
 
 
 
+[[boot-features-test-autoconfig-overriding-classpath]]
 ==== Overriding the Classpath
 It is also possible to test what happens when a particular class and/or package is not present at runtime.
 Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
@@ -8823,6 +8848,7 @@ The version can be customized via the `kotlin-coroutines.version` property.
 TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided by default if one bootstraps a Kotlin project with at least one reactive dependency on https://start.spring.io/#!language=kotlin[start.spring.io].
 
 
+
 [[boot-features-kotlin-configuration-properties]]
 === @ConfigurationProperties
 `@ConfigurationProperties` when used in combination with <<boot-features-external-config-constructor-binding,`@ConstructorBinding`>> supports classes with immutable `val` properties as shown in the following example:
@@ -8900,6 +8926,8 @@ The other issue is that putting your application's code and all its dependencies
 Since you probably recompile your code more often than you upgrade the version of Spring Boot you use, it’s often better to separate things a bit more.
 If you put jar files in the layer before your application classes, Docker often only needs to change the very bottom layer and can pick others up from its cache.
 
+
+
 [[boot-layering-docker-images]]
 === Layering Docker Images
 To make it easier to create optimized Docker images, Spring Boot supports adding a layer index file to the jar.
@@ -8936,8 +8964,13 @@ Application code is more likely to change between builds so it is isolated in a 
 For Maven, refer to the {spring-boot-maven-plugin-docs}#repackage-layers[packaging layered jars section] for more details on adding a layer index to the jar.
 For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-jars[packaging layered jars section] of the Gradle plugin documentation.
 
+
+
+[[boot-features-container-images-building]]
 === Building Container Images
 Spring Boot applications can be containerized <<boot-features-container-images-docker,using Dockerfiles>>, or by <<boot-features-container-images-buildpacks,using Cloud Native Buildpacks to create docker compatible container images that you can run anywhere>>.
+
+
 
 [[boot-features-container-images-docker]]
 ==== Dockerfiles
@@ -9003,6 +9036,7 @@ Of course, a Dockerfile can be written without using the jarmode.
 You can use some combination of `unzip` and `mv` to move things to the right layer but jarmode simplifies that.
 
 
+
 [[boot-features-container-images-buildpacks]]
 ==== Cloud Native Buildpacks
 Dockerfiles are just one way to build docker images.
@@ -9022,6 +9056,8 @@ NOTE: The https://github.com/paketo-buildpacks/spring-boot[Paketo Spring Boot bu
 NOTE: In order to achieve reproducible builds and container image caching, Buildpacks can manipulate the application resources metadata (such as the file "last modified" information).
 You should ensure that your application does not rely on that metadata at runtime.
 Spring Boot can use that information when serving static resources, but this can be disabled with configprop:spring.web.resources.cache.use-last-modified[]
+
+
 
 [[boot-features-whats-next]]
 == What to Read Next

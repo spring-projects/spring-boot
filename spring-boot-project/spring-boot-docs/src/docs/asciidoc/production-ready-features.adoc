@@ -675,6 +675,7 @@ If no `HealthIndicator` returns a status that is known to the `StatusAggregator`
 TIP: The `HealthContributorRegistry` can be used to register and unregister health indicators at runtime.
 
 
+
 [[production-ready-health-indicators]]
 ==== Auto-configured HealthIndicators
 The following `HealthIndicators` are auto-configured by Spring Boot when appropriate.
@@ -769,6 +770,7 @@ Additional `HealthIndicators` are available but not enabled by default:
 
 
 
+[[production-ready-health-indicators-writing]]
 ==== Writing Custom HealthIndicators
 To provide custom health information, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/HealthIndicator.java[`HealthIndicator`] interface.
 You need to provide an implementation of the `health()` method and return a `Health` response.
@@ -887,6 +889,7 @@ TIP: To handle the error automatically, consider extending from `AbstractReactiv
 
 
 
+[[reactive-health-indicators-autoconfigured]]
 ==== Auto-configured ReactiveHealthIndicators
 The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when appropriate:
 
@@ -915,6 +918,7 @@ The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when
 
 TIP: If necessary, reactive indicators replace the regular ones.
 Also, any `HealthIndicator` that is not handled explicitly is wrapped automatically.
+
 
 
 [[production-ready-health-groups]]
@@ -2396,7 +2400,7 @@ NOTE: By default, metrics from all `MeterBinder` beans will be automatically bou
 
 
 
-[[production-ready-metrics-per-meter-properties]]
+[[production-ready-metrics-customizing]]
 === Customizing individual metrics
 If you need to apply customizations to specific `Meter` instances you can use the `io.micrometer.core.instrument.config.MeterFilter` interface.
 
@@ -2434,6 +2438,7 @@ As the order of common tags cannot be guaranteed using this approach, Graphite u
 
 
 
+[[production-ready-metrics-per-meter-properties]]
 ==== Per-meter properties
 In addition to `MeterFilter` beans, it's also possible to apply a limited set of customization on a per-meter basis using properties.
 Per-meter customizations apply to any all meter IDs that start with the given name.
@@ -2616,6 +2621,7 @@ If your Cloud Foundry UAA or Cloud Controller services use self-signed certifica
 
 
 
+[[production-ready-custom-context-path]]
 === Custom context path
 If the server's context-path has been configured to anything other than `/`, the Cloud Foundry endpoints will not be available at the root of the application.
 For example, if `server.servlet.context-path=/app`, Cloud Foundry endpoints will be available at `/app/cloudfoundryapplication/*`.
