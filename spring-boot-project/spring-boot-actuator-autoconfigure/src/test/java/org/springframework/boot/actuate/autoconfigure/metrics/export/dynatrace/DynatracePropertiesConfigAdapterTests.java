@@ -112,7 +112,7 @@ class DynatracePropertiesConfigAdapterTests {
 		assertThat(properties.getGroup()).isNull();
 		assertThat(properties.getApiVersion()).isSameAs(DynatraceApiVersion.V1);
 		assertThat(properties.getMetricKeyPrefix()).isNull();
-		assertThat(properties.getEnrichWithOneAgentMetadata()).isFalse();
+		assertThat(properties.getEnrichWithOneAgentMetadata()).isTrue();
 		assertThat(properties.getDefaultDimensions()).isNull();
 	}
 

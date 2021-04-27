@@ -84,12 +84,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 	private String metricKeyPrefix;
 
 	/**
-	 * An optional Boolean that allows enabling of the OneAgent metadata export. Off by
+	 * An optional Boolean that allows enabling of the OneAgent metadata export. On by
 	 * default.
 	 *
 	 * API v1: not applicable (ignored), API v2: optional
 	 */
-	private Boolean enrichWithOneAgentMetadata = false;
+	private Boolean enrichWithOneAgentMetadata = true;
 
 	/**
 	 * Optional default dimensions that are added to all metrics in the form of key-value
