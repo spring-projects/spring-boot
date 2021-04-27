@@ -217,7 +217,7 @@ The most common deployment workflow for Heroku deployments is to `git push` the 
 
 [indent=0,subs="verbatim,quotes,attributes"]
 ----
-	$ git push heroku master
+	$ git push heroku main
 
 	Initializing repository, *done*.
 	Counting objects: 95, *done*.
@@ -255,7 +255,7 @@ The most common deployment workflow for Heroku deployments is to `git push` the 
 	       https://agile-sierra-1405.herokuapp.com/ *deployed to Heroku*
 
 	To git@heroku.com:agile-sierra-1405.git
-	 * [new branch]      master -> master
+	 * [new branch]      main -> main
 ----
 
 Your application should now be up and running on Heroku.
