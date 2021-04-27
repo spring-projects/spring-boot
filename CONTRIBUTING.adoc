@@ -49,7 +49,7 @@ added after the original pull request but before a merge.
 * A few unit tests would help a lot as well -- someone has to do it.
 * Verification tasks, including tests and Checkstyle, can be executed by running `./gradlew check` from the project root.
   Note that `SPRING_PROFILES_ACTIVE` environment variable might affect the result of tests, so in that case, you can prevent it by running `unset SPRING_PROFILES_ACTIVE` before running the task.
-* If no-one else is using your branch, please rebase it against the current master (or other target branch in the main project).
+* If no-one else is using your branch, please rebase it against the current main branch (or other target branch in the project).
 * When writing a commit message please follow https://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html[these conventions].
 
 

@@ -12,7 +12,7 @@
 :chomp: tags formatters headers packages
 
 :spring-boot-artifactory-repo: snapshot
-:github-tag: master
+:github-tag: main
 :spring-boot-version: current
 
 :github-repo: spring-projects/spring-boot
@@ -28,7 +28,7 @@
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
-:spring-boot-master-code: https://github.com/{github-repo}/tree/master
+:spring-boot-latest-code: https://github.com/{github-repo}/tree/main
 :spring-boot-current-docs: https://docs.spring.io/spring-boot/docs/current/reference/
 :spring-boot-actuator-restapi-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/actuator-api/htmlsingle
 :spring-boot-actuator-restapi-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/actuator-api/pdf/spring-boot-actuator-web-api.pdf
