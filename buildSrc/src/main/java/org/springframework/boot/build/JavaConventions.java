@@ -28,6 +28,7 @@ import java.util.stream.Collectors;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
+import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
@@ -141,6 +142,10 @@ class JavaConventions {
 			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
+			if (buildingWithJava8(project)) {
+				test.systemProperty("java.security.properties",
+						getClass().getClassLoader().getResource("jdk-8156584-security.properties"));
+			}
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
@@ -151,6 +156,10 @@ class JavaConventions {
 					testRetry.getFailOnPassedAfterRetry().set(true);
 					testRetry.getMaxRetries().set(isCi() ? 3 : 0);
 				}));
+	}
+
+	private boolean buildingWithJava8(Project project) {
+		return (!project.hasProperty("buildJavaHome")) && JavaVersion.current() == JavaVersion.VERSION_1_8;
 	}
 
 	private boolean isCi() {
