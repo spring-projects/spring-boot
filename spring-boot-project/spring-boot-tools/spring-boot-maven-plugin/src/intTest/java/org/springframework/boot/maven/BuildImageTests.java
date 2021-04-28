@@ -16,12 +16,16 @@
 
 package org.springframework.boot.maven;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -260,6 +264,34 @@ public class BuildImageTests extends AbstractArchiveIntegrationTests {
 						removeImage(imageReference);
 					}
 				});
+	}
+
+	@TestTemplate
+	void whenBuildImageIsInvokedWithZipPackaging(MavenBuild mavenBuild) {
+		mavenBuild.project("build-image-zip-packaging");
+		mavenBuild.goals("package");
+		mavenBuild.prepare(this::writeLongNameResource);
+		mavenBuild.execute((project) -> {
+			File jar = new File(project, "target/build-image-zip-packaging-0.0.1.BUILD-SNAPSHOT.jar");
+			assertThat(jar).isFile();
+			assertThat(buildLog(project)).contains("Building image").contains("paketo-buildpacks/builder")
+					.contains("docker.io/library/build-image-zip-packaging:0.0.1.BUILD-SNAPSHOT")
+					.contains("Successfully built image");
+			ImageReference imageReference = ImageReference.of(ImageName.of("build-image-zip-packaging"),
+					"0.0.1.BUILD-SNAPSHOT");
+			try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+				container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+				container.copyFileFromContainer("/workspace/META-INF/MANIFEST.MF", (inputStream) -> {
+					String text = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8)).lines()
+							.collect(Collectors.joining("\n"));
+					assertThat(text).contains("Main-Class: org.springframework.boot.loader.PropertiesLauncher");
+					return null;
+				});
+			}
+			finally {
+				removeImage(imageReference);
+			}
+		});
 	}
 
 	@TestTemplate
