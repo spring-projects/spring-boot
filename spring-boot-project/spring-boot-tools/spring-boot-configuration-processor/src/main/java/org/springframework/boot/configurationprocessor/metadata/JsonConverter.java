@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,21 +160,22 @@ class JsonConverter {
 
 	private static class ItemMetadataComparator implements Comparator<ItemMetadata> {
 
-		private final Comparator<ItemMetadata> itemComparator = Comparator.comparing(this::isDeprecated)
-				.thenComparing(ItemMetadata::getName).thenComparing(ItemMetadata::getSourceType);
+		private static final Comparator<ItemMetadata> GROUP = Comparator.comparing(ItemMetadata::getName)
+				.thenComparing(ItemMetadata::getSourceType, Comparator.nullsFirst(Comparator.naturalOrder()));
 
-		private final Comparator<ItemMetadata> groupComparator = Comparator.comparing(ItemMetadata::getName)
-				.thenComparing(ItemMetadata::getSourceType);
+		private static final Comparator<ItemMetadata> ITEM = Comparator.comparing(ItemMetadataComparator::isDeprecated)
+				.thenComparing(ItemMetadata::getName)
+				.thenComparing(ItemMetadata::getSourceType, Comparator.nullsFirst(Comparator.naturalOrder()));
 
 		@Override
 		public int compare(ItemMetadata o1, ItemMetadata o2) {
 			if (o1.isOfItemType(ItemType.GROUP)) {
-				return this.groupComparator.compare(o1, o2);
+				return GROUP.compare(o1, o2);
 			}
-			return this.itemComparator.compare(o1, o2);
+			return ITEM.compare(o1, o2);
 		}
 
-		private boolean isDeprecated(ItemMetadata item) {
+		private static boolean isDeprecated(ItemMetadata item) {
 			return item.getDeprecation() != null;
 		}
 
