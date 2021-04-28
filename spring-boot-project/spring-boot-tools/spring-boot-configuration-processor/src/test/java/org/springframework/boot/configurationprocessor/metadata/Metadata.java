@@ -26,7 +26,6 @@ import org.assertj.core.api.Condition;
 import org.hamcrest.collection.IsMapContaining;
 
 import org.springframework.boot.configurationprocessor.metadata.ItemMetadata.ItemType;
-import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
 /**
