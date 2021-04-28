@@ -8,7 +8,7 @@ description = "Spring Boot Build"
 defaultTasks 'build'
 
 nohttp {
-	whitelistFile = project.file("src/nohttp/whitelist.lines")
+	allowlistFile = project.file("src/nohttp/allowlist.lines")
 	source.exclude "**/bin/**"
 	source.exclude "**/build/**"
 	source.exclude "**/out/**"
