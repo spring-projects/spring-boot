@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,7 @@ import org.gradle.api.tasks.Classpath;
 import org.gradle.api.tasks.Copy;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskAction;
@@ -211,7 +212,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 		MavenExec generatePluginDescriptor = project.getTasks().create("generatePluginDescriptor", MavenExec.class);
 		generatePluginDescriptor.args("org.apache.maven.plugins:maven-plugin-plugin:3.6.0:descriptor");
 		generatePluginDescriptor.getOutputs().dir(new File(mavenDir, "target/classes/META-INF/maven"));
-		generatePluginDescriptor.getInputs().dir(new File(mavenDir, "target/classes/org"));
+		generatePluginDescriptor.getInputs().dir(new File(mavenDir, "target/classes/org"))
+				.withPathSensitivity(PathSensitivity.RELATIVE).withPropertyName("plugin classes");
 		generatePluginDescriptor.setProjectDir(mavenDir);
 		return generatePluginDescriptor;
 	}
@@ -243,7 +245,8 @@ public class MavenPluginPlugin implements Plugin<Project> {
 
 		void setGenerator(Task generator) {
 			this.generator = generator;
-			getInputs().files(this.generator);
+			getInputs().files(this.generator).withPathSensitivity(PathSensitivity.RELATIVE)
+					.withPropertyName("generated source");
 		}
 
 		@OutputDirectory

@@ -29,6 +29,7 @@ import org.asciidoctor.gradle.jvm.AsciidoctorTask;
 import org.gradle.api.Project;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
 
 import org.springframework.boot.build.artifactory.ArtifactoryRepository;
@@ -139,7 +140,8 @@ class AsciidoctorConventions {
 		syncDocumentationSource.setDestinationDir(syncedSource);
 		syncDocumentationSource.from("src/docs/");
 		asciidoctorTask.dependsOn(syncDocumentationSource);
-		asciidoctorTask.getInputs().dir(syncedSource);
+		asciidoctorTask.getInputs().dir(syncedSource).withPathSensitivity(PathSensitivity.RELATIVE)
+				.withPropertyName("synced source");
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
 		return syncDocumentationSource;
 	}
