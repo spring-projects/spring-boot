@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,7 @@ import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.file.FileCollection;
 import org.gradle.api.tasks.InputFiles;
 import org.gradle.api.tasks.OutputDirectory;
+import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskAction;
 
@@ -128,7 +129,8 @@ class AsciidoctorConventions {
 		syncDocumentationSource.setDestinationDir(syncedSource);
 		syncDocumentationSource.from("src/docs/");
 		asciidoctorTask.dependsOn(syncDocumentationSource);
-		asciidoctorTask.getInputs().dir(syncedSource);
+		asciidoctorTask.getInputs().dir(syncedSource).withPathSensitivity(PathSensitivity.RELATIVE)
+				.withPropertyName("synced source");
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
 		return syncDocumentationSource;
 	}
