@@ -16,6 +16,7 @@
 
 package org.springframework.boot.configurationprocessor;
 
+import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
@@ -73,6 +74,7 @@ class IncrementalBuildMetadataGenerationTests extends AbstractMetadataGeneration
 	}
 
 	@Test
+	@Disabled("gh-26271")
 	void incrementalBuildTypeRenamed() throws Exception {
 		TestProject project = new TestProject(this.tempDir, FooProperties.class, BarProperties.class);
 		ConfigurationMetadata metadata = project.fullBuild();
