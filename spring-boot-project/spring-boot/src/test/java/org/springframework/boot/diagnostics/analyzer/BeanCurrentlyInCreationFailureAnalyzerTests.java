@@ -16,14 +16,7 @@
 
 package org.springframework.boot.diagnostics.analyzer;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.StringReader;
-import java.util.List;
-import java.util.stream.Collectors;
-
 import org.junit.jupiter.api.Test;
-
 import org.springframework.beans.factory.BeanCurrentlyInCreationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.diagnostics.FailureAnalysis;
@@ -36,6 +29,12 @@ import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.StringReader;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.fail;
@@ -110,6 +109,19 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Test
+	void testSelfReferenceCycle() throws IOException {
+		FailureAnalysis analysis = performAnalysis(SelfReferenceBeanConfiguration.class);
+		List<String> lines = readDescriptionLines(analysis);
+		assertThat(lines).hasSize(5);
+		assertThat(lines.get(0))
+				.isEqualTo("The dependencies of some of the beans in the application context form a cycle:");
+		assertThat(lines.get(1)).isEqualTo("");
+		assertThat(lines.get(2)).isEqualTo("┌──->──┐");
+		assertThat(lines.get(3)).startsWith("|  bean defined in " + SelfReferenceBeanConfiguration.class.getName());
+		assertThat(lines.get(4)).isEqualTo("└──<-──┘");
+	}
+
+	@Test
 	void cycleWithAnUnknownStartIsNotAnalyzed() {
 		assertThat(this.analyzer.analyze(new BeanCurrentlyInCreationException("test"))).isNull();
 	}
@@ -137,6 +149,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("unused")
 	static class CyclicBeanMethodsConfiguration {
 
 		@Bean
@@ -167,6 +180,7 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@SuppressWarnings("unused")
 	static class CycleReferencedViaOtherBeansConfiguration {
 
 		@Bean
@@ -231,11 +245,23 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 		static class BeanThreeConfiguration {
 
+			@SuppressWarnings("unused")
 			@Bean
 			BeanThree three(BeanOne one) {
 				return new BeanThree();
 			}
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class SelfReferenceBeanConfiguration {
+
+		@SuppressWarnings("unused")
+		@Bean
+		SelfReferenceBean bean(SelfReferenceBean bean) {
+			return new SelfReferenceBean();
 		}
 
 	}
@@ -263,6 +289,13 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	static class BeanThree {
+
+	}
+
+	static class SelfReferenceBean {
+
+		@Autowired
+		SelfReferenceBean bean;
 
 	}
 
