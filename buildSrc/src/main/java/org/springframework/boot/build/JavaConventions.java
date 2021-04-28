@@ -17,6 +17,10 @@
 package org.springframework.boot.build;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -28,8 +32,10 @@ import java.util.stream.Collectors;
 
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
+import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
@@ -142,10 +148,14 @@ class JavaConventions {
 			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
+			CopyJdk8156584SecurityProperties copyJdk8156584SecurityProperties = new CopyJdk8156584SecurityProperties(
+					project);
 			if (buildingWithJava8(project)) {
 				test.systemProperty("java.security.properties",
-						getClass().getClassLoader().getResource("jdk-8156584-security.properties"));
+						"file:" + test.getWorkingDir().toPath().relativize(copyJdk8156584SecurityProperties.output));
+				test.setDebug(true);
 			}
+			test.doFirst(copyJdk8156584SecurityProperties);
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
@@ -224,6 +234,29 @@ class JavaConventions {
 		dependencyManagement.getDependencies().add(springBootParent);
 		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
 				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
+	}
+
+	private static final class CopyJdk8156584SecurityProperties implements Action<Task> {
+
+		private static final String SECURITY_PROPERTIES_FILE_NAME = "jdk-8156584-security.properties";
+
+		private final Path output;
+
+		private CopyJdk8156584SecurityProperties(Project project) {
+			this.output = new File(project.getBuildDir(), SECURITY_PROPERTIES_FILE_NAME).toPath();
+		}
+
+		@Override
+		public void execute(Task task) {
+			try (InputStream input = getClass().getClassLoader()
+					.getResourceAsStream(CopyJdk8156584SecurityProperties.SECURITY_PROPERTIES_FILE_NAME)) {
+				Files.copy(input, this.output);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
 	}
 
 }
