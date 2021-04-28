@@ -74,7 +74,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 		for (int i = 0; i < beansInCycle.size(); i++) {
 			BeanInCycle beanInCycle = beansInCycle.get(i);
 			if (i == cycleStart) {
-				message.append(String.format("┌─────┐%n"));
+				message.append(String.format((beansInCycle.size() == 1) ? "┌──->──┐%n" : "┌─────┐%n"));
 			}
 			else if (i > 0) {
 				String leftSide = (i < cycleStart) ? " " : "↑";
@@ -83,7 +83,7 @@ class BeanCurrentlyInCreationFailureAnalyzer extends AbstractFailureAnalyzer<Bea
 			String leftSide = (i < cycleStart) ? " " : "|";
 			message.append(String.format("%s  %s%n", leftSide, beanInCycle));
 		}
-		message.append(String.format("└─────┘%n"));
+		message.append(String.format((beansInCycle.size() == 1) ? "└──<-──┘%n" : "└─────┘%n"));
 		return message.toString();
 	}
 
