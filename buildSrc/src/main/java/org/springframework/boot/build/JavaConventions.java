@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
@@ -148,14 +149,13 @@ class JavaConventions {
 			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
-			CopyJdk8156584SecurityProperties copyJdk8156584SecurityProperties = new CopyJdk8156584SecurityProperties(
-					project);
 			if (buildingWithJava8(project)) {
+				CopyJdk8156584SecurityProperties copyJdk8156584SecurityProperties = new CopyJdk8156584SecurityProperties(
+						project);
 				test.systemProperty("java.security.properties",
 						"file:" + test.getWorkingDir().toPath().relativize(copyJdk8156584SecurityProperties.output));
-				test.setDebug(true);
+				test.doFirst(copyJdk8156584SecurityProperties);
 			}
-			test.doFirst(copyJdk8156584SecurityProperties);
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
@@ -250,7 +250,7 @@ class JavaConventions {
 		public void execute(Task task) {
 			try (InputStream input = getClass().getClassLoader()
 					.getResourceAsStream(CopyJdk8156584SecurityProperties.SECURITY_PROPERTIES_FILE_NAME)) {
-				Files.copy(input, this.output);
+				Files.copy(input, this.output, StandardCopyOption.REPLACE_EXISTING);
 			}
 			catch (IOException ex) {
 				throw new RuntimeException(ex);
