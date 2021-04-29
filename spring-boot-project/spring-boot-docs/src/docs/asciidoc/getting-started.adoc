@@ -9,7 +9,7 @@ We then walk you through building your first Spring Boot application, discussing
 
 
 
-[[getting-started-introducing-spring-boot]]
+[[getting-started.introducing-spring-boot]]
 == Introducing Spring Boot
 Spring Boot helps you to create stand-alone, production-grade Spring-based Applications that you can run.
 We take an opinionated view of the Spring platform and third-party libraries, so that you can get started with minimum fuss.
@@ -27,7 +27,7 @@ Our primary goals are:
 
 
 
-[[getting-started-system-requirements]]
+[[getting-started.system-requirements]]
 == System Requirements
 Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 16 (included).
 {spring-framework-docs}/[Spring Framework {spring-framework-version}] or above is also required.
@@ -46,7 +46,7 @@ Explicit build support is provided for the following build tools:
 
 
 
-[[getting-started-system-requirements-servlet-containers]]
+[[getting-started.system-requirements.servlet-containers]]
 === Servlet Containers
 Spring Boot supports the following embedded servlet containers:
 
@@ -70,7 +70,7 @@ You can also deploy Spring Boot applications to any Servlet 3.1+ compatible cont
 
 
 
-[[getting-started-installing-spring-boot]]
+[[getting-started.installing]]
 == Installing Spring Boot
 Spring Boot can be used with "`classic`" Java development tools or installed as a command line tool.
 Either way, you need https://www.java.com[Java SDK v1.8] or higher.
@@ -81,12 +81,12 @@ Before you begin, you should check your current Java installation by using the f
 	$ java -version
 ----
 
-If you are new to Java development or if you want to experiment with Spring Boot, you might want to try the <<getting-started-installing-the-cli, Spring Boot CLI>> (Command Line Interface) first.
+If you are new to Java development or if you want to experiment with Spring Boot, you might want to try the <<getting-started.installing.cli, Spring Boot CLI>> (Command Line Interface) first.
 Otherwise, read on for "`classic`" installation instructions.
 
 
 
-[[getting-started-installation-instructions-for-java]]
+[[getting-started.installing.java]]
 === Installation Instructions for the Java Developer
 You can use Spring Boot in the same way as any standard Java library.
 To do so, include the appropriate `+spring-boot-*.jar+` files on your classpath.
@@ -97,7 +97,7 @@ Although you _could_ copy Spring Boot jars, we generally recommend that you use 
 
 
 
-[[getting-started-maven-installation]]
+[[getting-started.installing.java.maven]]
 ==== Maven Installation
 Spring Boot is compatible with Apache Maven 3.3 or above.
 If you do not already have Maven installed, you can follow the instructions at https://maven.apache.org.
@@ -108,21 +108,21 @@ Ubuntu users can run `sudo apt-get install maven`.
 Windows users with https://chocolatey.org/[Chocolatey] can run `choco install maven` from an elevated (administrator) prompt.
 
 Spring Boot dependencies use the `org.springframework.boot` `groupId`.
-Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more <<using-spring-boot.adoc#using-boot-starter,"`Starters`">>.
-Spring Boot also provides an optional <<build-tool-plugins.adoc#build-tool-plugins-maven-plugin, Maven plugin>> to create executable jars.
+Typically, your Maven POM file inherits from the `spring-boot-starter-parent` project and declares dependencies to one or more <<using-spring-boot.adoc#using.build-systems.starters,"`Starters`">>.
+Spring Boot also provides an optional <<build-tool-plugins.adoc#build-tool-plugins.maven, Maven plugin>> to create executable jars.
 
 More details on getting started with Spring Boot and Maven can be found in the {spring-boot-maven-plugin-docs}#getting-started[Getting Started section] of the Maven plugin's reference guide.
 
 
 
-[[getting-started-gradle-installation]]
+[[getting-started.installing.java.gradle]]
 ==== Gradle Installation
 Spring Boot is compatible with Gradle 6.8 and 7.x.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
-Typically, your project declares dependencies to one or more <<using-spring-boot.adoc#using-boot-starter, "`Starters`">>.
-Spring Boot provides a useful <<build-tool-plugins.adoc#build-tool-plugins-gradle-plugin, Gradle plugin>> that can be used to simplify dependency declarations and to create executable jars.
+Typically, your project declares dependencies to one or more <<using-spring-boot.adoc#using.build-systems.starters, "`Starters`">>.
+Spring Boot provides a useful <<build-tool-plugins.adoc#build-tool-plugins.gradle, Gradle plugin>> that can be used to simplify dependency declarations and to create executable jars.
 
 .Gradle Wrapper
 ****
@@ -135,7 +135,7 @@ More details on getting started with Spring Boot and Gradle can be found in the 
 
 
 
-[[getting-started-installing-the-cli]]
+[[getting-started.installing.cli]]
 === Installing the Spring Boot CLI
 The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly prototype with Spring.
 It lets you run https://groovy-lang.org/[Groovy] scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.
@@ -144,7 +144,7 @@ You do not need to use the CLI to work with Spring Boot, but it is definitely th
 
 
 
-[[getting-started-manual-cli-installation]]
+[[getting-started.installing.cli.manual-installation]]
 ==== Manual Installation
 You can download the Spring CLI distribution from the Spring software repository:
 
@@ -160,7 +160,7 @@ Alternatively, you can use `java -jar` with the `.jar` file (the script helps yo
 
 
 
-[[getting-started-sdkman-cli-installation]]
+[[getting-started.installing.cli.sdkman]]
 ==== Installation with SDKMAN!
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of various binary SDKs, including Groovy and the Spring Boot CLI.
 Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following commands:
@@ -206,7 +206,7 @@ You can see it by running the following command:
 
 
 
-[[getting-started-homebrew-cli-installation]]
+[[getting-started.installing.cli.homebrew]]
 ==== OSX Homebrew Installation
 If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spring Boot CLI by using the following commands:
 
@@ -223,7 +223,7 @@ In that case, run `brew update` and try again.
 
 
 
-[[getting-started-macports-cli-installation]]
+[[getting-started.installing.cli.macports]]
 ==== MacPorts Installation
 If you are on a Mac and use https://www.macports.org/[MacPorts], you can install the Spring Boot CLI by using the following command:
 
@@ -234,7 +234,7 @@ If you are on a Mac and use https://www.macports.org/[MacPorts], you can install
 
 
 
-[[getting-started-cli-command-line-completion]]
+[[getting-started.installing.cli.completion]]
 ==== Command-line Completion
 The Spring Boot CLI includes scripts that provide command completion for the https://en.wikipedia.org/wiki/Bash_%28Unix_shell%29[BASH] and https://en.wikipedia.org/wiki/Z_shell[zsh] shells.
 You can `source` the script (also named `spring`) in any shell or put it in your personal or system-wide bash completion initialization.
@@ -252,7 +252,7 @@ NOTE: If you install the Spring Boot CLI by using Homebrew or MacPorts, the comm
 
 
 
-[[getting-started-scoop-cli-installation]]
+[[getting-started.installing.scoop]]
 ==== Windows Scoop Installation
 If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot CLI by using the following commands:
 
@@ -269,7 +269,7 @@ In that case, run `scoop update` and try again.
 
 
 
-[[getting-started-cli-example]]
+[[getting-started.installing.quick-start]]
 ==== Quick-start Spring CLI Example
 You can use the following web application to test your installation.
 To start, create a file called `app.groovy`, as follows:
@@ -307,7 +307,7 @@ You should see the following output:
 
 
 
-[[getting-started-upgrading-from-an-earlier-version]]
+[[getting-started.installing.upgrading]]
 === Upgrading from an Earlier Version of Spring Boot
 If you are upgrading from the `1.x` release of Spring Boot, check the {github-wiki}/Spring-Boot-2.0-Migration-Guide["`migration guide`" on the project wiki] that provides detailed upgrade instructions.
 Check also the {github-wiki}["`release notes`"] for a list of "`new and noteworthy`" features for each release.
@@ -330,11 +330,11 @@ WARNING: Properties that are added late to the environment, such as when using `
 NOTE: Once you're done with the migration, please make sure to remove this module from your project's dependencies.
 
 To upgrade an existing CLI installation, use the appropriate package manager command (for example, `brew upgrade`).
-If you manually installed the CLI, follow the <<getting-started-manual-cli-installation, standard instructions>>, remembering to update your `PATH` environment variable to remove any older references.
+If you manually installed the CLI, follow the <<getting-started.installing.cli.manual-installation, standard instructions>>, remembering to update your `PATH` environment variable to remove any older references.
 
 
 
-[[getting-started-first-application]]
+[[getting-started.first-application]]
 == Developing Your First Spring Boot Application
 This section describes how to develop a small "`Hello World!`" web application that highlights some of Spring Boot's key features.
 We use Maven to build this project, since most IDEs support it.
@@ -345,7 +345,7 @@ The https://spring.io[spring.io] web site contains many "`Getting Started`" http
 If you need to solve a specific problem, check there first.
 
 You can shortcut the steps below by going to https://start.spring.io and choosing the "Web" starter from the dependencies searcher.
-Doing so generates a new project structure so that you can <<getting-started-first-application-code,start coding right away>>.
+Doing so generates a new project structure so that you can <<getting-started.first-application.code,start coding right away>>.
 Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[start.spring.io user guide] for more details.
 ====
 
@@ -372,7 +372,7 @@ Subsequent instructions assume that you have created a suitable directory and th
 
 
 
-[[getting-started-first-application-pom]]
+[[getting-started.first-application.pom]]
 === Creating the POM
 We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
@@ -444,12 +444,12 @@ For simplicity, we continue to use a plain text editor for this example.
 
 
 
-[[getting-started-first-application-dependencies]]
+[[getting-started.first-application.dependencies]]
 === Adding Classpath Dependencies
 Spring Boot provides a number of "`Starters`" that let you add jars to your classpath.
 Our applications for smoke tests use the `spring-boot-starter-parent` in the `parent` section of the POM.
 The `spring-boot-starter-parent` is a special starter that provides useful Maven defaults.
-It also provides a <<using-spring-boot.adoc#using-boot-dependency-management,`dependency-management`>> section so that you can omit `version` tags for "`blessed`" dependencies.
+It also provides a <<using-spring-boot.adoc#using.build-systems.dependency-management,`dependency-management`>> section so that you can omit `version` tags for "`blessed`" dependencies.
 
 Other "`Starters`" provide dependencies that you are likely to need when developing a specific type of application.
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
@@ -480,7 +480,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 
 
 
-[[getting-started-first-application-code]]
+[[getting-started.first-application.code]]
 === Writing the Code
 To finish our application, we need to create a single Java file.
 By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/Example.java` to contain the following code:
@@ -512,7 +512,7 @@ We step through the important parts in the next few sections.
 
 
 
-[[getting-started-first-application-annotations]]
+[[getting-started.first-application.code.mvc-annotations]]
 ==== The @RestController and @RequestMapping Annotations
 The first annotation on our `Example` class is `@RestController`.
 This is known as a _stereotype_ annotation.
@@ -528,7 +528,7 @@ See the {spring-framework-docs}/web.html#mvc[MVC section] in the Spring Referenc
 
 
 
-[[getting-started-first-application-auto-configuration]]
+[[getting-started.first-application.code.enable-auto-configuration]]
 ==== The @EnableAutoConfiguration Annotation
 The second class-level annotation is `@EnableAutoConfiguration`.
 This annotation tells Spring Boot to "`guess`" how you want to configure Spring, based on the jar dependencies that you have added.
@@ -543,7 +543,7 @@ Spring Boot still does its best to auto-configure your application.
 
 
 
-[[getting-started-first-application-main-method]]
+[[getting-started.first-application.code.main-method]]
 ==== The "`main`" Method
 The final part of our application is the `main` method.
 This is a standard method that follows the Java convention for an application entry point.
@@ -554,7 +554,7 @@ The `args` array is also passed through to expose any command-line arguments.
 
 
 
-[[getting-started-first-application-run]]
+[[getting-started.first-application.run]]
 === Running the Example
 At this point, your application should work.
 Since you used the `spring-boot-starter-parent` POM, you have a useful `run` goal that you can use to start the application.
@@ -589,7 +589,7 @@ To gracefully exit the application, press `ctrl-c`.
 
 
 
-[[getting-started-first-application-executable-jar]]
+[[getting-started.first-application.executable-jar]]
 === Creating an Executable Jar
 We finish our example by creating a completely self-contained executable jar file that we could run in production.
 Executable jars (sometimes called "`fat jars`") are archives containing your compiled classes along with all of the jar dependencies that your code needs to run.
@@ -682,11 +682,11 @@ As before, to exit the application, press `ctrl-c`.
 
 
 
-[[getting-started-whats-next]]
+[[getting-started.whats=next]]
 == What to Read Next
 Hopefully, this section provided some of the Spring Boot basics and got you on your way to writing your own applications.
 If you are a task-oriented type of developer, you might want to jump over to https://spring.io and check out some of the https://spring.io/guides/[getting started] guides that solve specific "`How do I do that with Spring?`" problems.
 We also have Spring Boot-specific "`<<howto.adoc#howto, How-to>>`" reference documentation.
 
-Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using-boot>>_.
-If you are really impatient, you could also jump ahead and read about _<<spring-boot-features.adoc#boot-features, Spring Boot features>>_.
+Otherwise, the next logical step is to read _<<using-spring-boot.adoc#using>>_.
+If you are really impatient, you could also jump ahead and read about _<<spring-boot-features.adoc#features, Spring Boot features>>_.
