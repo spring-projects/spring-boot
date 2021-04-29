@@ -1,5 +1,5 @@
 [appendix]
-[[configuration-metadata]]
+[[appendix.configuration-metadata]]
 = Configuration Metadata
 include::attributes.adoc[]
 
@@ -7,11 +7,11 @@ Spring Boot jars include metadata files that provide details of all supported co
 The files are designed to let IDE developers offer contextual help and "`code completion`" as users are working with `application.properties` or `application.yml` files.
 
 The majority of the metadata file is generated automatically at compile time by processing all items annotated with `@ConfigurationProperties`.
-However, it is possible to <<configuration-metadata.annotation-processor.adding-additional-metadata,write part of the metadata manually>> for corner cases or more advanced use cases.
+However, it is possible to <<appendix.configuration-metadata.annotation-processor.adding-additional-metadata,write part of the metadata manually>> for corner cases or more advanced use cases.
 
 
 
-[[configuration-metadata.format]]
+[[appendix.configuration-metadata.format]]
 == Metadata Format
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
 They use a JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
@@ -98,7 +98,7 @@ For example, when a developer is configuring the configprop:spring.jpa.hibernate
 
 
 
-[[configuration-metadata.format.group]]
+[[appendix.configuration-metadata.format.group]]
 === Group Attributes
 The JSON object contained in the `groups` array can contain the attributes shown in the following table:
 
@@ -139,7 +139,7 @@ The JSON object contained in the `groups` array can contain the attributes shown
 
 
 
-[[configuration-metadata.format.property]]
+[[appendix.configuration-metadata.format.property]]
 === Property Attributes
 The JSON object contained in the `properties` array can contain the attributes described in the following table:
 
@@ -254,7 +254,7 @@ Doing so is particularly useful when a `replacement` is provided.
 
 
 
-[[configuration-metadata.format.hints]]
+[[appendix.configuration-metadata.format.hints]]
 === Hint Attributes
 The JSON object contained in the `hints` array can contain the attributes shown in the following table:
 
@@ -317,7 +317,7 @@ The JSON object contained in the `providers` attribute of each `hint` element ca
 
 
 
-[[configuration-metadata.format.repeated-items]]
+[[appendix.configuration-metadata.format.repeated-items]]
 === Repeated Metadata Items
 Objects with the same "`property`" and "`group`" name can appear multiple times within a metadata file.
 For example, you could bind two separate classes to the same prefix, with each having potentially overlapping property names.
@@ -325,7 +325,7 @@ While the same names appearing in the metadata multiple times should not be comm
 
 
 
-[[configuration-metadata.manual-hints]]
+[[appendix.configuration-metadata.manual-hints]]
 == Providing Manual Hints
 To improve the user experience and further assist the user in configuring a given property, you can provide additional metadata that:
 
@@ -334,10 +334,10 @@ To improve the user experience and further assist the user in configuring a give
 
 
 
-[[configuration-metadata.manual-hints.value-hint]]
+[[appendix.configuration-metadata.manual-hints.value-hint]]
 === Value Hint
 The `name` attribute of each hint refers to the `name` of a property.
-In the <<configuration-metadata.format,initial example shown earlier>>, we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
+In the <<appendix.configuration-metadata.format,initial example shown earlier>>, we provide five values for the `spring.jpa.hibernate.ddl-auto` property: `none`, `validate`, `update`, `create`, and `create-drop`.
 Each value may have a description as well.
 
 If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
@@ -356,7 +356,7 @@ Assume a `sample.contexts` maps magic `String` values to an integer, as shown in
 ----
 
 The magic values are (in this example) are `sample1` and `sample2`.
-In order to offer additional content assistance for the keys, you could add the following JSON to <<configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
+In order to offer additional content assistance for the keys, you could add the following JSON to <<appendix.configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
 
 [source,json,indent=0]
 ----
@@ -380,7 +380,7 @@ If your IDE supports it, this is by far the most effective approach to auto-comp
 
 
 
-[[configuration-metadata.manual-hints.value-providers]]
+[[appendix.configuration-metadata.manual-hints.value-providers]]
 === Value Providers
 Providers are a powerful way to attach semantics to a property.
 In this section, we define the official providers that you can use for your own hints.
@@ -424,7 +424,7 @@ If no provider for a given property is supported, no special content assistance 
 
 
 
-[[configuration-metadata.manual-hints.value-providers.any]]
+[[appendix.configuration-metadata.manual-hints.value-providers.any]]
 ==== Any
 The special **any** provider value permits any additional values to be provided.
 Regular value validation based on the property type should be applied if this is supported.
@@ -459,7 +459,7 @@ Note that, in the preceding example, any other value is also allowed.
 
 
 
-[[configuration-metadata.manual-hints.value-providers.class-reference]]
+[[appendix.configuration-metadata.manual-hints.value-providers.class-reference]]
 ==== Class Reference
 The **class-reference** provider auto-completes classes available in the project.
 This provider supports the following parameters:
@@ -503,7 +503,7 @@ The following metadata snippet corresponds to the standard `server.servlet.jsp.c
 
 
 
-[[configuration-metadata.manual-hints.value-providers.handle-as]]
+[[appendix.configuration-metadata.manual-hints.value-providers.handle-as]]
 ==== Handle As
 The **handle-as** provider lets you substitute the type of the property to a more high-level type.
 This typically happens when the property has a `java.lang.String` type, because you do not want your configuration classes to rely on classes that may not be on the classpath.
@@ -553,7 +553,7 @@ It is actually used internally as a `org.springframework.core.io.Resource` but c
 
 
 
-[[configuration-metadata.manual-hints.value-providers.logger-name]]
+[[appendix.configuration-metadata.manual-hints.value-providers.logger-name]]
 ==== Logger Name
 The **logger-name** provider auto-completes valid logger names and <<features.adoc#features.logging.log-groups,logger groups>>.
 Typically, package and class names available in the current project can be auto-completed.
@@ -640,7 +640,7 @@ As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints
 
 
 
-[[configuration-metadata.manual-hints.value-providers.spring-bean-reference]]
+[[appendix.configuration-metadata.manual-hints.value-providers.spring-bean-reference]]
 ==== Spring Bean Reference
 The **spring-bean-reference** provider auto-completes the beans that are defined in the configuration of the current project.
 This provider supports the following parameters:
@@ -680,7 +680,7 @@ If you provide that hint, you still need to transform the bean name into an actu
 
 
 
-[[configuration-metadata.manual-hints.value-providers.spring-profile-name]]
+[[appendix.configuration-metadata.manual-hints.value-providers.spring-profile-name]]
 ==== Spring Profile Name
 The **spring-profile-name** provider auto-completes the Spring profiles that are defined in the configuration of the current project.
 
@@ -702,14 +702,14 @@ The following metadata snippet corresponds to the standard `spring.profiles.acti
 
 
 
-[[configuration-metadata.annotation-processor]]
+[[appendix.configuration-metadata.annotation-processor]]
 == Generating Your Own Metadata by Using the Annotation Processor
 You can easily generate your own configuration metadata file from items annotated with `@ConfigurationProperties` by using the `spring-boot-configuration-processor` jar.
 The jar includes a Java annotation processor which is invoked as your project is compiled.
 
 
 
-[[configuration-metadata.annotation-processor.configuring]]
+[[appendix.configuration-metadata.annotation-processor.configuring]]
 === Configuring the Annotation Processor
 To use the processor, include a dependency on `spring-boot-configuration-processor`.
 
@@ -763,7 +763,7 @@ You could also let the AspectJ plugin run all the processing and disable annotat
 
 
 
-[[configuration-metadata.annotation-processor.automatic-metadata-generation]]
+[[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation]]
 === Automatic Metadata Generation
 The processor picks up both classes and methods that are annotated with `@ConfigurationProperties`.
 
@@ -807,7 +807,7 @@ The annotation processor applies a number of heuristics to extract the default v
 Default values have to be provided statically. In particular, do not refer to a constant defined in another class.
 Also, the annotation processor cannot auto-detect default values for ``Enum``s and ``Collections``s.
 
-For cases where the default value could not be detected, <<configuration-metadata.annotation-processor.adding-additional-metadata,manual metadata>> should be provided.
+For cases where the default value could not be detected, <<appendix.configuration-metadata.annotation-processor.adding-additional-metadata,manual metadata>> should be provided.
 Consider the following example:
 
 [source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
@@ -831,7 +831,7 @@ Consider the following example:
 	}
 ----
 
-In order to document default values for properties in the class above, you could add the following content to <<configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
+In order to document default values for properties in the class above, you could add the following content to <<appendix.configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
 
 [source,json,indent=0]
 ----
@@ -851,7 +851,7 @@ NOTE: Only the `name` of the property is required to document additional metadat
 
 
 
-[[configuration-metadata.annotation-processor.automatic-metadata-generation.nested-properties]]
+[[appendix.configuration-metadata.annotation-processor.automatic-metadata-generation.nested-properties]]
 ==== Nested Properties
 The annotation processor automatically considers inner classes as nested properties.
 Rather than documenting the `ip` and `port` at the root of the namespace, we could create a sub-namespace for it.
@@ -888,7 +888,7 @@ TIP: This has no effect on collections and maps, as those types are automaticall
 
 
 
-[[configuration-metadata.annotation-processor.adding-additional-metadata]]
+[[appendix.configuration-metadata.annotation-processor.adding-additional-metadata]]
 === Adding Additional Metadata
 Spring Boot's configuration file handling is quite flexible, and it is often the case that properties may exist that are not bound to a `@ConfigurationProperties` bean.
 You may also need to tune some attributes of an existing key.

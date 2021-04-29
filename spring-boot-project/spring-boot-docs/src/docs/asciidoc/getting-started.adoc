@@ -252,7 +252,7 @@ NOTE: If you install the Spring Boot CLI by using Homebrew or MacPorts, the comm
 
 
 
-[[getting-started.installing.scoop]]
+[[getting-started.installing.cli.scoop]]
 ==== Windows Scoop Installation
 If you are on a Windows and use https://scoop.sh/[Scoop], you can install the Spring Boot CLI by using the following commands:
 
@@ -269,7 +269,7 @@ In that case, run `scoop update` and try again.
 
 
 
-[[getting-started.installing.quick-start]]
+[[getting-started.installing.cli.quick-start]]
 ==== Quick-start Spring CLI Example
 You can use the following web application to test your installation.
 To start, create a file called `app.groovy`, as follows:
@@ -604,7 +604,7 @@ An uber jar packages all the classes from all the application's dependencies int
 The problem with this approach is that it becomes hard to see which libraries are in your application.
 It can also be problematic if the same filename is used (but with different content) in multiple jars.
 
-Spring Boot takes a <<executable-jar.adoc#executable-jar, different approach>> and lets you actually nest jars directly.
+Spring Boot takes a <<executable-jar.adoc#appendix.executable-jar, different approach>> and lets you actually nest jars directly.
 ****
 
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.

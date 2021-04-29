@@ -23,9 +23,9 @@ The reference documentation consists of the following sections:
 The reference documentation has the following appendices:
 
 [horizontal]
-<<common-application-properties.adoc#common-application-properties,Application Properties>> :: Common application properties that can be used to configure your application.
-<<configuration-metadata.adoc#configuration-metadata,Configuration Metadata>> :: Metadata used to describe configuration properties.
-<<auto-configuration-classes.adoc#auto-configuration-classes,Auto-configuration Classes>> :: Auto-configuration classes provided by Spring Boot.
-<<test-auto-configuration.adoc#test-auto-configuration,Test Auto-configuration Annotations>> :: Test-autoconfiguration annotations used to test slices of your application.
-<<executable-jar.adoc#executable-jar,Executable Jars>> :: Spring Boot's executable jars, their launchers, and their format.
-<<dependency-versions.adoc#dependency-versions,Dependency Versions>> :: Details of the dependencies that are managed by Spring Boot.
+<<common-application-properties.adoc#appendix.common-application-properties,Application Properties>> :: Common application properties that can be used to configure your application.
+<<configuration-metadata.adoc#appendix.configuration-metadata,Configuration Metadata>> :: Metadata used to describe configuration properties.
+<<auto-configuration-classes.adoc#appendix.auto-configuration-classes,Auto-configuration Classes>> :: Auto-configuration classes provided by Spring Boot.
+<<test-auto-configuration.adoc#appendix.test-auto-configuration,Test Auto-configuration Annotations>> :: Test-autoconfiguration annotations used to test slices of your application.
+<<executable-jar.adoc#appendix.executable-jar,Executable Jars>> :: Spring Boot's executable jars, their launchers, and their format.
+<<dependency-versions.adoc#appendix.dependency-versions,Dependency Versions>> :: Details of the dependencies that are managed by Spring Boot.

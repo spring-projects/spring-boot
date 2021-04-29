@@ -717,7 +717,7 @@ If you want to support your own locations, see the `ConfigDataLocationResolver` 
 
 
 
-[[features.external-config.file.importing-extensionless]]
+[[features.external-config.files.importing-extensionless]]
 ==== Importing Extensionless Files
 Some cloud platforms cannot add a file extension to volume mounted files.
 To import these extensionless files, you need to give Spring Boot a hint so that it knows how to load them.
@@ -1180,7 +1180,7 @@ include::{include-springbootfeatures}/externalizedconfiguration/use/MyService.ja
 ----
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
-See the <<configuration-metadata.adoc#configuration-metadata,appendix>> for details.
+See the <<configuration-metadata.adoc#appendix.configuration-metadata,appendix>> for details.
 
 
 
@@ -1578,7 +1578,7 @@ The following table summarizes the features that are supported by `@Configuratio
 | Yes
 | Limited (see <<boot-features-external-config-vs-value-note,note below>>)
 
-| <<configuration-metadata.adoc#configuration-metadata,Meta-data support>>
+| <<configuration-metadata.adoc#appendix.configuration-metadata,Meta-data support>>
 | Yes
 | No
 
@@ -2564,7 +2564,7 @@ For machine clients, it produces a JSON response with details of the error, the 
 For browser clients, there is a "`whitelabel`" error view that renders the same data in HTML format (to customize it, add a `View` that resolves to `error`).
 
 There are a number of `server.error` properties that can be set if you want to customize the default error handling behavior.
-See the <<common-application-properties.adoc#common-application-properties.server, "`Server Properties`">> section of the Appendix.
+See the <<common-application-properties.adoc#appendix.common-application-properties.server, "`Server Properties`">> section of the Appendix.
 
 To replace the default behavior completely, you can implement `ErrorController` and register a bean definition of that type or add a bean of type `ErrorAttributes` to use the existing mechanism but replace the contents.
 
@@ -3697,7 +3697,7 @@ The following connection pools are supported by `DataSourceBuilder`:
 
 
 
-[[features.sql.configure-datasource.jndi]]
+[[features.sql.datasource.jndi]]
 ==== Connection to a JNDI DataSource
 If you deploy your Spring Boot application to an Application Server, you might want to configure and manage your DataSource by using your Application Server's built-in features and access it by using JNDI.
 
@@ -5381,7 +5381,7 @@ You can customize this behaviour using the configprop:spring.kafka.streams.auto-
 
 [[features.messaging.kafka.additional-properties]]
 ==== Additional Kafka Properties
-The properties supported by auto configuration are shown in <<common-application-properties.adoc#common-application-properties>>.
+The properties supported by auto configuration are shown in <<common-application-properties.adoc#appendix.common-application-properties>>.
 Note that, for the most part, these properties (hyphenated or camelCase) map directly to the Apache Kafka dotted properties.
 Refer to the Apache Kafka documentation for details.
 
@@ -5661,7 +5661,7 @@ To ensure uniqueness in production, you should configure the configprop:spring.j
 If you package your Spring Boot application as a `war` or `ear` file and deploy it to a Java EE application server, you can use your application server's built-in transaction manager.
 Spring Boot tries to auto-configure a transaction manager by looking at common JNDI locations (`java:comp/UserTransaction`, `java:comp/TransactionManager`, and so on).
 If you use a transaction service provided by your application server, you generally also want to ensure that all resources are managed by the server and exposed over JNDI.
-Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the <<features.sql.configure-datasource.jndi, configprop:spring.datasource.jndi-name[] property>> to configure your `DataSource`.
+Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at the JNDI path (`java:/JmsXA` or `java:/XAConnectionFactory`), and you can use the <<features.sql.datasource.jndi, configprop:spring.datasource.jndi-name[] property>> to configure your `DataSource`.
 
 
 
@@ -6301,7 +6301,7 @@ To test that object JSON serialization and deserialization is working as expecte
 * `Gson`
 * `Jsonb`
 
-TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@JsonTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 If you need to configure elements of the auto-configuration, you can use the `@AutoConfigureJsonTesters` annotation.
 
@@ -6336,7 +6336,7 @@ To test whether Spring MVC controllers are working as expected, use the `@WebMvc
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebMvcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@WebMvcTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as the Jackson `Module`, you can import additional configuration classes by using `@Import` on your test.
 
@@ -6384,7 +6384,7 @@ To test that {spring-framework-docs}/web-reactive.html[Spring WebFlux] controlle
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@WebFluxTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@WebFluxTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 TIP: If you need to register extra components, such as Jackson `Module`, you can import additional configuration classes using `@Import` on your test.
 
@@ -6420,7 +6420,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Cassandra with Spring Boot, see "<<features.nosql.cassandra>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataCassandraTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows a typical setup for using Cassandra tests in Spring Boot:
 
@@ -6442,7 +6442,7 @@ This can be disabled using the `showSql()` attribute of the annotation.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJpaTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataJpaTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 By default, data JPA tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -6480,7 +6480,7 @@ By default, it configures an in-memory embedded database and a `JdbcTemplate`.
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JdbcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@JdbcTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 By default, JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -6503,7 +6503,7 @@ By default, it configures an in-memory embedded database, a `JdbcTemplate`, and 
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@DataJdbcTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@DataJdbcTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 By default, Data JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
@@ -6523,7 +6523,7 @@ If you want to replace it with an in-memory database, you can use `@AutoConfigur
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@JooqTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 `@JooqTest` configures a `DSLContext`.
 The following example shows the `@JooqTest` annotation in use:
@@ -6546,7 +6546,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using MongoDB with Spring Boot, see "<<features.nosql.mongodb>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 The following class shows the `@DataMongoTest` annotation in use:
 
@@ -6573,7 +6573,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Neo4J with Spring Boot, see "<<features.nosql.neo4j>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
@@ -6604,7 +6604,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using Redis with Spring Boot, see "<<features.nosql.redis>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataRedisTest` annotation in use:
 
@@ -6623,7 +6623,7 @@ Regular `@Component` and `@ConfigurationProperties` beans are not scanned when t
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 (For more about using LDAP with Spring Boot, see "<<features.nosql.ldap>>", earlier in this chapter.)
 
-TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@DataLdapTest` annotation in use:
 
@@ -6649,7 +6649,7 @@ By default, it auto-configures Jackson, GSON, and Jsonb support, configures a `R
 Regular `@Component` and `@ConfigurationProperties` beans are not scanned when the `@RestClientTest` annotation is used.
 `@EnableConfigurationProperties` can be used to include `@ConfigurationProperties` beans.
 
-TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@RestClientTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
 
@@ -6743,7 +6743,7 @@ By default, it configures a mock `WebServiceServer` bean and automatically custo
 (For more about using Web Services with Spring Boot, see "<<features.webservices>>", earlier in this chapter.)
 
 
-TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<test-auto-configuration.adoc#test-auto-configuration,found in the appendix>>.
+TIP: A list of the auto-configuration settings that are enabled by `@WebServiceClientTest` can be <<test-auto-configuration.adoc#appendix.test-auto-configuration,found in the appendix>>.
 
 The following example shows the `@WebServiceClientTest` annotation in use:
 
@@ -7253,7 +7253,7 @@ Here are some rules we follow internally to make sure descriptions are consisten
 * Use `java.time.Duration` rather than `long` and describe the default unit if it differs from milliseconds, e.g. "If a duration suffix is not specified, seconds will be used".
 * Do not provide the default value in the description unless it has to be determined at runtime.
 
-Make sure to <<configuration-metadata.adoc#configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
+Make sure to <<configuration-metadata.adoc#appendix.configuration-metadata.annotation-processor,trigger meta-data generation>> so that IDE assistance is available for your keys as well.
 You may want to review the generated metadata (`META-INF/spring-configuration-metadata.json`) to make sure your keys are properly documented.
 Using your own starter in a compatible IDE is also a good idea to validate that quality of the metadata.
 
@@ -7468,7 +7468,7 @@ data class KotlinExampleProperties(
 }
 ----
 
-TIP: To generate <<configuration-metadata.adoc#configuration-metadata.annotation-processor,your own metadata>> using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
+TIP: To generate <<configuration-metadata.adoc#appendix.configuration-metadata.annotation-processor,your own metadata>> using the annotation processor, {kotlin-docs}kapt.html[`kapt` should be configured] with the `spring-boot-configuration-processor` dependency.
 Note that some features (such as detecting the default value or deprecated items) are not working due to limitations in the model kapt provides.
 
 
@@ -7569,7 +7569,7 @@ For Gradle, refer to the {spring-boot-gradle-plugin-docs}#packaging-layered-arch
 
 [[features.container-images.building]]
 === Building Container Images
-Spring Boot applications can be containerized <<features.container-images.building.dockerfiles,using Dockerfiles>>, or by <<features.container-images.images.buildpacks,using Cloud Native Buildpacks to create docker compatible container images that you can run anywhere>>.
+Spring Boot applications can be containerized <<features.container-images.building.dockerfiles,using Dockerfiles>>, or by <<features.container-images.building.buildpacks,using Cloud Native Buildpacks to create docker compatible container images that you can run anywhere>>.
 
 
 
@@ -7635,7 +7635,7 @@ You can use some combination of `unzip` and `mv` to move things to the right lay
 
 
 
-[[features.container-images.images.buildpacks]]
+[[features.container-images.building.buildpacks]]
 ==== Cloud Native Buildpacks
 Dockerfiles are just one way to build docker images.
 Another way to build docker images is directly from your Maven or Gradle plugin, using buildpacks.

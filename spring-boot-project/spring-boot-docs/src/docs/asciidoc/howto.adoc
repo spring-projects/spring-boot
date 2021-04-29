@@ -402,7 +402,7 @@ There is not (and technically cannot be) an exhaustive list of all supported pro
 
 A running application with the Actuator features has a `configprops` endpoint that shows all the bound and bindable properties available through `@ConfigurationProperties`.
 
-The appendix includes an <<common-application-properties.adoc#common-application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
+The appendix includes an <<common-application-properties.adoc#appendix.common-application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
 The definitive list comes from searching the source code for `@ConfigurationProperties` and `@Value` annotations as well as the occasional use of `Binder`.
 For more about the exact ordering of loading properties, see "<<spring-boot-features#features.external-config>>".
 
@@ -656,7 +656,7 @@ As of Undertow 1.4.0+, both `h2` and `h2c` are supported on JDK 8 without any ad
 === Configure the Web Server
 Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` (or `application.yml`, or environment, etc. see "`<<howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
 The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
-See the list of <<common-application-properties.adoc#common-application-properties>>.
+See the list of <<common-application-properties.adoc#appendix.common-application-properties>>.
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
 However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
@@ -1076,11 +1076,11 @@ If you provide any `@Beans` of type `MappingJackson2HttpMessageConverter`, they 
 Also, a convenience bean of type `HttpMessageConverters` is provided (and is always available if you use the default MVC configuration).
 It has some useful methods to access the default and user-enhanced message converters.
 
-See the "`<<howtospring-mvc.customize-responsebody-rendering>>`" section and the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
+See the "`<<howto.spring-mvc.customize-responsebody-rendering>>`" section and the {spring-boot-autoconfigure-module-code}/web/servlet/WebMvcAutoConfiguration.java[`WebMvcAutoConfiguration`] source code for more details.
 
 
 
-[[howtospring-mvc.customize-responsebody-rendering]]
+[[howto.spring-mvc.customize-responsebody-rendering]]
 === Customize the @ResponseBody Rendering
 Spring uses `HttpMessageConverters` to render `@ResponseBody` (or responses from `@RestController`).
 You can contribute additional converters by adding beans of the appropriate type in a Spring Boot context.
@@ -2578,7 +2578,7 @@ If your application contains classes that you want to share with other projects,
 The separate module can then be depended upon by your application and other projects.
 
 If you cannot rearrange your code as recommended above, Spring Boot's Maven and Gradle plugins must be configured to produce a separate artifact that is suitable for use as a dependency.
-The executable archive cannot be used as a dependency as the <<executable-jar.adoc#executable-jar.nested-jars.jar-structure,executable jar format>> packages application classes in `BOOT-INF/classes`.
+The executable archive cannot be used as a dependency as the <<executable-jar.adoc#appendix.executable-jar.nested-jars.jar-structure,executable jar format>> packages application classes in `BOOT-INF/classes`.
 This means that they cannot be found when the executable jar is used as a dependency.
 
 To produce the two artifacts, one that can be used as a dependency and one that is executable, a classifier must be specified.
@@ -2735,7 +2735,7 @@ This section answers common questions about traditional deployment.
 
 
 
-[[howto.howto.traditional-deployment.war]]
+[[howto.traditional-deployment.war]]
 === Create a Deployable War File
 
 WARNING: Because Spring WebFlux does not strictly depend on the Servlet API and applications are deployed by default on an embedded Reactor Netty server, War deployment is not supported for WebFlux applications.
@@ -2813,7 +2813,7 @@ This means that, in addition to being deployable to a servlet container, you can
 
 
 
-[[howto.howto.traditional-deployment.convert-existing-application]]
+[[howto.traditional-deployment.convert-existing-application]]
 === Convert an Existing Application to Spring Boot
 To convert an existing non-web Spring application to a Spring Boot application, replace the code that creates your `ApplicationContext` and replace it with calls to `SpringApplication` or `SpringApplicationBuilder`.
 Spring MVC web applications are generally amenable to first creating a deployable war application and then migrating it later to an executable war or jar.
@@ -2909,7 +2909,7 @@ In that case, we suggest https://stackoverflow.com/questions/tagged/spring-boot[
 
 
 
-[[howto.howto.traditional-deployment.weblogic]]
+[[howto.traditional-deployment.weblogic]]
 ===  Deploying a WAR to WebLogic
 To deploy a Spring Boot application to WebLogic, you must ensure that your servlet initializer *directly* implements `WebApplicationInitializer` (even if you extend from a base class that already implements it).
 
@@ -2950,8 +2950,8 @@ You can do so by adding a `WEB-INF/weblogic.xml` file with the following content
 
 
 
-[[howto.howto.traditional-deployment.jedis-instead-of-lettuce]]
-=== Use Jedis Instead of Lettuce
+[[howto.jedis-instead-of-lettuce]]
+== Use Jedis Instead of Lettuce
 By default, the Spring Boot starter (`spring-boot-starter-data-redis`) uses https://github.com/lettuce-io/lettuce-core/[Lettuce].
 You need to exclude that dependency and include the https://github.com/xetorthio/jedis/[Jedis] one instead.
 Spring Boot manages both of these dependencies so you can switch to Jedis without specifying a version.
@@ -2991,8 +2991,8 @@ The following example shows how to do so in Gradle:
 
 
 
-[[howto.howto.traditional-deployment.testcontainers]]
-===  Use Testcontainers for integration testing
+[[howto.testcontainers]]
+==  Use Testcontainers for integration testing
 The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
 It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
 Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
