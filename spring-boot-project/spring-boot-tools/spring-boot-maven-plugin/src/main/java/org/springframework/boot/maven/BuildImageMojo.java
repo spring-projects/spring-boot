@@ -50,6 +50,7 @@ import org.springframework.boot.buildpack.platform.io.Owner;
 import org.springframework.boot.buildpack.platform.io.TarArchive;
 import org.springframework.boot.loader.tools.EntryWriter;
 import org.springframework.boot.loader.tools.ImagePackager;
+import org.springframework.boot.loader.tools.LayoutFactory;
 import org.springframework.boot.loader.tools.Libraries;
 import org.springframework.util.StringUtils;
 
@@ -158,6 +159,45 @@ public class BuildImageMojo extends AbstractPackagerMojo {
 	 */
 	@Parameter
 	private Docker docker;
+
+	/**
+	 * The type of archive (which corresponds to how the dependencies are laid out inside
+	 * it). Possible values are {@code JAR}, {@code WAR}, {@code ZIP}, {@code DIR},
+	 * {@code NONE}. Defaults to a guess based on the archive type.
+	 * @since 2.3.11
+	 */
+	@Parameter
+	private LayoutType layout;
+
+	/**
+	 * The layout factory that will be used to create the executable archive if no
+	 * explicit layout is set. Alternative layouts implementations can be provided by 3rd
+	 * parties.
+	 * @since 2.3.11
+	 */
+	@Parameter
+	private LayoutFactory layoutFactory;
+
+	/**
+	 * Return the type of archive that should be used when buiding the image.
+	 * @return the value of the {@code layout} parameter, or {@code null} if the parameter
+	 * is not provided
+	 */
+	@Override
+	protected LayoutType getLayout() {
+		return this.layout;
+	}
+
+	/**
+	 * Return the layout factory that will be used to determine the {@link LayoutType} if
+	 * no explicit layout is set.
+	 * @return the value of the {@code layoutFactory} parameter, or {@code null} if the
+	 * parameter is not provided
+	 */
+	@Override
+	protected LayoutFactory getLayoutFactory() {
+		return this.layoutFactory;
+	}
 
 	@Override
 	public void execute() throws MojoExecutionException {
