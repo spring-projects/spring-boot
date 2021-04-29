@@ -195,13 +195,13 @@ task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoc
 task documentDependencyVersions(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
 	dependsOn dependencyVersions
 	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
-	outputFile = file("${buildDir}/docs/generated/dependency-versions.adoc")
+	outputFile = file("${buildDir}/docs/generated/generated-dependency-versions.adoc")
 }
 
 task documentVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
 	dependsOn dependencyVersions
 	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
-	outputFile = file("${buildDir}/docs/generated/version-properties.adoc")
+	outputFile = file("${buildDir}/docs/generated/generated-version-properties.adoc")
 }
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {

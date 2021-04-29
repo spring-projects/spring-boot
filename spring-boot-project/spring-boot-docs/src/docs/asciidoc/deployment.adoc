@@ -36,7 +36,7 @@ Once you have unpacked the jar file, you can also get an extra boost to startup 
 NOTE: Using the `JarLauncher` over the application's main method has the added benefit of a predictable classpath order.
 The jar contains a `classpath.idx` file which is used by the `JarLauncher` when constructing the classpath.
 
-More efficient container images can also be created by <<spring-boot-features.adoc#features.container-images.building.dockerfiles,creating separate layers>> for your dependencies and application classes and resources (which normally change more frequently).
+More efficient container images can also be created by <<features.adoc#features.container-images.building.dockerfiles,creating separate layers>> for your dependencies and application classes and resources (which normally change more frequently).
 
 
 
@@ -165,7 +165,7 @@ TIP: The https://github.com/pivotal-cf/java-cfenv/[Java CFEnv] project is a bett
 Spring Boot auto-detects Kubernetes deployment environments by checking the environment for `"*_SERVICE_HOST"` and `"*_SERVICE_PORT"` variables.
 You can override this detection with the configprop:spring.main.cloud-platform[] configuration property.
 
-Spring Boot helps you to <<spring-boot-features.adoc#features.spring-application.application-availability,manage the state of your application>> and export it with <<production-ready-features.adoc#actuator.endpoints.kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
+Spring Boot helps you to <<features.adoc#features.spring-application.application-availability,manage the state of your application>> and export it with <<actuator.adoc#actuator.endpoints.kubernetes-probes, HTTP Kubernetes Probes using Actuator>>.
 
 
 
@@ -856,4 +856,4 @@ Check out the https://www.cloudfoundry.org/[Cloud Foundry], https://www.heroku.c
 These are just four of the most popular Java PaaS providers.
 Since Spring Boot is so amenable to cloud-based deployment, you can freely consider other providers as well.
 
-The next section goes on to cover the _<<spring-boot-cli.adoc#cli, Spring Boot CLI>>_, or you can jump ahead to read about _<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.
+The next section goes on to cover the _<<cli.adoc#cli, Spring Boot CLI>>_, or you can jump ahead to read about _<<build-tool-plugins.adoc#build-tool-plugins, build tool plugins>>_.

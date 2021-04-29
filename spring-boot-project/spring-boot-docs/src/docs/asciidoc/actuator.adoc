@@ -127,7 +127,7 @@ The following technology-agnostic endpoints are available:
   Disabled by default.
 
 | `startup`
-| Shows the <<spring-boot-features.adoc#features.spring-application.startup-tracking,startup steps data>> collected by the `ApplicationStartup`.
+| Shows the <<features.adoc#features.spring-application.startup-tracking,startup steps data>> collected by the `ApplicationStartup`.
   Requires the `SpringApplication` to be configured with a `BufferingApplicationStartup`.
 
 | `threaddump`
@@ -1007,7 +1007,7 @@ If you prefer not to include routing data sources in the indicator's output, set
 Applications deployed on Kubernetes can provide information about their internal state with https://kubernetes.io/docs/concepts/workloads/pods/pod-lifecycle/#container-probes[Container Probes].
 Depending on https://kubernetes.io/docs/tasks/configure-pod-container/configure-liveness-readiness-startup-probes/[your Kubernetes configuration], the kubelet will call those probes and react to the result.
 
-Spring Boot manages your <<spring-boot-features.adoc#features.spring-application.application-availability,Application Availability State>> out-of-the-box.
+Spring Boot manages your <<features.adoc#features.spring-application.application-availability,Application Availability State>> out-of-the-box.
 If deployed in a Kubernetes environment, actuator will gather the "Liveness" and "Readiness" information from the `ApplicationAvailability` interface and use that information in dedicated <<actuator.endpoints.health.auto-configured-health-indicators,Health Indicators>>: `LivenessStateHealthIndicator` and `ReadinessStateHealthIndicator`.
 These indicators will be shown on the global health endpoint (`"/actuator/health"`).
 They will also be exposed as separate HTTP Probes using <<actuator.endpoints.health.groups, Health Groups>>: `"/actuator/health/liveness"` and `"/actuator/health/readiness"`.
@@ -1038,7 +1038,7 @@ These health groups are only enabled automatically if the application is <<deplo
 You can enable them in any environment using the configprop:management.endpoint.health.probes.enabled[] configuration property.
 
 NOTE: If an application takes longer to start than the configured liveness period, Kubernetes mention the `"startupProbe"` as a possible solution.
-The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fails until all startup tasks are done, see <<production-ready-features.adoc#actuator.endpoints.kubernetes-probes.lifecycle,how Probes behave during the application lifecycle>>.
+The `"startupProbe"` is not necessarily needed here as the `"readinessProbe"` fails until all startup tasks are done, see <<actuator.adoc#actuator.endpoints.kubernetes-probes.lifecycle,how Probes behave during the application lifecycle>>.
 
 WARNING: If your Actuator endpoints are deployed on a separate management context, be aware that endpoints are then not using the same web infrastructure (port, connection pools, framework components) as the main application.
 In this case, a probe check could be successful even if the main application does not work properly (for example, it cannot accept new connections).
@@ -1063,11 +1063,11 @@ You can, for example, configure additional Health Indicators:
 By default, Spring Boot does not add other Health Indicators to these groups.
 
 The "`liveness`" Probe should not depend on health checks for external systems.
-If the <<spring-boot-features.adoc#features.spring-application.application-availability.liveness,Liveness State of an application>> is broken, Kubernetes will try to solve that problem by restarting the application instance.
+If the <<features.adoc#features.spring-application.application-availability.liveness,Liveness State of an application>> is broken, Kubernetes will try to solve that problem by restarting the application instance.
 This means that if an external system fails (e.g. a database, a Web API, an external cache), Kubernetes might restart all application instances and create cascading failures.
 
 As for the "`readiness`" Probe, the choice of checking external systems must be made carefully by the application developers, i.e. Spring Boot does not include any additional health checks in the readiness probe.
-If the <<spring-boot-features.adoc#features.spring-application.application-availability.readiness,Readiness State of an application instance>> is unready, Kubernetes will not route traffic to that instance.
+If the <<features.adoc#features.spring-application.application-availability.readiness,Readiness State of an application instance>> is unready, Kubernetes will not route traffic to that instance.
 Some external systems might not be shared by application instances, in which case they could quite naturally be included in a readiness probe.
 Other external systems might not be essential to the application (the application could have circuit breakers and fallbacks), in which case they definitely should not be included.
 Unfortunately, an external system that is shared by all application instances is common, and you have to make a judgement call: include it in the readiness probe and expect that the application is taken out of service when the external service is down, or leave it out and deal with failures higher up the stack, e.g. using a circuit breaker in the caller.
@@ -1088,7 +1088,7 @@ An important aspect of the Kubernetes Probes support is its consistency with the
 There is a significant difference between the `AvailabilityState` which is the in-memory, internal state of the application
 and the actual Probe which exposes that state: depending on the phase of application lifecycle, the Probe might not be available.
 
-Spring Boot publishes <<spring-boot-features.adoc#features.spring-application.application-events-and-listeners,Application Events during startup and shutdown>>,
+Spring Boot publishes <<features.adoc#features.spring-application.application-events-and-listeners,Application Events during startup and shutdown>>,
 and Probes can listen to such events and expose the `AvailabilityState` information.
 
 The following tables show the `AvailabilityState` and the state of HTTP connectors at different stages.
@@ -2210,7 +2210,7 @@ To add to the default tags, provide one or more ``@Bean``s that implement `WebMv
 To replace the default tags, provide a `@Bean` that implements `WebMvcTagsProvider`.
 
 TIP: In some cases, exceptions handled in Web controllers are not recorded as request metrics tags.
-Applications can opt-in and record exceptions by <<spring-boot-features.adoc#features.developing-web-applications.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt-in and record exceptions by <<features.adoc#features.developing-web-applications.spring-mvc.error-handling, setting handled exceptions as request attributes>>.
 
 
 
@@ -2249,7 +2249,7 @@ To add to the default tags, provide one or more ``@Bean``s that implement `WebFl
 To replace the default tags, provide a `@Bean` that implements `WebFluxTagsProvider`.
 
 TIP: In some cases, exceptions handled in controllers and handler functions are not recorded as request metrics tags.
-Applications can opt-in and record exceptions by <<spring-boot-features.adoc#features.developing-web-applications.spring-webflux.error-handling, setting handled exceptions as request attributes>>.
+Applications can opt-in and record exceptions by <<features.adoc#features.developing-web-applications.spring-webflux.error-handling, setting handled exceptions as request attributes>>.
 
 
 

@@ -143,7 +143,7 @@ The following application starters are provided by Spring Boot under the `org.sp
 .Spring Boot application starters
 include::starters/application-starters.adoc[]
 
-In addition to the application starters, the following starters can be used to add _<<production-ready-features.adoc#actuator, production ready>>_ features:
+In addition to the application starters, the following starters can be used to add _<<actuator.adoc#actuator, production ready>>_ features:
 
 .Spring Boot production starters
 include::starters/production-starters.adoc[]
@@ -811,7 +811,7 @@ This allows you to share the devtools global configuration with applications tha
 ====
 Profiles are not supported in devtools properties/yaml files.
 
-Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<spring-boot-features.adoc#features.external-config.files.profile-specific, profile-specific configuration files>>.
+Any profiles activated in `.spring-boot-devtools.properties` will not affect the loading of <<features.adoc#features.external-config.files.profile-specific, profile-specific configuration files>>.
 Profile specific filenames (of the form `spring-boot-devtools-<profile>.properties`) and `spring.config.activate.on-profile` documents in both YAML and Properties files are not supported.
 ====
 
@@ -940,7 +940,7 @@ Executable jars can be used for production deployment.
 As they are self-contained, they are also ideally suited for cloud-based deployment.
 
 For additional "`production ready`" features, such as health, auditing, and metric REST or JMX end-points, consider adding `spring-boot-actuator`.
-See _<<production-ready-features.adoc#actuator>>_ for details.
+See _<<actuator.adoc#actuator>>_ for details.
 
 
 

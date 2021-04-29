@@ -1,0 +1,107 @@
+[[documentation]]
+= Spring Boot Documentation
+include::attributes.adoc[]
+
+This section provides a brief overview of Spring Boot reference documentation.
+It serves as a map for the rest of the document.
+
+
+
+[[documentation.about]]
+== About the Documentation
+The Spring Boot reference guide is available as:
+
+* {spring-boot-docs}/html/[Multi-page HTML]
+* {spring-boot-docs}/htmlsingle/[Single page HTML]
+* {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF]
+
+The latest copy is available at {spring-boot-current-docs}.
+
+Copies of this document may be made for your own use and for distribution to others, provided that you do not charge any fee for such copies and further provided that each copy contains this Copyright Notice, whether distributed in print or electronically.
+
+
+
+[[documentation.getting-help]]
+== Getting Help
+If you have trouble with Spring Boot, we would like to help.
+
+* Try the <<howto.adoc#howto, How-to documents>>.
+  They provide solutions to the most common questions.
+* Learn the Spring basics.
+  Spring Boot builds on many other Spring projects.
+  Check the https://spring.io[spring.io] web-site for a wealth of reference documentation.
+  If you are starting out with Spring, try one of the https://spring.io/guides[guides].
+* Ask a question.
+  We monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
+* Report bugs with Spring Boot at https://github.com/spring-projects/spring-boot/issues.
+
+NOTE: All of Spring Boot is open source, including the documentation.
+If you find problems with the docs or if you want to improve them, please {spring-boot-code}[get involved].
+
+
+
+[[documentation.upgrading]]
+== Upgrading From an Earlier Version
+Instructions for how to upgrade from earlier versions of Spring Boot are provided on the project {github-wiki}[wiki].
+Follow the links in the {github-wiki}#release-notes[release notes] section to find the version that you want to upgrade to.
+
+Upgrading instructions are always the first item in the release notes.
+If you are more than one release behind, please make sure that you also review the release notes of the versions that you jumped.
+
+You should always ensure that you are running a {github-wiki}/Supported-Versions[supported version] of Spring Boot.
+
+
+
+[[documentation.first-steps]]
+== First Steps
+If you are getting started with Spring Boot or 'Spring' in general, start with <<getting-started.adoc#getting-started, the following topics>>:
+
+* *From scratch:* <<getting-started.adoc#getting-started.introducing-spring-boot, Overview>> | <<getting-started.adoc#getting-started.system-requirements, Requirements>> | <<getting-started.adoc#getting-started.installing, Installation>>
+* *Tutorial:* <<getting-started.adoc#getting-started.first-application, Part 1>> | <<getting-started.adoc#getting-started.first-application.code, Part 2>>
+* *Running your example:* <<getting-started.adoc#getting-started.first-application.run, Part 1>> | <<getting-started.adoc#getting-started.first-application.executable-jar, Part 2>>
+
+
+
+[[documentation.using]]
+== Working with Spring Boot
+Ready to actually start using Spring Boot? <<using.adoc#using, We have you covered>>:
+
+* *Build systems:* <<using.adoc#using.build-systems.maven, Maven>> | <<using.adoc#using.build-systems.gradle, Gradle>> | <<using.adoc#using.build-systems.ant, Ant>> | <<using.adoc#using.build-systems.starters, Starters>>
+* *Best practices:* <<using.adoc#using.structuring-your-code, Code Structure>> | <<using.adoc#using.configuration-classes, @Configuration>> | <<using.adoc#using.auto-configuration, @EnableAutoConfiguration>> | <<using.adoc#using.spring-beans-and-dependency-injection, Beans and Dependency Injection>>
+* *Running your code:* <<using.adoc#using.running-your-application.from-an-ide, IDE>> | <<using.adoc#using.running-your-application.as-a-packaged-application, Packaged>> | <<using.adoc#using.running-your-application.with-the-maven-plugin, Maven>> | <<using.adoc#using.running-your-application.with-the-gradle-plugin, Gradle>>
+* *Packaging your app:* <<using.adoc#using.packaging-for-production, Production jars>>
+* *Spring Boot CLI:* <<cli.adoc#cli, Using the CLI>>
+
+
+
+[[documentation.features]]
+== Learning About Spring Boot Features
+Need more details about Spring Boot's core features?
+<<features.adoc#features, The following content is for you>>:
+
+* *Core Features:* <<features.adoc#features.spring-application, SpringApplication>> | <<features.adoc#features.external-config, External Configuration>> | <<features.adoc#features.profiles, Profiles>> | <<features.adoc#features.logging, Logging>>
+* *Web Applications:* <<features.adoc#features.developing-web-applications.spring-mvc, MVC>> | <<features.adoc#features.developing-web-applications.embedded-container, Embedded Containers>>
+* *Working with data:* <<features.adoc#features.sql, SQL>> | <<features.adoc#features.nosql, NO-SQL>>
+* *Messaging:* <<features.adoc#features.messaging, Overview>> | <<features.adoc#features.messaging.jms, JMS>>
+* *Testing:* <<features.adoc#features.testing, Overview>> | <<features.adoc#features.testing.spring-boot-applications, Boot Applications>> | <<features.adoc#features.testing.utilities, Utils>>
+* *Extending:* <<features.adoc#features.developing-auto-configuration, Auto-configuration>> | <<features.adoc#features.developing-auto-configuration.condition-annotations, @Conditions>>
+
+
+
+[[documentation.actuator]]
+== Moving to Production
+When you are ready to push your Spring Boot application to production, we have <<actuator.adoc#actuator, some tricks>> that you might like:
+
+* *Management endpoints:* <<actuator.adoc#actuator.endpoints, Overview>>
+* *Connection options:* <<actuator.adoc#actuator.monitoring, HTTP>> | <<actuator.adoc#actuator.jmx, JMX>>
+* *Monitoring:* <<actuator.adoc#actuator.metrics, Metrics>> | <<actuator.adoc#actuator.auditing, Auditing>> | <<actuator.adoc#actuator.tracing, HTTP Tracing>> | <<actuator.adoc#actuator.process-monitoring, Process>>
+
+
+
+[[documentation.advanced]]
+== Advanced Topics
+Finally, we have a few topics for more advanced users:
+
+* *Spring Boot Applications Deployment:* <<deployment.adoc#deployment.cloud, Cloud Deployment>> | <<deployment.adoc#deployment.installing.nix-services, OS Service>>
+* *Build tool plugins:* <<build-tool-plugins.adoc#build-tool-plugins.maven, Maven>> | <<build-tool-plugins.adoc#build-tool-plugins.gradle, Gradle>>
+* *Appendix:* <<common-application-properties.adoc#common-application-properties,Application Properties>> | <<configuration-metadata.adoc#configuration-metadata,Configuration Metadata>> | <<auto-configuration-classes.adoc#auto-configuration-classes,Auto-configuration Classes>> | <<test-auto-configuration.adoc#test-auto-configuration,Test Auto-configuration Annotations>> | <<executable-jar.adoc#executable-jar,Executable Jars>> | <<dependency-versions.adoc#dependency-versions,Dependency Versions>>

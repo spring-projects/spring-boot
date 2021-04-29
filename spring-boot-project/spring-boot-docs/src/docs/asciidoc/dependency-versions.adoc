@@ -13,7 +13,7 @@ This appendix provides details of the dependencies that are managed by Spring Bo
 The following table provides details of all of the dependency versions that are provided by Spring Boot in its CLI (Command Line Interface), Maven dependency management, and Gradle plugin.
 When you declare a dependency on one of these artifacts without declaring a version, the version listed in the table is used.
 
-include::dependency-versions.adoc[]
+include::generated-dependency-versions.adoc[]
 
 
 
@@ -24,4 +24,4 @@ The following table provides all properties that can be used to override the ver
 Browse the {spring-boot-code}/spring-boot-project/spring-boot-dependencies/build.gradle[`spring-boot-dependencies` build.gradle] for a complete list of dependencies.
 You can learn how to customize these versions in your application in the <<build-tool-plugins.adoc#build-tool-plugins,Build Tool Plugins documentation>>.
 
-include::version-properties.adoc[]
+include::generated-version-properties.adoc[]

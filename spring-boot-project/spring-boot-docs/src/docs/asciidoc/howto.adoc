@@ -48,7 +48,7 @@ The Spring Boot auto-configuration tries its best to "`do the right thing`", but
 
 There is a really useful `ConditionEvaluationReport` available in any Spring Boot `ApplicationContext`.
 You can see it if you enable `DEBUG` logging output.
-If you use the `spring-boot-actuator` (see <<production-ready-features.adoc#actuator,the Actuator chapter>>), there is also a `conditions` endpoint that renders the report in JSON.
+If you use the `spring-boot-actuator` (see <<actuator.adoc#actuator,the Actuator chapter>>), there is also a `conditions` endpoint that renders the report in JSON.
 Use that endpoint to debug the application and see what features have been added (and which have not been added) by Spring Boot at runtime.
 
 Many more questions can be answered by looking at the source code and the Javadoc.
@@ -80,7 +80,7 @@ There is more than one way to register additional customizations:
 * Declaratively, for all applications, by adding a `META-INF/spring.factories` and packaging a jar file that the applications all use as a library.
 
 The `SpringApplication` sends some special `ApplicationEvents` to the listeners (some even before the context is created) and then registers the listeners for events published by the `ApplicationContext` as well.
-See "`<<spring-boot-features.adoc#features.spring-application.application-events-and-listeners,Application Events and Listeners>>`" in the '`Spring Boot features`' section for a complete list.
+See "`<<features.adoc#features.spring-application.application-events-and-listeners,Application Events and Listeners>>`" in the '`Spring Boot features`' section for a complete list.
 
 It is also possible to customize the `Environment` before the application context is refreshed by using `EnvironmentPostProcessor`.
 Each implementation should be registered in `META-INF/spring.factories`, as shown in the following example:
@@ -112,7 +112,7 @@ This is too late to configure certain properties such as `+logging.*+` and `+spr
 [[howto.application.context-hierarchy]]
 === Build an ApplicationContext Hierarchy (Adding a Parent or Root Context)
 You can use the `ApplicationBuilder` class to create parent/child `ApplicationContext` hierarchies.
-See "`<<spring-boot-features.adoc#features.spring-application.fluent-builder-api>>`" in the '`Spring Boot features`' section for more information.
+See "`<<features.adoc#features.spring-application.fluent-builder-api>>`" in the '`Spring Boot features`' section for more information.
 
 
 
@@ -263,7 +263,7 @@ The actual application _now_ shows the banner (as overridden by configuration) a
 
 [[howto.properties-and-configuration.external-properties-location]]
 === Change the Location of External Properties of an Application
-By default, properties from different sources are added to the Spring `Environment` in a defined order (see "`<<spring-boot-features.adoc#features.external-config>>`" in the '`Spring Boot features`' section for the exact order).
+By default, properties from different sources are added to the Spring `Environment` in a defined order (see "`<<features.adoc#features.external-config>>`" in the '`Spring Boot features`' section for the exact order).
 
 You can also provide the following System properties (or environment variables) to change the behavior:
 
@@ -329,7 +329,7 @@ The preceding example YAML corresponds to the following `application.properties`
 	server.port=9000
 ----
 
-See "`<<spring-boot-features.adoc#features.external-config.yaml>>`" in the '`Spring Boot features`' section for more information about YAML.
+See "`<<features.adoc#features.external-config.yaml>>`" in the '`Spring Boot features`' section for more information about YAML.
 
 
 
@@ -355,7 +355,7 @@ In Spring Boot, you can also set the active profile in `application.properties`,
 A value set this way is replaced by the System property or environment variable setting but not by the `SpringApplicationBuilder.profiles()` method.
 Thus, the latter Java API can be used to augment the profiles without changing the defaults.
 
-See "`<<spring-boot-features.adoc#features.profiles>>`" in the "`Spring Boot features`" section for more information.
+See "`<<features.adoc#features.profiles>>`" in the "`Spring Boot features`" section for more information.
 
 
 
@@ -402,7 +402,7 @@ There is not (and technically cannot be) an exhaustive list of all supported pro
 
 A running application with the Actuator features has a `configprops` endpoint that shows all the bound and bindable properties available through `@ConfigurationProperties`.
 
-The appendix includes an <<appendix-application-properties.adoc#common-application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
+The appendix includes an <<common-application-properties.adoc#common-application-properties, `application.properties`>> example with a list of the most common properties supported by Spring Boot.
 The definitive list comes from searching the source code for `@ConfigurationProperties` and `@Value` annotations as well as the occasional use of `Binder`.
 For more about the exact ordering of loading properties, see "<<spring-boot-features#features.external-config>>".
 
@@ -497,7 +497,7 @@ Thanks to relaxed binding of `Environment` values, you can also use configprop:s
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see "`<<spring-boot-features.adoc#features.developing-web-applications.embedded-container.customizing>>`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
+For more details, see "`<<features.adoc#features.developing-web-applications.embedded-container.customizing>>`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
 
 
 
@@ -656,7 +656,7 @@ As of Undertow 1.4.0+, both `h2` and `h2c` are supported on JDK 8 without any ad
 === Configure the Web Server
 Generally, you should first consider using one of the many available configuration keys and customize your web server by adding new entries in your `application.properties` (or `application.yml`, or environment, etc. see "`<<howto.properties-and-configuration.discover-build-in-options-for-external-properties>>`").
 The `server.{asterisk}` namespace is quite useful here, and it includes namespaces like `server.tomcat.{asterisk}`, `server.jetty.{asterisk}` and others, for server-specific features.
-See the list of <<appendix-application-properties.adoc#common-application-properties>>.
+See the list of <<common-application-properties.adoc#common-application-properties>>.
 
 The previous sections covered already many common use cases, such as compression, SSL or HTTP/2.
 However, if a configuration key doesn't exist for your use case, you should then look at {spring-boot-module-api}/web/server/WebServerFactoryCustomizer.html[`WebServerFactoryCustomizer`].
@@ -736,7 +736,7 @@ If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
 This aligns with the Servlet Specification's default dispatcher type.
 ====
 
-Like any other Spring bean, you can define the order of Servlet filter beans; please make sure to check the "`<<spring-boot-features.adoc#features.developing-web-applications.embedded-container.servlets-filters-listeners.beans>>`" section.
+Like any other Spring bean, you can define the order of Servlet filter beans; please make sure to check the "`<<features.adoc#features.developing-web-applications.embedded-container.servlets-filters-listeners.beans>>`" section.
 
 
 
@@ -1059,7 +1059,7 @@ These features are described in six enums (in Jackson) that map onto properties 
 |===
 
 For example, to enable pretty print, set `spring.jackson.serialization.indent_output=true`.
-Note that, thanks to the use of <<spring-boot-features.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>>, the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.
+Note that, thanks to the use of <<features.adoc#features.external-config.typesafe-configuration-properties.relaxed-binding, relaxed binding>>, the case of `indent_output` does not have to match the case of the corresponding enum constant, which is `INDENT_OUTPUT`.
 
 This environment-based configuration is applied to the auto-configured `Jackson2ObjectMapperBuilder` bean and applies to any mappers created by using the builder, including the auto-configured `ObjectMapper` bean.
 
@@ -1261,7 +1261,7 @@ This section answers questions related to using them.
 
 [[howto.http-clients.rest-template-proxy-configuration]]
 === Configure RestTemplate to Use a Proxy
-As described in <<spring-boot-features.adoc#features.resttemplate.customization>>, you can use a `RestTemplateCustomizer` with `RestTemplateBuilder` to build a customized `RestTemplate`.
+As described in <<features.adoc#features.resttemplate.customization>>, you can use a `RestTemplateCustomizer` with `RestTemplateBuilder` to build a customized `RestTemplate`.
 This is the recommended approach for creating a `RestTemplate` configured to use a proxy.
 
 The exact details of the proxy configuration depend on the underlying client request factory that is being used.
@@ -1330,7 +1330,7 @@ By default, Spring Boot picks up the native configuration from its default locat
 === Configure Logback for Logging
 If you need to apply customizations to logback beyond those that can be achieved with `application.properties`, you'll need to add a standard logback configuration file.
 You can add a `logback.xml` file to the root of your classpath for logback to find.
-You can also use `logback-spring.xml` if you want to use the <<spring-boot-features.adoc#features.logging.logback-extensions,Spring Boot Logback extensions>>.
+You can also use `logback-spring.xml` if you want to use the <<features.adoc#features.logging.logback-extensions,Spring Boot Logback extensions>>.
 
 TIP: The Logback documentation has a https://logback.qos.ch/manual/configuration.html[dedicated section that covers configuration] in some detail.
 
@@ -1493,7 +1493,7 @@ This section answers questions related to doing so.
 === Configure a Custom DataSource
 To configure your own `DataSource`, define a `@Bean` of that type in your configuration.
 Spring Boot reuses your `DataSource` anywhere one is required, including database initialization.
-If you need to externalize some settings, you can bind your `DataSource` to the environment (see "`<<spring-boot-features.adoc#features.external-config.typesafe-configuration-properties.3rd-party-configuration>>`").
+If you need to externalize some settings, you can bind your `DataSource` to the environment (see "`<<features.adoc#features.external-config.typesafe-configuration-properties.3rd-party-configuration>>`").
 
 The following example shows how to define a data source in a bean:
 
@@ -1601,7 +1601,7 @@ This example uses a more generic `configuration` sub namespace as the example do
 NOTE: Because your custom configuration chooses to go with Hikari, `app.datasource.type` has no effect.
 In practice, the builder is initialized with whatever value you might set there and then overridden by the call to `.type()`.
 
-See "`<<spring-boot-features.adoc#features.sql.datasource>>`" in the "`Spring Boot features`" section and the {spring-boot-autoconfigure-module-code}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
+See "`<<features.adoc#features.sql.datasource>>`" in the "`Spring Boot features`" section and the {spring-boot-autoconfigure-module-code}/jdbc/DataSourceAutoConfiguration.java[`DataSourceAutoConfiguration`] class for more details.
 
 
 
@@ -1941,7 +1941,7 @@ Be careful when switching from in-memory to a '`real`' database that you do not 
 You either have to set `ddl-auto` explicitly or use one of the other mechanisms to initialize the database.
 
 NOTE: You can output the schema creation by enabling the `org.hibernate.SQL` logger.
-This is done for you automatically if you enable the <<spring-boot-features.adoc#features.logging.console-output,debug mode>>.
+This is done for you automatically if you enable the <<features.adoc#features.logging.console-output,debug mode>>.
 
 In addition, a file named `import.sql` in the root of the classpath is executed on startup if Hibernate creates the schema from scratch (that is, if the `ddl-auto` property is set to `create` or `create-drop`).
 This can be useful for demos and for testing if you are careful but is probably not something you want to be on the classpath in production.
@@ -1967,7 +1967,7 @@ While we do not recommend using multiple data source initialization technologies
 This will defer data source initialization until after any `EntityManagerFactory` beans have been created and initialized.
 `schema.sql` can then be used to make additions to any schema creation performed by Hibernate and `data.sql` can be used to populate it.
 
-If you are using a <<spring-boot-features.adoc#howto.data-initialization.migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
+If you are using a <<features.adoc#howto.data-initialization.migration-tool,Higher-level Database Migration Tool>>, like Flyway or Liquibase, you should use them alone to create and initialize the schema.
 Using the basic `schema.sql` and `data.sql` scripts alongside Flyway or Liquibase is not recommended and support will be removed in a future release.
 
 
@@ -2196,7 +2196,7 @@ See {spring-boot-autoconfigure-module-code}/batch/BatchAutoConfiguration.java[Ba
 
 [[howto.batch.?running-from-the-command-line]]
 === Running from the Command Line
-Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see <<spring-boot-features.adoc#features.external-config.command-line-args,accessing command line properties>>.
+Spring Boot converts any command line argument starting with `--` to a property to add to the `Environment`, see <<features.adoc#features.external-config.command-line-args,accessing command line properties>>.
 This should not be used to pass arguments to batch jobs.
 To specify batch arguments on the command line, use the regular format (i.e. without `--`), as shown in the following example:
 
@@ -2238,7 +2238,7 @@ In a standalone application, the Actuator HTTP port defaults to the same as the 
 To make the application listen on a different port, set the external property: configprop:management.server.port[].
 To listen on a completely different network address (such as when you have an internal network for management and an external one for user applications), you can also set `management.server.address` to a valid IP address to which the server is able to bind.
 
-For more detail, see the {spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`<<production-ready-features.adoc#actuator.monitoring.customizing-management-server-port>>`" in the "`Production-ready features`" section.
+For more detail, see the {spring-boot-actuator-autoconfigure-module-code}/web/server/ManagementServerProperties.java[`ManagementServerProperties`] source code and "`<<actuator.adoc#actuator.monitoring.customizing-management-server-port>>`" in the "`Production-ready features`" section.
 
 
 
@@ -2257,7 +2257,7 @@ In general, you need a `View` that resolves with a name of `error` or a `@Contro
 Unless you replaced some of the default configuration, you should find a `BeanNameViewResolver` in your `ApplicationContext`, so a `@Bean` named `error` would be one way of doing that.
 See {spring-boot-autoconfigure-module-code}/web/servlet/error/ErrorMvcAutoConfiguration.java[`ErrorMvcAutoConfiguration`] for more options.
 
-See also the section on "`<<spring-boot-features.adoc#features.developing-web-applications.spring-mvc.error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
+See also the section on "`<<features.adoc#features.developing-web-applications.spring-mvc.error-handling, Error Handling>>`" for details of how to register handlers in the servlet container.
 
 
 
@@ -2367,12 +2367,12 @@ This section answers questions about how it works.
 [[howto.hotswapping.reload-static-content]]
 === Reload Static Content
 There are several options for hot reloading.
-The recommended approach is to use <<using-spring-boot.adoc#using.devtools,`spring-boot-devtools`>>, as it provides additional development-time features, such as support for fast application restarts and LiveReload as well as sensible development-time configuration (such as template caching).
+The recommended approach is to use <<using.adoc#using.devtools,`spring-boot-devtools`>>, as it provides additional development-time features, such as support for fast application restarts and LiveReload as well as sensible development-time configuration (such as template caching).
 Devtools works by monitoring the classpath for changes.
 This means that static resource changes must be "built" for the change to take effect.
 By default, this happens automatically in Eclipse when you save your changes.
 In IntelliJ IDEA, the Make Project command triggers the necessary build.
-Due to the <<using-spring-boot.adoc#using.devtools.restart.excluding-resources, default restart exclusions>>, changes to static resources do not trigger a restart of your application.
+Due to the <<using.adoc#using.devtools.restart.excluding-resources, default restart exclusions>>, changes to static resources do not trigger a restart of your application.
 They do, however, trigger a live reload.
 
 Alternatively, running in an IDE (especially with debugging on) is a good way to do development (all modern IDEs allow reloading of static resources and usually also allow hot-swapping of Java class changes).
@@ -2385,7 +2385,7 @@ You can use that with an external css/js compiler process if you are writing tha
 [[howto.hotswapping.reload-templates]]
 === Reload Templates without Restarting the Container
 Most of the templating technologies supported by Spring Boot include a configuration option to disable caching (described later in this document).
-If you use the `spring-boot-devtools` module, these properties are <<using-spring-boot.adoc#using.devtools.property-defaults,automatically configured>> for you at development time.
+If you use the `spring-boot-devtools` module, these properties are <<using.adoc#using.devtools.property-defaults,automatically configured>> for you at development time.
 
 
 
@@ -2416,7 +2416,7 @@ The `spring-boot-devtools` module includes support for automatic application res
 While not as fast as technologies such as https://www.jrebel.com/products/jrebel[JRebel] it is usually significantly faster than a "`cold start`".
 You should probably give it a try before investigating some of the more complex reload options discussed later in this document.
 
-For more details, see the <<using-spring-boot.adoc#using.devtools>> section.
+For more details, see the <<using.adoc#using.devtools>> section.
 
 
 
@@ -2578,7 +2578,7 @@ If your application contains classes that you want to share with other projects,
 The separate module can then be depended upon by your application and other projects.
 
 If you cannot rearrange your code as recommended above, Spring Boot's Maven and Gradle plugins must be configured to produce a separate artifact that is suitable for use as a dependency.
-The executable archive cannot be used as a dependency as the <<appendix-executable-jar-format.adoc#executable-jar.nested-jars.jar-structure,executable jar format>> packages application classes in `BOOT-INF/classes`.
+The executable archive cannot be used as a dependency as the <<executable-jar.adoc#executable-jar.nested-jars.jar-structure,executable jar format>> packages application classes in `BOOT-INF/classes`.
 This means that they cannot be found when the executable jar is used as a dependency.
 
 To produce the two artifacts, one that can be used as a dependency and one that is executable, a classifier must be specified.
