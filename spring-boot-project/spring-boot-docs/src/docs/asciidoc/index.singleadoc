@@ -6,6 +6,14 @@ include::attributes.adoc[]
 
 *{spring-boot-version}*
 
+ifdef::backend-html[]
+NOTE: You can also view this documentation as {spring-boot-docs}/html/index.html[multiple HTML pages] or as {spring-boot-docs}/pdf/spring-boot-reference.pdf[a PDF file].
+endif::backend-html[]
+
+ifdef::backend-pdf[]
+NOTE: You can also view this documentation as {spring-boot-docs}/html/index.html[multiple HTML pages] or as {spring-boot-docs}/htmlsingle/index.html[a single HTML page] (give it some time to load).
+endif::backend-pdf[]
+
 include::legal.adoc[leveloffset=+1]
 include::documentation.adoc[leveloffset=+1]
 include::getting-started.adoc[leveloffset=+1]

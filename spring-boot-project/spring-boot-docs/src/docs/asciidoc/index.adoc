@@ -6,6 +6,8 @@ include::attributes.adoc[]
 
 *{spring-boot-version}*
 
+NOTE: You can also view this documentation as {spring-boot-docs}/htmlsingle/index.html[a single HTML file] (give it some time to load) or as {spring-boot-docs}/pdf/spring-boot-reference.pdf[a PDF file].
+
 The reference documentation consists of the following sections:
 
 [horizontal]
