@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.TreeMap;
 import java.util.stream.Collectors;
 
+import io.spring.javaformat.gradle.CheckTask;
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
 import org.gradle.api.Action;
@@ -42,6 +43,7 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.quality.Checkstyle;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
@@ -66,7 +68,12 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied
- * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
+ * <li>{@link Test} tasks are configured:
+ * <ul>
+ * <li>to use JUnit Platform
+ * <li>with a max heap of 1024M
+ * <li>to run after any Checkstyle and format checking tasks
+ * </ul>
  * <li>A {@code testRuntimeOnly} dependency upon
  * {@code org.junit.platform:junit-platform-launcher} is added to projects with the
  * {@link JavaPlugin} applied
@@ -162,6 +169,8 @@ class JavaConventions {
 						"file:" + test.getWorkingDir().toPath().relativize(copyJdk8156584SecurityProperties.output));
 				test.doFirst(copyJdk8156584SecurityProperties);
 			}
+			project.getTasks().withType(Checkstyle.class, (checkstyle) -> test.mustRunAfter(checkstyle));
+			project.getTasks().withType(CheckTask.class, (checkFormat) -> test.mustRunAfter(checkFormat));
 		});
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
 				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
