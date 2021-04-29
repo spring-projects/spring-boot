@@ -78,7 +78,7 @@ To handle this scenario, a separate `@Configuration` class can be used to isolat
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/creatingautoconfiguration/classconditions/MyAutoConfiguration.java[]
+include::{docs-java}/features/developingautoconfiguration/conditionannotations/classconditions/MyAutoConfiguration.java[]
 ----
 
 TIP: If you use `@ConditionalOnClass` or `@ConditionalOnMissingClass` as a part of a meta-annotation to compose your own composed annotations, you must use `name` as referring to the class in such a case is not handled.
@@ -95,7 +95,7 @@ When placed on a `@Bean` method, the target type defaults to the return type of 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/creatingautoconfiguration/beanconditions/MyAutoConfiguration.java[]
+include::{docs-java}/features/developingautoconfiguration/conditionannotations/beanconditions/MyAutoConfiguration.java[]
 ----
 
 In the preceding example, the `myService` bean is going to be created if no bean of type `MyService` is already contained in the `ApplicationContext`.
@@ -156,7 +156,7 @@ The following example makes sure that `UserServiceAutoConfiguration` is always i
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=runner]
+include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=runner]
 ----
 
 TIP: If multiple auto-configurations have to be defined, there is no need to order their declarations as they are invoked in the exact same order as when running the application.
@@ -167,14 +167,14 @@ Invoking `run` provides a callback context that can be used with `AssertJ`.
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=test-user-config]
+include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-user-config]
 ----
 
 It is also possible to easily customize the `Environment`, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=test-env]
+include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-env]
 ----
 
 The runner can also be used to display the `ConditionEvaluationReport`.
@@ -183,7 +183,7 @@ The following example shows how to use the `ConditionEvaluationReportLoggingList
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/ConditionEvaluationReportTests.java[tag=*]
+include::{docs-java}/features/developingautoconfiguration/testing/ConditionEvaluationReportTests.java[tag=*]
 ----
 
 
@@ -202,7 +202,7 @@ In the following example, we assert that if `UserService` is not present, the au
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/testing/UserServiceAutoConfigurationTests.java[tag=test-classloader]
+include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-classloader]
 ----
 
 
@@ -251,7 +251,7 @@ Make sure that configuration keys are documented by adding field javadoc for eac
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/creatingautoconfiguration/configurationkeys/AcmeProperties.java[]
+include::{docs-java}/features/developingautoconfiguration/customstarter/configurationkeys/AcmeProperties.java[]
 ----
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.

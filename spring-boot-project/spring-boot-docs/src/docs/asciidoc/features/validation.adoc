@@ -8,5 +8,5 @@ For instance, the following service triggers the validation of the first argumen
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/validation/MyBean.java[]
+include::{docs-java}/features/validation/MyBean.java[]
 ----

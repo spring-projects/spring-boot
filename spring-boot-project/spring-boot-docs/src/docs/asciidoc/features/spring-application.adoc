@@ -5,7 +5,7 @@ In many situations, you can delegate to the static `SpringApplication.run` metho
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/main/run/MyApplication.java[]
+include::{docs-java}/features/springapplication/MyApplication.java[]
 ----
 
 When your application starts, you should see something similar to the following output:
@@ -167,7 +167,7 @@ For example, to turn off the banner, you could write:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/main/custom/MyApplication.java[]
+include::{docs-java}/features/springapplication/customizingspringapplication/MyApplication.java[]
 ----
 
 NOTE: The constructor arguments passed to `SpringApplication` are configuration sources for Spring beans.
@@ -188,7 +188,7 @@ The `SpringApplicationBuilder` lets you chain together multiple method calls and
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/SpringApplicationBuilderExample.java[tag=*]
+include::{docs-java}/features/springapplication/fluentbuilderapi/SpringApplicationBuilderExample.java[tag=*]
 ----
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
@@ -242,14 +242,14 @@ For example, we can export the "Readiness" state of the application to a file so
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/availability/ReadinessStateExporter.java[]
+include::{docs-java}/features/springapplication/applicationavailability/managing/ReadinessStateExporter.java[]
 ----
 
 We can also update the state of the application, when the application breaks and cannot recover:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/availability/LocalCacheVerifier.java[]
+include::{docs-java}/features/springapplication/applicationavailability/managing/LocalCacheVerifier.java[]
 ----
 
 Spring Boot provides <<actuator#actuator.endpoints.kubernetes-probes,Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints>>.
@@ -334,7 +334,7 @@ The `ApplicationArguments` interface provides access to both the raw `String[]` 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/ApplicationArgumentsExample.java[]
+include::{docs-java}/features/springapplication/applicationarguments/ApplicationArgumentsExample.java[]
 ----
 
 TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
@@ -355,7 +355,7 @@ The following example shows a `CommandLineRunner` with a `run` method:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/CommandLineRunnerExample.java[]
+include::{docs-java}/features/springapplication/commandlinerunner/CommandLineRunnerExample.java[]
 ----
 
 If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.
@@ -372,7 +372,7 @@ This exit code can then be passed to `System.exit()` to return it as a status co
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/exitcode/MyApplication.java[]
+include::{docs-java}/features/springapplication/applicationexit/MyApplication.java[]
 ----
 
 Also, the `ExitCodeGenerator` interface may be implemented by exceptions.
@@ -403,7 +403,7 @@ For example, to use the `BufferingApplicationStartup`, you could write:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/springapplication/startup/MyApplication.java[tag=*]
+include::{docs-java}/features/springapplication/startuptracking/MyApplication.java[tag=*]
 ----
 
 The first available implementation, `FlightRecorderApplicationStartup` is provided by Spring Framework.

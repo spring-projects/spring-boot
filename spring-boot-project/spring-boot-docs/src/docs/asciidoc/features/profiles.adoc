@@ -5,7 +5,7 @@ Any `@Component`, `@Configuration` or `@ConfigurationProperties` can be marked w
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/profiles/ProductionConfiguration.java[]
+include::{docs-java}/features/profiles/ProductionConfiguration.java[]
 ----
 
 NOTE: If `@ConfigurationProperties` beans are registered via `@EnableConfigurationProperties` instead of automatic scanning, the `@Profile` annotation needs to be specified on the `@Configuration` class that has the `@EnableConfigurationProperties` annotation.

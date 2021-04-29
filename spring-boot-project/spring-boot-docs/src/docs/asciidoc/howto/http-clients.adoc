@@ -11,12 +11,6 @@ As described in <<features#features.resttemplate.customization>>, you can use a 
 This is the recommended approach for creating a `RestTemplate` configured to use a proxy.
 
 The exact details of the proxy configuration depend on the underlying client request factory that is being used.
-The following example configures `HttpComponentsClientRequestFactory` with an `HttpClient` that uses a proxy for all hosts except `192.168.0.5`:
-
-[source,java,indent=0]
-----
-include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[tag=*]
-----
 
 
 
@@ -28,7 +22,7 @@ The following example configures a 60 second connect timeout and adds a `ReadTim
 
 [source,java,indent=0]
 ----
-include::{include-howto}/httpclients/CustomizeReactorNettyClientConfiguration.java[tag=*]
+include::{docs-java}/howto/httpclients/webclientreactornettycustomization/CustomizeReactorNettyClientConfiguration.java[tag=*]
 ----
 
 TIP: Note the use of `ReactorResourceFactory` for the connection provider and event loop resources.

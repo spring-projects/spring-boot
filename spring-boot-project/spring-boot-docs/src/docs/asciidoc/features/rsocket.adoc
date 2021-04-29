@@ -82,5 +82,5 @@ The following code shows a typical example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/rsocket/MyService.java[]
+include::{docs-java}/features/rsocket//requester/MyService.java[]
 ----

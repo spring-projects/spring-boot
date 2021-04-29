@@ -19,6 +19,7 @@ package org.springframework.boot.docs.howto.springbootapplication;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.docs.howto.application.customizetheenvironmentorapplicationcontext.MyEnvironmentPostProcessor;
 import org.springframework.core.env.StandardEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;

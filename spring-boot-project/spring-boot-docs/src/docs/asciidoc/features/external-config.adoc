@@ -40,7 +40,7 @@ To provide a concrete example, suppose you develop a `@Component` that uses a `n
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/valueinjection/MyBean.java[]
+include::{docs-java}/features/externalconfig/MyBean.java[]
 ----
 
 On your application classpath (for example, inside your jar) you can have an `application.properties` file that provides a sensible default property value for `name`.
@@ -616,7 +616,7 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/javabeanbinding/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/javabeanbinding/AcmeProperties.java[]
 ----
 
 The preceding POJO defines the following properties:
@@ -657,7 +657,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/constructorbinding/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/AcmeProperties.java[]
 ----
 
 In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
@@ -671,7 +671,7 @@ If you wish you return a non-null instance of `Security` even when no properties
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/constructorbinding/nonnull/AcmeProperties.java[tag=*]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/nonnull/AcmeProperties.java[]
 ----
 
 
@@ -697,7 +697,7 @@ This can be done on any `@Configuration` class, as shown in the following exampl
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/enable/MyConfiguration.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/enablingannotatedtypes/MyConfiguration.java[]
 ----
 
 To use configuration property scanning, add the `@ConfigurationPropertiesScan` annotation to your application.
@@ -707,7 +707,7 @@ If you want to define specific packages to scan, you can do so as shown in the f
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/enable/MyApplication.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/enablingannotatedtypes/MyApplication.java[]
 ----
 
 [NOTE]
@@ -743,7 +743,7 @@ To work with `@ConfigurationProperties` beans, you can inject them in the same w
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/use/MyService.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/usingannotatedtypes/MyService.java[]
 ----
 
 TIP: Using `@ConfigurationProperties` also lets you generate metadata files that can be used by IDEs to offer auto-completion for your own keys.
@@ -751,7 +751,7 @@ See the <<configuration-metadata#configuration-metadata,appendix>> for details.
 
 
 
-[[features.external-config.typesafe-configuration-properties.3rd-party-configuration]]
+[[features.external-config.typesafe-configuration-properties.third-party-configuration]]
 ==== Third-party Configuration
 As well as using `@ConfigurationProperties` to annotate a class, you can also use it on public `@Bean` methods.
 Doing so can be particularly useful when you want to bind properties to third-party components that are outside of your control.
@@ -760,7 +760,7 @@ To configure a bean from the `Environment` properties, add `@ConfigurationProper
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/ThirdPartyConfiguration.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/thirdpartyconfiguration/ThirdPartyConfiguration.java[]
 ----
 
 Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `AcmeProperties` example.
@@ -776,7 +776,7 @@ As an example, consider the following `@ConfigurationProperties` class:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/relaxed/OwnerProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/relaxedbinding/OwnerProperties.java[]
 ----
 
 With the preceding code, the following properties names can all be used:
@@ -895,7 +895,7 @@ The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/merge/list/AcmeProperties.java[tag=*]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/list/AcmeProperties.java[tag=*]
 ----
 
 Consider the following configuration:
@@ -950,7 +950,7 @@ The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/merge/map/AcmeProperties.java[tag=*]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/map/AcmeProperties.java[tag=*]
 ----
 
 Consider the following configuration:
@@ -1007,7 +1007,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/duration/javabeanbinding/AppSystemProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/javabeanbinding/AppSystemProperties.java[]
 ----
 
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
@@ -1030,7 +1030,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/duration/constructorbinding/AppSystemProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/constructorbinding/AppSystemProperties.java[]
 ----
 
 
@@ -1071,7 +1071,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/datasize/javabeanbinding/AppIoProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/javabeanbinding/AppIoProperties.java[]
 ----
 
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
@@ -1092,7 +1092,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/datasize/constructorbinding/AppIoProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/constructorbinding/AppIoProperties.java[]
 ----
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes.
@@ -1108,7 +1108,7 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/validate/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/AcmeProperties.java[]
 ----
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
@@ -1118,7 +1118,7 @@ The following example builds on the preceding `AcmeProperties` example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/externalizedconfiguration/validate/nested/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/nested/AcmeProperties.java[]
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.

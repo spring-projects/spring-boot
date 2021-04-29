@@ -38,7 +38,7 @@ The following listing shows an example of such a bean:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/redis/MyBean.java[]
+include::{docs-java}/features/nosql/redis/connecting/MyBean.java[]
 ----
 
 TIP: You can also register an arbitrary number of beans that implement `LettuceClientConfigurationBuilderCustomizer` for more advanced customizations.
@@ -64,7 +64,7 @@ The following example shows how to connect to a MongoDB database:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/mongodb/databasefactory/MyBean.java[]
+include::{docs-java}/features/nosql/mongodb/connecting/MyBean.java[]
 ----
 
 If you have defined your own `MongoClient`, it will be used to auto-configure a suitable `MongoDatabaseFactory`.
@@ -115,14 +115,13 @@ As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/mongodb/template/MyBean.java[]
+include::{docs-java}/features/nosql/mongodb/template/MyBean.java[]
 ----
 
 See the {spring-data-mongodb-api}/core/MongoOperations.html[`MongoOperations` Javadoc] for complete details.
 
 
 
-[[features.nosql.mongodb.repositories]]
 [[features.nosql.mongodb.repositories]]
 ==== Spring Data MongoDB Repositories
 Spring Data includes repository support for MongoDB.
@@ -133,7 +132,7 @@ You could take the JPA example from earlier and, assuming that `City` is now a M
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/mongodb/data/CityRepository.java[]
+include::{docs-java}/features/nosql/mongodb/repositories/CityRepository.java[]
 ----
 
 TIP: You can customize document scanning locations by using the `@EntityScan` annotation.
@@ -175,7 +174,7 @@ The following example shows how to inject a Neo4j `Driver` that gives you access
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/neo4j/driver/MyBean.java[]
+include::{docs-java}/features/nosql/neo4j/connecting/MyBean.java[]
 ----
 
 You can configure various aspects of the driver using `spring.neo4j.*` properties.
@@ -207,7 +206,7 @@ You could take the JPA example from earlier and define `City` as Spring Data Neo
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/neo4j/data/CityRepository.java[]
+include::{docs-java}/features/nosql/neo4j/repositories/CityRepository.java[]
 ----
 
 The `spring-boot-starter-data-neo4j` "`Starter`" enables the repository support as well as transaction management.
@@ -223,7 +222,7 @@ To enable transaction management, the following bean must be defined in your con
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/Neo4jReactiveTransactionManagerConfiguration.java[]
+include::{docs-java}/features/nosql/neo4j/repositories/Neo4jReactiveTransactionManagerConfiguration.java[]
 ----
 ====
 
@@ -244,7 +243,7 @@ The following example shows how to inject a Solr bean:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/solr/client/MyBean.java[]
+include::{docs-java}/features/nosql/solr/connecting/MyBean.java[]
 ----
 
 If you add your own `@Bean` of type `SolrClient`, it replaces the default.
@@ -342,7 +341,7 @@ as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/elasticsearch/template/MyBean.java[]
+include::{docs-java}/features/nosql/elasticsearch/connectingusingspringdata/MyBean.java[]
 ----
 
 In the presence of `spring-data-elasticsearch` and the required dependencies for using a `WebClient` (typically `spring-boot-starter-webflux`), Spring Boot can also auto-configure a <<features#features.nosql.elasticsearch.connecting-using-reactive-rest,ReactiveElasticsearchClient>> and a `ReactiveElasticsearchTemplate` as beans.
@@ -435,7 +434,7 @@ The following code listing shows how to inject a Cassandra bean:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/cassandra/template/MyBean.java[]
+include::{docs-java}/features/nosql/cassandra/connecting/MyBean.java[]
 ----
 
 If you add your own `@Bean` of type `CassandraTemplate`, it replaces the default.
@@ -514,7 +513,7 @@ The following examples shows how to inject a `CouchbaseTemplate` bean:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/couchbase/template/MyBean.java[]
+include::{docs-java}/features/nosql/couchbase/repositories/MyBean.java[]
 ----
 
 There are a few beans that you can define in your own configuration to override those provided by the auto-configuration:
@@ -528,7 +527,7 @@ For instance, you can customize the converters to use, as follows:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/couchbase/CouchbaseConversionsConfiguration.java[]
+include::{docs-java}/features/nosql/couchbase/repositories/CouchbaseConversionsConfiguration.java[]
 ----
 
 
@@ -575,7 +574,7 @@ You can also inject an auto-configured `LdapTemplate` instance as you would with
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/nosql/ldap/template/MyBean.java[]
+include::{docs-java}/features/nosql/ldap/repositories/MyBean.java[]
 ----
 
 

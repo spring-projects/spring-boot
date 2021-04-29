@@ -9,7 +9,7 @@ The following code shows a typical example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/MyService.java[]
+include::{docs-java}/features/resttemplate/MyService.java[]
 ----
 
 TIP: `RestTemplateBuilder` includes a number of useful methods that can be used to quickly configure a `RestTemplate`.
@@ -31,7 +31,7 @@ The following example shows a customizer that configures the use of a proxy for 
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/RestTemplateProxyCustomizer.java[]
+include::{docs-java}/features/resttemplate/customization/RestTemplateProxyCustomizer.java[]
 ----
 
 Finally, you can also create your own `RestTemplateBuilder` bean.
@@ -40,7 +40,7 @@ The following example exposes a `RestTemplateBuilder` with what Spring Boot woul
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/resttemplate/RestTemplateBuilderConfiguration.java[]
+include::{docs-java}/features/resttemplate/customization/RestTemplateBuilderConfiguration.java[]
 ----
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.

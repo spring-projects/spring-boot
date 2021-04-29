@@ -11,7 +11,7 @@ The following code shows a typical example:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/webclient/MyService.java[]
+include::{docs-java}/features/webclient/MyService.java[]
 ----
 
 

@@ -138,7 +138,7 @@ Spring's `JmsTemplate` is auto-configured, and you can autowire it directly into
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/jms/template/MyBean.java[]
+include::{docs-java}/features/messaging/jms/sending/MyBean.java[]
 ----
 
 NOTE: {spring-framework-api}/jms/core/JmsMessagingTemplate.html[`JmsMessagingTemplate`] can be injected in a similar manner.
@@ -163,7 +163,7 @@ The following component creates a listener endpoint on the `someQueue` destinati
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/jms/receiving/MyBean.java[]
+include::{docs-java}/features/messaging/jms/receiving/MyBean.java[]
 ----
 
 TIP: See {spring-framework-api}/jms/annotation/EnableJms.html[the Javadoc of `@EnableJms`] for more details.
@@ -174,14 +174,14 @@ For instance, the following example exposes another factory that uses a specific
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/jms/receiving/custom/JmsConfiguration.java[]
+include::{docs-java}/features/messaging/jms/receiving/custom/JmsConfiguration.java[]
 ----
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/jms/receiving/custom/MyBean.java[]
+include::{docs-java}/features/messaging/jms/receiving/custom/MyBean.java[]
 ----
 
 
@@ -239,7 +239,7 @@ Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowir
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/amqp/sending/MyBean.java[]
+include::{docs-java}/features/messaging/amqp/sending/MyBean.java[]
 ----
 
 NOTE: {spring-amqp-api}/rabbit/core/RabbitMessagingTemplate.html[`RabbitMessagingTemplate`] can be injected in a similar manner.
@@ -276,7 +276,7 @@ The following sample component creates a listener endpoint on the `someQueue` qu
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/amqp/receiving/MyBean.java[]
+include::{docs-java}/features/messaging/amqp/receiving/MyBean.java[]
 ----
 
 TIP: See {spring-amqp-api}/rabbit/annotation/EnableRabbit.html[the Javadoc of `@EnableRabbit`] for more details.
@@ -290,14 +290,14 @@ For instance, the following configuration class exposes another factory that use
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/amqp/receiving/custom/RabbitConfiguration.java[]
+include::{docs-java}/features/messaging/amqp/receiving/custom/RabbitConfiguration.java[]
 ----
 
 Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/amqp/receiving/custom/MyBean.java[]
+include::{docs-java}/features/messaging/amqp/receiving/custom/MyBean.java[]
 ----
 
 You can enable retries to handle situations where your listener throws an exception.
@@ -341,7 +341,7 @@ Spring's `KafkaTemplate` is auto-configured, and you can autowire it directly in
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/kafka/sending/MyBean.java[]
+include::{docs-java}/features/messaging/kafka/sending/MyBean.java[]
 ----
 
 NOTE: If the property configprop:spring.kafka.producer.transaction-id-prefix[] is defined, a `KafkaTransactionManager` is automatically configured.
@@ -358,7 +358,7 @@ The following component creates a listener endpoint on the `someTopic` topic:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/kafka/receiving/MyBean.java[]
+include::{docs-java}/features/messaging/kafka/receiving/MyBean.java[]
 ----
 
 If a `KafkaTransactionManager` bean is defined, it is automatically associated to the container factory.
@@ -387,7 +387,7 @@ To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/KafkaStreamsConfiguration.java[]
+include::{docs-java}/features/messaging/kafka/streams/KafkaStreamsConfiguration.java[]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
@@ -472,14 +472,14 @@ There are several ways to do that:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/kafka/test/property/MyTest.java[tag=*]
+include::{docs-java}/features/messaging/kafka/embedded/property/MyTest.java[tag=*]
 ----
 
 * Configure a property name on the `@EmbeddedKafka` annotation:
 
 [source,java,indent=0]
 ----
-include::{include-springbootfeatures}/messaging/kafka/test/annotation/MyTest.java[]
+include::{docs-java}/features/messaging/kafka/embedded/annotation/MyTest.java[]
 ----
 
 * Use a placeholder in configuration properties:
