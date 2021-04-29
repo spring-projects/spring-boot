@@ -321,6 +321,14 @@ class TomcatWebServerFactoryCustomizerTests {
 	}
 
 	@Test
+	void testCustomizeRejectIllegalHeader() {
+		bind("server.tomcat.reject-illegal-header=false");
+		customizeAndRunServer((server) -> assertThat(
+				((AbstractHttp11Protocol<?>) server.getTomcat().getConnector().getProtocolHandler())
+						.getRejectIllegalHeader()).isFalse());
+	}
+
+	@Test
 	void errorReportValveIsConfiguredToNotReportStackTraces() {
 		TomcatWebServer server = customizeAndGetServer();
 		Valve[] valves = server.getTomcat().getHost().getPipeline().getValves();

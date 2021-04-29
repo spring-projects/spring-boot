@@ -424,6 +424,11 @@ public class ServerProperties {
 		 */
 		private final Remoteip remoteip = new Remoteip();
 
+		/**
+		 * reject illegal header setting.
+		 */
+		private Boolean rejectIllegalHeader;
+
 		public DataSize getMaxHttpFormPostSize() {
 			return this.maxHttpFormPostSize;
 		}
@@ -570,6 +575,14 @@ public class ServerProperties {
 
 		public Remoteip getRemoteip() {
 			return this.remoteip;
+		}
+
+		public Boolean getRejectIllegalHeader() {
+			return this.rejectIllegalHeader;
+		}
+
+		public void setRejectIllegalHeader(Boolean rejectIllegalHeader) {
+			this.rejectIllegalHeader = rejectIllegalHeader;
 		}
 
 		/**
