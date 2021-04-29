@@ -893,25 +893,31 @@ TIP: To handle the error automatically, consider extending from `AbstractReactiv
 ==== Auto-configured ReactiveHealthIndicators
 The following `ReactiveHealthIndicators` are auto-configured by Spring Boot when appropriate:
 
-[cols="1,4"]
+[cols="2,4,6"]
 |===
-| Name | Description
+| Key | Name | Description
 
+| `cassandra`
 | {spring-boot-actuator-module-code}/cassandra/CassandraDriverReactiveHealthIndicator.java[`CassandraDriverReactiveHealthIndicator`]
 | Checks that a Cassandra database is up.
 
+| `couchbase`
 | {spring-boot-actuator-module-code}/couchbase/CouchbaseReactiveHealthIndicator.java[`CouchbaseReactiveHealthIndicator`]
 | Checks that a Couchbase cluster is up.
 
+| `elasticsearch`
 | {spring-boot-actuator-module-code}/elasticsearch/ElasticsearchReactiveHealthIndicator.java[`ElasticsearchReactiveHealthIndicator`]
 | Checks that an Elasticsearch cluster is up.
 
+| `mongo`
 | {spring-boot-actuator-module-code}/mongo/MongoReactiveHealthIndicator.java[`MongoReactiveHealthIndicator`]
 | Checks that a Mongo database is up.
 
+| `neo4j`
 | {spring-boot-actuator-module-code}/neo4j/Neo4jReactiveHealthIndicator.java[`Neo4jReactiveHealthIndicator`]
 | Checks that a Neo4j database is up.
 
+| `redis`
 | {spring-boot-actuator-module-code}/redis/RedisReactiveHealthIndicator.java[`RedisReactiveHealthIndicator`]
 | Checks that a Redis server is up.
 |===
