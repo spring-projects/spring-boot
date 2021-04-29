@@ -1,0 +1,18 @@
+[[actuator.auditing]]
+== Auditing
+Once Spring Security is in play, Spring Boot Actuator has a flexible audit framework that publishes events (by default, "`authentication success`", "`failure`" and "`access denied`" exceptions).
+This feature can be very useful for reporting and for implementing a lock-out policy based on authentication failures.
+
+Auditing can be enabled by providing a bean of type `AuditEventRepository` in your application's configuration.
+For convenience, Spring Boot offers an `InMemoryAuditEventRepository`.
+`InMemoryAuditEventRepository` has limited capabilities and we recommend using it only for development environments.
+For production environments, consider creating your own alternative `AuditEventRepository` implementation.
+
+
+
+[[actuator.auditing.custom]]
+=== Custom Auditing
+To customize published security events, you can provide your own implementations of `AbstractAuthenticationAuditListener` and `AbstractAuthorizationAuditListener`.
+
+You can also use the audit services for your own business events.
+To do so, either inject the `AuditEventRepository` bean into your own components and use that directly or publish an `AuditApplicationEvent` with the Spring `ApplicationEventPublisher` (by implementing `ApplicationEventPublisherAware`).

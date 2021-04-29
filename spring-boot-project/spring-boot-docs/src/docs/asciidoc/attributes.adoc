@@ -10,21 +10,17 @@
 :hide-uri-scheme:
 :docinfo: shared,private
 :chomp: tags formatters headers packages
-
 :spring-boot-artifactory-repo: snapshot
 :github-tag: main
 :spring-boot-version: current
-
 :github-repo: spring-projects/spring-boot
 :github-raw: https://raw.githubusercontent.com/{github-repo}/{github-tag}
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
-
-:include: ../main/java/org/springframework/boot/docs
+:include: ../../main/java/org/springframework/boot/docs
 :include-springbootfeatures: {include}/springbootfeatures
 :include-productionreadyfeatures: {include}/productionreadyfeatures
 :include-howto: {include}/howto
-
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
@@ -38,7 +34,6 @@
 :spring-boot-gradle-plugin-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/htmlsingle/
 :spring-boot-gradle-plugin-pdfdocs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/reference/pdf/spring-boot-gradle-plugin-reference.pdf
 :spring-boot-gradle-plugin-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/gradle-plugin/api/
-
 :spring-boot-module-code: {spring-boot-code}/spring-boot-project/spring-boot/src/main/java/org/springframework/boot
 :spring-boot-module-api: {spring-boot-api}/org/springframework/boot
 :spring-boot-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-autoconfigure/src/main/java/org/springframework/boot/autoconfigure
@@ -55,7 +50,6 @@
 :spring-boot-test-module-api: {spring-boot-api}/org/springframework/boot/test
 :spring-boot-test-autoconfigure-module-code: {spring-boot-code}/spring-boot-project/spring-boot-test-autoconfigure/src/main/java/org/springframework/boot/test/autoconfigure
 :spring-boot-test-autoconfigure-module-api: {spring-boot-api}/org/springframework/boot/test/autoconfigure
-
 :spring-amqp-api: https://docs.spring.io/spring-amqp/docs/{spring-amqp-version}/api/org/springframework/amqp
 :spring-batch: https://spring.io/projects/spring-batch
 :spring-batch-api: https://docs.spring.io/spring-batch/docs/{spring-batch-version}/api/org/springframework/batch
@@ -94,7 +88,6 @@
 :spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-session: https://spring.io/projects/spring-session
 :spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/
-
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :gradle-docs: https://docs.gradle.org/current/userguide

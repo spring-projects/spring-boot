@@ -1,7 +1,9 @@
 [appendix]
-[[appendix.auto-configuration-classes]]
+[[auto-configuration-classes]]
 = Auto-configuration Classes
 include::attributes.adoc[]
+
+
 
 This appendix contains details of all of the auto-configuration classes provided by Spring Boot, with links to documentation and source code.
 Remember to also look at the conditions report in your application for more details of which features are switched on.
@@ -9,16 +11,6 @@ Remember to also look at the conditions report in your application for more deta
 
 
 
-[[appendix.auto-configuration-classes.core]]
-== spring-boot-autoconfigure
-The following auto-configuration classes are from the `spring-boot-autoconfigure` module:
+include::auto-configuration-classes/core.adoc[]
 
-include::auto-configuration-classes/spring-boot-autoconfigure.adoc[]
-
-
-
-[[appendix.auto-configuration-classes.actuator]]
-== spring-boot-actuator-autoconfigure
-The following auto-configuration classes are from the `spring-boot-actuator-autoconfigure` module:
-
-include::auto-configuration-classes/spring-boot-actuator-autoconfigure.adoc[]
+include::auto-configuration-classes/actuator.adoc[]

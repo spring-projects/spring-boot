@@ -1,0 +1,32 @@
+[[executable-jar.jarfile-class]]
+== Spring Boot's "`JarFile`" Class
+The core class used to support loading nested jars is `org.springframework.boot.loader.jar.JarFile`.
+It lets you load jar content from a standard jar file or from nested child jar data.
+When first loaded, the location of each `JarEntry` is mapped to a physical file offset of the outer jar, as shown in the following example:
+
+[indent=0]
+----
+	myapp.jar
+	+-------------------+-------------------------+
+	| /BOOT-INF/classes | /BOOT-INF/lib/mylib.jar |
+	|+-----------------+||+-----------+----------+|
+	||     A.class      |||  B.class  |  C.class ||
+	|+-----------------+||+-----------+----------+|
+	+-------------------+-------------------------+
+	 ^                    ^           ^
+	 0063                 3452        3980
+----
+
+The preceding example shows how `A.class` can be found in `/BOOT-INF/classes` in `myapp.jar` at position `0063`.
+`B.class` from the nested jar can actually be found in `myapp.jar` at position `3452`, and `C.class` is at position `3980`.
+
+Armed with this information, we can load specific nested entries by seeking to the appropriate part of the outer jar.
+We do not need to unpack the archive, and we do not need to read all entry data into memory.
+
+
+
+[[executable-jar.jarfile-class.compatibilty]]
+=== Compatibility with the Standard Java "`JarFile`"
+Spring Boot Loader strives to remain compatible with existing code and libraries.
+`org.springframework.boot.loader.jar.JarFile` extends from `java.util.jar.JarFile` and should work as a drop-in replacement.
+The `getURL()` method returns a `URL` that opens a connection compatible with `java.net.JarURLConnection` and can be used with Java's `URLClassLoader`.

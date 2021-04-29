@@ -181,33 +181,33 @@ task aggregatedJavadoc(type: Javadoc) {
 
 task documentTestSlices(type: org.springframework.boot.build.test.autoconfigure.DocumentTestSlices) {
 	testSlices = configurations.testSlices
-	outputFile = file("${buildDir}/docs/generated/test-slice-auto-configuration.adoc")
+	outputFile = file("${buildDir}/docs/generated/test-auto-configuration/documented-slices.adoc")
 }
 
 task documentStarters(type: org.springframework.boot.build.starters.DocumentStarters) {
-	outputDir = file("${buildDir}/docs/generated/starters/")
+	outputDir = file("${buildDir}/docs/generated/using/starters/")
 }
 
 task documentAutoConfigurationClasses(type: org.springframework.boot.build.autoconfigure.DocumentAutoConfigurationClasses) {
 	autoConfiguration = configurations.autoConfiguration
-	outputDir = file("${buildDir}/docs/generated/auto-configuration-classes/")
+	outputDir = file("${buildDir}/docs/generated/auto-configuration-classes/documented-auto-configuration-classes/")
 }
 
 task documentDependencyVersions(type: org.springframework.boot.build.constraints.DocumentConstrainedVersions) {
 	dependsOn dependencyVersions
 	constrainedVersions.set(providers.provider { dependencyVersions.constrainedVersions })
-	outputFile = file("${buildDir}/docs/generated/generated-dependency-versions.adoc")
+	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-coordinates.adoc")
 }
 
 task documentVersionProperties(type: org.springframework.boot.build.constraints.DocumentVersionProperties) {
 	dependsOn dependencyVersions
 	versionProperties.set(providers.provider { dependencyVersions.versionProperties})
-	outputFile = file("${buildDir}/docs/generated/generated-version-properties.adoc")
+	outputFile = file("${buildDir}/docs/generated/dependency-versions/documented-properties.adoc")
 }
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("${buildDir}/docs/generated/config-docs/")
+	outputDir = file("${buildDir}/docs/generated/application-properties/documented-application-properties/")
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {

@@ -1,0 +1,3 @@
+[[application-properties.actuator]]
+== Actuator Properties [[actuator-properties]]
+include::documented-application-properties/actuator.adoc[]
