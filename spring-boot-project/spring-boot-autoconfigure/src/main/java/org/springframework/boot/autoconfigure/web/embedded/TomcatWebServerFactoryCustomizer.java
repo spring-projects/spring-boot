@@ -117,6 +117,8 @@ public class TomcatWebServerFactoryCustomizer
 				.to((relaxedChars) -> customizeRelaxedPathChars(factory, relaxedChars));
 		propertyMapper.from(tomcatProperties::getRelaxedQueryChars).as(this::joinCharacters).whenHasText()
 				.to((relaxedChars) -> customizeRelaxedQueryChars(factory, relaxedChars));
+		propertyMapper.from(tomcatProperties::getRejectIllegalHeader).whenNonNull()
+				.to((rejectIllegalHeader) -> customizeRejectIllegalHeader(factory, rejectIllegalHeader));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);
 	}
@@ -190,6 +192,16 @@ public class TomcatWebServerFactoryCustomizer
 
 	private void customizeRelaxedQueryChars(ConfigurableTomcatWebServerFactory factory, String relaxedChars) {
 		factory.addConnectorCustomizers((connector) -> connector.setProperty("relaxedQueryChars", relaxedChars));
+	}
+
+	private void customizeRejectIllegalHeader(ConfigurableTomcatWebServerFactory factory, boolean rejectIllegalHeader) {
+		factory.addConnectorCustomizers((connector) -> {
+			ProtocolHandler handler = connector.getProtocolHandler();
+			if (handler instanceof AbstractHttp11Protocol) {
+				AbstractHttp11Protocol<?> protocol = (AbstractHttp11Protocol<?>) handler;
+				protocol.setRejectIllegalHeader(rejectIllegalHeader);
+			}
+		});
 	}
 
 	private String joinCharacters(List<Character> content) {
