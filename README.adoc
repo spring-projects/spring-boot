@@ -32,25 +32,25 @@ Here is a quick teaser of a complete Spring Boot application in Java:
 	@SpringBootApplication
 	public class Example {
 
-		@RequestMapping("/")
-		String home() {
-			return "Hello World!";
-		}
+	    @RequestMapping("/")
+	    String home() {
+	        return "Hello World!";
+	    }
 
-		public static void main(String[] args) {
-			SpringApplication.run(Example.class, args);
-		}
+	    public static void main(String[] args) {
+	        SpringApplication.run(Example.class, args);
+	    }
 
 	}
 ----
 
 
 
-== Getting help
+== Getting Help
 Are you having trouble with Spring Boot? We want to help!
 
-* Check the {docs}/html/[reference documentation], especially the {docs}/html/howto.html#howto[How-to's] -- they provide solutions to the most common questions.
-* Learn the Spring basics -- Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] web-site for a wealth of reference documentation.
+* Check the {docs}/html/[reference documentation], especially the {docs}/html/howto.html#howto[How-to's] - they provide solutions to the most common questions.
+* Learn the Spring basics - Spring Boot builds on many other Spring projects; check the https://spring.io[spring.io] web-site for a wealth of reference documentation.
   If you are new to Spring, try one of the https://spring.io/guides[guides].
 * If you are upgrading, read the {github}/wiki[release notes] for upgrade instructions and "new and noteworthy" features.
 * Ask a question - we monitor https://stackoverflow.com[stackoverflow.com] for questions tagged with https://stackoverflow.com/tags/spring-boot[`spring-boot`].
