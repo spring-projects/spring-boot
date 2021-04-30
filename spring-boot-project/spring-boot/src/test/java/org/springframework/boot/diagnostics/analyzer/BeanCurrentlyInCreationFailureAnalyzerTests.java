@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -150,7 +150,6 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("unused")
 	static class CyclicBeanMethodsConfiguration {
 
 		@Bean
@@ -181,7 +180,6 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@SuppressWarnings("unused")
 	static class CycleReferencedViaOtherBeansConfiguration {
 
 		@Bean
@@ -246,7 +244,6 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 		@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 		static class BeanThreeConfiguration {
 
-			@SuppressWarnings("unused")
 			@Bean
 			BeanThree three(BeanOne one) {
 				return new BeanThree();
@@ -259,7 +256,6 @@ class BeanCurrentlyInCreationFailureAnalyzerTests {
 	@Configuration(proxyBeanMethods = false)
 	static class SelfReferenceBeanConfiguration {
 
-		@SuppressWarnings("unused")
 		@Bean
 		SelfReferenceBean bean(SelfReferenceBean bean) {
 			return new SelfReferenceBean();
