@@ -33,7 +33,7 @@ public interface NamedContributors<C> extends Iterable<NamedContributor<C>> {
 	/**
 	 * Return the contributor with the given name.
 	 * @param name the name of the contributor
-	 * @return a contributor instance of {@code null}
+	 * @return a contributor instance or {@code null}
 	 */
 	C getContributor(String name);
 
