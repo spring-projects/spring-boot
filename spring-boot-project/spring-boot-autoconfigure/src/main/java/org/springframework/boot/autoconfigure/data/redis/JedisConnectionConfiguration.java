@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,9 +24,12 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.ClientType;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
@@ -41,6 +44,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Weix Sun
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
@@ -56,13 +60,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean
 	JedisConnectionFactory redisConnectionFactory(
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
-		return createJedisConnectionFactory(builderCustomizers);
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers, Environment environment) {
+		return createJedisConnectionFactory(builderCustomizers, environment);
 	}
 
 	private JedisConnectionFactory createJedisConnectionFactory(
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
-		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers);
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers, Environment environment) {
+		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers, environment);
 		if (getSentinelConfig() != null) {
 			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
@@ -73,12 +77,9 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private JedisClientConfiguration getJedisClientConfiguration(
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers, Environment environment) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
-		RedisProperties.Pool pool = getProperties().getJedis().getPool();
-		if (pool != null) {
-			applyPooling(pool, builder);
-		}
+		createPoolingBuilder(builder, environment, getProperties().getJedis().getPool());
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
@@ -93,6 +94,18 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
 		return builder;
+	}
+
+	private void createPoolingBuilder(JedisClientConfigurationBuilder builder, Environment environment, Pool pool) {
+		final boolean poolEnabled = environment.getProperty("spring.redis.jedis.pool.enabled", Boolean.class, true);
+		if (poolEnabled) {
+			applyPooling(pool, builder);
+		}
+		final boolean isSentinelConfig = (getSentinelConfig() != null);
+		// Jedis Sentinel cannot operate without a pool.
+		if (!poolEnabled && isSentinelConfig) {
+			throw new RedisClientPoolingException(ClientType.JEDIS);
+		}
 	}
 
 	private void applyPooling(RedisProperties.Pool pool,
