@@ -51,7 +51,7 @@ final class GradleCompatibilityExtension implements TestTemplateInvocationContex
 			GRADLE_VERSIONS = Arrays.asList("7.0");
 		}
 		else {
-			GRADLE_VERSIONS = Arrays.asList("current", "7.0");
+			GRADLE_VERSIONS = Arrays.asList("current", "6.9-rc-1", "7.0");
 		}
 	}
 
