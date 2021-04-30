@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Stephane Nicoll
+ * @author Weix Sun
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass({ GenericObjectPool.class, JedisConnection.class, Jedis.class })
@@ -76,7 +77,7 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
 		RedisProperties.Pool pool = getProperties().getJedis().getPool();
-		if (pool != null) {
+		if (pool.isEnabled()) {
 			applyPooling(pool, builder);
 		}
 		if (StringUtils.hasText(getProperties().getUrl())) {
