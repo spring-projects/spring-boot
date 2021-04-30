@@ -87,7 +87,7 @@
 :spring-security-oauth2: https://spring.io/projects/spring-security-oauth
 :spring-security-oauth2-docs: https://projects.spring.io/spring-security-oauth/docs/oauth2.html
 :spring-session: https://spring.io/projects/spring-session
-:spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/
+:spring-webservices-docs: https://docs.spring.io/spring-ws/docs/{spring-webservices-version}/reference/html/
 :ant-docs: https://ant.apache.org/manual
 :dependency-management-plugin-code: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :gradle-docs: https://docs.gradle.org/current/userguide
