@@ -152,6 +152,7 @@ public class GradleBuild {
 				.replace("{version}", getBootVersion())
 				.replace("{dependency-management-plugin-version}", getDependencyManagementPluginVersion());
 		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
+		new File(this.projectDir, "settings.gradle").createNewFile();
 		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
 				new File(this.projectDir, "repository"));
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
