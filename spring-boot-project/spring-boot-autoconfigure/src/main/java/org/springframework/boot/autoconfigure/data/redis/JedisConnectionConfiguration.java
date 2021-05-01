@@ -100,10 +100,11 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		final boolean poolEnabled = environment.getProperty("spring.redis.jedis.pool.enabled", Boolean.class, true);
 		if (poolEnabled) {
 			applyPooling(pool, builder);
+			return;
 		}
 		final boolean isSentinelConfig = (getSentinelConfig() != null);
 		// Jedis Sentinel cannot operate without a pool.
-		if (!poolEnabled && isSentinelConfig) {
+		if (isSentinelConfig) {
 			throw new RedisClientPoolingException(ClientType.JEDIS);
 		}
 	}

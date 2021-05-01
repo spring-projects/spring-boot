@@ -158,11 +158,11 @@ class RedisAutoConfigurationJedisTests {
 	void testRedisConfigurationWithTimeoutAndConnectTimeout() {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.timeout:250",
 				"spring.redis.connect-timeout:1000").run((context) -> {
-			JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
-			assertThat(cf.getHostName()).isEqualTo("foo");
-			assertThat(cf.getTimeout()).isEqualTo(250);
-			assertThat(cf.getClientConfiguration().getConnectTimeout().toMillis()).isEqualTo(1000);
-		});
+					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
+					assertThat(cf.getHostName()).isEqualTo("foo");
+					assertThat(cf.getTimeout()).isEqualTo(250);
+					assertThat(cf.getClientConfiguration().getConnectTimeout().toMillis()).isEqualTo(1000);
+				});
 	}
 
 	@Test
@@ -191,9 +191,9 @@ class RedisAutoConfigurationJedisTests {
 				.withPropertyValues("spring.redis.sentinel.master:mymaster",
 						"spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
 				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
-		});
+					assertThat(context).hasFailed();
+					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
+				});
 	}
 
 	@Test
@@ -201,11 +201,11 @@ class RedisAutoConfigurationJedisTests {
 		this.contextRunner.withPropertyValues("spring.redis.username=user", "spring.redis.password=password",
 				"spring.redis.sentinel.master:mymaster", "spring.redis.sentinel.nodes:127.0.0.1:26379,127.0.0.1:26380")
 				.withUserConfiguration(JedisConnectionFactoryCaptorConfiguration.class).run((context) -> {
-			assertThat(context).hasFailed();
-			assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
-			assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
-			assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");
-		});
+					assertThat(context).hasFailed();
+					assertThat(JedisConnectionFactoryCaptor.connectionFactory.isRedisSentinelAware()).isTrue();
+					assertThat(getUserName(JedisConnectionFactoryCaptor.connectionFactory)).isEqualTo("user");
+					assertThat(JedisConnectionFactoryCaptor.connectionFactory.getPassword()).isEqualTo("password");
+				});
 	}
 
 	@Test
