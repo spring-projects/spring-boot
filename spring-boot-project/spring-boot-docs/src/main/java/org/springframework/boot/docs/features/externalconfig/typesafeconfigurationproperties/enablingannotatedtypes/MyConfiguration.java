@@ -24,8 +24,3 @@ import org.springframework.context.annotation.Configuration;
 public class MyConfiguration {
 
 }
-// @chomp:file
-
-class AcmeProperties {
-
-}

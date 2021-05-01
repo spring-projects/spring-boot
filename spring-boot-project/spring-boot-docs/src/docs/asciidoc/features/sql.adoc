@@ -430,7 +430,7 @@ The following example shows how to manually override the database port while the
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/sql/r2dbc/CustomizeR2dbcPortConfiguration.java[tag=*]
+include::{docs-java}/features/sql/r2dbc/MyR2dbcPortConfiguration.java[]
 ----
 
 The following examples show how to set some PostgreSQL connection options:

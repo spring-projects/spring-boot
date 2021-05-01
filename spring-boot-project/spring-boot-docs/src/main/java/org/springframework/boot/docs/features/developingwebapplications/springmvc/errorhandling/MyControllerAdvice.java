@@ -43,19 +43,3 @@ public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 	}
 
 }
-// @chomp:file
-
-class AcmeController {
-
-}
-
-class MyException extends RuntimeException {
-
-}
-
-class MyErrorBody {
-
-	MyErrorBody(int value, String message) {
-	}
-
-}

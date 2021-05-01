@@ -22,7 +22,7 @@ The following example configures a 60 second connect timeout and adds a `ReadTim
 
 [source,java,indent=0]
 ----
-include::{docs-java}/howto/httpclients/webclientreactornettycustomization/CustomizeReactorNettyClientConfiguration.java[tag=*]
+include::{docs-java}/howto/httpclients/webclientreactornettycustomization/MyReactorNettyClientConfiguration.java[]
 ----
 
 TIP: Note the use of `ReactorResourceFactory` for the connection provider and event loop resources.

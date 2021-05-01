@@ -32,8 +32,3 @@ public class MyController {
 	}
 
 }
-// @chomp:file
-
-class CustomException extends RuntimeException {
-
-}

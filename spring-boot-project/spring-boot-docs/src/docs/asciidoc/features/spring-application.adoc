@@ -403,7 +403,7 @@ For example, to use the `BufferingApplicationStartup`, you could write:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/springapplication/startuptracking/MyApplication.java[tag=*]
+include::{docs-java}/features/springapplication/startuptracking/MyApplication.java[]
 ----
 
 The first available implementation, `FlightRecorderApplicationStartup` is provided by Spring Framework.

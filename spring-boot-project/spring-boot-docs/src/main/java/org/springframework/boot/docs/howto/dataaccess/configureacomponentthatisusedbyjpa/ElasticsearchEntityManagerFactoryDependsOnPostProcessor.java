@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configureacomponentthatisusedbyjpa;
 
-// tag::code[]
 import javax.persistence.EntityManagerFactory;
 
 import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
@@ -35,4 +34,3 @@ public class ElasticsearchEntityManagerFactoryDependsOnPostProcessor
 	}
 
 }
-// end::code[]

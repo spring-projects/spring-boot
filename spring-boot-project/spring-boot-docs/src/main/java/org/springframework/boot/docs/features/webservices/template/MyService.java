@@ -36,12 +36,3 @@ public class MyService {
 	}
 
 }
-// @chomp:file
-
-class SomeRequest {
-
-}
-
-class SomeResponse {
-
-}

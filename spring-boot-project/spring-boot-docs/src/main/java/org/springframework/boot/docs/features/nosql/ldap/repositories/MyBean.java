@@ -37,8 +37,3 @@ public class MyBean {
 	// @fold:off
 
 }
-// @chomp:file
-
-class User {
-
-}

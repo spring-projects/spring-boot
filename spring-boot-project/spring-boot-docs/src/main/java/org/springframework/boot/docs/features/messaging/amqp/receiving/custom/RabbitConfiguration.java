@@ -16,12 +16,8 @@
 
 package org.springframework.boot.docs.features.messaging.amqp.receiving.custom;
 
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageProperties;
 import org.springframework.amqp.rabbit.config.SimpleRabbitListenerContainerFactory;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
-import org.springframework.amqp.support.converter.MessageConversionException;
-import org.springframework.amqp.support.converter.MessageConverter;
 import org.springframework.boot.autoconfigure.amqp.SimpleRabbitListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -40,21 +36,6 @@ public class RabbitConfiguration {
 
 	private ConnectionFactory getCustomConnectionFactory() {
 		return /**/ null;
-	}
-
-}
-// @chomp:file
-
-class MyMessageConverter implements MessageConverter {
-
-	@Override
-	public Message toMessage(Object object, MessageProperties messageProperties) throws MessageConversionException {
-		return null;
-	}
-
-	@Override
-	public Object fromMessage(Message message) throws MessageConversionException {
-		return null;
 	}
 
 }

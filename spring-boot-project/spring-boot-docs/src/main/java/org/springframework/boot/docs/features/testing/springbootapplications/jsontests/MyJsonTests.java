@@ -48,25 +48,3 @@ class MyJsonTests {
 	}
 
 }
-// @chomp:file
-
-class VehicleDetails {
-
-	private final String make;
-
-	private final String model;
-
-	VehicleDetails(String make, String model) {
-		this.make = make;
-		this.model = model;
-	}
-
-	String getMake() {
-		return this.make;
-	}
-
-	String getModel() {
-		return this.model;
-	}
-
-}

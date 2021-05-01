@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.webserver.usetomcatlegacycookieprocessor;
 
-// tag::code[]
 import org.apache.tomcat.util.http.LegacyCookieProcessor;
 
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -34,4 +33,3 @@ public class LegacyCookieProcessorConfiguration {
 	}
 
 }
-// end::code[]

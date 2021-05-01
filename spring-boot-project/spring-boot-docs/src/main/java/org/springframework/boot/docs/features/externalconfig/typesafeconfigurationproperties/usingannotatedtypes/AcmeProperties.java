@@ -14,22 +14,12 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.features.sql.r2dbc;
+package org.springframework.boot.docs.features.externalconfig.typesafeconfigurationproperties.usingannotatedtypes;
 
-import io.r2dbc.spi.ConnectionFactoryOptions;
+class AcmeProperties {
 
-import org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryOptionsBuilderCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
-
-@Configuration
-public class CustomizeR2dbcPortConfiguration {
-
-	// tag::code[]
-	@Bean
-	public ConnectionFactoryOptionsBuilderCustomizer connectionFactoryPortCustomizer() {
-		return (builder) -> builder.option(ConnectionFactoryOptions.PORT, 5432);
+	Object getRemoteAddress() {
+		return null;
 	}
-	// end::code[]
 
 }

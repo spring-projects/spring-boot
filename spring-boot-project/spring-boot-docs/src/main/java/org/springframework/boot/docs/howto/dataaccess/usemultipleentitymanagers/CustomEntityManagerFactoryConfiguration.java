@@ -22,18 +22,14 @@ import org.springframework.boot.autoconfigure.orm.jpa.JpaProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
 
-/**
- * Example configuration for a custom JPA entity manager.
- *
- * @author Stephane Nicoll
- */
-public class CustomEntityManagerFactoryExample {
+@Configuration(proxyBeanMethods = false)
+public class CustomEntityManagerFactoryConfiguration {
 
-	// tag::configuration[]
 	@Bean
 	@ConfigurationProperties("app.jpa.first")
 	public JpaProperties firstJpaProperties() {
@@ -55,11 +51,6 @@ public class CustomEntityManagerFactoryExample {
 	private JpaVendorAdapter createJpaVendorAdapter(JpaProperties jpaProperties) {
 		// Map JPA properties as needed
 		return new HibernateJpaVendorAdapter();
-	}
-	// end::configuration[]
-
-	private static class Order {
-
 	}
 
 }

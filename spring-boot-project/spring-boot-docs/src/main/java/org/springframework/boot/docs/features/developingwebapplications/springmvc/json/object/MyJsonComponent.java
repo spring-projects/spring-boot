@@ -56,20 +56,3 @@ public class MyJsonComponent {
 	}
 
 }
-// @chomp:file
-
-class MyObject {
-
-	MyObject(String name, int age) {
-	}
-
-	String getName() {
-		return null;
-	}
-
-	Integer getAge() {
-		return null;
-
-	}
-
-}

@@ -24,7 +24,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
 public class ConditionEvaluationReportTests {
 
-	// start::code[]
 	@Test
 	void autoConfigTest() {
 		ConditionEvaluationReportLoggingListener initializer = new ConditionEvaluationReportLoggingListener(
@@ -33,6 +32,5 @@ public class ConditionEvaluationReportTests {
 			// Test something...
 		});
 	}
-	// end::code[]
 
 }

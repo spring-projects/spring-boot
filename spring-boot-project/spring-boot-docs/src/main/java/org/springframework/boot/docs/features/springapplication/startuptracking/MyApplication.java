@@ -23,12 +23,10 @@ import org.springframework.boot.context.metrics.buffering.BufferingApplicationSt
 @SpringBootApplication
 public class MyApplication {
 
-	// tag::code[]
 	public static void main(String[] args) {
 		SpringApplication application = new SpringApplication(MyApplication.class);
 		application.setApplicationStartup(new BufferingApplicationStartup(2048));
 		application.run(args);
 	}
-	// end::code[]
 
 }

@@ -13,7 +13,7 @@ The `jersey.config.server.response.setStatusOverSendError` property must be set 
 
 [source,java,indent=0]
 ----
-include::{docs-java}/howto/jersey/springsecurity/JerseySetStatusOverSendErrorConfig.java[tag=*]
+include::{docs-java}/howto/jersey/springsecurity/JerseySetStatusOverSendErrorConfig.java[]
 ----
 
 

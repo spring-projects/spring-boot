@@ -25,13 +25,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 class MyEnvironmentTests {
 
-	// start::code[]
 	@Test
 	void testPropertySources() {
 		MockEnvironment environment = new MockEnvironment();
 		TestPropertyValues.of("org=Spring", "name=Boot").applyTo(environment);
 		assertThat(environment.getProperty("name")).isEqualTo("Boot");
 	}
-	// end::code[]
 
 }

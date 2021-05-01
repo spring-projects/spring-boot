@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.jersey.springsecurity;
 
-// tag::code[]
 import java.util.Collections;
 
 import org.glassfish.jersey.server.ResourceConfig;
@@ -30,10 +29,5 @@ public class JerseySetStatusOverSendErrorConfig extends ResourceConfig {
 		register(Endpoint.class);
 		setProperties(Collections.singletonMap("jersey.config.server.response.setStatusOverSendError", true));
 	}
-
-}
-// end::code[]
-
-class Endpoint {
 
 }

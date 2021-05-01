@@ -31,8 +31,3 @@ class MyTests {
 	}
 
 }
-// @chomp:file
-
-class MyTestsConfiguration {
-
-}

@@ -20,7 +20,6 @@ import org.assertj.core.util.Arrays;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.couchbase.config.BeanNames;
 import org.springframework.data.couchbase.core.convert.CouchbaseCustomConversions;
 
@@ -30,20 +29,6 @@ public class CouchbaseConversionsConfiguration {
 	@Bean(BeanNames.COUCHBASE_CUSTOM_CONVERSIONS)
 	public CouchbaseCustomConversions myCustomConversions() {
 		return new CouchbaseCustomConversions(Arrays.asList(new MyConverter()));
-	}
-
-}
-// @chomp:file
-
-class CouchbaseProperties {
-
-}
-
-class MyConverter implements Converter<CouchbaseProperties, Boolean> {
-
-	@Override
-	public Boolean convert(CouchbaseProperties value) {
-		return true;
 	}
 
 }

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configuretwodatasources;
 
-// tag::code[]
 import com.zaxxer.hikari.HikariDataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 
@@ -51,4 +50,3 @@ public class SimpleDataSourcesConfiguration {
 	}
 
 }
-// end::code[]

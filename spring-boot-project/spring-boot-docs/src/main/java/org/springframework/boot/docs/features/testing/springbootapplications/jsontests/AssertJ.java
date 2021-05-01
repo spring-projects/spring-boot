@@ -41,10 +41,3 @@ class AssertJ {
 	// end::code[]
 
 }
-
-class SomeObject {
-
-	SomeObject(float value) {
-	}
-
-}

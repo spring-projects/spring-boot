@@ -40,8 +40,3 @@ public class LocalCacheVerifier {
 	}
 
 }
-// @chomp:file
-
-class CacheCompletelyBrokenException extends RuntimeException {
-
-}

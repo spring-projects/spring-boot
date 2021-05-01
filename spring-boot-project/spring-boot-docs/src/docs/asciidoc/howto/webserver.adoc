@@ -464,7 +464,7 @@ You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWe
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/howto/webserver/enablemultipleconnectorsintomcat/TomcatMultipleConnectorsConfiguration.java[tag=*]
+include::{docs-java}/howto/webserver/enablemultipleconnectorsintomcat/TomcatMultipleConnectorsConfiguration.java[]
 ----
 
 
@@ -484,7 +484,7 @@ To switch to the `LegacyCookieProcessor`, use an `WebServerFactoryCustomizer` be
 
 [source,java,indent=0]
 ----
-include::{docs-java}/howto/webserver/usetomcatlegacycookieprocessor/LegacyCookieProcessorConfiguration.java[tag=*]
+include::{docs-java}/howto/webserver/usetomcatlegacycookieprocessor/LegacyCookieProcessorConfiguration.java[]
 ----
 
 
@@ -511,7 +511,7 @@ Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and 
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/howto/webserver/enablemultiplelistenersinundertow/UndertowMultipleListenersConfiguration.java[tag=*]
+include::{docs-java}/howto/webserver/enablemultiplelistenersinundertow/UndertowMultipleListenersConfiguration.java[]
 ----
 
 

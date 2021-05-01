@@ -18,7 +18,6 @@ package org.springframework.boot.docs.howto.webserver.enablemultiplelistenersinu
 
 import io.undertow.Undertow.Builder;
 
-//tag::code[]
 import org.springframework.boot.web.embedded.undertow.UndertowServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.context.annotation.Bean;
@@ -37,4 +36,3 @@ public class UndertowMultipleListenersConfiguration {
 	}
 
 }
-// end::code[]

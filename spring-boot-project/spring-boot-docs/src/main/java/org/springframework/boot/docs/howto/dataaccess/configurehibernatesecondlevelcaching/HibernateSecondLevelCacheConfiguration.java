@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configurehibernatesecondlevelcaching;
 
-// tag::code[]
 import org.hibernate.cache.jcache.ConfigSettings;
 
 import org.springframework.boot.autoconfigure.orm.jpa.HibernatePropertiesCustomizer;
@@ -33,4 +32,3 @@ public class HibernateSecondLevelCacheConfiguration {
 	}
 
 }
-// end::code[]

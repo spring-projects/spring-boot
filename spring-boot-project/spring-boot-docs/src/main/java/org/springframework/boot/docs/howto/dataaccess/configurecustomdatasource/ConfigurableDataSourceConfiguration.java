@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configurecustomdatasource;
 
-// tag::code[]
 import com.zaxxer.hikari.HikariDataSource;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
@@ -42,4 +41,3 @@ public class ConfigurableDataSourceConfiguration {
 	}
 
 }
-// end::code[]

@@ -36,22 +36,3 @@ public class MyService {
 	// ...
 
 }
-// @chomp:file
-
-class AcmeProperties {
-
-	Object getRemoteAddress() {
-		return null;
-	}
-
-}
-
-class Server {
-
-	Server(Object remoteAddress) {
-	}
-
-	void start() {
-	}
-
-}

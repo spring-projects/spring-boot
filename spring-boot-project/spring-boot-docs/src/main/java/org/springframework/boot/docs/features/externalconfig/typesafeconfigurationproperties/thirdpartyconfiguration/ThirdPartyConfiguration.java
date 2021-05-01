@@ -30,8 +30,3 @@ public class ThirdPartyConfiguration {
 	}
 
 }
-// @chomp:file
-
-class AnotherComponent {
-
-}

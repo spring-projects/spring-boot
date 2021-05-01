@@ -183,7 +183,7 @@ The following example shows how to use the `ConditionEvaluationReportLoggingList
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/ConditionEvaluationReportTests.java[tag=*]
+include::{docs-java}/features/developingautoconfiguration/testing/ConditionEvaluationReportTests.java[]
 ----
 
 

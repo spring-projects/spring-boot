@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.actuator.metrics.customizing;
 
-// tag::code[]
 import io.micrometer.core.instrument.config.MeterFilter;
 
 import org.springframework.context.annotation.Bean;
@@ -31,4 +30,3 @@ public class MetricsFilterConfiguration {
 	}
 
 }
-// end::code[]

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configurecustomdatasource;
 
-// tag::code[]
 import javax.sql.DataSource;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -34,4 +33,3 @@ public class BasicDataSourceConfiguration {
 	}
 
 }
-// end::code[]

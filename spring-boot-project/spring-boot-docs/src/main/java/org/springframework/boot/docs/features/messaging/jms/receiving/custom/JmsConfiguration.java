@@ -17,16 +17,11 @@
 package org.springframework.boot.docs.features.messaging.jms.receiving.custom;
 
 import javax.jms.ConnectionFactory;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.Session;
 
 import org.springframework.boot.autoconfigure.jms.DefaultJmsListenerContainerFactoryConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jms.config.DefaultJmsListenerContainerFactory;
-import org.springframework.jms.support.converter.MessageConversionException;
-import org.springframework.jms.support.converter.MessageConverter;
 
 @Configuration(proxyBeanMethods = false)
 public class JmsConfiguration {
@@ -42,21 +37,6 @@ public class JmsConfiguration {
 
 	private ConnectionFactory getCustomConnectionFactory() {
 		return /**/ null;
-	}
-
-}
-
-// @chomp:file
-class MyMessageConverter implements MessageConverter {
-
-	@Override
-	public Message toMessage(Object object, Session session) throws JMSException, MessageConversionException {
-		return null;
-	}
-
-	@Override
-	public Object fromMessage(Message message) throws JMSException, MessageConversionException {
-		return null;
 	}
 
 }

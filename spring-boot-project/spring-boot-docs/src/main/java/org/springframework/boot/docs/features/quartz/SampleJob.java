@@ -16,8 +16,6 @@
 
 package org.springframework.boot.docs.features.quartz;
 
-import java.util.Date;
-
 import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 
@@ -45,14 +43,6 @@ public class SampleJob extends QuartzJobBean {
 	@Override
 	protected void executeInternal(JobExecutionContext context) throws JobExecutionException {
 		this.myService.someMethod(context.getFireTime(), this.name);
-	}
-
-}
-// @chomp:file
-
-class MyService {
-
-	void someMethod(Date date, String name) {
 	}
 
 }

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.httpclients.webclientreactornettycustomization;
 
-// tag::code[]
 import io.netty.channel.ChannelOption;
 import io.netty.handler.timeout.ReadTimeoutHandler;
 import reactor.netty.http.client.HttpClient;
@@ -28,7 +27,7 @@ import org.springframework.http.client.reactive.ReactorClientHttpConnector;
 import org.springframework.http.client.reactive.ReactorResourceFactory;
 
 @Configuration(proxyBeanMethods = false)
-public class CustomizeReactorNettyClientConfiguration {
+public class MyReactorNettyClientConfiguration {
 
 	@Bean
 	ClientHttpConnector clientHttpConnector(ReactorResourceFactory resourceFactory) {
@@ -39,4 +38,3 @@ public class CustomizeReactorNettyClientConfiguration {
 	}
 
 }
-// end::code[]

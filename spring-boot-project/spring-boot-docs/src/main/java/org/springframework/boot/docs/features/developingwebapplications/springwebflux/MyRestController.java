@@ -16,12 +16,9 @@
 
 package org.springframework.boot.docs.features.developingwebapplications.springwebflux;
 
-import java.util.List;
-
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
-import org.springframework.data.repository.reactive.ReactiveCrudRepository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -55,28 +52,5 @@ public class MyRestController {
 	public void deleteUser(@PathVariable Long userId) {
 		this.userRepository.deleteById(userId);
 	}
-
-}
-// @chomp:file
-
-interface UserRepository extends ReactiveCrudRepository<User, Long> {
-
-}
-
-interface CustomerRepository extends ReactiveCrudRepository<Customer, Long> {
-
-	Flux<Customer> findByUser(User user);
-
-}
-
-class User {
-
-	List<Customer> getCustomers() {
-		return null;
-	}
-
-}
-
-class Customer {
 
 }

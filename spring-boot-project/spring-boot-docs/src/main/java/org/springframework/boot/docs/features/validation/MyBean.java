@@ -30,12 +30,3 @@ public class MyBean {
 	}
 
 }
-// @chomp:file
-
-class Archive {
-
-}
-
-class Author {
-
-}

@@ -28,8 +28,3 @@ public class MyTests {
 	// ...
 
 }
-// @chomp:file
-
-class MyConfig {
-
-}

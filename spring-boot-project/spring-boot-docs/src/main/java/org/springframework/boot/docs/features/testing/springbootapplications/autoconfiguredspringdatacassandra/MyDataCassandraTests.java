@@ -27,8 +27,3 @@ class MyDataCassandraTests {
 	private SomeRepository repository;
 
 }
-// @chomp:file
-
-interface SomeRepository {
-
-}

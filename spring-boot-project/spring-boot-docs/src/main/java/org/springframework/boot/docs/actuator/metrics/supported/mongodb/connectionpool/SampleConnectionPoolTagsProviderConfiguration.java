@@ -16,9 +16,6 @@
 
 package org.springframework.boot.docs.actuator.metrics.supported.mongodb.connectionpool;
 
-// tag::code[]
-import com.mongodb.event.ConnectionPoolCreatedEvent;
-import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 
 import org.springframework.context.annotation.Bean;
@@ -30,16 +27,6 @@ public class SampleConnectionPoolTagsProviderConfiguration {
 	@Bean
 	MongoConnectionPoolTagsProvider customConnectionPoolTagsProvider() {
 		return new CustomConnectionPoolTagsProvider();
-	}
-
-}
-// end::code[]
-
-class CustomConnectionPoolTagsProvider implements MongoConnectionPoolTagsProvider {
-
-	@Override
-	public Iterable<Tag> connectionPoolTags(ConnectionPoolCreatedEvent event) {
-		return java.util.Collections.emptyList();
 	}
 
 }

@@ -35,9 +35,3 @@ public class MyService {
 	}
 
 }
-
-// @chomp:file
-
-class User {
-
-}

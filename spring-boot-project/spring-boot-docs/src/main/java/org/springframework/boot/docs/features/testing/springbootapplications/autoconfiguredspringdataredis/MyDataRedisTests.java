@@ -29,8 +29,3 @@ class MyDataRedisTests {
 	// ...
 
 }
-// @chomp:file
-
-interface SomeRepository {
-
-}

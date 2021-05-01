@@ -16,19 +16,13 @@
 
 package org.springframework.boot.docs.features.developingwebapplications.springmvc.errorhandling.errorpageswithoutspringmvc;
 
-import java.io.IOException;
 import java.util.EnumSet;
 
 import javax.servlet.DispatcherType;
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.ServletRequest;
-import javax.servlet.ServletResponse;
 
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.filter.GenericFilterBean;
 
 @Configuration
 public class ServletFilterConfiguration {
@@ -39,16 +33,6 @@ public class ServletFilterConfiguration {
 		// ...
 		registration.setDispatcherTypes(EnumSet.allOf(DispatcherType.class));
 		return registration;
-	}
-
-}
-// @chomp:file
-
-class MyFilter extends GenericFilterBean {
-
-	@Override
-	public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
-			throws IOException, ServletException {
 	}
 
 }

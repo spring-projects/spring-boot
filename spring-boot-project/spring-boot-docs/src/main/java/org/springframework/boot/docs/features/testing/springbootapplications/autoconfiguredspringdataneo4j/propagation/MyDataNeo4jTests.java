@@ -29,8 +29,3 @@ class MyDataNeo4jTests {
 	// ...
 
 }
-// @chomp:file
-
-interface SomeRepository {
-
-}

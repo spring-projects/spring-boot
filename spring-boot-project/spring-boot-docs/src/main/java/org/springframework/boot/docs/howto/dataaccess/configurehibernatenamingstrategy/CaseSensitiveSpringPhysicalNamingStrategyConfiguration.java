@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess.configurehibernatenamingstrategy;
 
-// tag::code[]
 import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
 
 import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
@@ -39,4 +38,3 @@ class CaseSensitiveSpringPhysicalNamingStrategyConfiguration {
 	}
 
 }
-// end::code[]

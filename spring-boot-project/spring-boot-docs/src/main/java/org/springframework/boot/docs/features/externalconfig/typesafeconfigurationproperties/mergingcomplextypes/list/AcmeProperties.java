@@ -31,8 +31,3 @@ public class AcmeProperties {
 	}
 
 }
-// @chomp:file
-
-class MyPojo {
-
-}

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.webserver.enablemultipleconnectorsintomcat;
 
-// tag::code[]
 import java.io.IOException;
 import java.net.URL;
 
@@ -60,4 +59,3 @@ public class TomcatMultipleConnectorsConfiguration {
 	}
 
 }
-// end::code[]

@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.application.customizetheenvironmentorapplicationcontext;
 
-// tag::code[]
 import java.io.IOException;
 
 import org.springframework.boot.SpringApplication;
@@ -50,4 +49,3 @@ public class MyEnvironmentPostProcessor implements EnvironmentPostProcessor {
 	}
 
 }
-// end::code[]

@@ -42,25 +42,3 @@ class MyRepositoryTests {
 	}
 
 }
-// @chomp:file
-
-class User {
-
-	User(String username, String employeeNumber) {
-	}
-
-	String getEmployeeNumber() {
-		return null;
-	}
-
-	String getUsername() {
-		return null;
-	}
-
-}
-
-interface UserRepository {
-
-	User findByUsername(String username);
-
-}

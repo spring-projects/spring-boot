@@ -42,20 +42,3 @@ class MyTests {
 	}
 
 }
-// @chomp:file
-
-class RemoteService {
-
-	Object getValue() {
-		return null;
-	}
-
-}
-
-class Reverser {
-
-	String getReverseValue() {
-		return null;
-	}
-
-}

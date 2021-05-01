@@ -18,7 +18,6 @@ package org.springframework.boot.docs.features.developingwebapplications.springm
 
 import java.util.List;
 
-import org.springframework.data.repository.CrudRepository;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -52,28 +51,5 @@ public class MyRestController {
 	public void deleteUser(@PathVariable Long userId) {
 		this.userRepository.deleteById(userId);
 	}
-
-}
-// @chomp:file
-
-interface UserRepository extends CrudRepository<User, Long> {
-
-}
-
-interface CustomerRepository extends CrudRepository<Customer, Long> {
-
-	List<Customer> findByUser(User user);
-
-}
-
-class User {
-
-	List<Customer> getCustomers() {
-		return null;
-	}
-
-}
-
-class Customer {
 
 }

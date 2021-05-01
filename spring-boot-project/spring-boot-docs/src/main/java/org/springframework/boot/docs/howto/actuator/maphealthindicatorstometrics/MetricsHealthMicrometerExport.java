@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.actuator.maphealthindicatorstometrics;
 
-// tag::code[]
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.MeterRegistry;
 
@@ -51,4 +50,3 @@ public class MetricsHealthMicrometerExport {
 	}
 
 }
-// end::code[]

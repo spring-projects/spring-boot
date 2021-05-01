@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.howto.dataaccess;
 
-// tag::code[]
 import io.r2dbc.spi.ConnectionFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,4 +37,3 @@ public class R2dbcDatabaseInitializationConfiguration {
 	}
 
 }
-// end::code[]

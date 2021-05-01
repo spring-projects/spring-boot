@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.actuator.metrics.registeringcustom;
 
-// tag::code[]
 import io.micrometer.core.instrument.Gauge;
 import io.micrometer.core.instrument.binder.MeterBinder;
 
@@ -27,15 +26,6 @@ public class SampleMeterBinderConfiguration {
 	@Bean
 	MeterBinder queueSize(Queue queue) {
 		return (registry) -> Gauge.builder("queueSize", queue::size).register(registry);
-	}
-
-}
-// end::code[]
-
-class Queue {
-
-	int size() {
-		return 5;
 	}
 
 }

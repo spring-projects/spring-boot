@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.actuator.cloudfoundry.customcontextpath;
 
-// tag::code[]
 import java.io.IOException;
 import java.util.Collections;
 
@@ -75,4 +74,3 @@ public class CloudFoundryCustomContextPathConfiguration {
 	}
 
 }
-// end::code[]

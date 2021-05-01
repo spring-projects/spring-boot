@@ -34,8 +34,3 @@ public class MyService {
 	}
 
 }
-// @chomp:file
-
-class Details {
-
-}

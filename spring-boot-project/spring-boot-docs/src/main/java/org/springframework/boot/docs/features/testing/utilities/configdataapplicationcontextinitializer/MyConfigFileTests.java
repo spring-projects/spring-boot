@@ -25,8 +25,3 @@ class MyConfigFileTests {
 	// ...
 
 }
-// @chomp:file
-
-class Config {
-
-}

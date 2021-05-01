@@ -44,12 +44,3 @@ class MyRestClientTests {
 	}
 
 }
-// @chomp:file
-
-class RemoteVehicleDetailsService {
-
-	String callRestService() {
-		return "hello";
-	}
-
-}

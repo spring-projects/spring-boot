@@ -16,17 +16,10 @@
 
 package org.springframework.boot.docs.features.developingwebapplications.springmvc.messageconverters;
 
-import java.io.IOException;
-
 import org.springframework.boot.autoconfigure.http.HttpMessageConverters;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.http.HttpInputMessage;
-import org.springframework.http.HttpOutputMessage;
-import org.springframework.http.converter.AbstractHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
-import org.springframework.http.converter.HttpMessageNotReadableException;
-import org.springframework.http.converter.HttpMessageNotWritableException;
 
 @Configuration(proxyBeanMethods = false)
 public class HttpMessageConvertersConfiguration {
@@ -37,30 +30,5 @@ public class HttpMessageConvertersConfiguration {
 		HttpMessageConverter<?> another = new AnotherHttpMessageConverter();
 		return new HttpMessageConverters(additional, another);
 	}
-
-}
-// @chomp:file
-
-class AdditionalHttpMessageConverter extends AbstractHttpMessageConverter<Object> {
-
-	@Override
-	protected boolean supports(Class<?> clazz) {
-		return false;
-	}
-
-	@Override
-	protected Object readInternal(Class<?> clazz, HttpInputMessage inputMessage)
-			throws IOException, HttpMessageNotReadableException {
-		return null;
-	}
-
-	@Override
-	protected void writeInternal(Object t, HttpOutputMessage outputMessage)
-			throws IOException, HttpMessageNotWritableException {
-	}
-
-}
-
-class AnotherHttpMessageConverter extends AdditionalHttpMessageConverter {
 
 }

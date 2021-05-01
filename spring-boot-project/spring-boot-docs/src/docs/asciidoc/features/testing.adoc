@@ -908,7 +908,7 @@ You can call it with `key=value` strings, as follows:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/utilities/testpropertyvalues/MyEnvironmentTests.java[tag=*]
+include::{docs-java}/features/testing/utilities/testpropertyvalues/MyEnvironmentTests.java[]
 ----
 
 

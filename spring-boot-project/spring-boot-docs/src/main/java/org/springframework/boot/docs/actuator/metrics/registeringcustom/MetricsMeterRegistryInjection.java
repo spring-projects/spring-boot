@@ -16,10 +16,6 @@
 
 package org.springframework.boot.docs.actuator.metrics.registeringcustom;
 
-//tag::code[]
-import java.util.Collections;
-import java.util.List;
-
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tags;
 
@@ -33,19 +29,6 @@ public class MetricsMeterRegistryInjection {
 	MetricsMeterRegistryInjection(MeterRegistry registry) {
 		this.dictionary = Dictionary.load();
 		registry.gauge("dictionary.size", Tags.empty(), this.dictionary.getWords().size());
-	}
-
-}
-// end::code[]
-
-class Dictionary {
-
-	static Dictionary load() {
-		return new Dictionary();
-	}
-
-	List<String> getWords() {
-		return Collections.emptyList();
 	}
 
 }

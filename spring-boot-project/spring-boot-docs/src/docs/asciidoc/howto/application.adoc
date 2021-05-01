@@ -80,7 +80,7 @@ For instance, the following example loads a YAML configuration file from the cla
 
 [source,java,indent=0]
 ----
-include::{docs-java}/howto/application/customizetheenvironmentorapplicationcontext/MyEnvironmentPostProcessor.java[tag=*]
+include::{docs-java}/howto/application/customizetheenvironmentorapplicationcontext/MyEnvironmentPostProcessor.java[]
 ----
 
 TIP: The `Environment` has already been prepared with all the usual property sources that Spring Boot loads by default.
