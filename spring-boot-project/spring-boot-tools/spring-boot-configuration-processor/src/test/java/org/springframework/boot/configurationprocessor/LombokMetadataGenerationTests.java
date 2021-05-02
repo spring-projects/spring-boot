@@ -29,6 +29,7 @@ import org.springframework.boot.configurationsample.lombok.LombokInnerClassPrope
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassWithGetterProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
 import org.springframework.boot.configurationsample.lombok.SimpleLombokPojo;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +45,12 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void lombokDataProperties() {
 		ConfigurationMetadata metadata = compile(LombokSimpleDataProperties.class);
 		assertSimpleLombokProperties(metadata, LombokSimpleDataProperties.class, "data");
+	}
+
+	@Test
+	void lombokValueProperties() {
+		ConfigurationMetadata metadata = compile(LombokSimpleValueProperties.class);
+		assertSimpleLombokProperties(metadata, LombokSimpleValueProperties.class, "value");
 	}
 
 	@Test
