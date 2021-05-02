@@ -13,13 +13,9 @@ If you need to externalize some settings, you can bind your `DataSource` to the 
 
 The following example shows how to define a data source in a bean:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	@ConfigurationProperties(prefix="app.datasource")
-	public DataSource dataSource() {
-		return new FancyDataSource();
-	}
+include::{docs-java}/howto/dataaccess/configurecustomdatasource/FancyDataSourceConfiguration.java[]
 ----
 
 The following example shows how to define a data source by setting properties:
@@ -190,16 +186,9 @@ For more about Spring Data, see the {spring-data}[Spring Data project page].
 Spring Boot tries to guess the location of your `@Entity` definitions, based on the `@EnableAutoConfiguration` it finds.
 To get more control, you can use the `@EntityScan` annotation, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration(proxyBeanMethods = false)
-	@EnableAutoConfiguration
-	@EntityScan(basePackageClasses=City.class)
-	public class Application {
-
-		//...
-
-	}
+include::{docs-java}/howto/dataaccess/separateentitydefinitionsfromspringconfiguration/Application.java[]
 ----
 
 
@@ -255,7 +244,7 @@ This implementation provides the same table structure as Hibernate 4: all dots a
 
 [source,java,indent=0]
 ----
-include::{docs-java}/howto/dataaccess/configurehibernatenamingstrategy/CaseSensitiveSpringPhysicalNamingStrategyConfiguration.java[]
+include::{docs-java}/howto/dataaccess/configurehibernatenamingstrategy/spring/MyHibernateConfiguration.java[]
 ----
 
 If you prefer to use Hibernate 5's default instead, set the following property:
@@ -267,12 +256,9 @@ If you prefer to use Hibernate 5's default instead, set the following property:
 
 Alternatively, you can configure the following bean:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public PhysicalNamingStrategy physicalNamingStrategy() {
-		return new PhysicalNamingStrategyStandardImpl();
-	}
+include::{docs-java}/howto/dataaccess/configurehibernatenamingstrategy/standard/MyHibernateConfiguration.java[]
 ----
 
 See {spring-boot-autoconfigure-module-code}/orm/jpa/HibernateJpaAutoConfiguration.java[`HibernateJpaAutoConfiguration`] and {spring-boot-autoconfigure-module-code}/orm/jpa/JpaBaseConfiguration.java[`JpaBaseConfiguration`] for more details.
@@ -320,7 +306,7 @@ If you need to use JPA against multiple data sources, you likely need one `Entit
 The `LocalContainerEntityManagerFactoryBean` from Spring ORM allows you to configure an `EntityManagerFactory` for your needs.
 You can also reuse `JpaProperties` to bind settings for each `EntityManagerFactory`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
 include::{docs-java}/howto/dataaccess/usemultipleentitymanagers/CustomEntityManagerFactoryConfiguration.java[]
 ----
@@ -337,23 +323,16 @@ You should provide a similar configuration for any additional data sources for w
 To complete the picture, you need to configure a `JpaTransactionManager` for each `EntityManagerFactory` as well.
 Alternatively, you might be able to use a JTA transaction manager that spans both.
 
-If you use Spring Data, you need to configure `@EnableJpaRepositories` accordingly, as shown in the following example:
+If you use Spring Data, you need to configure `@EnableJpaRepositories` accordingly, as shown in the following examples:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Configuration(proxyBeanMethods = false)
-	@EnableJpaRepositories(basePackageClasses = Order.class,
-			entityManagerFactoryRef = "firstEntityManagerFactory")
-	public class OrderConfiguration {
-		...
-	}
+include::{docs-java}/howto/dataaccess/usemultipleentitymanagers/OrderConfiguration.java[]
+----
 
-	@Configuration(proxyBeanMethods = false)
-	@EnableJpaRepositories(basePackageClasses = Customer.class,
-			entityManagerFactoryRef = "secondEntityManagerFactory")
-	public class CustomerConfiguration {
-		...
-	}
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
+----
+include::{docs-java}/howto/dataaccess/usemultipleentitymanagers/CustomerConfiguration.java[]
 ----
 
 

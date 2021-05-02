@@ -49,7 +49,7 @@ public class CustomEntityManagerFactoryConfiguration {
 	}
 
 	private JpaVendorAdapter createJpaVendorAdapter(JpaProperties jpaProperties) {
-		// Map JPA properties as needed
+		// ... map JPA properties as needed
 		return new HibernateJpaVendorAdapter();
 	}
 

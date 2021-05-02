@@ -320,15 +320,9 @@ If you wish to configure custom security for HTTP endpoints, for example, only a
 
 A typical Spring Security configuration might look something like the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
-			requests.anyRequest().hasRole("ENDPOINT_ADMIN"));
-		http.httpBasic();
-		return http.build();
-	}
+include::{docs-java}/actuator/endpoints/security/typical/MySecurityConfiguration.java[]
 ----
 
 The preceding example uses `EndpointRequest.toAnyEndpoint()` to match a request to any endpoint and then ensures that all have the `ENDPOINT_ADMIN` role.
@@ -349,14 +343,9 @@ You can do so by changing the configprop:management.endpoints.web.exposure.inclu
 
 Additionally, if Spring Security is present, you would need to add custom security configuration that allows unauthenticated access to the endpoints as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		http.requestMatcher(EndpointRequest.toAnyEndpoint()).authorizeRequests((requests) ->
-				requests.anyRequest().permitAll());
-		return http.build();
-	}
+include::{docs-java}/actuator/endpoints/security/exposeall/MySecurityConfiguration.java[]
 ----
 
 NOTE: In both the examples above, the configuration applies only to the actuator endpoints.
@@ -751,25 +740,9 @@ You need to provide an implementation of the `health()` method and return a `Hea
 The `Health` response should include a status and can optionally include additional details to be displayed.
 The following code shows a sample `HealthIndicator` implementation:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.actuate.health.Health;
-	import org.springframework.boot.actuate.health.HealthIndicator;
-	import org.springframework.stereotype.Component;
-
-	@Component
-	public class MyHealthIndicator implements HealthIndicator {
-
-		@Override
-		public Health health() {
-			int errorCode = check(); // perform some specific health check
-			if (errorCode != 0) {
-				return Health.down().withDetail("Error Code", errorCode).build();
-			}
-			return Health.up().build();
-		}
-
-	}
+include::{docs-java}/actuator/endpoints/health/writingcustomhealthindicators/MyHealthIndicator.java[]
 ----
 
 NOTE: The identifier for a given `HealthIndicator` is the name of the bean without the `HealthIndicator` suffix, if it exists.
@@ -845,18 +818,9 @@ If you need to register a regular `HealthContributor`, you should wrap it using 
 To provide custom health information from a reactive API, you can register Spring beans that implement the {spring-boot-actuator-module-code}/health/ReactiveHealthIndicator.java[`ReactiveHealthIndicator`] interface.
 The following code shows a sample `ReactiveHealthIndicator` implementation:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@Component
-	public class MyReactiveHealthIndicator implements ReactiveHealthIndicator {
-
-		@Override
-		public Mono<Health> health() {
-			return doHealthCheck() //perform some specific health check that returns a Mono<Health>
-				.onErrorResume(ex -> Mono.just(new Health.Builder().down(ex).build()));
-		}
-
-	}
+include::{docs-java}/actuator/endpoints/health/reactivehealthindicators/MyReactiveHealthIndicator.java[]
 ----
 
 TIP: To handle the error automatically, consider extending from `AbstractReactiveHealthIndicator`.
@@ -1218,24 +1182,9 @@ To provide custom application information, you can register Spring beans that im
 
 The following example contributes an `example` entry with a single value:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import java.util.Collections;
-
-	import org.springframework.boot.actuate.info.Info;
-	import org.springframework.boot.actuate.info.InfoContributor;
-	import org.springframework.stereotype.Component;
-
-	@Component
-	public class ExampleInfoContributor implements InfoContributor {
-
-		@Override
-		public void contribute(Info.Builder builder) {
-			builder.withDetail("example",
-					Collections.singletonMap("key", "value"));
-		}
-
-	}
+include::{docs-java}/actuator/endpoints/info/writingcustominfocontributors/MyInfoContributor.java[]
 ----
 
 If you reach the `info` endpoint, you should see a response that contains the following additional entry:

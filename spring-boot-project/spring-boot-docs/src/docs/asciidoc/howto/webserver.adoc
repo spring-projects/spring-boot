@@ -104,17 +104,9 @@ The best way to get that and be sure it has been initialized is to add a `@Bean`
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-	public class MyWebIntegrationTests {
-
-		@LocalServerPort
-		int port;
-
-		// ...
-
-	}
+include::{docs-java}/howto/webserver/discoverport/MyWebIntegrationTests.java[]
 ----
 
 [NOTE]
@@ -254,17 +246,9 @@ You can declare such a component and get access to the server factory relevant t
 
 The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Component
-	public class MyTomcatWebServerCustomizer
-			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
-
-		@Override
-		public void customize(TomcatServletWebServerFactory factory) {
-			// customize the factory here
-		}
-	}
+include::{docs-java}/howto/webserver/configure/MyTomcatWebServerCustomizer.java[]
 ----
 
 NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
@@ -335,14 +319,9 @@ Like any other Spring bean, you can define the order of Servlet filter beans; pl
 As <<howto#howto.webserver.add-servlet-filter-listener.spring-bean,described earlier>>, any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public FilterRegistrationBean registration(MyFilter filter) {
-		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-		registration.setEnabled(false);
-		return registration;
-	}
+include::{docs-java}/howto/webserver/addservletfilterlistener/springbean/disable/MyFilterConfiguration.java[]
 ----
 
 
@@ -520,12 +499,9 @@ include::{docs-java}/howto/webserver/enablemultiplelistenersinundertow/UndertowM
 === Create WebSocket Endpoints Using @ServerEndpoint
 If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@Bean
-	public ServerEndpointExporter serverEndpointExporter() {
-		return new ServerEndpointExporter();
-	}
+include::{docs-java}/howto/webserver/createwebsocketendpointsusingserverendpoint/MyWebSocketConfiguration.java[]
 ----
 
 The bean shown in the preceding example registers any `@ServerEndpoint` annotated beans with the underlying WebSocket container.

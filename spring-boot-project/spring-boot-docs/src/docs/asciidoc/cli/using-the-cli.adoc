@@ -59,15 +59,7 @@ The following example shows a "`hello world`" web application written in Groovy:
 .hello.groovy
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@RestController
-	class WebApplication {
-
-		@RequestMapping("/")
-		String home() {
-			"Hello World!"
-		}
-
-	}
+include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]
 ----
 
 To compile and run the application, type the following command:
@@ -185,17 +177,16 @@ For example, consider the following declaration:
 
 [source,groovy,indent=0]
 ----
-	@DependencyManagementBom("com.example.custom-bom:1.0.0")
+include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/single/CustomDependencyManagement.groovy[tag=*]
 ----
 
 The preceding declaration picks up `custom-bom-1.0.0.pom` in a Maven repository under `com/example/custom-versions/1.0.0/`.
 
 When you specify multiple BOMs, they are applied in the order in which you declare them, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,groovy,indent=0]
 ----
-	@DependencyManagementBom(["com.example.custom-bom:1.0.0",
-			"com.example.another-bom:1.0.0"])
+include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/multiple/CustomDependencyManagement.groovy[tag=*]
 ----
 
 The preceding example indicates that the dependency management in `another-bom` overrides the dependency management in `custom-bom`.

@@ -14,27 +14,28 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.dataaccess.configurehibernatenamingstrategy;
+package org.springframework.boot.docs.actuator.metrics.export.jmx;
 
-import org.hibernate.engine.jdbc.env.spi.JdbcEnvironment;
+import io.micrometer.core.instrument.Clock;
+import io.micrometer.core.instrument.Meter;
+import io.micrometer.core.instrument.config.NamingConvention;
+import io.micrometer.core.instrument.util.HierarchicalNameMapper;
+import io.micrometer.jmx.JmxConfig;
+import io.micrometer.jmx.JmxMeterRegistry;
 
-import org.springframework.boot.orm.jpa.hibernate.SpringPhysicalNamingStrategy;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
-@Configuration
-class CaseSensitiveSpringPhysicalNamingStrategyConfiguration {
+@Configuration(proxyBeanMethods = false)
+public class MyJmxConfiguration {
 
 	@Bean
-	SpringPhysicalNamingStrategy caseSensitivePhysicalNamingStrategy() {
-		return new SpringPhysicalNamingStrategy() {
+	public JmxMeterRegistry jmxMeterRegistry(JmxConfig config, Clock clock) {
+		return new JmxMeterRegistry(config, clock, this::toHierarchicalName);
+	}
 
-			@Override
-			protected boolean isCaseInsensitive(JdbcEnvironment jdbcEnvironment) {
-				return false;
-			}
-
-		};
+	private String toHierarchicalName(Meter.Id id, NamingConvention convention) {
+		return /**/ HierarchicalNameMapper.DEFAULT.toHierarchicalName(id, convention);
 	}
 
 }

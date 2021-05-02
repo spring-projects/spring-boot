@@ -18,14 +18,9 @@ The special `.keys` and `.values` suffixes must refer to the keys and the values
 
 Assume a `sample.contexts` maps magic `String` values to an integer, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	@ConfigurationProperties("sample")
-	public class SampleProperties {
-
-		private Map<String,Integer> contexts;
-		// getters and setters
-	}
+include::{docs-java}/configurationmetadata/manualhints/valuehint/SampleProperties.java[]
 ----
 
 The magic values are (in this example) are `sample1` and `sample2`.

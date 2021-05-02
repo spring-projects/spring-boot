@@ -149,26 +149,9 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 To finish our application, we need to create a single Java file.
 By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/Example.java` to contain the following code:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	import org.springframework.boot.*;
-	import org.springframework.boot.autoconfigure.*;
-	import org.springframework.web.bind.annotation.*;
-
-	@RestController
-	@EnableAutoConfiguration
-	public class Example {
-
-		@RequestMapping("/")
-		String home() {
-			return "Hello World!";
-		}
-
-		public static void main(String[] args) {
-			SpringApplication.run(Example.class, args);
-		}
-
-	}
+include::{docs-java}/gettingstarted/firstapplication/code/Example.java[]
 ----
 
 Although there is not much code here, quite a lot is going on.

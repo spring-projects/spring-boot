@@ -93,7 +93,7 @@ To use Spring property placeholders together with automatic expansion, escape th
 
 [[howto.properties-and-configuration.externalize-configuration]]
 === Externalize the Configuration of SpringApplication
-A `SpringApplication` has bean properties (mainly setters), so you can use its Java API as you create the application to modify its behavior.
+A `SpringApplication` has bean property setters, so you can use its Java API as you create the application to modify its behavior.
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
 
@@ -107,28 +107,37 @@ For example, in `application.properties`, you might have the following settings:
 
 Then the Spring Boot banner is not printed on startup, and the application is not starting an embedded web server.
 
-Properties defined in external configuration override the values specified with the Java API, with the notable exception of the sources used to create the `ApplicationContext`.
-Consider the following application:
+Properties defined in external configuration override and replace the values specified with the Java API, with the notable exception of the primary sources.
+Primary sources are those provided to the `SpringApplication` constructor:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0]
 ----
-	new SpringApplicationBuilder()
-		.bannerMode(Banner.Mode.OFF)
-		.sources(demo.MyApp.class)
-		.run(args);
+include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/application/MyApplication.java[]
 ----
 
-Now consider the following configuration:
+Or to `sources(...)` method of a `SpringApplicationBuilder`:
+
+[source,java,indent=0]
+----
+include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/builder/MyApplication.java[]
+----
+
+Given the examples above, if we have the following configuration:
 
 [source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
 ----
 	spring:
 	  main:
-	    sources: "com.acme.Config,com.acme.ExtraConfig"
+	    sources: "com.example.MyDatabaseConfig,com.example.MyJmsConfig"
 	    banner-mode: "console"
 ----
 
-The actual application _now_ shows the banner (as overridden by configuration) and uses three sources for the `ApplicationContext` (in the following order): `demo.MyApp`, `com.acme.Config`, and `com.acme.ExtraConfig`.
+The actual application will show the banner (as overridden by configuration) and uses three sources for the `ApplicationContext`.
+The application sources are:
+
+.`MyApplication` (from the code)
+.`MyDatabaseConfig` (from the external config)
+.`MyJmsConfig`(from the external config)
 
 
 

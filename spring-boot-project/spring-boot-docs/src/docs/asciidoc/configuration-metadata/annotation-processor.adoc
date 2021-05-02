@@ -69,29 +69,9 @@ The annotation processor also supports the use of the `@Data`, `@Getter`, and `@
 
 Consider the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,attributes"]
+[source,java,indent=0,subs="verbatim,attributes"]
 ----
-	@ConfigurationProperties(prefix="server")
-	public class ServerProperties {
-
-	    /**
-	    * Name of the server.
-	    */
-		private String name;
-
-		/**
-         * IP address to listen to.
-         */
-		private String ip = "127.0.0.1";
-
-		/**
-		* Port to listener to.
-		*/
-		private int port = 9797;
-
-		// ... getter and setters
-
-	}
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/ServerProperties.java[]
 ----
 
 This exposes three properties where `server.name` has no default and `server.ip` and `server.port` defaults to `"127.0.0.1"` and `9797` respectively.
@@ -106,25 +86,9 @@ Also, the annotation processor cannot auto-detect default values for ``Enum``s a
 For cases where the default value could not be detected, <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,manual metadata>> should be provided.
 Consider the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@ConfigurationProperties(prefix = "acme.messaging")
-	public class MessagingProperties {
-
-		private List<String> addresses = new ArrayList<>(Arrays.asList("a", "b"));
-
-		private ContainerType containerType = ContainerType.SIMPLE;
-
-		// ... getter and setters
-
-		public enum ContainerType {
-
-			SIMPLE,
-			DIRECT
-
-		}
-
-	}
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/MessagingProperties.java[]
 ----
 
 In order to document default values for properties in the class above, you could add the following content to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
@@ -153,28 +117,9 @@ The annotation processor automatically considers inner classes as nested propert
 Rather than documenting the `ip` and `port` at the root of the namespace, we could create a sub-namespace for it.
 Consider the updated example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	@ConfigurationProperties(prefix="server")
-	public class ServerProperties {
-
-		private String name;
-
-		private Host host;
-
-		// ... getter and setters
-
-		public static class Host {
-
-			private String ip;
-
-			private int port;
-
-			// ... getter and setters
-
-		}
-
-	}
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/nestedproperties/ServerProperties.java[]
 ----
 
 The preceding example produces metadata information for `server.name`, `server.host.ip`, and `server.host.port` properties.
