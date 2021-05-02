@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.springframework.boot.context.properties.source.IterableConfigurationP
 import org.springframework.core.ResolvableType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 /**
  * Base class for {@link AggregateBinder AggregateBinders} that read a sequential run of
@@ -90,7 +89,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
 			ResolvableType elementType, Object value) {
-		if (value instanceof String && !StringUtils.hasText((String) value)) {
+		if (value == null || value instanceof CharSequence && ((CharSequence) value).length() == 0) {
 			return;
 		}
 		Object aggregate = convert(value, aggregateType, target.getAnnotations());

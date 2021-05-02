@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,12 +70,6 @@ public final class Layouts {
 
 		@Override
 		public String getLibraryLocation(String libraryName, LibraryScope scope) {
-			return "BOOT-INF/lib/";
-		}
-
-		@Deprecated
-		@Override
-		public String getLibraryDestination(String libraryName, LibraryScope scope) {
 			return "BOOT-INF/lib/";
 		}
 
@@ -161,15 +155,19 @@ public final class Layouts {
 			return SCOPE_LOCATION.get(scope);
 		}
 
-		@Deprecated
-		@Override
-		public String getLibraryDestination(String libraryName, LibraryScope scope) {
-			return SCOPE_LOCATION.get(scope);
-		}
-
 		@Override
 		public String getClassesLocation() {
 			return "WEB-INF/classes/";
+		}
+
+		@Override
+		public String getClasspathIndexFileLocation() {
+			return "WEB-INF/classpath.idx";
+		}
+
+		@Override
+		public String getLayersIndexFileLocation() {
+			return "WEB-INF/layers.idx";
 		}
 
 		@Override

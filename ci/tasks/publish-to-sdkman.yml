@@ -1,0 +1,13 @@
+---
+platform: linux
+inputs:
+  - name: artifactory-repo
+  - name: git-repo
+params:
+  RELEASE_TYPE:
+  BRANCH:
+  LATEST_GA:
+  SDKMAN_CONSUMER_KEY:
+  SDKMAN_CONSUMER_TOKEN:
+run:
+  path: git-repo/ci/scripts/publish-to-sdkman.sh

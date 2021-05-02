@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,6 +85,15 @@ class ConfigTreePropertySourceTests {
 	@Test
 	void getPropertyNamesFromNestedReturnsPropertyNames() throws Exception {
 		ConfigTreePropertySource propertySource = getNestedPropertySource();
+		assertThat(propertySource.getPropertyNames()).containsExactly("c", "fa.a", "fa.b", "fb.a", "fb.fa.a");
+	}
+
+	@Test
+	void getPropertyNamesFromNestedWithSymlinkInPathReturnsPropertyNames() throws Exception {
+		addNested();
+		Path symlinkTempDir = Files.createSymbolicLink(this.directory.resolveSibling("symlinkTempDir"), this.directory);
+		ConfigTreePropertySource propertySource = new ConfigTreePropertySource("test", symlinkTempDir);
+		Files.delete(symlinkTempDir);
 		assertThat(propertySource.getPropertyNames()).containsExactly("c", "fa.a", "fa.b", "fb.a", "fb.fa.a");
 	}
 

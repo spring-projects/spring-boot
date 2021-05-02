@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -128,7 +128,7 @@ final class ApplicationPluginAction implements PluginApplicationAction {
 	private String loadResource(String name) {
 		try (InputStreamReader reader = new InputStreamReader(getClass().getResourceAsStream(name))) {
 			char[] buffer = new char[4096];
-			int read = 0;
+			int read;
 			StringWriter writer = new StringWriter();
 			while ((read = reader.read(buffer)) > 0) {
 				writer.write(buffer, 0, read);

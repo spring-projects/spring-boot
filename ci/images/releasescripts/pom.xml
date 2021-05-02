@@ -16,9 +16,14 @@
 	<description>Utility that can be used when releasing Java projects</description>
 	<properties>
 		<java.version>1.8</java.version>
-		<spring-javaformat.version>0.0.20</spring-javaformat.version>
+		<spring-javaformat.version>0.0.26</spring-javaformat.version>
 	</properties>
 	<dependencies>
+		<dependency>
+			<groupId>org.bouncycastle</groupId>
+			<artifactId>bcpg-jdk15to18</artifactId>
+			<version>1.68</version>
+		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter</artifactId>

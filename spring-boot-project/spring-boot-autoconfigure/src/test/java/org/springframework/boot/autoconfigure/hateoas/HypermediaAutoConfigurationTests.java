@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,15 +29,16 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.hateoas.MediaTypes;
+import org.springframework.hateoas.RepresentationModel;
 import org.springframework.hateoas.client.LinkDiscoverer;
 import org.springframework.hateoas.client.LinkDiscoverers;
 import org.springframework.hateoas.config.EnableHypermediaSupport;
 import org.springframework.hateoas.config.EnableHypermediaSupport.HypermediaType;
 import org.springframework.hateoas.mediatype.hal.HalLinkDiscoverer;
 import org.springframework.hateoas.server.EntityLinks;
-import org.springframework.hateoas.server.mvc.TypeConstrainedMappingJackson2HttpMessageConverter;
 import org.springframework.http.MediaType;
 import org.springframework.http.converter.HttpMessageConverter;
+import org.springframework.http.converter.json.MappingJackson2HttpMessageConverter;
 import org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerAdapter;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -87,28 +88,28 @@ class HypermediaAutoConfigurationTests {
 	}
 
 	@Test
-	void supportedMediaTypesOfTypeConstrainedConvertersIsCustomized() {
+	void whenUsingTheDefaultConfigurationThenMappingJacksonConverterCanWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.run((context) -> {
 			RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
-			for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
-				if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-					assertThat(converter.getSupportedMediaTypes()).contains(MediaType.APPLICATION_JSON,
-							MediaTypes.HAL_JSON);
-				}
-			}
+			Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters().stream()
+					.filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
+			assertThat(mappingJacksonConverter).isPresent().hasValueSatisfying(
+					(converter) -> assertThat(converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
+							.isTrue());
 		});
 	}
 
 	@Test
-	void customizationOfSupportedMediaTypesCanBeDisabled() {
+	void whenHalIsNotTheDefaultJsonMediaTypeThenMappingJacksonConverterCannotWriteHateoasTypeAsApplicationJson() {
 		this.contextRunner.withPropertyValues("spring.hateoas.use-hal-as-default-json-media-type:false")
 				.run((context) -> {
 					RequestMappingHandlerAdapter handlerAdapter = context.getBean(RequestMappingHandlerAdapter.class);
-					for (HttpMessageConverter<?> converter : handlerAdapter.getMessageConverters()) {
-						if (converter instanceof TypeConstrainedMappingJackson2HttpMessageConverter) {
-							assertThat(converter.getSupportedMediaTypes()).containsExactly(MediaTypes.HAL_JSON);
-						}
-					}
+					Optional<HttpMessageConverter<?>> mappingJacksonConverter = handlerAdapter.getMessageConverters()
+							.stream().filter(MappingJackson2HttpMessageConverter.class::isInstance).findFirst();
+					assertThat(mappingJacksonConverter).isPresent()
+							.hasValueSatisfying((converter) -> assertThat(
+									converter.canWrite(RepresentationModel.class, MediaType.APPLICATION_JSON))
+											.isFalse());
 				});
 	}
 

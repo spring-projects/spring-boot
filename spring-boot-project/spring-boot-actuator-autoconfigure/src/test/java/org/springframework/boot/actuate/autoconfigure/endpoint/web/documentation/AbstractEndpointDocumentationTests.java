@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,7 +59,7 @@ import static org.springframework.restdocs.payload.PayloadDocumentation.fieldWit
 		"management.endpoints.web.exposure.include=*", "spring.jackson.default-property-inclusion=non_null" })
 public abstract class AbstractEndpointDocumentationTests {
 
-	protected String describeEnumValues(Class<? extends Enum<?>> enumType) {
+	protected static String describeEnumValues(Class<? extends Enum<?>> enumType) {
 		return StringUtils.collectionToDelimitedString(Stream.of(enumType.getEnumConstants())
 				.map((constant) -> "`" + constant.name() + "`").collect(Collectors.toList()), ", ");
 	}

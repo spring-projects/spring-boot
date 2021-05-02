@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.jms;
 
 import javax.jms.ConnectionFactory;
+import javax.jms.ExceptionListener;
 import javax.jms.Session;
 
 import org.apache.activemq.ActiveMQConnectionFactory;
@@ -56,6 +57,7 @@ import static org.mockito.Mockito.mock;
  * @author Greg Turnquist
  * @author Stephane Nicoll
  * @author Aurélien Leboulanger
+ * @author Eddú Meléndez
  */
 class JmsAutoConfigurationTests {
 
@@ -207,6 +209,16 @@ class JmsAutoConfigurationTests {
 				.run((context) -> {
 					DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
 					assertThat(container.getMessageConverter()).isSameAs(context.getBean("myMessageConverter"));
+				});
+	}
+
+	@Test
+	void testDefaultContainerFactoryWithExceptionListener() {
+		ExceptionListener exceptionListener = mock(ExceptionListener.class);
+		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
+				.withBean(ExceptionListener.class, () -> exceptionListener).run((context) -> {
+					DefaultMessageListenerContainer container = getContainer(context, "jmsListenerContainerFactory");
+					assertThat(container.getExceptionListener()).isSameAs(exceptionListener);
 				});
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.data.mongo;
 
 import java.util.Collections;
@@ -25,7 +26,6 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.data.annotation.Persistent;
 import org.springframework.data.mapping.model.FieldNamingStrategy;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 import org.springframework.data.mongodb.core.mapping.Document;
@@ -36,6 +36,7 @@ import org.springframework.data.mongodb.core.mapping.MongoMappingContext;
  *
  * @author Madhura Bhave
  * @author Artsiom Yudovin
+ * @author Scott Fredericks
  */
 @Configuration(proxyBeanMethods = false)
 class MongoDataConfiguration {
@@ -47,7 +48,7 @@ class MongoDataConfiguration {
 		PropertyMapper mapper = PropertyMapper.get().alwaysApplyingWhenNonNull();
 		MongoMappingContext context = new MongoMappingContext();
 		mapper.from(properties.isAutoIndexCreation()).to(context::setAutoIndexCreation);
-		context.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class, Persistent.class));
+		context.setInitialEntitySet(new EntityScanner(applicationContext).scan(Document.class));
 		Class<?> strategyClass = properties.getFieldNamingStrategy();
 		if (strategyClass != null) {
 			context.setFieldNamingStrategy((FieldNamingStrategy) BeanUtils.instantiateClass(strategyClass));

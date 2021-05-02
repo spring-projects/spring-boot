@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.jupiter.api.Test;
 
@@ -37,6 +38,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyS
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.boot.convert.Delimiter;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -339,7 +341,7 @@ class JavaBeanBinderTests {
 
 	@Test
 	void bindToInstanceWhenNoDefaultConstructorShouldBind() {
-		Binder binder = new Binder(this.sources, null, null, null, null,
+		Binder binder = new Binder(this.sources, null, (ConversionService) null, null, null,
 				(bindable, isNestedConstructorBinding) -> null);
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("foo.value", "bar");
@@ -538,6 +540,19 @@ class JavaBeanBinderTests {
 		this.sources.add(source);
 		PackagePrivateSetterBean bean = this.binder.bind("foo", Bindable.of(PackagePrivateSetterBean.class)).get();
 		assertThat(bean.getProperty()).isEqualTo("test");
+	}
+
+	@Test
+	void bindUsesConsistentPropertyOrder() {
+		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
+		source.put("foo.gamma", "0");
+		source.put("foo.alpha", "0");
+		source.put("foo.beta", "0");
+		this.sources.add(source);
+		PropertyOrderBean bean = this.binder.bind("foo", Bindable.of(PropertyOrderBean.class)).get();
+		assertThat(bean.getAlpha()).isEqualTo(0);
+		assertThat(bean.getBeta()).isEqualTo(1);
+		assertThat(bean.getGamma()).isEqualTo(2);
 	}
 
 	@Test // gh-23007
@@ -1082,6 +1097,42 @@ class JavaBeanBinderTests {
 
 		List<String> getNames() {
 			return this.names;
+		}
+
+	}
+
+	static class PropertyOrderBean {
+
+		static AtomicInteger atomic = new AtomicInteger();
+
+		private int alpha;
+
+		private int beta;
+
+		private int gamma;
+
+		int getAlpha() {
+			return this.alpha;
+		}
+
+		void setAlpha(int alpha) {
+			this.alpha = alpha + atomic.getAndIncrement();
+		}
+
+		int getBeta() {
+			return this.beta;
+		}
+
+		void setBeta(int beta) {
+			this.beta = beta + atomic.getAndIncrement();
+		}
+
+		int getGamma() {
+			return this.gamma;
+		}
+
+		void setGamma(int gamma) {
+			this.gamma = gamma + atomic.getAndIncrement();
 		}
 
 	}

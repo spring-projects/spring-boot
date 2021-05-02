@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.endpoint.http;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.boot.actuate.endpoint.ProducibleOperationArgumentResolver;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.MimeTypeUtils;
 
@@ -28,7 +29,10 @@ import org.springframework.util.MimeTypeUtils;
  *
  * @author Phillip Webb
  * @since 2.2.0
+ * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
+ * {@link org.springframework.boot.actuate.endpoint.ApiVersion}
  */
+@Deprecated
 public enum ApiVersion {
 
 	/**
@@ -53,7 +57,10 @@ public enum ApiVersion {
 	 * will be deduced based on the {@code Accept} header.
 	 * @param headers the HTTP headers
 	 * @return the API version to use
+	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of direct injection with
+	 * resolution via the {@link ProducibleOperationArgumentResolver}.
 	 */
+	@Deprecated
 	public static ApiVersion fromHttpHeaders(Map<String, List<String>> headers) {
 		ApiVersion version = null;
 		List<String> accepts = headers.get("Accept");

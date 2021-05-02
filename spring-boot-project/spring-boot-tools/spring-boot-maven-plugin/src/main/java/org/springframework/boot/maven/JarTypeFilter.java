@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.Collections;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.jar.JarFile;
+import java.util.jar.Manifest;
 
 import org.apache.maven.artifact.Artifact;
 
@@ -43,12 +44,18 @@ class JarTypeFilter extends DependencyFilter {
 	@Override
 	protected boolean filter(Artifact artifact) {
 		try (JarFile jarFile = new JarFile(artifact.getFile())) {
-			String jarType = jarFile.getManifest().getMainAttributes().getValue("Spring-Boot-Jar-Type");
-			return jarType != null && EXCLUDED_JAR_TYPES.contains(jarType);
+			Manifest manifest = jarFile.getManifest();
+			if (manifest != null) {
+				String jarType = manifest.getMainAttributes().getValue("Spring-Boot-Jar-Type");
+				if (jarType != null && EXCLUDED_JAR_TYPES.contains(jarType)) {
+					return true;
+				}
+			}
 		}
 		catch (IOException ex) {
-			return false;
+			// Continue
 		}
+		return false;
 	}
 
 }

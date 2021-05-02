@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link FlywayProperties}.
  *
  * @author Stephane Nicoll
+ * @author Chris Bono
  */
 class FlywayPropertiesTests {
 
@@ -99,8 +100,8 @@ class FlywayPropertiesTests {
 		Map<String, PropertyDescriptor> configuration = indexProperties(
 				PropertyAccessorFactory.forBeanPropertyAccess(new ClassicConfiguration()));
 		// Properties specific settings
-		ignoreProperties(properties, "url", "user", "password", "enabled", "checkLocation", "createDataSource");
-
+		ignoreProperties(properties, "url", "driverClassName", "user", "password", "enabled", "checkLocation",
+				"createDataSource");
 		// High level object we can't set with properties
 		ignoreProperties(configuration, "callbacks", "classLoader", "dataSource", "javaMigrations",
 				"javaMigrationClassProvider", "resourceProvider", "resolvers");

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,8 @@ import org.springframework.core.env.PropertySource;
  * {@link ConfigFileApplicationListener} to filter out properties for specific operations.
  *
  * @author Phillip Webb
- * @deprecated since 2.4.0 along with {@link ConfigFileApplicationListener}
+ * @deprecated since 2.4.0 for removal in 2.6.0 along with
+ * {@link ConfigFileApplicationListener}
  */
 @Deprecated
 class FilteredPropertySource extends PropertySource<PropertySource<?>> {

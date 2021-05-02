@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -97,7 +97,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param resourceProperties the resources configuration properties
 	 * @param errorProperties the error configuration properties
 	 * @param applicationContext the current application context
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #DefaultErrorWebExceptionHandler(ErrorAttributes, Resources, ErrorProperties, ApplicationContext)}
 	 */
 	@Deprecated
@@ -187,13 +187,11 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 	 * @param produces the media type produced (or {@code MediaType.ALL})
 	 * @return if the stacktrace attribute should be included
 	 */
-	@SuppressWarnings("deprecation")
 	protected boolean isIncludeStackTrace(ServerRequest request, MediaType produces) {
 		switch (this.errorProperties.getIncludeStacktrace()) {
 		case ALWAYS:
 			return true;
 		case ON_PARAM:
-		case ON_TRACE_PARAM:
 			return isTraceEnabled(request);
 		default:
 			return false;
@@ -254,7 +252,7 @@ public class DefaultErrorWebExceptionHandler extends AbstractErrorWebExceptionHa
 		return (serverRequest) -> {
 			try {
 				List<MediaType> acceptedMediaTypes = serverRequest.headers().accept();
-				acceptedMediaTypes.remove(MediaType.ALL);
+				acceptedMediaTypes.removeIf(MediaType.ALL::equalsTypeAndSubtype);
 				MediaType.sortBySpecificityAndQuality(acceptedMediaTypes);
 				return acceptedMediaTypes.stream().anyMatch(MediaType.TEXT_HTML::isCompatibleWith);
 			}

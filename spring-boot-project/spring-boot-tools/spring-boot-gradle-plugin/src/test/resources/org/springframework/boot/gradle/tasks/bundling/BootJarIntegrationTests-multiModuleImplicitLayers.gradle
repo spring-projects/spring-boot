@@ -7,6 +7,11 @@ subprojects {
 	apply plugin: 'java'
 	group = 'org.example.projects'
 	version = '1.2.3'
+	if (it.name == 'bravo') {
+		dependencies {
+			implementation(project(':charlie'))
+		}
+	}
 }
 
 bootJar {

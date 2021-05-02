@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.Collections;
 import java.util.Set;
 import java.util.function.Supplier;
 
@@ -119,9 +120,20 @@ class ConfigDataEnvironmentPostProcessorTests {
 	@Test
 	void applyToAppliesPostProcessing() {
 		int before = this.environment.getPropertySources().size();
-		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, "dev");
+		TestConfigDataEnvironmentUpdateListener listener = new TestConfigDataEnvironmentUpdateListener();
+		ConfigDataEnvironmentPostProcessor.applyTo(this.environment, null, null, Collections.singleton("dev"),
+				listener);
 		assertThat(this.environment.getPropertySources().size()).isGreaterThan(before);
 		assertThat(this.environment.getActiveProfiles()).containsExactly("dev");
+		assertThat(listener.getAddedPropertySources()).hasSizeGreaterThan(0);
+		assertThat(listener.getProfiles().getActive()).containsExactly("dev");
+		assertThat(listener.getAddedPropertySources().stream().anyMatch((added) -> hasDevProfile(added.getResource())))
+				.isTrue();
+	}
+
+	private boolean hasDevProfile(ConfigDataResource resource) {
+		return (resource instanceof StandardConfigDataResource)
+				&& "dev".equals(((StandardConfigDataResource) resource).getProfile());
 	}
 
 }

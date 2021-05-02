@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,30 +16,14 @@
 
 package smoketest.data.r2dbc;
 
-import io.r2dbc.spi.ConnectionFactory;
-
-import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
-import org.springframework.core.io.Resource;
-import org.springframework.core.io.ResourceLoader;
-import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 
 @SpringBootApplication
 public class SampleR2dbcApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(SampleR2dbcApplication.class, args);
-	}
-
-	@Bean
-	public ApplicationRunner initializeDatabase(ConnectionFactory connectionFactory, ResourceLoader resourceLoader) {
-		return (arguments) -> {
-			Resource[] scripts = new Resource[] { resourceLoader.getResource("classpath:database-init.sql") };
-			new ResourceDatabasePopulator(scripts).populate(connectionFactory).block();
-		};
-
 	}
 
 }

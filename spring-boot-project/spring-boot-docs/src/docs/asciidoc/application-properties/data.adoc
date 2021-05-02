@@ -1,0 +1,3 @@
+[[application-properties.data]]
+== Data Properties [[data-properties]]
+include::documented-application-properties/data.adoc[]

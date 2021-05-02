@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,10 +45,12 @@ public class InfluxDbAutoConfiguration {
 	@Bean
 	@ConditionalOnMissingBean
 	@ConditionalOnProperty("spring.influx.url")
-	public InfluxDB influxDb(InfluxDbProperties properties,
-			ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder) {
-		return new InfluxDBImpl(properties.getUrl(), properties.getUser(), properties.getPassword(),
+	public InfluxDB influxDb(InfluxDbProperties properties, ObjectProvider<InfluxDbOkHttpClientBuilderProvider> builder,
+			ObjectProvider<InfluxDbCustomizer> customizers) {
+		InfluxDB influxDb = new InfluxDBImpl(properties.getUrl(), properties.getUser(), properties.getPassword(),
 				determineBuilder(builder.getIfAvailable()));
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(influxDb));
+		return influxDb;
 	}
 
 	private static OkHttpClient.Builder determineBuilder(InfluxDbOkHttpClientBuilderProvider builder) {

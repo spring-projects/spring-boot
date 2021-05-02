@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,12 +17,20 @@
 package org.springframework.boot.loader.archive;
 
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.FileSystem;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
+import java.util.EnumSet;
 import java.util.Iterator;
 import java.util.UUID;
 import java.util.jar.JarEntry;
@@ -43,11 +51,19 @@ public class JarFileArchive implements Archive {
 
 	private static final int BUFFER_SIZE = 32 * 1024;
 
+	private static final FileAttribute<?>[] NO_FILE_ATTRIBUTES = {};
+
+	private static final EnumSet<PosixFilePermission> DIRECTORY_PERMISSIONS = EnumSet.of(PosixFilePermission.OWNER_READ,
+			PosixFilePermission.OWNER_WRITE, PosixFilePermission.OWNER_EXECUTE);
+
+	private static final EnumSet<PosixFilePermission> FILE_PERMISSIONS = EnumSet.of(PosixFilePermission.OWNER_READ,
+			PosixFilePermission.OWNER_WRITE);
+
 	private final JarFile jarFile;
 
 	private URL url;
 
-	private File tempUnpackDirectory;
+	private Path tempUnpackDirectory;
 
 	public JarFileArchive(File file) throws IOException {
 		this(file, file.toURI().toURL());
@@ -110,36 +126,42 @@ public class JarFileArchive implements Archive {
 		if (name.lastIndexOf('/') != -1) {
 			name = name.substring(name.lastIndexOf('/') + 1);
 		}
-		File file = new File(getTempUnpackDirectory(), name);
-		if (!file.exists() || file.length() != jarEntry.getSize()) {
-			unpack(jarEntry, file);
+		Path path = getTempUnpackDirectory().resolve(name);
+		if (!Files.exists(path) || Files.size(path) != jarEntry.getSize()) {
+			unpack(jarEntry, path);
 		}
-		return new JarFileArchive(file, file.toURI().toURL());
+		return new JarFileArchive(path.toFile(), path.toUri().toURL());
 	}
 
-	private File getTempUnpackDirectory() {
+	private Path getTempUnpackDirectory() {
 		if (this.tempUnpackDirectory == null) {
-			File tempDirectory = new File(System.getProperty("java.io.tmpdir"));
+			Path tempDirectory = Paths.get(System.getProperty("java.io.tmpdir"));
 			this.tempUnpackDirectory = createUnpackDirectory(tempDirectory);
 		}
 		return this.tempUnpackDirectory;
 	}
 
-	private File createUnpackDirectory(File parent) {
+	private Path createUnpackDirectory(Path parent) {
 		int attempts = 0;
 		while (attempts++ < 1000) {
-			String fileName = new File(this.jarFile.getName()).getName();
-			File unpackDirectory = new File(parent, fileName + "-spring-boot-libs-" + UUID.randomUUID());
-			if (unpackDirectory.mkdirs()) {
+			String fileName = Paths.get(this.jarFile.getName()).getFileName().toString();
+			Path unpackDirectory = parent.resolve(fileName + "-spring-boot-libs-" + UUID.randomUUID());
+			try {
+				createDirectory(unpackDirectory);
 				return unpackDirectory;
+			}
+			catch (IOException ex) {
 			}
 		}
 		throw new IllegalStateException("Failed to create unpack directory in directory '" + parent + "'");
 	}
 
-	private void unpack(JarEntry entry, File file) throws IOException {
+	private void unpack(JarEntry entry, Path path) throws IOException {
+		createFile(path);
+		path.toFile().deleteOnExit();
 		try (InputStream inputStream = this.jarFile.getInputStream(entry);
-				OutputStream outputStream = new FileOutputStream(file)) {
+				OutputStream outputStream = Files.newOutputStream(path, StandardOpenOption.WRITE,
+						StandardOpenOption.TRUNCATE_EXISTING)) {
 			byte[] buffer = new byte[BUFFER_SIZE];
 			int bytesRead;
 			while ((bytesRead = inputStream.read(buffer)) != -1) {
@@ -147,6 +169,21 @@ public class JarFileArchive implements Archive {
 			}
 			outputStream.flush();
 		}
+	}
+
+	private void createDirectory(Path path) throws IOException {
+		Files.createDirectory(path, getFileAttributes(path.getFileSystem(), DIRECTORY_PERMISSIONS));
+	}
+
+	private void createFile(Path path) throws IOException {
+		Files.createFile(path, getFileAttributes(path.getFileSystem(), FILE_PERMISSIONS));
+	}
+
+	private FileAttribute<?>[] getFileAttributes(FileSystem fileSystem, EnumSet<PosixFilePermission> ownerReadWrite) {
+		if (!fileSystem.supportedFileAttributeViews().contains("posix")) {
+			return NO_FILE_ATTRIBUTES;
+		}
+		return new FileAttribute<?>[] { PosixFilePermissions.asFileAttribute(ownerReadWrite) };
 	}
 
 	@Override

@@ -9,12 +9,15 @@ plugins {
 description = "Spring Boot Maven Plugin"
 
 configurations {
+	dependenciesBom
 	documentation
 }
 
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")
+
+	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
 
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
 	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
@@ -30,7 +33,7 @@ dependencies {
 	intTestImplementation("org.testcontainers:testcontainers")
 	intTestImplementation("org.testcontainers:junit-jupiter")
 
-	optional("org.apache.maven.plugins:maven-shade-plugin")
+	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin")
 
 	runtimeOnly("org.sonatype.plexus:plexus-build-api")
 
@@ -41,9 +44,20 @@ dependencies {
 	testImplementation("org.springframework:spring-core")
 }
 
+task syncSpringBootDependenciesBom(type: Sync) {
+	destinationDir = file("${buildDir}/generated-resources/org/springframework/boot/maven")
+	from configurations.dependenciesBom
+}
+
 syncDocumentationSourceForAsciidoctor {
 	from(documentPluginGoals) {
 		into "asciidoc/goals"
+	}
+}
+
+sourceSets {
+	intTest {
+		output.dir("${buildDir}/generated-resources", builtBy: "syncSpringBootDependenciesBom")
 	}
 }
 
@@ -101,7 +115,7 @@ task zip(type: Zip) {
 }
 
 prepareMavenBinaries {
-	versions "3.6.2", "3.5.4"
+	versions "3.8.1", "3.6.3", "3.5.4"
 }
 
 artifacts {

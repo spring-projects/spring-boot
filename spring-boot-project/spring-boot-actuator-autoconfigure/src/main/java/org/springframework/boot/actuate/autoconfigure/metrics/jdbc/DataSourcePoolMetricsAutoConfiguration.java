@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariConfigMXBean;
 import com.zaxxer.hikari.HikariDataSource;
 import com.zaxxer.hikari.metrics.micrometer.MicrometerMetricsTrackerFactory;
 import io.micrometer.core.instrument.MeterRegistry;
@@ -112,7 +113,8 @@ public class DataSourcePoolMetricsAutoConfiguration {
 		@Autowired
 		void bindMetricsRegistryToHikariDataSources(Collection<DataSource> dataSources) {
 			for (DataSource dataSource : dataSources) {
-				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariDataSource.class);
+				HikariDataSource hikariDataSource = DataSourceUnwrapper.unwrap(dataSource, HikariConfigMXBean.class,
+						HikariDataSource.class);
 				if (hikariDataSource != null) {
 					bindMetricsRegistryToHikariDataSource(hikariDataSource);
 				}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,17 @@
 
 package org.springframework.boot.convert;
 
+import java.util.List;
 import java.util.stream.Stream;
 
+import org.junit.jupiter.api.Test;
 import org.junit.jupiter.params.provider.Arguments;
 
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.Converter;
+import org.springframework.format.support.DefaultFormattingConversionService;
+import org.springframework.format.support.FormattingConversionService;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,10 +45,32 @@ class CharSequenceToObjectConverterTests {
 	@ConversionServiceTest
 	void convertWhenCanConvertDirectlySkipsStringConversion(ConversionService conversionService) {
 		assertThat(conversionService.convert(new String("1"), Long.class)).isEqualTo(1);
-		System.out.println(conversionService.getClass());
 		if (!ConversionServiceArguments.isApplicationConversionService(conversionService)) {
 			assertThat(conversionService.convert(new StringBuilder("1"), Long.class)).isEqualTo(2);
 		}
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void convertWhenTargetIsList() {
+		ConversionService conversionService = new ApplicationConversionService();
+		StringBuilder source = new StringBuilder("1,2,3");
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(StringBuilder.class);
+		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class));
+		List<String> conveted = (List<String>) conversionService.convert(source, sourceType, targetType);
+		assertThat(conveted).containsExactly("1", "2", "3");
+	}
+
+	@Test
+	@SuppressWarnings("unchecked")
+	void convertWhenTargetIsListAndNotUsingApplicationConversionService() {
+		FormattingConversionService conversionService = new DefaultFormattingConversionService();
+		conversionService.addConverter(new CharSequenceToObjectConverter(conversionService));
+		StringBuilder source = new StringBuilder("1,2,3");
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(StringBuilder.class);
+		TypeDescriptor targetType = TypeDescriptor.collection(List.class, TypeDescriptor.valueOf(String.class));
+		List<String> conveted = (List<String>) conversionService.convert(source, sourceType, targetType);
+		assertThat(conveted).containsExactly("1", "2", "3");
 	}
 
 	static Stream<? extends Arguments> conversionServices() {

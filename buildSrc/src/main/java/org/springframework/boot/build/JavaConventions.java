@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,28 +13,37 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.build;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeMap;
-import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import io.spring.javaformat.gradle.CheckTask;
 import io.spring.javaformat.gradle.FormatTask;
 import io.spring.javaformat.gradle.SpringJavaFormatPlugin;
+import org.gradle.api.Action;
 import org.gradle.api.JavaVersion;
 import org.gradle.api.Project;
+import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.quality.Checkstyle;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
 import org.gradle.api.tasks.SourceSet;
@@ -48,6 +57,7 @@ import org.gradle.testretry.TestRetryTaskExtension;
 
 import org.springframework.boot.build.optional.OptionalDependenciesPlugin;
 import org.springframework.boot.build.testing.TestFailuresPlugin;
+import org.springframework.boot.build.toolchain.ToolchainPlugin;
 
 /**
  * Conventions that are applied in the presence of the {@link JavaBasePlugin}. When the
@@ -58,7 +68,15 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied
- * <li>{@link Test} tasks are configured to use JUnit Platform and use a max heap of 1024M
+ * <li>{@link Test} tasks are configured:
+ * <ul>
+ * <li>to use JUnit Platform
+ * <li>with a max heap of 1024M
+ * <li>to run after any Checkstyle and format checking tasks
+ * </ul>
+ * <li>A {@code testRuntimeOnly} dependency upon
+ * {@code org.junit.platform:junit-platform-launcher} is added to projects with the
+ * {@link JavaPlugin} applied
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
  * <li>{@link JavaCompile} tasks are configured to use {@code -parameters} and, when
@@ -99,6 +117,7 @@ class JavaConventions {
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
 			configureDependencyManagement(project);
+			configureToolchain(project);
 		});
 	}
 
@@ -141,10 +160,20 @@ class JavaConventions {
 
 	private void configureTestConventions(Project project) {
 		project.getTasks().withType(Test.class, (test) -> {
-			withOptionalBuildJavaHome(project, (javaHome) -> test.setExecutable(javaHome + "/bin/java"));
 			test.useJUnitPlatform();
 			test.setMaxHeapSize("1024M");
+			if (buildingWithJava8(project)) {
+				CopyJdk8156584SecurityProperties copyJdk8156584SecurityProperties = new CopyJdk8156584SecurityProperties(
+						project);
+				test.systemProperty("java.security.properties",
+						"file:" + test.getWorkingDir().toPath().relativize(copyJdk8156584SecurityProperties.output));
+				test.doFirst(copyJdk8156584SecurityProperties);
+			}
+			project.getTasks().withType(Checkstyle.class, (checkstyle) -> test.mustRunAfter(checkstyle));
+			project.getTasks().withType(CheckTask.class, (checkFormat) -> test.mustRunAfter(checkFormat));
 		});
+		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> project.getDependencies()
+				.add(JavaPlugin.TEST_RUNTIME_ONLY_CONFIGURATION_NAME, "org.junit.platform:junit-platform-launcher"));
 		project.getPlugins().apply(TestRetryPlugin.class);
 		project.getTasks().withType(Test.class,
 				(test) -> project.getPlugins().withType(TestRetryPlugin.class, (testRetryPlugin) -> {
@@ -159,36 +188,27 @@ class JavaConventions {
 	}
 
 	private void configureJavadocConventions(Project project) {
-		project.getTasks().withType(Javadoc.class, (javadoc) -> {
-			javadoc.getOptions().source("1.8").encoding("UTF-8");
-			withOptionalBuildJavaHome(project, (javaHome) -> javadoc.setExecutable(javaHome + "/bin/javadoc"));
-		});
+		project.getTasks().withType(Javadoc.class, (javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
 	}
 
 	private void configureJavaCompileConventions(Project project) {
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
-			withOptionalBuildJavaHome(project, (javaHome) -> {
-				compile.getOptions().setFork(true);
-				compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
-				compile.getOptions().getForkOptions().setExecutable(javaHome + "/bin/javac");
-			});
+			compile.setSourceCompatibility("1.8");
+			compile.setTargetCompatibility("1.8");
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
 			}
-			if (JavaVersion.current() == JavaVersion.VERSION_1_8) {
+			if (buildingWithJava8(project)) {
 				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
 						"-Xlint:varargs"));
 			}
 		});
 	}
 
-	private void withOptionalBuildJavaHome(Project project, Consumer<String> consumer) {
-		String buildJavaHome = (String) project.findProperty("buildJavaHome");
-		if (buildJavaHome != null && !buildJavaHome.isEmpty()) {
-			consumer.accept(buildJavaHome);
-		}
+	private boolean buildingWithJava8(Project project) {
+		return !project.hasProperty("toolchainVersion") && JavaVersion.current() == JavaVersion.VERSION_1_8;
 	}
 
 	private void configureSpringJavaFormat(Project project) {
@@ -220,6 +240,33 @@ class JavaConventions {
 		dependencyManagement.getDependencies().add(springBootParent);
 		project.getPlugins().withType(OptionalDependenciesPlugin.class, (optionalDependencies) -> configurations
 				.getByName(OptionalDependenciesPlugin.OPTIONAL_CONFIGURATION_NAME).extendsFrom(dependencyManagement));
+	}
+
+	private void configureToolchain(Project project) {
+		project.getPlugins().apply(ToolchainPlugin.class);
+	}
+
+	private static final class CopyJdk8156584SecurityProperties implements Action<Task> {
+
+		private static final String SECURITY_PROPERTIES_FILE_NAME = "jdk-8156584-security.properties";
+
+		private final Path output;
+
+		private CopyJdk8156584SecurityProperties(Project project) {
+			this.output = new File(project.getBuildDir(), SECURITY_PROPERTIES_FILE_NAME).toPath();
+		}
+
+		@Override
+		public void execute(Task task) {
+			try (InputStream input = getClass().getClassLoader()
+					.getResourceAsStream(CopyJdk8156584SecurityProperties.SECURITY_PROPERTIES_FILE_NAME)) {
+				Files.copy(input, this.output, StandardCopyOption.REPLACE_EXISTING);
+			}
+			catch (IOException ex) {
+				throw new RuntimeException(ex);
+			}
+		}
+
 	}
 
 }

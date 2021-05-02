@@ -1,0 +1,9 @@
+[[executable-jar.alternatives]]
+== Alternative Single Jar Solutions
+If the preceding restrictions mean that you cannot use Spring Boot Loader, consider the following alternatives:
+
+* https://maven.apache.org/plugins/maven-shade-plugin/[Maven Shade Plugin]
+* http://www.jdotsoft.com/JarClassLoader.php[JarClassLoader]
+* https://sourceforge.net/projects/one-jar/[OneJar]
+* https://imperceptiblethoughts.com/shadow/[Gradle Shadow Plugin]
+

@@ -94,7 +94,7 @@ class ImportAutoConfigurationImportSelector extends AutoConfigurationImportSelec
 	}
 
 	protected Collection<String> loadFactoryNames(Class<?> source) {
-		return SpringFactoriesLoader.loadFactoryNames(source, getClass().getClassLoader());
+		return SpringFactoriesLoader.loadFactoryNames(source, getBeanClassLoader());
 	}
 
 	@Override

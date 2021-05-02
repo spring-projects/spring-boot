@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,24 +36,55 @@ public class StandardConfigDataResource extends ConfigDataResource {
 
 	private final Resource resource;
 
+	private final boolean emptyDirectory;
+
 	/**
 	 * Create a new {@link StandardConfigDataResource} instance.
 	 * @param reference the resource reference
 	 * @param resource the underlying resource
 	 */
 	StandardConfigDataResource(StandardConfigDataReference reference, Resource resource) {
+		this(reference, resource, false);
+	}
+
+	/**
+	 * Create a new {@link StandardConfigDataResource} instance.
+	 * @param reference the resource reference
+	 * @param resource the underlying resource
+	 * @param emptyDirectory if the resource is an empty directory that we know exists
+	 */
+	StandardConfigDataResource(StandardConfigDataReference reference, Resource resource, boolean emptyDirectory) {
 		Assert.notNull(reference, "Reference must not be null");
 		Assert.notNull(resource, "Resource must not be null");
 		this.reference = reference;
 		this.resource = resource;
+		this.emptyDirectory = emptyDirectory;
 	}
 
 	StandardConfigDataReference getReference() {
 		return this.reference;
 	}
 
-	Resource getResource() {
+	/**
+	 * Return the underlying Spring {@link Resource} being loaded.
+	 * @return the underlying resource
+	 * @since 2.4.2
+	 */
+	public Resource getResource() {
 		return this.resource;
+	}
+
+	/**
+	 * Return the profile or {@code null} if the resource is not profile specific.
+	 * @return the profile or {@code null}
+	 * @since 2.4.6
+	 */
+	public String getProfile() {
+		return this.reference.getProfile();
+	}
+
+	boolean isEmptyDirectory() {
+		return this.emptyDirectory;
 	}
 
 	@Override
@@ -65,7 +96,7 @@ public class StandardConfigDataResource extends ConfigDataResource {
 			return false;
 		}
 		StandardConfigDataResource other = (StandardConfigDataResource) obj;
-		return this.resource.equals(other.resource);
+		return this.resource.equals(other.resource) && this.emptyDirectory == other.emptyDirectory;
 	}
 
 	@Override

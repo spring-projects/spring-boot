@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,21 @@ import java.io.PrintWriter;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.file.attribute.FileAttribute;
+import java.nio.file.attribute.PosixFilePermission;
+import java.nio.file.attribute.PosixFilePermissions;
 import java.util.Random;
+import java.util.Set;
 
+import org.apache.commons.compress.archivers.tar.TarArchiveEntry;
+import org.apache.commons.compress.archivers.tar.TarArchiveOutputStream;
+import org.apache.commons.compress.compressors.gzip.GzipCompressorOutputStream;
+import org.apache.commons.compress.utils.IOUtils;
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
 import org.junit.jupiter.api.TestTemplate;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 
@@ -60,6 +70,47 @@ class BootBuildImageIntegrationTests {
 		String projectName = this.gradleBuild.getProjectDir().getName();
 		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	void buildsImageWithWarPackaging() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "-PapplyWarPlugin",
+				"--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles())
+				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	void buildsImageWithWarPackagingAndJarConfiguration() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		File buildLibs = new File(this.gradleBuild.getProjectDir(), "build/libs");
+		assertThat(buildLibs.listFiles())
+				.containsExactly(new File(buildLibs, this.gradleBuild.getProjectDir().getName() + ".war"));
 		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
 		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
 			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
@@ -145,7 +196,83 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void failsWithLaunchScript() {
+	void buildsImageWithBuildpackFromBuilder() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
+	void buildsImageWithBuildpackFromDirectory() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		writeBuildpackContent();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("---> Hello World buildpack");
+		new DockerApi().image().remove(imageReference, false);
+	}
+
+	@TestTemplate
+	@DisabledOnOs(OS.WINDOWS)
+	void buildsImageWithBuildpackFromTarGzip() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		writeBuildpackContent();
+		tarGzipBuildpackContent();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		assertThat(result.getOutput()).contains("---> Hello World buildpack");
+		new DockerApi().image().remove(imageReference, false);
+	}
+
+	@TestTemplate
+	void buildsImageWithBuildpacksFromImages() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.build("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		String projectName = this.gradleBuild.getProjectDir().getName();
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
+		assertThat(result.getOutput()).contains("docker.io/library/" + projectName);
+		ImageReference imageReference = ImageReference.of(ImageName.of(projectName));
+		try (GenericContainer<?> container = new GenericContainer<>(imageReference.toString())) {
+			container.waitingFor(Wait.forLogMessage("Launched\\n", 1)).start();
+		}
+		finally {
+			new DockerApi().image().remove(imageReference, false);
+		}
+	}
+
+	@TestTemplate
+	void failsWithBindingContainingInvalidCertificate() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		writeCertificateBindingFiles();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("failed to decode certificate")
+				.contains("/platform/bindings/certificates/test.crt");
+	}
+
+	@TestTemplate
+	void failsWithLaunchScript() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage");
@@ -154,7 +281,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void failsWithBuilderError() {
+	void failsWithBuilderError() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
@@ -163,7 +290,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void failsWithInvalidImageName() {
+	void failsWithInvalidImageName() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--imageName=example/Invalid-Image-Name");
@@ -173,7 +300,7 @@ class BootBuildImageIntegrationTests {
 	}
 
 	@TestTemplate
-	void failsWithPublishMissingPublishRegistry() {
+	void failsWithPublishMissingPublishRegistry() throws IOException {
 		writeMainClass();
 		writeLongNameResource();
 		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--publishImage");
@@ -181,7 +308,16 @@ class BootBuildImageIntegrationTests {
 		assertThat(result.getOutput()).contains("requires docker.publishRegistry");
 	}
 
-	private void writeMainClass() {
+	@TestTemplate
+	void failsWithBuildpackNotInBuilder() throws IOException {
+		writeMainClass();
+		writeLongNameResource();
+		BuildResult result = this.gradleBuild.buildAndFail("bootBuildImage", "--pullPolicy=IF_NOT_PRESENT");
+		assertThat(result.task(":bootBuildImage").getOutcome()).isEqualTo(TaskOutcome.FAILED);
+		assertThat(result.getOutput()).contains("'urn:cnb:builder:example/does-not-exist:0.0.1' not found in builder");
+	}
+
+	private void writeMainClass() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/example");
 		examplePackage.mkdirs();
 		File main = new File(examplePackage, "Main.java");
@@ -201,22 +337,82 @@ class BootBuildImageIntegrationTests {
 			writer.println();
 			writer.println("}");
 		}
-		catch (IOException ex) {
-			throw new RuntimeException(ex);
+	}
+
+	private void writeLongNameResource() throws IOException {
+		StringBuilder name = new StringBuilder();
+		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
+		Path path = this.gradleBuild.getProjectDir().toPath()
+				.resolve(Paths.get("src", "main", "resources", name.toString()));
+		Files.createDirectories(path.getParent());
+		Files.createFile(path);
+	}
+
+	private void writeBuildpackContent() throws IOException {
+		File buildpackDir = new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world");
+		buildpackDir.mkdirs();
+		File descriptor = new File(buildpackDir, "buildpack.toml");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(descriptor))) {
+			writer.println("api = \"0.2\"");
+			writer.println("[buildpack]");
+			writer.println("id = \"example/hello-world\"");
+			writer.println("version = \"0.0.1\"");
+			writer.println("name = \"Hello World Buildpack\"");
+			writer.println("homepage = \"https://github.com/buildpacks/samples/tree/main/buildpacks/hello-world\"");
+			writer.println("[[stacks]]\n");
+			writer.println("id = \"io.buildpacks.stacks.bionic\"");
+		}
+		File binDir = new File(buildpackDir, "bin");
+		binDir.mkdirs();
+		FileAttribute<Set<PosixFilePermission>> attribute = PosixFilePermissions
+				.asFileAttribute(PosixFilePermissions.fromString("rwxrwxrwx"));
+		File detect = Files.createFile(Paths.get(binDir.getAbsolutePath(), "detect"), attribute).toFile();
+		try (PrintWriter writer = new PrintWriter(new FileWriter(detect))) {
+			writer.println("#!/usr/bin/env bash");
+			writer.println("set -eo pipefail");
+			writer.println("exit 0");
+		}
+		File build = Files.createFile(Paths.get(binDir.getAbsolutePath(), "build"), attribute).toFile();
+		try (PrintWriter writer = new PrintWriter(new FileWriter(build))) {
+			writer.println("#!/usr/bin/env bash");
+			writer.println("set -eo pipefail");
+			writer.println("echo \"---> Hello World buildpack\"");
+			writer.println("echo \"---> done\"");
+			writer.println("exit 0");
 		}
 	}
 
-	private void writeLongNameResource() {
-		StringBuilder name = new StringBuilder();
-		new Random().ints('a', 'z' + 1).limit(128).forEach((i) -> name.append((char) i));
-		try {
-			Path path = this.gradleBuild.getProjectDir().toPath()
-					.resolve(Paths.get("src", "main", "resources", name.toString()));
-			Files.createDirectories(path.getParent());
-			Files.createFile(path);
+	private void tarGzipBuildpackContent() throws IOException {
+		Path tarGzipPath = Paths.get(this.gradleBuild.getProjectDir().getAbsolutePath(), "hello-world.tgz");
+		try (TarArchiveOutputStream tar = new TarArchiveOutputStream(
+				new GzipCompressorOutputStream(Files.newOutputStream(Files.createFile(tarGzipPath))))) {
+			writeFileToTar(tar, new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world/buildpack.toml"),
+					"buildpack.toml", 0644);
+			writeFileToTar(tar, new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world/bin/detect"),
+					"bin/detect", 0777);
+			writeFileToTar(tar, new File(this.gradleBuild.getProjectDir(), "buildpack/hello-world/bin/build"),
+					"bin/build", 0777);
 		}
-		catch (IOException ex) {
-			throw new RuntimeException(ex);
+	}
+
+	private void writeFileToTar(TarArchiveOutputStream tar, File file, String name, int mode) throws IOException {
+		TarArchiveEntry entry = new TarArchiveEntry(file, name);
+		entry.setMode(mode);
+		tar.putArchiveEntry(entry);
+		IOUtils.copy(Files.newInputStream(file.toPath()), tar);
+		tar.closeArchiveEntry();
+	}
+
+	private void writeCertificateBindingFiles() throws IOException {
+		File bindingDir = new File(this.gradleBuild.getProjectDir(), "bindings/ca-certificates");
+		bindingDir.mkdirs();
+		File type = new File(bindingDir, "type");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(type))) {
+			writer.print("ca-certificates");
+		}
+		File cert = new File(bindingDir, "test.crt");
+		try (PrintWriter writer = new PrintWriter(new FileWriter(cert))) {
+			writer.println("not a valid certificate");
 		}
 	}
 

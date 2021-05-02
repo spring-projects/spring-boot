@@ -27,26 +27,25 @@ import com.mongodb.MongoClientSettings;
 import de.flapdoodle.embed.mongo.Command;
 import de.flapdoodle.embed.mongo.MongodExecutable;
 import de.flapdoodle.embed.mongo.MongodStarter;
-import de.flapdoodle.embed.mongo.config.DownloadConfigBuilder;
-import de.flapdoodle.embed.mongo.config.ExtractedArtifactStoreBuilder;
-import de.flapdoodle.embed.mongo.config.IMongodConfig;
-import de.flapdoodle.embed.mongo.config.MongodConfigBuilder;
+import de.flapdoodle.embed.mongo.config.Defaults;
+import de.flapdoodle.embed.mongo.config.ImmutableMongodConfig;
+import de.flapdoodle.embed.mongo.config.MongodConfig;
 import de.flapdoodle.embed.mongo.config.Net;
-import de.flapdoodle.embed.mongo.config.RuntimeConfigBuilder;
 import de.flapdoodle.embed.mongo.config.Storage;
 import de.flapdoodle.embed.mongo.distribution.Feature;
 import de.flapdoodle.embed.mongo.distribution.IFeatureAwareVersion;
 import de.flapdoodle.embed.mongo.distribution.Version;
 import de.flapdoodle.embed.mongo.distribution.Versions;
-import de.flapdoodle.embed.process.config.IRuntimeConfig;
+import de.flapdoodle.embed.process.config.RuntimeConfig;
 import de.flapdoodle.embed.process.config.io.ProcessOutput;
-import de.flapdoodle.embed.process.config.store.IDownloadConfig;
-import de.flapdoodle.embed.process.distribution.GenericVersion;
+import de.flapdoodle.embed.process.config.store.DownloadConfig;
+import de.flapdoodle.embed.process.config.store.ImmutableDownloadConfig;
+import de.flapdoodle.embed.process.distribution.Version.GenericVersion;
 import de.flapdoodle.embed.process.io.Processors;
 import de.flapdoodle.embed.process.io.Slf4jLevel;
 import de.flapdoodle.embed.process.io.progress.Slf4jProgressListener;
 import de.flapdoodle.embed.process.runtime.Network;
-import de.flapdoodle.embed.process.store.ArtifactStoreBuilder;
+import de.flapdoodle.embed.process.store.ExtractedArtifactStore;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +80,7 @@ import org.springframework.data.mongodb.core.ReactiveMongoClientFactoryBean;
  * @author Yogesh Lonkar
  * @author Mark Paluch
  * @author Issam El-atif
+ * @author Paulius Dambrauskas
  * @since 1.3.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -97,14 +97,14 @@ public class EmbeddedMongoAutoConfiguration {
 
 	private final MongoProperties properties;
 
-	public EmbeddedMongoAutoConfiguration(MongoProperties properties, EmbeddedMongoProperties embeddedProperties) {
+	public EmbeddedMongoAutoConfiguration(MongoProperties properties) {
 		this.properties = properties;
 	}
 
 	@Bean(initMethod = "start", destroyMethod = "stop")
 	@ConditionalOnMissingBean
-	public MongodExecutable embeddedMongoServer(IMongodConfig mongodConfig, IRuntimeConfig runtimeConfig,
-			ApplicationContext context) throws IOException {
+	public MongodExecutable embeddedMongoServer(MongodConfig mongodConfig, RuntimeConfig runtimeConfig,
+			ApplicationContext context) {
 		Integer configuredPort = this.properties.getPort();
 		if (configuredPort == null || configuredPort == 0) {
 			setEmbeddedPort(context, mongodConfig.net().getPort());
@@ -113,7 +113,7 @@ public class EmbeddedMongoAutoConfiguration {
 		return mongodStarter.prepare(mongodConfig);
 	}
 
-	private MongodStarter getMongodStarter(IRuntimeConfig runtimeConfig) {
+	private MongodStarter getMongodStarter(RuntimeConfig runtimeConfig) {
 		if (runtimeConfig == null) {
 			return MongodStarter.getDefaultInstance();
 		}
@@ -122,8 +122,8 @@ public class EmbeddedMongoAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean
-	public IMongodConfig embeddedMongoConfiguration(EmbeddedMongoProperties embeddedProperties) throws IOException {
-		MongodConfigBuilder builder = new MongodConfigBuilder().version(determineVersion(embeddedProperties));
+	public MongodConfig embeddedMongoConfiguration(EmbeddedMongoProperties embeddedProperties) throws IOException {
+		ImmutableMongodConfig.Builder builder = MongodConfig.builder().version(determineVersion(embeddedProperties));
 		EmbeddedMongoProperties.Storage storage = embeddedProperties.getStorage();
 		if (storage != null) {
 			String databaseDir = storage.getDatabaseDir();
@@ -149,10 +149,14 @@ public class EmbeddedMongoAutoConfiguration {
 					return version;
 				}
 			}
-			return Versions.withFeatures(new GenericVersion(embeddedProperties.getVersion()));
+			return Versions.withFeatures(createEmbeddedMongoVersion(embeddedProperties));
 		}
-		return Versions.withFeatures(new GenericVersion(embeddedProperties.getVersion()),
+		return Versions.withFeatures(createEmbeddedMongoVersion(embeddedProperties),
 				embeddedProperties.getFeatures().toArray(new Feature[0]));
+	}
+
+	private GenericVersion createEmbeddedMongoVersion(EmbeddedMongoProperties embeddedProperties) {
+		return de.flapdoodle.embed.process.distribution.Version.of(embeddedProperties.getVersion());
 	}
 
 	private InetAddress getHost() throws UnknownHostException {
@@ -189,29 +193,28 @@ public class EmbeddedMongoAutoConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(Logger.class)
-	@ConditionalOnMissingBean(IRuntimeConfig.class)
+	@ConditionalOnMissingBean(RuntimeConfig.class)
 	static class RuntimeConfigConfiguration {
 
 		@Bean
-		IRuntimeConfig embeddedMongoRuntimeConfig(
+		RuntimeConfig embeddedMongoRuntimeConfig(
 				ObjectProvider<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
 			Logger logger = LoggerFactory.getLogger(getClass().getPackage().getName() + ".EmbeddedMongo");
 			ProcessOutput processOutput = new ProcessOutput(Processors.logTo(logger, Slf4jLevel.INFO),
 					Processors.logTo(logger, Slf4jLevel.ERROR),
 					Processors.named("[console>]", Processors.logTo(logger, Slf4jLevel.DEBUG)));
-			return new RuntimeConfigBuilder().defaultsWithLogger(Command.MongoD, logger).processOutput(processOutput)
+			return Defaults.runtimeConfigFor(Command.MongoD, logger).processOutput(processOutput)
 					.artifactStore(getArtifactStore(logger, downloadConfigBuilderCustomizers.orderedStream()))
-					.daemonProcess(false).build();
+					.isDaemonProcess(false).build();
 		}
 
-		private ArtifactStoreBuilder getArtifactStore(Logger logger,
+		private ExtractedArtifactStore getArtifactStore(Logger logger,
 				Stream<DownloadConfigBuilderCustomizer> downloadConfigBuilderCustomizers) {
-			DownloadConfigBuilder downloadConfigBuilder = new DownloadConfigBuilder()
-					.defaultsForCommand(Command.MongoD);
+			ImmutableDownloadConfig.Builder downloadConfigBuilder = Defaults.downloadConfigFor(Command.MongoD);
 			downloadConfigBuilder.progressListener(new Slf4jProgressListener(logger));
 			downloadConfigBuilderCustomizers.forEach((customizer) -> customizer.customize(downloadConfigBuilder));
-			IDownloadConfig downloadConfig = downloadConfigBuilder.build();
-			return new ExtractedArtifactStoreBuilder().defaults(Command.MongoD).download(downloadConfig);
+			DownloadConfig downloadConfig = downloadConfigBuilder.build();
+			return Defaults.extractedArtifactStoreFor(Command.MongoD).withDownloadConfig(downloadConfig);
 		}
 
 	}

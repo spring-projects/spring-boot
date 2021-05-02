@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,6 @@ package org.springframework.boot.autoconfigure.data.rest;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.annotation.Order;
 import org.springframework.data.rest.core.config.RepositoryRestConfiguration;
 import org.springframework.data.rest.webmvc.config.RepositoryRestConfigurer;
@@ -37,16 +36,14 @@ import org.springframework.web.servlet.config.annotation.CorsRegistry;
 @Order(0)
 class SpringBootRepositoryRestConfigurer implements RepositoryRestConfigurer {
 
-	@Autowired(required = false)
-	private Jackson2ObjectMapperBuilder objectMapperBuilder;
+	private final Jackson2ObjectMapperBuilder objectMapperBuilder;
 
-	@Autowired
-	private RepositoryRestProperties properties;
+	private final RepositoryRestProperties properties;
 
-	@Override
-	@SuppressWarnings("deprecation")
-	public void configureRepositoryRestConfiguration(RepositoryRestConfiguration config) {
-		configureRepositoryRestConfiguration(config, null);
+	SpringBootRepositoryRestConfigurer(Jackson2ObjectMapperBuilder objectMapperBuilder,
+			RepositoryRestProperties properties) {
+		this.objectMapperBuilder = objectMapperBuilder;
+		this.properties = properties;
 	}
 
 	@Override

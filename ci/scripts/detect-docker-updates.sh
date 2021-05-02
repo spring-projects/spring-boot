@@ -1,6 +1,6 @@
 #!/bin/bash
 
-latest_version=$(curl -I -s https://github.com/docker/docker-ce/releases/latest | grep "location:" | awk '{n=split($0, parts, "/"); print substr(parts[n],2);}' | awk '{$1=$1;print}' | tr -d '\r' | tr -d '\n' )
+latest_version=$(curl -I -s https://github.com/moby/moby/releases/latest | grep -i "location:" | awk '{n=split($0, parts, "/"); print substr(parts[n],2);}' | awk '{$1=$1;print}' | tr -d '\r' | tr -d '\n' )
 
 if [[ $latest_version =~ (beta|rc) ]]; then
 	echo "Skip pre-release versions"

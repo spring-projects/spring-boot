@@ -16,3 +16,11 @@ bootBuildImage {
 	}
 }
 // end::docker-host[]
+
+task bootBuildImageDocker {
+	doFirst {
+		println("host=${tasks.bootBuildImage.docker.host}")
+		println("tlsVerify=${tasks.bootBuildImage.docker.tlsVerify}")
+		println("certPath=${tasks.bootBuildImage.docker.certPath}")
+	}
+}

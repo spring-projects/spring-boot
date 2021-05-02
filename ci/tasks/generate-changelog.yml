@@ -1,13 +1,13 @@
 ---
 platform: linux
 image_resource:
-  type: docker-image
+  type: registry-image
   source:
     repository: springio/github-changelog-generator
-    tag: '0.0.4'
+    tag: '0.0.6'
 inputs:
 - name: git-repo
-- name: version
+- name: artifactory-repo
 outputs:
 - name: generated-changelog
 params:

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.env.SystemEnvironmentPropertySourceEnvironmentPostProcessor.OriginAwareSystemEnvironmentPropertySource;
 import org.springframework.boot.origin.SystemEnvironmentOrigin;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -39,10 +40,12 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
 
+	private final SpringApplication application = new SpringApplication();
+
 	@Test
 	void postProcessShouldReplaceSystemEnvironmentPropertySource() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
-		postProcessor.postProcessEnvironment(this.environment, null);
+		postProcessor.postProcessEnvironment(this.environment, this.application);
 		PropertySource<?> replaced = this.environment.getPropertySources().get("systemEnvironment");
 		assertThat(replaced).isInstanceOf(OriginAwareSystemEnvironmentPropertySource.class);
 	}
@@ -52,7 +55,7 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	void replacedPropertySourceShouldBeOriginAware() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
 		PropertySource<?> original = this.environment.getPropertySources().get("systemEnvironment");
-		postProcessor.postProcessEnvironment(this.environment, null);
+		postProcessor.postProcessEnvironment(this.environment, this.application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 				.getPropertySources().get("systemEnvironment");
 		Map<String, Object> originalMap = (Map<String, Object>) original.getSource();
@@ -67,7 +70,7 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 	@Test
 	void replacedPropertySourceWhenPropertyAbsentShouldReturnNullOrigin() {
 		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
-		postProcessor.postProcessEnvironment(this.environment, null);
+		postProcessor.postProcessEnvironment(this.environment, this.application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 				.getPropertySources().get("systemEnvironment");
 		assertThat(replaced.getOrigin("NON_EXISTENT")).isNull();
@@ -79,12 +82,23 @@ class SystemEnvironmentPropertySourceEnvironmentPostProcessorTests {
 		Map<String, Object> source = Collections.singletonMap("FOO_BAR_BAZ", "hello");
 		this.environment.getPropertySources().replace("systemEnvironment",
 				new SystemEnvironmentPropertySource("systemEnvironment", source));
-		postProcessor.postProcessEnvironment(this.environment, null);
+		postProcessor.postProcessEnvironment(this.environment, this.application);
 		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
 				.getPropertySources().get("systemEnvironment");
 		SystemEnvironmentOrigin origin = (SystemEnvironmentOrigin) replaced.getOrigin("foo.bar.baz");
 		assertThat(origin.getProperty()).isEqualTo("FOO_BAR_BAZ");
 		assertThat(replaced.getProperty("foo.bar.baz")).isEqualTo("hello");
+	}
+
+	@Test
+	void propertySourceShouldBePrefixed() {
+		SystemEnvironmentPropertySourceEnvironmentPostProcessor postProcessor = new SystemEnvironmentPropertySourceEnvironmentPostProcessor();
+		SpringApplication application = new SpringApplication();
+		application.setEnvironmentPrefix("my");
+		postProcessor.postProcessEnvironment(this.environment, application);
+		OriginAwareSystemEnvironmentPropertySource replaced = (OriginAwareSystemEnvironmentPropertySource) this.environment
+				.getPropertySources().get("systemEnvironment");
+		assertThat(replaced.getPrefix()).isEqualTo("my");
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -170,7 +170,6 @@ public class JacksonAutoConfiguration {
 
 			@Override
 			public void customize(Jackson2ObjectMapperBuilder builder) {
-
 				if (this.jacksonProperties.getDefaultPropertyInclusion() != null) {
 					builder.serializationInclusion(this.jacksonProperties.getDefaultPropertyInclusion());
 				}
@@ -257,15 +256,24 @@ public class JacksonAutoConfiguration {
 			private void configurePropertyNamingStrategyField(Jackson2ObjectMapperBuilder builder, String fieldName) {
 				// Find the field (this way we automatically support new constants
 				// that may be added by Jackson in the future)
-				Field field = ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
-						PropertyNamingStrategy.class);
-				Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found on "
-						+ PropertyNamingStrategy.class.getName());
+				Field field = findPropertyNamingStrategyField(fieldName);
+				Assert.notNull(field, () -> "Constant named '" + fieldName + "' not found");
 				try {
 					builder.propertyNamingStrategy((PropertyNamingStrategy) field.get(null));
 				}
 				catch (Exception ex) {
 					throw new IllegalStateException(ex);
+				}
+			}
+
+			private Field findPropertyNamingStrategyField(String fieldName) {
+				try {
+					return ReflectionUtils.findField(com.fasterxml.jackson.databind.PropertyNamingStrategies.class,
+							fieldName, PropertyNamingStrategy.class);
+				}
+				catch (NoClassDefFoundError ex) { // Fallback pre Jackson 2.12
+					return ReflectionUtils.findField(PropertyNamingStrategy.class, fieldName,
+							PropertyNamingStrategy.class);
 				}
 			}
 

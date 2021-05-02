@@ -1,0 +1,3 @@
+[[application-properties.server]]
+== Server Properties [[server-properties]]
+include::documented-application-properties/server.adoc[]

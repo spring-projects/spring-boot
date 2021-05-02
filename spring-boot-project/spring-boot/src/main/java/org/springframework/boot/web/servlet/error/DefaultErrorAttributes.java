@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -68,27 +68,7 @@ import org.springframework.web.servlet.ModelAndView;
 @Order(Ordered.HIGHEST_PRECEDENCE)
 public class DefaultErrorAttributes implements ErrorAttributes, HandlerExceptionResolver, Ordered {
 
-	private static final String ERROR_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
-
-	private final Boolean includeException;
-
-	/**
-	 * Create a new {@link DefaultErrorAttributes} instance.
-	 */
-	public DefaultErrorAttributes() {
-		this.includeException = null;
-	}
-
-	/**
-	 * Create a new {@link DefaultErrorAttributes} instance.
-	 * @param includeException whether to include the "exception" attribute
-	 * @deprecated since 2.3.0 in favor of
-	 * {@link ErrorAttributeOptions#including(Include...)}
-	 */
-	@Deprecated
-	public DefaultErrorAttributes(boolean includeException) {
-		this.includeException = includeException;
-	}
+	private static final String ERROR_INTERNAL_ATTRIBUTE = DefaultErrorAttributes.class.getName() + ".ERROR";
 
 	@Override
 	public int getOrder() {
@@ -103,15 +83,12 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 	}
 
 	private void storeErrorAttributes(HttpServletRequest request, Exception ex) {
-		request.setAttribute(ERROR_ATTRIBUTE, ex);
+		request.setAttribute(ERROR_INTERNAL_ATTRIBUTE, ex);
 	}
 
 	@Override
 	public Map<String, Object> getErrorAttributes(WebRequest webRequest, ErrorAttributeOptions options) {
 		Map<String, Object> errorAttributes = getErrorAttributes(webRequest, options.isIncluded(Include.STACK_TRACE));
-		if (Boolean.TRUE.equals(this.includeException)) {
-			options = options.including(Include.EXCEPTION);
-		}
 		if (!options.isIncluded(Include.EXCEPTION)) {
 			errorAttributes.remove("exception");
 		}
@@ -119,7 +96,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 			errorAttributes.remove("trace");
 		}
 		if (!options.isIncluded(Include.MESSAGE) && errorAttributes.get("message") != null) {
-			errorAttributes.put("message", "");
+			errorAttributes.remove("message");
 		}
 		if (!options.isIncluded(Include.BINDING_ERRORS)) {
 			errorAttributes.remove("errors");
@@ -127,9 +104,7 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 		return errorAttributes;
 	}
 
-	@Override
-	@Deprecated
-	public Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
+	private Map<String, Object> getErrorAttributes(WebRequest webRequest, boolean includeStackTrace) {
 		Map<String, Object> errorAttributes = new LinkedHashMap<>();
 		errorAttributes.put("timestamp", new Date());
 		addStatus(errorAttributes, webRequest);
@@ -241,8 +216,14 @@ public class DefaultErrorAttributes implements ErrorAttributes, HandlerException
 
 	@Override
 	public Throwable getError(WebRequest webRequest) {
-		Throwable exception = getAttribute(webRequest, ERROR_ATTRIBUTE);
-		return (exception != null) ? exception : getAttribute(webRequest, RequestDispatcher.ERROR_EXCEPTION);
+		Throwable exception = getAttribute(webRequest, ERROR_INTERNAL_ATTRIBUTE);
+		if (exception == null) {
+			exception = getAttribute(webRequest, RequestDispatcher.ERROR_EXCEPTION);
+		}
+		// store the exception in a well-known attribute to make it available to metrics
+		// instrumentation.
+		webRequest.setAttribute(ErrorAttributes.ERROR_ATTRIBUTE, exception, WebRequest.SCOPE_REQUEST);
+		return exception;
 	}
 
 	@SuppressWarnings("unchecked")

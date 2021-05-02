@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,6 +45,8 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockHttpServletResponse;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -157,6 +159,7 @@ class RemoteDevToolsAutoConfigurationTests {
 		mockMvc.perform(MockMvcRequestBuilders.get(DEFAULT_CONTEXT_PATH + "/restart").header(DEFAULT_SECRET_HEADER_NAME,
 				"supersecret")).andExpect(status().isOk());
 		assertRestartInvoked(true);
+		assertThat(this.context.containsBean("devtoolsSecurityFilterChain")).isTrue();
 	}
 
 	@Test
@@ -180,6 +183,25 @@ class RemoteDevToolsAutoConfigurationTests {
 		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).addFilter(securityFilterChain)
 				.addFilter(filter).build();
 		mockMvc.perform(MockMvcRequestBuilders.get("/my-path")).andExpect(status().isUnauthorized());
+	}
+
+	@Test
+	void securityConfigurationWhenWebSecurityConfigurerAdapterIsFound2() throws Exception {
+		this.context = getContext(() -> {
+			AnnotationConfigServletWebApplicationContext context = new AnnotationConfigServletWebApplicationContext();
+			context.setServletContext(new MockServletContext());
+			context.register(Config.class, PropertyPlaceholderAutoConfiguration.class,
+					TestWebSecurityConfigurerAdapter.class);
+			TestPropertyValues.of("spring.devtools.remote.secret:supersecret").applyTo(context);
+			context.refresh();
+			return context;
+		});
+		DispatcherFilter filter = this.context.getBean(DispatcherFilter.class);
+		MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(this.context).apply(springSecurity()).addFilter(filter)
+				.build();
+		mockMvc.perform(MockMvcRequestBuilders.get(DEFAULT_CONTEXT_PATH + "/restart").header(DEFAULT_SECRET_HEADER_NAME,
+				"supersecret")).andExpect(status().isOk());
+		assertRestartInvoked(true);
 	}
 
 	@Test
@@ -246,6 +268,16 @@ class RemoteDevToolsAutoConfigurationTests {
 		HttpRestartServer remoteRestartHttpRestartServer() {
 			SourceDirectoryUrlFilter sourceDirectoryUrlFilter = mock(SourceDirectoryUrlFilter.class);
 			return new MockHttpRestartServer(sourceDirectoryUrlFilter);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class TestWebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+
+		@Override
+		protected void configure(HttpSecurity http) throws Exception {
+			http.antMatcher("/foo/**").authorizeRequests().anyRequest().authenticated().and().httpBasic();
 		}
 
 	}

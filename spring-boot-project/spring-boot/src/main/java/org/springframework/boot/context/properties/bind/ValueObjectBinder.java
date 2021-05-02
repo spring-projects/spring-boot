@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.context.properties.bind;
 
 import java.lang.annotation.Annotation;
@@ -47,6 +48,7 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class ValueObjectBinder implements DataObjectBinder {
 
@@ -188,6 +190,8 @@ class ValueObjectBinder implements DataObjectBinder {
 	 */
 	private static final class KotlinValueObject<T> extends ValueObject<T> {
 
+		private static final Annotation[] ANNOTATION_ARRAY = new Annotation[0];
+
 		private final List<ConstructorParameter> constructorParameters;
 
 		private KotlinValueObject(Constructor<T> primaryConstructor, KFunction<T> kotlinConstructor,
@@ -201,13 +205,18 @@ class ValueObjectBinder implements DataObjectBinder {
 			List<KParameter> parameters = kotlinConstructor.getParameters();
 			List<ConstructorParameter> result = new ArrayList<>(parameters.size());
 			for (KParameter parameter : parameters) {
-				String name = parameter.getName();
+				String name = getParameterName(parameter);
 				ResolvableType parameterType = ResolvableType
 						.forType(ReflectJvmMapping.getJavaType(parameter.getType()), type);
-				Annotation[] annotations = parameter.getAnnotations().toArray(new Annotation[0]);
+				Annotation[] annotations = parameter.getAnnotations().toArray(ANNOTATION_ARRAY);
 				result.add(new ConstructorParameter(name, parameterType, annotations));
 			}
 			return Collections.unmodifiableList(result);
+		}
+
+		private String getParameterName(KParameter parameter) {
+			return MergedAnnotations.from(parameter, parameter.getAnnotations().toArray(ANNOTATION_ARRAY))
+					.get(Name.class).getValue(MergedAnnotation.VALUE, String.class).orElseGet(parameter::getName);
 		}
 
 		@Override

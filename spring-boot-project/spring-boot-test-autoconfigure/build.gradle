@@ -84,8 +84,17 @@ dependencies {
 	testImplementation("org.testcontainers:mongodb")
 	testImplementation("org.testcontainers:neo4j")
 	testImplementation("org.testcontainers:testcontainers")
+	testImplementation("org.thymeleaf:thymeleaf")
+}
 
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+configurations {
+	configurationPropertiesMetadata
+}
+
+artifacts {
+	configurationPropertiesMetadata new File(sourceSets.main.output.resourcesDir, "META-INF/spring-configuration-metadata.json"), { artifact ->
+		artifact.builtBy sourceSets.main.processResourcesTaskName
+	}
 }
 
 test {

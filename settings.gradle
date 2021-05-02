@@ -22,7 +22,7 @@ pluginManagement {
 }
 
 plugins {
-	id "com.gradle.enterprise" version "3.5"
+	id "com.gradle.enterprise" version "3.6.1"
 	id "io.spring.ge.conventions" version "0.0.7"
 }
 
@@ -31,8 +31,10 @@ rootProject.name="spring-boot-build"
 settings.gradle.projectsLoaded {
 	gradleEnterprise {
 		buildScan {
-			if (settings.gradle.rootProject.hasProperty('buildJavaHome')) {
-				value('Build Java home', settings.gradle.rootProject.getProperty('buildJavaHome'))
+			def toolchainVersion = settings.gradle.rootProject.findProperty('toolchainVersion')
+			if (toolchainVersion != null) {
+				value('Toolchain version', toolchainVersion)
+				tag("JDK-$toolchainVersion")
 			}
 
 			settings.gradle.rootProject.getBuildDir().mkdirs()
@@ -71,6 +73,7 @@ include "spring-boot-project:spring-boot-test-autoconfigure"
 include "spring-boot-tests:spring-boot-deployment-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-configuration-processor-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-launch-script-tests"
+include "spring-boot-tests:spring-boot-integration-tests:spring-boot-loader-tests"
 include "spring-boot-tests:spring-boot-integration-tests:spring-boot-server-tests"
 
 file("${rootDir}/spring-boot-project/spring-boot-starters").eachDirMatch(~/spring-boot-starter.*/) {

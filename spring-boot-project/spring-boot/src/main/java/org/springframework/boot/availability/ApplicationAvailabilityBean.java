@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,10 @@ package org.springframework.boot.availability;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.ApplicationListener;
 import org.springframework.util.Assert;
 
@@ -33,6 +37,8 @@ import org.springframework.util.Assert;
  */
 public class ApplicationAvailabilityBean
 		implements ApplicationAvailability, ApplicationListener<AvailabilityChangeEvent<?>> {
+
+	private static final Log logger = LogFactory.getLog(ApplicationAvailabilityBean.class);
 
 	private final Map<Class<? extends AvailabilityState>, AvailabilityChangeEvent<?>> events = new HashMap<>();
 
@@ -58,8 +64,37 @@ public class ApplicationAvailabilityBean
 
 	@Override
 	public void onApplicationEvent(AvailabilityChangeEvent<?> event) {
+		logStateChange(event);
 		Class<? extends AvailabilityState> stateType = getStateType(event.getState());
 		this.events.put(stateType, event);
+	}
+
+	private void logStateChange(AvailabilityChangeEvent<?> event) {
+		if (logger.isInfoEnabled()) {
+			StringBuilder message = createStateChangeMessage(event);
+			logger.info(message);
+		}
+	}
+
+	private StringBuilder createStateChangeMessage(AvailabilityChangeEvent<?> event) {
+		Class<? extends AvailabilityState> stateType = getStateType(event.getState());
+		StringBuilder message = new StringBuilder(
+				"Application availability state " + stateType.getSimpleName() + " changed");
+		AvailabilityChangeEvent<? extends AvailabilityState> lastChangeEvent = getLastChangeEvent(stateType);
+		if (lastChangeEvent != null) {
+			message.append(" from " + lastChangeEvent.getState());
+		}
+		message.append(" to " + event.getState());
+		Object source = event.getSource();
+		if (source != null) {
+			if (source instanceof Throwable) {
+				message.append(": " + source);
+			}
+			else if (!(source instanceof ApplicationEventPublisher)) {
+				message.append(": " + source.getClass().getName());
+			}
+		}
+		return message;
 	}
 
 	@SuppressWarnings("unchecked")

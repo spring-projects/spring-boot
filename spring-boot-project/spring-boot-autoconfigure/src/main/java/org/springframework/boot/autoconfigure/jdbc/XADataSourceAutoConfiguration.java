@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.autoconfigure.jdbc;
 
 import java.util.HashMap;
@@ -105,7 +106,7 @@ public class XADataSourceAutoConfiguration implements BeanClassLoaderAware {
 	}
 
 	private ConfigurationPropertySource getBinderSource(DataSourceProperties dataSourceProperties) {
-		Map<Object, Object> properties = new HashMap<Object, Object>();
+		Map<Object, Object> properties = new HashMap<>();
 		properties.putAll(dataSourceProperties.getXa().getProperties());
 		properties.computeIfAbsent("user", (key) -> dataSourceProperties.determineUsername());
 		properties.computeIfAbsent("password", (key) -> dataSourceProperties.determinePassword());

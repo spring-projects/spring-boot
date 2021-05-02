@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -107,7 +107,7 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	/**
 	 * Create a new {@link CloudFoundryVcapEnvironmentPostProcessor} instance.
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #CloudFoundryVcapEnvironmentPostProcessor(Log)}
 	 */
 	@Deprecated
@@ -154,8 +154,8 @@ public class CloudFoundryVcapEnvironmentPostProcessor
 
 	/**
 	 * Event listener used to switch logging.
-	 * @deprecated since 2.4.0 in favor of only using {@link EnvironmentPostProcessor}
-	 * callbacks
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of only using
+	 * {@link EnvironmentPostProcessor} callbacks
 	 */
 	@Deprecated
 	@Override

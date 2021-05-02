@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,7 +47,8 @@ public interface SpringApplicationRunListener {
 	/**
 	 * Called immediately when the run method has first started. Can be used for very
 	 * early initialization.
-	 * @deprecated since 2.4.0 in favor of {@link #starting(ConfigurableBootstrapContext)}
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
+	 * {@link #starting(ConfigurableBootstrapContext)}
 	 */
 	@Deprecated
 	default void starting() {
@@ -68,7 +69,7 @@ public interface SpringApplicationRunListener {
 	 * Called once the environment has been prepared, but before the
 	 * {@link ApplicationContext} has been created.
 	 * @param environment the environment
-	 * @deprecated since 2.4.0 in favor of
+	 * @deprecated since 2.4.0 for removal in 2.6.0 in favor of
 	 * {@link #environmentPrepared(ConfigurableBootstrapContext, ConfigurableEnvironment)}
 	 */
 	@Deprecated

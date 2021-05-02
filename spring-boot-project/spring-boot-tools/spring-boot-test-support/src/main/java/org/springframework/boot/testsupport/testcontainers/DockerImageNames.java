@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,17 +26,17 @@ import org.testcontainers.utility.DockerImageName;
  */
 public final class DockerImageNames {
 
-	private static final String CASSANDRA_VERSION = "3.11.2";
+	private static final String CASSANDRA_VERSION = "3.11.10";
 
 	private static final String COUCHBASE_VERSION = "6.5.1";
 
-	private static final String MONGO_VERSION = "4.0.10";
+	private static final String MONGO_VERSION = "4.0.23";
 
 	private static final String NEO4J_VERSION = "4.0";
 
-	private static final String POSTGRESQL_VERSION = "9.6.12";
+	private static final String POSTGRESQL_VERSION = "9.6.21";
 
-	private static final String REDIS_VERSION = "4.0.6";
+	private static final String REDIS_VERSION = "4.0.14";
 
 	private static final String REGISTRY_VERSION = "2.7.1";
 

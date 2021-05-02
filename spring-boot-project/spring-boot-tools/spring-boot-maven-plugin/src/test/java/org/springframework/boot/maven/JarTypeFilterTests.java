@@ -60,12 +60,17 @@ class JarTypeFilterTests {
 		assertThat(new JarTypeFilter().filter(createArtifact("annotation-processor"))).isTrue();
 	}
 
-	private Artifact createArtifact(String jarType) {
+	@Test
+	void whenArtifactHasNoManifestFileThenItIsIncluded() {
+		assertThat(new JarTypeFilter().filter(createArtifactWithNoManifest())).isFalse();
+	}
+
+	private Artifact createArtifact(String springBootJarType) {
 		Path jarPath = this.temp.resolve("test.jar");
 		Manifest manifest = new Manifest();
 		manifest.getMainAttributes().putValue("Manifest-Version", "1.0");
-		if (jarType != null) {
-			manifest.getMainAttributes().putValue("Spring-Boot-Jar-Type", jarType);
+		if (springBootJarType != null) {
+			manifest.getMainAttributes().putValue("Spring-Boot-Jar-Type", springBootJarType);
 		}
 		try {
 			new JarOutputStream(new FileOutputStream(jarPath.toFile()), manifest).close();
@@ -73,6 +78,21 @@ class JarTypeFilterTests {
 		catch (IOException ex) {
 			throw new RuntimeException(ex);
 		}
+		return mockArtifact(jarPath);
+	}
+
+	private Artifact createArtifactWithNoManifest() {
+		Path jarPath = this.temp.resolve("test.jar");
+		try {
+			new JarOutputStream(new FileOutputStream(jarPath.toFile())).close();
+		}
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
+		}
+		return mockArtifact(jarPath);
+	}
+
+	private Artifact mockArtifact(Path jarPath) {
 		Artifact artifact = mock(Artifact.class);
 		given(artifact.getFile()).willReturn(jarPath.toFile());
 		return artifact;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,7 +63,8 @@ public abstract class Launcher {
 	 * @param archives the archives
 	 * @return the classloader
 	 * @throws Exception if the classloader cannot be created
-	 * @deprecated since 2.3.0 in favor of {@link #createClassLoader(Iterator)}
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of
+	 * {@link #createClassLoader(Iterator)}
 	 */
 	@Deprecated
 	protected ClassLoader createClassLoader(List<Archive> archives) throws Exception {
@@ -139,7 +140,7 @@ public abstract class Launcher {
 	 * Returns the archives that will be used to construct the class path.
 	 * @return the class path archives
 	 * @throws Exception if the class path archives cannot be obtained
-	 * @deprecated since 2.3.0 in favor of implementing
+	 * @deprecated since 2.3.0 for removal in 2.5.0 in favor of implementing
 	 * {@link #getClassPathArchivesIterator()}.
 	 */
 	@Deprecated

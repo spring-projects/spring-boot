@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,10 +37,20 @@ import org.springframework.web.cors.CorsConfiguration;
 public class CorsEndpointProperties {
 
 	/**
-	 * Comma-separated list of origins to allow. '*' allows all origins. When not set,
-	 * CORS support is disabled.
+	 * Comma-separated list of origins to allow. '*' allows all origins. When credentials
+	 * are allowed, '*' cannot be used and origin patterns should be configured instead.
+	 * When no allowed origins or allowed origin patterns are set, CORS support is
+	 * disabled.
 	 */
 	private List<String> allowedOrigins = new ArrayList<>();
+
+	/**
+	 * Comma-separated list of origin patterns to allow. Unlike allowed origins which only
+	 * supports '*', origin patterns are more flexible (for example
+	 * 'https://*.example.com') and can be used when credentials are allowed. When no
+	 * allowed origin patterns or allowed origins are set, CORS support is disabled.
+	 */
+	private List<String> allowedOriginPatterns = new ArrayList<>();
 
 	/**
 	 * Comma-separated list of methods to allow. '*' allows all methods. When not set,
@@ -76,6 +86,14 @@ public class CorsEndpointProperties {
 
 	public void setAllowedOrigins(List<String> allowedOrigins) {
 		this.allowedOrigins = allowedOrigins;
+	}
+
+	public List<String> getAllowedOriginPatterns() {
+		return this.allowedOriginPatterns;
+	}
+
+	public void setAllowedOriginPatterns(List<String> allowedOriginPatterns) {
+		this.allowedOriginPatterns = allowedOriginPatterns;
 	}
 
 	public List<String> getAllowedMethods() {
@@ -119,12 +137,13 @@ public class CorsEndpointProperties {
 	}
 
 	public CorsConfiguration toCorsConfiguration() {
-		if (CollectionUtils.isEmpty(this.allowedOrigins)) {
+		if (CollectionUtils.isEmpty(this.allowedOrigins) && CollectionUtils.isEmpty(this.allowedOriginPatterns)) {
 			return null;
 		}
 		PropertyMapper map = PropertyMapper.get();
 		CorsConfiguration configuration = new CorsConfiguration();
 		map.from(this::getAllowedOrigins).to(configuration::setAllowedOrigins);
+		map.from(this::getAllowedOriginPatterns).to(configuration::setAllowedOriginPatterns);
 		map.from(this::getAllowedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedHeaders);
 		map.from(this::getAllowedMethods).whenNot(CollectionUtils::isEmpty).to(configuration::setAllowedMethods);
 		map.from(this::getExposedHeaders).whenNot(CollectionUtils::isEmpty).to(configuration::setExposedHeaders);

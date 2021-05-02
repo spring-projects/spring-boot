@@ -11,9 +11,11 @@ def generatedResources = "${buildDir}/generated-resources/main"
 configurations {
 	loader {
 		extendsFrom dependencyManagement
+		transitive = false
 	}
 	jarmode {
 		extendsFrom dependencyManagement
+		transitive = false
 	}
 }
 
@@ -42,7 +44,10 @@ sourceSets {
 task reproducibleLoaderJar(type: Jar) {
 	dependsOn configurations.loader
 	from {
-		zipTree(configurations.loader.incoming.files.filter {it.name.startsWith "spring-boot-loader" }.singleFile)
+		zipTree(configurations.loader.incoming.files.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+		}
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
@@ -53,7 +58,10 @@ task reproducibleLoaderJar(type: Jar) {
 task reproducibleJarModeLayerToolsJar(type: Jar) {
 	dependsOn configurations.jarmode
 	from {
-		zipTree(configurations.jarmode.incoming.files.filter {it.name.startsWith "spring-boot-jarmode-layertools" }.singleFile)
+		zipTree(configurations.jarmode.incoming.files.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+		}
 	}
 	reproducibleFileOrder = true
 	preserveFileTimestamps = false
@@ -67,7 +75,7 @@ processResources {
 }
 
 compileJava {
-	if ((!project.hasProperty("buildJavaHome")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
+	if ((!project.hasProperty("toolchainVersion")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
 		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']	
 	}	
 }

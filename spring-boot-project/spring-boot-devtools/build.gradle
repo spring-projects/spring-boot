@@ -70,7 +70,7 @@ dependencies {
 	testImplementation("org.thymeleaf:thymeleaf-spring5")
 	testImplementation("nz.net.ultraq.thymeleaf:thymeleaf-layout-dialect")
 
-	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+	testRuntimeOnly("org.aspectj:aspectjweaver")
 	testRuntimeOnly("org.yaml:snakeyaml")
 }
 

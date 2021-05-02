@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -93,7 +93,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, error),
 				ErrorAttributeOptions.defaults());
 		assertThat(attributes.get("error")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.getReasonPhrase());
-		assertThat(attributes.get("message")).isEqualTo("");
+		assertThat(attributes).doesNotContainKey("message");
 		assertThat(attributes.get("status")).isEqualTo(HttpStatus.I_AM_A_TEAPOT.value());
 	}
 
@@ -148,7 +148,7 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
 				ErrorAttributeOptions.defaults());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(attributes.get("message")).isEqualTo("");
+		assertThat(attributes).doesNotContainKey("message");
 	}
 
 	@Test
@@ -160,21 +160,9 @@ class DefaultErrorAttributesTests {
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
 				ErrorAttributeOptions.of(Include.EXCEPTION, Include.MESSAGE));
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
 		assertThat(attributes.get("message")).isEqualTo("Test");
-	}
-
-	@Test
-	@SuppressWarnings("deprecation")
-	void excludeExceptionWithDeprecatedConstructor() {
-		RuntimeException error = new RuntimeException("Test");
-		this.errorAttributes = new DefaultErrorAttributes(false);
-		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
-		ServerRequest serverRequest = buildServerRequest(request, error);
-		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(serverRequest,
-				ErrorAttributeOptions.of());
-		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
-		assertThat(attributes.get("exception")).isNull();
 	}
 
 	@Test
@@ -190,6 +178,7 @@ class DefaultErrorAttributesTests {
 		assertThat(attributes.get("message")).isEqualTo("invalid request");
 		assertThat(attributes.get("exception")).isEqualTo(RuntimeException.class.getName());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 	}
 
 	@Test
@@ -205,6 +194,7 @@ class DefaultErrorAttributesTests {
 		assertThat(attributes.get("message")).isEqualTo("could not process request");
 		assertThat(attributes.get("exception")).isEqualTo(ResponseStatusException.class.getName());
 		assertThat(this.errorAttributes.getError(serverRequest)).isSameAs(error);
+		assertThat(serverRequest.attribute(ErrorAttributes.ERROR_ATTRIBUTE)).containsSame(error);
 	}
 
 	@Test
@@ -269,8 +259,8 @@ class DefaultErrorAttributesTests {
 		MockServerHttpRequest request = MockServerHttpRequest.get("/test").build();
 		Map<String, Object> attributes = this.errorAttributes.getErrorAttributes(buildServerRequest(request, ex),
 				ErrorAttributeOptions.defaults());
-		assertThat(attributes.get("message")).isEqualTo("");
-		assertThat(attributes.containsKey("errors")).isFalse();
+		assertThat(attributes).doesNotContainKey("message");
+		assertThat(attributes).doesNotContainKey("errors");
 	}
 
 	private ServerRequest buildServerRequest(MockServerHttpRequest request, Throwable error) {

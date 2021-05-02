@@ -1,0 +1,25 @@
+[appendix]
+[[executable-jar]]
+= The Executable Jar Format
+include::attributes.adoc[]
+
+
+
+The `spring-boot-loader` modules lets Spring Boot support executable jar and war files.
+If you use the Maven plugin or the Gradle plugin, executable jars are automatically generated, and you generally do not need to know the details of how they work.
+
+If you need to create executable jars from a different build system or if you are just curious about the underlying technology, this appendix provides some background.
+
+
+
+include::executable-jar/nested-jars.adoc[]
+
+include::executable-jar/jarfile-class.adoc[]
+
+include::executable-jar/launching.adoc[]
+
+include::executable-jar/property-launcher.adoc[]
+
+include::executable-jar/restrictions.adoc[]
+
+include::executable-jar/alternatives.adoc[]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -101,7 +101,7 @@ public class ResolveMainClassName extends DefaultTask {
 
 	/**
 	 * Returns the property for the explicitly configured main class name that should be
-	 * used in favour of resolving the main class name from the classpath.
+	 * used in favor of resolving the main class name from the classpath.
 	 * @return the configured main class name property
 	 */
 	@Input

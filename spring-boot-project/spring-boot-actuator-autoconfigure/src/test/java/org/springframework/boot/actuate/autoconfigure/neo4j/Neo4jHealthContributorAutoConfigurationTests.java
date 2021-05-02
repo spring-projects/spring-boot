@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.actuate.autoconfigure.neo4j;
 
 import org.junit.jupiter.api.Test;
@@ -102,6 +103,7 @@ class Neo4jHealthContributorAutoConfigurationTests {
 		HealthIndicator neo4jHealthIndicator() {
 			return new AbstractHealthIndicator() {
 
+				@Override
 				protected void doHealthCheck(Health.Builder builder) {
 					builder.up().withDetail("test", true);
 				}

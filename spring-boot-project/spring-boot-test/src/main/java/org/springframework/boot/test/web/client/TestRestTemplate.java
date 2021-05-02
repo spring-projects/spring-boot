@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.RequestEntity;
+import org.springframework.http.RequestEntity.UriTemplateRequestEntity;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.ClientHttpResponse;
@@ -965,7 +966,7 @@ public class TestRestTemplate {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	private RequestEntity<?> createRequestEntityWithRootAppliedUri(RequestEntity<?> requestEntity) {
 		return new RequestEntity(requestEntity.getBody(), requestEntity.getHeaders(), requestEntity.getMethod(),
-				applyRootUriIfNecessary(requestEntity.getUrl()), requestEntity.getType());
+				applyRootUriIfNecessary(resolveUri(requestEntity)), requestEntity.getType());
 	}
 
 	private URI applyRootUriIfNecessary(URI uri) {
@@ -974,6 +975,23 @@ public class TestRestTemplate {
 			return URI.create(((RootUriTemplateHandler) uriTemplateHandler).getRootUri() + uri.toString());
 		}
 		return uri;
+	}
+
+	private URI resolveUri(RequestEntity<?> entity) {
+		if (entity instanceof UriTemplateRequestEntity) {
+			UriTemplateRequestEntity<?> templatedUriEntity = (UriTemplateRequestEntity<?>) entity;
+			if (templatedUriEntity.getVars() != null) {
+				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
+						templatedUriEntity.getVars());
+			}
+			else if (templatedUriEntity.getVarsMap() != null) {
+				return this.restTemplate.getUriTemplateHandler().expand(templatedUriEntity.getUriTemplate(),
+						templatedUriEntity.getVarsMap());
+			}
+			throw new IllegalStateException(
+					"No variables specified for URI template: " + templatedUriEntity.getUriTemplate());
+		}
+		return entity.getUrl();
 	}
 
 	/**

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
-import org.springframework.data.neo4j.config.Neo4jDefaultReactiveCallbacksRegistrar;
 import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jOperations;
@@ -48,7 +46,6 @@ import org.springframework.transaction.ReactiveTransactionManager;
 @ConditionalOnClass({ Driver.class, ReactiveNeo4jTemplate.class, ReactiveTransactionManager.class, Flux.class })
 @ConditionalOnBean(Driver.class)
 @AutoConfigureAfter(Neo4jDataAutoConfiguration.class)
-@Import(Neo4jDefaultReactiveCallbacksRegistrar.class)
 public class Neo4jReactiveDataAutoConfiguration {
 
 	@Bean
@@ -61,15 +58,16 @@ public class Neo4jReactiveDataAutoConfiguration {
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_CLIENT_BEAN_NAME)
 	@ConditionalOnMissingBean
-	public ReactiveNeo4jClient reactiveNeo4jClient(Driver driver) {
-		return ReactiveNeo4jClient.create(driver);
+	public ReactiveNeo4jClient reactiveNeo4jClient(Driver driver,
+			ReactiveDatabaseSelectionProvider databaseNameProvider) {
+		return ReactiveNeo4jClient.create(driver, databaseNameProvider);
 	}
 
 	@Bean(ReactiveNeo4jRepositoryConfigurationExtension.DEFAULT_NEO4J_TEMPLATE_BEAN_NAME)
 	@ConditionalOnMissingBean(ReactiveNeo4jOperations.class)
 	public ReactiveNeo4jTemplate reactiveNeo4jTemplate(ReactiveNeo4jClient neo4jClient,
-			Neo4jMappingContext neo4jMappingContext, ReactiveDatabaseSelectionProvider databaseNameProvider) {
-		return new ReactiveNeo4jTemplate(neo4jClient, neo4jMappingContext, databaseNameProvider);
+			Neo4jMappingContext neo4jMappingContext) {
+		return new ReactiveNeo4jTemplate(neo4jClient, neo4jMappingContext);
 	}
 
 }

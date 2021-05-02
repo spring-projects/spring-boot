@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package org.springframework.boot.web.client;
 
 import java.net.URI;
 import java.util.Map;
+import java.util.function.Function;
 
 import org.springframework.util.Assert;
 import org.springframework.util.StringUtils;
@@ -82,6 +83,17 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 
 	public String getRootUri() {
 		return this.rootUri;
+	}
+
+	/**
+	 * Derives a new {@code RootUriTemplateHandler} from this one, wrapping its delegate
+	 * {@link UriTemplateHandler} by applying the given {@code wrapper}.
+	 * @param wrapper the wrapper to apply to the delegate URI template handler
+	 * @return the new handler
+	 * @since 2.3.10
+	 */
+	public RootUriTemplateHandler withHandlerWrapper(Function<UriTemplateHandler, UriTemplateHandler> wrapper) {
+		return new RootUriTemplateHandler(this.rootUri, wrapper.apply(this.handler));
 	}
 
 	/**

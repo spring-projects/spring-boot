@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,12 +34,14 @@ import org.elasticsearch.client.RequestOptions;
 import org.elasticsearch.client.RestClient;
 import org.elasticsearch.client.RestClientBuilder;
 import org.elasticsearch.client.RestHighLevelClient;
+import org.elasticsearch.client.sniff.Sniffer;
 import org.junit.jupiter.api.Test;
 import org.testcontainers.elasticsearch.ElasticsearchContainer;
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.testcontainers.DockerImageNames;
 import org.springframework.context.annotation.Bean;
@@ -47,6 +49,7 @@ import org.springframework.context.annotation.Configuration;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link ElasticsearchRestClientAutoConfiguration}.
@@ -101,16 +104,6 @@ class ElasticsearchRestClientAutoConfigurationTests {
 			assertThat(lowLevelClient).hasFieldOrPropertyWithValue("pathPrefix", "/test");
 			assertThat(lowLevelClient).extracting("client.connmgr.pool.maxTotal").isEqualTo(100);
 			assertThat(lowLevelClient).extracting("client.defaultConfig.cookieSpec").isEqualTo("rfc6265-lax");
-		});
-	}
-
-	@Test
-	@Deprecated
-	void configureWhenDeprecatedBuilderCustomizerShouldApply() {
-		this.contextRunner.withUserConfiguration(DeprecatedBuilderCustomizerConfiguration.class).run((context) -> {
-			assertThat(context).hasSingleBean(RestHighLevelClient.class);
-			RestHighLevelClient restClient = context.getBean(RestHighLevelClient.class);
-			assertThat(restClient.getLowLevelClient()).hasFieldOrPropertyWithValue("pathPrefix", "/deprecated");
 		});
 	}
 
@@ -220,6 +213,49 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void configureWithoutSnifferLibraryShouldNotCreateSniffer() {
+		this.contextRunner.withClassLoader(new FilteredClassLoader("org.elasticsearch.client.sniff"))
+				.run((context) -> assertThat(context).hasSingleBean(RestHighLevelClient.class)
+						.doesNotHaveBean(Sniffer.class));
+	}
+
+	@Test
+	void configureShouldCreateSnifferUsingRestHighLevelClient() {
+		this.contextRunner.run((context) -> {
+			assertThat(context).hasSingleBean(Sniffer.class);
+			assertThat(context.getBean(Sniffer.class)).hasFieldOrPropertyWithValue("restClient",
+					context.getBean(RestHighLevelClient.class).getLowLevelClient());
+			// Validate shutdown order as the sniffer must be shutdown before the client
+			assertThat(context.getBeanFactory().getDependentBeans("elasticsearchRestHighLevelClient"))
+					.contains("elasticsearchSniffer");
+		});
+	}
+
+	@Test
+	void configureWithCustomSnifferSettings() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.sniffer.interval=180s",
+				"spring.elasticsearch.rest.sniffer.delay-after-failure=30s").run((context) -> {
+					assertThat(context).hasSingleBean(Sniffer.class);
+					Sniffer sniffer = context.getBean(Sniffer.class);
+					assertThat(sniffer).hasFieldOrPropertyWithValue("sniffIntervalMillis",
+							Duration.ofMinutes(3).toMillis());
+					assertThat(sniffer).hasFieldOrPropertyWithValue("sniffAfterFailureDelayMillis",
+							Duration.ofSeconds(30).toMillis());
+				});
+	}
+
+	@Test
+	void configureWhenCustomSnifferShouldBackOff() {
+		Sniffer customSniffer = mock(Sniffer.class);
+		this.contextRunner.withBean(Sniffer.class, () -> customSniffer).run((context) -> {
+			assertThat(context).hasSingleBean(Sniffer.class);
+			Sniffer sniffer = context.getBean(Sniffer.class);
+			assertThat(sniffer).isSameAs(customSniffer);
+			verifyNoInteractions(customSniffer);
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class BuilderCustomizerConfiguration {
 
@@ -243,17 +279,6 @@ class ElasticsearchRestClientAutoConfigurationTests {
 				}
 
 			};
-		}
-
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	@Deprecated
-	static class DeprecatedBuilderCustomizerConfiguration {
-
-		@Bean
-		org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientBuilderCustomizer myCustomizer() {
-			return (builder) -> builder.setPathPrefix("/deprecated");
 		}
 
 	}

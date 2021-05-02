@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,28 +16,23 @@
 
 package org.springframework.boot.autoconfigure.jooq;
 
-import java.util.concurrent.Executor;
-
 import javax.sql.DataSource;
 
+import org.jooq.CharsetProvider;
+import org.jooq.ConnectionProvider;
+import org.jooq.ConverterProvider;
 import org.jooq.DSLContext;
 import org.jooq.ExecuteListener;
 import org.jooq.ExecuteListenerProvider;
 import org.jooq.ExecutorProvider;
-import org.jooq.Record;
-import org.jooq.RecordListener;
 import org.jooq.RecordListenerProvider;
-import org.jooq.RecordMapper;
 import org.jooq.RecordMapperProvider;
-import org.jooq.RecordType;
-import org.jooq.RecordUnmapper;
 import org.jooq.RecordUnmapperProvider;
 import org.jooq.SQLDialect;
-import org.jooq.TransactionListener;
 import org.jooq.TransactionListenerProvider;
 import org.jooq.TransactionalRunnable;
-import org.jooq.VisitListener;
 import org.jooq.VisitListenerProvider;
+import org.jooq.impl.DataSourceConnectionProvider;
 import org.jooq.impl.DefaultExecuteListenerProvider;
 import org.junit.jupiter.api.Test;
 
@@ -49,10 +44,12 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.jdbc.datasource.TransactionAwareDataSourceProxy;
 import org.springframework.transaction.PlatformTransactionManager;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link JooqAutoConfiguration}.
@@ -107,28 +104,79 @@ class JooqAutoConfigurationTests {
 									"insert into jooqtest (name) values ('foo');")));
 					dsl.transaction(new AssertFetch(dsl, "select count(*) as total from jooqtest_tx;", "1"));
 				});
-
 	}
 
 	@Test
-	void customProvidersArePickedUp() {
-		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class,
-				TestRecordMapperProvider.class, TestRecordUnmapperProvider.class, TestRecordListenerProvider.class,
-				TestExecuteListenerProvider.class, TestVisitListenerProvider.class,
-				TestTransactionListenerProvider.class, TestExecutorProvider.class).run((context) -> {
+	void jooqWithDefaultConnectionProvider() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
+			DSLContext dsl = context.getBean(DSLContext.class);
+			ConnectionProvider connectionProvider = dsl.configuration().connectionProvider();
+			assertThat(connectionProvider).isInstanceOf(DataSourceConnectionProvider.class);
+			DataSource connectionProviderDataSource = ((DataSourceConnectionProvider) connectionProvider).dataSource();
+			assertThat(connectionProviderDataSource).isInstanceOf(TransactionAwareDataSourceProxy.class);
+		});
+	}
+
+	@Test
+	void jooqWithDefaultExecuteListenerProvider() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class).run((context) -> {
+			DSLContext dsl = context.getBean(DSLContext.class);
+			assertThat(dsl.configuration().executeListenerProviders()).hasSize(1);
+		});
+	}
+
+	@Test
+	void jooqWithSeveralExecuteListenerProviders() {
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TestExecuteListenerProvider.class)
+				.run((context) -> {
 					DSLContext dsl = context.getBean(DSLContext.class);
-					assertThat(dsl.configuration().recordMapperProvider().getClass())
-							.isEqualTo(TestRecordMapperProvider.class);
-					assertThat(dsl.configuration().recordUnmapperProvider().getClass())
-							.isEqualTo(TestRecordUnmapperProvider.class);
-					assertThat(dsl.configuration().executorProvider().getClass()).isEqualTo(TestExecutorProvider.class);
-					assertThat(dsl.configuration().recordListenerProviders()).hasSize(1);
 					ExecuteListenerProvider[] executeListenerProviders = dsl.configuration().executeListenerProviders();
 					assertThat(executeListenerProviders).hasSize(2);
 					assertThat(executeListenerProviders[0]).isInstanceOf(DefaultExecuteListenerProvider.class);
 					assertThat(executeListenerProviders[1]).isInstanceOf(TestExecuteListenerProvider.class);
-					assertThat(dsl.configuration().visitListenerProviders()).hasSize(1);
-					assertThat(dsl.configuration().transactionListenerProviders()).hasSize(1);
+				});
+	}
+
+	@Test
+	void dslContextWithConfigurationCustomizersAreApplied() {
+		ConverterProvider converterProvider = mock(ConverterProvider.class);
+		CharsetProvider charsetProvider = mock(CharsetProvider.class);
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class)
+				.withBean("configurationCustomizer1", DefaultConfigurationCustomizer.class,
+						() -> (configuration) -> configuration.set(converterProvider))
+				.withBean("configurationCustomizer2", DefaultConfigurationCustomizer.class,
+						() -> (configuration) -> configuration.set(charsetProvider))
+				.run((context) -> {
+					DSLContext dsl = context.getBean(DSLContext.class);
+					assertThat(dsl.configuration().converterProvider()).isSameAs(converterProvider);
+					assertThat(dsl.configuration().charsetProvider()).isSameAs(charsetProvider);
+				});
+	}
+
+	@Test
+	@Deprecated
+	void customProvidersArePickedUp() {
+		RecordMapperProvider recordMapperProvider = mock(RecordMapperProvider.class);
+		RecordUnmapperProvider recordUnmapperProvider = mock(RecordUnmapperProvider.class);
+		RecordListenerProvider recordListenerProvider = mock(RecordListenerProvider.class);
+		VisitListenerProvider visitListenerProvider = mock(VisitListenerProvider.class);
+		TransactionListenerProvider transactionListenerProvider = mock(TransactionListenerProvider.class);
+		ExecutorProvider executorProvider = mock(ExecutorProvider.class);
+		this.contextRunner.withUserConfiguration(JooqDataSourceConfiguration.class, TxManagerConfiguration.class)
+				.withBean(RecordMapperProvider.class, () -> recordMapperProvider)
+				.withBean(RecordUnmapperProvider.class, () -> recordUnmapperProvider)
+				.withBean(RecordListenerProvider.class, () -> recordListenerProvider)
+				.withBean(VisitListenerProvider.class, () -> visitListenerProvider)
+				.withBean(TransactionListenerProvider.class, () -> transactionListenerProvider)
+				.withBean(ExecutorProvider.class, () -> executorProvider).run((context) -> {
+					DSLContext dsl = context.getBean(DSLContext.class);
+					assertThat(dsl.configuration().recordMapperProvider()).isSameAs(recordMapperProvider);
+					assertThat(dsl.configuration().recordUnmapperProvider()).isSameAs(recordUnmapperProvider);
+					assertThat(dsl.configuration().executorProvider()).isSameAs(executorProvider);
+					assertThat(dsl.configuration().recordListenerProviders()).containsExactly(recordListenerProvider);
+					assertThat(dsl.configuration().visitListenerProviders()).containsExactly(visitListenerProvider);
+					assertThat(dsl.configuration().transactionListenerProviders())
+							.containsExactly(transactionListenerProvider);
 				});
 	}
 
@@ -201,65 +249,11 @@ class JooqAutoConfigurationTests {
 
 	}
 
-	static class TestRecordMapperProvider implements RecordMapperProvider {
-
-		@Override
-		public <R extends Record, E> RecordMapper<R, E> provide(RecordType<R> recordType, Class<? extends E> aClass) {
-			return null;
-		}
-
-	}
-
-	static class TestRecordUnmapperProvider implements RecordUnmapperProvider {
-
-		@Override
-		public <E, R extends Record> RecordUnmapper<E, R> provide(Class<? extends E> aClass, RecordType<R> recordType) {
-			return null;
-		}
-
-	}
-
-	static class TestRecordListenerProvider implements RecordListenerProvider {
-
-		@Override
-		public RecordListener provide() {
-			return null;
-		}
-
-	}
-
 	@Order(100)
 	static class TestExecuteListenerProvider implements ExecuteListenerProvider {
 
 		@Override
 		public ExecuteListener provide() {
-			return null;
-		}
-
-	}
-
-	static class TestVisitListenerProvider implements VisitListenerProvider {
-
-		@Override
-		public VisitListener provide() {
-			return null;
-		}
-
-	}
-
-	static class TestTransactionListenerProvider implements TransactionListenerProvider {
-
-		@Override
-		public TransactionListener provide() {
-			return null;
-		}
-
-	}
-
-	static class TestExecutorProvider implements ExecutorProvider {
-
-		@Override
-		public Executor provide() {
 			return null;
 		}
 

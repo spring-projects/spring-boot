@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,27 +16,44 @@
 
 package com.autoconfig;
 
-import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
-import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
+import java.io.IOException;
+
+import javax.servlet.ServletException;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWarDeployment;
+import org.springframework.boot.web.servlet.ServletRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.MediaType;
 
-@ConditionalOnWarDeployment
 @Configuration
 public class ExampleAutoConfiguration {
 
 	@Bean
-	public TestEndpoint testEndpoint() {
-		return new TestEndpoint();
+	@ConditionalOnWarDeployment
+	public ServletRegistrationBean<TestServlet> onWarTestServlet() {
+		ServletRegistrationBean<TestServlet> registration = new ServletRegistrationBean<>(new TestServlet());
+		registration.addUrlMappings("/conditionalOnWar");
+		return registration;
 	}
 
-	@Endpoint(id = "war")
-	static class TestEndpoint {
+	@Bean
+	public ServletRegistrationBean<TestServlet> testServlet() {
+		ServletRegistrationBean<TestServlet> registration = new ServletRegistrationBean<>(new TestServlet());
+		registration.addUrlMappings("/always");
+		return registration;
+	}
 
-		@ReadOperation
-		String hello() {
-			return "{\"hello\":\"world\"}";
+	static class TestServlet extends HttpServlet {
+
+		@Override
+		protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+			resp.setContentType(MediaType.APPLICATION_JSON_VALUE);
+			resp.getWriter().println("{\"hello\":\"world\"}");
+			resp.flushBuffer();
 		}
 
 	}

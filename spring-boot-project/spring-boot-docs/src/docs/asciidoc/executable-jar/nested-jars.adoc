@@ -1,0 +1,141 @@
+[[executable-jar.nested-jars]]
+== Nested JARs
+Java does not provide any standard way to load nested jar files (that is, jar files that are themselves contained within a jar).
+This can be problematic if you need to distribute a self-contained application that can be run from the command line without unpacking.
+
+To solve this problem, many developers use "`shaded`" jars.
+A shaded jar packages all classes, from all jars, into a single "`uber jar`".
+The problem with shaded jars is that it becomes hard to see which libraries are actually in your application.
+It can also be problematic if the same filename is used (but with different content) in multiple jars.
+Spring Boot takes a different approach and lets you actually nest jars directly.
+
+
+
+[[executable-jar.nested-jars.jar-structure]]
+=== The Executable Jar File Structure
+Spring Boot Loader-compatible jar files should be structured in the following way:
+
+[indent=0]
+----
+	example.jar
+	 |
+	 +-META-INF
+	 |  +-MANIFEST.MF
+	 +-org
+	 |  +-springframework
+	 |     +-boot
+	 |        +-loader
+	 |           +-<spring boot loader classes>
+	 +-BOOT-INF
+	    +-classes
+	    |  +-mycompany
+	    |     +-project
+	    |        +-YourClasses.class
+	    +-lib
+	       +-dependency1.jar
+	       +-dependency2.jar
+----
+
+Application classes should be placed in a nested `BOOT-INF/classes` directory.
+Dependencies should be placed in a nested `BOOT-INF/lib` directory.
+
+
+
+[[executable-jar.nested-jars.war-structure]]
+=== The Executable War File Structure
+Spring Boot Loader-compatible war files should be structured in the following way:
+
+[indent=0]
+----
+	example.war
+	 |
+	 +-META-INF
+	 |  +-MANIFEST.MF
+	 +-org
+	 |  +-springframework
+	 |     +-boot
+	 |        +-loader
+	 |           +-<spring boot loader classes>
+	 +-WEB-INF
+	    +-classes
+	    |  +-com
+	    |     +-mycompany
+	    |        +-project
+	    |           +-YourClasses.class
+	    +-lib
+	    |  +-dependency1.jar
+	    |  +-dependency2.jar
+	    +-lib-provided
+	       +-servlet-api.jar
+	       +-dependency3.jar
+----
+
+Dependencies should be placed in a nested `WEB-INF/lib` directory.
+Any dependencies that are required when running embedded but are not required when deploying to a traditional web container should be placed in `WEB-INF/lib-provided`.
+
+
+
+[[executable-jar.nested-jars.index-files]]
+=== Index Files
+Spring Boot Loader-compatible jar and war archives can include additional index files under the `BOOT-INF/` directory.
+A `classpath.idx` file can be provided for both jars and wars, and it provides the ordering that jars should be added to the classpath.
+The `layers.idx` file can be used only for jars, and it allows a jar to be split into logical layers for Docker/OCI image creation.
+
+Index files follow a YAML compatible syntax so that they can be easily parsed by third-party tools.
+These files, however, are _not_ parsed internally as YAML and they must be written in exactly the formats described below in order to be used.
+
+
+
+[[executable-jar.nested-jars.classpath-index]]
+=== Classpath Index
+The classpath index file can be provided in `BOOT-INF/classpath.idx`.
+It provides a list of jar names (including the directory) in the order that they should be added to the classpath.
+Each line must start with dash space (`"-&#183;"`) and names must be in double quotes.
+
+For example, given the following jar:
+
+[indent=0]
+----
+	example.jar
+	 |
+	 +-META-INF
+	 |  +-...
+	 +-BOOT-INF
+	    +-classes
+	    |  +...
+	    +-lib
+	       +-dependency1.jar
+	       +-dependency2.jar
+----
+
+The index file would look like this:
+
+[indent=0]
+----
+	- "BOOT-INF/lib/dependency2.jar"
+	- "BOOT-INF/lib/dependency1.jar"
+----
+
+
+
+[[executable-jar.nested-jars.layer-index]]
+=== Layer Index
+The layers index file can be provided in `BOOT-INF/layers.idx`.
+It provides a list of layers and the parts of the jar that should be contained within them.
+Layers are written in the order that they should be added to the Docker/OCI image.
+Layers names are written as quoted strings prefixed with dash space (`"-&#183;"`) and with a colon (`":"`) suffix.
+Layer content is either a file or directory name written as a quoted string prefixed by space space dash space (`"&#183;&#183;-&#183;"`).
+A directory name ends with `/`, a file name does not.
+When a directory name is used it means that all files inside that directory are in the same layer.
+
+A typical example of a layers index would be:
+
+[indent=0]
+----
+	- "dependencies":
+	  - "BOOT-INF/lib/dependency1.jar"
+	  - "BOOT-INF/lib/dependency2.jar"
+	- "application":
+	  - "BOOT-INF/classes/"
+	  - "META-INF/"
+----

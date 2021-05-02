@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -13,6 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package org.springframework.boot.context.properties.bind;
 
 import java.lang.reflect.Constructor;
@@ -30,6 +31,7 @@ import org.springframework.boot.context.properties.source.ConfigurationPropertyN
 import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
 import org.springframework.boot.context.properties.source.MockConfigurationPropertySource;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionService;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.util.Assert;
 
@@ -108,7 +110,7 @@ class ValueObjectBinderTests {
 		this.sources.add(source);
 		Constructor<?>[] constructors = MultipleConstructorsBean.class.getDeclaredConstructors();
 		Constructor<?> constructor = (constructors[0].getParameterCount() == 1) ? constructors[0] : constructors[1];
-		Binder binder = new Binder(this.sources, null, null, null, null,
+		Binder binder = new Binder(this.sources, null, (ConversionService) null, null, null,
 				(bindable, isNestedConstructorBinding) -> constructor);
 		MultipleConstructorsBean bound = binder.bind("foo", Bindable.of(MultipleConstructorsBean.class)).get();
 		assertThat(bound.getIntValue()).isEqualTo(12);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -83,8 +83,8 @@ public final class CommandLineInvoker {
 	private File findLaunchScript() throws IOException {
 		File unpacked = new File(this.temp, "unpacked-cli");
 		if (!unpacked.isDirectory()) {
-			File zip = new File(new BuildOutput(getClass()).getRootLocation(), "distributions")
-					.listFiles((pathname) -> pathname.getName().endsWith("-bin.zip"))[0];
+			File zip = new File(new BuildOutput(getClass()).getRootLocation(),
+					"distributions/spring-boot-cli-" + Versions.getBootVersion() + "-bin.zip");
 			try (ZipInputStream input = new ZipInputStream(new FileInputStream(zip))) {
 				ZipEntry entry;
 				while ((entry = input.getNextEntry()) != null) {

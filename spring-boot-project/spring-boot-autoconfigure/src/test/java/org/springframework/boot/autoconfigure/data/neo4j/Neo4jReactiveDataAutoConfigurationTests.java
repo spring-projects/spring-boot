@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,11 @@ import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNode;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestNonAnnotated;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestPersistent;
+import org.springframework.boot.autoconfigure.data.neo4j.scan.TestRelationshipProperties;
 import org.springframework.boot.autoconfigure.neo4j.Neo4jAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
@@ -30,6 +35,7 @@ import org.springframework.data.neo4j.core.ReactiveDatabaseSelectionProvider;
 import org.springframework.data.neo4j.core.ReactiveNeo4jClient;
 import org.springframework.data.neo4j.core.ReactiveNeo4jOperations;
 import org.springframework.data.neo4j.core.ReactiveNeo4jTemplate;
+import org.springframework.data.neo4j.core.mapping.Neo4jMappingContext;
 import org.springframework.transaction.ReactiveTransactionManager;
 import org.springframework.transaction.TransactionManager;
 
@@ -86,6 +92,16 @@ class Neo4jReactiveDataAutoConfigurationTests {
 	}
 
 	@Test
+	void shouldProvideReactiveNeo4jClientWithCustomDatabaseSelectionProvider() {
+		this.contextRunner.withUserConfiguration(CustomReactiveDatabaseSelectionProviderConfiguration.class)
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ReactiveNeo4jClient.class);
+					assertThat(context.getBean(ReactiveNeo4jClient.class)).extracting("databaseSelectionProvider")
+							.isSameAs(context.getBean(ReactiveDatabaseSelectionProvider.class));
+				});
+	}
+
+	@Test
 	void shouldReuseExistingReactiveNeo4jClient() {
 		this.contextRunner
 				.withBean("myCustomReactiveClient", ReactiveNeo4jClient.class, () -> mock(ReactiveNeo4jClient.class))
@@ -96,11 +112,7 @@ class Neo4jReactiveDataAutoConfigurationTests {
 	@Test
 	void shouldProvideReactiveNeo4jTemplate() {
 		this.contextRunner.withUserConfiguration(CustomReactiveDatabaseSelectionProviderConfiguration.class)
-				.run((context) -> {
-					assertThat(context).hasSingleBean(ReactiveNeo4jTemplate.class);
-					assertThat(context.getBean(ReactiveNeo4jTemplate.class)).extracting("databaseSelectionProvider")
-							.isSameAs(context.getBean(ReactiveDatabaseSelectionProvider.class));
-				});
+				.run((context) -> assertThat(context).hasSingleBean(ReactiveNeo4jTemplate.class));
 	}
 
 	@Test
@@ -121,6 +133,17 @@ class Neo4jReactiveDataAutoConfigurationTests {
 						.hasSingleBean(TransactionManager.class));
 	}
 
+	@Test
+	void shouldFilterInitialEntityScanWithKnownAnnotations() {
+		this.contextRunner.withUserConfiguration(EntityScanConfig.class).run((context) -> {
+			Neo4jMappingContext mappingContext = context.getBean(Neo4jMappingContext.class);
+			assertThat(mappingContext.hasPersistentEntityFor(TestNode.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestPersistent.class)).isFalse();
+			assertThat(mappingContext.hasPersistentEntityFor(TestRelationshipProperties.class)).isTrue();
+			assertThat(mappingContext.hasPersistentEntityFor(TestNonAnnotated.class)).isFalse();
+		});
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomReactiveDatabaseSelectionProviderConfiguration {
 
@@ -128,6 +151,12 @@ class Neo4jReactiveDataAutoConfigurationTests {
 		ReactiveDatabaseSelectionProvider databaseNameProvider() {
 			return () -> Mono.just(DatabaseSelection.byName("custom"));
 		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@TestAutoConfigurationPackage(TestPersistent.class)
+	static class EntityScanConfig {
 
 	}
 

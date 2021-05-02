@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,8 @@ package org.springframework.boot.build.bom.bomr;
 
 import java.io.StringReader;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import java.util.SortedSet;
 import java.util.TreeSet;
@@ -49,13 +49,13 @@ final class MavenMetadataVersionResolver implements VersionResolver {
 
 	private final RestTemplate rest;
 
-	private final List<String> repositoryUrls;
+	private final Collection<String> repositoryUrls;
 
-	MavenMetadataVersionResolver(List<String> repositoryUrls) {
+	MavenMetadataVersionResolver(Collection<String> repositoryUrls) {
 		this(new RestTemplate(Arrays.asList(new StringHttpMessageConverter())), repositoryUrls);
 	}
 
-	MavenMetadataVersionResolver(RestTemplate restTemplate, List<String> repositoryUrls) {
+	MavenMetadataVersionResolver(RestTemplate restTemplate, Collection<String> repositoryUrls) {
 		this.rest = restTemplate;
 		this.repositoryUrls = repositoryUrls;
 	}

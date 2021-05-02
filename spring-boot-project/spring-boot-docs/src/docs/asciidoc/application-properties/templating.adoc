@@ -1,0 +1,3 @@
+[[application-properties.templating]]
+== Templating Properties [[templating-properties]]
+include::documented-application-properties/templating.adoc[]
