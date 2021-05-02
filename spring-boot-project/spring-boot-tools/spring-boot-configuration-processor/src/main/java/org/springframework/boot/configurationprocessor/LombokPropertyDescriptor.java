@@ -36,6 +36,8 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 
 	private static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
 
+	private static final String LOMBOK_VALUE_ANNOTATION = "lombok.Value";
+
 	private static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
 
 	private static final String LOMBOK_SETTER_ANNOTATION = "lombok.Setter";
@@ -100,7 +102,11 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 		if (lombokMethodAnnotationOnElement != null) {
 			return isAccessLevelPublic(env, lombokMethodAnnotationOnElement);
 		}
-		return (env.getAnnotation(getOwnerElement(), LOMBOK_DATA_ANNOTATION) != null);
+		return (hasAnnotation(env, LOMBOK_DATA_ANNOTATION) || hasAnnotation(env, LOMBOK_VALUE_ANNOTATION));
+	}
+
+	private boolean hasAnnotation(MetadataGenerationEnvironment env, String lombokAnnotation) {
+		return (env.getAnnotation(getOwnerElement(), lombokAnnotation) != null);
 	}
 
 	private boolean isAccessLevelPublic(MetadataGenerationEnvironment env, AnnotationMirror lombokAnnotation) {

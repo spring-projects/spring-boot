@@ -30,6 +30,7 @@ import org.springframework.boot.configurationsample.lombok.LombokExplicitPropert
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
 import org.springframework.boot.configurationsample.simple.SimpleProperties;
 import org.springframework.boot.configurationsample.specific.InnerClassProperties;
 
@@ -108,6 +109,16 @@ class LombokPropertyDescriptorTests extends PropertyDescriptorTests {
 	void lombokSimplePropertyWithOnlyGetterOnDataClassShouldNotBeExposed() throws IOException {
 		process(LombokSimpleDataProperties.class, (roundEnv, metadataEnv) -> {
 			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleDataProperties.class);
+			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "ignored");
+			assertThat(property.isProperty(metadataEnv)).isFalse();
+			assertThat(property.isNested(metadataEnv)).isFalse();
+		});
+	}
+
+	@Test
+	void lombokSimplePropertyWithOnlyGetterOnValueClassShouldNotBeExposed() throws IOException {
+		process(LombokSimpleValueProperties.class, (roundEnv, metadataEnv) -> {
+			TypeElement ownerElement = roundEnv.getRootElement(LombokSimpleValueProperties.class);
 			LombokPropertyDescriptor property = createPropertyDescriptor(ownerElement, "ignored");
 			assertThat(property.isProperty(metadataEnv)).isFalse();
 			assertThat(property.isNested(metadataEnv)).isFalse();

@@ -41,6 +41,7 @@ import org.springframework.boot.configurationsample.immutable.ImmutableSimplePro
 import org.springframework.boot.configurationsample.lombok.LombokExplicitProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesGrandparent;
 import org.springframework.boot.configurationsample.simple.HierarchicalPropertiesParent;
@@ -101,6 +102,12 @@ class PropertyDescriptorResolverTests {
 	@Test
 	void propertiesWithLombokDataClass() throws IOException {
 		process(LombokSimpleDataProperties.class, propertyNames(
+				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
+	}
+
+	@Test
+	void propertiesWithLombokValueClass() throws IOException {
+		process(LombokSimpleValueProperties.class, propertyNames(
 				(stream) -> assertThat(stream).containsExactly("name", "description", "counter", "number", "items")));
 	}
 
