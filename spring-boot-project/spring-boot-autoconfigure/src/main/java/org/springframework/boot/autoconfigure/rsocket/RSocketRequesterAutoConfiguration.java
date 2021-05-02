@@ -19,6 +19,7 @@ package org.springframework.boot.autoconfigure.rsocket;
 import io.rsocket.transport.netty.server.TcpServerTransport;
 import reactor.netty.http.server.HttpServer;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
@@ -26,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
+import org.springframework.messaging.rsocket.RSocketConnectorConfigurer;
 import org.springframework.messaging.rsocket.RSocketRequester;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
@@ -37,6 +39,7 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * requester instances with different configurations.
  *
  * @author Brian Clozel
+ * @author Nguyen Bao Sach
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -47,8 +50,11 @@ public class RSocketRequesterAutoConfiguration {
 	@Bean
 	@Scope("prototype")
 	@ConditionalOnMissingBean
-	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies) {
-		return RSocketRequester.builder().rsocketStrategies(strategies);
+	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies,
+			ObjectProvider<RSocketConnectorConfigurer> connectorConfigurers) {
+		return connectorConfigurers.orderedStream()
+				.collect(RSocketRequester::builder, RSocketRequester.Builder::rsocketConnector, (first, second) -> {
+				}).rsocketStrategies(strategies);
 	}
 
 }
