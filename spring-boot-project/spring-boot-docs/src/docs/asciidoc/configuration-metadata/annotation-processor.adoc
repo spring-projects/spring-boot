@@ -22,7 +22,7 @@ With Maven the dependency should be declared as optional, as shown in the follow
 
 With Gradle, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
 		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -31,7 +31,7 @@ With Gradle, the dependency should be declared in the `annotationProcessor` conf
 
 If you are using an `additional-spring-configuration-metadata.json` file, the `compileJava` task should be configured to depend on the `processResources` task, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	compileJava.inputs.files(processResources)
 ----

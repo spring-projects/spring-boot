@@ -69,7 +69,7 @@ If that property is not set to `false`, these may be expanded by the build.
 ==== Automatic Property Expansion Using Gradle
 You can automatically expand properties from the Gradle project by configuring the Java plugin's `processResources` task to do so, as shown in the following example:
 
-[source,groovy,indent=0]
+[source,gradle,indent=0]
 ----
 	processResources {
 		expand(project.properties)

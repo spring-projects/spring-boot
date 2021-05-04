@@ -17,7 +17,7 @@ To include devtools support, add the module dependency to your build, as shown i
 ----
 
 .Gradle
-[source,groovy,indent=0,subs="attributes"]
+[source,gradle,indent=0,subs="attributes"]
 ----
 	dependencies {
 		developmentOnly("org.springframework.boot:spring-boot-devtools")

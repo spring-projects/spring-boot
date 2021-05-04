@@ -46,7 +46,7 @@ If you wish to use Jetty 10, which does support Servlet 4.0, override the `jetty
 
 The following Gradle example shows how to use Undertow in place of Reactor Netty for Spring WebFlux:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	configurations.all {
 		resolutionStrategy.dependencySubstitution.all { dependency ->

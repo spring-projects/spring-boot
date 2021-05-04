@@ -317,7 +317,7 @@ If you have defined auto-configurations directly in your application, make sure 
 
 With Gradle 4.5 and earlier, the dependency should be declared in the `compileOnly` configuration, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
 		compileOnly "org.springframework.boot:spring-boot-autoconfigure-processor"
@@ -326,7 +326,7 @@ With Gradle 4.5 and earlier, the dependency should be declared in the `compileOn
 
 With Gradle 4.6 and later, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
 		annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"

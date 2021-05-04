@@ -29,7 +29,7 @@ If you use Maven and `spring-boot-starter-parent` (which configures Maven's war 
 
 If you use Gradle, you need to modify `build.gradle` to apply the war plugin to the project, as follows:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	apply plugin: 'war'
 ----
@@ -54,7 +54,7 @@ If you use Maven, the following example marks the servlet container (Tomcat, in 
 
 If you use Gradle, the following example marks the servlet container (Tomcat, in this case) as being provided:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
 		// …

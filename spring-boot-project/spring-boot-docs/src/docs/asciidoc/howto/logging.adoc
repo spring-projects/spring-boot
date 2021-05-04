@@ -148,7 +148,7 @@ The following example shows how to set up the starters in Maven:
 
 And the following example shows one way to set up the starters in Gradle:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
 		compile 'org.springframework.boot:spring-boot-starter-web'

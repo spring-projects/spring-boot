@@ -28,7 +28,7 @@ To create a '`fully executable`' jar with Maven, use the following plugin config
 
 The following example shows the equivalent Gradle configuration:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	bootJar {
 		launchScript()

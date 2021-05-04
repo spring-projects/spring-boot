@@ -26,7 +26,7 @@ The following example shows how to do so in Maven:
 
 The following example shows how to do so in Gradle:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	dependencies {
 		implementation('org.springframework.boot:spring-boot-starter-data-redis') {
