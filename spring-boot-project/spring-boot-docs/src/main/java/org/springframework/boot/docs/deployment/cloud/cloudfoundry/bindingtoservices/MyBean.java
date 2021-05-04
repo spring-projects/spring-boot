@@ -21,7 +21,7 @@ import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;
 
 @Component
-class MyBean implements EnvironmentAware {
+public class MyBean implements EnvironmentAware {
 
 	@SuppressWarnings("unused")
 	private String instanceId;

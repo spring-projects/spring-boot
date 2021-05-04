@@ -16,11 +16,11 @@ Each value may have a description as well.
 If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
 The special `.keys` and `.values` suffixes must refer to the keys and the values, respectively.
 
-Assume a `sample.contexts` maps magic `String` values to an integer, as shown in the following example:
+Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/configurationmetadata/manualhints/valuehint/SampleProperties.java[]
+include::{docs-java}/configurationmetadata/manualhints/valuehint/MyProperties.java[]
 ----
 
 The magic values are (in this example) are `sample1` and `sample2`.
@@ -30,7 +30,7 @@ In order to offer additional content assistance for the keys, you could add the 
 ----
 	{"hints": [
 		{
-			"name": "sample.contexts.keys",
+			"name": "my.contexts.keys",
 			"values": [
 				{
 					"value": "sample1"

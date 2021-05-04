@@ -20,7 +20,7 @@ import com.mongodb.event.ConnectionPoolCreatedEvent;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.binder.mongodb.MongoConnectionPoolTagsProvider;
 
-class CustomConnectionPoolTagsProvider implements MongoConnectionPoolTagsProvider {
+public class CustomConnectionPoolTagsProvider implements MongoConnectionPoolTagsProvider {
 
 	@Override
 	public Iterable<Tag> connectionPoolTags(ConnectionPoolCreatedEvent event) {

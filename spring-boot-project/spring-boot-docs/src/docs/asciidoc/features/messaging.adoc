@@ -174,7 +174,7 @@ For instance, the following example exposes another factory that uses a specific
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/messaging/jms/receiving/custom/JmsConfiguration.java[]
+include::{docs-java}/features/messaging/jms/receiving/custom/MyJmsConfiguration.java[]
 ----
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
@@ -290,7 +290,7 @@ For instance, the following configuration class exposes another factory that use
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/messaging/amqp/receiving/custom/RabbitConfiguration.java[]
+include::{docs-java}/features/messaging/amqp/receiving/custom/MyRabbitConfiguration.java[]
 ----
 
 Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
@@ -387,7 +387,7 @@ To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/messaging/kafka/streams/KafkaStreamsConfiguration.java[]
+include::{docs-java}/features/messaging/kafka/streams/MyKafkaStreamsConfiguration.java[]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
@@ -440,7 +440,7 @@ You can also configure the Spring Kafka `JsonDeserializer` as follows:
 	      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
 	      properties:
 	        "[spring.json.value.default.type]": "com.example.Invoice"
-	        "[spring.json.trusted.packages]": "com.example,org.acme"
+	        "[spring.json.trusted.packages]": "com.example.main,com.example.another"
 ----
 
 Similarly, you can disable the `JsonSerializer` default behavior of sending type information in headers:

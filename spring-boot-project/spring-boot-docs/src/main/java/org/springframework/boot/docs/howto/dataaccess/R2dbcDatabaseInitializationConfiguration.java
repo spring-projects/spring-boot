@@ -29,7 +29,7 @@ import org.springframework.r2dbc.connection.init.ResourceDatabasePopulator;
 public class R2dbcDatabaseInitializationConfiguration {
 
 	@Autowired
-	void initializeDatabase(ConnectionFactory connectionFactory) {
+	public void initializeDatabase(ConnectionFactory connectionFactory) {
 		ResourceLoader resourceLoader = new DefaultResourceLoader();
 		Resource[] scripts = new Resource[] { resourceLoader.getResource("classpath:schema.sql"),
 				resourceLoader.getResource("classpath:data.sql") };

@@ -886,7 +886,7 @@ To replace the default metric tags, define a `MongoCommandTagsProvider` bean, as
 
 [source,java,indent=0]
 ----
-include::{docs-java}/actuator/metrics/supported/mongodb/command/SampleCommandTagsProviderConfiguration.java[]
+include::{docs-java}/actuator/metrics/supported/mongodb/command/MyCommandTagsProviderConfiguration.java[]
 ----
 
 To disable the auto-configured command metrics, set the following property:
@@ -927,7 +927,7 @@ To replace the default metric tags, define a `MongoConnectionPoolTagsProvider` b
 
 [source,java,indent=0]
 ----
-include::{docs-java}/actuator/metrics/supported/mongodb/connectionpool/SampleConnectionPoolTagsProviderConfiguration.java[]
+include::{docs-java}/actuator/metrics/supported/mongodb/connectionpool/MyConnectionPoolTagsProviderConfiguration.java[]
 ----
 
 To disable the auto-configured connection pool metrics, set the following property:
@@ -980,14 +980,14 @@ To register custom metrics, inject `MeterRegistry` into your component, as shown
 
 [source,java,indent=0]
 ----
-include::{docs-java}/actuator/metrics/registeringcustom/MetricsMeterRegistryInjection.java[]
+include::{docs-java}/actuator/metrics/registeringcustom/MyBean.java[]
 ----
 
 If your metrics depend on other beans, it is recommended that you use a `MeterBinder` to register them, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/actuator/metrics/registeringcustom/SampleMeterBinderConfiguration.java[]
+include::{docs-java}/actuator/metrics/registeringcustom/MyMeterBinderConfiguration.java[]
 ----
 
 Using a `MeterBinder` ensures that the correct dependency relationships are set up and that the bean is available when the metric's value is retrieved.
@@ -1005,7 +1005,7 @@ For example, if you want to rename the `mytag.region` tag to `mytag.area` for al
 
 [source,java,indent=0]
 ----
-include::{docs-java}/actuator/metrics/customizing/MetricsFilterConfiguration.java[]
+include::{docs-java}/actuator/metrics/customizing/MyMetricsFilterConfiguration.java[]
 ----
 
 NOTE: By default, all `MeterFilter` beans will be automatically bound to the Spring-managed `MeterRegistry`.

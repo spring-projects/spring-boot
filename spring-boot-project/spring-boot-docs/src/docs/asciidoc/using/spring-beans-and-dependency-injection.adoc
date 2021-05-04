@@ -10,14 +10,14 @@ The following example shows a `@Service` Bean that uses constructor injection to
 
 [source,java,indent=0]
 ----
-include::{docs-java}/using/springbeansanddependencyinjection/singleconstructor/DatabaseAccountService.java[]
+include::{docs-java}/using/springbeansanddependencyinjection/singleconstructor/MyAccountService.java[]
 ----
 
 If a bean has more than one constructor, you'll need to mark the one you want Spring to use with `@Autowired`:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/using/springbeansanddependencyinjection/multipleconstructors/DatabaseAccountService.java[]
+include::{docs-java}/using/springbeansanddependencyinjection/multipleconstructors/MyAccountService.java[]
 ----
 
 TIP: Notice how using constructor injection lets the `riskAssessor` field be marked as `final`, indicating that it cannot be subsequently changed.

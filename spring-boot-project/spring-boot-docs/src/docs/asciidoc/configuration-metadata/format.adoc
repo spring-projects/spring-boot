@@ -142,7 +142,7 @@ The JSON object contained in the `properties` array can contain the attributes d
 
 | `type`
 | String
-| The full signature of the data type of the property (for example, `java.lang.String`) but also a full generic type (such as `java.util.Map<java.lang.String,acme.MyEnum>`).
+| The full signature of the data type of the property (for example, `java.lang.String`) but also a full generic type (such as `java.util.Map<java.lang.String,com.example.MyEnum>`).
   You can use this attribute to guide the user as to the types of values that they can enter.
   For consistency, the type of a primitive is specified by using its wrapper counterpart (for example, `boolean` becomes `java.lang.Boolean`).
   Note that this class may be a complex type that gets converted from a `String` as values are bound.
@@ -204,12 +204,12 @@ This is still supported in a deprecated fashion and should no longer be used.
 If no reason and replacement are available, an empty `deprecation` object should be set.
 
 Deprecation can also be specified declaratively in code by adding the `@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated property.
-For instance, assume that the `app.acme.target` property was confusing and was renamed to `app.acme.name`.
+For instance, assume that the `my.app.target` property was confusing and was renamed to `my.app.name`.
 The following example shows how to handle that situation:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/configurationmetadata/format/group/AcmeProperties.java[]
+include::{docs-java}/configurationmetadata/format/group/MyProperties.java[]
 ----
 
 NOTE: There is no way to set a `level`.

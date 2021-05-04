@@ -26,12 +26,12 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-@ControllerAdvice(basePackageClasses = AcmeController.class)
+@ControllerAdvice(basePackageClasses = SomeController.class)
 public class MyControllerAdvice extends ResponseEntityExceptionHandler {
 
 	@ResponseBody
 	@ExceptionHandler(MyException.class)
-	ResponseEntity<?> handleControllerException(HttpServletRequest request, Throwable ex) {
+	public ResponseEntity<?> handleControllerException(HttpServletRequest request, Throwable ex) {
 		HttpStatus status = getStatus(request);
 		return new ResponseEntity<>(new MyErrorBody(status.value(), ex.getMessage()), status);
 	}

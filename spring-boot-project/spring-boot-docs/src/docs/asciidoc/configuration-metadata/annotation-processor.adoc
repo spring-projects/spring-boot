@@ -71,11 +71,11 @@ Consider the following example:
 
 [source,java,indent=0,subs="verbatim,attributes"]
 ----
-include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/ServerProperties.java[]
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/MyServerProperties.java[]
 ----
 
-This exposes three properties where `server.name` has no default and `server.ip` and `server.port` defaults to `"127.0.0.1"` and `9797` respectively.
-The Javadoc on fields is used to populate the `description` attribute. For instance, the description of `server.ip` is "IP address to listen to.".
+This exposes three properties where `my.server.name` has no default and `my.server.ip` and `my.server.port` defaults to `"127.0.0.1"` and `9797` respectively.
+The Javadoc on fields is used to populate the `description` attribute. For instance, the description of `my.server.ip` is "IP address to listen to.".
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
@@ -88,7 +88,7 @@ Consider the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/MessagingProperties.java[]
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/MyMessagingProperties.java[]
 ----
 
 In order to document default values for properties in the class above, you could add the following content to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
@@ -97,11 +97,11 @@ In order to document default values for properties in the class above, you could
 ----
 	{"properties": [
 		{
-			"name": "acme.messaging.addresses",
+			"name": "my.messaging.addresses",
 			"defaultValue": ["a", "b"]
 		},
 		{
-			"name": "acme.messaging.container-type",
+			"name": "my.messaging.container-type",
 			"defaultValue": "simple"
 		}
 	]}
@@ -119,10 +119,10 @@ Consider the updated example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/nestedproperties/ServerProperties.java[]
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/nestedproperties/MyServerProperties.java[]
 ----
 
-The preceding example produces metadata information for `server.name`, `server.host.ip`, and `server.host.port` properties.
+The preceding example produces metadata information for `my.server.name`, `my.server.host.ip`, and `my.server.host.port` properties.
 You can use the `@NestedConfigurationProperty` annotation on a field to indicate that a regular (non-inner) class should be treated as if it were nested.
 
 TIP: This has no effect on collections and maps, as those types are automatically identified, and a single metadata property is generated for each of them.

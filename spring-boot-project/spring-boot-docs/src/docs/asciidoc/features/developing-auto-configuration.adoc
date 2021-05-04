@@ -152,11 +152,11 @@ Concretely, each test should create a well defined `ApplicationContext` that rep
 `ApplicationContextRunner` provides a great way to achieve that.
 
 `ApplicationContextRunner` is usually defined as a field of the test class to gather the base, common configuration.
-The following example makes sure that `UserServiceAutoConfiguration` is always invoked:
+The following example makes sure that `MyServiceAutoConfiguration` is always invoked:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=runner]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=runner]
 ----
 
 TIP: If multiple auto-configurations have to be defined, there is no need to order their declarations as they are invoked in the exact same order as when running the application.
@@ -167,14 +167,14 @@ Invoking `run` provides a callback context that can be used with `AssertJ`.
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-user-config]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-user-config]
 ----
 
 It is also possible to easily customize the `Environment`, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-env]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-env]
 ----
 
 The runner can also be used to display the `ConditionEvaluationReport`.
@@ -183,7 +183,7 @@ The following example shows how to use the `ConditionEvaluationReportLoggingList
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/ConditionEvaluationReportTests.java[]
+include::{docs-java}/features/developingautoconfiguration/testing/MyConditionEvaluationReportingTests.java[]
 ----
 
 
@@ -198,11 +198,11 @@ If you need to test an auto-configuration that only operates in a Servlet or Rea
 ==== Overriding the Classpath
 It is also possible to test what happens when a particular class and/or package is not present at runtime.
 Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
-In the following example, we assert that if `UserService` is not present, the auto-configuration is properly disabled:
+In the following example, we assert that if `MyService` is not present, the auto-configuration is properly disabled:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-classloader]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-classloader]
 ----
 
 

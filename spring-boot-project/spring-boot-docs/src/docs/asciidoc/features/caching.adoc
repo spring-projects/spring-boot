@@ -11,7 +11,7 @@ In a nutshell, to add caching to an operation of your service add the relevant a
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/caching/MathService.java[]
+include::{docs-java}/features/caching/MyMathService.java[]
 ----
 
 This example demonstrates the use of caching on a potentially costly operation.
@@ -61,7 +61,7 @@ The following example sets a flag to say that `null` values should be passed dow
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/caching/provider/CacheManagerCustomizerConfiguration.java[]
+include::{docs-java}/features/caching/provider/MyCacheManagerConfiguration.java[]
 ----
 
 NOTE: In the preceding example, an auto-configured `ConcurrentMapCacheManager` is expected.
@@ -92,8 +92,8 @@ Even if the JSR-107 standard does not enforce a standardized way to define the l
 	spring:
 	  cache:
 	    jcache:
-	      provider: "com.acme.MyCachingProvider"
-	      config: "classpath:acme.xml"
+	      provider: "com.example.MyCachingProvider"
+	      config: "classpath:example.xml"
 ----
 
 NOTE: When a cache library offers both a native implementation and JSR-107 support, Spring Boot prefers the JSR-107 support, so that the same features are available if you switch to a different JSR-107 implementation.
@@ -177,7 +177,7 @@ The following example shows a customizer that configures a specific entry expira
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/caching/provider/couchbase/CouchbaseCacheManagerConfiguration.java[]
+include::{docs-java}/features/caching/provider/couchbase/MyCouchbaseCacheManagerConfiguration.java[]
 ----
 
 
@@ -208,7 +208,7 @@ The following example shows a customizer that configures a specific time to live
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/caching/provider/redis/RedisCacheManagerConfiguration.java[]
+include::{docs-java}/features/caching/provider/redis/MyRedisCacheManagerConfiguration.java[]
 ----
 
 

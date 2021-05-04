@@ -68,5 +68,5 @@ The following example shows one way to write such an exporter:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/howto/actuator/maphealthindicatorstometrics/MetricsHealthMicrometerExport.java[]
+include::{docs-java}/howto/actuator/maphealthindicatorstometrics/MyHealthMetricsExportConfiguration.java[]
 ----

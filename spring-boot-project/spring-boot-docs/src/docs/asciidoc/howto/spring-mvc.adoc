@@ -164,7 +164,7 @@ If you would rather map to a different path, you can configure one as follows:
 	spring:
 	  mvc:
 	    servlet:
-	      path: "/acme"
+	      path: "/mypath"
 ----
 
 If you have additional servlets you can declare a `@Bean` of type `Servlet` or `ServletRegistrationBean` for each and Spring Boot will register them transparently to the container.

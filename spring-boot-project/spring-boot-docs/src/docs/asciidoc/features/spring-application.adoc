@@ -188,7 +188,7 @@ The `SpringApplicationBuilder` lets you chain together multiple method calls and
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/springapplication/fluentbuilderapi/SpringApplicationBuilderExample.java[tag=*]
+include::{docs-java}/features/springapplication/fluentbuilderapi/MyApplication.java[tag=*]
 ----
 
 NOTE: There are some restrictions when creating an `ApplicationContext` hierarchy.
@@ -242,14 +242,14 @@ For example, we can export the "Readiness" state of the application to a file so
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/springapplication/applicationavailability/managing/ReadinessStateExporter.java[]
+include::{docs-java}/features/springapplication/applicationavailability/managing/MyReadinessStateExporter.java[]
 ----
 
 We can also update the state of the application, when the application breaks and cannot recover:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/springapplication/applicationavailability/managing/LocalCacheVerifier.java[]
+include::{docs-java}/features/springapplication/applicationavailability/managing/MyLocalCacheVerifier.java[]
 ----
 
 Spring Boot provides <<actuator#actuator.endpoints.kubernetes-probes,Kubernetes HTTP probes for "Liveness" and "Readiness" with Actuator Health Endpoints>>.
@@ -334,7 +334,7 @@ The `ApplicationArguments` interface provides access to both the raw `String[]` 
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/springapplication/applicationarguments/ApplicationArgumentsExample.java[]
+include::{docs-java}/features/springapplication/applicationarguments/MyBean.java[]
 ----
 
 TIP: Spring Boot also registers a `CommandLinePropertySource` with the Spring `Environment`.
@@ -355,7 +355,7 @@ The following example shows a `CommandLineRunner` with a `run` method:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/springapplication/commandlinerunner/CommandLineRunnerExample.java[]
+include::{docs-java}/features/springapplication/commandlinerunner/MyCommandLineRunner.java[]
 ----
 
 If several `CommandLineRunner` or `ApplicationRunner` beans are defined that must be called in a specific order, you can additionally implement the `org.springframework.core.Ordered` interface or use the `org.springframework.core.annotation.Order` annotation.

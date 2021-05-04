@@ -165,7 +165,7 @@ have `@SpringBootTest` inject them using the `args` attribute.
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/usingapplicationarguments/ApplicationArgumentTests.java[]
+include::{docs-java}/features/testing/springbootapplications/usingapplicationarguments/MyApplicationArgumentTests.java[]
 ----
 
 
@@ -177,7 +177,7 @@ If you have web endpoints that you want to test against this mock environment, y
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/withmockenvironment/MockMvcTests.java[]
+include::{docs-java}/features/testing/springbootapplications/withmockenvironment/MyMockMvcTests.java[]
 ----
 
 TIP: If you want to focus only on the web layer and not start a complete `ApplicationContext`, consider <<features#features.testing.spring-boot-applications.spring-mvc-tests,using `@WebMvcTest` instead>>.
@@ -186,7 +186,7 @@ Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestc
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/withmockenvironment/MockWebTestClientTests.java[]
+include::{docs-java}/features/testing/springbootapplications/withmockenvironment/MyMockWebTestClientTests.java[]
 ----
 
 [TIP]
@@ -211,7 +211,7 @@ For convenience, tests that need to make REST calls to the started server can ad
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/withrunningserver/RandomPortWebTestClientTests.java[]
+include::{docs-java}/features/testing/springbootapplications/withrunningserver/MyRandomPortWebTestClientTests.java[]
 ----
 
 This setup requires `spring-webflux` on the classpath.
@@ -219,7 +219,7 @@ If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/withrunningserver/RandomPortTestRestTemplateTests.java[]
+include::{docs-java}/features/testing/springbootapplications/withrunningserver/MyRandomPortTestRestTemplateTests.java[]
 ----
 
 
@@ -238,7 +238,7 @@ If such test needs access to an `MBeanServer`, consider marking it dirty as well
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/jmx/SampleJmxTests.java[]
+include::{docs-java}/features/testing/springbootapplications/jmx/MyJmxTests.java[]
 ----
 
 
@@ -357,7 +357,7 @@ For instance, the following example asserts that the actual number is a float va
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/jsontests/AssertJ.java[tag=*]
+include::{docs-java}/features/testing/springbootapplications/jsontests/MyJsonAssertJTests.java[tag=*]
 ----
 
 
@@ -710,14 +710,14 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/UserDocumentationTests.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/MyUserDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsMockMvcConfigurationCustomizer` bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/CustomizationConfiguration.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/MyRestDocsConfiguration.java[]
 ----
 
 If you want to make use of Spring REST Docs support for a parameterized output directory, you can create a `RestDocumentationResultHandler` bean.
@@ -726,7 +726,7 @@ The following example shows a `RestDocumentationResultHandler` being defined:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/ResultHandlerConfiguration.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/MyResultHandlerConfiguration.java[]
 ----
 
 
@@ -738,14 +738,14 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/UsersDocumentationTests.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyUsersDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsWebTestClientConfigurationCustomizer` bean, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/AdvancedRestDocsConfiguration.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyRestDocsConfiguration.java[]
 ----
 
 
@@ -757,14 +757,14 @@ You can inject it by using `@Autowired` and use it in your tests as you normally
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/UserDocumentationTests.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyUserDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer` bean can be used, as shown in the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/AdvancedRestDocsConfiguration.java[]
+include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyRestDocsConfiguration.java[]
 ----
 
 
@@ -794,7 +794,7 @@ Additional auto-configurations can be added on a test-by-test basis by creating 
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/additionalautoconfigurationandslicing/ExampleJdbcTests.java[]
+include::{docs-java}/features/testing/springbootapplications/additionalautoconfigurationandslicing/MyJdbcTests.java[]
 ----
 
 NOTE: Make sure to not use the regular `@Import` annotation to import auto-configurations as they are handled in a specific way by Spring Boot.
@@ -821,7 +821,7 @@ You could define your `@SpringBootApplication` as follows:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/SampleApplication.java[]
+include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyApplication.java[]
 ----
 
 Because this class is the source configuration for the test, any slice test actually tries to start Spring Batch, which is definitely not what you want to do.
@@ -829,7 +829,7 @@ A recommended approach is to move that area-specific configuration to a separate
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/BatchConfiguration.java[]
+include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyBatchConfiguration.java[]
 ----
 
 NOTE: Depending on the complexity of your application, you may either have a single `@Configuration` class for your customizations or one class per domain area.
@@ -840,14 +840,14 @@ For example, for a `@WebMvcTest`, the following configuration will not include t
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/WebConfiguration.java[]
+include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyWebConfiguration.java[]
 ----
 
 The configuration below will, however, cause the custom `WebMvcConfigurer` to be loaded by the test slice.
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/TestWebMvcConfigurer.java[]
+include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyWebMvcConfigurer.java[]
 ----
 
 Another source of confusion is classpath scanning.
@@ -856,7 +856,7 @@ Your application may resemble the following code:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/scan/SampleApplication.java[]
+include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/scan/MyApplication.java[]
 ----
 
 Doing so effectively overrides the default component scan directive with the side effect of scanning those two packages regardless of the slice that you chose.
@@ -920,7 +920,7 @@ To use add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutpu
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/testing/utilities/outputcapture/OutputCaptureTests.java[]
+include::{docs-java}/features/testing/utilities/outputcapture/MyOutputCaptureTests.java[]
 ----
 
 

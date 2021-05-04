@@ -73,23 +73,23 @@ For example, the `SPRING_APPLICATION_JSON` property can be supplied on the comma
 
 [indent=0]
 ----
-	$ SPRING_APPLICATION_JSON='{"acme":{"name":"test"}}' java -jar myapp.jar
+	$ SPRING_APPLICATION_JSON='{"my":{"name":"test"}}' java -jar myapp.jar
 ----
 
-In the preceding example, you end up with `acme.name=test` in the Spring `Environment`.
+In the preceding example, you end up with `my.name=test` in the Spring `Environment`.
 
 The same JSON can also be provided as a system property:
 
 [indent=0]
 ----
-	$ java -Dspring.application.json='{"acme":{"name":"test"}}' -jar myapp.jar
+	$ java -Dspring.application.json='{"my":{"name":"test"}}' -jar myapp.jar
 ----
 
 Or you could supply the JSON by using a command line argument:
 
 [indent=0]
 ----
-	$ java -jar myapp.jar --spring.application.json='{"acme":{"name":"test"}}'
+	$ java -jar myapp.jar --spring.application.json='{"my":{"name":"test"}}'
 ----
 
 If you are deploying to a classic Application Server, you could also use a JNDI variable named `java:comp/env/spring.application.json`.
@@ -616,17 +616,17 @@ It is possible to bind a bean declaring standard JavaBean properties as shown in
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/javabeanbinding/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/javabeanbinding/MyProperties.java[]
 ----
 
 The preceding POJO defines the following properties:
 
-* `acme.enabled`, with a value of `false` by default.
-* `acme.remote-address`, with a type that can be coerced from `String`.
-* `acme.security.username`, with a nested "security" object whose name is determined by the name of the property.
+* `my.service.enabled`, with a value of `false` by default.
+* `my.service.remote-address`, with a type that can be coerced from `String`.
+* `my.service.security.username`, with a nested "security" object whose name is determined by the name of the property.
   In particular, the return type is not used at all there and could have been `SecurityProperties`.
-* `acme.security.password`.
-* `acme.security.roles`, with a collection of `String` that defaults to `USER`.
+* `my.service.security.password`.
+* `my.service.security.roles`, with a collection of `String` that defaults to `USER`.
 
 NOTE: The properties that map to `@ConfigurationProperties` classes available in Spring Boot, which are configured via properties files, YAML files, environment variables etc., are public API but the accessors (getters/setters) of the class itself are not meant to be used directly.
 
@@ -657,7 +657,7 @@ The example in the previous section can be rewritten in an immutable fashion as 
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/MyProperties.java[]
 ----
 
 In this setup, the `@ConstructorBinding` annotation is used to indicate that constructor binding should be used.
@@ -666,12 +666,12 @@ This means that the binder will expect to find a constructor with the parameters
 Nested members of a `@ConstructorBinding` class (such as `Security` in the example above) will also be bound via their constructor.
 
 Default values can be specified using `@DefaultValue` and the same conversion service will be applied to coerce the `String` value to the target type of a missing property.
-By default, if no properties are bound to `Security`, the `AcmeProperties` instance will contain a `null` value for `security`.
+By default, if no properties are bound to `Security`, the `MyProperties` instance will contain a `null` value for `security`.
 If you wish you return a non-null instance of `Security` even when no properties are bound to it, you can use an empty `@DefaultValue` annotation to do so:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/nonnull/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/nonnull/MyProperties.java[]
 ----
 
 
@@ -715,7 +715,7 @@ include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/ena
 When the `@ConfigurationProperties` bean is registered using configuration property scanning or via `@EnableConfigurationProperties`, the bean has a conventional name: `<prefix>-<fqn>`, where `<prefix>` is the environment key prefix specified in the `@ConfigurationProperties` annotation and `<fqn>` is the fully qualified name of the bean.
 If the annotation does not provide any prefix, only the fully qualified name of the bean is used.
 
-The bean name in the example above is `acme-com.example.AcmeProperties`.
+The bean name in the example above is `com.example.app-com.example.app.SomeProperties`.
 ====
 
 We recommend that `@ConfigurationProperties` only deal with the environment and, in particular, does not inject other beans from the context.
@@ -730,13 +730,14 @@ This style of configuration works particularly well with the `SpringApplication`
 
 [source,yaml,indent=0]
 ----
-	acme:
-		remote-address: 192.168.1.1
-		security:
-			username: admin
-			roles:
-			  - USER
-			  - ADMIN
+	my:
+		service:
+			remote-address: 192.168.1.1
+			security:
+				username: admin
+				roles:
+				  - USER
+				  - ADMIN
 ----
 
 To work with `@ConfigurationProperties` beans, you can inject them in the same way as any other bean, as shown in the following example:
@@ -763,7 +764,7 @@ To configure a bean from the `Environment` properties, add `@ConfigurationProper
 include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/thirdpartyconfiguration/ThirdPartyConfiguration.java[]
 ----
 
-Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `AcmeProperties` example.
+Any JavaBean property defined with the `another` prefix is mapped onto that `AnotherComponent` bean in manner similar to the preceding `SomeProperties` example.
 
 
 
@@ -776,7 +777,7 @@ As an example, consider the following `@ConfigurationProperties` class:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/relaxedbinding/OwnerProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/relaxedbinding/MyPersonProperties.java[]
 ----
 
 With the preceding code, the following properties names can all be used:
@@ -786,20 +787,20 @@ With the preceding code, the following properties names can all be used:
 |===
 | Property | Note
 
-| `acme.my-project.person.first-name`
+| `my.main-project.person.first-name`
 | Kebab case, which is recommended for use in `.properties` and `.yml` files.
 
-| `acme.myProject.person.firstName`
+| `my.main-project.person.firstName`
 | Standard camel case syntax.
 
-| `acme.my_project.person.first_name`
+| `my.main-project.person.first_name`
 | Underscore notation, which is an alternative format for use in `.properties` and `.yml` files.
 
-| `ACME_MYPROJECT_PERSON_FIRSTNAME`
+| `MY_MAINPROJECT_PERSON_FIRSTNAME`
 | Upper case format, which is recommended when using system environment variables.
 |===
 
-NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase and separated by `-`, such as `acme.my-project.person`).
+NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase and separated by `-`, such as `my.main-project.person`).
 
 .relaxed binding rules per property source
 [cols="2,4,4"]
@@ -823,7 +824,7 @@ NOTE: The `prefix` value for the annotation _must_ be in kebab case (lowercase a
 | Standard list syntax using `[ ]` or comma-separated values
 |===
 
-TIP: We recommend that, when possible, properties are stored in lower-case kebab format, such as `my.property-name=acme`.
+TIP: We recommend that, when possible, properties are stored in lower-case kebab format, such as `my.person.first-name=Rod`.
 
 
 
@@ -838,15 +839,15 @@ For example, consider binding the following properties to a `Map<String,String>`
 [source,properties,indent=0,role="primary"]
 .Properties
 ----
-	acme.map.[/key1]=value1
-	acme.map.[/key2]=value2
-	acme.map./key3=value3
+	my.map.[/key1]=value1
+	my.map.[/key2]=value2
+	my.map./key3=value3
 ----
 
 [source,yaml,indent=0,role="secondary"]
 .Yaml
 ----
-	acme:
+	my:
 	  map:
 	    "[/key1]": "value1"
 	    "[/key2]": "value2"
@@ -882,7 +883,7 @@ For example, the configuration property `spring.main.log-startup-info` would be 
 Environment variables can also be used when binding to object lists.
 To bind to a `List`, the element number should be surrounded with underscores in the variable name.
 
-For example, the configuration property `my.acme[0].other` would use an environment variable named `MY_ACME_0_OTHER`.
+For example, the configuration property `my.service[0].other` would use an environment variable named `MY_SERVICE_0_OTHER`.
 
 
 
@@ -891,18 +892,18 @@ For example, the configuration property `my.acme[0].other` would use an environm
 When lists are configured in more than one place, overriding works by replacing the entire list.
 
 For example, assume a `MyPojo` object with `name` and `description` attributes that are `null` by default.
-The following example exposes a list of `MyPojo` objects from `AcmeProperties`:
+The following example exposes a list of `MyPojo` objects from `MyProperties`:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/list/AcmeProperties.java[tag=*]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/list/MyProperties.java[]
 ----
 
 Consider the following configuration:
 
 [source,yaml,indent=0,configblocks]
 ----
-	acme:
+	my:
 	  list:
 	  - name: "my name"
 	    description: "my description"
@@ -911,12 +912,12 @@ Consider the following configuration:
 	  config:
 	    activate:
 	      on-profile: "dev"
-	acme:
+	my:
 	  list:
 	  - name: "my another name"
 ----
 
-If the `dev` profile is not active, `AcmeProperties.list` contains one `MyPojo` entry, as previously defined.
+If the `dev` profile is not active, `MyProperties.list` contains one `MyPojo` entry, as previously defined.
 If the `dev` profile is enabled, however, the `list` _still_ contains only one entry (with a name of `my another name` and a description of `null`).
 This configuration _does not_ add a second `MyPojo` instance to the list, and it does not merge the items.
 
@@ -925,7 +926,7 @@ Consider the following example:
 
 [source,yaml,indent=0,configblocks]
 ----
-	acme:
+	my:
 	  list:
 	  - name: "my name"
 	    description: "my description"
@@ -936,28 +937,28 @@ Consider the following example:
 	  config:
 	    activate:
 	      on-profile: "dev"
-	acme:
+	my:
 	  list:
 	  - name: "my another name"
 ----
 
-In the preceding example, if the `dev` profile is active, `AcmeProperties.list` contains _one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
+In the preceding example, if the `dev` profile is active, `MyProperties.list` contains _one_ `MyPojo` entry (with a name of `my another name` and a description of `null`).
 For YAML, both comma-separated lists and YAML lists can be used for completely overriding the contents of the list.
 
 For `Map` properties, you can bind with property values drawn from multiple sources.
 However, for the same property in multiple sources, the one with the highest priority is used.
-The following example exposes a `Map<String, MyPojo>` from `AcmeProperties`:
+The following example exposes a `Map<String, MyPojo>` from `MyProperties`:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/map/AcmeProperties.java[tag=*]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/mergingcomplextypes/map/MyProperties.java[]
 ----
 
 Consider the following configuration:
 
 [source,yaml,indent=0,configblocks]
 ----
-	acme:
+	my:
 	  map:
 	    key1:
 	      name: "my name 1"
@@ -967,7 +968,7 @@ Consider the following configuration:
 	  config:
 	    activate:
 	      on-profile: "dev"
-	acme:
+	my:
 	  map:
 	    key1:
 	      name: "dev name 1"
@@ -976,7 +977,7 @@ Consider the following configuration:
 	      description: "dev description 2"
 ----
 
-If the `dev` profile is not active, `AcmeProperties.map` contains one entry with key `key1` (with a name of `my name 1` and a description of `my description 1`).
+If the `dev` profile is not active, `MyProperties.map` contains one entry with key `key1` (with a name of `my name 1` and a description of `my description 1`).
 If the `dev` profile is enabled, however, `map` contains two entries with keys `key1` (with a name of `dev name 1` and a description of `my description 1`) and `key2` (with a name of `dev name 2` and a description of `dev description 2`).
 
 NOTE: The preceding merging rules apply to properties from all property sources, and not just files.
@@ -1007,7 +1008,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/javabeanbinding/AppSystemProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/javabeanbinding/MyProperties.java[]
 ----
 
 To specify a session timeout of 30 seconds, `30`, `PT30S` and `30s` are all equivalent.
@@ -1030,7 +1031,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/constructorbinding/AppSystemProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/durations/constructorbinding/MyProperties.java[]
 ----
 
 
@@ -1071,7 +1072,7 @@ Consider the following example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/javabeanbinding/AppIoProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/javabeanbinding/MyProperties.java[]
 ----
 
 To specify a buffer size of 10 megabytes, `10` and `10MB` are equivalent.
@@ -1092,7 +1093,7 @@ If you prefer to use constructor binding, the same properties can be exposed, as
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/constructorbinding/AppIoProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/conversion/datasizes/constructorbinding/MyProperties.java[]
 ----
 
 TIP: If you are upgrading a `Long` property, make sure to define the unit (using `@DataSizeUnit`) if it isn't bytes.
@@ -1108,17 +1109,17 @@ To do so, ensure that a compliant JSR-303 implementation is on your classpath an
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/MyProperties.java[]
 ----
 
 TIP: You can also trigger validation by annotating the `@Bean` method that creates the configuration properties with `@Validated`.
 
 To ensure that validation is always triggered for nested properties, even when no properties are found, the associated field must be annotated with `@Valid`.
-The following example builds on the preceding `AcmeProperties` example:
+The following example builds on the preceding `MyProperties` example:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/nested/AcmeProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/validate/nested/MyProperties.java[]
 ----
 
 You can also add a custom Spring `Validator` by creating a bean definition called `configurationPropertiesValidator`.

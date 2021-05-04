@@ -43,7 +43,7 @@ public class MyRestController {
 	}
 
 	@GetMapping("/{user}/customers")
-	List<Customer> getUserCustomers(@PathVariable Long userId) {
+	public List<Customer> getUserCustomers(@PathVariable Long userId) {
 		return this.userRepository.findById(userId).map(this.customerRepository::findByUser).get();
 	}
 

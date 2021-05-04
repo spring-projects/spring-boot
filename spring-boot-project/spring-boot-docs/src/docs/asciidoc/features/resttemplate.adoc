@@ -31,7 +31,7 @@ The following example shows a customizer that configures the use of a proxy for 
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/resttemplate/customization/RestTemplateProxyCustomizer.java[]
+include::{docs-java}/features/resttemplate/customization/MyRestTemplateCustomizer.java[]
 ----
 
 Finally, you can also create your own `RestTemplateBuilder` bean.
@@ -40,7 +40,7 @@ The following example exposes a `RestTemplateBuilder` with what Spring Boot woul
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/resttemplate/customization/RestTemplateBuilderConfiguration.java[]
+include::{docs-java}/features/resttemplate/customization/MyRestTemplateBuilderConfiguration.java[]
 ----
 
 The most extreme (and rarely used) option is to create your own `RestTemplateBuilder` bean without using a configurer.

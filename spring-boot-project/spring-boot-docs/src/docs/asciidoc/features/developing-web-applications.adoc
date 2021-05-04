@@ -69,7 +69,7 @@ If you need to add or customize converters, you can use Spring Boot's `HttpMessa
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/messageconverters/HttpMessageConvertersConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/messageconverters/MyHttpMessageConvertersConfiguration.java[]
 ----
 
 Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
@@ -352,7 +352,7 @@ You can also define a class annotated with `@ControllerAdvice` to customize the 
 include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/MyControllerAdvice.java[]
 ----
 
-In the preceding example, if `YourException` is thrown by a controller defined in the same package as `AcmeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
+In the preceding example, if `YourException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
 
 In some cases, errors handled at the controller level are not recorded by the <<actuator#actuator.metrics.supported.spring-mvc, metrics infrastructure>>.
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
@@ -419,14 +419,14 @@ This abstraction works directly with the underlying embedded servlet container a
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/ErrorPageConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/MyErrorPagesConfiguration.java[]
 ----
 
 NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/ServletFilterConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/MyFilterConfiguration.java[]
 ----
 
 Note that the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type.
@@ -469,7 +469,7 @@ Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method COR
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/cors/CorsConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/cors/MyCorsConfiguration.java[]
 ----
 
 
@@ -491,12 +491,12 @@ include::{docs-java}/features/developingwebapplications/springwebflux/MyRestCont
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/RoutingConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/MyRoutingConfiguration.java[]
 ----
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/UserHandler.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/MyUserHandler.java[]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -540,7 +540,7 @@ If you need to add or customize codecs, you can create a custom `CodecCustomizer
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/httpcodecs/CodecConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/httpcodecs/MyCodecsConfiguration.java[]
 ----
 
 You can also leverage <<features#features.developing-web-applications.spring-mvc.json,Boot's custom JSON serializers and deserializers>>.
@@ -610,11 +610,11 @@ The first step to customizing this feature often involves using the existing mec
 For that, you can add a bean of type `ErrorAttributes`.
 
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
-Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
+Because a `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/CustomErrorWebExceptionHandler.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyErrorWebExceptionHandler.java[]
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
@@ -624,7 +624,7 @@ Applications can ensure that such exceptions are recorded with the request metri
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/ExceptionHandlingController.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyExceptionHandlingController.java[]
 ----
 
 
@@ -702,7 +702,7 @@ To get started with Jersey, include the `spring-boot-starter-jersey` as a depend
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/features/developingwebapplications/jersey/JerseyConfig.java[]
+include::{docs-java}/features/developingwebapplications/jersey/MyJerseyConfig.java[]
 ----
 
 WARNING: Jersey's support for scanning executable archives is rather limited.
@@ -715,7 +715,7 @@ All the registered endpoints should be `@Components` with HTTP resource annotati
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/features/developingwebapplications/jersey/Endpoint.java[]
+include::{docs-java}/features/developingwebapplications/jersey/MyEndpoint.java[]
 ----
 
 Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
@@ -829,7 +829,7 @@ The following example shows programmatically setting the port:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/CustomizationBean.java[]
+include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/MyWebServerFactoryCustomizer.java[]
 ----
 
 `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
@@ -837,7 +837,7 @@ The following example shows how to customize `TomcatServletWebServerFactory` tha
 
 [source,java,indent=0,subs="verbatim,quotes,attributes"]
 ----
-include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/TomcatServerCustomizer.java[]
+include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/MyTomcatWebServerFactoryCustomizer.java[]
 ----
 
 

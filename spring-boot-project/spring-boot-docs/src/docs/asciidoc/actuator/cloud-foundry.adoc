@@ -52,5 +52,5 @@ For Tomcat, the following configuration can be added:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/actuator/cloudfoundry/customcontextpath/CloudFoundryCustomContextPathConfiguration.java[]
+include::{docs-java}/actuator/cloudfoundry/customcontextpath/MyCloudFoundryConfiguration.java[]
 ----

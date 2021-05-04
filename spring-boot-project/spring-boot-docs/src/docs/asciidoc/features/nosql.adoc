@@ -222,7 +222,7 @@ To enable transaction management, the following bean must be defined in your con
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/nosql/neo4j/repositories/Neo4jReactiveTransactionManagerConfiguration.java[]
+include::{docs-java}/features/nosql/neo4j/repositories/MyNeo4jConfiguration.java[]
 ----
 ====
 
@@ -527,7 +527,7 @@ For instance, you can customize the converters to use, as follows:
 
 [source,java,indent=0]
 ----
-include::{docs-java}/features/nosql/couchbase/repositories/CouchbaseConversionsConfiguration.java[]
+include::{docs-java}/features/nosql/couchbase/repositories/MyCouchbaseConfiguration.java[]
 ----
 
 

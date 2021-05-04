@@ -28,7 +28,7 @@ import org.springframework.context.annotation.Configuration;
 public class MyMeterRegistryConfiguration {
 
 	@Bean
-	MeterRegistryCustomizer<GraphiteMeterRegistry> graphiteMetricsNamingConvention() {
+	public MeterRegistryCustomizer<GraphiteMeterRegistry> graphiteMetricsNamingConvention() {
 		return (registry) -> registry.config().namingConvention(this::name);
 	}
 

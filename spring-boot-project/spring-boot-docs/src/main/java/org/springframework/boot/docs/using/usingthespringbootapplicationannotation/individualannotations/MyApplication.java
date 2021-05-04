@@ -23,7 +23,7 @@ import org.springframework.context.annotation.Import;
 
 @Configuration(proxyBeanMethods = false)
 @EnableAutoConfiguration
-@Import({ MyConfig.class, MyAnotherConfig.class })
+@Import({ SomeConfiguration.class, AnotherConfiguration.class })
 public class MyApplication {
 
 	public static void main(String[] args) {

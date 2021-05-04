@@ -16,7 +16,6 @@
 
 package org.springframework.boot.docs.features.messaging.kafka.sending;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
 
@@ -25,7 +24,6 @@ public class MyBean {
 
 	private final KafkaTemplate<String, String> kafkaTemplate;
 
-	@Autowired
 	public MyBean(KafkaTemplate<String, String> kafkaTemplate) {
 		this.kafkaTemplate = kafkaTemplate;
 	}
