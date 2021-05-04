@@ -23,9 +23,9 @@ For instance, to use JDBC as the back-end store, you can configure your applicat
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-    spring:
-      session:
-        store-type: "jdbc"
+	spring:
+	  session:
+	    store-type: "jdbc"
 ----
 
 TIP: You can disable Spring Session by setting the `store-type` to `none`.
@@ -35,10 +35,10 @@ For instance, it is possible to customize the name of the table for the JDBC sto
 
 [source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-    spring:
-      session:
-        jdbc:
-          table-name: "SESSIONS"
+	spring:
+	  session:
+	    jdbc:
+	      table-name: "SESSIONS"
 ----
 
 For setting the timeout of the session you can use the configprop:spring.session.timeout[] property.

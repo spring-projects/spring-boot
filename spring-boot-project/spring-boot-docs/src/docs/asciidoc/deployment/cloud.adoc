@@ -27,7 +27,7 @@ Once you have built your application (by using, for example, `mvn clean package`
 Be sure to have https://docs.cloudfoundry.org/cf-cli/getting-started.html#login[logged in with your `cf` command line client] before pushing an application.
 The following line shows using the `cf push` command to deploy an application:
 
-[indent=0,subs="verbatim"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ cf push acloudyspringtime -p target/demo-0.0.1-SNAPSHOT.jar
 ----
@@ -68,7 +68,7 @@ Congratulations! The application is now live!
 
 Once your application is live, you can verify the status of the deployed application by using the `cf apps` command, as shown in the following example:
 
-[indent=0,subs="verbatim"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ cf apps
 	Getting applications in ...
@@ -126,14 +126,14 @@ The preStop handler can be configured via the PodSpec in the pod's configuration
 
 [source,yml,indent=0,subs="verbatim"]
 ----
-spec:
-  containers:
-  - name: example-container
-    image: example-image
-    lifecycle:
-      preStop:
-        exec:
-          command: ["sh", "-c", "sleep 10"]
+	spec:
+	  containers:
+	  - name: example-container
+	    image: example-image
+	    lifecycle:
+	      preStop:
+	        exec:
+	          command: ["sh", "-c", "sleep 10"]
 ----
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<features#features.graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
@@ -161,7 +161,7 @@ The `$PORT` environment variable is assigned to us by the Heroku PaaS.
 This should be everything you need.
 The most common deployment workflow for Heroku deployments is to `git push` the code to production, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes"]
+[source,shell,indent=0,subs="verbatim,quotes"]
 ----
 	$ git push heroku main
 
@@ -308,7 +308,7 @@ Boxfuse leverages this information both for the images it produces as well as fo
 
 Once you have created a https://console.boxfuse.com[Boxfuse account], connected it to your AWS account, installed the latest version of the Boxfuse Client, and ensured that the application has been built by Maven or Gradle (by using, for example, `mvn clean package`), you can deploy your Spring Boot application to AWS with a command similar to the following:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ boxfuse run myapp-1.0.jar -env=prod
 ----

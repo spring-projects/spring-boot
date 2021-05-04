@@ -66,12 +66,13 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 ----
 
 Each "`property`" is a configuration item that the user specifies with a given value.
-For example, `server.port` and `server.address` might be specified in `application.properties`, as follows:
+For example, `server.port` and `server.address` might be specified in your `application.properties`/`application.yaml`, as follows:
 
-[source,properties,indent=0,subs="verbatim",configprops]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	server.port=9090
-	server.address=127.0.0.1
+	server:
+	  port: 9090
+	  address: 127.0.0.1
 ----
 
 The "`groups`" are higher level items that do not themselves specify a value but instead provide a contextual grouping for properties.

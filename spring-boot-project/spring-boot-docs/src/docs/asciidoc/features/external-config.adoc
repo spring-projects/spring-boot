@@ -71,7 +71,7 @@ When your application starts, any `spring.application.json` or `SPRING_APPLICATI
 
 For example, the `SPRING_APPLICATION_JSON` property can be supplied on the command line in a UN{asterisk}X shell as an environment variable:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ SPRING_APPLICATION_JSON='{"my":{"name":"test"}}' java -jar myapp.jar
 ----
@@ -80,14 +80,14 @@ In the preceding example, you end up with `my.name=test` in the Spring `Environm
 
 The same JSON can also be provided as a system property:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -Dspring.application.json='{"my":{"name":"test"}}' -jar myapp.jar
 ----
 
 Or you could supply the JSON by using a command line argument:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar myapp.jar --spring.application.json='{"my":{"name":"test"}}'
 ----
@@ -116,14 +116,14 @@ If you do not like `application` as the configuration file name, you can switch 
 You can also refer to an explicit location by using the `spring.config.location` environment property (which is a comma-separated list of directory locations or file paths).
 The following example shows how to specify a different file name:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar myproject.jar --spring.config.name=myproject
 ----
 
 The following example shows how to specify two locations:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar myproject.jar --spring.config.location=optional:classpath:/default.properties,optional:classpath:/override.properties
 ----

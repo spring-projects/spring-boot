@@ -77,9 +77,12 @@ Each will be called in order with the `MongoClientSettings.Builder` that is used
 
 You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
-[source,properties,indent=0,subs="verbatim",configprops]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring.data.mongodb.uri=mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test
+	spring:
+	  data:
+	    mongodb:
+	      uri: "mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test"
 ----
 
 Alternatively, you can specify connection details using discrete properties.

@@ -71,7 +71,7 @@ To do so, you need to <<features#features.external-config,enable the `debug` pro
 
 For instance, if you are running your application by using `java -jar`, you can enable the `debug` property as follows:
 
-[indent=0,subs="verbatim"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar myproject-0.0.1-SNAPSHOT.jar --debug
 ----
@@ -410,7 +410,7 @@ The first available implementation, `FlightRecorderApplicationStartup` is provid
 It adds Spring-specific startup events to a Java Flight Recorder session and is meant for profiling applications and correlating their Spring context lifecycle with JVM events (such as allocations, GCs, class loading...).
 Once configured, you can record data by running the application with the Flight Recorder enabled:
 
-[source,bash,indent=0,subs="verbatim"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -XX:StartFlightRecording:filename=recording.jfr,duration=10s -jar demo.jar
 ----

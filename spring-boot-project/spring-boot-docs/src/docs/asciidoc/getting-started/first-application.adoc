@@ -15,7 +15,7 @@ Check the https://github.com/spring-io/start.spring.io/blob/main/USING.adoc[star
 
 Before we begin, open a terminal and run the following commands to ensure that you have valid versions of Java and Maven installed:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -version
 	java version "1.8.0_102"
@@ -23,7 +23,7 @@ Before we begin, open a terminal and run the following commands to ensure that y
 	Java HotSpot(TM) 64-Bit Server VM (build 25.102-b14, mixed mode)
 ----
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ mvn -v
 	Apache Maven 3.5.4 (1edded0938998edf8bf061f1ceb3cfdeccf443fe; 2018-06-17T14:33:14-04:00)
@@ -119,7 +119,7 @@ Other "`Starters`" provide dependencies that you are likely to need when develop
 Since we are developing a web application, we add a `spring-boot-starter-web` dependency.
 Before that, we can look at what we currently have by running the following command:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ mvn dependency:tree
 
@@ -208,7 +208,7 @@ Since you used the `spring-boot-starter-parent` POM, you have a useful `run` goa
 Type `mvn spring-boot:run` from the root project directory to start the application.
 You should see output similar to the following:
 
-[indent=0,subs="verbatim,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ mvn spring-boot:run
 
@@ -275,7 +275,7 @@ See the {spring-boot-maven-plugin-docs}#getting-started[plugin documentation] fo
 
 Save your `pom.xml` and run `mvn package` from the command line, as follows:
 
-[indent=0,subs="verbatim,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ mvn package
 
@@ -298,7 +298,7 @@ If you look in the `target` directory, you should see `myproject-0.0.1-SNAPSHOT.
 The file should be around 10 MB in size.
 If you want to peek inside, you can use `jar tvf`, as follows:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ jar tvf target/myproject-0.0.1-SNAPSHOT.jar
 ----
@@ -308,7 +308,7 @@ This is the original jar file that Maven created before it was repackaged by Spr
 
 To run that application, use the `java -jar` command, as follows:
 
-[indent=0,subs="verbatim,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
 

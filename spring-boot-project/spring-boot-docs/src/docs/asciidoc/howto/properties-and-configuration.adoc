@@ -218,7 +218,7 @@ See "`<<features#features.external-config.yaml>>`" in the '`Spring Boot features
 The Spring `Environment` has an API for this, but you would normally set a System property (configprop:spring.profiles.active[]) or an OS environment variable (configprop:spring.profiles.active[format=envvar]).
 Also, you can launch your application with a `-D` argument (remember to put it before the main class or jar archive), as follows:
 
-[indent=0,subs="verbatim"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar -Dspring.profiles.active=production demo-0.0.1-SNAPSHOT.jar
 ----

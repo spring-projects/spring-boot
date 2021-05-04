@@ -42,13 +42,13 @@ If you use Maven, the following example marks the servlet container (Tomcat, in 
 [source,xml,indent=0,subs="verbatim"]
 ----
 	<dependencies>
-		<!-- … -->
+		<!-- ... -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- … -->
+		<!-- ... -->
 	</dependencies>
 ----
 
@@ -57,9 +57,9 @@ If you use Gradle, the following example marks the servlet container (Tomcat, in
 [source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
-		// …
+		// ...
 		providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-		// …
+		// ...
 	}
 ----
 

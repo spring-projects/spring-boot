@@ -15,7 +15,7 @@ To use the module, you need to declare an additional `spring-boot` namespace in 
 
 You need to remember to start Ant using the `-lib` option, as shown in the following example:
 
-[indent=0,subs="verbatim,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ ant -lib <directory containing spring-boot-antlib-{spring-boot-version}.jar>
 ----
