@@ -64,7 +64,6 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * plugin is applied:
  *
  * <ul>
- * <li>{@code sourceCompatibility} is set to {@code 1.8}
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied
@@ -79,7 +78,11 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  * {@link JavaPlugin} applied
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
- * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}
+ * <li>{@link JavaCompile} tasks are configured:
+ * <ul>
+ * <li>to use {@code -parameters}
+ * <li>with source and target compatibility of 1.8
+ * </ul>
  * <li>{@link Jar} tasks are configured to produce jars with LICENSE.txt and NOTICE.txt
  * files and the following manifest entries:
  * <ul>
@@ -101,11 +104,12 @@ import org.springframework.boot.build.testing.TestFailuresPlugin;
  */
 class JavaConventions {
 
+	private static final String SOURCE_AND_TARGET_COMPATIBILITY = "1.8";
+
 	void apply(Project project) {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
 			project.getPlugins().apply(TestFailuresPlugin.class);
 			configureSpringJavaFormat(project);
-			project.setProperty("sourceCompatibility", "1.8");
 			configureJavaCompileConventions(project);
 			configureJavadocConventions(project);
 			configureTestConventions(project);
@@ -130,7 +134,7 @@ class JavaConventions {
 			jar.manifest((manifest) -> {
 				Map<String, Object> attributes = new TreeMap<>();
 				attributes.put("Automatic-Module-Name", project.getName().replace("-", "."));
-				attributes.put("Build-Jdk-Spec", project.property("sourceCompatibility"));
+				attributes.put("Build-Jdk-Spec", SOURCE_AND_TARGET_COMPATIBILITY);
 				attributes.put("Built-By", "Spring");
 				attributes.put("Implementation-Title",
 						determineImplementationTitle(project, sourceJarTaskNames, javadocJarTaskNames, jar));
@@ -195,6 +199,8 @@ class JavaConventions {
 	private void configureJavaCompileConventions(Project project) {
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
+			compile.setSourceCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
+			compile.setTargetCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
 			withOptionalBuildJavaHome(project, (javaHome) -> {
 				compile.getOptions().setFork(true);
 				compile.getOptions().getForkOptions().setJavaHome(new File(javaHome));
