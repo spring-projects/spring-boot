@@ -391,7 +391,7 @@ include::{docs-java}/features/messaging/kafka/streams/MyKafkaStreamsConfiguratio
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
-You can customize this behaviour using the configprop:spring.kafka.streams.auto-startup[] property.
+You can customize this behavior using the configprop:spring.kafka.streams.auto-startup[] property.
 
 
 

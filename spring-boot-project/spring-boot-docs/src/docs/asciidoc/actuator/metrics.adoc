@@ -224,7 +224,7 @@ The https://graphiteapp.org[Graphite server] host and port to use can be provide
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/graphite#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
-TIP: To take control over this behaviour, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
+TIP: To take control over this behavior, define your `GraphiteMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you define your own:
 
 [source,java,indent=0]
@@ -297,7 +297,7 @@ The domain to use can be provided using:
 
 Micrometer provides a default `HierarchicalNameMapper` that governs how a dimensional meter id is {micrometer-registry-docs}/jmx#_hierarchical_name_mapping[mapped to flat hierarchical names].
 
-TIP: To take control over this behaviour, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
+TIP: To take control over this behavior, define your `JmxMeterRegistry` and supply your own `HierarchicalNameMapper`.
 An auto-configured `JmxConfig` and `Clock` beans are provided unless you define your own:
 
 [source,java,indent=0]

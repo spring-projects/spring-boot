@@ -220,7 +220,7 @@ Concretely, a custom starter can contain the following:
 In a nutshell, adding the starter should provide everything needed to start using that library.
 
 This separation in two modules is in no way necessary.
-If "acme" has several flavours, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
+If "acme" has several flavors, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
 Besides, you have the ability to craft a starter that provides an opinion about those optional dependencies.
 At the same time, others can rely only on the `autoconfigure` module and craft their own starter with different opinions.
 
