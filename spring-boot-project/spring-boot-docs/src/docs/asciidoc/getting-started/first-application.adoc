@@ -42,7 +42,7 @@ We need to start by creating a Maven `pom.xml` file.
 The `pom.xml` is the recipe that is used to build your project.
 Open your favorite text editor and add the following:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -130,7 +130,7 @@ The `mvn dependency:tree` command prints a tree representation of your project d
 You can see that `spring-boot-starter-parent` provides no dependencies by itself.
 To add the necessary dependencies, edit your `pom.xml` and add the `spring-boot-starter-web` dependency immediately below the `parent` section:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependencies>
 		<dependency>
@@ -149,7 +149,7 @@ If you run `mvn dependency:tree` again, you see that there are now a number of a
 To finish our application, we need to create a single Java file.
 By default, Maven compiles sources from `src/main/java`, so you need to create that directory structure and then add a file named `src/main/java/MyApplication.java` to contain the following code:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/gettingstarted/firstapplication/code/MyApplication.java[]
 ----
@@ -208,7 +208,7 @@ Since you used the `spring-boot-starter-parent` POM, you have a useful `run` goa
 Type `mvn spring-boot:run` from the root project directory to start the application.
 You should see output similar to the following:
 
-[indent=0,subs="attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ mvn spring-boot:run
 
@@ -257,7 +257,7 @@ Spring Boot takes a <<executable-jar#executable-jar, different approach>> and le
 To create an executable jar, we need to add the `spring-boot-maven-plugin` to our `pom.xml`.
 To do so, insert the following lines just below the `dependencies` section:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -275,7 +275,7 @@ See the {spring-boot-maven-plugin-docs}#getting-started[plugin documentation] fo
 
 Save your `pom.xml` and run `mvn package` from the command line, as follows:
 
-[indent=0,subs="attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ mvn package
 
@@ -308,7 +308,7 @@ This is the original jar file that Maven created before it was repackaged by Spr
 
 To run that application, use the `java -jar` command, as follows:
 
-[indent=0,subs="attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ java -jar target/myproject-0.0.1-SNAPSHOT.jar
 

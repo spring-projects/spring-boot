@@ -10,7 +10,7 @@ Most developers use the `spring-boot-starter-test` "`Starter`", which imports bo
 If you have tests that use JUnit 4, JUnit 5's vintage engine can be used to run them.
 To use the vintage engine, add a dependency on `junit-vintage-engine`, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.junit.vintage</groupId>
@@ -105,7 +105,7 @@ If you have only Spring WebFlux, we'll detect that and configure a WebFlux-based
 If both are present, Spring MVC takes precedence.
 If you want to test a reactive web application in this scenario, you must set the configprop:spring.main.web-application-type[] property:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/detectingwebapptype/MyWebFluxTests.java[]
 ----
@@ -148,7 +148,7 @@ As we <<features#features.testing.spring-boot-applications.detecting-configurati
 When placed on a top-level class, `@TestConfiguration` indicates that classes in `src/test/java` should not be picked up by scanning.
 You can then import that class explicitly where it is required, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/excludingconfiguration/MyTests.java[]
 ----
@@ -163,7 +163,7 @@ See {spring-boot-module-api}/context/TypeExcludeFilter.html[the Javadoc] for det
 If your application expects <<features#features.spring-application.application-arguments,arguments>>, you can
 have `@SpringBootTest` inject them using the `args` attribute.
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/usingapplicationarguments/MyApplicationArgumentTests.java[]
 ----
@@ -175,7 +175,7 @@ include::{docs-java}/features/testing/springbootapplications/usingapplicationarg
 By default, `@SpringBootTest` does not start the server.
 If you have web endpoints that you want to test against this mock environment, you can additionally configure {spring-framework-docs}/testing.html#spring-mvc-test-framework[`MockMvc`] as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/withmockenvironment/MyMockMvcTests.java[]
 ----
@@ -184,7 +184,7 @@ TIP: If you want to focus only on the web layer and not start a complete `Applic
 
 Alternatively, you can configure a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`] as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/withmockenvironment/MyMockWebTestClientTests.java[]
 ----
@@ -209,7 +209,7 @@ If you use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)`, an avai
 The `@LocalServerPort` annotation can be used to <<howto#howto.webserver.discover-port,inject the actual port used>> into your test.
 For convenience, tests that need to make REST calls to the started server can additionally `@Autowire` a {spring-framework-docs}/testing.html#webtestclient-tests[`WebTestClient`], which resolves relative links to the running server and comes with a dedicated API for verifying responses, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/withrunningserver/MyRandomPortWebTestClientTests.java[]
 ----
@@ -217,7 +217,7 @@ include::{docs-java}/features/testing/springbootapplications/withrunningserver/M
 This setup requires `spring-webflux` on the classpath.
 If you can't or won't add webflux, Spring Boot also provides a `TestRestTemplate` facility:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/withrunningserver/MyRandomPortTestRestTemplateTests.java[]
 ----
@@ -236,7 +236,7 @@ Any such beans are called with the `WebTestClient.Builder` that is used to creat
 As the test context framework caches context, JMX is disabled by default to prevent identical components to register on the same domain.
 If such test needs access to an `MBeanServer`, consider marking it dirty as well:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/jmx/MyJmxTests.java[]
 ----
@@ -268,7 +268,7 @@ Mock beans are automatically reset after each test method.
 If your test uses one of Spring Boot's test annotations (such as `@SpringBootTest`), this feature is automatically enabled.
 To use this feature with a different arrangement, listeners must be explicitly added, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/mockingbeans/listener/MyTests.java[]
 ----
@@ -277,7 +277,7 @@ include::{docs-java}/features/testing/springbootapplications/mockingbeans/listen
 
 The following example replaces an existing `RemoteService` bean with a mock implementation:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/mockingbeans/bean/MyTests.java[]
 ----
@@ -343,7 +343,7 @@ The `JacksonTester`, `GsonTester`, `JsonbTester`, and `BasicJsonTester` classes 
 Any helper fields on the test class can be `@Autowired` when using `@JsonTest`.
 The following example shows a test class for Jackson:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/jsontests/MyJsonTests.java[]
 ----
@@ -355,7 +355,7 @@ If you're using Spring Boot's AssertJ-based helpers to assert on a number value 
 Instead, you can use AssertJ's `satisfies` to assert that the value matches the given condition.
 For instance, the following example asserts that the actual number is a float value close to `0.15` within an offset of `0.01`.
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/jsontests/MyJsonAssertJTests.java[tag=*]
 ----
@@ -381,7 +381,7 @@ Mock MVC offers a powerful way to quickly test MVC controllers without needing t
 TIP: You can also auto-configure `MockMvc` in a non-`@WebMvcTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureMockMvc`.
 The following example uses `MockMvc`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/springmvctests/MyControllerTests.java[]
 ----
@@ -391,7 +391,7 @@ TIP: If you need to configure elements of the auto-configuration (for example, w
 If you use HtmlUnit or Selenium, auto-configuration also provides an HtmlUnit `WebClient` bean and/or a Selenium `WebDriver` bean.
 The following example uses HtmlUnit:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/springmvctests/MyHtmlUnitTests.java[]
 ----
@@ -428,7 +428,7 @@ Often, `@WebFluxTest` is limited to a single controller and used in combination 
 TIP: You can also auto-configure `WebTestClient` in a non-`@WebFluxTest` (such as `@SpringBootTest`) by annotating it with `@AutoConfigureWebTestClient`.
 The following example shows a class that uses both `@WebFluxTest` and a `WebTestClient`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/springwebfluxtests/MyControllerTests.java[]
 ----
@@ -457,7 +457,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataCassand
 
 The following example shows a typical setup for using Cassandra tests in Spring Boot:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdatacassandra/MyDataCassandraTests.java[]
 ----
@@ -481,7 +481,7 @@ By default, data JPA tests are transactional and roll back at the end of each te
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdatajpa/MyNonTransactionalTests.java[]
 ----
@@ -491,7 +491,7 @@ If you want to use `TestEntityManager` outside of `@DataJpaTest` instances, you 
 A `JdbcTemplate` is also available if you need that.
 The following example shows the `@DataJpaTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdatajpa/withoutdb/MyRepositoryTests.java[]
 ----
@@ -499,7 +499,7 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 In-memory embedded databases generally work well for tests, since they are fast and do not require any installation.
 If, however, you prefer to run tests against a real database you can use the `@AutoConfigureTestDatabase` annotation, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdatajpa/withdb/MyRepositoryTests.java[]
 ----
@@ -519,7 +519,7 @@ By default, JDBC tests are transactional and roll back at the end of each test.
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredjdbc/MyTransactionalTests.java[]
 ----
@@ -561,7 +561,7 @@ TIP: A list of the auto-configurations that are enabled by `@JooqTest` can be <<
 `@JooqTest` configures a `DSLContext`.
 The following example shows the `@JooqTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredjooq/MyJooqTests.java[]
 ----
@@ -583,7 +583,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataMongoTe
 
 The following class shows the `@DataMongoTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdatamongodb/withoutdb/MyDataMongoDbTests.java[]
 ----
@@ -591,7 +591,7 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 In-memory embedded MongoDB generally works well for tests, since it is fast and does not require any developer installation.
 If, however, you prefer to run tests against a real MongoDB server, you should exclude the embedded MongoDB auto-configuration, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdatamongodb/withdb/MyDataMongoDbTests.java[]
 ----
@@ -610,7 +610,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataNeo4jTe
 
 The following example shows a typical setup for using Neo4J tests in Spring Boot:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdataneo4j/propagation/MyDataNeo4jTests.java[]
 ----
@@ -619,7 +619,7 @@ By default, Data Neo4j tests are transactional and roll back at the end of each 
 See the {spring-framework-docs}/testing.html#testcontext-tx-enabling-transactions[relevant section] in the Spring Framework Reference Documentation for more details.
 If that is not what you want, you can disable transaction management for a test or for the whole class, as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdataneo4j/nopropagation/MyDataNeo4jTests.java[]
 ----
@@ -641,7 +641,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataRedisTe
 
 The following example shows the `@DataRedisTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdataredis/MyDataRedisTests.java[]
 ----
@@ -660,7 +660,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@DataLdapTes
 
 The following example shows the `@DataLdapTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdataldap/inmemory/MyDataLdapTests.java[]
 ----
@@ -668,7 +668,7 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 In-memory embedded LDAP generally works well for tests, since it is fast and does not require any developer installation.
 If, however, you prefer to run tests against a real LDAP server, you should exclude the embedded LDAP auto-configuration, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringdataldap/server/MyDataLdapTests.java[]
 ----
@@ -686,7 +686,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@RestClientT
 
 The specific beans that you want to test should be specified by using the `value` or `components` attribute of `@RestClientTest`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredrestclient/MyRestClientTests.java[]
 ----
@@ -708,14 +708,14 @@ It can also be used to configure the host, scheme, and port that appears in any 
 `@AutoConfigureRestDocs` customizes the `MockMvc` bean to use Spring REST Docs when testing Servlet-based web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using Mock MVC and Spring REST Docs, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/MyUserDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsMockMvcConfigurationCustomizer` bean, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/MyRestDocsConfiguration.java[]
 ----
@@ -724,7 +724,7 @@ If you want to make use of Spring REST Docs support for a parameterized output d
 The auto-configuration calls `alwaysDo` with this result handler, thereby causing each `MockMvc` call to automatically generate the default snippets.
 The following example shows a `RestDocumentationResultHandler` being defined:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withmockmvc/MyResultHandlerConfiguration.java[]
 ----
@@ -736,14 +736,14 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 `@AutoConfigureRestDocs` can also be used with `WebTestClient` when testing reactive web applications.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using `@WebFluxTest` and Spring REST Docs, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyUsersDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, you can use a `RestDocsWebTestClientConfigurationCustomizer` bean, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withwebtestclient/MyRestDocsConfiguration.java[]
 ----
@@ -755,14 +755,14 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredsprin
 `@AutoConfigureRestDocs` makes a `RequestSpecification` bean, preconfigured to use Spring REST Docs, available to your tests.
 You can inject it by using `@Autowired` and use it in your tests as you normally would when using REST Assured and Spring REST Docs, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyUserDocumentationTests.java[]
 ----
 
 If you require more control over Spring REST Docs configuration than offered by the attributes of `@AutoConfigureRestDocs`, a `RestDocsRestAssuredConfigurationCustomizer` bean can be used, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredspringrestdocs/withrestassured/MyRestDocsConfiguration.java[]
 ----
@@ -780,7 +780,7 @@ TIP: A list of the auto-configuration settings that are enabled by `@WebServiceC
 
 The following example shows the `@WebServiceClientTest` annotation in use:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebservices/MyWebServiceClientTests.java[]
 ----
@@ -792,7 +792,7 @@ include::{docs-java}/features/testing/springbootapplications/autoconfiguredwebse
 Each slice provides one or more `@AutoConfigure...` annotations that namely defines the auto-configurations that should be included as part of a slice.
 Additional auto-configurations can be added on a test-by-test basis by creating a custom `@AutoConfigure...` annotation or by adding `@ImportAutoConfiguration` to the test as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/additionalautoconfigurationandslicing/MyJdbcTests.java[]
 ----
@@ -819,7 +819,7 @@ It then becomes important not to litter the application's main class with config
 Assume that you are using Spring Batch and you rely on the auto-configuration for it.
 You could define your `@SpringBootApplication` as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyApplication.java[]
 ----
@@ -827,7 +827,7 @@ include::{docs-java}/features/testing/springbootapplications/userconfigurationan
 Because this class is the source configuration for the test, any slice test actually tries to start Spring Batch, which is definitely not what you want to do.
 A recommended approach is to move that area-specific configuration to a separate `@Configuration` class at the same level as your application, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyBatchConfiguration.java[]
 ----
@@ -838,14 +838,14 @@ The latter approach lets you enable it in one of your tests, if necessary, with 
 Test slices exclude `@Configuration` classes from scanning.
 For example, for a `@WebMvcTest`, the following configuration will not include the given `WebMvcConfigurer` bean in the application context loaded by the test slice:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyWebConfiguration.java[]
 ----
 
 The configuration below will, however, cause the custom `WebMvcConfigurer` to be loaded by the test slice.
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/MyWebMvcConfigurer.java[]
 ----
@@ -854,7 +854,7 @@ Another source of confusion is classpath scanning.
 Assume that, while you structured your code in a sensible way, you need to scan an additional package.
 Your application may resemble the following code:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/springbootapplications/userconfigurationandslicing/scan/MyApplication.java[]
 ----
@@ -890,7 +890,7 @@ A few test utility classes that are generally useful when testing your applicati
 `ConfigDataApplicationContextInitializer` is an `ApplicationContextInitializer` that you can apply to your tests to load Spring Boot `application.properties` files.
 You can use it when you do not need the full set of features provided by `@SpringBootTest`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/utilities/configdataapplicationcontextinitializer/MyConfigFileTests.java[]
 ----
@@ -906,7 +906,7 @@ For `@Value` support, you need to either additionally configure a `PropertySourc
 `TestPropertyValues` lets you quickly add properties to a `ConfigurableEnvironment` or `ConfigurableApplicationContext`.
 You can call it with `key=value` strings, as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/utilities/testpropertyvalues/MyEnvironmentTests.java[]
 ----
@@ -918,7 +918,7 @@ include::{docs-java}/features/testing/utilities/testpropertyvalues/MyEnvironment
 `OutputCapture` is a JUnit `Extension` that you can use to capture `System.out` and `System.err` output.
 To use add `@ExtendWith(OutputCaptureExtension.class)` and inject `CapturedOutput` as an argument to your test class constructor or test method as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/utilities/outputcapture/MyOutputCaptureTests.java[]
 ----
@@ -943,7 +943,7 @@ If you do use Apache's HTTP client, some additional test-friendly features are e
 
 `TestRestTemplate` can be instantiated directly in your integration tests, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/utilities/testresttemplate/MyTests.java[]
 ----
@@ -952,7 +952,7 @@ Alternatively, if you use the `@SpringBootTest` annotation with `WebEnvironment.
 If necessary, additional customizations can be applied through the `RestTemplateBuilder` bean.
 Any URLs that do not specify a host and port automatically connect to the embedded server, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/testing/utilities/testresttemplate/MySpringBootTests.java[]
 ----

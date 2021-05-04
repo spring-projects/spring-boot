@@ -16,7 +16,7 @@ This is possible in both Maven and Gradle.
 You can automatically expand properties from the Maven project by using resource filtering.
 If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	app:
 	  encoding: "@project.build.sourceEncoding@"
@@ -33,7 +33,7 @@ See the {spring-boot-maven-plugin-docs}#getting-started[plugin usage page] for m
 
 If you do not use the starter parent, you need to include the following  element inside the `<build/>` element of your `pom.xml`:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<resources>
 		<resource>
@@ -45,7 +45,7 @@ If you do not use the starter parent, you need to include the following  element
 
 You also need to include the following element inside `<plugins/>`:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<plugin>
 		<groupId>org.apache.maven.plugins</groupId>
@@ -69,7 +69,7 @@ If that property is not set to `false`, these may be expanded by the build.
 ==== Automatic Property Expansion Using Gradle
 You can automatically expand properties from the Gradle project by configuring the Java plugin's `processResources` task to do so, as shown in the following example:
 
-[source,gradle,indent=0]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	processResources {
 		expand(project.properties)
@@ -78,7 +78,7 @@ You can automatically expand properties from the Gradle project by configuring t
 
 You can then refer to your Gradle project's properties by using placeholders, as shown in the following example:
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	app:
 	  name: "${name}"
@@ -97,7 +97,7 @@ A `SpringApplication` has bean property setters, so you can use its Java API as 
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  main:
@@ -110,21 +110,21 @@ Then the Spring Boot banner is not printed on startup, and the application is no
 Properties defined in external configuration override and replace the values specified with the Java API, with the notable exception of the primary sources.
 Primary sources are those provided to the `SpringApplication` constructor:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/application/MyApplication.java[]
 ----
 
 Or to `sources(...)` method of a `SpringApplicationBuilder`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/builder/MyApplication.java[]
 ----
 
 Given the examples above, if we have the following configuration:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  main:
@@ -165,7 +165,7 @@ See {spring-boot-module-code}/context/config/ConfigFileApplicationListener.java[
 Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to set configuration properties on the command line.
 You can enable this behavior by using placeholders in `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  port: "${port:8080}"
@@ -183,7 +183,7 @@ In those two platforms, the `PORT` environment variable is set automatically and
 === Use YAML for External Properties
 YAML is a superset of JSON and, as such, is a convenient syntax for storing external properties in a hierarchical format, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,subs="verbatim"]
 ----
 	spring:
 	  application:
@@ -201,7 +201,7 @@ A YAML file is parsed to a Java `Map<String,Object>` (like a JSON object), and S
 
 The preceding example YAML corresponds to the following `application.properties` file:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,properties,indent=0,subs="verbatim",configprops]
 ----
 	spring.application.name=cruncher
 	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
@@ -218,14 +218,14 @@ See "`<<features#features.external-config.yaml>>`" in the '`Spring Boot features
 The Spring `Environment` has an API for this, but you would normally set a System property (configprop:spring.profiles.active[]) or an OS environment variable (configprop:spring.profiles.active[format=envvar]).
 Also, you can launch your application with a `-D` argument (remember to put it before the main class or jar archive), as follows:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ java -jar -Dspring.profiles.active=production demo-0.0.1-SNAPSHOT.jar
 ----
 
 In Spring Boot, you can also set the active profile in `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  profiles:
@@ -246,7 +246,7 @@ Spring Boot supports multi-document YAML and Properties files (see <<features#fe
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
 If the profile expression matches then that document is included in the final merge (otherwise, it is not), as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim,attributes",configprops,configblocks]
 ----
 	server:
 	  port: 9000

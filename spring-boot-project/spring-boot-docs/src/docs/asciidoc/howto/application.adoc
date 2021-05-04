@@ -17,7 +17,7 @@ If, for whatever reason, you cannot handle the exception, return `null` to give 
 `FailureAnalyzer` implementations must be registered in `META-INF/spring.factories`.
 The following example registers `ProjectConstraintViolationFailureAnalyzer`:
 
-[source,properties,indent=0]
+[source,properties,indent=0,subs="verbatim"]
 ----
 	org.springframework.boot.diagnostics.FailureAnalyzer=\
 	com.example.ProjectConstraintViolationFailureAnalyzer
@@ -78,7 +78,7 @@ Each implementation should be registered in `META-INF/spring.factories`, as show
 The implementation can load arbitrary files and add them to the `Environment`.
 For instance, the following example loads a YAML configuration file from the classpath:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/howto/application/customizetheenvironmentorapplicationcontext/MyEnvironmentPostProcessor.java[]
 ----

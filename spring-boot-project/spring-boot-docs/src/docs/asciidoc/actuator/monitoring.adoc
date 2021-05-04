@@ -17,7 +17,7 @@ Sometimes, it is useful to customize the prefix for the management endpoints.
 For example, your application might already use `/actuator` for another purpose.
 You can use the configprop:management.endpoints.web.base-path[] property to change the prefix for your management endpoint, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  endpoints:
@@ -34,7 +34,7 @@ If you want to map endpoints to a different path, you can use the configprop:man
 
 The following example remaps `/actuator/health` to `/healthcheck`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  endpoints:
@@ -53,7 +53,7 @@ If, however, your application runs inside your own data center, you may prefer t
 
 You can set the configprop:management.server.port[] property to change the HTTP port, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  server:
@@ -70,7 +70,7 @@ If you want to use a custom management port on Cloud Foundry, you will need to e
 When configured to use a custom port, the management server can also be configured with its own SSL by using the various `management.server.ssl.*` properties.
 For example, doing so lets a management server be available over HTTP while the main application uses HTTPS, as shown in the following property settings:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  port: 8443
@@ -87,7 +87,7 @@ For example, doing so lets a management server be available over HTTP while the 
 
 Alternatively, both the main server and the management server can use SSL but with different key stores, as follows:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  port: 8443
@@ -115,7 +115,7 @@ NOTE: You can listen on a different address only when the port differs from the 
 
 The following example `application.properties` does not allow remote management connections:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  server:
@@ -129,7 +129,7 @@ The following example `application.properties` does not allow remote management 
 === Disabling HTTP Endpoints
 If you do not want to expose endpoints over HTTP, you can set the management port to `-1`, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  server:
@@ -138,7 +138,7 @@ If you do not want to expose endpoints over HTTP, you can set the management por
 
 This can be achieved using the configprop:management.endpoints.web.exposure.exclude[] property as well, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  endpoints:

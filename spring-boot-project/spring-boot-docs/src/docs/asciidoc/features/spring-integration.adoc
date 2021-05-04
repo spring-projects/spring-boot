@@ -10,7 +10,7 @@ Spring Boot also configures some features that are triggered by the presence of 
 If `spring-integration-jmx` is also on the classpath, message processing statistics are published over JMX.
 If `spring-integration-jdbc` is available, the default database schema can be created on startup, as shown in the following line:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  integration:
@@ -23,7 +23,7 @@ This infrastructure can handle Spring Integration RSocket channel adapters and `
 
 Spring Boot can also auto-configure an `ClientRSocketConnector` using configuration properties:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	# Connecting to a RSocket server over TCP
 	spring:
@@ -34,7 +34,7 @@ Spring Boot can also auto-configure an `ClientRSocketConnector` using configurat
 	        port: 9898
 ----
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	# Connecting to a RSocket Server over WebSocket
 	spring:

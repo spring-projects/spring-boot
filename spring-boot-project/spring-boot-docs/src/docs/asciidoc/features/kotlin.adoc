@@ -57,7 +57,7 @@ Also be aware that Spring Boot's own API is {github-issues}10712[not yet annotat
 ==== runApplication
 Spring Boot provides an idiomatic way to run an application with `runApplication<MyApplication>(*args)` as shown in the following example:
 
-[source,kotlin,indent=0]
+[source,kotlin,indent=0,subs="verbatim"]
 ----
 	import org.springframework.boot.autoconfigure.SpringBootApplication
 	import org.springframework.boot.runApplication
@@ -73,7 +73,7 @@ Spring Boot provides an idiomatic way to run an application with `runApplication
 This is a drop-in replacement for `SpringApplication.run(MyApplication::class.java, *args)`.
 It also allows customization of the application as shown in the following example:
 
-[source,kotlin,indent=0]
+[source,kotlin,indent=0,subs="verbatim"]
 ----
 	runApplication<MyApplication>(*args) {
 		setBannerMode(OFF)
@@ -110,7 +110,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 === @ConfigurationProperties
 `@ConfigurationProperties` when used in combination with <<features#features.external-config.typesafe-configuration-properties.constructor-binding,`@ConstructorBinding`>> supports classes with immutable `val` properties as shown in the following example:
 
-[source,kotlin,indent=0]
+[source,kotlin,indent=0,subs="verbatim"]
 ----
 @ConstructorBinding
 @ConfigurationProperties("example.kotlin")

@@ -8,7 +8,7 @@ The {spring-webservices-docs}[Spring Web Services features] can be easily access
 To do so, configure their location, as shown in the following example:
 
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  webservices:
@@ -25,7 +25,7 @@ It does, however, auto-configure a `WebServiceTemplateBuilder`, which can be use
 
 The following code shows a typical example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/webservices/template/MyService.java[]
 ----
@@ -33,7 +33,7 @@ include::{docs-java}/features/webservices/template/MyService.java[]
 By default, `WebServiceTemplateBuilder` detects a suitable HTTP-based `WebServiceMessageSender` using the available HTTP client libraries on the classpath.
 You can also customize read and connection timeouts as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/webservices/template/MyWebServiceTemplateConfiguration.java[]
 ----

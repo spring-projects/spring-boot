@@ -47,7 +47,7 @@ The `spring-boot-antlib` "`AntLib`" module is also available to help Ant create 
 
 To declare dependencies, a typical `ivy.xml` file looks something like the following example:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<ivy-module version="2.0">
 		<info organisation="org.springframework.boot" module="spring-boot-sample-ant" />
@@ -64,7 +64,7 @@ To declare dependencies, a typical `ivy.xml` file looks something like the follo
 
 A typical `build.xml` looks like the following example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 	<project
 		xmlns:ivy="antlib:org.apache.ivy.ant"

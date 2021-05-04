@@ -93,7 +93,7 @@ Alternatively, you can use `java -jar` with the `.jar` file (the script helps yo
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of various binary SDKs, including Groovy and the Spring Boot CLI.
 Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following commands:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ sdk install springboot
 	$ spring --version
@@ -102,7 +102,7 @@ Get SDKMAN! from https://sdkman.io and install Spring Boot by using the followin
 
 If you develop features for the CLI and want access to the version you built, use the following commands:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{spring-boot-version}-bin/spring-{spring-boot-version}/
 	$ sdk default springboot dev
@@ -115,7 +115,7 @@ It points at your target build location, so every time you rebuild Spring Boot, 
 
 You can see it by running the following command:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ sdk ls springboot
 
@@ -202,7 +202,7 @@ In that case, run `scoop update` and try again.
 You can use the following web application to test your installation.
 To start, create a file called `app.groovy`, as follows:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,groovy,indent=0,pending-extract=true,subs="verbatim"]
 ----
 	@RestController
 	class ThisWillActuallyRun {
@@ -244,7 +244,7 @@ When upgrading to a new feature release, some properties may have been renamed o
 Spring Boot provides a way to analyze your application's environment and print diagnostics at startup, but also temporarily migrate properties at runtime for you.
 To enable that feature, add the following dependency to your project:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>

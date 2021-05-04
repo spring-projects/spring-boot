@@ -41,7 +41,7 @@ Spring Boot tries to auto-configure JMS by looking for a `ConnectionFactory` at 
 When using JTA, the primary JMS `ConnectionFactory` bean is XA-aware and participates in distributed transactions.
 You can inject into your bean without needing to use any `@Qualifier`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/jta/mixingxaandnonxaconnections/primary/MyBean.java[tag=*]
 ----
@@ -51,14 +51,14 @@ For example, your JMS processing logic might take longer than the XA timeout.
 
 If you want to use a non-XA `ConnectionFactory`, you can the `nonXaJmsConnectionFactory` bean:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/jta/mixingxaandnonxaconnections/nonxa/MyBean.java[tag=*]
 ----
 
 For consistency, the `jmsConnectionFactory` bean is also provided by using the bean alias `xaJmsConnectionFactory`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/jta/mixingxaandnonxaconnections/xa/MyBean.java[tag=*]
 ----

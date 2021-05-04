@@ -3,7 +3,7 @@
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
 They use a JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"groups": [
 		{
@@ -68,7 +68,7 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 Each "`property`" is a configuration item that the user specifies with a given value.
 For example, `server.port` and `server.address` might be specified in `application.properties`, as follows:
 
-[source,properties,indent=0,configprops]
+[source,properties,indent=0,subs="verbatim",configprops]
 ----
 	server.port=9090
 	server.address=127.0.0.1
@@ -207,7 +207,7 @@ Deprecation can also be specified declaratively in code by adding the `@Deprecat
 For instance, assume that the `my.app.target` property was confusing and was renamed to `my.app.name`.
 The following example shows how to handle that situation:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/configurationmetadata/format/group/MyProperties.java[]
 ----

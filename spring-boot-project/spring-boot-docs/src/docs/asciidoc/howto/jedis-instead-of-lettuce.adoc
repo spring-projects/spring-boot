@@ -6,7 +6,7 @@ Spring Boot manages both of these dependencies so you can switch to Jedis withou
 
 The following example shows how to do so in Maven:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -26,7 +26,7 @@ The following example shows how to do so in Maven:
 
 The following example shows how to do so in Gradle:
 
-[source,gradle,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
 		implementation('org.springframework.boot:spring-boot-starter-data-redis') {

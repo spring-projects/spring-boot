@@ -21,7 +21,7 @@ These levels can be one of:
 === Configure a Logger
 To configure a given logger, `POST` a partial entity to the resource's URI, as shown in the following example:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{
 		"configuredLevel": "DEBUG"

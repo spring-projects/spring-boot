@@ -3,7 +3,7 @@
 Once you have installed the CLI, you can run it by typing `spring` and pressing Enter at the command line.
 If you run `spring` without any arguments, a help screen is displayed, as follows:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ spring
 	usage: spring [--help] [--version]
@@ -41,7 +41,7 @@ You can type `spring help` to get more details about any of the supported comman
 
 The `version` command provides a quick way to check which version of Spring Boot you are using, as follows:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ spring version
 	Spring CLI v{spring-boot-version}
@@ -57,28 +57,28 @@ The Spring Boot CLI is completely self-contained, so you do not need any externa
 The following example shows a "`hello world`" web application written in Groovy:
 
 .hello.groovy
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,groovy,indent=0,subs="verbatim"]
 ----
 include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]
 ----
 
 To compile and run the application, type the following command:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ spring run hello.groovy
 ----
 
 To pass command-line arguments to the application, use `--` to separate the commands from the "`spring`" command arguments, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ spring run hello.groovy -- --server.port=9000
 ----
 
 To set JVM command line arguments, you can use the `JAVA_OPTS` environment variable, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
 ----
@@ -175,7 +175,7 @@ The annotation's value should specify the coordinates (`groupId:artifactId:versi
 
 For example, consider the following declaration:
 
-[source,groovy,indent=0]
+[source,groovy,indent=0,subs="verbatim"]
 ----
 include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/single/CustomDependencyManagement.groovy[tag=*]
 ----
@@ -184,7 +184,7 @@ The preceding declaration picks up `custom-bom-1.0.0.pom` in a Maven repository 
 
 When you specify multiple BOMs, they are applied in the order in which you declare them, as shown in the following example:
 
-[source,groovy,indent=0]
+[source,groovy,indent=0,subs="verbatim"]
 ----
 include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/multiple/CustomDependencyManagement.groovy[tag=*]
 ----
@@ -305,7 +305,7 @@ If you do not use either of these shells (perhaps you are a Windows user), you c
 
 From inside the embedded shell, you can run other commands directly:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	$ version
 	Spring CLI v{spring-boot-version}
@@ -322,7 +322,7 @@ To exit the embedded shell, press `ctrl-c`.
 You can add extensions to the CLI by using the `install` command.
 The command takes one or more sets of artifact coordinates in the format `group:artifact:version`, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ spring install com.example:spring-boot-cli-extension:1.0.0.RELEASE
 ----
@@ -332,7 +332,7 @@ In addition to installing the artifacts identified by the coordinates you supply
 To uninstall a dependency, use the `uninstall` command.
 As with the `install` command, it takes one or more sets of artifact coordinates in the format of `group:artifact:version`, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ spring uninstall com.example:spring-boot-cli-extension:1.0.0.RELEASE
 ----
@@ -341,7 +341,7 @@ It uninstalls the artifacts identified by the coordinates you supply and their d
 
 To uninstall all additional dependencies, you can use the `--all` option, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	$ spring uninstall --all
 ----

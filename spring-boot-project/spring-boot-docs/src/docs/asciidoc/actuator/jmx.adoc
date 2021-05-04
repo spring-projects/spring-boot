@@ -18,7 +18,7 @@ To solve this problem, you can set the configprop:spring.jmx.unique-names[] prop
 You can also customize the JMX domain under which endpoints are exposed.
 The following settings show an example of doing so in `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  jmx:
@@ -35,7 +35,7 @@ The following settings show an example of doing so in `application.properties`:
 === Disabling JMX Endpoints
 If you do not want to expose endpoints over JMX, you can set the configprop:management.endpoints.jmx.exposure.exclude[] property to `*`, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  endpoints:
@@ -52,7 +52,7 @@ Jolokia is a JMX-HTTP bridge that provides an alternative method of accessing JM
 To use Jolokia, include a dependency to `org.jolokia:jolokia-core`.
 For example, with Maven, you would add the following dependency:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.jolokia</groupId>
@@ -75,7 +75,7 @@ Jolokia has a number of settings that you would traditionally configure by setti
 With Spring Boot, you can use your `application.properties` file.
 To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  endpoint:
@@ -90,7 +90,7 @@ To do so, prefix the parameter with `management.endpoint.jolokia.config.`, as sh
 ==== Disabling Jolokia
 If you use Jolokia but do not want Spring Boot to configure it, set the configprop:management.endpoint.jolokia.enabled[] property to `false`, as follows:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	management:
 	  endpoint:

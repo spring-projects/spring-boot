@@ -66,7 +66,7 @@ Spring Boot can detect your database type and execute those scripts on startup.
 If you use an embedded database, this happens by default.
 You can also enable it for any database type, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  batch:
@@ -93,7 +93,7 @@ By default, they are in a directory called `classpath:db/migration`, but you can
 This is a comma-separated list of one or more `classpath:` or `filesystem:` locations.
 For example, the following configuration would search for scripts in both the default classpath location and the `/opt/migration` directory:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  flyway:
@@ -103,7 +103,7 @@ For example, the following configuration would search for scripts in both the de
 You can also add a special `\{vendor}` placeholder to use vendor-specific scripts.
 Assume the following:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  flyway:
@@ -141,7 +141,7 @@ For example, you can place test-specific migrations in `src/test/resources` and 
 Also, you can use profile-specific configuration to customize `spring.flyway.locations` so that certain migrations run only when a particular profile is active.
 For example, in `application-dev.properties`, you might specify the following setting:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  flyway:
