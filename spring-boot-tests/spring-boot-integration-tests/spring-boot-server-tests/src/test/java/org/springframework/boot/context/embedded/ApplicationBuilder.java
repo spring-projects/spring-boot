@@ -170,6 +170,7 @@ class ApplicationBuilder {
 		if (settingsXml != null) {
 			invocation.setUserSettingsFile(settingsXml);
 		}
+		invocation.setUpdateSnapshots(true);
 		DefaultInvoker invoker = new DefaultInvoker();
 		invoker.setMavenHome(new File("build/maven-binaries/apache-maven-3.6.2"));
 		InvocationResult execute = invoker.execute(invocation);
