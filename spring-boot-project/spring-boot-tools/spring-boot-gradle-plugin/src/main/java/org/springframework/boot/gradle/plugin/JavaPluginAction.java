@@ -220,6 +220,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 				objectFactory.named(LibraryElements.class, LibraryElements.JAR));
 		productionRuntimeClasspath.setVisible(false);
 		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
+		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
+		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());
 		runtimeClasspath.extendsFrom(developmentOnly);
 	}
 
