@@ -26,6 +26,7 @@ import com.couchbase.client.java.Cluster;
 import com.couchbase.client.java.codec.JacksonJsonSerializer;
 import com.couchbase.client.java.codec.JsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
+import com.couchbase.client.java.json.JsonValueModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
@@ -43,6 +44,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Eddú Meléndez
  * @author Stephane Nicoll
+ * @author Nguyen Bao Sach
  */
 class CouchbaseAutoConfigurationTests {
 
@@ -72,8 +74,9 @@ class CouchbaseAutoConfigurationTests {
 				.withPropertyValues("spring.couchbase.connection-string=localhost").run((context) -> {
 					ClusterEnvironment env = context.getBean(ClusterEnvironment.class);
 					JsonSerializer serializer = env.jsonSerializer();
-					assertThat(serializer).isInstanceOf(JacksonJsonSerializer.class)
-							.hasFieldOrPropertyWithValue("mapper", context.getBean(ObjectMapper.class));
+					assertThat(serializer).isInstanceOf(JacksonJsonSerializer.class).extracting("mapper")
+							.hasFieldOrPropertyWithValue("_registeredModuleTypes", context.getBean(ObjectMapper.class)
+									.copy().registerModule(new JsonValueModule()).getRegisteredModuleIds());
 				});
 	}
 

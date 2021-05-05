@@ -31,6 +31,7 @@ import com.couchbase.client.java.ClusterOptions;
 import com.couchbase.client.java.codec.JacksonJsonSerializer;
 import com.couchbase.client.java.env.ClusterEnvironment;
 import com.couchbase.client.java.env.ClusterEnvironment.Builder;
+import com.couchbase.client.java.json.JsonValueModule;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
 import org.springframework.beans.factory.ObjectProvider;
@@ -54,6 +55,7 @@ import org.springframework.util.ResourceUtils;
  * @author Eddú Meléndez
  * @author Stephane Nicoll
  * @author Yulin Qin
+ * @author Nguyen Bao Sach
  * @since 1.4.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -139,7 +141,7 @@ public class CouchbaseAutoConfiguration {
 		private final ObjectMapper objectMapper;
 
 		private JacksonClusterEnvironmentBuilderCustomizer(ObjectMapper objectMapper) {
-			this.objectMapper = objectMapper;
+			this.objectMapper = objectMapper.copy().registerModule(new JsonValueModule());
 		}
 
 		@Override
