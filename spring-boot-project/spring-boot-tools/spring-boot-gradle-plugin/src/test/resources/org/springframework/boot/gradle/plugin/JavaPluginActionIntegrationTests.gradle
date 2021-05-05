@@ -35,3 +35,11 @@ task('configurationAttributes') {
 		}
 	}
 }
+
+task('configurationResolvabilityAndConsumability') {
+	doFirst {
+		def configuration = configurations.findByName(configurationName)
+		println "canBeResolved: ${configuration.canBeResolved}"
+		println "canBeConsumed: ${configuration.canBeConsumed}"
+	}
+}
