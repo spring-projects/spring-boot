@@ -36,19 +36,14 @@ class RedisClientPoolingFailureAnalyzer extends AbstractFailureAnalyzer<RedisCli
 	}
 
 	private String getDescription(ClientType clientType, String message) {
-		if (StringUtils.hasText(message)) {
-			StringBuilder detailsMessage = new StringBuilder();
-			detailsMessage.append(String.format("%s failed to pooling. Details are %s.", clientType.name(), message));
-			return detailsMessage.toString();
-		}
-		return "";
+		StringBuilder detailsMessage = new StringBuilder();
+		detailsMessage.append(String.format("%s failed to pooling. Details are %s.", clientType.name(), message));
+		return detailsMessage.toString();
 	}
 
 	private String getAction(ClientType clientType, String message) {
-		if (StringUtils.hasText(message)) {
-			if (isGetDefaultPoolingFailureAction(message)) {
-				return getDefaultPoolingFailureAction(clientType);
-			}
+		if (isGetDefaultPoolingFailureAction(message)) {
+			return getDefaultPoolingFailureAction(clientType);
 		}
 		return "";
 	}

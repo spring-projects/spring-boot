@@ -112,13 +112,13 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	private LettuceClientConfigurationBuilder createBuilder(Environment environment, Pool pool) {
 		final boolean poolEnabled = environment.getProperty("spring.redis.lettuce.pool.enabled", Boolean.class, true);
 		if (poolEnabled) {
-			poolingFailureAnalyzerEvaluation();
+			evaluatePoolingFailureAnalyzer();
 			return new PoolBuilderFactory().createBuilder(pool);
 		}
 		return LettuceClientConfiguration.builder();
 	}
 
-	private void poolingFailureAnalyzerEvaluation() {
+	private void evaluatePoolingFailureAnalyzer() {
 		final boolean pool2Present = ClassUtils.isPresent(PoolBuilderFactory.GENERIC_OBJECT_POOL_CONFIG_CLASS_NAME,
 				null);
 		if (!pool2Present) {
