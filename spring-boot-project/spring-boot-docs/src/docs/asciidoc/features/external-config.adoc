@@ -125,7 +125,9 @@ The following example shows how to specify two locations:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
-	$ java -jar myproject.jar --spring.config.location=optional:classpath:/default.properties,optional:classpath:/override.properties
+	$ java -jar myproject.jar --spring.config.location=\
+		optional:classpath:/default.properties,\
+		optional:classpath:/override.properties
 ----
 
 TIP: Use the prefix `optional:` if the <<features#features.external-config.files.optional-prefix,locations are optional>> and you don't mind if they don't exist.
@@ -671,7 +673,7 @@ If you wish you return a non-null instance of `Security` even when no properties
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/nonnull/MyProperties.java[]
+include::{docs-java}/features/externalconfig/typesafeconfigurationproperties/constructorbinding/nonnull/MyProperties.java[tag=*]
 ----
 
 

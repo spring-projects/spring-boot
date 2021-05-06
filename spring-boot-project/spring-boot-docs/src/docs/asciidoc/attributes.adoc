@@ -9,7 +9,7 @@
 :sectnums:
 :hide-uri-scheme:
 :docinfo: shared,private
-:chomp: tags formatters headers packages
+:chomp: default headers packages
 :spring-boot-artifactory-repo: snapshot
 :github-tag: main
 :spring-boot-version: current

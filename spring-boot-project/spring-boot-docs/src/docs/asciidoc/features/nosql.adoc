@@ -11,7 +11,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-couchbase}[Couchbase]
 * {spring-data-ldap}[LDAP]
 
-Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Solr Cassandra, Couchbase, and LDAP.
+Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Solr, Elasticsearch, Cassandra, Couchbase, LDAP and InfluxDB.
 You can make use of the other projects, but you must configure them yourself.
 Refer to the appropriate reference documentation at {spring-data}.
 

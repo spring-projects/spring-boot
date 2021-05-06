@@ -105,7 +105,7 @@ For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomc
 	      test-on-borrow: true
 ----
 
-This will set the pool to wait 10000 ms before throwing an exception if no connection is available, limit the maximum number of connections to 50 and validate the connection before borrowing it from the pool.
+This will set the pool to wait 10000ms before throwing an exception if no connection is available, limit the maximum number of connections to 50ms and validate the connection before borrowing it from the pool.
 
 
 
@@ -253,18 +253,24 @@ By default, JPA databases are automatically created *only* if you use an embedde
 You can explicitly configure JPA settings by using `+spring.jpa.*+` properties.
 For example, to create and drop tables you can add the following line to your `application.properties`:
 
-[indent=0]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring.jpa.hibernate.ddl-auto=create-drop
+	spring:
+	  jpa:
+	    hibernate.ddl-auto: "create-drop"
 ----
 
 NOTE: Hibernate's own internal property name for this (if you happen to remember it better) is `hibernate.hbm2ddl.auto`.
 You can set it, along with other Hibernate native properties, by using `+spring.jpa.properties.*+` (the prefix is stripped before adding them to the entity manager).
 The following line shows an example of setting JPA properties for Hibernate:
 
-[indent=0]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+	spring:
+	  jpa:
+	    properties:
+	      hibernate:
+	        "globally_quoted_identifiers": "true"
 ----
 
 The line in the preceding example passes a value of `true` for the `hibernate.globally_quoted_identifiers` property to the Hibernate entity manager.

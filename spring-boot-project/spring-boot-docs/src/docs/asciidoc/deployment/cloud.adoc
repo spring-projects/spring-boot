@@ -161,10 +161,15 @@ The `$PORT` environment variable is assigned to us by the Heroku PaaS.
 This should be everything you need.
 The most common deployment workflow for Heroku deployments is to `git push` the code to production, as shown in the following example:
 
-[source,shell,indent=0,subs="verbatim,quotes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ git push heroku main
+----
 
+Which will result in the following:
+
+[indent=0,subs="verbatim,quotes"]
+----
 	Initializing repository, *done*.
 	Counting objects: 95, *done*.
 	Delta compression using up to 8 threads.

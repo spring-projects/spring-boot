@@ -7,7 +7,7 @@ Testcontainers can be used in a Spring Boot test as follows:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/testcontainers/vanilla/MyIntegrationTests.java
+include::{docs-java}/howto/testcontainers/vanilla/MyIntegrationTests.java[]
 ----
 
 This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
@@ -17,7 +17,7 @@ This can be done with a static `@DynamicPropertySource` method that allows addin
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/testcontainers/dynamicproperties/MyIntegrationTests.java
+include::{docs-java}/howto/testcontainers/dynamicproperties/MyIntegrationTests.java[]
 ----
 
 The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.

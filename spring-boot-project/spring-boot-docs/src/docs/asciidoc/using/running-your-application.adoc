@@ -22,7 +22,7 @@ Maven includes plugins for https://maven.apache.org/plugins/maven-eclipse-plugin
 Gradle offers plugins for {gradle-docs}/userguide.html[various IDEs].
 
 TIP: If you accidentally run a web application twice, you see a "`Port already in use`" error.
-STS users can use the `Relaunch` button rather than the `Run` button to ensure that any existing instance is closed.
+Spring Tools users can use the `Relaunch` button rather than the `Run` button to ensure that any existing instance is closed.
 
 
 

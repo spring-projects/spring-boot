@@ -34,7 +34,7 @@ Spring Boot provides auto-configuration for Spring MVC that works well with most
 The auto-configuration adds the following features on top of Spring's defaults:
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
-* Support for serving static resources, including support for WebJars (covered <<features#features.developing-web-applications.spring-mvc.static-content,later in this document>>)).
+* Support for serving static resources, including support for WebJars (covered <<features#features.developing-web-applications.spring-mvc.static-content,later in this document>>).
 * Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
 * Support for `HttpMessageConverters` (covered <<features#features.developing-web-applications.spring-mvc.message-converters,later in this document>>).
 * Automatic registration of `MessageCodesResolver` (covered <<features#features.developing-web-applications.spring-mvc.message-codes,later in this document>>).
@@ -218,7 +218,7 @@ Nowadays, Content Negotiation is much more reliable.
 There are other ways to deal with HTTP clients that don't consistently send proper "Accept" request headers.
 Instead of using suffix matching, we can use a query parameter to ensure that requests like `"GET /projects/spring-boot?format=json"` will be mapped to `@GetMapping("/projects/spring-boot")`:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -228,7 +228,7 @@ Instead of using suffix matching, we can use a query parameter to ensure that re
 
 Or if you prefer to use a different parameter name:
 
-[source,properties,indent=0,subs="verbatim"]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -239,7 +239,7 @@ Or if you prefer to use a different parameter name:
 
 Most standard media types are supported out-of-the-box, but you can also define new ones:
 
-[source,yaml,indent=0,subs="verbatim",configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -372,7 +372,7 @@ The name of the file should be the exact status code or a series mask.
 
 For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim"]
+[indent=0,subs="verbatim"]
 ----
 	src/
 	 +- main/
@@ -387,7 +387,7 @@ For example, to map `404` to a static HTML file, your directory structure would 
 
 To map all `5xx` errors by using a FreeMarker template, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim"]
+[indent=0,subs="verbatim"]
 ----
 	src/
 	 +- main/

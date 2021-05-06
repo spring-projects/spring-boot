@@ -34,9 +34,12 @@ public class MyKafkaStreamsConfiguration {
 	@Bean
 	public KStream<Integer, String> kStream(StreamsBuilder streamsBuilder) {
 		KStream<Integer, String> stream = streamsBuilder.stream("ks1In");
-		stream.map((k, v) -> new KeyValue<>(k, v.toUpperCase())).to("ks1Out",
-				Produced.with(Serdes.Integer(), new JsonSerde<>()));
+		stream.map(this::uppercaseValue).to("ks1Out", Produced.with(Serdes.Integer(), new JsonSerde<>()));
 		return stream;
+	}
+
+	private KeyValue<Integer, String> uppercaseValue(Integer key, String value) {
+		return new KeyValue<>(key, value.toUpperCase());
 	}
 
 }

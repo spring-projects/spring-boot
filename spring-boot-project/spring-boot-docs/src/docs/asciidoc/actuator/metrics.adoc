@@ -67,14 +67,14 @@ You can register any number of `MeterRegistryCustomizer` beans to further config
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/actuator/metrics/gettingstarted/commontags/MyMeterRegistryConfiguration.java
+include::{docs-java}/actuator/metrics/gettingstarted/commontags/MyMeterRegistryConfiguration.java[]
 ----
 
 You can apply customizations to particular registry implementations by being more specific about the generic type:
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/actuator/metrics/gettingstarted/specifictype/MyMeterRegistryConfiguration.java
+include::{docs-java}/actuator/metrics/gettingstarted/specifictype/MyMeterRegistryConfiguration.java[]
 ----
 
 Spring Boot also <<actuator#actuator.metrics.supported,configures built-in instrumentation>> that you can control via configuration or dedicated annotation markers.
@@ -229,7 +229,7 @@ An auto-configured `GraphiteConfig` and `Clock` beans are provided unless you de
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/actuator/metrics/export/graphite/MyGraphiteConfiguration.java
+include::{docs-java}/actuator/metrics/export/graphite/MyGraphiteConfiguration.java[]
 ----
 
 
@@ -302,7 +302,7 @@ An auto-configured `JmxConfig` and `Clock` beans are provided unless you define 
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/actuator/metrics/export/jmx/MyJmxConfiguration.java
+include::{docs-java}/actuator/metrics/export/jmx/MyJmxConfiguration.java[]
 ----
 
 

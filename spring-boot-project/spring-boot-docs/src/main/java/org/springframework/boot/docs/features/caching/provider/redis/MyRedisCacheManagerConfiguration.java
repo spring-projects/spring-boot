@@ -28,11 +28,13 @@ public class MyRedisCacheManagerConfiguration {
 
 	@Bean
 	public RedisCacheManagerBuilderCustomizer myRedisCacheManagerBuilderCustomizer() {
+		// @formatter:off
 		return (builder) -> builder
-				.withCacheConfiguration("cache1",
-						RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofSeconds(10)))
-				.withCacheConfiguration("cache2",
-						RedisCacheConfiguration.defaultCacheConfig().entryTtl(Duration.ofMinutes(1)));
+				.withCacheConfiguration("cache1", RedisCacheConfiguration
+						.defaultCacheConfig().entryTtl(Duration.ofSeconds(10)))
+				.withCacheConfiguration("cache2", RedisCacheConfiguration
+						.defaultCacheConfig().entryTtl(Duration.ofMinutes(1)));
+		// @formatter:on
 
 	}
 

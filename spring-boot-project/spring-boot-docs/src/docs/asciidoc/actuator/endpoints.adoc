@@ -791,17 +791,17 @@ The following table shows the default status mappings for the built-in statuses:
 |===
 | Status | Mapping
 
-| DOWN
-| SERVICE_UNAVAILABLE (503)
+| `DOWN`
+| `SERVICE_UNAVAILABLE` (`503`)
 
-| OUT_OF_SERVICE
-| SERVICE_UNAVAILABLE (503)
+| `OUT_OF_SERVICE`
+| `SERVICE_UNAVAILABLE` (`503`)
 
-| UP
-| No mapping by default, so http status is 200
+| `UP`
+| No mapping by default, so HTTP status is `200`
 
-| UNKNOWN
-| No mapping by default, so http status is 200
+| `UNKNOWN`
+| No mapping by default, so HTTP status is `200`
 |===
 
 

@@ -22,7 +22,7 @@ import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportL
 import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 
-public class MyConditionEvaluationReportingTests {
+class MyConditionEvaluationReportingTests {
 
 	@Test
 	void autoConfigTest() {

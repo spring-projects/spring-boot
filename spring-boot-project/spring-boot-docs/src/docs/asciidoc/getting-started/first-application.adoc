@@ -59,18 +59,6 @@ Open your favorite text editor and add the following:
 			<version>{spring-boot-version}</version>
 		</parent>
 
-		<description/>
-		<developers>
-			<developer/>
-		</developers>
-		<licenses>
-			<license/>
-		</licenses>
-		<scm>
-			<url/>
-		</scm>
-		<url/>
-
 		<!-- Additional lines to be added here... -->
 
 ifeval::["{spring-boot-artifactory-repo}" != "release"]
@@ -161,7 +149,7 @@ We step through the important parts in the next few sections.
 
 [[getting-started.first-application.code.mvc-annotations]]
 ==== The @RestController and @RequestMapping Annotations
-The first annotation on our `Example` class is `@RestController`.
+The first annotation on our `MyApplication` class is `@RestController`.
 This is known as a _stereotype_ annotation.
 It provides hints for people reading the code and for Spring that the class plays a specific role.
 In this case, our class is a web `@Controller`, so Spring considers it when handling incoming web requests.
@@ -196,7 +184,7 @@ The final part of our application is the `main` method.
 This is a standard method that follows the Java convention for an application entry point.
 Our main method delegates to Spring Boot's `SpringApplication` class by calling `run`.
 `SpringApplication` bootstraps our application, starting Spring, which, in turn, starts the auto-configured Tomcat web server.
-We need to pass `Example.class` as an argument to the `run` method to tell `SpringApplication` which is the primary Spring component.
+We need to pass `MyApplication.class` as an argument to the `run` method to tell `SpringApplication` which is the primary Spring component.
 The `args` array is also passed through to expose any command-line arguments.
 
 

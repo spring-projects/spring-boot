@@ -32,10 +32,10 @@ public class MyBean {
 		this.databaseClient = databaseClient;
 	}
 
-	// @fold: on // ...
+	// @fold:on // ...
 	public Flux<Map<String, Object>> someMethod() {
 		return this.databaseClient.sql("select * from user").fetch().all();
 	}
-	// @fold: off
+	// @fold:off
 
 }

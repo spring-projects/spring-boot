@@ -358,7 +358,7 @@ The remote client application is designed to be run from within your IDE.
 You need to run `org.springframework.boot.devtools.RemoteSpringApplication` with the same classpath as the remote project that you connect to.
 The application's single required argument is the remote URL to which it connects.
 
-For example, if you are using Eclipse or STS and you have a project named `my-app` that you have deployed to Cloud Foundry, you would do the following:
+For example, if you are using Eclipse or Spring Tools and you have a project named `my-app` that you have deployed to Cloud Foundry, you would do the following:
 
 * Select `Run Configurations...` from the `Run` menu.
 * Create a new `Java Application` "`launch configuration`".
@@ -368,7 +368,7 @@ For example, if you are using Eclipse or STS and you have a project named `my-ap
 
 A running remote client might resemble the following listing:
 
-[indent=0,subs="verbatim"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	  .   ____          _                                              __ _ _
 	 /\\ / ___'_ __ _ _(_)_ __  __ _          ___               _      \ \ \ \

@@ -28,11 +28,13 @@ public class MyCouchbaseCacheManagerConfiguration {
 
 	@Bean
 	public CouchbaseCacheManagerBuilderCustomizer myCouchbaseCacheManagerBuilderCustomizer() {
+		// @formatter:off
 		return (builder) -> builder
-				.withCacheConfiguration("cache1",
-						CouchbaseCacheConfiguration.defaultCacheConfig().entryExpiry(Duration.ofSeconds(10)))
-				.withCacheConfiguration("cache2",
-						CouchbaseCacheConfiguration.defaultCacheConfig().entryExpiry(Duration.ofMinutes(1)));
+				.withCacheConfiguration("cache1", CouchbaseCacheConfiguration
+						.defaultCacheConfig().entryExpiry(Duration.ofSeconds(10)))
+				.withCacheConfiguration("cache2", CouchbaseCacheConfiguration
+						.defaultCacheConfig().entryExpiry(Duration.ofMinutes(1)));
+		// @formatter:on
 
 	}
 
