@@ -22,6 +22,7 @@ import org.testcontainers.utility.DockerImageName;
  * Create {@link DockerImageName} instances for services used in integration tests.
  *
  * @author Stephane Nicoll
+ * @author Nguyen Bao Sach
  * @since 2.3.6
  */
 public final class DockerImageNames {
@@ -52,8 +53,8 @@ public final class DockerImageNames {
 	}
 
 	/**
-	 * Return a {@link DockerImageName} suitable for running Cassandra.
-	 * @return a docker image name for running cassandra
+	 * Return a {@link DockerImageName} suitable for running Couchbase.
+	 * @return a docker image name for running couchbase
 	 */
 	public static DockerImageName couchbase() {
 		return DockerImageName.parse("couchbase/server").withTag(COUCHBASE_VERSION);
