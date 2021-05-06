@@ -33,6 +33,7 @@ import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadata;
 import org.springframework.boot.jdbc.metadata.DataSourcePoolMetadataProvider;
 import org.springframework.util.Assert;
 import org.springframework.util.ConcurrentReferenceHashMap;
+import org.springframework.util.ObjectUtils;
 
 /**
  * A {@link MeterBinder} for a {@link DataSource}.
@@ -94,7 +95,7 @@ public class DataSourcePoolMetrics implements MeterBinder {
 
 	private static class CachingDataSourcePoolMetadataProvider implements DataSourcePoolMetadataProvider {
 
-		private static final Map<DataSource, DataSourcePoolMetadata> cache = new ConcurrentReferenceHashMap<>();
+		private static final Map<String, DataSourcePoolMetadata> cache = new ConcurrentReferenceHashMap<>();
 
 		private final DataSourcePoolMetadataProvider metadataProvider;
 
@@ -108,10 +109,11 @@ public class DataSourcePoolMetrics implements MeterBinder {
 
 		@Override
 		public DataSourcePoolMetadata getDataSourcePoolMetadata(DataSource dataSource) {
-			DataSourcePoolMetadata metadata = cache.get(dataSource);
+			String dataSourceId = ObjectUtils.identityToString(dataSource);
+			DataSourcePoolMetadata metadata = cache.get(dataSourceId);
 			if (metadata == null) {
 				metadata = this.metadataProvider.getDataSourcePoolMetadata(dataSource);
-				cache.put(dataSource, metadata);
+				cache.put(dataSourceId, metadata);
 			}
 			return metadata;
 		}
