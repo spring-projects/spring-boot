@@ -27,8 +27,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.logging.log4j.util.Strings;
 import org.assertj.core.api.Condition;
@@ -407,9 +405,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		String property = context.getEnvironment().getProperty("my.property");
 		assertThat(context.getEnvironment().getActiveProfiles()).contains("dev");
 		assertThat(property).isEqualTo("fromdevprofile");
-		List<String> names = StreamSupport.stream(context.getEnvironment().getPropertySources().spliterator(), false)
-				.map(org.springframework.core.env.PropertySource::getName).collect(Collectors.toList());
-		assertThat(names).contains(
+		assertThat(context.getEnvironment().getPropertySources()).extracting("name").contains(
 				"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #0)",
 				"Config resource 'class path resource [configdata/profiles/testsetprofiles.yml]' via location 'classpath:configdata/profiles/' (document #1)");
 	}
@@ -598,6 +594,14 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		ConfigurableApplicationContext context = this.application
 				.run("--spring.config.location=classpath:application-import-with-placeholder-in-document.properties");
 		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported");
+	}
+
+	@Test
+	void runWhenImportWithProfileVariantOrdersPropertySourcesCorrectly() {
+		this.application.setAdditionalProfiles("dev");
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:application-import-with-profile-variant.properties");
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported-dev");
 	}
 
 	@Test
