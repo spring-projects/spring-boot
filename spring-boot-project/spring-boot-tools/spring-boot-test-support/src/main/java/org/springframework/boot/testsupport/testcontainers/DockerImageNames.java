@@ -52,8 +52,8 @@ public final class DockerImageNames {
 	}
 
 	/**
-	 * Return a {@link DockerImageName} suitable for running Cassandra.
-	 * @return a docker image name for running cassandra
+	 * Return a {@link DockerImageName} suitable for running Couchbase.
+	 * @return a docker image name for running couchbase
 	 */
 	public static DockerImageName couchbase() {
 		return DockerImageName.parse("couchbase/server").withTag(COUCHBASE_VERSION);
