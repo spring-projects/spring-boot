@@ -597,6 +597,14 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	void runWhenImportWithProfileVariantOrdersPropertySourcesCorrectly() {
+		this.application.setAdditionalProfiles("dev");
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.location=classpath:application-import-with-profile-variant.properties");
+		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported-dev");
+	}
+
+	@Test
 	void runWhenHasPropertyInProfileDocumentThrowsException() {
 		assertThatExceptionOfType(BindException.class).isThrownBy(() -> this.application.run(
 				"--spring.config.location=classpath:application-import-with-placeholder-in-profile-document.properties"))
