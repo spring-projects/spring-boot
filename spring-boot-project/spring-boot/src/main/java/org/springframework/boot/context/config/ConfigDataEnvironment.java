@@ -233,7 +233,7 @@ class ConfigDataEnvironment {
 		contributors = processWithoutProfiles(contributors, importer, activationContext);
 		activationContext = withProfiles(contributors, activationContext);
 		contributors = processWithProfiles(contributors, importer, activationContext);
-		applyToEnvironment(contributors, activationContext);
+		applyToEnvironment(contributors, activationContext, importer.getLoadedLocations());
 	}
 
 	private ConfigDataEnvironmentContributors processInitial(ConfigDataEnvironmentContributors contributors,
@@ -320,9 +320,9 @@ class ConfigDataEnvironment {
 	}
 
 	private void applyToEnvironment(ConfigDataEnvironmentContributors contributors,
-			ConfigDataActivationContext activationContext) {
+			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations) {
 		checkForInvalidProperties(contributors);
-		checkMandatoryLocations(contributors, activationContext);
+		checkMandatoryLocations(contributors, activationContext, loadedLocations);
 		MutablePropertySources propertySources = this.environment.getPropertySources();
 		this.logger.trace("Applying config data environment contributions");
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
@@ -357,7 +357,7 @@ class ConfigDataEnvironment {
 	}
 
 	private void checkMandatoryLocations(ConfigDataEnvironmentContributors contributors,
-			ConfigDataActivationContext activationContext) {
+			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations) {
 		Set<ConfigDataLocation> mandatoryLocations = new LinkedHashSet<>();
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			if (contributor.isActive(activationContext)) {
@@ -369,6 +369,7 @@ class ConfigDataEnvironment {
 				mandatoryLocations.remove(contributor.getLocation());
 			}
 		}
+		mandatoryLocations.removeAll(loadedLocations);
 		if (!mandatoryLocations.isEmpty()) {
 			for (ConfigDataLocation mandatoryLocation : mandatoryLocations) {
 				this.notFoundAction.handle(this.logger, new ConfigDataLocationNotFoundException(mandatoryLocation));

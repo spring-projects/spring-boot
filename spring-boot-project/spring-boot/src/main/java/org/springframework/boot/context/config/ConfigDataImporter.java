@@ -49,6 +49,8 @@ class ConfigDataImporter {
 
 	private final Set<ConfigDataResource> loaded = new HashSet<>();
 
+	private final Set<ConfigDataLocation> loadedLocations = new HashSet<>();
+
 	/**
 	 * Create a new {@link ConfigDataImporter} instance.
 	 * @param logFactory the log factory
@@ -113,10 +115,15 @@ class ConfigDataImporter {
 			ConfigDataResolutionResult candidate = candidates.get(i);
 			ConfigDataLocation location = candidate.getLocation();
 			ConfigDataResource resource = candidate.getResource();
-			if (this.loaded.add(resource)) {
+			if (this.loaded.contains(resource)) {
+				this.loadedLocations.add(location);
+			}
+			else {
 				try {
 					ConfigData loaded = this.loaders.load(loaderContext, resource);
 					if (loaded != null) {
+						this.loaded.add(resource);
+						this.loadedLocations.add(location);
 						result.put(candidate, loaded);
 					}
 				}
@@ -137,6 +144,10 @@ class ConfigDataImporter {
 
 	private ConfigDataNotFoundAction getNotFoundAction(ConfigDataLocation location) {
 		return (!location.isOptional()) ? this.notFoundAction : ConfigDataNotFoundAction.IGNORE;
+	}
+
+	Set<ConfigDataLocation> getLoadedLocations() {
+		return this.loadedLocations;
 	}
 
 }
