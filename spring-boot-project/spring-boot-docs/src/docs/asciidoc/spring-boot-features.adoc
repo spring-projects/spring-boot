@@ -8760,7 +8760,7 @@ Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Sl
 
 [[boot-features-kotlin-requirements]]
 === Requirements
-Spring Boot supports Kotlin 1.3.x.
+Spring Boot supports Kotlin 1.3.x or later.
 To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
 The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
 
