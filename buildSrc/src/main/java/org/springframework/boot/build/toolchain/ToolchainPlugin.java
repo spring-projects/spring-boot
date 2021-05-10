@@ -17,6 +17,7 @@
 package org.springframework.boot.build.toolchain;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.gradle.api.Plugin;
@@ -83,9 +84,7 @@ public class ToolchainPlugin implements Plugin<Project> {
 
 	private void configureTestToolchain(Project project) {
 		project.getTasks().withType(Test.class, (test) -> {
-			// See https://github.com/spring-projects/spring-ldap/issues/570
-			List<String> arguments = Arrays.asList("--add-exports=java.naming/com.sun.jndi.ldap=ALL-UNNAMED",
-					"--illegal-access=warn");
+			List<String> arguments = Collections.singletonList("--illegal-access=warn");
 			test.jvmArgs(arguments);
 		});
 	}
