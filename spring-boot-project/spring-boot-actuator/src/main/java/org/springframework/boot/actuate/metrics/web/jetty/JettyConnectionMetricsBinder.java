@@ -57,7 +57,7 @@ public class JettyConnectionMetricsBinder implements ApplicationListener<Applica
 		ApplicationContext applicationContext = event.getApplicationContext();
 		Server server = findServer(applicationContext);
 		if (server != null) {
-			JettyConnectionMetrics.addToAllConnectors(server, meterRegistry, tags);
+			JettyConnectionMetrics.addToAllConnectors(server, this.meterRegistry, this.tags);
 		}
 	}
 

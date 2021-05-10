@@ -57,7 +57,7 @@ public class JettySslHandshakeMetricsBinder implements ApplicationListener<Appli
 		ApplicationContext applicationContext = event.getApplicationContext();
 		Server server = findServer(applicationContext);
 		if (server != null) {
-			JettySslHandshakeMetrics.addToAllConnectors(server, meterRegistry, tags);
+			JettySslHandshakeMetrics.addToAllConnectors(server, this.meterRegistry, this.tags);
 		}
 	}
 
