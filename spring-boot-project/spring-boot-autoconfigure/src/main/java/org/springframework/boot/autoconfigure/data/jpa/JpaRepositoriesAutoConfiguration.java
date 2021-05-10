@@ -36,30 +36,28 @@ import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.data.envers.repository.config.EnableEnversRepositories;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.data.repository.history.RevisionRepository;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
  * <p>
  * Activates when there is a bean of type {@link javax.sql.DataSource} configured in the
- * context, the Spring Data JPA
- * {@link org.springframework.data.jpa.repository.JpaRepository} type is on the classpath,
- * and there is no other, existing
- * {@link org.springframework.data.jpa.repository.JpaRepository} configured.
+ * context, the Spring Data JPA {@link JpaRepository} type is on the classpath, and there
+ * is no other, existing {@link JpaRepository} configured.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
  * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
  * <p>
- * In case
- * {@link org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean}
- * is on the classpath, it is used instead of
- * {@link org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean} to
- * support {@link org.springframework.data.repository.history.RevisionRepository} with
- * Hibernate Envers.
+ * In case {@link EnableEnversRepositories} is on the classpath,
+ * {@link EnversRevisionRepositoryFactoryBean} is used instead of
+ * {@link JpaRepositoryFactoryBean} to support {@link RevisionRepository} with Hibernate
+ * Envers.
  * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
  *
@@ -118,14 +116,14 @@ public class JpaRepositoriesAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(EnversRevisionRepositoryFactoryBean.class)
+	@ConditionalOnClass(EnableEnversRepositories.class)
 	@Import(EnversRevisionRepositoriesRegistrar.class)
 	public static class EnversRevisionRepositoriesRegistrarConfiguration {
 
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingClass("org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean")
+	@ConditionalOnMissingClass("org.springframework.data.envers.repository.config.EnableEnversRepositories")
 	@Import(JpaRepositoriesRegistrar.class)
 	public static class JpaRepositoriesRegistrarConfiguration {
 
