@@ -61,13 +61,13 @@ public class StartMojo extends AbstractRunMojo {
 	 * The JMX name of the automatically deployed MBean managing the lifecycle of the
 	 * spring application.
 	 */
-	@Parameter(property = "spring-boot.start.jmxName", defaultValue = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME)
+	@Parameter(defaultValue = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME)
 	private String jmxName;
 
 	/**
 	 * The port to use to expose the platform MBeanServer if the application is forked.
 	 */
-	@Parameter(property = "spring-boot.start.jmxPort", defaultValue = "9001")
+	@Parameter(defaultValue = "9001")
 	private int jmxPort;
 
 	/**
