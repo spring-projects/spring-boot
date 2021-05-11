@@ -98,6 +98,8 @@ class AsciidoctorConventions {
 		Configuration asciidoctorExtensions = configurations.maybeCreate(EXTENSIONS_CONFIGURATION);
 		asciidoctorExtensions.getDependencies().add(project.getDependencies()
 				.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.1-SNAPSHOT"));
+		asciidoctorExtensions.getDependencies()
+				.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
 		Configuration dependencyManagement = configurations.findByName("dependencyManagement");
 		if (dependencyManagement != null) {
 			asciidoctorExtensions.extendsFrom(dependencyManagement);
@@ -111,7 +113,9 @@ class AsciidoctorConventions {
 		asciidoctorTask.baseDirFollowsSourceDir();
 		createSyncDocumentationSourceTask(project, asciidoctorTask);
 		if (asciidoctorTask instanceof AsciidoctorTask) {
-			configureAsciidoctorHtmlTask((AsciidoctorTask) asciidoctorTask);
+			boolean pdf = asciidoctorTask.getName().toLowerCase().contains("pdf");
+			String backend = (!pdf) ? "spring-html" : "spring-pdf";
+			((AsciidoctorTask) asciidoctorTask).outputOptions((outputOptions) -> outputOptions.backends(backend));
 		}
 	}
 
@@ -144,10 +148,6 @@ class AsciidoctorConventions {
 				.withPropertyName("synced source");
 		asciidoctorTask.setSourceDir(project.relativePath(new File(syncedSource, "asciidoc/")));
 		return syncDocumentationSource;
-	}
-
-	private void configureAsciidoctorHtmlTask(AsciidoctorTask asciidoctorTask) {
-		asciidoctorTask.outputOptions((outputOptions) -> outputOptions.backends("spring-html"));
 	}
 
 }

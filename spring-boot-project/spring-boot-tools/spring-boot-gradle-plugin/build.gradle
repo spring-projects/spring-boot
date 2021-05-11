@@ -2,7 +2,6 @@ plugins {
 	id "java-gradle-plugin"
 	id "maven-publish"
 	id "org.asciidoctor.jvm.convert"
-	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-repository"
 	id "org.springframework.boot.optional-dependencies"
@@ -82,7 +81,7 @@ asciidoctor {
 	attributes "stylesheet": "css/style.css"
 }
 
-asciidoctorPdf {
+task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "index.adoc"
 	}

@@ -1,7 +1,6 @@
 plugins {
     id "java-library"
 	id "org.asciidoctor.jvm.convert"
-	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
@@ -175,7 +174,7 @@ asciidoctor {
 	}
 }
 
-asciidoctorPdf {
+task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "index.adoc"
 	}
