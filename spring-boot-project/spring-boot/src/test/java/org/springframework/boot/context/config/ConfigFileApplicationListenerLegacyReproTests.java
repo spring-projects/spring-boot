@@ -168,17 +168,6 @@ class ConfigFileApplicationListenerLegacyReproTests {
 		assertVersionProperty(this.context, "A", "C", "A");
 	}
 
-	@Test
-	void additionalProfilesViaProgrammaticallySetting() {
-		// gh-25704
-		SpringApplication application = new SpringApplication(Config.class);
-		application.setWebApplicationType(WebApplicationType.NONE);
-		application.setAdditionalProfiles("dev");
-		this.context = application.run();
-		assertThat(this.context.getEnvironment().acceptsProfiles(Profiles.of("dev"))).isTrue();
-		assertThat(this.context.getEnvironment().getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
-	}
-
 	private void assertVersionProperty(ConfigurableApplicationContext context, String expectedVersion,
 			String... expectedActiveProfiles) {
 		assertThat(context.getEnvironment().getActiveProfiles()).isEqualTo(expectedActiveProfiles);

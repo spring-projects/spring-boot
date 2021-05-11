@@ -154,7 +154,6 @@ import org.springframework.web.context.support.StandardServletEnvironment;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Ethan Rubinson
- * @author Nguyen Bao Sach
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
