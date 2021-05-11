@@ -36,13 +36,13 @@ import org.springframework.jmx.export.MBeanExporter;
  *
  * @author Stephane Nicoll
  * @author Andy Wilkinson
- * @author Nguyen Bao Sach
  * @since 1.3.0
  * @see SpringApplicationAdminMXBean
  */
 @Configuration(proxyBeanMethods = false)
 @AutoConfigureAfter(JmxAutoConfiguration.class)
-@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true")
+@ConditionalOnProperty(prefix = "spring.application.admin", value = "enabled", havingValue = "true",
+		matchIfMissing = false)
 public class SpringApplicationAdminJmxAutoConfiguration {
 
 	/**
@@ -61,8 +61,11 @@ public class SpringApplicationAdminJmxAutoConfiguration {
 	public SpringApplicationAdminMXBeanRegistrar springApplicationAdminRegistrar(
 			ObjectProvider<MBeanExporter> mbeanExporters, Environment environment) throws MalformedObjectNameException {
 		String jmxName = environment.getProperty(JMX_NAME_PROPERTY, DEFAULT_JMX_NAME);
-		// Make sure to not register that MBean twice
-		mbeanExporters.forEach((mbeanExporter) -> mbeanExporter.addExcludedBean(jmxName));
+		if (mbeanExporters != null) { // Make sure to not register that MBean twice
+			for (MBeanExporter mbeanExporter : mbeanExporters) {
+				mbeanExporter.addExcludedBean(jmxName);
+			}
+		}
 		return new SpringApplicationAdminMXBeanRegistrar(jmxName);
 	}
 
