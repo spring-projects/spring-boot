@@ -83,7 +83,6 @@ class ConfigDataEnvironmentPostProcessorTests {
 		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
 		verify(this.configDataEnvironment).processAndApply();
 		assertThat(this.resourceLoaderCaptor.getValue()).isInstanceOf(DefaultResourceLoader.class);
-		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
 
 	@Test
@@ -95,7 +94,6 @@ class ConfigDataEnvironmentPostProcessorTests {
 		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
 		verify(this.configDataEnvironment).processAndApply();
 		assertThat(this.resourceLoaderCaptor.getValue()).isSameAs(resourceLoader);
-		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
 
 	@Test
@@ -106,6 +104,14 @@ class ConfigDataEnvironmentPostProcessorTests {
 		verify(this.postProcessor).getConfigDataEnvironment(any(), any(), this.additionalProfilesCaptor.capture());
 		verify(this.configDataEnvironment).processAndApply();
 		assertThat(this.additionalProfilesCaptor.getValue()).containsExactly("dev");
+	}
+
+	@Test
+	void postProcessEnvironmentWhenNoActiveProfiles() {
+		willReturn(this.configDataEnvironment).given(this.postProcessor).getConfigDataEnvironment(any(), any(), any());
+		this.postProcessor.postProcessEnvironment(this.environment, this.application);
+		verify(this.postProcessor).getConfigDataEnvironment(any(), this.resourceLoaderCaptor.capture(), any());
+		verify(this.configDataEnvironment).processAndApply();
 		assertThat(this.environment.getActiveProfiles()).isEmpty();
 	}
 
@@ -123,7 +129,7 @@ class ConfigDataEnvironmentPostProcessorTests {
 	}
 
 	@Test
-	void postProcessEnvironmentWhenHasAdditionalProfilesViaProgrammaticallySettingAndUseLegacyProcessing() {
+	void postProcessEnvironmentWhenHasAdditionalProfilesAndUseLegacyProcessing() {
 		this.application.setAdditionalProfiles("dev");
 		ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener legacyListener = mock(
 				ConfigDataEnvironmentPostProcessor.LegacyConfigFileApplicationListener.class);
