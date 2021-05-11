@@ -102,7 +102,7 @@ public class WebFluxAutoConfiguration {
 
 	@Bean
 	@ConditionalOnMissingBean(HiddenHttpMethodFilter.class)
-	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "spring.webflux.hiddenmethod.filter", name = "enabled")
 	public OrderedHiddenHttpMethodFilter hiddenHttpMethodFilter() {
 		return new OrderedHiddenHttpMethodFilter();
 	}

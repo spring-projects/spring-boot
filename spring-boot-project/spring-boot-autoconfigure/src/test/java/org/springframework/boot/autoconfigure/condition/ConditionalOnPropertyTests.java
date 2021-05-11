@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -299,7 +299,7 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	// i.e ${simple.myProperty:false}
-	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "true", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "simple", name = "my-property", havingValue = "true")
 	static class DisabledIfNotConfiguredOtherwiseConfig {
 
 		@Bean
@@ -399,7 +399,7 @@ class ConditionalOnPropertyTests {
 
 	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnMyFeature
-	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "my.other.feature", name = "enabled", havingValue = "true")
 	static class MetaAnnotationAndDirectAnnotation {
 
 		@Bean
@@ -411,7 +411,7 @@ class ConditionalOnPropertyTests {
 
 	@Retention(RetentionPolicy.RUNTIME)
 	@Target({ ElementType.TYPE, ElementType.METHOD })
-	@ConditionalOnProperty(prefix = "my.feature", name = "enabled", havingValue = "true", matchIfMissing = false)
+	@ConditionalOnProperty(prefix = "my.feature", name = "enabled", havingValue = "true")
 	@interface ConditionalOnMyFeature {
 
 	}
