@@ -372,7 +372,6 @@ public class SpringApplication {
 		ConfigurationPropertySources.attach(environment);
 		listeners.environmentPrepared(bootstrapContext, environment);
 		DefaultPropertiesPropertySource.moveToEnd(environment);
-		configureAdditionalProfiles(environment);
 		Assert.state(!environment.containsProperty("spring.main.environment-prefix"),
 				"Environment prefix cannot be set via properties.");
 		bindToSpringApplication(environment);
@@ -554,16 +553,6 @@ public class SpringApplication {
 	 * @see org.springframework.boot.context.config.ConfigFileApplicationListener
 	 */
 	protected void configureProfiles(ConfigurableEnvironment environment, String[] args) {
-	}
-
-	private void configureAdditionalProfiles(ConfigurableEnvironment environment) {
-		if (!CollectionUtils.isEmpty(this.additionalProfiles)) {
-			Set<String> profiles = new LinkedHashSet<>(Arrays.asList(environment.getActiveProfiles()));
-			if (!profiles.containsAll(this.additionalProfiles)) {
-				profiles.addAll(this.additionalProfiles);
-				environment.setActiveProfiles(StringUtils.toStringArray(profiles));
-			}
-		}
 	}
 
 	private void configureIgnoreBeanInfo(ConfigurableEnvironment environment) {

@@ -146,6 +146,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Brian Clozel
  * @author Artsiom Yudovin
  * @author Marten Deinum
+ * @author Nguyen Bao Sach
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {

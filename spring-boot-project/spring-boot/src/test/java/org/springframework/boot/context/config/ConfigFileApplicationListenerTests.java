@@ -70,6 +70,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Eddú Meléndez
  * @author Madhura Bhave
  * @author Scott Frederick
+ * @author Nguyen Bao Sach
  */
 @Deprecated
 @ExtendWith({ OutputCaptureExtension.class, UseLegacyProcessing.class })
@@ -1148,6 +1149,25 @@ class ConfigFileApplicationListenerTests {
 		this.initializer.setSearchNames("testproperties");
 		this.initializer.postProcessEnvironment(this.environment, this.application);
 		assertThat(this.environment.getProperty("fourth.property")).isNull();
+	}
+
+	@Test
+	void additionalProfilesCanBeIncludedFromProgrammaticallySetting() {
+		// gh-25704
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("other", "dev");
+		this.context = application.run();
+		assertThat(this.context.getEnvironment().getProperty("my.property")).isEqualTo("fromdevpropertiesfile");
+	}
+
+	@Test
+	void activeProfilesShouldTakePrecedenceOverAdditionalProfiles() {
+		SpringApplication application = new SpringApplication(Config.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setAdditionalProfiles("foo");
+		this.context = application.run("--spring.profiles.active=bar,spam");
+		assertThat(this.context.getEnvironment().getActiveProfiles()).containsExactly("foo", "bar", "spam");
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
