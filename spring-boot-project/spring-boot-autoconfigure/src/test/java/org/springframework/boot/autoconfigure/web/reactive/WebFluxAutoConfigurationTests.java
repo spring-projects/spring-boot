@@ -87,6 +87,8 @@ import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
+import org.springframework.web.server.session.CookieWebSessionIdResolver;
+import org.springframework.web.server.session.WebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionManager;
 import org.springframework.web.util.pattern.PathPattern;
 
@@ -563,6 +565,19 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Test
+	void customWebSessionIdResolverShouldBeApplied() {
+		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolvers.class).run((context) -> {
+			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+			MockServerWebExchange exchange = MockServerWebExchange.from(request);
+			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
+			WebSession webSession = webSessionManager.getSession(exchange).block();
+			webSession.start();
+			exchange.getResponse().setComplete().block();
+			assertThat(exchange.getResponse().getCookies().get("JSESSIONID")).isNotEmpty();
+		});
+	}
+
+	@Test
 	void customSameSteConfigurationShouldBeApplied() {
 		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run((context) -> {
 			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
@@ -582,6 +597,18 @@ class WebFluxAutoConfigurationTests {
 			return ((SimpleUrlHandlerMapping) mapping).getHandlerMap();
 		}
 		return Collections.emptyMap();
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomWebSessionIdResolvers {
+
+		@Bean
+		WebSessionIdResolver webSessionIdResolver() {
+			CookieWebSessionIdResolver resolver = new CookieWebSessionIdResolver();
+			resolver.setCookieName("JSESSIONID");
+			return resolver;
+		}
+
 	}
 
 	@Configuration(proxyBeanMethods = false)
