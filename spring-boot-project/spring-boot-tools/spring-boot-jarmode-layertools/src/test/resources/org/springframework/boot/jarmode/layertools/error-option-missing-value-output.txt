@@ -1,9 +1,0 @@
-Error: Option "--destination" for the extract command requires a value
-
-Extracts layers from the jar for image creation
-
-Usage:
-  java -Djarmode=layertools -jar test.jar extract [options] [<layer>...]
-
-Options:
-  --destination string  The destination to extract files to

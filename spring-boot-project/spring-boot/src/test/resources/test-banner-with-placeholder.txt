@@ -1,3 +1,0 @@
-Running a Test!
-
-${test.property}

@@ -1,3 +1,0 @@
-hazelcast-client:
-  client-labels:
-    - explicit-yaml

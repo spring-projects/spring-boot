@@ -1,6 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<configuration>
-	<include resource="org/springframework/boot/logging/logback/base.xml" />
-	<springProperty scope="context" name="SIMPLE" source="testpropertyfoobar" defaultValue="foo"/>
-	<springProperty scope="context" name="MINE" source="my.example-property" defaultValue="bar"/>
-</configuration>
