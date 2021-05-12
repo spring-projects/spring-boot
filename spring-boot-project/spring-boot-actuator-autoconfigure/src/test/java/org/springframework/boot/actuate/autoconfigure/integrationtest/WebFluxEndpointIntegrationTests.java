@@ -51,7 +51,7 @@ class WebFluxEndpointIntegrationTests {
 			.withUserConfiguration(EndpointsConfiguration.class);
 
 	@Test
-	void linksAreProvidedToAllEndpointTypes() throws Exception {
+	void linksAreProvidedToAllEndpointTypes() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.exposure.include:*").run((context) -> {
 			WebTestClient client = createWebTestClient(context);
 			client.get().uri("/actuator").exchange().expectStatus().isOk().expectBody().jsonPath("_links.beans")
@@ -61,7 +61,7 @@ class WebFluxEndpointIntegrationTests {
 	}
 
 	@Test
-	void linksPageIsNotAvailableWhenDisabled() throws Exception {
+	void linksPageIsNotAvailableWhenDisabled() {
 		this.contextRunner.withPropertyValues("management.endpoints.web.discovery.enabled=false").run((context) -> {
 			WebTestClient client = createWebTestClient(context);
 			client.get().uri("/actuator").exchange().expectStatus().isNotFound();

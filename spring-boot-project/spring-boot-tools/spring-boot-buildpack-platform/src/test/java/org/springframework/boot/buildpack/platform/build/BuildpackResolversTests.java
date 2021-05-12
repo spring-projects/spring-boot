@@ -53,7 +53,7 @@ class BuildpackResolversTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void resolveAllWithBuilderBuildpackReferenceReturnsExpectedBuildpack() throws IOException {
+	void resolveAllWithBuilderBuildpackReferenceReturnsExpectedBuildpack() {
 		BuildpackReference reference = BuildpackReference.of("urn:cnb:builder:paketo-buildpacks/spring-boot@3.5.0");
 		Buildpacks buildpacks = BuildpackResolvers.resolveAll(this.resolverContext, Collections.singleton(reference));
 		assertThat(buildpacks.getBuildpacks()).hasSize(1);
@@ -92,7 +92,7 @@ class BuildpackResolversTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void resolveAllWithInvalidLocatorThrowsException() throws IOException {
+	void resolveAllWithInvalidLocatorThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("unknown-buildpack@0.0.1");
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> BuildpackResolvers.resolveAll(this.resolverContext, Collections.singleton(reference)))

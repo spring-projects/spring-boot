@@ -114,7 +114,7 @@ class SampleSecureWebFluxCustomSecurityTests {
 		}
 
 		@Bean
-		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> {
 				exchanges.matchers(EndpointRequest.to("health")).permitAll();
 				exchanges.matchers(EndpointRequest.toAnyEndpoint().excluding(MappingsEndpoint.class))

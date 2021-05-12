@@ -171,7 +171,7 @@ class WebMvcEndpointExposureIntegrationTests {
 				.build();
 	}
 
-	private boolean isExposed(WebTestClient client, HttpMethod method, String path) throws Exception {
+	private boolean isExposed(WebTestClient client, HttpMethod method, String path) {
 		path = "/actuator/" + path;
 		EntityExchangeResult<byte[]> result = client.method(method).uri(path).exchange().expectBody().returnResult();
 		if (result.getStatus() == HttpStatus.OK) {

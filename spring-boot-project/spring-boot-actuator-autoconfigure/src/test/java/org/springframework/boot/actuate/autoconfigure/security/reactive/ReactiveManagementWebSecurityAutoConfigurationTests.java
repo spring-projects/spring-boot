@@ -159,7 +159,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	static class CustomSecurityConfiguration {
 
 		@Bean
-		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> {
 				exchanges.pathMatchers("/foo").permitAll();
 				exchanges.anyExchange().authenticated();
@@ -179,7 +179,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 		}
 
 		@Bean
-		WebFilterChainProxy webFilterChainProxy(ServerHttpSecurity http) throws Exception {
+		WebFilterChainProxy webFilterChainProxy(ServerHttpSecurity http) {
 			return new WebFilterChainProxy(getFilterChains(http));
 		}
 
@@ -190,7 +190,7 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 			return httpSecurity;
 		}
 
-		private List<SecurityWebFilterChain> getFilterChains(ServerHttpSecurity http) throws Exception {
+		private List<SecurityWebFilterChain> getFilterChains(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
 			http.formLogin(Customizer.withDefaults());
 			return Collections.singletonList(http.build());

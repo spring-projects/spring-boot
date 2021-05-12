@@ -129,7 +129,7 @@ class LoggingApplicationListenerTests {
 	}
 
 	@AfterEach
-	void clear() throws IOException {
+	void clear() {
 		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
 		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
 		loggingSystem.cleanUp();
@@ -420,7 +420,7 @@ class LoggingApplicationListenerTests {
 	}
 
 	@Test
-	void shutdownHookRegistrationCanBeDisabled() throws Exception {
+	void shutdownHookRegistrationCanBeDisabled() {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		Object registered = ReflectionTestUtils.getField(listener, TestLoggingApplicationListener.class,
 				"shutdownHookRegistered");

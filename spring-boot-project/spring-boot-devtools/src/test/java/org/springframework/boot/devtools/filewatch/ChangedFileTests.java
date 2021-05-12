@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,42 +37,42 @@ class ChangedFileTests {
 	File tempDir;
 
 	@Test
-	void sourceDirectoryMustNotBeNull() throws Exception {
+	void sourceDirectoryMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ChangedFile(null, new File(this.tempDir, "file"), Type.ADD))
 				.withMessageContaining("SourceDirectory must not be null");
 	}
 
 	@Test
-	void fileMustNotBeNull() throws Exception {
+	void fileMustNotBeNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> new ChangedFile(new File(this.tempDir, "directory"), null, Type.ADD))
 				.withMessageContaining("File must not be null");
 	}
 
 	@Test
-	void typeMustNotBeNull() throws Exception {
+	void typeMustNotBeNull() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> new ChangedFile(new File(this.tempDir, "file"), new File(this.tempDir, "directory"), null))
 				.withMessageContaining("Type must not be null");
 	}
 
 	@Test
-	void getFile() throws Exception {
+	void getFile() {
 		File file = new File(this.tempDir, "file");
 		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "directory"), file, Type.ADD);
 		assertThat(changedFile.getFile()).isEqualTo(file);
 	}
 
 	@Test
-	void getType() throws Exception {
+	void getType() {
 		ChangedFile changedFile = new ChangedFile(new File(this.tempDir, "directory"), new File(this.tempDir, "file"),
 				Type.DELETE);
 		assertThat(changedFile.getType()).isEqualTo(Type.DELETE);
 	}
 
 	@Test
-	void getRelativeName() throws Exception {
+	void getRelativeName() {
 		File subDirectory = new File(this.tempDir, "A");
 		File file = new File(subDirectory, "B.txt");
 		ChangedFile changedFile = new ChangedFile(this.tempDir, file, Type.ADD);
