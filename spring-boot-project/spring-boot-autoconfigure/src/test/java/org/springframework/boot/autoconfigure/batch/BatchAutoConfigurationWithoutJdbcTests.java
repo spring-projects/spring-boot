@@ -60,22 +60,22 @@ class BatchAutoConfigurationWithoutJdbcTests {
 	static class BatchConfiguration implements BatchConfigurer {
 
 		@Override
-		public JobRepository getJobRepository() throws Exception {
+		public JobRepository getJobRepository() {
 			return mock(JobRepository.class);
 		}
 
 		@Override
-		public PlatformTransactionManager getTransactionManager() throws Exception {
+		public PlatformTransactionManager getTransactionManager() {
 			return mock(PlatformTransactionManager.class);
 		}
 
 		@Override
-		public JobLauncher getJobLauncher() throws Exception {
+		public JobLauncher getJobLauncher() {
 			return mock(JobLauncher.class);
 		}
 
 		@Override
-		public JobExplorer getJobExplorer() throws Exception {
+		public JobExplorer getJobExplorer() {
 			return mock(JobExplorer.class);
 		}
 

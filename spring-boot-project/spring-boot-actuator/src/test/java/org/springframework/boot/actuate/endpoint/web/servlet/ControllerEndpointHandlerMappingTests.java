@@ -73,7 +73,7 @@ class ControllerEndpointHandlerMappingTests {
 	}
 
 	@Test
-	void mappingNarrowedToMethod() throws Exception {
+	void mappingNarrowedToMethod() {
 		ExposableControllerEndpoint first = firstEndpoint();
 		ControllerEndpointHandlerMapping mapping = createMapping("actuator", first);
 		assertThatExceptionOfType(HttpRequestMethodNotSupportedException.class)

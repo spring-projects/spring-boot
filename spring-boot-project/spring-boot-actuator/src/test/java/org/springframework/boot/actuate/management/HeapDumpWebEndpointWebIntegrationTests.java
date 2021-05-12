@@ -59,13 +59,13 @@ class HeapDumpWebEndpointWebIntegrationTests {
 	}
 
 	@WebEndpointTest
-	void getRequestShouldReturnHeapDumpInResponseBody(WebTestClient client) throws Exception {
+	void getRequestShouldReturnHeapDumpInResponseBody(WebTestClient client) {
 		client.get().uri("/actuator/heapdump").exchange().expectStatus().isOk().expectHeader()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).expectBody(String.class).isEqualTo("HEAPDUMP");
 		assertHeapDumpFileIsDeleted();
 	}
 
-	private void assertHeapDumpFileIsDeleted() throws InterruptedException {
+	private void assertHeapDumpFileIsDeleted() {
 		Awaitility.waitAtMost(Duration.ofSeconds(5)).until(this.endpoint.file::exists, is(false));
 	}
 

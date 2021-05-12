@@ -56,7 +56,7 @@ class ControllerEndpointWebFluxIntegrationTests {
 	}
 
 	@Test
-	void endpointsCanBeAccessed() throws Exception {
+	void endpointsCanBeAccessed() {
 		TestSecurityContextHolder.getContext()
 				.setAuthentication(new TestingAuthenticationToken("user", "N/A", "ROLE_ACTUATOR"));
 		this.context = new AnnotationConfigReactiveWebApplicationContext();

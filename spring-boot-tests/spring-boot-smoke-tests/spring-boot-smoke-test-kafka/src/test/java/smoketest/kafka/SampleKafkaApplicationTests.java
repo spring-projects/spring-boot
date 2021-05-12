@@ -44,7 +44,7 @@ class SampleKafkaApplicationTests {
 	private Consumer consumer;
 
 	@Test
-	void testVanillaExchange() throws Exception {
+	void testVanillaExchange() {
 		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(this.consumer::getMessages, not(empty()));
 		assertThat(this.consumer.getMessages()).extracting("message").containsOnly("A simple test message");
 	}

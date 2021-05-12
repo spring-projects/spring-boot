@@ -43,7 +43,7 @@ class FileUtilsTests {
 	private File originDirectory;
 
 	@BeforeEach
-	void init() throws IOException {
+	void init() {
 		this.outputDirectory = new File(this.tempDir, "remove");
 		this.originDirectory = new File(this.tempDir, "keep");
 		this.outputDirectory.mkdirs();

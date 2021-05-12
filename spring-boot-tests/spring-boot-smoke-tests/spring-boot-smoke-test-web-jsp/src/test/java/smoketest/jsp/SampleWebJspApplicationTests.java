@@ -53,7 +53,7 @@ class SampleWebJspApplicationTests {
 	}
 
 	@Test
-	void customErrorPage() throws Exception {
+	void customErrorPage() {
 		HttpHeaders headers = new HttpHeaders();
 		headers.setAccept(Arrays.asList(MediaType.TEXT_HTML));
 		RequestEntity<Void> request = new RequestEntity<>(headers, HttpMethod.GET, URI.create("/foo"));

@@ -242,7 +242,7 @@ class TomcatReactiveWebServerFactoryTests extends AbstractReactiveWebServerFacto
 	}
 
 	@Test
-	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() {
 		TomcatReactiveWebServerFactory factory = getFactory();
 		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();

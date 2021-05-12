@@ -63,7 +63,7 @@ class HttpTunnelPayloadForwarderTests {
 	}
 
 	@Test
-	void overflow() throws Exception {
+	void overflow() {
 		WritableByteChannel channel = Channels.newChannel(new ByteArrayOutputStream());
 		HttpTunnelPayloadForwarder forwarder = new HttpTunnelPayloadForwarder(channel);
 		assertThatIllegalStateException().isThrownBy(() -> {

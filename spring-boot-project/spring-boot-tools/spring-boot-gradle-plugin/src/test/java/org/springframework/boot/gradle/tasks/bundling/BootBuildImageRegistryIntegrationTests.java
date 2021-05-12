@@ -66,7 +66,7 @@ public class BootBuildImageRegistryIntegrationTests {
 	}
 
 	@TestTemplate
-	void buildsImageAndPublishesToRegistry() throws IOException, InterruptedException {
+	void buildsImageAndPublishesToRegistry() throws IOException {
 		writeMainClass();
 		String repoName = "test-image";
 		String imageName = this.registryAddress + "/" + repoName;

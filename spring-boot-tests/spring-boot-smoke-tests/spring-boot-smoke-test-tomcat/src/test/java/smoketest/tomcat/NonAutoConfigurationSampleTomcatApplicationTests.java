@@ -50,7 +50,7 @@ class NonAutoConfigurationSampleTomcatApplicationTests {
 	private TestRestTemplate restTemplate;
 
 	@Test
-	void testHome() throws Exception {
+	void testHome() {
 		ResponseEntity<String> entity = this.restTemplate.getForEntity("/", String.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.OK);
 		assertThat(entity.getBody()).isEqualTo("Hello World");

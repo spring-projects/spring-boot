@@ -16,8 +16,6 @@
 
 package org.springframework.boot.context.properties;
 
-import java.io.IOException;
-
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
@@ -53,7 +51,7 @@ class EnableConfigurationPropertiesRegistrarTests {
 	}
 
 	@Test
-	void typeWithDefaultConstructorShouldRegisterGenericBeanDefinition() throws Exception {
+	void typeWithDefaultConstructorShouldRegisterGenericBeanDefinition() {
 		register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory
 				.getBeanDefinition("foo-" + getClass().getName() + "$FooProperties");
@@ -61,7 +59,7 @@ class EnableConfigurationPropertiesRegistrarTests {
 	}
 
 	@Test
-	void typeWithConstructorBindingShouldRegisterConfigurationPropertiesBeanDefinition() throws Exception {
+	void typeWithConstructorBindingShouldRegisterConfigurationPropertiesBeanDefinition() {
 		register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory
 				.getBeanDefinition("bar-" + getClass().getName() + "$BarProperties");
@@ -69,7 +67,7 @@ class EnableConfigurationPropertiesRegistrarTests {
 	}
 
 	@Test
-	void typeWithMultipleConstructorsShouldRegisterGenericBeanDefinition() throws Exception {
+	void typeWithMultipleConstructorsShouldRegisterGenericBeanDefinition() {
 		register(TestConfiguration.class);
 		BeanDefinition beanDefinition = this.beanFactory
 				.getBeanDefinition("bing-" + getClass().getName() + "$BingProperties");
@@ -84,14 +82,14 @@ class EnableConfigurationPropertiesRegistrarTests {
 	}
 
 	@Test
-	void registrationWithDuplicatedTypeShouldRegisterSingleBeanDefinition() throws IOException {
+	void registrationWithDuplicatedTypeShouldRegisterSingleBeanDefinition() {
 		register(DuplicateConfiguration.class);
 		String name = "foo-" + getClass().getName() + "$FooProperties";
 		verify(this.beanFactory, times(1)).registerBeanDefinition(eq(name), any());
 	}
 
 	@Test
-	void registrationWithNoTypeShouldNotRegisterAnything() throws IOException {
+	void registrationWithNoTypeShouldNotRegisterAnything() {
 		register(EmptyConfiguration.class);
 		String[] names = this.beanFactory.getBeanNamesForType(Object.class);
 		for (String name : names) {

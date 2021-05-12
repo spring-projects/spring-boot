@@ -41,7 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSpringXmlPlaceholderBeanDefinitionTests {
 
 	@Test
-	void beanWithPlaceholderShouldNotFail(CapturedOutput output) throws Exception {
+	void beanWithPlaceholderShouldNotFail(CapturedOutput output) {
 		assertThat(output).contains("Hello Other World");
 	}
 

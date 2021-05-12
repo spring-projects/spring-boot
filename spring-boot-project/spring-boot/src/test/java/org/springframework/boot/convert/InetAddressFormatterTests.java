@@ -37,7 +37,7 @@ import static org.junit.jupiter.api.Assumptions.assumingThat;
 class InetAddressFormatterTests {
 
 	@ConversionServiceTest
-	void convertFromInetAddressToStringShouldConvert(ConversionService conversionService) throws UnknownHostException {
+	void convertFromInetAddressToStringShouldConvert(ConversionService conversionService) {
 		assumingThat(isResolvable("example.com"), () -> {
 			InetAddress address = InetAddress.getByName("example.com");
 			String converted = conversionService.convert(address, String.class);

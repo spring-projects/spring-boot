@@ -57,7 +57,7 @@ class LoggingApplicationListenerIntegrationTests {
 	}
 
 	@Test
-	void logFileRegisteredInTheContextWhenApplicable(@TempDir File tempDir) throws Exception {
+	void logFileRegisteredInTheContextWhenApplicable(@TempDir File tempDir) {
 		String logFile = new File(tempDir, "test.log").getAbsolutePath();
 		try (ConfigurableApplicationContext context = new SpringApplicationBuilder(SampleService.class)
 				.web(WebApplicationType.NONE).properties("logging.file.name=" + logFile).run()) {

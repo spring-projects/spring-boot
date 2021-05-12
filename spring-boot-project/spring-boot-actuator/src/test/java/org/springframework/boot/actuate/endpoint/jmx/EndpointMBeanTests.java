@@ -22,7 +22,6 @@ import java.net.URLClassLoader;
 import javax.management.Attribute;
 import javax.management.AttributeList;
 import javax.management.AttributeNotFoundException;
-import javax.management.InvalidAttributeValueException;
 import javax.management.MBeanException;
 import javax.management.MBeanInfo;
 import javax.management.ReflectionException;
@@ -87,7 +86,7 @@ class EndpointMBeanTests {
 	}
 
 	@Test
-	void invokeWhenOperationFailedShouldTranslateException() throws MBeanException, ReflectionException {
+	void invokeWhenOperationFailedShouldTranslateException() {
 		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation((arguments) -> {
 			throw new FatalBeanException("test failure");
 		}));
@@ -99,7 +98,7 @@ class EndpointMBeanTests {
 	}
 
 	@Test
-	void invokeWhenOperationFailedWithJdkExceptionShouldReuseException() throws MBeanException, ReflectionException {
+	void invokeWhenOperationFailedWithJdkExceptionShouldReuseException() {
 		TestExposableJmxEndpoint endpoint = new TestExposableJmxEndpoint(new TestJmxOperation((arguments) -> {
 			throw new UnsupportedOperationException("test failure");
 		}));
@@ -110,7 +109,7 @@ class EndpointMBeanTests {
 	}
 
 	@Test
-	void invokeWhenActionNameIsNotAnOperationShouldThrowException() throws MBeanException, ReflectionException {
+	void invokeWhenActionNameIsNotAnOperationShouldThrowException() {
 		EndpointMBean bean = createEndpointMBean();
 		assertThatExceptionOfType(ReflectionException.class)
 				.isThrownBy(() -> bean.invoke("missingOperation", NO_PARAMS, NO_SIGNATURE))
@@ -131,7 +130,7 @@ class EndpointMBeanTests {
 	}
 
 	@Test
-	void invokeWhenOperationIsInvalidShouldThrowException() throws MBeanException, ReflectionException {
+	void invokeWhenOperationIsInvalidShouldThrowException() {
 		TestJmxOperation operation = new TestJmxOperation() {
 
 			@Override
@@ -166,15 +165,14 @@ class EndpointMBeanTests {
 	}
 
 	@Test
-	void getAttributeShouldThrowException() throws AttributeNotFoundException, MBeanException, ReflectionException {
+	void getAttributeShouldThrowException() {
 		EndpointMBean bean = createEndpointMBean();
 		assertThatExceptionOfType(AttributeNotFoundException.class).isThrownBy(() -> bean.getAttribute("test"))
 				.withMessageContaining("EndpointMBeans do not support attributes");
 	}
 
 	@Test
-	void setAttributeShouldThrowException()
-			throws AttributeNotFoundException, InvalidAttributeValueException, MBeanException, ReflectionException {
+	void setAttributeShouldThrowException() {
 		EndpointMBean bean = createEndpointMBean();
 		assertThatExceptionOfType(AttributeNotFoundException.class)
 				.isThrownBy(() -> bean.setAttribute(new Attribute("test", "test")))

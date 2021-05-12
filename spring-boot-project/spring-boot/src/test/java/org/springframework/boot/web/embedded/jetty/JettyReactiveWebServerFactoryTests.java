@@ -116,7 +116,7 @@ class JettyReactiveWebServerFactoryTests extends AbstractReactiveWebServerFactor
 	}
 
 	@Test
-	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() throws Exception {
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsCannotBeMade() {
 		JettyReactiveWebServerFactory factory = getFactory();
 		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();

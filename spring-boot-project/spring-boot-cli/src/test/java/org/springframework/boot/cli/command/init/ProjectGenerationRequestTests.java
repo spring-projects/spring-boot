@@ -199,7 +199,7 @@ class ProjectGenerationRequestTests {
 	}
 
 	@Test
-	void noTypeAndNoDefault() throws Exception {
+	void noTypeAndNoDefault() {
 		assertThatExceptionOfType(ReportableException.class)
 				.isThrownBy(() -> this.request.generateUrl(readMetadata("types-conflict")))
 				.withMessageContaining("no default is defined");

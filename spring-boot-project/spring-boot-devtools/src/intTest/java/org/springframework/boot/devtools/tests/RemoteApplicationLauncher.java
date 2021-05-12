@@ -100,13 +100,13 @@ abstract class RemoteApplicationLauncher extends AbstractApplicationLauncher {
 		return StringUtils.collectionToDelimitedString(entries, File.pathSeparator);
 	}
 
-	private int awaitServerPort(LaunchedJvm jvm, File serverPortFile) throws Exception {
+	private int awaitServerPort(LaunchedJvm jvm, File serverPortFile) {
 		return Awaitility.waitAtMost(Duration.ofMinutes(3))
 				.until(() -> new ApplicationState(serverPortFile, jvm), ApplicationState::hasServerPort)
 				.getServerPort();
 	}
 
-	private void awaitRemoteSpringApplication(LaunchedJvm launchedJvm) throws Exception {
+	private void awaitRemoteSpringApplication(LaunchedJvm launchedJvm) {
 		FileContents contents = new FileContents(launchedJvm.getStandardOut());
 		try {
 			Awaitility.waitAtMost(Duration.ofMinutes(3)).until(contents::get,

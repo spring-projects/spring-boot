@@ -62,7 +62,7 @@ class HttpHeaderInterceptorTests {
 	private MockHttpServletRequest httpRequest;
 
 	@BeforeEach
-	void setup() throws Exception {
+	void setup() {
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();
 		this.request = new ServletServerHttpRequest(this.httpRequest);

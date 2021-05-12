@@ -79,7 +79,7 @@ class DataSourcePropertiesTests {
 	}
 
 	@Test
-	void whenEmbeddedConnectionIsNoneAndNoUrlIsConfiguredThenDetermineUrlThrows() throws Exception {
+	void whenEmbeddedConnectionIsNoneAndNoUrlIsConfiguredThenDetermineUrlThrows() {
 		DataSourceProperties properties = new DataSourceProperties();
 		properties.setGenerateUniqueName(false);
 		properties.setEmbeddedDatabaseConnection(EmbeddedDatabaseConnection.NONE);

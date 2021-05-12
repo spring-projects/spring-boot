@@ -77,7 +77,7 @@ class MappingsEndpointReactiveDocumentationTests extends AbstractEndpointDocumen
 	}
 
 	@Test
-	void mappings() throws Exception {
+	void mappings() {
 		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
 				requestMappingConditionField("").description("Details of the request mapping conditions.").optional(),
 				requestMappingConditionField(".consumes").description("Details of the consumes condition"),

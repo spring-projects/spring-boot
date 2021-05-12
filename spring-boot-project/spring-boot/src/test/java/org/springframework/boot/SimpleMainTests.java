@@ -44,7 +44,7 @@ class SimpleMainTests {
 	private static final String SPRING_STARTUP = "Started SpringApplication in";
 
 	@Test
-	void emptyApplicationContext() throws Exception {
+	void emptyApplicationContext() {
 		assertThatIllegalArgumentException().isThrownBy(() -> SpringApplication.main(getArgs()));
 	}
 

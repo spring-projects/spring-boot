@@ -153,7 +153,7 @@ class BindResultTests {
 	}
 
 	@Test
-	void orElseThrowWhenHasNoValueShouldThrowException() throws Exception {
+	void orElseThrowWhenHasNoValueShouldThrowException() {
 		BindResult<String> result = BindResult.of(null);
 		assertThatIOException().isThrownBy(() -> result.orElseThrow(IOException::new));
 	}

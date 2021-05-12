@@ -17,8 +17,6 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -43,7 +41,7 @@ class MavenIntegrationTests {
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	void bootJarCanBeUploaded() throws FileNotFoundException, IOException {
+	void bootJarCanBeUploaded() {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
 				.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
@@ -53,7 +51,7 @@ class MavenIntegrationTests {
 	}
 
 	@TestTemplate
-	void bootWarCanBeUploaded() throws IOException {
+	void bootWarCanBeUploaded() {
 		BuildResult result = this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("6.0.0")
 				.build("uploadBootArchives");
 		assertThat(result.task(":uploadBootArchives").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);

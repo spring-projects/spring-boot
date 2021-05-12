@@ -395,7 +395,7 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	void delegatingFilterProxyRegistrationBeansSkipsTargetBeanNames() throws Exception {
+	void delegatingFilterProxyRegistrationBeansSkipsTargetBeanNames() {
 		addWebServerFactoryBean();
 		DelegatingFilterProxyRegistrationBean initializer = new DelegatingFilterProxyRegistrationBean("filterBean");
 		this.context.registerBeanDefinition("initializerBean", beanDefinition(initializer));
@@ -444,7 +444,7 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	void servletRequestCanBeInjectedEarly(CapturedOutput output) throws Exception {
+	void servletRequestCanBeInjectedEarly(CapturedOutput output) {
 		// gh-14990
 		int initialOutputLength = output.length();
 		addWebServerFactoryBean();
@@ -460,7 +460,7 @@ class ServletWebServerApplicationContextTests {
 	}
 
 	@Test
-	void webApplicationScopeIsRegistered() throws Exception {
+	void webApplicationScopeIsRegistered() {
 		addWebServerFactoryBean();
 		this.context.refresh();
 		assertThat(this.context.getBeanFactory().getRegisteredScope(WebApplicationContext.SCOPE_APPLICATION))

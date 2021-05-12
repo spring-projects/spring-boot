@@ -68,7 +68,7 @@ class ApplicationPidFileWriterTests {
 	}
 
 	@Test
-	void createPidFile() throws Exception {
+	void createPidFile() {
 		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.onApplicationEvent(EVENT);
@@ -76,7 +76,7 @@ class ApplicationPidFileWriterTests {
 	}
 
 	@Test
-	void overridePidFile() throws Exception {
+	void overridePidFile() {
 		File file = new File(this.tempDir, "pid");
 		System.setProperty("PIDFILE", new File(this.tempDir, "override").getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
@@ -85,7 +85,7 @@ class ApplicationPidFileWriterTests {
 	}
 
 	@Test
-	void overridePidFileWithSpring() throws Exception {
+	void overridePidFileWithSpring() {
 		File file = new File(this.tempDir, "pid");
 		SpringApplicationEvent event = createPreparedEvent("spring.pid.file", file.getAbsolutePath());
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter();
@@ -120,7 +120,7 @@ class ApplicationPidFileWriterTests {
 	}
 
 	@Test
-	void withNoEnvironment() throws Exception {
+	void withNoEnvironment() {
 		File file = new File(this.tempDir, "pid");
 		ApplicationPidFileWriter listener = new ApplicationPidFileWriter(file);
 		listener.setTriggerEventType(ApplicationStartingEvent.class);

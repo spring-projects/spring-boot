@@ -17,7 +17,6 @@
 package org.springframework.boot.devtools.autoconfigure;
 
 import java.io.File;
-import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.time.Duration;
@@ -52,7 +51,7 @@ import static org.mockito.Mockito.verify;
 class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDataSourceAutoConfigurationTests {
 
 	@BeforeEach
-	void before(@TempDir File tempDir) throws IOException {
+	void before(@TempDir File tempDir) {
 		System.setProperty("derby.stream.error.file", new File(tempDir, "derby.log").getAbsolutePath());
 	}
 

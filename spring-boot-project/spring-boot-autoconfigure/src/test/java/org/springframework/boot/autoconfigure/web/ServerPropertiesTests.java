@@ -433,7 +433,7 @@ class ServerPropertiesTests {
 	}
 
 	@Test
-	void jettyMaxHttpFormPostSizeMatchesDefault() throws Exception {
+	void jettyMaxHttpFormPostSizeMatchesDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory
 				.getWebServer((ServletContextInitializer) (servletContext) -> servletContext
@@ -527,7 +527,7 @@ class ServerPropertiesTests {
 				.isEqualTo(HttpDecoderSpec.DEFAULT_INITIAL_BUFFER_SIZE);
 	}
 
-	private Connector getDefaultConnector() throws Exception {
+	private Connector getDefaultConnector() {
 		return new Connector(TomcatServletWebServerFactory.DEFAULT_PROTOCOL);
 	}
 

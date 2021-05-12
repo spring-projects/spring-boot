@@ -722,7 +722,7 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void enableSslWithValidateServerCertificateFalse() throws Exception {
+	void enableSslWithValidateServerCertificateFalse() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true",
 						"spring.rabbitmq.ssl.validateServerCertificate=false")
@@ -734,7 +734,7 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void enableSslWithValidateServerCertificateDefault() throws Exception {
+	void enableSslWithValidateServerCertificateDefault() {
 		this.contextRunner.withUserConfiguration(TestConfiguration.class)
 				.withPropertyValues("spring.rabbitmq.ssl.enabled:true").run((context) -> {
 					com.rabbitmq.client.ConnectionFactory rabbitConnectionFactory = getTargetConnectionFactory(context);
@@ -785,43 +785,42 @@ class RabbitAutoConfigurationTests {
 	}
 
 	@Test
-	void whenACredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+	void whenACredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() {
 		this.contextRunner.withUserConfiguration(CredentialsProviderConfiguration.class)
 				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
 						.isEqualTo(CredentialsProviderConfiguration.credentialsProvider));
 	}
 
 	@Test
-	void whenAPrimaryCredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+	void whenAPrimaryCredentialsProviderIsAvailableThenConnectionFactoryIsConfiguredToUseIt() {
 		this.contextRunner.withUserConfiguration(PrimaryCredentialsProviderConfiguration.class)
 				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
 						.isEqualTo(PrimaryCredentialsProviderConfiguration.credentialsProvider));
 	}
 
 	@Test
-	void whenMultipleCredentialsProvidersAreAvailableThenConnectionFactoryUsesDefaultProvider() throws Exception {
+	void whenMultipleCredentialsProvidersAreAvailableThenConnectionFactoryUsesDefaultProvider() {
 		this.contextRunner.withUserConfiguration(MultipleCredentialsProvidersConfiguration.class)
 				.run((context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsProvider())
 						.isInstanceOf(DefaultCredentialsProvider.class));
 	}
 
 	@Test
-	void whenACredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+	void whenACredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() {
 		this.contextRunner.withUserConfiguration(CredentialsRefreshServiceConfiguration.class).run(
 				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
 						.isEqualTo(CredentialsRefreshServiceConfiguration.credentialsRefreshService));
 	}
 
 	@Test
-	void whenAPrimaryCredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() throws Exception {
+	void whenAPrimaryCredentialsRefreshServiceIsAvailableThenConnectionFactoryIsConfiguredToUseIt() {
 		this.contextRunner.withUserConfiguration(PrimaryCredentialsRefreshServiceConfiguration.class).run(
 				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
 						.isEqualTo(PrimaryCredentialsRefreshServiceConfiguration.credentialsRefreshService));
 	}
 
 	@Test
-	void whenMultipleCredentialsRefreshServiceAreAvailableThenConnectionFactoryHasNoCredentialsRefreshService()
-			throws Exception {
+	void whenMultipleCredentialsRefreshServiceAreAvailableThenConnectionFactoryHasNoCredentialsRefreshService() {
 		this.contextRunner.withUserConfiguration(MultipleCredentialsRefreshServicesConfiguration.class).run(
 				(context) -> assertThat(getTargetConnectionFactory(context).params(null).getCredentialsRefreshService())
 						.isNull());

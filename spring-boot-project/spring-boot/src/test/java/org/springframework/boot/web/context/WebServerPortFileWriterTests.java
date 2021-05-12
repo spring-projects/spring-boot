@@ -53,7 +53,7 @@ class WebServerPortFileWriterTests {
 	}
 
 	@Test
-	void createPortFile() throws Exception {
+	void createPortFile() {
 		File file = new File(this.tempDir, "port.file");
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
@@ -61,7 +61,7 @@ class WebServerPortFileWriterTests {
 	}
 
 	@Test
-	void overridePortFileWithDefault() throws Exception {
+	void overridePortFileWithDefault() {
 		System.setProperty("PORTFILE", new File(this.tempDir, "port.file").getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter();
 		listener.onApplicationEvent(mockEvent("", 8080));
@@ -70,7 +70,7 @@ class WebServerPortFileWriterTests {
 	}
 
 	@Test
-	void overridePortFileWithExplicitFile() throws Exception {
+	void overridePortFileWithExplicitFile() {
 		File file = new File(this.tempDir, "port.file");
 		System.setProperty("PORTFILE", new File(this.tempDir, "override.file").getAbsolutePath());
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
@@ -80,7 +80,7 @@ class WebServerPortFileWriterTests {
 	}
 
 	@Test
-	void createManagementPortFile() throws Exception {
+	void createManagementPortFile() {
 		File file = new File(this.tempDir, "port.file");
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);
 		listener.onApplicationEvent(mockEvent("", 8080));
@@ -96,7 +96,7 @@ class WebServerPortFileWriterTests {
 	}
 
 	@Test
-	void createUpperCaseManagementPortFile() throws Exception {
+	void createUpperCaseManagementPortFile() {
 		File file = new File(this.tempDir, "port.file");
 		file = new File(file.getParentFile(), file.getName().toUpperCase(Locale.ENGLISH));
 		WebServerPortFileWriter listener = new WebServerPortFileWriter(file);

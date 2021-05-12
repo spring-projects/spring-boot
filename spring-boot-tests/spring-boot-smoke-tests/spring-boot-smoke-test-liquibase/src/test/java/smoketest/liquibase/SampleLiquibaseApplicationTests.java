@@ -47,7 +47,7 @@ class SampleLiquibaseApplicationTests {
 	}
 
 	@Test
-	void testDefaultSettings(CapturedOutput output) throws Exception {
+	void testDefaultSettings(CapturedOutput output) {
 		try {
 			SampleLiquibaseApplication.main(new String[] { "--server.port=0" });
 		}

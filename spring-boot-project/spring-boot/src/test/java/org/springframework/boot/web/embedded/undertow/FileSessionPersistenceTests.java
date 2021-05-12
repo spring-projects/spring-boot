@@ -17,7 +17,6 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.Map;
@@ -45,7 +44,7 @@ class FileSessionPersistenceTests {
 	private Date expiration = new Date(System.currentTimeMillis() + 10000);
 
 	@BeforeEach
-	void setup(@TempDir File tempDir) throws IOException {
+	void setup(@TempDir File tempDir) {
 		this.dir = tempDir;
 		this.dir.mkdir();
 		this.persistence = new FileSessionPersistence(this.dir);

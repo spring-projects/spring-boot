@@ -67,7 +67,7 @@ class WebTestClientSpringBootTestIntegrationTests {
 	static class TestConfiguration {
 
 		@Bean
-		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
 			http.authorizeExchange((exchanges) -> exchanges.anyExchange().permitAll());
 			return http.build();
 		}

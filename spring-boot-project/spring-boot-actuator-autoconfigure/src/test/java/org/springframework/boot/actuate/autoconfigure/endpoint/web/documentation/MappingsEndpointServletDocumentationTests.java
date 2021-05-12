@@ -76,7 +76,7 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 	}
 
 	@Test
-	void mappings() throws Exception {
+	void mappings() {
 		ResponseFieldsSnippet commonResponseFields = responseFields(
 				fieldWithPath("contexts").description("Application contexts keyed by id."),
 				fieldWithPath("contexts.*.mappings").description("Mappings in the context, keyed by mapping type."),

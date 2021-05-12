@@ -54,7 +54,7 @@ class WebTestClientRestDocsAutoConfigurationIntegrationTests {
 	}
 
 	@Test
-	void defaultSnippetsAreWritten() throws Exception {
+	void defaultSnippetsAreWritten() {
 		this.webTestClient.get().uri("/").exchange().expectStatus().is2xxSuccessful().expectBody()
 				.consumeWith(document("default-snippets"));
 		File defaultSnippetsDir = new File(this.generatedSnippets, "default-snippets");

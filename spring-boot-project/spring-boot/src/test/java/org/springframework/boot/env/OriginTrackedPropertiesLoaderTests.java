@@ -90,7 +90,7 @@ class OriginTrackedPropertiesLoaderTests {
 	}
 
 	@Test
-	void getMalformedUnicodeProperty() throws Exception {
+	void getMalformedUnicodeProperty() {
 		// gh-12716
 		ClassPathResource resource = new ClassPathResource("test-properties-malformed-unicode.properties", getClass());
 		assertThatIllegalStateException().isThrownBy(() -> new OriginTrackedPropertiesLoader(resource).load())

@@ -99,7 +99,7 @@ class HttpTraceFilterTests {
 	}
 
 	@Test
-	void statusIsAssumedToBe500WhenChainFails() throws ServletException, IOException {
+	void statusIsAssumedToBe500WhenChainFails() {
 		assertThatIOException().isThrownBy(() -> this.filter.doFilter(new MockHttpServletRequest(),
 				new MockHttpServletResponse(), new MockFilterChain(new HttpServlet() {
 

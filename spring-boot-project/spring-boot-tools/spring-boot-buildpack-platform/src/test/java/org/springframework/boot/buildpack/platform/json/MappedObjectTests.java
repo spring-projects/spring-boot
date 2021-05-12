@@ -41,7 +41,7 @@ class MappedObjectTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void ofReadsJson() throws Exception {
+	void ofReadsJson() {
 		assertThat(this.mapped.getNode()).isNotNull();
 	}
 

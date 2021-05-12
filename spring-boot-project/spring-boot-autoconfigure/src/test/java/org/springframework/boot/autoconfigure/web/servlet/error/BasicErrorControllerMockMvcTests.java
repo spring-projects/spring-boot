@@ -180,7 +180,7 @@ class BasicErrorControllerMockMvcTests {
 			}
 
 			@RequestMapping("/noContent")
-			void noContent() throws Exception {
+			void noContent() {
 				throw new NoContentException("Expected!");
 			}
 

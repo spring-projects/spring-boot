@@ -52,7 +52,7 @@ class LayersIndexTests {
 	}
 
 	@Test
-	void writeToWhenSimpleNamesSortsAlphabetically() throws Exception {
+	void writeToWhenSimpleNamesSortsAlphabetically() {
 		LayersIndex index = new LayersIndex(LAYER_A);
 		index.add(LAYER_A, "cat");
 		index.add(LAYER_A, "dog");

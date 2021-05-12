@@ -145,7 +145,7 @@ class IncludeExcludeEndpointFilterTests {
 	}
 
 	@Test // gh-20997
-	void matchWhenDashInName() throws Exception {
+	void matchWhenDashInName() {
 		setupFilter("bus-refresh", "");
 		assertThat(match(EndpointId.of("bus-refresh"))).isTrue();
 	}

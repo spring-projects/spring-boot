@@ -85,14 +85,14 @@ class FrameTests {
 	}
 
 	@Test
-	void readFragmentedNotSupported() throws Exception {
+	void readFragmentedNotSupported() {
 		byte[] bytes = new byte[] { 0x0F };
 		assertThatIllegalStateException().isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Fragmented frames are not supported");
 	}
 
 	@Test
-	void readLargeFramesNotSupported() throws Exception {
+	void readLargeFramesNotSupported() {
 		byte[] bytes = new byte[] { (byte) 0x80, (byte) 0xFF };
 		assertThatIllegalStateException().isThrownBy(() -> Frame.read(newConnectionInputStream(bytes)))
 				.withMessageContaining("Large frames are not supported");

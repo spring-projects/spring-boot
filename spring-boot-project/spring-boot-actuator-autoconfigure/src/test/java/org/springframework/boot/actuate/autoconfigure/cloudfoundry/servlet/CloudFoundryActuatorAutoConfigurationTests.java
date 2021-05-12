@@ -96,7 +96,7 @@ class CloudFoundryActuatorAutoConfigurationTests {
 	}
 
 	@Test
-	void cloudfoundryapplicationProducesActuatorMediaType() throws Exception {
+	void cloudfoundryapplicationProducesActuatorMediaType() {
 		this.contextRunner.withPropertyValues("VCAP_APPLICATION:---", "vcap.application.application_id:my-app-id",
 				"vcap.application.cf_api:https://my-cloud-controller.com").run((context) -> {
 					MockMvc mockMvc = MockMvcBuilders.webAppContextSetup(context).build();

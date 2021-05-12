@@ -57,13 +57,13 @@ class MainMethodTests {
 	}
 
 	@Test
-	void missingArgsMainMethod() throws Exception {
+	void missingArgsMainMethod() {
 		assertThatIllegalStateException().isThrownBy(() -> new TestThread(MissingArgs::main).test())
 				.withMessageContaining("Unable to find main method");
 	}
 
 	@Test
-	void nonStatic() throws Exception {
+	void nonStatic() {
 		assertThatIllegalStateException().isThrownBy(() -> new TestThread(() -> new NonStaticMain().main()).test())
 				.withMessageContaining("Unable to find main method");
 	}

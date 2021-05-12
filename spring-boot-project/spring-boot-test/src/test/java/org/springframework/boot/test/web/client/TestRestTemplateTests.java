@@ -125,7 +125,7 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void authenticated() throws Exception {
+	void authenticated() {
 		TestRestTemplate restTemplate = new TestRestTemplate("user", "password");
 		assertBasicAuthorizationCredentials(restTemplate, "user", "password");
 	}
@@ -200,7 +200,7 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void withBasicAuthAddsBasicAuthWhenNotAlreadyPresent() throws Exception {
+	void withBasicAuthAddsBasicAuthWhenNotAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate();
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(getConverterClasses(original)).containsExactlyElementsOf(getConverterClasses(basicAuth));
@@ -210,7 +210,7 @@ class TestRestTemplateTests {
 	}
 
 	@Test
-	void withBasicAuthReplacesBasicAuthWhenAlreadyPresent() throws Exception {
+	void withBasicAuthReplacesBasicAuthWhenAlreadyPresent() {
 		TestRestTemplate original = new TestRestTemplate("foo", "bar").withBasicAuth("replace", "replace");
 		TestRestTemplate basicAuth = original.withBasicAuth("user", "password");
 		assertThat(getConverterClasses(basicAuth)).containsExactlyElementsOf(getConverterClasses(original));
@@ -366,7 +366,7 @@ class TestRestTemplateTests {
 	}
 
 	private void assertBasicAuthorizationCredentials(TestRestTemplate testRestTemplate, String username,
-			String password) throws Exception {
+			String password) {
 		ClientHttpRequest request = ReflectionTestUtils.invokeMethod(testRestTemplate.getRestTemplate(),
 				"createRequest", URI.create("http://localhost"), HttpMethod.POST);
 		if (username == null) {

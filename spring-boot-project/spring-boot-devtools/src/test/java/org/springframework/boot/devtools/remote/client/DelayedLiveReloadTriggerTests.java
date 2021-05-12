@@ -69,7 +69,7 @@ class DelayedLiveReloadTriggerTests {
 	private DelayedLiveReloadTrigger trigger;
 
 	@BeforeEach
-	void setup() throws IOException {
+	void setup() {
 		this.trigger = new DelayedLiveReloadTrigger(this.liveReloadServer, this.requestFactory, URL);
 	}
 

@@ -103,7 +103,7 @@ class WebServletHandlerTests {
 	}
 
 	@Test
-	void urlPatternsDeclaredTwice() throws IOException {
+	void urlPatternsDeclaredTwice() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceServlet.class))
 				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");

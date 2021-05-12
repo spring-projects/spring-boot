@@ -54,7 +54,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class RSocketWebSocketNettyRouteProviderTests {
 
 	@Test
-	void webEndpointsShouldWork() throws Exception {
+	void webEndpointsShouldWork() {
 		new ReactiveWebApplicationContextRunner(AnnotationConfigReactiveWebServerApplicationContext::new)
 				.withConfiguration(
 						AutoConfigurations.of(HttpHandlerAutoConfiguration.class, WebFluxAutoConfiguration.class,

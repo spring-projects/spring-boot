@@ -49,7 +49,7 @@ class DocumentRootTests {
 	}
 
 	@Test
-	void explodedWarFileDocumentRootWhenRunningFromPackagedWar() throws Exception {
+	void explodedWarFileDocumentRootWhenRunningFromPackagedWar() {
 		File codeSourceFile = new File(this.tempDir, "test.war");
 		File directory = this.documentRoot.getExplodedWarFileDocumentRoot(codeSourceFile);
 		assertThat(directory).isNull();

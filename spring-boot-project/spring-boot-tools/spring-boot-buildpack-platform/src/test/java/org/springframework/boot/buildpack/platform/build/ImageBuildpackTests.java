@@ -93,7 +93,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void resolveWhenFullyQualifiedReferenceWithInvalidImageReferenceThrowsException() throws Exception {
+	void resolveWhenFullyQualifiedReferenceWithInvalidImageReferenceThrowsException() {
 		BuildpackReference reference = BuildpackReference.of("docker://buildpack@0.0.1");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		assertThatIllegalArgumentException().isThrownBy(() -> ImageBuildpack.resolve(resolverContext, reference))
@@ -101,7 +101,7 @@ class ImageBuildpackTests extends AbstractJsonTests {
 	}
 
 	@Test
-	void resolveWhenUnqualifiedReferenceWithInvalidImageReferenceReturnsNull() throws Exception {
+	void resolveWhenUnqualifiedReferenceWithInvalidImageReferenceReturnsNull() {
 		BuildpackReference reference = BuildpackReference.of("buildpack@0.0.1");
 		BuildpackResolverContext resolverContext = mock(BuildpackResolverContext.class);
 		Buildpack buildpack = ImageBuildpack.resolve(resolverContext, reference);

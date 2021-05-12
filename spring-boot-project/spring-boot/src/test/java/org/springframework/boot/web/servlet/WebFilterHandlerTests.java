@@ -128,7 +128,7 @@ class WebFilterHandlerTests {
 	}
 
 	@Test
-	void urlPatternsDeclaredTwice() throws IOException {
+	void urlPatternsDeclaredTwice() {
 		assertThatIllegalStateException()
 				.isThrownBy(() -> handleBeanDefinitionForClass(UrlPatternsDeclaredTwiceFilter.class))
 				.withMessageContaining("The urlPatterns and value attributes are mutually exclusive.");

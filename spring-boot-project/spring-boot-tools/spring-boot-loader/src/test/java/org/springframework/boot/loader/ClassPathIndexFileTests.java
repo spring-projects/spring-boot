@@ -42,7 +42,7 @@ class ClassPathIndexFileTests {
 	File temp;
 
 	@Test
-	void loadIfPossibleWhenRootIsNotFileReturnsNull() throws IOException {
+	void loadIfPossibleWhenRootIsNotFileReturnsNull() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> ClassPathIndexFile.loadIfPossible(new URL("https://example.com/file"), "test.idx"))
 				.withMessage("URL does not reference a file");
@@ -95,7 +95,7 @@ class ClassPathIndexFileTests {
 		}
 	}
 
-	private ClassPathIndexFile copyAndLoadTestIndexFile() throws IOException, MalformedURLException {
+	private ClassPathIndexFile copyAndLoadTestIndexFile() throws IOException {
 		copyTestIndexFile();
 		ClassPathIndexFile indexFile = ClassPathIndexFile.loadIfPossible(this.temp.toURI().toURL(), "test.idx");
 		return indexFile;

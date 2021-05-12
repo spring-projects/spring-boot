@@ -50,7 +50,7 @@ class LogFileWebEndpointWebIntegrationTests {
 	}
 
 	@BeforeAll
-	static void setup(@TempDir File temp) throws IOException {
+	static void setup(@TempDir File temp) {
 		tempFile = temp;
 	}
 

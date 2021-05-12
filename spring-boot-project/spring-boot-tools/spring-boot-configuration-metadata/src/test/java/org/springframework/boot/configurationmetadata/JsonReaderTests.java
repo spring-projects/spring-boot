@@ -46,7 +46,7 @@ class JsonReaderTests extends AbstractConfigurationMetadataTests {
 	}
 
 	@Test
-	void invalidMetadata() throws IOException {
+	void invalidMetadata() {
 		assertThatIllegalStateException().isThrownBy(() -> readFor("invalid")).withCauseInstanceOf(JSONException.class);
 	}
 

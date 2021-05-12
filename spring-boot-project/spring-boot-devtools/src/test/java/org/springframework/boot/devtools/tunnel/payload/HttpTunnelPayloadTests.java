@@ -93,7 +93,7 @@ class HttpTunnelPayloadTests {
 	}
 
 	@Test
-	void getWithMissingHeader() throws Exception {
+	void getWithMissingHeader() {
 		MockHttpServletRequest servletRequest = new MockHttpServletRequest();
 		servletRequest.setContent("hello".getBytes());
 		HttpInputMessage request = new ServletServerHttpRequest(servletRequest);

@@ -70,7 +70,7 @@ class WebMvcTestAllControllersIntegrationTests {
 	}
 
 	@Test
-	void shouldRunValidationFailure() throws Exception {
+	void shouldRunValidationFailure() {
 		assertThatExceptionOfType(NestedServletException.class)
 				.isThrownBy(() -> this.mvc.perform(get("/three/invalid")))
 				.withCauseInstanceOf(ConstraintViolationException.class);

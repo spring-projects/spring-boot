@@ -112,7 +112,7 @@ class SpringApplicationAdminMXBeanRegistrarTests {
 	}
 
 	@Test
-	void shutdownApp() throws InstanceNotFoundException {
+	void shutdownApp() {
 		final ObjectName objectName = createObjectName(OBJECT_NAME);
 		SpringApplication application = new SpringApplication(Config.class);
 		application.setWebApplicationType(WebApplicationType.NONE);

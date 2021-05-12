@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.mongo.embedded;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 import java.util.EnumSet;
 import java.util.Map;
@@ -150,7 +149,7 @@ class EmbeddedMongoAutoConfigurationTests {
 	}
 
 	@Test
-	void mongoWritesToCustomDatabaseDir(@TempDir Path temp) throws IOException {
+	void mongoWritesToCustomDatabaseDir(@TempDir Path temp) {
 		File customDatabaseDir = new File(temp.toFile(), "custom-database-dir");
 		FileSystemUtils.deleteRecursively(customDatabaseDir);
 		load("spring.mongodb.embedded.storage.databaseDir=" + customDatabaseDir.getPath());

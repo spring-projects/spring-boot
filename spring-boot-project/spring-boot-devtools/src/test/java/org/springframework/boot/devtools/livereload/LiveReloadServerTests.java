@@ -112,7 +112,7 @@ class LiveReloadServerTests {
 		assertThat(this.server.getClosedExceptions().size()).isGreaterThan(0);
 	}
 
-	private void awaitClosedException() throws InterruptedException {
+	private void awaitClosedException() {
 		Awaitility.waitAtMost(Duration.ofSeconds(10)).until(this.server::getClosedExceptions, is(not(empty())));
 	}
 

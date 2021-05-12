@@ -130,7 +130,7 @@ class OriginTrackedYamlLoaderTests {
 	}
 
 	@Test
-	void unsupportedType() throws Exception {
+	void unsupportedType() {
 		String yaml = "value: !!java.net.URL [!!java.lang.String [!!java.lang.StringBuilder [\"http://localhost:9000/\"]]]";
 		Resource resource = new ByteArrayResource(yaml.getBytes(StandardCharsets.UTF_8));
 		this.loader = new OriginTrackedYamlLoader(resource);

@@ -35,7 +35,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 class SslServerCustomizerTests {
 
 	@Test
-	void keyStoreProviderIsUsedWhenCreatingKeyStore() throws Exception {
+	void keyStoreProviderIsUsedWhenCreatingKeyStore() {
 		Ssl ssl = new Ssl();
 		ssl.setKeyPassword("password");
 		ssl.setKeyStore("src/test/resources/test.jks");
@@ -47,7 +47,7 @@ class SslServerCustomizerTests {
 	}
 
 	@Test
-	void trustStoreProviderIsUsedWhenCreatingTrustStore() throws Exception {
+	void trustStoreProviderIsUsedWhenCreatingTrustStore() {
 		Ssl ssl = new Ssl();
 		ssl.setTrustStorePassword("password");
 		ssl.setTrustStore("src/test/resources/test.jks");
@@ -59,7 +59,7 @@ class SslServerCustomizerTests {
 	}
 
 	@Test
-	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() throws Exception {
+	void getKeyManagerFactoryWhenSslIsEnabledWithNoKeyStoreThrowsWebServerException() {
 		Ssl ssl = new Ssl();
 		SslServerCustomizer customizer = new SslServerCustomizer(ssl, null, null);
 		assertThatIllegalStateException().isThrownBy(() -> customizer.getKeyManagerFactory(ssl, null))

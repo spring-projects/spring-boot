@@ -183,14 +183,14 @@ class ConditionalOnAvailableEndpointTests {
 	}
 
 	@Test // gh-21044
-	void outcomeWhenIncludeAllShouldMatchDashedEndpoint() throws Exception {
+	void outcomeWhenIncludeAllShouldMatchDashedEndpoint() {
 		this.contextRunner.withUserConfiguration(DashedEndpointConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=*")
 				.run((context) -> assertThat(context).hasSingleBean(DashedEndpoint.class));
 	}
 
 	@Test // gh-21044
-	void outcomeWhenIncludeDashedShouldMatchDashedEndpoint() throws Exception {
+	void outcomeWhenIncludeDashedShouldMatchDashedEndpoint() {
 		this.contextRunner.withUserConfiguration(DashedEndpointConfiguration.class)
 				.withPropertyValues("management.endpoints.web.exposure.include=test-dashed")
 				.run((context) -> assertThat(context).hasSingleBean(DashedEndpoint.class));

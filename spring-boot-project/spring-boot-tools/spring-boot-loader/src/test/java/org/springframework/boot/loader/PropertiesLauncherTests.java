@@ -401,7 +401,7 @@ class PropertiesLauncherTests {
 		assertThat(bytes).isNotEmpty();
 	}
 
-	private void waitFor(String value) throws Exception {
+	private void waitFor(String value) {
 		Awaitility.waitAtMost(Duration.ofSeconds(5)).until(this.output::toString, containsString(value));
 	}
 

@@ -65,7 +65,7 @@ class DirectorySnapshotTests {
 	}
 
 	@Test
-	void directoryDoesNotHaveToExist() throws Exception {
+	void directoryDoesNotHaveToExist() {
 		File file = new File(this.tempDir, "does/not/exist");
 		DirectorySnapshot snapshot = new DirectorySnapshot(file);
 		assertThat(snapshot).isEqualTo(new DirectorySnapshot(file));
@@ -107,7 +107,7 @@ class DirectorySnapshotTests {
 	}
 
 	@Test
-	void getChangedFilesSnapshotMustBeTheSameSourceDirectory() throws Exception {
+	void getChangedFilesSnapshotMustBeTheSameSourceDirectory() {
 		assertThatIllegalArgumentException().isThrownBy(
 				() -> this.initialSnapshot.getChangedFiles(new DirectorySnapshot(createTestDirectoryStructure()), null))
 				.withMessageContaining("Snapshot source directory must be '" + this.directory + "'");

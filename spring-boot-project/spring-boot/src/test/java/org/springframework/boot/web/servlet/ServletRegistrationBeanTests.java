@@ -129,7 +129,7 @@ class ServletRegistrationBeanTests {
 	}
 
 	@Test
-	void setServletMustNotBeNull() throws Exception {
+	void setServletMustNotBeNull() {
 		ServletRegistrationBean<MockServlet> bean = new ServletRegistrationBean<>();
 		assertThatIllegalArgumentException().isThrownBy(() -> bean.onStartup(this.servletContext))
 				.withMessageContaining("Servlet must not be null");

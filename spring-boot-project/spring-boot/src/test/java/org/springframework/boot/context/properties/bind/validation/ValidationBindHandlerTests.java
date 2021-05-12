@@ -218,7 +218,7 @@ class ValidationBindHandlerTests {
 	}
 
 	@Test
-	void validateMapValues() throws Exception {
+	void validateMapValues() {
 		MockConfigurationPropertySource source = new MockConfigurationPropertySource();
 		source.put("test.items.[itemOne].number", "one");
 		source.put("test.items.[ITEM2].number", "two");
@@ -229,7 +229,7 @@ class ValidationBindHandlerTests {
 	}
 
 	@Test
-	void validateMapValuesWithNonUniformSource() throws Exception {
+	void validateMapValuesWithNonUniformSource() {
 		Map<String, Object> map = new LinkedHashMap<>();
 		map.put("test.items.itemOne.number", "one");
 		map.put("test.items.ITEM2.number", "two");

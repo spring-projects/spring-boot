@@ -51,7 +51,7 @@ class IndexedLayersTests {
 	}
 
 	@Test
-	void createWhenIndexFileIsMalformedThrowsException() throws Exception {
+	void createWhenIndexFileIsMalformedThrowsException() {
 		assertThatIllegalStateException().isThrownBy(() -> new IndexedLayers("test"))
 				.withMessage("Layer index file is malformed");
 	}

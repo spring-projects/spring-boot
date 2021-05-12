@@ -41,7 +41,7 @@ class SampleTestNoMockitoApplicationTests {
 	private ApplicationContext context;
 
 	@Test
-	void contextLoads() throws Exception {
+	void contextLoads() {
 		assertThat(this.context).isNotNull();
 	}
 

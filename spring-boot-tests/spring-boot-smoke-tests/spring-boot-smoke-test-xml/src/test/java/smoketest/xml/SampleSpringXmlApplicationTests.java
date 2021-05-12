@@ -28,7 +28,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleSpringXmlApplicationTests {
 
 	@Test
-	void testDefaultSettings(CapturedOutput output) throws Exception {
+	void testDefaultSettings(CapturedOutput output) {
 		SampleSpringXmlApplication.main(new String[0]);
 		assertThat(output).contains("Hello World");
 	}

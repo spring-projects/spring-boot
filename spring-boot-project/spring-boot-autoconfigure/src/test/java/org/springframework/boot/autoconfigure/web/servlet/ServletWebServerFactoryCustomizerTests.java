@@ -98,7 +98,7 @@ class ServletWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void customizeSessionProperties() throws Exception {
+	void customizeSessionProperties() {
 		Map<String, String> map = new HashMap<>();
 		map.put("server.servlet.session.timeout", "123");
 		map.put("server.servlet.session.tracking-modes", "cookie,url");

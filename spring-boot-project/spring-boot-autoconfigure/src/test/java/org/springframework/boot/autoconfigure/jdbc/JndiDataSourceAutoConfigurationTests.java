@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jdbc;
 import java.util.Set;
 
 import javax.naming.Context;
-import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -80,7 +79,7 @@ class JndiDataSourceAutoConfigurationTests {
 	}
 
 	@Test
-	void dataSourceIsAvailableFromJndi() throws IllegalStateException, NamingException {
+	void dataSourceIsAvailableFromJndi() {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -94,7 +93,7 @@ class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException, NamingException {
+	void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -111,7 +110,7 @@ class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void mbeanDataSourceIsExcludedFromExportByAllExporters() throws IllegalStateException, NamingException {
+	void mbeanDataSourceIsExcludedFromExportByAllExporters() throws IllegalStateException {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 		this.context = new AnnotationConfigApplicationContext();
@@ -128,7 +127,7 @@ class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException, NamingException {
+	void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException {
 		DataSource dataSource = mock(DataSource.class);
 		configureJndi("foo", dataSource);
 

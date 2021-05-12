@@ -39,7 +39,7 @@ class DataObjectPropertyNameTests {
 	}
 
 	@Test
-	void toDashedFormWhenContainsIndexedAddsNoDashToIndex() throws Exception {
+	void toDashedFormWhenContainsIndexedAddsNoDashToIndex() {
 		assertThat(DataObjectPropertyName.toDashedForm("test[fooBar]")).isEqualTo("test[fooBar]");
 		assertThat(DataObjectPropertyName.toDashedForm("testAgain[fooBar]")).isEqualTo("test-again[fooBar]");
 	}

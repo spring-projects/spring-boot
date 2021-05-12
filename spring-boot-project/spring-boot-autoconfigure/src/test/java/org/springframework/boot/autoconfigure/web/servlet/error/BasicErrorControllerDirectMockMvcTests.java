@@ -98,7 +98,7 @@ class BasicErrorControllerDirectMockMvcTests {
 	}
 
 	@Test
-	void errorPageNotAvailableWithWhitelabelDisabled() throws Exception {
+	void errorPageNotAvailableWithWhitelabelDisabled() {
 		setup((ConfigurableWebApplicationContext) new SpringApplication(WebMvcIncludedConfiguration.class)
 				.run("--server.port=0", "--server.error.whitelabel.enabled=false"));
 		assertThatExceptionOfType(ServletException.class)

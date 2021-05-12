@@ -51,7 +51,7 @@ class FileSnapshotTests {
 	}
 
 	@Test
-	void fileMustNotBeADirectory() throws Exception {
+	void fileMustNotBeADirectory() {
 		File file = new File(this.tempDir, "file");
 		file.mkdir();
 		assertThatIllegalArgumentException().isThrownBy(() -> new FileSnapshot(file))

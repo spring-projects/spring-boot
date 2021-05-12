@@ -243,7 +243,7 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void parseArrayConfig() throws Exception {
+	void parseArrayConfig() {
 		ConfigurationMetadata metadata = compile(SimpleArrayProperties.class);
 		assertThat(metadata).has(Metadata.withGroup("array").ofType(SimpleArrayProperties.class));
 		assertThat(metadata).has(Metadata.withProperty("array.primitive", "java.lang.Integer[]"));

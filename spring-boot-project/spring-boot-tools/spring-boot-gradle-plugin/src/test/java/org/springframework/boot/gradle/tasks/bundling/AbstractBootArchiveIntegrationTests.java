@@ -86,7 +86,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void basicBuild() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
+	void basicBuild() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}
@@ -106,7 +106,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void upToDateWhenBuiltTwice() throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
+	void upToDateWhenBuiltTwice() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
@@ -114,8 +114,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void upToDateWhenBuiltTwiceWithLaunchScriptIncluded()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException {
+	void upToDateWhenBuiltTwiceWithLaunchScriptIncluded() {
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.build("-PincludeLaunchScript=true", this.taskName).task(":" + this.taskName)
@@ -167,7 +166,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void duplicatesAreHandledGracefully() throws IOException {
+	void duplicatesAreHandledGracefully() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}
@@ -257,7 +256,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void layersWithCustomSourceSet() throws IOException {
+	void layersWithCustomSourceSet() {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 	}

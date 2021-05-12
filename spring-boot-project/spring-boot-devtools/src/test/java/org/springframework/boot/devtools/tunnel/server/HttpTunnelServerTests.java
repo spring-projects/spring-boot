@@ -83,7 +83,7 @@ class HttpTunnelServerTests {
 	private MockServerChannel serverChannel;
 
 	@BeforeEach
-	void setup() throws Exception {
+	void setup() {
 		this.server = new HttpTunnelServer(this.serverConnection);
 		this.servletRequest = new MockHttpServletRequest();
 		this.servletRequest.setAsyncSupported(true);

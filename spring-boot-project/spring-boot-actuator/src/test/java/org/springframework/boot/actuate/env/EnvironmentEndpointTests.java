@@ -227,7 +227,7 @@ class EnvironmentEndpointTests {
 	}
 
 	@Test
-	void propertyWithCharSequenceTypeIsConvertedToString() throws Exception {
+	void propertyWithCharSequenceTypeIsConvertedToString() {
 		ConfigurableEnvironment environment = emptyEnvironment();
 		environment.getPropertySources().addFirst(singleKeyPropertySource("test", "foo", new CharSequenceProperty()));
 		EnvironmentDescriptor descriptor = new EnvironmentEndpoint(environment).environment(null);

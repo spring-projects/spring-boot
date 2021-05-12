@@ -69,7 +69,7 @@ class ErrorMvcAutoConfigurationTests {
 	}
 
 	@Test
-	void renderCanUseJavaTimeTypeAsTimestamp() throws Exception { // gh-23256
+	void renderCanUseJavaTimeTypeAsTimestamp() { // gh-23256
 		this.contextRunner.run((context) -> {
 			View errorView = context.getBean("error", View.class);
 			ErrorAttributes errorAttributes = context.getBean(ErrorAttributes.class);

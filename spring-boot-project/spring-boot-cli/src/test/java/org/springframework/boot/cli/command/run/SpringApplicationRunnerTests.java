@@ -32,7 +32,7 @@ import static org.mockito.Mockito.mock;
 class SpringApplicationRunnerTests {
 
 	@Test
-	void exceptionMessageWhenSourcesContainsNoClasses() throws Exception {
+	void exceptionMessageWhenSourcesContainsNoClasses() {
 		SpringApplicationRunnerConfiguration configuration = mock(SpringApplicationRunnerConfiguration.class);
 		given(configuration.getClasspath()).willReturn(new String[] { "foo", "bar" });
 		given(configuration.getLogLevel()).willReturn(Level.INFO);

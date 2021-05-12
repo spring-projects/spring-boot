@@ -35,7 +35,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 	private static TestableContext context;
 
 	@Override
-	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+	public Context getInitialContext(Hashtable<?, ?> environment) {
 		return getContext();
 	}
 
@@ -78,7 +78,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 		}
 
 		@Override
-		public Object lookup(String name) throws NamingException {
+		public Object lookup(String name) {
 			return this.bindings.get(name);
 		}
 
