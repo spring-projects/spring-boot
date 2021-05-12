@@ -1,0 +1,1 @@
+INSERT INTO USER(ID, USERNAME, VIN) values (123, 'sframework', '01234567890123456');

@@ -1,0 +1,13 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+outputs:
+- name: distribution-repository
+caches:
+- path: gradle
+params:
+  CI: true
+  GRADLE_ENTERPRISE_URL: https://ge.spring.io
+run:
+  path: git-repo/ci/scripts/build-pr-project.sh

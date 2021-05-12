@@ -1,0 +1,19 @@
+{
+   "str":"foo",
+   "num":5,
+   "bool":true,
+   "arr":[
+      42
+   ],
+   "colorMap":{
+      "red":"rojo"
+   },
+   "whitespace":"    ",
+   "emptyString":"",
+   "emptyArray":[
+
+   ],
+   "emptyMap":{
+
+   }
+}

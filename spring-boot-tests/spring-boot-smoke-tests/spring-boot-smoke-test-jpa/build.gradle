@@ -1,0 +1,25 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot JPA smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-freemarker"))
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation("jakarta.persistence:jakarta.persistence-api")
+	if (JavaVersion.current().java9Compatible) {
+		implementation("jakarta.xml.bind:jakarta.xml.bind-api")
+	}
+	implementation("org.hibernate:hibernate-core") {
+		exclude group: "javax.activation", module: "javax.activation-api"
+		exclude group: "javax.persistence", module: "javax.persistence-api"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+	implementation("org.springframework:spring-orm")
+
+	runtimeOnly("com.h2database:h2")
+
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+}

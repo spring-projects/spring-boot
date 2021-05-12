@@ -1,0 +1,25 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using Jetty as the embedded servlet container. An alternative to spring-boot-starter-tomcat"
+
+dependencies {
+	api("jakarta.servlet:jakarta.servlet-api")
+	api("jakarta.websocket:jakarta.websocket-api")
+	api("org.eclipse.jetty:jetty-servlets")
+	api("org.eclipse.jetty:jetty-webapp") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
+	api("org.eclipse.jetty.websocket:websocket-server") {
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+	}
+	api("org.eclipse.jetty.websocket:javax-websocket-server-impl") {
+		exclude group: "javax.annotation", module: "javax.annotation-api"
+		exclude group: "javax.servlet", module: "javax.servlet-api"
+		exclude group: "javax.websocket", module: "javax.websocket-api"
+		exclude group: "javax.websocket", module: "javax.websocket-client-api"
+		exclude group: "org.eclipse.jetty", module: "jetty-jndi"
+	}
+	api("org.glassfish:jakarta.el")
+}

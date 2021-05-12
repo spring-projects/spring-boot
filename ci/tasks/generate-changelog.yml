@@ -1,0 +1,20 @@
+---
+platform: linux
+image_resource:
+  type: registry-image
+  source:
+    repository: springio/github-changelog-generator
+    tag: '0.0.6'
+inputs:
+- name: git-repo
+- name: artifactory-repo
+outputs:
+- name: generated-changelog
+params:
+  GITHUB_ORGANIZATION:
+  GITHUB_REPO:
+  GITHUB_USERNAME:
+  GITHUB_TOKEN:
+  RELEASE_TYPE:
+run:
+  path: git-repo/ci/scripts/generate-changelog.sh

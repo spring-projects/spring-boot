@@ -1,0 +1,44 @@
+SPRING BOOT CLI - INSTALLATION
+==============================
+
+Thank you for downloading the Spring Boot CLI tool. Please follow these instructions
+in order to complete your installation.
+
+
+Prerequisites
+-------------
+Spring Boot CLI requires Java JDK v1.8 or above in order to run. Groovy v${groovy.version}
+is packaged as part of this distribution, and therefore does not need to be installed (any
+existing Groovy installation is ignored).
+
+The CLI will use whatever JDK it finds on your path, to check that you have an appropriate
+version you should run:
+
+	java -version
+
+Alternatively, you can set the JAVA_HOME environment variable to point a suitable JDK.
+
+
+Environment Variables
+---------------------
+No specific environment variables are required to run the CLI, however, you may want to
+set SPRING_HOME to point to a specific installation. You should also add SPRING_HOME/bin
+to your PATH environment variable.
+
+
+Shell Completion
+----------------
+Shell auto-completion scripts are provided for BASH and ZSH. Add symlinks to the appropriate
+location for your environment. For example, something like:
+
+  ln -s ./shell-completion/bash/spring /etc/bash_completion.d/spring
+  ln -s ./shell-completion/zsh/_spring /usr/local/share/zsh/site-functions/_spring
+
+
+Checking Your Installation
+--------------------------
+To test if you have successfully installed the CLI you can run the following command:
+
+	spring --version
+
+

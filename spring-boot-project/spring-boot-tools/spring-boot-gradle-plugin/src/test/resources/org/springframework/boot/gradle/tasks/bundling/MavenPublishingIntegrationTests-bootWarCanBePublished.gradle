@@ -1,0 +1,25 @@
+plugins {
+	id 'war'
+	id 'maven-publish'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootWar {
+	mainClass = 'com.example.Application'
+}
+
+group = 'com.example'
+version = '1.0'
+
+publishing {
+	repositories {
+		maven {
+			url "${buildDir}/repo"
+		}
+	}
+	publications {
+		bootWeb(MavenPublication) {
+			artifact bootWar
+		}
+	}
+}

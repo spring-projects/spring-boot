@@ -1,0 +1,79 @@
+{
+  "groups": [
+    {
+      "name": "spring.map",
+      "type": "org.acme.Map",
+      "sourceType": "org.acme.config.MapApp",
+      "sourceMethod": "map()",
+      "description": "This is Map."
+    }
+  ],
+  "properties": [
+    {
+      "name": "spring.map.first",
+      "type": "java.util.Map<String,String>",
+      "sourceType": "org.acme.Map"
+    },
+    {
+      "name": "spring.map.second",
+      "type": "java.util.Map<String,String>",
+      "sourceType": "org.acme.Map"
+    },
+    {
+      "name": "spring.map.keys",
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Map"
+    },
+    {
+      "name": "spring.map.values",
+      "type": "java.lang.String",
+      "sourceType": "org.acme.Map"
+    }
+  ],
+  "hints": [
+    {
+      "name": "spring.map.first.keys",
+      "values": [
+        {
+          "value": "one",
+          "description": "First."
+        },
+        {
+          "value": "two",
+          "description": "Second."
+        }
+      ]
+    },
+    {
+      "name": "spring.map.second.values",
+      "values": [
+        {
+          "value": "42",
+          "description": "Choose me."
+        },
+        {
+          "value": "24"
+        }
+      ]
+    },
+    {
+      "name": "spring.map.keys",
+      "providers": [
+        {
+          "name": "any"
+        }
+      ]
+    },
+    {
+      "name": "spring.map.values",
+      "providers": [
+        {
+          "name": "handle-as",
+          "parameters": {
+            "target": "java.lang.Integer"
+          }
+        }
+      ]
+    }
+  ]
+}

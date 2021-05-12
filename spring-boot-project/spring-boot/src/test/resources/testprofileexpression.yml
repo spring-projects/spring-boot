@@ -1,0 +1,14 @@
+---
+my:
+  property: fromyamlfile
+---
+spring:
+  profiles: dev & other
+my:
+  property: devandother
+---
+spring:
+  profiles: (dev | other) & another
+my:
+  property: devorotherandanother
+---

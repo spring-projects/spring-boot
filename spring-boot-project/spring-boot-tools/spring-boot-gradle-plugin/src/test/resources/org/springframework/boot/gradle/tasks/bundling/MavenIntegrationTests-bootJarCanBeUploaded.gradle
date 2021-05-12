@@ -1,0 +1,20 @@
+plugins {
+	id 'java'
+	id 'maven'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootJar {
+	mainClass = 'com.example.Application'
+}
+
+group = 'com.example'
+version = '1.0'
+
+uploadBootArchives {
+	repositories {
+		mavenDeployer {
+		 	repository(url: "file:${buildDir}/repo")
+		}
+	}
+}

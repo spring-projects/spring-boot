@@ -1,0 +1,13 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+params:
+  GITHUB_REPO:
+  GITHUB_ORGANIZATION:
+  GITHUB_PASSWORD:
+  GITHUB_USERNAME:
+  JDK_VERSION:
+  MILESTONE:
+run:
+  path: git-repo/ci/scripts/detect-jdk-updates.sh

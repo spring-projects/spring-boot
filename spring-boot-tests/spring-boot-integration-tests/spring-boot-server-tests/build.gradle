@@ -1,0 +1,51 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Server Tests"
+
+configurations {
+	testRepository
+}
+
+dependencies {
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.samskivert:jmustache")
+	testImplementation("jakarta.servlet:jakarta.servlet-api")
+	testImplementation("org.apache.httpcomponents:httpasyncclient")
+	testImplementation("org.apache.maven.shared:maven-invoker:3.0.0")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.eclipse.jetty:jetty-webapp") {
+		exclude group: "javax.servlet", module: "javax-servlet-api"
+	}
+	testImplementation("org.springframework:spring-web")
+
+	testRepository(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-maven-plugin", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-jetty", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-json", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-parent", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat", configuration: "mavenRepository"))
+	testRepository(project(path: ":spring-boot-project:spring-boot-starters:spring-boot-starter-undertow", configuration: "mavenRepository"))
+
+	testRuntimeOnly(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-logging"))
+}
+
+task prepareMavenBinaries(type: org.springframework.boot.build.mavenplugin.PrepareMavenBinaries) {
+	outputDir = file("${buildDir}/maven-binaries")
+	versions "3.6.2"
+}
+
+task syncTestRepository(type: Sync) {
+	destinationDir = file("${buildDir}/test-repository")
+	from {
+		configurations.testRepository
+	}
+}
+
+test {
+	dependsOn prepareMavenBinaries, syncTestRepository
+}

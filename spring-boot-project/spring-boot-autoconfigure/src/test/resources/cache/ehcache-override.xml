@@ -1,0 +1,10 @@
+<ehcache>
+	<cache name="cacheOverrideTest1"
+	       maxBytesLocalHeap="50m"
+	       timeToLiveSeconds="100">
+	</cache>
+	<cache name="cacheOverrideTest2"
+	       maxBytesLocalHeap="50m"
+	       timeToLiveSeconds="100">
+	</cache>
+</ehcache>

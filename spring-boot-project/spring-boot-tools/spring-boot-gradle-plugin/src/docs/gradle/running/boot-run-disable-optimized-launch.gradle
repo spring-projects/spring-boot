@@ -1,0 +1,16 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+// tag::launch[]
+bootRun {
+	optimizedLaunch = false
+}
+// end::launch[]
+
+task optimizedLaunch {
+	doLast {
+		println bootRun.optimizedLaunch
+	}
+}

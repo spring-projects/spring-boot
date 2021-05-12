@@ -1,0 +1,10 @@
+plugins {
+	id 'org.springframework.boot' version '{version}'
+}
+
+task kotlinVersion {
+	doLast {
+		def kotlinVersion = project.hasProperty('kotlin.version') ? project.getProperty('kotlin.version') : 'none'
+		println "Kotlin version: ${kotlinVersion}"
+	}
+}

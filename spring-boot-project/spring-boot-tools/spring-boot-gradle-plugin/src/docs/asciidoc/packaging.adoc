@@ -1,0 +1,373 @@
+[[packaging-executable]]
+== Packaging Executable Archives
+The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
+
+
+
+[[packaging-executable-jars]]
+=== Packaging Executable Jars
+Executable jars can be built using the `bootJar` task.
+The task is automatically created when the `java` plugin is applied and is an instance of {boot-jar-javadoc}[`BootJar`].
+The `assemble` task is automatically configured to depend upon the `bootJar` task so running `assemble` (or `build`) will also run the `bootJar` task.
+
+
+
+[[packaging-executable-wars]]
+=== Packaging Executable Wars
+Executable wars can be built using the `bootWar` task.
+The task is automatically created when the `war` plugin is applied and is an instance of {boot-war-javadoc}[`BootWar`].
+The `assemble` task is automatically configured to depend upon the `bootWar` task so running `assemble` (or `build`) will also run the `bootWar` task.
+
+
+
+[[packaging-executable-wars-deployable]]
+==== Packaging Executable and Deployable Wars
+A war file can be packaged such that it can be executed using `java -jar` and deployed to an external container.
+To do so, the embedded servlet container dependencies should be added to the `providedRuntime` configuration, for example:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/war-container-dependency.gradle[tags=dependencies]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/war-container-dependency.gradle.kts[tags=dependencies]
+----
+
+
+This ensures that they are package in the war file's `WEB-INF/lib-provided` directory from where they will not conflict with the external container's own classes.
+
+NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other limitations, `compileOnly` dependencies are not on the test classpath so any web-based integration tests will fail.
+
+
+
+[[packaging-executable-and-normal]]
+=== Packaging Executable and Normal Archives
+By default, when the `bootJar` or `bootWar` tasks are configured, the `jar` or `war` tasks are disabled.
+A project can be configured to build both an executable archive and a normal archive at the same time by enabling the `jar` or `war` task:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle[tags=enable-jar]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=enable-jar]
+----
+
+
+To avoid the executable archive and the normal archive from being written to the same location, one or the other should be configured to use a different location.
+One way to do so is by configuring a classifier:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle[tags=classifier]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-and-jar.gradle.kts[tags=classifier]
+----
+
+
+
+[[packaging-executable-configuring]]
+=== Configuring Executable Archive Packaging
+The {boot-jar-javadoc}[`BootJar`] and {boot-war-javadoc}[`BootWar`] tasks are subclasses of Gradle's `Jar` and `War` tasks respectively.
+As a result, all of the standard configuration options that are available when packaging a jar or war are also available when packaging an executable jar or war.
+A number of configuration options that are specific to executable jars and wars are also provided.
+
+
+
+[[packaging-executable-configuring-main-class]]
+==== Configuring the Main Class
+By default, the executable archive's main class will be configured automatically by looking for a class with a `public static void main(String[])` method in directories on the task's classpath.
+
+The main class can also be configured explicitly using the task's `mainClass` property:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-main-class.gradle[tags=main-class]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-main-class.gradle.kts[tags=main-class]
+----
+
+Alternatively, the main class name can be configured project-wide using the `mainClass` property of the Spring Boot DSL:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/spring-boot-dsl-main-class.gradle[tags=main-class]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/spring-boot-dsl-main-class.gradle.kts[tags=main-class]
+----
+
+If the {application-plugin}[`application` plugin] has been applied its `mainClass` property must be configured and can be used for the same purpose:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/application-plugin-main-class.gradle[tags=main-class]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/application-plugin-main-class.gradle.kts[tags=main-class]
+----
+
+Lastly, the `Start-Class` attribute can be configured on the task's manifest:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-manifest-main-class.gradle[tags=main-class]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-manifest-main-class.gradle.kts[tags=main-class]
+----
+
+NOTE: If the main class is written in Kotlin, the name of the generated Java class should be used.
+By default, this is the name of the Kotlin class with the `Kt` suffix added.
+For example, `ExampleApplication` becomes `ExampleApplicationKt`.
+If another name is defined using `@JvmName` then that name should be used.
+
+
+[[packaging-executable-configuring-including-development-only-dependencies]]
+==== Including Development-only Dependencies
+By default all dependencies declared in the `developmentOnly` configuration will be excluded from an executable jar or war.
+
+If you want to include dependencies declared in the `developmentOnly` configuration in your archive, configure the classpath of its task to include the configuration, as shown in the following example for the `bootWar` task:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-war-include-devtools.gradle[tags=include-devtools]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-war-include-devtools.gradle.kts[tags=include-devtools]
+----
+
+
+
+[[packaging-executable-configuring-unpacking]]
+==== Configuring Libraries that Require Unpacking
+Most libraries can be used directly when nested in an executable archive, however certain libraries can have problems.
+For example, JRuby includes its own nested jar support which assumes that `jruby-complete.jar` is always directly available on the file system.
+
+To deal with any problematic libraries, an executable archive can be configured to unpack specific nested jars to a temporary directory when the executable archive is run.
+Libraries can be identified as requiring unpacking using Ant-style patterns that match against the absolute path of the source jar file:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-requires-unpack.gradle[tags=requires-unpack]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unpack]
+----
+
+
+For more control a closure can also be used.
+The closure is passed a `FileTreeElement` and should return a `boolean` indicating whether or not unpacking is required.
+
+
+
+[[packaging-executable-configuring-launch-script]]
+==== Making an Archive Fully Executable
+Spring Boot provides support for fully executable archives.
+An archive is made fully executable by prepending a shell script that knows how to launch the application.
+On Unix-like platforms, this launch script allows the archive to be run directly like any other executable or to be installed as a service.
+
+NOTE: Currently, some tools do not accept this format so you may not always be able to use this technique.
+For example, `jar -xf` may silently fail to extract a jar or war that has been made fully-executable.
+It is recommended that you only enable this option if you intend to execute it directly, rather than running it with `java -jar`, deploying it to a servlet container, or including it in an OCI image.
+
+To use this feature, the inclusion of the launch script must be enabled:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-include-launch-script.gradle[tags=include-launch-script]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-include-launch-script.gradle.kts[tags=include-launch-script]
+----
+
+This will add Spring Boot's default launch script to the archive.
+The default launch script includes several properties with sensible default values.
+The values can be customized using the `properties` property:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-launch-script-properties.gradle[tags=launch-script-properties]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-launch-script-properties.gradle.kts[tags=launch-script-properties]
+----
+
+If the default launch script does not meet your needs, the `script` property can be used to provide a custom launch script:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-custom-launch-script.gradle[tags=custom-launch-script]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-custom-launch-script.gradle.kts[tags=custom-launch-script]
+----
+
+
+
+[[packaging-executable-configuring-properties-launcher]]
+==== Using the PropertiesLauncher
+To use the `PropertiesLauncher` to launch an executable jar or war, configure the task's manifest to set the `Main-Class` attribute:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-war-properties-launcher.gradle[tags=properties-launcher]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-war-properties-launcher.gradle.kts[tags=properties-launcher]
+----
+
+
+
+[[packaging-layered-jars]]
+==== Packaging Layered Jars
+By default, the `bootJar` task builds an archive that contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
+For cases where a docker image needs to be built from the contents of the jar, it's useful to be able to separate these directories further so that they can be written into distinct layers.
+
+Layered jars use the same layout as regular boot packaged jars, but include an additional meta-data file that describes each layer.
+
+By default, the following layers are defined:
+
+* `dependencies` for any non-project dependency whose version does not contain `SNAPSHOT`.
+* `spring-boot-loader` for the jar loader classes.
+* `snapshot-dependencies` for any non-project dependency whose version contains `SNAPSHOT`.
+* `application` for project dependencies, application classes, and resources.
+
+The layers order is important as it determines how likely previous layers can be cached when part of the application changes.
+The default order is `dependencies`, `spring-boot-loader`, `snapshot-dependencies`, `application`.
+Content that is least likely to change should be added first, followed by layers that are more likely to change.
+
+To disable this feature, you can do so in the following manner:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered-disabled.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered-disabled.gradle.kts[tags=layered]
+----
+
+When a layered jar is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your jar.
+With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
+If you wish to exclude this dependency, you can do so in the following manner:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered-exclude-tools.gradle.kts[tags=layered]
+----
+
+
+
+[[packaging-layers-configuration]]
+===== Custom Layers Configuration
+Depending on your application, you may want to tune how layers are created and add new ones.
+
+This can be done using configuration that describes how the jar can be separated into layers, and the order of those layers.
+The following example shows how the default ordering described above can be defined explicitly:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/packaging/boot-jar-layered-custom.gradle[tags=layered]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/packaging/boot-jar-layered-custom.gradle.kts[tags=layered]
+----
+
+The `layered` DSL is defined using three parts:
+
+* The `application` closure defines how the application classes and resources should be layered.
+* The `dependencies` closure defines how dependencies should be layered.
+* The `layerOrder` method defines the order that the layers should be written.
+
+Nested `intoLayer` closures are used within `application` and `dependencies` sections to claim content for a layer.
+These closures are evaluated in the order that they are defined, from top to bottom.
+Any content not claimed by an earlier `intoLayer` closure remains available for subsequent ones to consider.
+
+The `intoLayer` closure claims content using nested `include` and `exclude` calls.
+The `application` closure uses Ant-style patch matching for include/exclude parameters.
+The `dependencies` section uses `group:artifact[:version]` patterns.
+It also provides `includeProjectDependencies()` and `excludeProjectDependencies()` methods that can be used to include or exclude project dependencies.
+
+If no `include` call is made, then all content (not claimed by an earlier closure) is considered.
+
+If no `exclude` call is made, then no exclusions are applied.
+
+Looking at the `dependencies` closure in the example above, we can see that the first `intoLayer` will claim all project dependencies for the `application` layer.
+The next `intoLayer` will claim all SNAPSHOT dependencies for the `snapshot-dependencies` layer.
+The third and final `intoLayer` will claim anything left (in this case, any dependency that is not a project dependency or a SNAPSHOT) for the `dependencies` layer.
+
+The `application` closure has similar rules.
+First claiming `org/springframework/boot/loader/**` content for the `spring-boot-loader` layer.
+Then claiming any remaining classes and resources for the `application` layer.
+
+NOTE: The order that `intoLayer` closures are added is often different from the order that the layers are written.
+For this reason the `layerOrder` method must always be called and _must_ cover all layers referenced by the `intoLayer` calls.

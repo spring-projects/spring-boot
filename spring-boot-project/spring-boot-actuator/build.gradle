@@ -1,0 +1,93 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.configuration-properties"
+	id "org.springframework.boot.optional-dependencies"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Actuator"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot"))
+
+	optional("com.datastax.oss:java-driver-core")
+	optional("com.fasterxml.jackson.core:jackson-databind")
+	optional("com.fasterxml.jackson.datatype:jackson-datatype-jsr310")
+	optional("com.github.ben-manes.caffeine:caffeine")
+	optional("com.hazelcast:hazelcast")
+	optional("com.hazelcast:hazelcast-spring")
+	optional("com.sun.mail:jakarta.mail")
+	optional("com.zaxxer:HikariCP")
+	optional("io.lettuce:lettuce-core")
+	optional("io.micrometer:micrometer-core")
+	optional("io.micrometer:micrometer-registry-prometheus")
+	optional("io.prometheus:simpleclient_pushgateway")
+	optional("io.r2dbc:r2dbc-pool")
+	optional("io.r2dbc:r2dbc-spi")
+	optional("io.reactivex:rxjava-reactive-streams")
+	optional("org.elasticsearch.client:elasticsearch-rest-client")
+	optional("io.undertow:undertow-servlet") {
+		exclude group: "org.jboss.spec.javax.annotation", module: "jboss-annotations-api_1.2_spec"
+		exclude group: "org.jboss.spec.javax.servlet", module: "jboss-servlet-api_4.0_spec"
+	}
+	optional("javax.cache:cache-api")
+	optional("javax.jms:javax.jms-api")
+	optional("net.sf.ehcache:ehcache")
+	optional("org.apache.tomcat.embed:tomcat-embed-core")
+	optional("org.aspectj:aspectjweaver")
+	optional("org.eclipse.jetty:jetty-server")
+	optional("org.elasticsearch:elasticsearch")
+	optional("org.flywaydb:flyway-core")
+	optional("org.glassfish.jersey.core:jersey-server")
+	optional("org.glassfish.jersey.containers:jersey-container-servlet-core")
+	optional("org.hibernate.validator:hibernate-validator")
+	optional("org.influxdb:influxdb-java")
+	optional("org.liquibase:liquibase-core")
+	optional("org.mongodb:mongodb-driver-reactivestreams")
+	optional("org.mongodb:mongodb-driver-sync")
+	optional("org.neo4j.driver:neo4j-java-driver")
+	optional("org.springframework:spring-jdbc")
+	optional("org.springframework:spring-messaging")
+	optional("org.springframework:spring-webflux")
+	optional("org.springframework:spring-web")
+	optional("org.springframework:spring-webmvc")
+	optional("org.springframework.amqp:spring-rabbit")
+	optional("org.springframework.data:spring-data-cassandra")
+	optional("org.springframework.data:spring-data-couchbase")
+	optional("org.springframework.data:spring-data-elasticsearch")
+	optional("org.springframework.data:spring-data-ldap")
+	optional("org.springframework.data:spring-data-mongodb")
+	optional("org.springframework.data:spring-data-redis")
+	optional("org.springframework.data:spring-data-rest-webmvc")
+	optional("org.springframework.data:spring-data-solr")
+	optional("org.springframework.integration:spring-integration-core")
+	optional("org.springframework.security:spring-security-core")
+	optional("org.springframework.security:spring-security-web")
+	optional("org.springframework.session:spring-session-core")
+
+	testImplementation(project(":spring-boot-project:spring-boot-test"))
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation(project(":spring-boot-project:spring-boot-autoconfigure"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("com.jayway.jsonpath:json-path")
+	testImplementation("io.projectreactor:reactor-test")
+	testImplementation("io.r2dbc:r2dbc-h2")
+	testImplementation("org.apache.logging.log4j:log4j-to-slf4j")
+	testImplementation("org.awaitility:awaitility")
+	testImplementation("org.glassfish.jersey.media:jersey-media-json-jackson")
+	testImplementation("org.hamcrest:hamcrest")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.skyscreamer:jsonassert")
+	testImplementation("org.springframework:spring-test")
+	testImplementation("com.squareup.okhttp3:mockwebserver")
+	testImplementation("org.testcontainers:junit-jupiter")
+
+	testRuntimeOnly("io.projectreactor.netty:reactor-netty-http")
+	testRuntimeOnly("javax.xml.bind:jaxb-api")
+	testRuntimeOnly("org.apache.tomcat.embed:tomcat-embed-el")
+	testRuntimeOnly("org.glassfish.jersey.ext:jersey-spring5")
+	testRuntimeOnly("org.hsqldb:hsqldb")
+}

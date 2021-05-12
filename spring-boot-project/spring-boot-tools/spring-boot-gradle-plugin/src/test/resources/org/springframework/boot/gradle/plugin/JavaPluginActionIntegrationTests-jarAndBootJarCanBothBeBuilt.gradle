@@ -1,0 +1,13 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootJar {
+	mainClass = 'com.example.Application'
+	classifier = 'boot'
+}
+
+jar {
+	enabled = true
+}

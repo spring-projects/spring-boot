@@ -1,0 +1,4 @@
+---
+spring.profiles: "!A"
+
+version: NOT A

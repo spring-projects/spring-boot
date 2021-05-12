@@ -1,0 +1,39 @@
+plugins {
+	id "war"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.integration-test"
+}
+
+description = "Spring Boot Deployment Tests"
+
+configurations {
+	providedRuntime {
+		extendsFrom dependencyManagement
+	}
+}
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
+		exclude group: "org.hibernate.validator"
+	}
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-actuator"))
+
+	intTestImplementation(enforcedPlatform(project(path: ":spring-boot-project:spring-boot-parent")))
+	intTestImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation("org.apache.httpcomponents:httpasyncclient")
+	intTestImplementation("org.awaitility:awaitility")
+	intTestImplementation("org.testcontainers:junit-jupiter")
+	intTestImplementation("org.testcontainers:testcontainers")
+	intTestImplementation("org.springframework:spring-web")
+
+	providedRuntime(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-tomcat"))
+}
+
+intTest {
+	inputs.files(war).withNormalizer(ClasspathNormalizer)
+}
+
+war {
+	archiveVersion = ''
+}

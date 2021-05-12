@@ -1,0 +1,62 @@
+dn: dc=spring,dc=org
+objectclass: top
+objectclass: domain
+objectclass: extensibleObject
+dc: spring
+
+dn: ou=groups,dc=spring,dc=org
+objectclass: top
+objectclass: organizationalUnit
+ou: groups
+
+dn: cn=ROLE_USER,ou=groups,dc=spring,dc=org
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: ROLE_USER
+uniqueMember: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+uniqueMember: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+uniqueMember: cn=Some Person,ou=company1,c=Sweden,dc=spring,dc=org
+uniqueMember: cn=Some Person3,ou=company1,c=Sweden,dc=spring,dc=org
+
+dn: cn=ROLE_ADMIN,ou=groups,dc=spring,dc=org
+objectclass: top
+objectclass: groupOfUniqueNames
+cn: ROLE_ADMIN
+uniqueMember: cn=Some Person2,ou=company1,c=Sweden,dc=spring,dc=org
+
+dn: c=Sweden,dc=spring,dc=org
+objectclass: top
+objectclass: country
+c: Sweden
+description: The country of Sweden
+
+dn: ou=company1,c=Sweden,dc=spring,dc=org
+objectclass: top
+objectclass: organizationalUnit
+ou: company1
+description: First company in Sweden
+
+dn: cn=Alice Smith,ou=company1,c=Sweden,dc=spring,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+uid: alice.smith
+userPassword: password
+cn: Alice Smith
+sn: Alice Smith
+description: Sweden, Company1, Alice Smith
+telephoneNumber: +46 555-123456
+
+dn: cn=Bob Smith,ou=company1,c=Sweden,dc=spring,dc=org
+objectclass: top
+objectclass: person
+objectclass: organizationalPerson
+objectclass: inetOrgPerson
+uid: bob.smith
+userPassword: password
+cn: Bob Smith
+sn: Bob Smith
+description: Sweden, Company1, Some Person2
+telephoneNumber: +46 555-654321
+

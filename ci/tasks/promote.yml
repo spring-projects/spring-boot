@@ -1,0 +1,17 @@
+---
+platform: linux
+inputs:
+- name: git-repo
+- name: artifactory-repo
+outputs:
+- name: version
+params:
+  RELEASE_TYPE:
+  ARTIFACTORY_SERVER:
+  ARTIFACTORY_USERNAME:
+  ARTIFACTORY_PASSWORD:
+  SONATYPE_USER_TOKEN:
+  SONATYPE_PASSWORD_TOKEN:
+  SONATYPE_STAGING_PROFILE_ID:
+run:
+  path: git-repo/ci/scripts/promote.sh

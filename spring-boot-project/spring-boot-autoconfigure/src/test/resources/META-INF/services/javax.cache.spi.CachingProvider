@@ -1,0 +1,4 @@
+#
+# Test JSR 107 provider for testing purposes only.
+#
+org.springframework.boot.autoconfigure.cache.support.MockCachingProvider

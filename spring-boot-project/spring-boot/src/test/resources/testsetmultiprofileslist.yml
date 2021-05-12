@@ -1,0 +1,6 @@
+---
+spring:
+  profiles:
+    active:
+      - dev
+      - healthcheck

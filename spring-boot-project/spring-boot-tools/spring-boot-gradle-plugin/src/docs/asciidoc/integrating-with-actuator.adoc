@@ -1,0 +1,83 @@
+[[integrating-with-actuator]]
+== Integrating with Actuator
+
+
+[[integrating-with-actuator-build-info]]
+=== Generating Build Information
+Spring Boot Actuator's `info` endpoint automatically publishes information about your build in the presence of a `META-INF/build-info.properties` file.
+A {build-info-javadoc}[`BuildInfo`] task is provided to generate this file.
+The easiest way to use the task is via the plugin's DSL:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/integrating-with-actuator/build-info-basic.gradle[tags=build-info]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/integrating-with-actuator/build-info-basic.gradle.kts[tags=build-info]
+----
+
+
+This will configure a {build-info-javadoc}[`BuildInfo`] task named `bootBuildInfo` and, if it exists, make the Java plugin's `classes` task depend upon it.
+The task's destination directory will be `META-INF` in the output directory of the main source set's resources (typically `build/resources/main`).
+
+By default, the generated build information is derived from the project:
+
+|===
+| Property | Default value
+
+| `build.artifact`
+| The base name of the `bootJar` or `bootWar` task, or `unspecified` if no such task
+  exists
+
+| `build.group`
+| The group of the project
+
+| `build.name`
+| The name of the project
+
+| `build.version`
+| The version of the project
+
+| `build.time`
+| The time at which the project is being built
+
+|===
+
+The properties can be customized using the DSL:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/integrating-with-actuator/build-info-custom-values.gradle[tags=custom-values]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/integrating-with-actuator/build-info-custom-values.gradle.kts[tags=custom-values]
+----
+
+
+The default value for `build.time` is the instant at which the project is being built.
+A side-effect of this is that the task will never be up-to-date.
+As a result, builds will take longer as more tasks, including the project's tests, will have to be executed.
+Another side-effect is that the task's output will always change and, therefore, the build will not be truly repeatable.
+If you value build performance or repeatability more highly than the accuracy of the `build.time` property, set `time` to `null` or a fixed value.
+
+Additional properties can also be added to the build information:
+
+[source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
+.Groovy
+----
+include::../gradle/integrating-with-actuator/build-info-additional.gradle[tags=additional]
+----
+
+[source,kotlin,indent=0,subs="verbatim,attributes",role="secondary"]
+.Kotlin
+----
+include::../gradle/integrating-with-actuator/build-info-additional.gradle.kts[tags=additional]
+----

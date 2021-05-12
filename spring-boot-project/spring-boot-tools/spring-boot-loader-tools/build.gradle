@@ -1,0 +1,81 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Loader Tools"
+
+def generatedResources = "${buildDir}/generated-resources/main"
+
+configurations {
+	loader {
+		extendsFrom dependencyManagement
+		transitive = false
+	}
+	jarmode {
+		extendsFrom dependencyManagement
+		transitive = false
+	}
+}
+
+dependencies {
+	api("org.apache.commons:commons-compress")
+	api("org.springframework:spring-core")
+
+	compileOnly("ch.qos.logback:logback-classic")
+
+	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
+
+	jarmode(project(":spring-boot-project:spring-boot-tools:spring-boot-jarmode-layertools"))
+
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.zeroturnaround:zt-zip:1.13")
+}
+
+sourceSets {
+	main {
+		resources.srcDirs generatedResources
+	}
+}
+
+task reproducibleLoaderJar(type: Jar) {
+	dependsOn configurations.loader
+	from {
+		zipTree(configurations.loader.incoming.files.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+		}
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = "spring-boot-loader.jar"
+	destinationDirectory = file("${generatedResources}/META-INF/loader")
+}
+
+task reproducibleJarModeLayerToolsJar(type: Jar) {
+	dependsOn configurations.jarmode
+	from {
+		zipTree(configurations.jarmode.incoming.files.singleFile).matching {
+			exclude "META-INF/LICENSE.txt"
+			exclude "META-INF/NOTICE.txt"
+		}
+	}
+	reproducibleFileOrder = true
+	preserveFileTimestamps = false
+	archiveFileName = "spring-boot-jarmode-layertools.jar"
+	destinationDirectory = file("${generatedResources}/META-INF/jarmode")
+}
+
+processResources {
+	dependsOn reproducibleLoaderJar
+	dependsOn reproducibleJarModeLayerToolsJar
+}
+
+compileJava {
+	if ((!project.hasProperty("toolchainVersion")) && JavaVersion.current() == JavaVersion.VERSION_1_8) {
+		options.compilerArgs += ['-Xlint:-sunapi', '-XDenableSunApiLintControl']	
+	}	
+}

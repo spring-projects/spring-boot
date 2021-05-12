@@ -1,0 +1,14 @@
+---
+my:
+  property: fromyamlfile
+  other: notempty
+---
+spring:
+  profiles: thedefault
+my:
+  property: fromdefaultprofile
+---
+spring:
+  profiles: other
+my:
+  property: fromotherprofile

@@ -1,0 +1,6 @@
+plugins {
+	id 'application'
+	id 'org.springframework.boot' version '{version}'
+}
+
+mainClassName = 'com.example.bootrun.main.CustomMainClass'

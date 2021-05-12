@@ -1,0 +1,9 @@
+plugins {
+	id 'war'
+	id 'application'
+	id 'org.springframework.boot' version '{version}'
+}
+
+springBoot {
+	mainClass = 'com.example.CustomMain'
+}

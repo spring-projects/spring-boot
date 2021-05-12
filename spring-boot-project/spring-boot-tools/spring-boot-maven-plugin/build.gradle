@@ -1,0 +1,123 @@
+plugins {
+	id "org.asciidoctor.jvm.convert"
+	id "org.asciidoctor.jvm.pdf"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.maven-plugin"
+	id "org.springframework.boot.optional-dependencies"
+}
+
+description = "Spring Boot Maven Plugin"
+
+configurations {
+	dependenciesBom
+	documentation
+}
+
+dependencies {
+	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
+	compileOnly("org.sonatype.plexus:plexus-build-api")
+
+	dependenciesBom(project(path: ":spring-boot-project:spring-boot-dependencies", configuration: "effectiveBom"))
+
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("org.apache.maven.shared:maven-common-artifact-filters")
+	implementation("org.apache.maven:maven-plugin-api")
+
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	intTestImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	intTestImplementation("org.apache.maven.shared:maven-invoker")
+	intTestImplementation("org.assertj:assertj-core")
+	intTestImplementation("org.junit.jupiter:junit-jupiter")
+	intTestImplementation("org.testcontainers:testcontainers")
+	intTestImplementation("org.testcontainers:junit-jupiter")
+
+	mavenOptionalImplementation("org.apache.maven.plugins:maven-shade-plugin")
+
+	runtimeOnly("org.sonatype.plexus:plexus-build-api")
+
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.springframework:spring-core")
+}
+
+task syncSpringBootDependenciesBom(type: Sync) {
+	destinationDir = file("${buildDir}/generated-resources/org/springframework/boot/maven")
+	from configurations.dependenciesBom
+}
+
+syncDocumentationSourceForAsciidoctor {
+	from(documentPluginGoals) {
+		into "asciidoc/goals"
+	}
+}
+
+sourceSets {
+	intTest {
+		output.dir("${buildDir}/generated-resources", builtBy: "syncSpringBootDependenciesBom")
+	}
+}
+
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	doFirst {
+		def versionEl = version.split("\\.")
+		attributes "spring-boot-xsd-version": versionEl[0] + '.' + versionEl[1]
+	}
+}
+
+asciidoctor {
+	sources {
+		include "index.adoc"
+	}
+}
+
+syncDocumentationSourceForAsciidoctorPdf {
+	from(documentPluginGoals) {
+		into "asciidoc/goals"
+	}
+}
+
+asciidoctorPdf {
+	sources {
+		include "index.adoc"
+	}
+}
+
+javadoc {
+	options {
+		author = true
+		docTitle = "Spring Boot Maven Plugin ${project.version} API"
+		encoding = "UTF-8"
+		memberLevel = "protected"
+		outputLevel = "quiet"
+		splitIndex = true
+		use = true
+		windowTitle = "Spring Boot Maven Plugin ${project.version} API"
+	}
+}
+
+task zip(type: Zip) {
+	dependsOn asciidoctor, asciidoctorPdf
+	duplicatesStrategy "fail"
+	from(asciidoctorPdf.outputDir) {
+		into "reference/pdf"
+		rename "index.pdf", "${project.name}-reference.pdf"
+	}
+	from(asciidoctor.outputDir) {
+		into "reference/htmlsingle"
+	}
+	from(javadoc) {
+		into "api"
+	}
+}
+
+prepareMavenBinaries {
+	versions "3.6.2", "3.5.4"
+}
+
+artifacts {
+	"documentation" zip
+}

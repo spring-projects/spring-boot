@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+		xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.springframework.boot</groupId>
+	<artifactId>spring-boot-maven-plugin</artifactId>
+	<version>{{version}}</version>
+	<packaging>maven-plugin</packaging>
+	<name>Spring Boot Maven Plugin</name>
+	<url>https://projects.spring.io/spring-boot/#</url>
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+	</properties>
+	<licenses>
+		<license>
+			<name>Apache License, Version 2.0</name>
+			<url>https://www.apache.org/licenses/LICENSE-2.0</url>
+		</license>
+	</licenses>
+	<scm>
+		<url>https://github.com/spring-projects/spring-boot</url>
+		<connection>scm:git:git://github.com/spring-projects/spring-boot.git</connection>
+		<developerConnection>scm:git:ssh://git@github.com/spring-projects/spring-boot.git</developerConnection>
+	</scm>
+	<issueManagement>
+		<system>GitHub</system>
+		<url>https://github.com/spring-projects/spring-boot/issues</url>
+	</issueManagement>
+	<organization>
+		<name>Pivotal Software, Inc.</name>
+		<url>https://spring.io</url>
+	</organization>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-plugin-plugin</artifactId>
+				<version>3.6.0</version>
+				<configuration>
+					<helpPackageName>org.springframework.boot.maven</helpPackageName>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
