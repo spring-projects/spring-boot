@@ -1,0 +1,10 @@
+= Spring Boot Test Builder
+
+This directory contains a Cloud Native Buildpacks https://buildpacks.io/docs/concepts/components/builder/[builder] and https://buildpacks.io/docs/concepts/components/buildpack/[buildpack] that is used by integration tests to verify the behavior of the Spring Boot build plugins.
+
+== Creating the builder
+
+* Install the https://buildpacks.io/docs/install-pack/[pack CLI]
+* Authenticate to projects.registry.vmware.com via `docker login`
+* Use the `build.sh` create the necessary images and push them to the registry
+
