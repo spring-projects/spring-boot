@@ -23,7 +23,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureOrder;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -309,11 +308,10 @@ public class WebFluxAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
-		public WebSessionManager webSessionManager(
-				@Autowired(required = false) WebSessionIdResolver webSessionIdResolver) {
+		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolvers) {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
-			if (webSessionIdResolver != null) {
-				webSessionManager.setSessionIdResolver(webSessionIdResolver);
+			if (webSessionIdResolvers.getIfAvailable() != null) {
+				webSessionManager.setSessionIdResolver(webSessionIdResolvers.getIfAvailable());
 				return webSessionManager;
 			}
 			CookieWebSessionIdResolver cookieWebSessionIdResolver = new CookieWebSessionIdResolver();
