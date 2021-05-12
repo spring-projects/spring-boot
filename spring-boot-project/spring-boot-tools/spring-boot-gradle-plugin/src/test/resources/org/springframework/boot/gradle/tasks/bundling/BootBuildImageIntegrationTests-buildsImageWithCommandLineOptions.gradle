@@ -5,7 +5,3 @@ plugins {
 
 sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
-
-bootBuildImage {
-	bindings = [ "${projectDir}/bindings/ca-certificates:/platform/bindings/certificates" ]
-}
