@@ -25,6 +25,9 @@
 				</executions>
 				<configuration>
 					<layout>ZIP</layout>
+					<image>
+						<builder>projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1</builder>
+					</image>
 				</configuration>
 			</plugin>
 		</plugins>
