@@ -91,6 +91,7 @@ class FlywayPropertiesTests {
 		assertThat(configuration.isSkipDefaultResolvers()).isEqualTo(properties.isSkipDefaultResolvers());
 		assertThat(configuration.isValidateMigrationNaming()).isEqualTo(properties.isValidateMigrationNaming());
 		assertThat(configuration.isValidateOnMigrate()).isEqualTo(properties.isValidateOnMigrate());
+		assertThat(configuration.getFailOnMissingLocations()).isEqualTo(properties.isFailOnMissingLocations());
 	}
 
 	@Test

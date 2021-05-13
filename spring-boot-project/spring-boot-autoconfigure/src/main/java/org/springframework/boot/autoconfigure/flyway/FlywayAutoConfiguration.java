@@ -213,6 +213,10 @@ public class FlywayAutoConfiguration {
 			map.from(properties.isOutOfOrder()).to(configuration::outOfOrder);
 			map.from(properties.isSkipDefaultCallbacks()).to(configuration::skipDefaultCallbacks);
 			map.from(properties.isSkipDefaultResolvers()).to(configuration::skipDefaultResolvers);
+			// No method reference for compatibility with Flyway < 7.8
+			map.from(properties.getIgnoreMigrationPatterns()).whenNot(List::isEmpty)
+					.to((ignoreMigrationPatterns) -> configuration
+							.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
 			configureValidateMigrationNaming(configuration, properties.isValidateMigrationNaming());
 			map.from(properties.isValidateOnMigrate()).to(configuration::validateOnMigrate);
 			map.from(properties.getInitSqls()).whenNot(CollectionUtils::isEmpty)
@@ -252,6 +256,18 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getVaultToken()).to((vaultToken) -> configuration.vaultToken(vaultToken));
 			map.from(properties.getVaultSecrets()).whenNot(List::isEmpty)
 					.to((vaultSecrets) -> configuration.vaultSecrets(vaultSecrets.toArray(new String[0])));
+			// No method reference for compatibility with Flyway version < 7.9
+			configureFailOnMissingLocations(configuration, properties.isFailOnMissingLocations());
+		}
+
+		private void configureFailOnMissingLocations(FluentConfiguration configuration,
+				boolean failOnMissingLocations) {
+			try {
+				configuration.failOnMissingLocations(failOnMissingLocations);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 7.9
+			}
 		}
 
 		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {

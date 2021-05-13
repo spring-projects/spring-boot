@@ -251,6 +251,12 @@ public class FlywayProperties {
 	private boolean skipDefaultResolvers;
 
 	/**
+	 * Ignore migrations that match this comma-separated list of patterns when validating
+	 * migrations. Requires Flyway Teams.
+	 */
+	private List<String> ignoreMigrationPatterns;
+
+	/**
 	 * Whether to validate migrations and callbacks whose scripts do not obey the correct
 	 * naming convention.
 	 */
@@ -354,6 +360,12 @@ public class FlywayProperties {
 	 * Requires Flyway teams.
 	 */
 	private List<String> vaultSecrets;
+
+	/**
+	 * Whether to fail if a location specified in the flyway.locations option doesn't
+	 * exist.
+	 */
+	private boolean failOnMissingLocations = false;
 
 	public boolean isEnabled() {
 		return this.enabled;
@@ -690,6 +702,14 @@ public class FlywayProperties {
 		this.skipDefaultResolvers = skipDefaultResolvers;
 	}
 
+	public List<String> getIgnoreMigrationPatterns() {
+		return this.ignoreMigrationPatterns;
+	}
+
+	public void setIgnoreMigrationPatterns(List<String> ignoreMigrationPatterns) {
+		this.ignoreMigrationPatterns = ignoreMigrationPatterns;
+	}
+
 	public boolean isValidateMigrationNaming() {
 		return this.validateMigrationNaming;
 	}
@@ -840,6 +860,14 @@ public class FlywayProperties {
 
 	public void setVaultSecrets(List<String> vaultSecrets) {
 		this.vaultSecrets = vaultSecrets;
+	}
+
+	public boolean isFailOnMissingLocations() {
+		return this.failOnMissingLocations;
+	}
+
+	public void setFailOnMissingLocations(boolean failOnMissingLocations) {
+		this.failOnMissingLocations = failOnMissingLocations;
 	}
 
 }
