@@ -172,12 +172,8 @@ class HandlerTests {
 		TestJarCreator.createTestJar(testJar);
 		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
-		JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile());
-		try {
+		try (JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile())) {
 			assertThat(jarFile.getRootJarFile().getFile()).isEqualTo(testJar);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
@@ -187,12 +183,8 @@ class HandlerTests {
 		TestJarCreator.createTestJar(testJar);
 		URL url = new URL(null, "jar:" + testJar.toURI().toURL() + "!/nested.jar!/3.dat", this.handler);
 		JarURLConnection connection = (JarURLConnection) url.openConnection();
-		JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile());
-		try {
+		try (JarFile jarFile = JarFileWrapper.unwrap(connection.getJarFile())) {
 			assertThat(jarFile.getRootJarFile().getFile()).isEqualTo(testJar);
-		}
-		finally {
-			jarFile.close();
 		}
 	}
 
