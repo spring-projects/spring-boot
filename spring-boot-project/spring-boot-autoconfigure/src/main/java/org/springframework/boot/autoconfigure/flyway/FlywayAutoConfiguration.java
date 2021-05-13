@@ -175,6 +175,7 @@ public class FlywayAutoConfiguration {
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
 			String[] locations = new LocationResolver(configuration.getDataSource())
 					.resolveLocations(properties.getLocations()).toArray(new String[0]);
+			configureFailOnMissingLocations(configuration, properties.isFailOnMissingLocations());
 			map.from(locations).to(configuration::locations);
 			map.from(properties.getEncoding()).to(configuration::encoding);
 			map.from(properties.getConnectRetries()).to(configuration::connectRetries);
@@ -252,6 +253,23 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getVaultToken()).to((vaultToken) -> configuration.vaultToken(vaultToken));
 			map.from(properties.getVaultSecrets()).whenNot(List::isEmpty)
 					.to((vaultSecrets) -> configuration.vaultSecrets(vaultSecrets.toArray(new String[0])));
+			// No method reference for compatibility with Flyway < 7.8
+			map.from(properties.getIgnoreMigrationPatterns()).whenNot(List::isEmpty)
+					.to((ignoreMigrationPatterns) -> configuration
+							.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
+			// No method reference for compatibility with Flyway version < 7.9
+			map.from(properties.getDetectEncoding()).whenNonNull()
+					.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
+		}
+
+		private void configureFailOnMissingLocations(FluentConfiguration configuration,
+				boolean failOnMissingLocations) {
+			try {
+				configuration.failOnMissingLocations(failOnMissingLocations);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 7.9
+			}
 		}
 
 		private void configureCreateSchemas(FluentConfiguration configuration, boolean createSchemas) {
