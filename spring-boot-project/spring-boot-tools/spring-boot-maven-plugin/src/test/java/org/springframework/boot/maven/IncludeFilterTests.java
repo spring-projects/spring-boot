@@ -34,7 +34,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author David Turanski
  */
-@SuppressWarnings({ "rawtypes" })
+@SuppressWarnings({ "rawtypes", "unchecked" })
 class IncludeFilterTests {
 
 	@Test
