@@ -142,7 +142,6 @@ class AnnotationConfigServletWebServerApplicationContextTests {
 	}
 
 	@Component
-	@SuppressWarnings("serial")
 	static class ExampleServletWithAutowired extends GenericServlet {
 
 		@Autowired

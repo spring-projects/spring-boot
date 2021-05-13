@@ -97,7 +97,7 @@ class RestTemplateAutoConfigurationTests {
 	}
 
 	@Test
-	@SuppressWarnings({ "unchecked", "rawtypes" })
+	@SuppressWarnings({ "rawtypes" })
 	void restTemplateWhenHasCustomMessageConvertersShouldHaveMessageConverters() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 				.withUserConfiguration(CustomHttpMessageConverter.class, RestTemplateConfig.class).run((context) -> {

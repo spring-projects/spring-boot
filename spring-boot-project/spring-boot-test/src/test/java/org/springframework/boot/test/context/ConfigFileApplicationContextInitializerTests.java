@@ -34,7 +34,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Phillip Webb
  */
 @Deprecated
-@SuppressWarnings("deprecation")
 @ExtendWith(SpringExtension.class)
 @DirtiesContext
 @ContextConfiguration(classes = ConfigFileApplicationContextInitializerTests.Config.class,

@@ -61,7 +61,6 @@ class ResourcePropertiesBindingTests {
 		};
 	}
 
-	@SuppressWarnings("deprecation")
 	@Configuration(proxyBeanMethods = false)
 	@EnableConfigurationProperties(ResourceProperties.class)
 	static class TestConfiguration {
