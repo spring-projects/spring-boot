@@ -67,7 +67,6 @@ class SampleLiquibaseApplicationTests {
 				.contains("Successfully released change log lock");
 	}
 
-	@SuppressWarnings("serial")
 	private boolean serverNotRunning(IllegalStateException ex) {
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};

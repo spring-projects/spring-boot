@@ -35,7 +35,7 @@ import static org.mockito.Mockito.mock;
  * @author Stephane Nicoll
  * @author David Turanski
  */
-@SuppressWarnings({ "rawtypes", "unchecked" })
+@SuppressWarnings({ "rawtypes" })
 class ExcludeFilterTests {
 
 	@Test
