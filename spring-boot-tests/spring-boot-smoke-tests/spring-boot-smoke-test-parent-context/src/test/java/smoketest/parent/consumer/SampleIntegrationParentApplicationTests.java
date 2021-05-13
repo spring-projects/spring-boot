@@ -49,20 +49,12 @@ class SampleIntegrationParentApplicationTests {
 	void testVanillaExchange(@TempDir Path temp) throws Exception {
 		File inputDir = new File(temp.toFile(), "input");
 		File outputDir = new File(temp.toFile(), "output");
-		ConfigurableApplicationContext app = SpringApplication.run(SampleParentContextApplication.class,
-				"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir);
-		try {
-			ConfigurableApplicationContext producer = SpringApplication.run(ProducerApplication.class,
-					"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir, "World");
-			try {
+		try (ConfigurableApplicationContext app = SpringApplication.run(SampleParentContextApplication.class,
+				"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir)) {
+			try (ConfigurableApplicationContext producer = SpringApplication.run(ProducerApplication.class,
+					"--service.input-dir=" + inputDir, "--service.output-dir=" + outputDir, "World")) {
 				awaitOutputContaining(outputDir, "Hello World");
 			}
-			finally {
-				producer.close();
-			}
-		}
-		finally {
-			app.close();
 		}
 	}
 
