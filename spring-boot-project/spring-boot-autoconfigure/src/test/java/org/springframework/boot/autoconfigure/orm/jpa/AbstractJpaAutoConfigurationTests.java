@@ -420,7 +420,6 @@ abstract class AbstractJpaAutoConfigurationTests {
 
 	}
 
-	@SuppressWarnings("serial")
 	static class CustomJpaTransactionManager extends JpaTransactionManager {
 
 	}

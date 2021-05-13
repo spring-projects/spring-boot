@@ -44,7 +44,6 @@ class SampleCouchbaseApplicationTests {
 	}
 
 	private boolean serverNotRunning(RuntimeException ex) {
-		@SuppressWarnings("serial")
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
 		if (nested.contains(FeatureNotAvailableException.class)) {
