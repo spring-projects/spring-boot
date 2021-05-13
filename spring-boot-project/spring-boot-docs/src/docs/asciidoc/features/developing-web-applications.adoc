@@ -727,6 +727,8 @@ By default, the servlet is initialized lazily, but you can customize that behavi
 You can disable or override that bean by creating one of your own with the same name.
 You can also use a filter instead of a servlet by setting `spring.jersey.type=filter` (in which case, the `@Bean` to replace or override is `jerseyFilterRegistration`).
 The filter has an `@Order`, which you can set with `spring.jersey.filter.order`.
+When using Jersey as a filter, a Servlet that will handle any requests that are not intercepted by Jersey must be present.
+If your application does not contain such a servlet, you may want to enable the default servlet by setting configprop:server.servlet.register-default-servlet[] to `true`.
 Both the servlet and the filter registrations can be given init parameters by using `spring.jersey.init.*` to specify a map of properties.
 
 
