@@ -547,7 +547,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenConfigLocationHasNonOptionalMissingFileDirectoryThrowsResourceNotFoundException() {
 		File location = new File(this.temp, "application.unknown");
-		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class).isThrownBy(() -> this.application
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(() -> this.application
 				.run("--spring.config.location=" + StringUtils.cleanPath(location.getAbsolutePath()) + "/"));
 	}
 
@@ -564,6 +564,12 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		location.mkdirs();
 		assertThatNoException().isThrownBy(() -> this.application
 				.run("--spring.config.location=" + StringUtils.cleanPath(location.getAbsolutePath()) + "/"));
+	}
+
+	@Test
+	void runWhenConfigLocationHasMandatoryDirectoryThatDoesntExistThrowsException() {
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
+				() -> this.application.run("--spring.config.location=" + StringUtils.cleanPath("invalid/")));
 	}
 
 	@Test
@@ -686,11 +692,30 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenHasWildcardLocationLoadsFromAllMatchingLocations() {
 		ConfigurableApplicationContext context = this.application.run(
-				"--spring.config.location=optional:file:src/test/resources/config/*/",
-				"--spring.config.name=testproperties");
+				"--spring.config.location=file:src/test/resources/config/*/", "--spring.config.name=testproperties");
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getProperty("first.property")).isEqualTo("apple");
 		assertThat(environment.getProperty("second.property")).isEqualTo("ball");
+	}
+
+	@Test
+	void runWhenMandatoryWildcardLocationHasEmptyFileDirectory() {
+		assertThatNoException()
+				.isThrownBy(() -> this.application.run("--spring.config.location=file:src/test/resources/config/*/"));
+	}
+
+	@Test
+	void runWhenMandatoryWildcardLocationHasNoSubdirectories() {
+		assertThatIllegalStateException().isThrownBy(
+				() -> this.application.run("--spring.config.location=file:src/test/resources/config/0-empty/*/"))
+				.withMessage(
+						"No subdirectories found for mandatory directory location 'file:src/test/resources/config/0-empty/*/'.");
+	}
+
+	@Test
+	void runWhenHasMandatoryWildcardLocationThatDoesNotExist() {
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
+				.isThrownBy(() -> this.application.run("--spring.config.location=file:invalid/*/"));
 	}
 
 	@Test // gh-24990

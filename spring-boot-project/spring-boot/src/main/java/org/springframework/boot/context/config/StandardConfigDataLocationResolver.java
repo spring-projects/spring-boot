@@ -18,6 +18,7 @@ package org.springframework.boot.context.config;
 
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Deque;
@@ -26,6 +27,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
 
 import org.apache.commons.logging.Log;
 
@@ -243,17 +245,31 @@ public class StandardConfigDataLocationResolver
 			Set<StandardConfigDataReference> references) {
 		Set<StandardConfigDataResource> empty = new LinkedHashSet<>();
 		for (StandardConfigDataReference reference : references) {
-			if (reference.isMandatoryDirectory()) {
-				Resource resource = this.resourceLoader.getResource(reference.getDirectory());
-				if (resource instanceof ClassPathResource) {
-					continue;
-				}
-				StandardConfigDataResource configDataResource = new StandardConfigDataResource(reference, resource);
-				ConfigDataResourceNotFoundException.throwIfDoesNotExist(configDataResource, resource);
-				empty.add(new StandardConfigDataResource(reference, resource, true));
-			}
+			empty.addAll(resolveEmptyDirectories(reference));
 		}
 		return empty;
+	}
+
+	private Set<StandardConfigDataResource> resolveEmptyDirectories(StandardConfigDataReference reference) {
+		if (!this.resourceLoader.isPattern(reference.getResourceLocation())) {
+			return resolveNonPatternEmptyDirectories(reference);
+		}
+		return resolvePatternEmptyDirectories(reference);
+	}
+
+	private Set<StandardConfigDataResource> resolveNonPatternEmptyDirectories(StandardConfigDataReference reference) {
+		Resource resource = this.resourceLoader.getResource(reference.getDirectory());
+		return (resource instanceof ClassPathResource || !resource.exists()) ? Collections.emptySet()
+				: Collections.singleton(new StandardConfigDataResource(reference, resource, true));
+	}
+
+	private Set<StandardConfigDataResource> resolvePatternEmptyDirectories(StandardConfigDataReference reference) {
+		Resource[] resources = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
+		Assert.state(resources.length > 0,
+				"No subdirectories found for mandatory directory location '" + reference.getDirectory() + "'.");
+		return Arrays.stream(resources).filter(Resource::exists)
+				.map((resource) -> new StandardConfigDataResource(reference, resource, true))
+				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}
 
 	private List<StandardConfigDataResource> resolve(StandardConfigDataReference reference) {
