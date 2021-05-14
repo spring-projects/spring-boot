@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2020 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,11 +16,16 @@
 
 package org.springframework.boot.context.metrics.buffering;
 
-import java.util.Iterator;
+import java.time.Instant;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 
 import org.springframework.core.metrics.StartupStep;
+import org.springframework.util.Assert;
 
 /**
  * {@link StartupStep} implementation to be buffered by
@@ -28,6 +33,7 @@ import org.springframework.core.metrics.StartupStep;
  * {@link System#nanoTime()}.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  */
 class BufferedStartupStep implements StartupStep {
 
@@ -35,22 +41,27 @@ class BufferedStartupStep implements StartupStep {
 
 	private final long id;
 
-	private final Long parentId;
+	private final BufferedStartupStep parent;
 
-	private long startTime;
-
-	private long endTime;
-
-	private final DefaultTags tags;
+	private final List<Tag> tags = new ArrayList<>();
 
 	private final Consumer<BufferedStartupStep> recorder;
 
-	BufferedStartupStep(long id, String name, Long parentId, Consumer<BufferedStartupStep> recorder) {
-		this.id = id;
-		this.parentId = parentId;
-		this.tags = new DefaultTags();
+	private final Instant startTime;
+
+	private final AtomicBoolean ended = new AtomicBoolean();
+
+	BufferedStartupStep(BufferedStartupStep parent, String name, long id, Instant startTime,
+			Consumer<BufferedStartupStep> recorder) {
+		this.parent = parent;
 		this.name = name;
+		this.id = id;
+		this.startTime = startTime;
 		this.recorder = recorder;
+	}
+
+	BufferedStartupStep getParent() {
+		return this.parent;
 	}
 
 	@Override
@@ -63,23 +74,18 @@ class BufferedStartupStep implements StartupStep {
 		return this.id;
 	}
 
+	Instant getStartTime() {
+		return this.startTime;
+	}
+
 	@Override
 	public Long getParentId() {
-		return this.parentId;
+		return (this.parent != null) ? this.parent.getId() : null;
 	}
 
 	@Override
 	public Tags getTags() {
-		return this.tags;
-	}
-
-	@Override
-	public StartupStep tag(String key, String value) {
-		if (this.endTime != 0L) {
-			throw new IllegalStateException("StartupStep has already ended.");
-		}
-		this.tags.add(key, value);
-		return this;
+		return Collections.unmodifiableList(this.tags)::iterator;
 	}
 
 	@Override
@@ -88,63 +94,20 @@ class BufferedStartupStep implements StartupStep {
 	}
 
 	@Override
+	public StartupStep tag(String key, String value) {
+		Assert.state(!this.ended.get(), "StartupStep has already ended.");
+		this.tags.add(new DefaultTag(key, value));
+		return this;
+	}
+
+	@Override
 	public void end() {
+		this.ended.set(true);
 		this.recorder.accept(this);
 	}
 
-	long getStartTime() {
-		return this.startTime;
-	}
-
-	void recordStartTime(long startTime) {
-		this.startTime = startTime;
-	}
-
-	long getEndTime() {
-		return this.endTime;
-	}
-
-	void recordEndTime(long endTime) {
-		this.endTime = endTime;
-	}
-
-	static class DefaultTags implements Tags {
-
-		private Tag[] tags = new Tag[0];
-
-		void add(String key, String value) {
-			Tag[] newTags = new Tag[this.tags.length + 1];
-			System.arraycopy(this.tags, 0, newTags, 0, this.tags.length);
-			newTags[newTags.length - 1] = new DefaultTag(key, value);
-			this.tags = newTags;
-		}
-
-		@Override
-		public Iterator<Tag> iterator() {
-			return new TagsIterator();
-		}
-
-		private class TagsIterator implements Iterator<Tag> {
-
-			private int index = 0;
-
-			@Override
-			public boolean hasNext() {
-				return this.index < DefaultTags.this.tags.length;
-			}
-
-			@Override
-			public Tag next() {
-				return DefaultTags.this.tags[this.index++];
-			}
-
-			@Override
-			public void remove() {
-				throw new UnsupportedOperationException("tags are append only");
-			}
-
-		}
-
+	boolean isEnded() {
+		return this.ended.get();
 	}
 
 	static class DefaultTag implements Tag {
