@@ -371,7 +371,7 @@ public class FlywayProperties {
 	 * Whether to fail if a location specified in the flyway.locations option doesn't
 	 * exist.
 	 */
-	private boolean failOnMissingLocations = false;
+	private boolean failOnMissingLocations;
 
 	public boolean isEnabled() {
 		return this.enabled;
