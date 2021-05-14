@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.orm.jpa;
 
+import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -37,6 +38,7 @@ import org.springframework.boot.test.context.assertj.AssertableApplicationContex
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -69,7 +71,9 @@ abstract class AbstractJpaAutoConfigurationTests {
 	protected AbstractJpaAutoConfigurationTests(Class<?> autoConfiguredClass) {
 		this.autoConfiguredClass = autoConfiguredClass;
 		this.contextRunner = new ApplicationContextRunner()
-				.withPropertyValues("spring.datasource.generate-unique-name=true")
+				.withPropertyValues("spring.datasource.generate-unique-name=true",
+						"spring.jta.log-dir="
+								+ new File(new BuildOutput(getClass()).getRootLocation(), "transaction-logs"))
 				.withUserConfiguration(TestConfiguration.class).withConfiguration(AutoConfigurations.of(
 						DataSourceAutoConfiguration.class, TransactionAutoConfiguration.class, autoConfiguredClass));
 	}
