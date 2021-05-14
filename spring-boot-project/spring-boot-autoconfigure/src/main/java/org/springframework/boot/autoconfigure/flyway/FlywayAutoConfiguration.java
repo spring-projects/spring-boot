@@ -257,7 +257,17 @@ public class FlywayAutoConfiguration {
 			map.from(properties.getVaultSecrets()).whenNot(List::isEmpty)
 					.to((vaultSecrets) -> configuration.vaultSecrets(vaultSecrets.toArray(new String[0])));
 			// No method reference for compatibility with Flyway version < 7.9
+			configureDetectEncoding(configuration, properties.isDetectEncoding());
 			configureFailOnMissingLocations(configuration, properties.isFailOnMissingLocations());
+		}
+
+		private void configureDetectEncoding(FluentConfiguration configuration, boolean detectEncoding) {
+			try {
+				configuration.detectEncoding(detectEncoding);
+			}
+			catch (NoSuchMethodError ex) {
+				// Flyway < 7.9
+			}
 		}
 
 		private void configureFailOnMissingLocations(FluentConfiguration configuration,

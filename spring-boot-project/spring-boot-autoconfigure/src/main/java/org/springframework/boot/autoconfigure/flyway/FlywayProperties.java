@@ -19,11 +19,7 @@ package org.springframework.boot.autoconfigure.flyway;
 import java.io.File;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
@@ -72,6 +68,12 @@ public class FlywayProperties {
 	 * Maximum number of retries when trying to obtain a lock.
 	 */
 	private Integer lockRetryCount;
+
+	/**
+	 * Whether or not Flyway should try to automatically detect SQL migration file
+	 * encoding. Requires Flyway Teams.
+	 */
+	private boolean detectEncoding = false;
 
 	/**
 	 * Default schema name managed by Flyway (case-sensitive).
@@ -417,6 +419,14 @@ public class FlywayProperties {
 
 	public void setLockRetryCount(Integer lockRetryCount) {
 		this.lockRetryCount = lockRetryCount;
+	}
+
+	public boolean isDetectEncoding() {
+		return detectEncoding;
+	}
+
+	public void setDetectEncoding(final boolean detectEncoding) {
+		this.detectEncoding = detectEncoding;
 	}
 
 	public String getDefaultSchema() {

@@ -55,6 +55,7 @@ class FlywayPropertiesTests {
 		// Can't assert lock retry count default as it is new in Flyway 7.1
 		// Asserting hard-coded value in the metadata instead
 		assertThat(configuration.getLockRetryCount()).isEqualTo(50);
+		assertThat(properties.isDetectEncoding()).isEqualTo(configuration.getDetectEncoding());
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());
 		assertThat(properties.getSchemas()).isEqualTo(Arrays.asList(configuration.getSchemas()));
 		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.getCreateSchemas());
@@ -120,6 +121,8 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "shouldCreateSchemas");
 		// Getters for the DataSource settings rather than actual properties
 		ignoreProperties(configuration, "password", "url", "user");
+		// Properties not exposed by Flyway
+		ignoreProperties(configuration, "failOnMissingTarget");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());
