@@ -55,7 +55,7 @@ class FlywayPropertiesTests {
 		// Can't assert lock retry count default as it is new in Flyway 7.1
 		// Asserting hard-coded value in the metadata instead
 		assertThat(configuration.getLockRetryCount()).isEqualTo(50);
-		assertThat(properties.isDetectEncoding()).isEqualTo(configuration.getDetectEncoding());
+		assertThat(properties.getDetectEncoding()).isNull();
 		assertThat(properties.getDefaultSchema()).isEqualTo(configuration.getDefaultSchema());
 		assertThat(properties.getSchemas()).isEqualTo(Arrays.asList(configuration.getSchemas()));
 		assertThat(properties.isCreateSchemas()).isEqualTo(configuration.getCreateSchemas());
