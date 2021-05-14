@@ -16,7 +16,11 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.web.jetty;
 
+import java.util.Collections;
+
 import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Tags;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
@@ -117,10 +121,20 @@ class JettyMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomJettyConnectionMetricsBinderToBeUsed() {
-		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
-				.withUserConfiguration(CustomJettyConnectionMetricsBinder.class, MeterRegistryConfiguration.class)
-				.run((context) -> assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class)
-						.hasBean("customJettyConnectionMetricsBinder"));
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class))
+				.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettyConnectionMetricsBinder.class,
+						MeterRegistryConfiguration.class)
+				.run((context) -> {
+					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+							context.getSourceApplicationContext()));
+					assertThat(context).hasSingleBean(JettyConnectionMetricsBinder.class)
+							.hasBean("customJettyConnectionMetricsBinder");
+					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+					assertThat(registry.find("jetty.connections.messages.in").tag("custom-tag-name", "custom-tag-value")
+							.meter()).isNotNull();
+				});
 	}
 
 	@Test
@@ -158,6 +172,23 @@ class JettyMetricsAutoConfigurationTests {
 
 	@Test
 	void allowsCustomJettySslHandshakeMetricsBinderToBeUsed() {
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class))
+				.withUserConfiguration(ServletWebServerConfiguration.class, CustomJettySslHandshakeMetricsBinder.class,
+						MeterRegistryConfiguration.class)
+				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
+				.run((context) -> {
+					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
+							context.getSourceApplicationContext()));
+					assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
+							.hasBean("customJettySslHandshakeMetricsBinder");
+					SimpleMeterRegistry registry = context.getBean(SimpleMeterRegistry.class);
+					assertThat(registry.find("jetty.ssl.handshakes").tag("custom-tag-name", "custom-tag-value").meter())
+							.isNotNull();
+				});
+
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
 				.withUserConfiguration(CustomJettySslHandshakeMetricsBinder.class, MeterRegistryConfiguration.class)
 				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
@@ -235,7 +266,7 @@ class JettyMetricsAutoConfigurationTests {
 
 		@Bean
 		JettyConnectionMetricsBinder customJettyConnectionMetricsBinder(MeterRegistry meterRegistry) {
-			return new JettyConnectionMetricsBinder(meterRegistry);
+			return new JettyConnectionMetricsBinder(meterRegistry, Tags.of("custom-tag-name", "custom-tag-value"));
 		}
 
 	}
@@ -245,7 +276,7 @@ class JettyMetricsAutoConfigurationTests {
 
 		@Bean
 		JettySslHandshakeMetricsBinder customJettySslHandshakeMetricsBinder(MeterRegistry meterRegistry) {
-			return new JettySslHandshakeMetricsBinder(meterRegistry);
+			return new JettySslHandshakeMetricsBinder(meterRegistry, Tags.of("custom-tag-name", "custom-tag-value"));
 		}
 
 	}
