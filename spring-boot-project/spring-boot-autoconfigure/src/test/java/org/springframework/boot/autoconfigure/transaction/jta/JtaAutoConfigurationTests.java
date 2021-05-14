@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,6 +51,7 @@ import org.springframework.boot.jta.bitronix.BitronixDependentBeanFactoryPostPro
 import org.springframework.boot.jta.bitronix.PoolingConnectionFactoryBean;
 import org.springframework.boot.jta.bitronix.PoolingDataSourceBean;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -73,6 +74,8 @@ import static org.mockito.Mockito.mock;
  */
 @SuppressWarnings("deprecation")
 class JtaAutoConfigurationTests {
+
+	private final File buildOutput = new BuildOutput(JtaAutoConfigurationTests.class).getRootLocation();
 
 	private AnnotationConfigApplicationContext context;
 
@@ -104,7 +107,11 @@ class JtaAutoConfigurationTests {
 
 	@Test
 	void atomikosSanityCheck() {
-		this.context = new AnnotationConfigApplicationContext(JtaProperties.class, AtomikosJtaConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.jta.log-dir:" + new File(this.buildOutput, "atomikos-logs"))
+				.applyTo(this.context);
+		this.context.register(JtaProperties.class, AtomikosJtaConfiguration.class);
+		this.context.refresh();
 		this.context.getBean(AtomikosProperties.class);
 		this.context.getBean(UserTransactionService.class);
 		this.context.getBean(UserTransactionManager.class);
@@ -118,7 +125,11 @@ class JtaAutoConfigurationTests {
 	@Test
 	@Deprecated
 	void bitronixSanityCheck() {
-		this.context = new AnnotationConfigApplicationContext(JtaProperties.class, BitronixJtaConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.jta.log-dir:" + new File(this.buildOutput, "bitronix-logs"))
+				.applyTo(this.context);
+		this.context.register(JtaProperties.class, BitronixJtaConfiguration.class);
+		this.context.refresh();
 		this.context.getBean(bitronix.tm.Configuration.class);
 		this.context.getBean(TransactionManager.class);
 		this.context.getBean(XADataSourceWrapper.class);
@@ -130,7 +141,11 @@ class JtaAutoConfigurationTests {
 	@Test
 	@Deprecated
 	void defaultBitronixServerId() throws UnknownHostException {
-		this.context = new AnnotationConfigApplicationContext(BitronixJtaConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.jta.log-dir:" + new File(this.buildOutput, "bitronix-logs"))
+				.applyTo(this.context);
+		this.context.register(BitronixJtaConfiguration.class);
+		this.context.refresh();
 		String serverId = this.context.getBean(bitronix.tm.Configuration.class).getServerId();
 		assertThat(serverId).isEqualTo(InetAddress.getLocalHost().getHostAddress());
 	}
@@ -139,7 +154,8 @@ class JtaAutoConfigurationTests {
 	@Deprecated
 	void customBitronixServerId() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues.of("spring.jta.transactionManagerId:custom").applyTo(this.context);
+		TestPropertyValues.of("spring.jta.transactionManagerId:custom",
+				"spring.jta.log-dir:" + new File(this.buildOutput, "bitronix-logs")).applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class);
 		this.context.refresh();
 		String serverId = this.context.getBean(bitronix.tm.Configuration.class).getServerId();
@@ -162,7 +178,8 @@ class JtaAutoConfigurationTests {
 	void atomikosConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.atomikos.connectionfactory.minPoolSize:5",
-				"spring.jta.atomikos.connectionfactory.maxPoolSize:10").applyTo(this.context);
+				"spring.jta.atomikos.connectionfactory.maxPoolSize:10",
+				"spring.jta.log-dir:" + new File(this.buildOutput, "atomikos-logs")).applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
 		AtomikosConnectionFactoryBean connectionFactory = this.context.getBean(AtomikosConnectionFactoryBean.class);
@@ -175,7 +192,8 @@ class JtaAutoConfigurationTests {
 	void bitronixConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.bitronix.connectionfactory.minPoolSize:5",
-				"spring.jta.bitronix.connectionfactory.maxPoolSize:10").applyTo(this.context);
+				"spring.jta.bitronix.connectionfactory.maxPoolSize:10",
+				"spring.jta.log-dir:" + new File(this.buildOutput, "bitronix-logs")).applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
 		PoolingConnectionFactoryBean connectionFactory = this.context.getBean(PoolingConnectionFactoryBean.class);
@@ -187,7 +205,8 @@ class JtaAutoConfigurationTests {
 	void atomikosDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.jta.atomikos.datasource.minPoolSize:5", "spring.jta.atomikos.datasource.maxPoolSize:10")
+				.of("spring.jta.atomikos.datasource.minPoolSize:5", "spring.jta.atomikos.datasource.maxPoolSize:10",
+						"spring.jta.log-dir:" + new File(this.buildOutput, "atomikos-logs"))
 				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -201,7 +220,8 @@ class JtaAutoConfigurationTests {
 	void bitronixDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.jta.bitronix.datasource.minPoolSize:5", "spring.jta.bitronix.datasource.maxPoolSize:10")
+				.of("spring.jta.bitronix.datasource.minPoolSize:5", "spring.jta.bitronix.datasource.maxPoolSize:10",
+						"spring.jta.log-dir:" + new File(this.buildOutput, "bitronix-logs"))
 				.applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -214,7 +234,8 @@ class JtaAutoConfigurationTests {
 	void atomikosCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.transaction.default-timeout:30", "spring.transaction.rollback-on-commit-failure:true")
+				.of("spring.transaction.default-timeout:30", "spring.transaction.rollback-on-commit-failure:true",
+						"spring.jta.log-dir:" + new File(this.buildOutput, "atomikos-logs"))
 				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class, TransactionAutoConfiguration.class);
 		this.context.refresh();
@@ -228,7 +249,8 @@ class JtaAutoConfigurationTests {
 	void bitronixCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues
-				.of("spring.transaction.default-timeout:30", "spring.transaction.rollback-on-commit-failure:true")
+				.of("spring.transaction.default-timeout:30", "spring.transaction.rollback-on-commit-failure:true",
+						"spring.jta.log-dir:" + new File(this.buildOutput, "bitronix-logs"))
 				.applyTo(this.context);
 		this.context.register(BitronixJtaConfiguration.class, TransactionAutoConfiguration.class);
 		this.context.refresh();

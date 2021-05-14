@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package smoketest.bitronix;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import bitronix.tm.resource.jms.PoolingConnectionFactory;
@@ -25,6 +26,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.ApplicationContext;
 import org.springframework.util.StringUtils;
 
@@ -38,9 +40,11 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ExtendWith(OutputCaptureExtension.class)
 class SampleBitronixApplicationTests {
 
+	private final File jtaLogDir = new File(new BuildOutput(getClass()).getRootLocation(), "bitronix-logs");
+
 	@Test
 	void testTransactionRollback(CapturedOutput output) throws Exception {
-		SampleBitronixApplication.main(new String[] {});
+		SampleBitronixApplication.main(new String[] { "--spring.jta.log-dir=" + this.jtaLogDir });
 		assertThat(output).satisfies(numberOfOccurrences("---->", 1));
 		assertThat(output).satisfies(numberOfOccurrences("----> josh", 1));
 		assertThat(output).satisfies(numberOfOccurrences("Count is 1", 2));
@@ -49,7 +53,8 @@ class SampleBitronixApplicationTests {
 
 	@Test
 	void testExposesXaAndNonXa() {
-		ApplicationContext context = SpringApplication.run(SampleBitronixApplication.class);
+		ApplicationContext context = SpringApplication.run(SampleBitronixApplication.class,
+				"--spring.jta.log-dir=" + this.jtaLogDir);
 		Object jmsConnectionFactory = context.getBean("jmsConnectionFactory");
 		Object xaJmsConnectionFactory = context.getBean("xaJmsConnectionFactory");
 		Object nonXaJmsConnectionFactory = context.getBean("nonXaJmsConnectionFactory");
