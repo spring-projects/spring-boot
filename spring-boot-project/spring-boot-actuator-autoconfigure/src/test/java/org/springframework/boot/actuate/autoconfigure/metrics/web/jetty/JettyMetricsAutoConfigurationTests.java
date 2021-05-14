@@ -129,6 +129,8 @@ class JettyMetricsAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 						ServletWebServerFactoryAutoConfiguration.class))
 				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext()));
@@ -144,6 +146,8 @@ class JettyMetricsAutoConfigurationTests {
 				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
 						ReactiveWebServerFactoryAutoConfiguration.class))
 				.withUserConfiguration(ReactiveWebServerConfiguration.class, MeterRegistryConfiguration.class)
+				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
 				.run((context) -> {
 					context.publishEvent(new ApplicationStartedEvent(new SpringApplication(), null,
 							context.getSourceApplicationContext()));
@@ -156,8 +160,29 @@ class JettyMetricsAutoConfigurationTests {
 	void allowsCustomJettySslHandshakeMetricsBinderToBeUsed() {
 		new WebApplicationContextRunner().withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class))
 				.withUserConfiguration(CustomJettySslHandshakeMetricsBinder.class, MeterRegistryConfiguration.class)
+				.withPropertyValues("server.ssl.enabled: true", "server.ssl.key-store: src/test/resources/test.jks",
+						"server.ssl.key-store-password: secret", "server.ssl.key-password: password")
 				.run((context) -> assertThat(context).hasSingleBean(JettySslHandshakeMetricsBinder.class)
 						.hasBean("customJettySslHandshakeMetricsBinder"));
+	}
+
+	@Test
+	void doesNotautoConfiguresSslHandshakeMetricsWhenSslEnabledPropertyNotSpecified() {
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class))
+				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+				.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));
+	}
+
+	@Test
+	void doesNotautoConfiguresSslHandshakeMetricsWhenSslEnabledPropertySetToFalse() {
+		new WebApplicationContextRunner(AnnotationConfigServletWebServerApplicationContext::new)
+				.withConfiguration(AutoConfigurations.of(JettyMetricsAutoConfiguration.class,
+						ServletWebServerFactoryAutoConfiguration.class))
+				.withUserConfiguration(ServletWebServerConfiguration.class, MeterRegistryConfiguration.class)
+				.withPropertyValues("server.ssl.enabled: false")
+				.run((context) -> assertThat(context).doesNotHaveBean(JettySslHandshakeMetricsBinder.class));
 	}
 
 	@Configuration(proxyBeanMethods = false)
