@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.groovy.template;
 import java.security.CodeSource;
 import java.security.ProtectionDomain;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.Servlet;
 
 import groovy.text.markup.MarkupTemplateEngine;
@@ -41,6 +40,7 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.i18n.LocaleContextHolder;
+import org.springframework.core.log.LogMessage;
 import org.springframework.web.servlet.view.UrlBasedViewResolver;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfig;
 import org.springframework.web.servlet.view.groovy.GroovyMarkupConfigurer;
@@ -73,20 +73,20 @@ public class GroovyTemplateAutoConfiguration {
 
 		private final GroovyTemplateProperties properties;
 
-		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties,
-				ObjectProvider<MarkupTemplateEngine> templateEngine) {
+		public GroovyMarkupConfiguration(ApplicationContext applicationContext, GroovyTemplateProperties properties) {
 			this.applicationContext = applicationContext;
 			this.properties = properties;
+			checkTemplateLocationExists();
 		}
 
-		@PostConstruct
 		public void checkTemplateLocationExists() {
 			if (this.properties.isCheckTemplateLocation() && !isUsingGroovyAllJar()) {
 				TemplateLocation location = new TemplateLocation(this.properties.getResourceLoaderPath());
 				if (!location.exists(this.applicationContext)) {
-					logger.warn("Cannot find template location: " + location
-							+ " (please add some templates, check your Groovy "
-							+ "configuration, or set spring.groovy.template." + "check-template-location=false)");
+					logger.warn(LogMessage.format(
+							"Cannot find template location: %s (please add some templates, check your Groovy "
+									+ "configuration, or set spring.groovy.template.check-template-location=false)",
+							location));
 				}
 			}
 		}
@@ -94,18 +94,15 @@ public class GroovyTemplateAutoConfiguration {
 		/**
 		 * MarkupTemplateEngine could be loaded from groovy-templates or groovy-all.
 		 * Unfortunately it's quite common for people to use groovy-all and not actually
-		 * need templating support. This method check attempts to check the source jar so
-		 * that we can skip the {@code /template} folder check for such cases.
+		 * need templating support. This method attempts to check the source jar so that
+		 * we can skip the {@code /template} directory check for such cases.
 		 * @return true if the groovy-all jar is used
 		 */
 		private boolean isUsingGroovyAllJar() {
 			try {
 				ProtectionDomain domain = MarkupTemplateEngine.class.getProtectionDomain();
 				CodeSource codeSource = domain.getCodeSource();
-				if (codeSource != null && codeSource.getLocation().toString().contains("-all")) {
-					return true;
-				}
-				return false;
+				return codeSource != null && codeSource.getLocation().toString().contains("-all");
 			}
 			catch (Exception ex) {
 				return false;

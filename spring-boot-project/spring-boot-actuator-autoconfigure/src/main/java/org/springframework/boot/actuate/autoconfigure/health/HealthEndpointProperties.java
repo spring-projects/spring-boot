@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,47 +16,92 @@
 
 package org.springframework.boot.actuate.autoconfigure.health;
 
-import java.util.HashSet;
+import java.util.LinkedHashMap;
+import java.util.Map;
 import java.util.Set;
 
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.health.ShowDetails;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
  * Configuration properties for {@link HealthEndpoint}.
  *
  * @author Phillip Webb
+ * @author Leo Li
  * @since 2.0.0
  */
 @ConfigurationProperties("management.endpoint.health")
-public class HealthEndpointProperties {
+public class HealthEndpointProperties extends HealthProperties {
 
 	/**
 	 * When to show full health details.
 	 */
-	private ShowDetails showDetails = ShowDetails.NEVER;
+	private Show showDetails = Show.NEVER;
 
 	/**
-	 * Roles used to determine whether or not a user is authorized to be shown details.
-	 * When empty, all authenticated users are authorized.
+	 * Health endpoint groups.
 	 */
-	private Set<String> roles = new HashSet<>();
+	private Map<String, Group> group = new LinkedHashMap<>();
 
-	public ShowDetails getShowDetails() {
+	@Override
+	public Show getShowDetails() {
 		return this.showDetails;
 	}
 
-	public void setShowDetails(ShowDetails showDetails) {
+	public void setShowDetails(Show showDetails) {
 		this.showDetails = showDetails;
 	}
 
-	public Set<String> getRoles() {
-		return this.roles;
+	public Map<String, Group> getGroup() {
+		return this.group;
 	}
 
-	public void setRoles(Set<String> roles) {
-		this.roles = roles;
+	/**
+	 * A health endpoint group.
+	 */
+	public static class Group extends HealthProperties {
+
+		/**
+		 * Health indicator IDs that should be included or '*' for all.
+		 */
+		private Set<String> include;
+
+		/**
+		 * Health indicator IDs that should be excluded or '*' for all.
+		 */
+		private Set<String> exclude;
+
+		/**
+		 * When to show full health details. Defaults to the value of
+		 * 'management.endpoint.health.show-details'.
+		 */
+		private Show showDetails;
+
+		public Set<String> getInclude() {
+			return this.include;
+		}
+
+		public void setInclude(Set<String> include) {
+			this.include = include;
+		}
+
+		public Set<String> getExclude() {
+			return this.exclude;
+		}
+
+		public void setExclude(Set<String> exclude) {
+			this.exclude = exclude;
+		}
+
+		@Override
+		public Show getShowDetails() {
+			return this.showDetails;
+		}
+
+		public void setShowDetails(Show showDetails) {
+			this.showDetails = showDetails;
+		}
+
 	}
 
 }

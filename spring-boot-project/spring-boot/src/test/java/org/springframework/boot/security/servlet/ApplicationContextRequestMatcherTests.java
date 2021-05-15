@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 package org.springframework.boot.security.servlet;
 
+import java.lang.Thread.UncaughtExceptionHandler;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.function.Supplier;
 
 import javax.servlet.http.HttpServletRequest;
@@ -26,6 +30,7 @@ import org.springframework.beans.factory.NoSuchBeanDefinitionException;
 import org.springframework.context.ApplicationContext;
 import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.support.StaticWebApplicationContext;
 
@@ -67,6 +72,67 @@ class ApplicationContextRequestMatcherTests {
 		Supplier<ExistingBean> supplier = new TestApplicationContextRequestMatcher<>(ExistingBean.class)
 				.callMatchesAndReturnProvidedContext(context);
 		assertThatExceptionOfType(NoSuchBeanDefinitionException.class).isThrownBy(supplier::get);
+	}
+
+	@Test // gh-18012
+	void matchesWhenCalledWithDifferentApplicationContextDoesNotCache() {
+		StaticWebApplicationContext context1 = createWebApplicationContext();
+		StaticWebApplicationContext context2 = createWebApplicationContext();
+		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<>(
+				ApplicationContext.class);
+		assertThat(matcher.callMatchesAndReturnProvidedContext(context1).get()).isEqualTo(context1);
+		assertThat(matcher.callMatchesAndReturnProvidedContext(context2).get()).isEqualTo(context2);
+	}
+
+	@Test
+	void initializeAndMatchesAreNotCalledIfContextIsIgnored() {
+		StaticWebApplicationContext context = createWebApplicationContext();
+		TestApplicationContextRequestMatcher<ApplicationContext> matcher = new TestApplicationContextRequestMatcher<ApplicationContext>(
+				ApplicationContext.class) {
+
+			@Override
+			protected boolean ignoreApplicationContext(WebApplicationContext webApplicationContext) {
+				return true;
+			}
+
+			@Override
+			protected void initialized(Supplier<ApplicationContext> context) {
+				throw new IllegalStateException();
+			}
+
+			@Override
+			protected boolean matches(HttpServletRequest request, Supplier<ApplicationContext> context) {
+				throw new IllegalStateException();
+			}
+
+		};
+		MockHttpServletRequest request = new MockHttpServletRequest(context.getServletContext());
+		assertThat(matcher.matches(request)).isFalse();
+	}
+
+	@Test // gh-18211
+	void matchesWhenConcurrentlyCalledWaitsForInitialize() {
+		ConcurrentApplicationContextRequestMatcher matcher = new ConcurrentApplicationContextRequestMatcher();
+		StaticWebApplicationContext context = createWebApplicationContext();
+		Runnable target = () -> matcher.matches(new MockHttpServletRequest(context.getServletContext()));
+		List<Thread> threads = new ArrayList<>();
+		AssertingUncaughtExceptionHandler exceptionHandler = new AssertingUncaughtExceptionHandler();
+		for (int i = 0; i < 2; i++) {
+			Thread thread = new Thread(target);
+			thread.setUncaughtExceptionHandler(exceptionHandler);
+			threads.add(thread);
+		}
+		threads.forEach(Thread::start);
+		threads.forEach(this::join);
+		exceptionHandler.assertNoExceptions();
+	}
+
+	private void join(Thread thread) {
+		try {
+			thread.join(1000);
+		}
+		catch (InterruptedException ex) {
+		}
 	}
 
 	private StaticWebApplicationContext createWebApplicationContext() {
@@ -120,6 +186,49 @@ class ApplicationContextRequestMatcherTests {
 
 		Supplier<C> getProvidedContext() {
 			return this.providedContext;
+		}
+
+	}
+
+	static class ConcurrentApplicationContextRequestMatcher extends ApplicationContextRequestMatcher<Object> {
+
+		ConcurrentApplicationContextRequestMatcher() {
+			super(Object.class);
+		}
+
+		private final AtomicBoolean initialized = new AtomicBoolean();
+
+		@Override
+		protected void initialized(Supplier<Object> context) {
+			try {
+				Thread.sleep(200);
+			}
+			catch (InterruptedException ex) {
+			}
+			this.initialized.set(true);
+		}
+
+		@Override
+		protected boolean matches(HttpServletRequest request, Supplier<Object> context) {
+			assertThat(this.initialized.get()).isTrue();
+			return true;
+		}
+
+	}
+
+	private static class AssertingUncaughtExceptionHandler implements UncaughtExceptionHandler {
+
+		private volatile Throwable ex;
+
+		@Override
+		public void uncaughtException(Thread thead, Throwable ex) {
+			this.ex = ex;
+		}
+
+		void assertNoExceptions() {
+			if (this.ex != null) {
+				ReflectionUtils.rethrowRuntimeException(this.ex);
+			}
 		}
 
 	}

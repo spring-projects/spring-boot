@@ -51,7 +51,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class DataSourceJmxConfigurationTests {
 
 	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
-			.withPropertyValues("spring.datasource.url=" + "jdbc:hsqldb:mem:test-" + UUID.randomUUID())
+			.withPropertyValues("spring.datasource.url=jdbc:hsqldb:mem:test-" + UUID.randomUUID())
 			.withConfiguration(AutoConfigurations.of(JmxAutoConfiguration.class, DataSourceAutoConfiguration.class));
 
 	@Test

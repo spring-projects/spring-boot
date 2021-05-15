@@ -1,0 +1,41 @@
+[[build-info]]
+== Integrating with Actuator
+Spring Boot Actuator displays build-related information if a `META-INF/build-info.properties` file is present.
+The `build-info` goal generates such file with the coordinates of the project and the build time.
+It also allows you to add an arbitrary number of additional properties, as shown in the following example:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<executions>
+						<execution>
+							<goals>
+								<goal>build-info</goal>
+							</goals>
+							<configuration>
+								<additionalProperties>
+									<encoding.source>UTF-8</encoding.source>
+									<encoding.reporting>UTF-8</encoding.reporting>
+									<java.source>${maven.compiler.source}</java.source>
+									<java.target>${maven.compiler.target}</java.target>
+								</additionalProperties>
+							</configuration>
+						</execution>
+					</executions>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+This configuration will generate a `build-info.properties` at the expected location with four additional keys.
+
+NOTE: `maven.compiler.source` and `maven.compiler.target` are expected to be regular properties available in the project.
+They will be interpolated as you would expect.
+
+include::goals/build-info.adoc[leveloffset=+1]

@@ -7,8 +7,11 @@ outputs:
 - name: distribution-repository
 params:
   RELEASE_TYPE:
+  CI: true
+  GRADLE_ENTERPRISE_CACHE_USERNAME:
+  GRADLE_ENTERPRISE_CACHE_PASSWORD:
+  GRADLE_ENTERPRISE_URL: https://ge.spring.io
 caches:
-- path: maven
 - path: gradle
 run:
   path: git-repo/ci/scripts/stage.sh

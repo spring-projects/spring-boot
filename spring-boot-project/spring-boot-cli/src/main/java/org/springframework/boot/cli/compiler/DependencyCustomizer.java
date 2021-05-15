@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -71,7 +71,6 @@ public class DependencyCustomizer {
 
 	public String getVersion(String artifactId) {
 		return getVersion(artifactId, "");
-
 	}
 
 	public String getVersion(String artifactId, String defaultVersion) {
@@ -94,7 +93,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(className);
+						Class.forName(className, false, DependencyCustomizer.this.loader);
 					}
 					catch (Exception ex) {
 						return true;
@@ -117,7 +116,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String className : classNames) {
 					try {
-						DependencyCustomizer.this.loader.loadClass(className);
+						Class.forName(className, false, DependencyCustomizer.this.loader);
 						return false;
 					}
 					catch (Exception ex) {
@@ -144,7 +143,6 @@ public class DependencyCustomizer {
 						if (DependencyCustomizer.this.loader.getResource(path) == null) {
 							return false;
 						}
-						return true;
 					}
 					catch (Exception ex) {
 						// swallow exception and continue
@@ -167,10 +165,7 @@ public class DependencyCustomizer {
 			protected boolean canAdd() {
 				for (String path : paths) {
 					try {
-						if (DependencyCustomizer.this.loader.getResource(path) != null) {
-							return true;
-						}
-						return false;
+						return DependencyCustomizer.this.loader.getResource(path) != null;
 					}
 					catch (Exception ex) {
 						// swallow exception and continue

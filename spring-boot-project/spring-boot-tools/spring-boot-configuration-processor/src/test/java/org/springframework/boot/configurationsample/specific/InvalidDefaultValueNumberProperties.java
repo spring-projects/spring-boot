@@ -18,6 +18,7 @@ package org.springframework.boot.configurationsample.specific;
 
 import org.springframework.boot.configurationsample.ConfigurationProperties;
 import org.springframework.boot.configurationsample.DefaultValue;
+import org.springframework.boot.configurationsample.MetaConstructorBinding;
 
 /**
  * Demonstrates that an invalid default number value leads to a compilation failure.
@@ -25,6 +26,7 @@ import org.springframework.boot.configurationsample.DefaultValue;
  * @author Stephane Nicoll
  */
 @ConfigurationProperties("test")
+@MetaConstructorBinding
 public class InvalidDefaultValueNumberProperties {
 
 	private final int counter;

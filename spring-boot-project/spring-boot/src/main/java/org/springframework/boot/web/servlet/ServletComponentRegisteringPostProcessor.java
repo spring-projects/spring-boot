@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.springframework.beans.BeansException;
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -29,7 +30,6 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.annotation.ClassPathScanningCandidateComponentProvider;
-import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.web.context.WebApplicationContext;
 
 /**
@@ -72,9 +72,9 @@ class ServletComponentRegisteringPostProcessor implements BeanFactoryPostProcess
 
 	private void scanPackage(ClassPathScanningCandidateComponentProvider componentProvider, String packageToScan) {
 		for (BeanDefinition candidate : componentProvider.findCandidateComponents(packageToScan)) {
-			if (candidate instanceof ScannedGenericBeanDefinition) {
+			if (candidate instanceof AnnotatedBeanDefinition) {
 				for (ServletComponentHandler handler : HANDLERS) {
-					handler.handle(((ScannedGenericBeanDefinition) candidate),
+					handler.handle(((AnnotatedBeanDefinition) candidate),
 							(BeanDefinitionRegistry) this.applicationContext);
 				}
 			}

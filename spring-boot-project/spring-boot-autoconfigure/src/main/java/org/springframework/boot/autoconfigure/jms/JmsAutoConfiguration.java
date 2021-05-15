@@ -34,7 +34,9 @@ import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.jms.core.JmsMessageOperations;
 import org.springframework.jms.core.JmsMessagingTemplate;
+import org.springframework.jms.core.JmsOperations;
 import org.springframework.jms.core.JmsTemplate;
 import org.springframework.jms.support.converter.MessageConverter;
 import org.springframework.jms.support.destination.DestinationResolver;
@@ -71,7 +73,7 @@ public class JmsAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(JmsOperations.class)
 		@ConditionalOnSingleCandidate(ConnectionFactory.class)
 		public JmsTemplate jmsTemplate(ConnectionFactory connectionFactory) {
 			PropertyMapper map = PropertyMapper.get();
@@ -104,7 +106,7 @@ public class JmsAutoConfiguration {
 	protected static class MessagingTemplateConfiguration {
 
 		@Bean
-		@ConditionalOnMissingBean
+		@ConditionalOnMissingBean(JmsMessageOperations.class)
 		@ConditionalOnSingleCandidate(JmsTemplate.class)
 		public JmsMessagingTemplate jmsMessagingTemplate(JmsProperties properties, JmsTemplate jmsTemplate) {
 			JmsMessagingTemplate messagingTemplate = new JmsMessagingTemplate(jmsTemplate);

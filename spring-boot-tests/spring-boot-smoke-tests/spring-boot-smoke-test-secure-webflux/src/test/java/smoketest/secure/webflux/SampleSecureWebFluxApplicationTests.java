@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,11 +51,6 @@ class SampleSecureWebFluxApplicationTests {
 	}
 
 	@Test
-	void infoInsecureByDefault() {
-		this.webClient.get().uri("/actuator/info").accept(MediaType.APPLICATION_JSON).exchange().expectStatus().isOk();
-	}
-
-	@Test
 	void otherActuatorsSecureByDefault() {
 		this.webClient.get().uri("/actuator/env").accept(MediaType.APPLICATION_JSON).exchange().expectStatus()
 				.isUnauthorized();
@@ -63,20 +58,19 @@ class SampleSecureWebFluxApplicationTests {
 
 	@Test
 	void userDefinedMappingsAccessibleOnLogin() {
-		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange().expectBody(String.class)
-				.isEqualTo("Hello user");
+		this.webClient.get().uri("/").accept(MediaType.APPLICATION_JSON).header("Authorization", getBasicAuth())
+				.exchange().expectBody(String.class).isEqualTo("Hello user");
 	}
 
 	@Test
 	void actuatorsAccessibleOnLogin() {
 		this.webClient.get().uri("/actuator/health").accept(MediaType.APPLICATION_JSON)
-				.header("Authorization", "basic " + getBasicAuth()).exchange().expectBody(String.class)
+				.header("Authorization", getBasicAuth()).exchange().expectBody(String.class)
 				.isEqualTo("{\"status\":\"UP\"}");
 	}
 
 	private String getBasicAuth() {
-		return new String(Base64.getEncoder().encode(("user:password").getBytes()));
+		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
 }

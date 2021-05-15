@@ -53,15 +53,15 @@ class SampleSimpleApplicationTests {
 	}
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) {
+	void testDefaultSettings(CapturedOutput output) {
 		SampleSimpleApplication.main(new String[0]);
-		assertThat(capturedOutput).contains("Hello Phil");
+		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
-	void testCommandLineOverrides(CapturedOutput capturedOutput) {
+	void testCommandLineOverrides(CapturedOutput output) {
 		SampleSimpleApplication.main(new String[] { "--name=Gordon", "--duration=1m" });
-		assertThat(capturedOutput).contains("Hello Gordon for 60 seconds");
+		assertThat(output).contains("Hello Gordon for 60 seconds");
 	}
 
 }

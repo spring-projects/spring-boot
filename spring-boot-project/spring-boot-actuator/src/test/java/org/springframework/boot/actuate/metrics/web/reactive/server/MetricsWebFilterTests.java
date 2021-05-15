@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link MetricsWebFilter}
  *
  * @author Brian Clozel
+ * @author Madhura Bhave
  */
 class MetricsWebFilterTests {
 
@@ -50,7 +51,7 @@ class MetricsWebFilterTests {
 	void setup() {
 		MockClock clock = new MockClock();
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
-		this.webFilter = new MetricsWebFilter(this.registry, new DefaultWebFluxTagsProvider(), REQUEST_METRICS_NAME,
+		this.webFilter = new MetricsWebFilter(this.registry, new DefaultWebFluxTagsProvider(true), REQUEST_METRICS_NAME,
 				AutoTimer.ENABLED);
 	}
 
@@ -68,7 +69,7 @@ class MetricsWebFilterTests {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(new IllegalStateException("test error")))
 				.onErrorResume((t) -> {
-					exchange.getResponse().setStatusCodeValue(500);
+					exchange.getResponse().setRawStatusCode(500);
 					return exchange.getResponse().setComplete();
 				}).block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
@@ -83,7 +84,7 @@ class MetricsWebFilterTests {
 
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> Mono.error(anonymous)).onErrorResume((t) -> {
-			exchange.getResponse().setStatusCodeValue(500);
+			exchange.getResponse().setRawStatusCode(500);
 			return exchange.getResponse().setComplete();
 		}).block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
@@ -95,11 +96,24 @@ class MetricsWebFilterTests {
 	void filterAddsTagsToRegistryForExceptionsAndCommittedResponse() {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		this.webFilter.filter(exchange, (serverWebExchange) -> {
-			exchange.getResponse().setStatusCodeValue(500);
+			exchange.getResponse().setRawStatusCode(500);
 			return exchange.getResponse().setComplete().then(Mono.error(new IllegalStateException("test error")));
 		}).onErrorResume((t) -> Mono.empty()).block(Duration.ofSeconds(30));
 		assertMetricsContainsTag("uri", "/projects/{project}");
 		assertMetricsContainsTag("status", "500");
+	}
+
+	@Test
+	void trailingSlashShouldNotRecordDuplicateMetrics() {
+		MockServerWebExchange exchange1 = createExchange("/projects/spring-boot", "/projects/{project}");
+		MockServerWebExchange exchange2 = createExchange("/projects/spring-boot", "/projects/{project}/");
+		this.webFilter.filter(exchange1, (serverWebExchange) -> exchange1.getResponse().setComplete())
+				.block(Duration.ofSeconds(30));
+		this.webFilter.filter(exchange2, (serverWebExchange) -> exchange2.getResponse().setComplete())
+				.block(Duration.ofSeconds(30));
+		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag("uri", "/projects/{project}").timer().count())
+				.isEqualTo(2);
+		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag("status", "200").timer().count()).isEqualTo(2);
 	}
 
 	private MockServerWebExchange createExchange(String path, String pathPattern) {

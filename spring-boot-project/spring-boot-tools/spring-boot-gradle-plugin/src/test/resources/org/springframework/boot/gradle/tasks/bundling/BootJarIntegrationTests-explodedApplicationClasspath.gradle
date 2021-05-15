@@ -1,0 +1,25 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+repositories {
+	mavenCentral()
+	maven { url "file:repository" }
+}
+
+dependencies {
+	implementation("com.example:library:1.0-SNAPSHOT")
+	implementation("org.apache.commons:commons-lang3:3.9")
+}
+
+task explode(type: Sync) {
+	dependsOn(bootJar)
+	destinationDir = file("$buildDir/exploded")
+	from zipTree(files(bootJar).singleFile)
+}
+
+task launch(type: JavaExec) {
+	classpath = files(explode)
+	main = 'org.springframework.boot.loader.JarLauncher'
+}

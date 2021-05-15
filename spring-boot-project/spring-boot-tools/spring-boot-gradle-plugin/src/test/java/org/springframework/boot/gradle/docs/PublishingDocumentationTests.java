@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,19 +33,20 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Jean-Baptiste Nizet
  */
 @ExtendWith(GradleMultiDslExtension.class)
-public class PublishingDocumentationTests {
+class PublishingDocumentationTests {
 
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	public void mavenUpload() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven").build("deployerRepository").getOutput())
-				.contains("https://repo.example.com");
+	void mavenUpload() throws IOException {
+		assertThat(this.gradleBuild.expectDeprecationWarningsWithAtLeastVersion("5.6")
+				.script("src/docs/gradle/publishing/maven").build("deployerRepository").getOutput())
+						.contains("https://repo.example.com");
 	}
 
 	@TestTemplate
-	public void mavenPublish() throws IOException {
-		assertThat(this.gradleBuild.script("src/main/gradle/publishing/maven-publish").build("publishingConfiguration")
+	void mavenPublish() throws IOException {
+		assertThat(this.gradleBuild.script("src/docs/gradle/publishing/maven-publish").build("publishingConfiguration")
 				.getOutput()).contains("MavenPublication").contains("https://repo.example.com");
 	}
 

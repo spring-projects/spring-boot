@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -73,6 +73,7 @@ public class ManagementContextAutoConfiguration {
 		@Override
 		public void afterSingletonsInstantiated() {
 			verifySslConfiguration();
+			verifyAddressConfiguration();
 			if (this.environment instanceof ConfigurableEnvironment) {
 				addLocalManagementPortPropertyAlias((ConfigurableEnvironment) this.environment);
 			}
@@ -81,6 +82,12 @@ public class ManagementContextAutoConfiguration {
 		private void verifySslConfiguration() {
 			Boolean enabled = this.environment.getProperty("management.server.ssl.enabled", Boolean.class, false);
 			Assert.state(!enabled, "Management-specific SSL cannot be configured as the management "
+					+ "server is not listening on a separate port");
+		}
+
+		private void verifyAddressConfiguration() {
+			Object address = this.environment.getProperty("management.server.address");
+			Assert.state(address == null, "Management-specific server address cannot be configured as the management "
 					+ "server is not listening on a separate port");
 		}
 

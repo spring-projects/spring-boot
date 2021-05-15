@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,11 +44,6 @@ public class HumioProperties extends StepRegistryProperties {
 	private Duration connectTimeout = Duration.ofSeconds(5);
 
 	/**
-	 * Name of the repository to publish metrics to.
-	 */
-	private String repository = "sandbox";
-
-	/**
 	 * Humio tags describing the data source in which metrics will be stored. Humio tags
 	 * are a distinct concept from Micrometer's tags. Micrometer's tags are used to divide
 	 * metrics along dimensional boundaries.
@@ -77,14 +72,6 @@ public class HumioProperties extends StepRegistryProperties {
 	@Override
 	public void setConnectTimeout(Duration connectTimeout) {
 		this.connectTimeout = connectTimeout;
-	}
-
-	public String getRepository() {
-		return this.repository;
-	}
-
-	public void setRepository(String repository) {
-		this.repository = repository;
 	}
 
 	public Map<String, String> getTags() {

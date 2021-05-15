@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import reactor.netty.http.server.HttpServerRequest;
 import reactor.netty.http.server.HttpServerResponse;
 
 import org.springframework.boot.web.server.Compression;
+import org.springframework.util.InvalidMimeTypeException;
 import org.springframework.util.MimeType;
 import org.springframework.util.MimeTypeUtils;
 import org.springframework.util.ObjectUtils;
@@ -70,11 +71,16 @@ final class CompressionCustomizer implements NettyServerCustomizer {
 				.collect(Collectors.toList());
 		return (request, response) -> {
 			String contentType = response.responseHeaders().get(HttpHeaderNames.CONTENT_TYPE);
-			if (StringUtils.isEmpty(contentType)) {
+			if (!StringUtils.hasLength(contentType)) {
 				return false;
 			}
-			MimeType contentMimeType = MimeTypeUtils.parseMimeType(contentType);
-			return mimeTypes.stream().anyMatch((candidate) -> candidate.isCompatibleWith(contentMimeType));
+			try {
+				MimeType contentMimeType = MimeTypeUtils.parseMimeType(contentType);
+				return mimeTypes.stream().anyMatch((candidate) -> candidate.isCompatibleWith(contentMimeType));
+			}
+			catch (InvalidMimeTypeException ex) {
+				return false;
+			}
 		};
 	}
 

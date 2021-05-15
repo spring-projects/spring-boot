@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package smoketest.ant;
 
 import java.io.File;
-import java.io.FileFilter;
 import java.io.InputStreamReader;
 import java.util.concurrent.TimeUnit;
 
@@ -38,17 +37,9 @@ public class SampleAntApplicationIT {
 
 	@Test
 	void runJar() throws Exception {
-		File target = new File("target");
-		File[] jarFiles = target.listFiles(new FileFilter() {
-
-			@Override
-			public boolean accept(File file) {
-				return file.getName().endsWith(".jar");
-			}
-
-		});
-		assertThat(jarFiles).hasSize(1);
-		Process process = new JavaExecutable().processBuilder("-jar", jarFiles[0].getName()).directory(target).start();
+		File libs = new File("build/ant/libs");
+		Process process = new JavaExecutable().processBuilder("-jar", "spring-boot-smoke-test-ant.jar").directory(libs)
+				.start();
 		process.waitFor(5, TimeUnit.MINUTES);
 		assertThat(process.exitValue()).isEqualTo(0);
 		String output = FileCopyUtils.copyToString(new InputStreamReader(process.getInputStream()));

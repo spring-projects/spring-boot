@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,19 +24,20 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 
+import org.springframework.aop.scope.ScopedProxyUtils;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.HierarchicalBeanFactory;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurationMetadata;
-import org.springframework.boot.autoconfigure.condition.BeanTypeRegistry.TypeExtractor;
 import org.springframework.boot.autoconfigure.condition.ConditionMessage.Style;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -44,13 +45,19 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.ConfigurationCondition;
 import org.springframework.core.Ordered;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.annotation.MergedAnnotation;
+import org.springframework.core.annotation.MergedAnnotation.Adapt;
+import org.springframework.core.annotation.MergedAnnotationCollectors;
+import org.springframework.core.annotation.MergedAnnotationPredicates;
 import org.springframework.core.annotation.MergedAnnotations;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.core.type.MethodMetadata;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
+import org.springframework.util.CollectionUtils;
 import org.springframework.util.MultiValueMap;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.util.StringUtils;
 
@@ -68,12 +75,6 @@ import org.springframework.util.StringUtils;
  */
 @Order(Ordered.LOWEST_PRECEDENCE)
 class OnBeanCondition extends FilteringSpringBootCondition implements ConfigurationCondition {
-
-	/**
-	 * Bean definition attribute name for factory beans to signal their product type (if
-	 * known and it can't be deduced from the factory bean class).
-	 */
-	public static final String FACTORY_BEAN_OBJECT_TYPE = BeanTypeRegistry.FACTORY_BEAN_OBJECT_TYPE;
 
 	@Override
 	public ConfigurationPhase getConfigurationPhase() {
@@ -112,128 +113,173 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 	@Override
 	public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 		ConditionMessage matchMessage = ConditionMessage.empty();
-		if (metadata.isAnnotated(ConditionalOnBean.class.getName())) {
-			BeanSearchSpec spec = new BeanSearchSpec(context, metadata, ConditionalOnBean.class);
+		MergedAnnotations annotations = metadata.getAnnotations();
+		if (annotations.isPresent(ConditionalOnBean.class)) {
+			Spec<ConditionalOnBean> spec = new Spec<>(context, metadata, annotations, ConditionalOnBean.class);
 			MatchResult matchResult = getMatchingBeans(context, spec);
 			if (!matchResult.isAllMatched()) {
 				String reason = createOnBeanNoMatchReason(matchResult);
-				return ConditionOutcome
-						.noMatch(ConditionMessage.forCondition(ConditionalOnBean.class, spec).because(reason));
+				return ConditionOutcome.noMatch(spec.message().because(reason));
 			}
-			matchMessage = matchMessage.andCondition(ConditionalOnBean.class, spec).found("bean", "beans")
-					.items(Style.QUOTE, matchResult.getNamesOfAllMatches());
+			matchMessage = spec.message(matchMessage).found("bean", "beans").items(Style.QUOTE,
+					matchResult.getNamesOfAllMatches());
 		}
 		if (metadata.isAnnotated(ConditionalOnSingleCandidate.class.getName())) {
-			BeanSearchSpec spec = new SingleCandidateBeanSearchSpec(context, metadata,
-					ConditionalOnSingleCandidate.class);
+			Spec<ConditionalOnSingleCandidate> spec = new SingleCandidateSpec(context, metadata, annotations);
 			MatchResult matchResult = getMatchingBeans(context, spec);
 			if (!matchResult.isAllMatched()) {
-				return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnSingleCandidate.class, spec)
-						.didNotFind("any beans").atAll());
+				return ConditionOutcome.noMatch(spec.message().didNotFind("any beans").atAll());
 			}
 			else if (!hasSingleAutowireCandidate(context.getBeanFactory(), matchResult.getNamesOfAllMatches(),
 					spec.getStrategy() == SearchStrategy.ALL)) {
-				return ConditionOutcome.noMatch(ConditionMessage.forCondition(ConditionalOnSingleCandidate.class, spec)
-						.didNotFind("a primary bean from beans")
+				return ConditionOutcome.noMatch(spec.message().didNotFind("a primary bean from beans")
 						.items(Style.QUOTE, matchResult.getNamesOfAllMatches()));
 			}
-			matchMessage = matchMessage.andCondition(ConditionalOnSingleCandidate.class, spec)
-					.found("a primary bean from beans").items(Style.QUOTE, matchResult.getNamesOfAllMatches());
+			matchMessage = spec.message(matchMessage).found("a primary bean from beans").items(Style.QUOTE,
+					matchResult.getNamesOfAllMatches());
 		}
 		if (metadata.isAnnotated(ConditionalOnMissingBean.class.getName())) {
-			BeanSearchSpec spec = new BeanSearchSpec(context, metadata, ConditionalOnMissingBean.class);
+			Spec<ConditionalOnMissingBean> spec = new Spec<>(context, metadata, annotations,
+					ConditionalOnMissingBean.class);
 			MatchResult matchResult = getMatchingBeans(context, spec);
 			if (matchResult.isAnyMatched()) {
 				String reason = createOnMissingBeanNoMatchReason(matchResult);
-				return ConditionOutcome
-						.noMatch(ConditionMessage.forCondition(ConditionalOnMissingBean.class, spec).because(reason));
+				return ConditionOutcome.noMatch(spec.message().because(reason));
 			}
-			matchMessage = matchMessage.andCondition(ConditionalOnMissingBean.class, spec).didNotFind("any beans")
-					.atAll();
+			matchMessage = spec.message(matchMessage).didNotFind("any beans").atAll();
 		}
 		return ConditionOutcome.match(matchMessage);
 	}
 
-	protected final MatchResult getMatchingBeans(ConditionContext context, BeanSearchSpec beans) {
+	protected final MatchResult getMatchingBeans(ConditionContext context, Spec<?> spec) {
+		ClassLoader classLoader = context.getClassLoader();
 		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
-		if (beans.getStrategy() == SearchStrategy.ANCESTORS) {
+		boolean considerHierarchy = spec.getStrategy() != SearchStrategy.CURRENT;
+		Set<Class<?>> parameterizedContainers = spec.getParameterizedContainers();
+		if (spec.getStrategy() == SearchStrategy.ANCESTORS) {
 			BeanFactory parent = beanFactory.getParentBeanFactory();
-			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent, "Unable to use SearchStrategy.PARENTS");
+			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, parent,
+					"Unable to use SearchStrategy.ANCESTORS");
 			beanFactory = (ConfigurableListableBeanFactory) parent;
 		}
-		MatchResult matchResult = new MatchResult();
-		boolean considerHierarchy = beans.getStrategy() != SearchStrategy.CURRENT;
-		TypeExtractor typeExtractor = beans.getTypeExtractor(context.getClassLoader());
-		List<String> beansIgnoredByType = getNamesOfBeansIgnoredByType(beans.getIgnoredTypes(), typeExtractor,
-				beanFactory, context, considerHierarchy);
-		for (String type : beans.getTypes()) {
-			Collection<String> typeMatches = getBeanNamesForType(beanFactory, type, typeExtractor,
-					context.getClassLoader(), considerHierarchy);
-			typeMatches.removeAll(beansIgnoredByType);
+		MatchResult result = new MatchResult();
+		Set<String> beansIgnoredByType = getNamesOfBeansIgnoredByType(classLoader, beanFactory, considerHierarchy,
+				spec.getIgnoredTypes(), parameterizedContainers);
+		for (String type : spec.getTypes()) {
+			Collection<String> typeMatches = getBeanNamesForType(classLoader, considerHierarchy, beanFactory, type,
+					parameterizedContainers);
+			Iterator<String> iterator = typeMatches.iterator();
+			while (iterator.hasNext()) {
+				String match = iterator.next();
+				if (beansIgnoredByType.contains(match) || ScopedProxyUtils.isScopedTarget(match)) {
+					iterator.remove();
+				}
+			}
 			if (typeMatches.isEmpty()) {
-				matchResult.recordUnmatchedType(type);
+				result.recordUnmatchedType(type);
 			}
 			else {
-				matchResult.recordMatchedType(type, typeMatches);
+				result.recordMatchedType(type, typeMatches);
 			}
 		}
-		for (String annotation : beans.getAnnotations()) {
-			List<String> annotationMatches = Arrays.asList(
-					getBeanNamesForAnnotation(beanFactory, annotation, context.getClassLoader(), considerHierarchy));
+		for (String annotation : spec.getAnnotations()) {
+			Set<String> annotationMatches = getBeanNamesForAnnotation(classLoader, beanFactory, annotation,
+					considerHierarchy);
 			annotationMatches.removeAll(beansIgnoredByType);
 			if (annotationMatches.isEmpty()) {
-				matchResult.recordUnmatchedAnnotation(annotation);
+				result.recordUnmatchedAnnotation(annotation);
 			}
 			else {
-				matchResult.recordMatchedAnnotation(annotation, annotationMatches);
+				result.recordMatchedAnnotation(annotation, annotationMatches);
 			}
 		}
-		for (String beanName : beans.getNames()) {
+		for (String beanName : spec.getNames()) {
 			if (!beansIgnoredByType.contains(beanName) && containsBean(beanFactory, beanName, considerHierarchy)) {
-				matchResult.recordMatchedName(beanName);
+				result.recordMatchedName(beanName);
 			}
 			else {
-				matchResult.recordUnmatchedName(beanName);
+				result.recordUnmatchedName(beanName);
 			}
 		}
-		return matchResult;
+		return result;
 	}
 
-	private String[] getBeanNamesForAnnotation(ConfigurableListableBeanFactory beanFactory, String type,
-			ClassLoader classLoader, boolean considerHierarchy) throws LinkageError {
-		Set<String> names = new HashSet<>();
+	private Set<String> getNamesOfBeansIgnoredByType(ClassLoader classLoader, ListableBeanFactory beanFactory,
+			boolean considerHierarchy, Set<String> ignoredTypes, Set<Class<?>> parameterizedContainers) {
+		Set<String> result = null;
+		for (String ignoredType : ignoredTypes) {
+			Collection<String> ignoredNames = getBeanNamesForType(classLoader, considerHierarchy, beanFactory,
+					ignoredType, parameterizedContainers);
+			result = addAll(result, ignoredNames);
+		}
+		return (result != null) ? result : Collections.emptySet();
+	}
+
+	private Set<String> getBeanNamesForType(ClassLoader classLoader, boolean considerHierarchy,
+			ListableBeanFactory beanFactory, String type, Set<Class<?>> parameterizedContainers) throws LinkageError {
 		try {
-			@SuppressWarnings("unchecked")
-			Class<? extends Annotation> annotationType = (Class<? extends Annotation>) ClassUtils.forName(type,
-					classLoader);
-			collectBeanNamesForAnnotation(names, beanFactory, annotationType, considerHierarchy);
+			return getBeanNamesForType(beanFactory, considerHierarchy, resolve(type, classLoader),
+					parameterizedContainers);
+		}
+		catch (ClassNotFoundException | NoClassDefFoundError ex) {
+			return Collections.emptySet();
+		}
+	}
+
+	private Set<String> getBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy, Class<?> type,
+			Set<Class<?>> parameterizedContainers) {
+		Set<String> result = collectBeanNamesForType(beanFactory, considerHierarchy, type, parameterizedContainers,
+				null);
+		return (result != null) ? result : Collections.emptySet();
+	}
+
+	private Set<String> collectBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
+			Class<?> type, Set<Class<?>> parameterizedContainers, Set<String> result) {
+		result = addAll(result, beanFactory.getBeanNamesForType(type, true, false));
+		for (Class<?> container : parameterizedContainers) {
+			ResolvableType generic = ResolvableType.forClassWithGenerics(container, type);
+			result = addAll(result, beanFactory.getBeanNamesForType(generic, true, false));
+		}
+		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
+			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
+			if (parent instanceof ListableBeanFactory) {
+				result = collectBeanNamesForType((ListableBeanFactory) parent, considerHierarchy, type,
+						parameterizedContainers, result);
+			}
+		}
+		return result;
+	}
+
+	private Set<String> getBeanNamesForAnnotation(ClassLoader classLoader, ConfigurableListableBeanFactory beanFactory,
+			String type, boolean considerHierarchy) throws LinkageError {
+		Set<String> result = null;
+		try {
+			result = collectBeanNamesForAnnotation(beanFactory, resolveAnnotationType(classLoader, type),
+					considerHierarchy, result);
 		}
 		catch (ClassNotFoundException ex) {
 			// Continue
 		}
-		return StringUtils.toStringArray(names);
+		return (result != null) ? result : Collections.emptySet();
 	}
 
-	private void collectBeanNamesForAnnotation(Set<String> names, ListableBeanFactory beanFactory,
-			Class<? extends Annotation> annotationType, boolean considerHierarchy) {
-		BeanTypeRegistry registry = BeanTypeRegistry.get(beanFactory);
-		names.addAll(registry.getNamesForAnnotation(annotationType));
+	@SuppressWarnings("unchecked")
+	private Class<? extends Annotation> resolveAnnotationType(ClassLoader classLoader, String type)
+			throws ClassNotFoundException {
+		return (Class<? extends Annotation>) resolve(type, classLoader);
+	}
+
+	private Set<String> collectBeanNamesForAnnotation(ListableBeanFactory beanFactory,
+			Class<? extends Annotation> annotationType, boolean considerHierarchy, Set<String> result) {
+		result = addAll(result, beanFactory.getBeanNamesForAnnotation(annotationType));
 		if (considerHierarchy) {
 			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
 			if (parent instanceof ListableBeanFactory) {
-				collectBeanNamesForAnnotation(names, (ListableBeanFactory) parent, annotationType, considerHierarchy);
+				result = collectBeanNamesForAnnotation((ListableBeanFactory) parent, annotationType, considerHierarchy,
+						result);
 			}
 		}
-	}
-
-	private List<String> getNamesOfBeansIgnoredByType(List<String> ignoredTypes, TypeExtractor typeExtractor,
-			ListableBeanFactory beanFactory, ConditionContext context, boolean considerHierarchy) {
-		List<String> beanNames = new ArrayList<>();
-		for (String ignoredType : ignoredTypes) {
-			beanNames.addAll(getBeanNamesForType(beanFactory, ignoredType, typeExtractor, context.getClassLoader(),
-					considerHierarchy));
-		}
-		return beanNames;
+		return result;
 	}
 
 	private boolean containsBean(ConfigurableListableBeanFactory beanFactory, String beanName,
@@ -242,36 +288,6 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			return beanFactory.containsBean(beanName);
 		}
 		return beanFactory.containsLocalBean(beanName);
-	}
-
-	private Collection<String> getBeanNamesForType(ListableBeanFactory beanFactory, String type,
-			TypeExtractor typeExtractor, ClassLoader classLoader, boolean considerHierarchy) throws LinkageError {
-		try {
-			return getBeanNamesForType(beanFactory, considerHierarchy, ClassUtils.forName(type, classLoader),
-					typeExtractor);
-		}
-		catch (ClassNotFoundException | NoClassDefFoundError ex) {
-			return Collections.emptySet();
-		}
-	}
-
-	private Collection<String> getBeanNamesForType(ListableBeanFactory beanFactory, boolean considerHierarchy,
-			Class<?> type, TypeExtractor typeExtractor) {
-		Set<String> result = new LinkedHashSet<>();
-		collectBeanNamesForType(result, beanFactory, type, typeExtractor, considerHierarchy);
-		return result;
-	}
-
-	private void collectBeanNamesForType(Set<String> result, ListableBeanFactory beanFactory, Class<?> type,
-			TypeExtractor typeExtractor, boolean considerHierarchy) {
-		BeanTypeRegistry registry = BeanTypeRegistry.get(beanFactory);
-		result.addAll(registry.getNamesForType(type, typeExtractor));
-		if (considerHierarchy && beanFactory instanceof HierarchicalBeanFactory) {
-			BeanFactory parent = ((HierarchicalBeanFactory) beanFactory).getParentBeanFactory();
-			if (parent instanceof ListableBeanFactory) {
-				collectBeanNamesForType(result, (ListableBeanFactory) parent, type, typeExtractor, considerHierarchy);
-			}
-		}
 	}
 
 	private String createOnBeanNoMatchReason(MatchResult matchResult) {
@@ -354,95 +370,148 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 		return null;
 	}
 
-	protected static class BeanSearchSpec {
+	private static Set<String> addAll(Set<String> result, Collection<String> additional) {
+		if (CollectionUtils.isEmpty(additional)) {
+			return result;
+		}
+		result = (result != null) ? result : new LinkedHashSet<>();
+		result.addAll(additional);
+		return result;
+	}
 
-		private final Class<?> annotationType;
+	private static Set<String> addAll(Set<String> result, String[] additional) {
+		if (ObjectUtils.isEmpty(additional)) {
+			return result;
+		}
+		result = (result != null) ? result : new LinkedHashSet<>();
+		Collections.addAll(result, additional);
+		return result;
+	}
 
-		private final List<String> names = new ArrayList<>();
+	/**
+	 * A search specification extracted from the underlying annotation.
+	 */
+	private static class Spec<A extends Annotation> {
 
-		private final List<String> types = new ArrayList<>();
+		private final ClassLoader classLoader;
 
-		private final List<String> annotations = new ArrayList<>();
+		private final Class<? extends Annotation> annotationType;
 
-		private final List<String> ignoredTypes = new ArrayList<>();
+		private final Set<String> names;
 
-		private final List<String> parameterizedContainers = new ArrayList<>();
+		private final Set<String> types;
+
+		private final Set<String> annotations;
+
+		private final Set<String> ignoredTypes;
+
+		private final Set<Class<?>> parameterizedContainers;
 
 		private final SearchStrategy strategy;
 
-		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata, Class<?> annotationType) {
-			this(context, metadata, annotationType, null);
-		}
-
-		public BeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata, Class<?> annotationType,
-				Class<?> genericContainer) {
+		Spec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations,
+				Class<A> annotationType) {
+			MultiValueMap<String, Object> attributes = annotations.stream(annotationType)
+					.filter(MergedAnnotationPredicates.unique(MergedAnnotation::getMetaTypes))
+					.collect(MergedAnnotationCollectors.toMultiValueMap(Adapt.CLASS_TO_STRING));
+			MergedAnnotation<A> annotation = annotations.get(annotationType);
+			this.classLoader = context.getClassLoader();
 			this.annotationType = annotationType;
-			MultiValueMap<String, Object> attributes = metadata.getAllAnnotationAttributes(annotationType.getName(),
-					true);
-			collect(attributes, "name", this.names);
-			collect(attributes, "value", this.types);
-			collect(attributes, "type", this.types);
-			collect(attributes, "annotation", this.annotations);
-			collect(attributes, "ignored", this.ignoredTypes);
-			collect(attributes, "ignoredType", this.ignoredTypes);
-			collect(attributes, "parameterizedContainer", this.parameterizedContainers);
-			this.strategy = (SearchStrategy) attributes.getFirst("search");
+			this.names = extract(attributes, "name");
+			this.annotations = extract(attributes, "annotation");
+			this.ignoredTypes = extract(attributes, "ignored", "ignoredType");
+			this.parameterizedContainers = resolveWhenPossible(extract(attributes, "parameterizedContainer"));
+			this.strategy = annotation.getValue("search", SearchStrategy.class).orElse(null);
+			Set<String> types = extractTypes(attributes);
 			BeanTypeDeductionException deductionException = null;
-			try {
-				if (this.types.isEmpty() && this.names.isEmpty()) {
-					addDeducedBeanType(context, metadata, this.types);
+			if (types.isEmpty() && this.names.isEmpty()) {
+				try {
+					types = deducedBeanType(context, metadata);
+				}
+				catch (BeanTypeDeductionException ex) {
+					deductionException = ex;
 				}
 			}
-			catch (BeanTypeDeductionException ex) {
-				deductionException = ex;
-			}
+			this.types = types;
 			validate(deductionException);
 		}
 
+		protected Set<String> extractTypes(MultiValueMap<String, Object> attributes) {
+			return extract(attributes, "value", "type");
+		}
+
+		private Set<String> extract(MultiValueMap<String, Object> attributes, String... attributeNames) {
+			if (attributes.isEmpty()) {
+				return Collections.emptySet();
+			}
+			Set<String> result = new LinkedHashSet<>();
+			for (String attributeName : attributeNames) {
+				List<Object> values = attributes.getOrDefault(attributeName, Collections.emptyList());
+				for (Object value : values) {
+					if (value instanceof String[]) {
+						merge(result, (String[]) value);
+					}
+					else if (value instanceof String) {
+						merge(result, (String) value);
+					}
+				}
+			}
+			return result.isEmpty() ? Collections.emptySet() : result;
+		}
+
+		private void merge(Set<String> result, String... additional) {
+			Collections.addAll(result, additional);
+		}
+
+		private Set<Class<?>> resolveWhenPossible(Set<String> classNames) {
+			if (classNames.isEmpty()) {
+				return Collections.emptySet();
+			}
+			Set<Class<?>> resolved = new LinkedHashSet<>(classNames.size());
+			for (String className : classNames) {
+				try {
+					resolved.add(resolve(className, this.classLoader));
+				}
+				catch (ClassNotFoundException | NoClassDefFoundError ex) {
+				}
+			}
+			return resolved;
+		}
+
 		protected void validate(BeanTypeDeductionException ex) {
-			if (!hasAtLeastOne(this.types, this.names, this.annotations)) {
+			if (!hasAtLeastOneElement(this.types, this.names, this.annotations)) {
 				String message = getAnnotationName() + " did not specify a bean using type, name or annotation";
 				if (ex == null) {
 					throw new IllegalStateException(message);
 				}
-				throw new IllegalStateException(message + " and the attempt to deduce" + " the bean's type failed", ex);
+				throw new IllegalStateException(message + " and the attempt to deduce the bean's type failed", ex);
 			}
 		}
 
-		private boolean hasAtLeastOne(List<?>... lists) {
-			return Arrays.stream(lists).anyMatch((list) -> !list.isEmpty());
+		private boolean hasAtLeastOneElement(Set<?>... sets) {
+			for (Set<?> set : sets) {
+				if (!set.isEmpty()) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		protected final String getAnnotationName() {
 			return "@" + ClassUtils.getShortName(this.annotationType);
 		}
 
-		protected void collect(MultiValueMap<String, Object> attributes, String key, List<String> destination) {
-			List<?> values = attributes.get(key);
-			if (values != null) {
-				for (Object value : values) {
-					if (value instanceof String[]) {
-						Collections.addAll(destination, (String[]) value);
-					}
-					else {
-						destination.add((String) value);
-					}
-				}
-			}
-		}
-
-		private void addDeducedBeanType(ConditionContext context, AnnotatedTypeMetadata metadata,
-				final List<String> beanTypes) {
+		private Set<String> deducedBeanType(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			if (metadata instanceof MethodMetadata && metadata.isAnnotated(Bean.class.getName())) {
-				addDeducedBeanTypeForBeanMethod(context, (MethodMetadata) metadata, beanTypes);
+				return deducedBeanTypeForBeanMethod(context, (MethodMetadata) metadata);
 			}
+			return Collections.emptySet();
 		}
 
-		private void addDeducedBeanTypeForBeanMethod(ConditionContext context, MethodMetadata metadata,
-				final List<String> beanTypes) {
+		private Set<String> deducedBeanTypeForBeanMethod(ConditionContext context, MethodMetadata metadata) {
 			try {
 				Class<?> returnType = getReturnType(context, metadata);
-				beanTypes.add(returnType.getName());
+				return Collections.singleton(returnType.getName());
 			}
 			catch (Throwable ex) {
 				throw new BeanTypeDeductionException(metadata.getDeclaringClassName(), metadata.getMethodName(), ex);
@@ -451,19 +520,27 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 		private Class<?> getReturnType(ConditionContext context, MethodMetadata metadata)
 				throws ClassNotFoundException, LinkageError {
-			// We should be safe to load at this point since we are in the
-			// REGISTER_BEAN phase
+			// Safe to load at this point since we are in the REGISTER_BEAN phase
 			ClassLoader classLoader = context.getClassLoader();
-			Class<?> returnType = ClassUtils.forName(metadata.getReturnTypeName(), classLoader);
-			if (isParameterizedContainer(returnType, classLoader)) {
+			Class<?> returnType = resolve(metadata.getReturnTypeName(), classLoader);
+			if (isParameterizedContainer(returnType)) {
 				returnType = getReturnTypeGeneric(metadata, classLoader);
 			}
 			return returnType;
 		}
 
+		private boolean isParameterizedContainer(Class<?> type) {
+			for (Class<?> parameterizedContainer : this.parameterizedContainers) {
+				if (parameterizedContainer.isAssignableFrom(type)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		private Class<?> getReturnTypeGeneric(MethodMetadata metadata, ClassLoader classLoader)
 				throws ClassNotFoundException, LinkageError {
-			Class<?> declaringClass = ClassUtils.forName(metadata.getDeclaringClassName(), classLoader);
+			Class<?> declaringClass = resolve(metadata.getDeclaringClassName(), classLoader);
 			Method beanMethod = findBeanMethod(declaringClass, metadata.getMethodName());
 			return ResolvableType.forMethodReturnType(beanMethod).resolveGeneric();
 		}
@@ -473,79 +550,75 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			if (isBeanMethod(method)) {
 				return method;
 			}
-			return Arrays.stream(ReflectionUtils.getAllDeclaredMethods(declaringClass))
-					.filter((candidate) -> candidate.getName().equals(methodName)).filter(this::isBeanMethod)
-					.findFirst()
-					.orElseThrow(() -> new IllegalStateException("Unable to find bean method " + methodName));
+			Method[] candidates = ReflectionUtils.getAllDeclaredMethods(declaringClass);
+			for (Method candidate : candidates) {
+				if (candidate.getName().equals(methodName) && isBeanMethod(candidate)) {
+					return candidate;
+				}
+			}
+			throw new IllegalStateException("Unable to find bean method " + methodName);
 		}
 
 		private boolean isBeanMethod(Method method) {
-			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.EXHAUSTIVE)
+			return method != null && MergedAnnotations.from(method, MergedAnnotations.SearchStrategy.TYPE_HIERARCHY)
 					.isPresent(Bean.class);
 		}
 
-		public TypeExtractor getTypeExtractor(ClassLoader classLoader) {
-			if (this.parameterizedContainers.isEmpty()) {
-				return ResolvableType::resolve;
-			}
-			return (type) -> {
-				Class<?> resolved = type.resolve();
-				if (isParameterizedContainer(resolved, classLoader)) {
-					return type.getGeneric().resolve();
-				}
-				return resolved;
-			};
-		}
-
-		private boolean isParameterizedContainer(Class<?> type, ClassLoader classLoader) {
-			for (String candidate : this.parameterizedContainers) {
-				try {
-					if (ClassUtils.forName(candidate, classLoader).isAssignableFrom(type)) {
-						return true;
-					}
-				}
-				catch (Exception ex) {
-				}
-			}
-			return false;
-		}
-
-		public SearchStrategy getStrategy() {
+		private SearchStrategy getStrategy() {
 			return (this.strategy != null) ? this.strategy : SearchStrategy.ALL;
 		}
 
-		public List<String> getNames() {
+		Set<String> getNames() {
 			return this.names;
 		}
 
-		public List<String> getTypes() {
+		Set<String> getTypes() {
 			return this.types;
 		}
 
-		public List<String> getAnnotations() {
+		Set<String> getAnnotations() {
 			return this.annotations;
 		}
 
-		public List<String> getIgnoredTypes() {
+		Set<String> getIgnoredTypes() {
 			return this.ignoredTypes;
+		}
+
+		Set<Class<?>> getParameterizedContainers() {
+			return this.parameterizedContainers;
+		}
+
+		ConditionMessage.Builder message() {
+			return ConditionMessage.forCondition(this.annotationType, this);
+		}
+
+		ConditionMessage.Builder message(ConditionMessage message) {
+			return message.andCondition(this.annotationType, this);
 		}
 
 		@Override
 		public String toString() {
+			boolean hasNames = !this.names.isEmpty();
+			boolean hasTypes = !this.types.isEmpty();
+			boolean hasIgnoredTypes = !this.ignoredTypes.isEmpty();
 			StringBuilder string = new StringBuilder();
 			string.append("(");
-			if (!this.names.isEmpty()) {
+			if (hasNames) {
 				string.append("names: ");
 				string.append(StringUtils.collectionToCommaDelimitedString(this.names));
-				if (!this.types.isEmpty()) {
-					string.append("; ");
-				}
+				string.append(hasTypes ? " " : "; ");
 			}
-			if (!this.types.isEmpty()) {
+			if (hasTypes) {
 				string.append("types: ");
 				string.append(StringUtils.collectionToCommaDelimitedString(this.types));
+				string.append(hasIgnoredTypes ? " " : "; ");
 			}
-			string.append("; SearchStrategy: ");
+			if (hasIgnoredTypes) {
+				string.append("ignored: ");
+				string.append(StringUtils.collectionToCommaDelimitedString(this.ignoredTypes));
+				string.append("; ");
+			}
+			string.append("SearchStrategy: ");
 			string.append(this.strategy.toString().toLowerCase(Locale.ENGLISH));
 			string.append(")");
 			return string.toString();
@@ -553,28 +626,38 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 
 	}
 
-	private static class SingleCandidateBeanSearchSpec extends BeanSearchSpec {
+	/**
+	 * Specialized {@link Spec specification} for
+	 * {@link ConditionalOnSingleCandidate @ConditionalOnSingleCandidate}.
+	 */
+	private static class SingleCandidateSpec extends Spec<ConditionalOnSingleCandidate> {
 
-		SingleCandidateBeanSearchSpec(ConditionContext context, AnnotatedTypeMetadata metadata,
-				Class<?> annotationType) {
-			super(context, metadata, annotationType);
+		private static final Collection<String> FILTERED_TYPES = Arrays.asList("", Object.class.getName());
+
+		SingleCandidateSpec(ConditionContext context, AnnotatedTypeMetadata metadata, MergedAnnotations annotations) {
+			super(context, metadata, annotations, ConditionalOnSingleCandidate.class);
 		}
 
 		@Override
-		protected void collect(MultiValueMap<String, Object> attributes, String key, List<String> destination) {
-			super.collect(attributes, key, destination);
-			destination.removeAll(Arrays.asList("", Object.class.getName()));
+		protected Set<String> extractTypes(MultiValueMap<String, Object> attributes) {
+			Set<String> types = super.extractTypes(attributes);
+			types.removeAll(FILTERED_TYPES);
+			return types;
 		}
 
 		@Override
 		protected void validate(BeanTypeDeductionException ex) {
 			Assert.isTrue(getTypes().size() == 1,
-					() -> getAnnotationName() + " annotations must specify only one type (got " + getTypes() + ")");
+					() -> getAnnotationName() + " annotations must specify only one type (got "
+							+ StringUtils.collectionToCommaDelimitedString(getTypes()) + ")");
 		}
 
 	}
 
-	protected static final class MatchResult {
+	/**
+	 * Results collected during the condition evaluation.
+	 */
+	private static final class MatchResult {
 
 		private final Map<String, Collection<String>> matchedAnnotations = new HashMap<>();
 
@@ -617,46 +700,49 @@ class OnBeanCondition extends FilteringSpringBootCondition implements Configurat
 			this.unmatchedTypes.add(type);
 		}
 
-		public boolean isAllMatched() {
+		boolean isAllMatched() {
 			return this.unmatchedAnnotations.isEmpty() && this.unmatchedNames.isEmpty()
 					&& this.unmatchedTypes.isEmpty();
 		}
 
-		public boolean isAnyMatched() {
+		boolean isAnyMatched() {
 			return (!this.matchedAnnotations.isEmpty()) || (!this.matchedNames.isEmpty())
 					|| (!this.matchedTypes.isEmpty());
 		}
 
-		public Map<String, Collection<String>> getMatchedAnnotations() {
+		Map<String, Collection<String>> getMatchedAnnotations() {
 			return this.matchedAnnotations;
 		}
 
-		public List<String> getMatchedNames() {
+		List<String> getMatchedNames() {
 			return this.matchedNames;
 		}
 
-		public Map<String, Collection<String>> getMatchedTypes() {
+		Map<String, Collection<String>> getMatchedTypes() {
 			return this.matchedTypes;
 		}
 
-		public List<String> getUnmatchedAnnotations() {
+		List<String> getUnmatchedAnnotations() {
 			return this.unmatchedAnnotations;
 		}
 
-		public List<String> getUnmatchedNames() {
+		List<String> getUnmatchedNames() {
 			return this.unmatchedNames;
 		}
 
-		public List<String> getUnmatchedTypes() {
+		List<String> getUnmatchedTypes() {
 			return this.unmatchedTypes;
 		}
 
-		public Set<String> getNamesOfAllMatches() {
+		Set<String> getNamesOfAllMatches() {
 			return this.namesOfAllMatches;
 		}
 
 	}
 
+	/**
+	 * Exception thrown when the bean type cannot be deduced.
+	 */
 	static final class BeanTypeDeductionException extends RuntimeException {
 
 		private BeanTypeDeductionException(String className, String beanMethodName, Throwable cause) {

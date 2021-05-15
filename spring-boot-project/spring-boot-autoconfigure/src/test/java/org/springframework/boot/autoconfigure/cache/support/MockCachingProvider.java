@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,6 @@ import javax.cache.configuration.Configuration;
 import javax.cache.configuration.OptionalFeature;
 import javax.cache.spi.CachingProvider;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -41,25 +39,8 @@ import static org.mockito.Mockito.mock;
 public class MockCachingProvider implements CachingProvider {
 
 	@Override
-	@SuppressWarnings("rawtypes")
 	public CacheManager getCacheManager(URI uri, ClassLoader classLoader, Properties properties) {
-		CacheManager cacheManager = mock(CacheManager.class);
-		given(cacheManager.getURI()).willReturn(uri);
-		given(cacheManager.getClassLoader()).willReturn(classLoader);
-		final Map<String, Cache> caches = new HashMap<>();
-		given(cacheManager.getCacheNames()).willReturn(caches.keySet());
-		given(cacheManager.getCache(anyString())).willAnswer((invocation) -> {
-			String cacheName = invocation.getArgument(0);
-			return caches.get(cacheName);
-		});
-		given(cacheManager.createCache(anyString(), any(Configuration.class))).will((invocation) -> {
-			String cacheName = invocation.getArgument(0);
-			Cache cache = mock(Cache.class);
-			given(cache.getName()).willReturn(cacheName);
-			caches.put(cacheName, cache);
-			return cache;
-		});
-		return cacheManager;
+		return new MockCacheManager(uri, classLoader, properties);
 	}
 
 	@Override
@@ -102,6 +83,110 @@ public class MockCachingProvider implements CachingProvider {
 	@Override
 	public boolean isSupported(OptionalFeature optionalFeature) {
 		return false;
+	}
+
+	public static class MockCacheManager implements CacheManager {
+
+		private final Map<String, Configuration<?, ?>> configurations = new HashMap<>();
+
+		private final Map<String, Cache<?, ?>> caches = new HashMap<>();
+
+		private final URI uri;
+
+		private final ClassLoader classLoader;
+
+		private final Properties properties;
+
+		private boolean closed;
+
+		public MockCacheManager(URI uri, ClassLoader classLoader, Properties properties) {
+			this.uri = uri;
+			this.classLoader = classLoader;
+			this.properties = properties;
+		}
+
+		@Override
+		public CachingProvider getCachingProvider() {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public URI getURI() {
+			return this.uri;
+		}
+
+		@Override
+		public ClassLoader getClassLoader() {
+			return this.classLoader;
+		}
+
+		@Override
+		public Properties getProperties() {
+			return this.properties;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <K, V, C extends Configuration<K, V>> Cache<K, V> createCache(String cacheName, C configuration)
+				throws IllegalArgumentException {
+			this.configurations.put(cacheName, configuration);
+			Cache<K, V> cache = mock(Cache.class);
+			given(cache.getName()).willReturn(cacheName);
+			this.caches.put(cacheName, cache);
+			return cache;
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <K, V> Cache<K, V> getCache(String cacheName, Class<K> keyType, Class<V> valueType) {
+			return (Cache<K, V>) this.caches.get(cacheName);
+		}
+
+		@Override
+		@SuppressWarnings("unchecked")
+		public <K, V> Cache<K, V> getCache(String cacheName) {
+			return (Cache<K, V>) this.caches.get(cacheName);
+		}
+
+		@Override
+		public Iterable<String> getCacheNames() {
+			return this.caches.keySet();
+		}
+
+		@Override
+		public void destroyCache(String cacheName) {
+			this.caches.remove(cacheName);
+		}
+
+		@Override
+		public void enableManagement(String cacheName, boolean enabled) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void enableStatistics(String cacheName, boolean enabled) {
+			throw new UnsupportedOperationException();
+		}
+
+		@Override
+		public void close() {
+			this.closed = true;
+		}
+
+		@Override
+		public boolean isClosed() {
+			return this.closed;
+		}
+
+		@Override
+		public <T> T unwrap(Class<T> clazz) {
+			throw new UnsupportedOperationException();
+		}
+
+		public Map<String, Configuration<?, ?>> getConfigurations() {
+			return this.configurations;
+		}
+
 	}
 
 }

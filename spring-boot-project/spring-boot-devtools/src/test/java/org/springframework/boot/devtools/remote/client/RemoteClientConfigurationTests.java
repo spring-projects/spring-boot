@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -78,21 +78,21 @@ class RemoteClientConfigurationTests {
 	}
 
 	@Test
-	void warnIfRestartDisabled(CapturedOutput capturedOutput) {
+	void warnIfRestartDisabled(CapturedOutput output) {
 		configure("spring.devtools.remote.restart.enabled:false");
-		assertThat(capturedOutput).contains("Remote restart is disabled");
+		assertThat(output).contains("Remote restart is disabled");
 	}
 
 	@Test
-	void warnIfNotHttps(CapturedOutput capturedOutput) {
+	void warnIfNotHttps(CapturedOutput output) {
 		configure("http://localhost", true);
-		assertThat(capturedOutput).contains("is insecure");
+		assertThat(output).contains("is insecure");
 	}
 
 	@Test
-	void doesntWarnIfUsingHttps(CapturedOutput capturedOutput) {
+	void doesntWarnIfUsingHttps(CapturedOutput output) {
 		configure("https://localhost", true);
-		assertThat(capturedOutput).doesNotContain("is insecure");
+		assertThat(output).doesNotContain("is insecure");
 	}
 
 	@Test
@@ -156,7 +156,9 @@ class RemoteClientConfigurationTests {
 
 		@Bean
 		TomcatServletWebServerFactory tomcat() {
-			return new TomcatServletWebServerFactory(0);
+			TomcatServletWebServerFactory webServerFactory = new TomcatServletWebServerFactory(0);
+			webServerFactory.setRegisterDefaultServlet(true);
+			return webServerFactory;
 		}
 
 		@Bean

@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>org.springframework.boot.maven.it</groupId>
+	<artifactId>jar-classifier</artifactId>
+	<version>0.0.1</version>
+	<packaging>jar</packaging>
+	<name>jar</name>
+	<description>Classifier Jar dependency</description>
+	<build>
+		<plugins>
+			<plugin>
+				<artifactId>maven-jar-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>alpha</id>
+						<phase>package</phase>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+						<configuration>
+							<classifier>alpha</classifier>
+						</configuration>
+					</execution>
+                    <execution>
+                        <id>bravo</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>jar</goal>
+                        </goals>
+                        <configuration>
+                            <classifier>bravo</classifier>
+                        </configuration>
+                    </execution>
+				</executions>
+			</plugin>
+		</plugins>
+	</build>
+</project>

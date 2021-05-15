@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,7 @@ public class ExampleService {
 
 	private static final Charset CHARSET = StandardCharsets.UTF_8;
 
-	private RedisOperations<Object, Object> operations;
+	private final RedisOperations<Object, Object> operations;
 
 	public ExampleService(RedisOperations<Object, Object> operations) {
 		this.operations = operations;

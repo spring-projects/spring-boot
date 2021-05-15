@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,8 +111,9 @@ class JndiConnectionFactoryAutoConfigurationTests {
 
 	private ContextConsumer<AssertableApplicationContext> assertConnectionFactory(ConnectionFactory connectionFactory) {
 		return (context) -> {
-			assertThat(context).hasSingleBean(ConnectionFactory.class);
-			assertThat(context.getBean(ConnectionFactory.class)).isSameAs(connectionFactory);
+			assertThat(context).hasSingleBean(ConnectionFactory.class).hasBean("jmsConnectionFactory");
+			assertThat(context.getBean(ConnectionFactory.class)).isSameAs(connectionFactory)
+					.isSameAs(context.getBean("jmsConnectionFactory"));
 		};
 	}
 

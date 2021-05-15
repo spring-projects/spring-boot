@@ -34,7 +34,6 @@ import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.EncodedResource;
@@ -95,12 +94,9 @@ public class ProjectInfoAutoConfiguration {
 
 	static class GitResourceAvailableCondition extends SpringBootCondition {
 
-		private final ResourceLoader defaultResourceLoader = new DefaultResourceLoader();
-
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ResourceLoader loader = context.getResourceLoader();
-			loader = (loader != null) ? loader : this.defaultResourceLoader;
 			Environment environment = context.getEnvironment();
 			String location = environment.getProperty("spring.info.git.location");
 			if (location == null) {

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -40,16 +40,16 @@ class NumberToDurationConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenSimpleWithoutSuffixShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, 10)).isEqualTo(Duration.ofMillis(10));
-		assertThat(convert(conversionService, +10)).isEqualTo(Duration.ofMillis(10));
-		assertThat(convert(conversionService, -10)).isEqualTo(Duration.ofMillis(-10));
+		assertThat(convert(conversionService, 10)).hasMillis(10);
+		assertThat(convert(conversionService, +10)).hasMillis(10);
+		assertThat(convert(conversionService, -10)).hasMillis(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, 10, ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert(conversionService, +10, ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert(conversionService, -10, ChronoUnit.SECONDS)).isEqualTo(Duration.ofSeconds(-10));
+		assertThat(convert(conversionService, 10, ChronoUnit.SECONDS)).hasSeconds(10);
+		assertThat(convert(conversionService, +10, ChronoUnit.SECONDS)).hasSeconds(10);
+		assertThat(convert(conversionService, -10, ChronoUnit.SECONDS)).hasSeconds(-10);
 	}
 
 	private Duration convert(ConversionService conversionService, Integer source) {

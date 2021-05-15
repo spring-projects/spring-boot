@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,10 +43,7 @@ class CompositeHandlerMapping implements HandlerMapping {
 
 	@Override
 	public HandlerExecutionChain getHandler(HttpServletRequest request) throws Exception {
-		if (this.mappings == null) {
-			this.mappings = extractMappings();
-		}
-		for (HandlerMapping mapping : this.mappings) {
+		for (HandlerMapping mapping : getMappings()) {
 			HandlerExecutionChain handler = mapping.getHandler(request);
 			if (handler != null) {
 				return handler;
@@ -55,9 +52,25 @@ class CompositeHandlerMapping implements HandlerMapping {
 		return null;
 	}
 
+	@Override
+	public boolean usesPathPatterns() {
+		for (HandlerMapping mapping : getMappings()) {
+			if (mapping.usesPathPatterns()) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	private List<HandlerMapping> getMappings() {
+		if (this.mappings == null) {
+			this.mappings = extractMappings();
+		}
+		return this.mappings;
+	}
+
 	private List<HandlerMapping> extractMappings() {
-		List<HandlerMapping> list = new ArrayList<>();
-		list.addAll(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
+		List<HandlerMapping> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerMapping.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		return list;

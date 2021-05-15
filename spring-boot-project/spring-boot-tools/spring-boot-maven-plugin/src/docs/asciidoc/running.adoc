@@ -1,0 +1,275 @@
+[[run]]
+== Running your Application with Maven
+The plugin includes a run goal which can be used to launch your application from the command line, as shown in the following example:
+
+[indent=0]
+----
+	$ mvn spring-boot:run
+----
+
+Application arguments can be specified using the `arguments` parameter, see <<run-example-application-arguments,using application arguments>> for more details.
+
+By default the application is executed in a forked process and setting properties on the command-line will not affect the application.
+If you need to specify some JVM arguments (i.e. for debugging purposes), you can use the `jvmArguments` parameter, see <<run-example-debug,Debug the application>> for more details.
+There is also explicit support for <<run-example-system-properties,system properties>> and <<run-example-environment-variables,environment variables>>.
+
+As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see <<run-example-active-profiles,Specify active profiles>>.
+
+Although this is not recommended, it is possible to execute the application directly from the Maven JVM by disabling the `fork` property.
+Doing so means that the `jvmArguments`, `systemPropertyVariables`, `environmentVariables` and `agents` options are ignored.
+
+Spring Boot `devtools` is a module to improve the development-time experience when working on Spring Boot applications.
+To enable it, just add the following dependency to your project:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<dependencies>
+		<dependency>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-devtools</artifactId>
+			<optional>true</optional>
+		</dependency>
+	</dependencies>
+----
+
+When `devtools` is running, it detects change when you recompile your application and automatically refreshes it.
+This works for not only resources but code as well.
+It also provides a LiveReload server so that it can automatically trigger a browser refresh whenever things change.
+
+Devtools can also be configured to only refresh the browser whenever a static resource has changed (and ignore any change in the code).
+Just include the following property in your project:
+
+[source,properties,indent=0]
+----
+	spring.devtools.remote.restart.enabled=false
+----
+
+Prior to `devtools`, the plugin supported hot refreshing of resources by default which has now be disabled in favour of the solution described above.
+You can restore it at any time by configuring your project:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<build>
+	<plugins>
+		<plugin>
+			<groupId>org.springframework.boot</groupId>
+			<artifactId>spring-boot-maven-plugin</artifactId>
+			<configuration>
+				<addResources>true</addResources>
+			</configuration>
+		</plugin>
+	</plugins>
+</build>
+----
+
+When `addResources` is enabled, any `src/main/resources` directory will be added to the application classpath when you run the application and any duplicate found in `target/classes` will be removed.
+This allows hot refreshing of resources which can be very useful when developing web applications.
+For example, you can work on HTML, CSS or JavaScript files and see your changes immediately without recompiling your application.
+It is also a helpful way of allowing your front end developers to work without needing to download and install a Java IDE.
+
+NOTE: A side effect of using this feature is that filtering of resources at build time will not work.
+
+In order to be consistent with the `repackage` goal, the `run` goal builds the classpath in such a way that any dependency that is excluded in the plugin's configuration gets excluded from the classpath as well.
+For more details, see <<repackage-example-exclude-dependency,the dedicated example>>.
+
+Sometimes it is useful to include test dependencies when running the application.
+For example, if you want to run your application in a test mode that uses stub classes.
+If you wish to do this, you can set the `useTestClasspath` parameter to true.
+
+NOTE: This is only applied when you run an application: the `repackage` goal will not add test dependencies to the resulting JAR/WAR.
+
+include::goals/run.adoc[leveloffset=+1]
+
+
+
+[[run-examples]]
+=== Examples
+
+
+
+[[run-example-debug]]
+==== Debug the Application
+By default, the `run` goal runs your application in a forked process.
+If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
+The following configuration suspend the process until a debugger has joined on port 5005:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<jvmArguments>
+							-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005
+						</jvmArguments>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+These arguments can be specified on the command line as well, make sure to wrap that properly, that is:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Xdebug -Xrunjdwp:transport=dt_socket,server=y,suspend=y,address=5005"
+----
+
+
+
+[[run-example-system-properties]]
+==== Using System Properties
+System properties can be specified using the `systemPropertyVariables` attribute.
+The following example sets `property1` to `test` and `property2` to 42:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+	<project>
+		<build>
+			<properties>
+				<my.value>42</my.value>
+			</properties>
+			<plugins>
+				<plugin>
+					<groupId>org.springframework.boot</groupId>
+					<artifactId>spring-boot-maven-plugin</artifactId>
+					<configuration>
+						<systemPropertyVariables>
+							<property1>test</property1>
+							<property2>${my.value}</property2>
+						</systemPropertyVariables>
+					</configuration>
+				</plugin>
+			</plugins>
+		</build>
+	</project>
+----
+
+If the value is empty or not defined (i.e. `<my-property/`>), the system property is set with an empty String as the value.
+Maven trims values specified in the pom so it is not possible to specify a System property which needs to start or end with a space via this mechanism: consider using `jvmArguments` instead.
+
+Any String typed Maven variable can be passed as system properties.
+Any attempt to pass any other Maven variable type (e.g. a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
+
+The `jvmArguments` parameter takes precedence over system properties defined with the mechanism above.
+In the following example, the value for `property1` is `overridden`:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.jvmArguments="-Dproperty1=overridden"
+----
+
+
+
+[[run-example-environment-variables]]
+==== Using Environment Variables
+Environment variables can be specified using the `environmentVariables` attribute.
+The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<environmentVariables>
+						<ENV1>5000</ENV1>
+						<ENV2>Some Text</ENV2>
+						<ENV3/>
+						<ENV4></ENV4>
+					</environmentVariables>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+If the value is empty or not defined (i.e. `<MY_ENV/`>), the env variable is set with an empty String as the value.
+Maven trims values specified in the pom so it is not possible to specify an env variable which needs to start or end with a space.
+
+Any String typed Maven variable can be passed as system properties.
+Any attempt to pass any other Maven variable type (e.g. a `List` or a `URL` variable) will cause the variable expression to be passed literally (unevaluated).
+
+Environment variables defined this way take precedence over existing values.
+
+
+
+[[run-example-application-arguments]]
+==== Using Application Arguments
+Application arguments can be specified using the `arguments` attribute.
+The following example sets two arguments: `property1` and `property2=42`:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<arguments>
+						<argument>property1</argument>
+						<argument>property2=${my.value}</argument>
+					</arguments>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+On the command-line, arguments are separated by a space the same way `jvmArguments` are.
+If an argument contains a space, make sure to quote it.
+In the following example, two arguments are available: `property1` and `property2=Hello World`:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.arguments="property1 'property2=Hello World'"
+----
+
+
+
+[[run-example-active-profiles]]
+==== Specify Active Profiles
+The active profiles to use for a particular application can be specified using the `profiles` argument.
+
+The following configuration enables the `foo` and `bar` profiles:
+
+[source,xml,indent=0,subs="verbatim,attributes"]
+----
+<project>
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.springframework.boot</groupId>
+				<artifactId>spring-boot-maven-plugin</artifactId>
+				<configuration>
+					<profiles>
+						<profile>foo</profile>
+						<profile>bar</profile>
+					</profiles>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+</project>
+----
+
+The profiles to enable can be specified on the command line as well, make sure to separate them with a comma, as shown in the following example:
+
+[indent=0]
+----
+	$ mvn spring-boot:run -Dspring-boot.run.profiles=foo,bar
+----
+
+
+

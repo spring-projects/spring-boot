@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,13 +46,13 @@ class ConfigurationPropertiesAutoConfigurationTests {
 
 	@Test
 	void processAnnotatedBean() {
-		load(new Class[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
+		load(new Class<?>[] { AutoConfig.class, SampleBean.class }, "foo.name:test");
 		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("test");
 	}
 
 	@Test
 	void processAnnotatedBeanNoAutoConfig() {
-		load(new Class[] { SampleBean.class }, "foo.name:test");
+		load(new Class<?>[] { SampleBean.class }, "foo.name:test");
 		assertThat(this.context.getBean(SampleBean.class).getName()).isEqualTo("default");
 	}
 

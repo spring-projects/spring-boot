@@ -1,0 +1,25 @@
+plugins {
+	id 'war'
+	id 'org.springframework.boot' version '{version}'
+}
+
+bootWar {
+	mainClass = 'com.example.Application'
+}
+
+repositories {
+	flatDir {
+		dirs 'repository'
+	}
+}
+
+dependencies {
+	implementation(name: "standard")
+	implementation(name: "starter")
+}
+
+bootWar {
+	layered {
+		enabled = false
+	}
+}

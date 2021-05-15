@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,9 @@ import java.util.function.Supplier;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanDefinitionCustomizer;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.BeanNameGenerator;
+import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.boot.context.annotation.Configurations;
 import org.springframework.boot.context.annotation.UserConfigurations;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -105,6 +107,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 	private final Supplier<C> contextFactory;
 
+	private final boolean allowBeanDefinitionOverriding;
+
 	private final List<ApplicationContextInitializer<? super C>> initializers;
 
 	private final TestPropertyValues environmentProperties;
@@ -124,13 +128,14 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param contextFactory the factory used to create the actual context
 	 */
 	protected AbstractApplicationContextRunner(Supplier<C> contextFactory) {
-		this(contextFactory, Collections.emptyList(), TestPropertyValues.empty(), TestPropertyValues.empty(), null,
-				null, Collections.emptyList(), Collections.emptyList());
+		this(contextFactory, false, Collections.emptyList(), TestPropertyValues.empty(), TestPropertyValues.empty(),
+				null, null, Collections.emptyList(), Collections.emptyList());
 	}
 
 	/**
 	 * Create a new {@link AbstractApplicationContextRunner} instance.
 	 * @param contextFactory the factory used to create the actual context
+	 * @param allowBeanDefinitionOverriding whether bean definition overriding is allowed
 	 * @param initializers the initializers
 	 * @param environmentProperties the environment properties
 	 * @param systemProperties the system properties
@@ -139,7 +144,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @param beanRegistrations the bean registrations
 	 * @param configurations the configuration
 	 */
-	protected AbstractApplicationContextRunner(Supplier<C> contextFactory,
+	protected AbstractApplicationContextRunner(Supplier<C> contextFactory, boolean allowBeanDefinitionOverriding,
 			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
 			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
 			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations) {
@@ -149,6 +154,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		Assert.notNull(configurations, "Configurations must not be null");
 		Assert.notNull(initializers, "Initializers must not be null");
 		this.contextFactory = contextFactory;
+		this.allowBeanDefinitionOverriding = allowBeanDefinitionOverriding;
 		this.initializers = Collections.unmodifiableList(initializers);
 		this.environmentProperties = environmentProperties;
 		this.systemProperties = systemProperties;
@@ -159,15 +165,30 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	}
 
 	/**
-	 * Add a {@link ApplicationContextInitializer} to be called when the context is
+	 * Specify if bean definition overriding, by registering a definition with the same
+	 * name as an existing definition, should be allowed.
+	 * @param allowBeanDefinitionOverriding if bean overriding is allowed
+	 * @return a new instance with the updated bean definition overriding policy
+	 * @since 2.3.0
+	 * @see DefaultListableBeanFactory#setAllowBeanDefinitionOverriding(boolean)
+	 */
+	public SELF withAllowBeanDefinitionOverriding(boolean allowBeanDefinitionOverriding) {
+		return newInstance(this.contextFactory, allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader, this.parent,
+				this.beanRegistrations, this.configurations);
+	}
+
+	/**
+	 * Add an {@link ApplicationContextInitializer} to be called when the context is
 	 * created.
 	 * @param initializer the initializer to add
 	 * @return a new instance with the updated initializers
 	 */
 	public SELF withInitializer(ApplicationContextInitializer<? super C> initializer) {
 		Assert.notNull(initializer, "Initializer must not be null");
-		return newInstance(this.contextFactory, add(this.initializers, initializer), this.environmentProperties,
-				this.systemProperties, this.classLoader, this.parent, this.beanRegistrations, this.configurations);
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, add(this.initializers, initializer),
+				this.environmentProperties, this.systemProperties, this.classLoader, this.parent,
+				this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -181,8 +202,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withPropertyValues(String... pairs) {
-		return newInstance(this.contextFactory, this.initializers, this.environmentProperties.and(pairs),
-				this.systemProperties, this.classLoader, this.parent, this.beanRegistrations, this.configurations);
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties.and(pairs), this.systemProperties, this.classLoader, this.parent,
+				this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -196,9 +218,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @see #withSystemProperties(String...)
 	 */
 	public SELF withSystemProperties(String... pairs) {
-		return newInstance(this.contextFactory, this.initializers, this.environmentProperties,
-				this.systemProperties.and(pairs), this.classLoader, this.parent, this.beanRegistrations,
-				this.configurations);
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties, this.systemProperties.and(pairs), this.classLoader, this.parent,
+				this.beanRegistrations, this.configurations);
 	}
 
 	/**
@@ -209,8 +231,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @see FilteredClassLoader
 	 */
 	public SELF withClassLoader(ClassLoader classLoader) {
-		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
-				classLoader, this.parent, this.beanRegistrations, this.configurations);
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties, this.systemProperties, classLoader, this.parent, this.beanRegistrations,
+				this.configurations);
 	}
 
 	/**
@@ -220,8 +243,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @return a new instance with the updated parent
 	 */
 	public SELF withParent(ApplicationContext parent) {
-		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
-				this.classLoader, parent, this.beanRegistrations, this.configurations);
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader, parent, this.beanRegistrations,
+				this.configurations);
 	}
 
 	/**
@@ -256,8 +280,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 * @return a new instance with the updated bean
 	 */
 	public <T> SELF withBean(String name, Class<T> type, Object... constructorArgs) {
-		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
-				this.classLoader, this.parent,
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader, this.parent,
 				add(this.beanRegistrations, new BeanRegistration<>(name, type, constructorArgs)), this.configurations);
 	}
 
@@ -296,8 +320,8 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	public <T> SELF withBean(String name, Class<T> type, Supplier<T> supplier,
 			BeanDefinitionCustomizer... customizers) {
-		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
-				this.classLoader, this.parent,
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader, this.parent,
 				add(this.beanRegistrations, new BeanRegistration<>(name, type, supplier, customizers)),
 				this.configurations);
 	}
@@ -319,8 +343,9 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	public SELF withConfiguration(Configurations configurations) {
 		Assert.notNull(configurations, "Configurations must not be null");
-		return newInstance(this.contextFactory, this.initializers, this.environmentProperties, this.systemProperties,
-				this.classLoader, this.parent, this.beanRegistrations, add(this.configurations, configurations));
+		return newInstance(this.contextFactory, this.allowBeanDefinitionOverriding, this.initializers,
+				this.environmentProperties, this.systemProperties, this.classLoader, this.parent,
+				this.beanRegistrations, add(this.configurations, configurations));
 	}
 
 	/**
@@ -339,7 +364,7 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 		return result;
 	}
 
-	protected abstract SELF newInstance(Supplier<C> contextFactory,
+	protected abstract SELF newInstance(Supplier<C> contextFactory, boolean allowBeanDefinitionOverriding,
 			List<ApplicationContextInitializer<? super C>> initializers, TestPropertyValues environmentProperties,
 			TestPropertyValues systemProperties, ClassLoader classLoader, ApplicationContext parent,
 			List<BeanRegistration<?>> beanRegistrations, List<Configurations> configurations);
@@ -353,14 +378,12 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 	 */
 	@SuppressWarnings("unchecked")
 	public SELF run(ContextConsumer<? super A> consumer) {
-		withContextClassLoader(this.classLoader, () -> {
-			this.systemProperties.applyToSystemProperties(() -> {
-				try (A context = createAssertableContext()) {
-					accept(consumer, context);
-				}
-				return null;
-			});
-		});
+		withContextClassLoader(this.classLoader, () -> this.systemProperties.applyToSystemProperties(() -> {
+			try (A context = createAssertableContext()) {
+				accept(consumer, context);
+			}
+			return null;
+		}));
 		return (SELF) this;
 	}
 
@@ -391,6 +414,11 @@ public abstract class AbstractApplicationContextRunner<SELF extends AbstractAppl
 
 	private C createAndLoadContext() {
 		C context = this.contextFactory.get();
+		ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+		if (beanFactory instanceof DefaultListableBeanFactory) {
+			((DefaultListableBeanFactory) beanFactory)
+					.setAllowBeanDefinitionOverriding(this.allowBeanDefinitionOverriding);
+		}
 		try {
 			configureContext(context);
 			return context;

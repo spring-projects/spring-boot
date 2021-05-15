@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,6 +43,8 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	private final Set<ConfigurationPropertyName> boundNames = new HashSet<>();
 
+	private final Set<ConfigurationPropertyName> attemptedNames = new HashSet<>();
+
 	private final Function<ConfigurationPropertySource, Boolean> filter;
 
 	NoUnboundElementsBindHandler() {
@@ -59,9 +61,24 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 	}
 
 	@Override
+	public <T> Bindable<T> onStart(ConfigurationPropertyName name, Bindable<T> target, BindContext context) {
+		this.attemptedNames.add(name);
+		return super.onStart(name, target, context);
+	}
+
+	@Override
 	public Object onSuccess(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Object result) {
 		this.boundNames.add(name);
 		return super.onSuccess(name, target, context, result);
+	}
+
+	@Override
+	public Object onFailure(ConfigurationPropertyName name, Bindable<?> target, BindContext context, Exception error)
+			throws Exception {
+		if (error instanceof UnboundConfigurationPropertiesException) {
+			throw error;
+		}
+		return super.onFailure(name, target, context, error);
 	}
 
 	@Override
@@ -99,20 +116,61 @@ public class NoUnboundElementsBindHandler extends AbstractBindHandler {
 
 	private boolean isUnbound(ConfigurationPropertyName name, ConfigurationPropertyName candidate) {
 		if (name.isAncestorOf(candidate)) {
-			if (!this.boundNames.contains(candidate) && !isOverriddenCollectionElement(candidate)) {
-				return true;
-			}
+			return !this.boundNames.contains(candidate) && !isOverriddenCollectionElement(candidate);
 		}
 		return false;
 	}
 
 	private boolean isOverriddenCollectionElement(ConfigurationPropertyName candidate) {
 		int lastIndex = candidate.getNumberOfElements() - 1;
-		if (candidate.isNumericIndex(lastIndex)) {
+		if (candidate.isLastElementIndexed()) {
 			ConfigurationPropertyName propertyName = candidate.chop(lastIndex);
 			return this.boundNames.contains(propertyName);
 		}
+		Indexed indexed = getIndexed(candidate);
+		if (indexed != null) {
+			String zeroethProperty = indexed.getName() + "[0]";
+			if (this.boundNames.contains(ConfigurationPropertyName.of(zeroethProperty))) {
+				String nestedZeroethProperty = zeroethProperty + "." + indexed.getNestedPropertyName();
+				return isCandidateValidPropertyName(nestedZeroethProperty);
+			}
+		}
 		return false;
+	}
+
+	private boolean isCandidateValidPropertyName(String nestedZeroethProperty) {
+		return this.attemptedNames.contains(ConfigurationPropertyName.of(nestedZeroethProperty));
+	}
+
+	private Indexed getIndexed(ConfigurationPropertyName candidate) {
+		for (int i = 0; i < candidate.getNumberOfElements(); i++) {
+			if (candidate.isNumericIndex(i)) {
+				return new Indexed(candidate.chop(i).toString(),
+						candidate.getElement(i + 1, ConfigurationPropertyName.Form.UNIFORM));
+			}
+		}
+		return null;
+	}
+
+	private static final class Indexed {
+
+		private final String name;
+
+		private final String nestedPropertyName;
+
+		private Indexed(String name, String nestedPropertyName) {
+			this.name = name;
+			this.nestedPropertyName = nestedPropertyName;
+		}
+
+		String getName() {
+			return this.name;
+		}
+
+		String getNestedPropertyName() {
+			return this.nestedPropertyName;
+		}
+
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -85,8 +85,19 @@ class FailureAnalyzersTests {
 		verify(failureAnalyzer, times(1)).analyze(failure);
 	}
 
+	@Test
+	void createWithNullContextSkipsAwareAnalyzers() {
+		RuntimeException failure = new RuntimeException();
+		analyzeAndReport("basic.factories", failure, null);
+		verify(failureAnalyzer, times(1)).analyze(failure);
+	}
+
 	private void analyzeAndReport(String factoriesName, Throwable failure) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
+		analyzeAndReport(factoriesName, failure, context);
+	}
+
+	private void analyzeAndReport(String factoriesName, Throwable failure, AnnotationConfigApplicationContext context) {
 		ClassLoader classLoader = new CustomSpringFactoriesClassLoader(factoriesName);
 		new FailureAnalyzers(context, classLoader).reportException(failure);
 	}

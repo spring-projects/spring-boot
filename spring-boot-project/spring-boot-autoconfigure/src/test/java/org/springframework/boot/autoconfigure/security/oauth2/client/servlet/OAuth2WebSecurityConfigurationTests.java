@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import javax.servlet.Filter;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
@@ -31,6 +32,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.security.config.BeanIds;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
@@ -115,13 +117,35 @@ class OAuth2WebSecurityConfigurationTests {
 	}
 
 	@Test
-	void securityConfigurerBacksOffWhenOtherWebSecurityAdapterPresent() {
+	void securityFilterChainConfigBacksOffWhenOtherWebSecurityAdapterPresent() {
 		this.contextRunner
 				.withUserConfiguration(TestWebSecurityConfigurerConfig.class, OAuth2WebSecurityConfiguration.class)
 				.run((context) -> {
 					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
 					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 					assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
+				});
+	}
+
+	@Test
+	void securityFilterChainConfigBacksOffWhenOtherSecurityFilterChainBeanPresent() {
+		this.contextRunner
+				.withUserConfiguration(TestSecurityFilterChainConfig.class, OAuth2WebSecurityConfiguration.class)
+				.run((context) -> {
+					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
+					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
+					assertThat(context).getBean(OAuth2AuthorizedClientService.class).isNotNull();
+				});
+	}
+
+	@Test
+	void securityFilterChainConfigConditionalOnSecurityFilterChainClass() {
+		this.contextRunner
+				.withUserConfiguration(ClientRegistrationRepositoryConfiguration.class,
+						OAuth2WebSecurityConfiguration.class)
+				.withClassLoader(new FilteredClassLoader(SecurityFilterChain.class)).run((context) -> {
+					assertThat(getFilters(context, OAuth2LoginAuthenticationFilter.class)).isEmpty();
+					assertThat(getFilters(context, OAuth2AuthorizationCodeGrantFilter.class)).isEmpty();
 				});
 	}
 
@@ -155,7 +179,7 @@ class OAuth2WebSecurityConfigurationTests {
 		result = result && ObjectUtils.nullSafeEquals(reg1.getClientName(), reg2.getClientName());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getClientSecret(), reg2.getClientSecret());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getScopes(), reg2.getScopes());
-		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUriTemplate(), reg2.getRedirectUriTemplate());
+		result = result && ObjectUtils.nullSafeEquals(reg1.getRedirectUri(), reg2.getRedirectUri());
 		result = result && ObjectUtils.nullSafeEquals(reg1.getRegistrationId(), reg2.getRegistrationId());
 		result = result
 				&& ObjectUtils.nullSafeEquals(reg1.getAuthorizationGrantType(), reg2.getAuthorizationGrantType());
@@ -197,7 +221,7 @@ class OAuth2WebSecurityConfigurationTests {
 					.clientAuthenticationMethod(
 							org.springframework.security.oauth2.core.ClientAuthenticationMethod.BASIC)
 					.authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE).scope("read")
-					.clientSecret("secret").redirectUriTemplate("https://redirect-uri.com")
+					.clientSecret("secret").redirectUri("https://redirect-uri.com")
 					.authorizationUri("https://authorization-uri.com").tokenUri("https://token-uri.com")
 					.userInfoUri(userInfoUri).userNameAttributeName("login");
 			return builder.build();
@@ -208,6 +232,19 @@ class OAuth2WebSecurityConfigurationTests {
 	@Configuration(proxyBeanMethods = false)
 	@Import(ClientRegistrationRepositoryConfiguration.class)
 	static class TestWebSecurityConfigurerConfig extends WebSecurityConfigurerAdapter {
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(ClientRegistrationRepositoryConfiguration.class)
+	static class TestSecurityFilterChainConfig {
+
+		@Bean
+		SecurityFilterChain testSecurityFilterChain(HttpSecurity http) throws Exception {
+			return http.antMatcher("/**").authorizeRequests((authorize) -> authorize.anyRequest().authenticated())
+					.build();
+
+		}
 
 	}
 

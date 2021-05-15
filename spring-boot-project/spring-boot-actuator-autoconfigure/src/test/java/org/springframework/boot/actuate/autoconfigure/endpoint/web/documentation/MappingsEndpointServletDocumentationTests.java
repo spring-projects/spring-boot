@@ -89,10 +89,10 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 						.description("Dispatcher handler mappings, if any.").optional().type(JsonFieldType.OBJECT),
 				parentIdField());
 		List<FieldDescriptor> dispatcherServletFields = new ArrayList<>(Arrays.asList(
-				fieldWithPath("*").description(
-						"Dispatcher servlet mappings, if any, keyed by " + "dispatcher servlet bean name."),
+				fieldWithPath("*")
+						.description("Dispatcher servlet mappings, if any, keyed by dispatcher servlet bean name."),
 				fieldWithPath("*.[].details").optional().type(JsonFieldType.OBJECT)
-						.description("Additional implementation-specific " + "details about the mapping. Optional."),
+						.description("Additional implementation-specific details about the mapping. Optional."),
 				fieldWithPath("*.[].handler").description("Handler for the mapping."),
 				fieldWithPath("*.[].predicate").description("Predicate for the mapping.")));
 		List<FieldDescriptor> requestMappingConditions = Arrays.asList(
@@ -117,12 +117,12 @@ class MappingsEndpointServletDocumentationTests extends AbstractEndpointDocument
 				requestMappingConditionField(".produces.[].negated").description("Whether the media type is negated."));
 		List<FieldDescriptor> handlerMethod = Arrays.asList(
 				fieldWithPath("*.[].details.handlerMethod").optional().type(JsonFieldType.OBJECT)
-						.description("Details of the method, if any, " + "that will handle requests to this mapping."),
+						.description("Details of the method, if any, that will handle requests to this mapping."),
 				fieldWithPath("*.[].details.handlerMethod.className")
 						.description("Fully qualified name of the class of the method."),
 				fieldWithPath("*.[].details.handlerMethod.name").description("Name of the method."),
 				fieldWithPath("*.[].details.handlerMethod.descriptor")
-						.description("Descriptor of the method as specified in the Java " + "Language Specification."));
+						.description("Descriptor of the method as specified in the Java Language Specification."));
 		dispatcherServletFields.addAll(handlerMethod);
 		dispatcherServletFields.addAll(requestMappingConditions);
 		this.client.get().uri("/actuator/mappings").exchange().expectBody()

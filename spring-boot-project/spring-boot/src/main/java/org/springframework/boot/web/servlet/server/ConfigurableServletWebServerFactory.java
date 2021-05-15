@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
+import org.springframework.boot.web.servlet.WebListenerRegistry;
 
 /**
  * A configurable {@link ServletWebServerFactory}.
@@ -41,7 +42,8 @@ import org.springframework.boot.web.servlet.ServletContextInitializer;
  * @see ServletWebServerFactory
  * @see WebServerFactoryCustomizer
  */
-public interface ConfigurableServletWebServerFactory extends ConfigurableWebServerFactory, ServletWebServerFactory {
+public interface ConfigurableServletWebServerFactory
+		extends ConfigurableWebServerFactory, ServletWebServerFactory, WebListenerRegistry {
 
 	/**
 	 * Sets the context path for the web server. The context should start with a "/"
@@ -66,8 +68,8 @@ public interface ConfigurableServletWebServerFactory extends ConfigurableWebServ
 	void setSession(Session session);
 
 	/**
-	 * Set if the DefaultServlet should be registered. Defaults to {@code true} so that
-	 * files from the {@link #setDocumentRoot(File) document root} will be served.
+	 * Set if the DefaultServlet should be registered. Defaults to {@code false} since
+	 * 2.4.
 	 * @param registerDefaultServlet if the default servlet should be registered
 	 */
 	void setRegisterDefaultServlet(boolean registerDefaultServlet);

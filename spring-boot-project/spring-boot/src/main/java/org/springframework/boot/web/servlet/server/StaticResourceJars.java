@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.net.URLConnection;
+import java.nio.file.InvalidPathException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.jar.JarFile;
@@ -124,7 +125,7 @@ class StaticResourceJars {
 		try {
 			return isResourcesJar(new JarFile(file));
 		}
-		catch (IOException ex) {
+		catch (IOException | InvalidPathException ex) {
 			return false;
 		}
 	}

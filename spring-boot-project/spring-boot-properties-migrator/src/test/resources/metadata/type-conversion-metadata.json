@@ -20,8 +20,7 @@
       "name": "test.cache-seconds",
       "type": "java.lang.Integer",
       "deprecation": {
-        "replacement": "test.cache",
-        "level": "error"
+        "replacement": "test.cache"
       }
     },
     {

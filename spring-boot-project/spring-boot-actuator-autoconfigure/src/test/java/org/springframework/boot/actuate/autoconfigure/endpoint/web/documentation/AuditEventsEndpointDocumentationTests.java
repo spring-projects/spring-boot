@@ -75,13 +75,14 @@ class AuditEventsEndpointDocumentationTests extends MockMvcEndpointDocumentation
 				.perform(get("/actuator/auditevents")
 						.param("principal", "alice").param("after", queryTimestamp).param("type", "logout"))
 				.andExpect(status().isOk())
-				.andDo(document("auditevents/filtered", requestParameters(
-						parameterWithName("after").description(
-								"Restricts the events to those that occurred " + "after the given time. Optional."),
-						parameterWithName("principal")
-								.description("Restricts the events to those with the given " + "principal. Optional."),
-						parameterWithName("type")
-								.description("Restricts the events to those with the given " + "type. Optional."))));
+				.andDo(document("auditevents/filtered",
+						requestParameters(
+								parameterWithName("after").description(
+										"Restricts the events to those that occurred after the given time. Optional."),
+								parameterWithName("principal").description(
+										"Restricts the events to those with the given principal. Optional."),
+								parameterWithName("type")
+										.description("Restricts the events to those with the given type. Optional."))));
 		verify(this.repository).find("alice", now.toInstant(), "logout");
 	}
 

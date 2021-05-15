@@ -1,0 +1,94 @@
+plugins {
+	id "java-gradle-plugin"
+	id "io.spring.javaformat" version "${javaFormatVersion}"
+	id "checkstyle"
+}
+
+repositories {
+	mavenCentral()
+	gradlePluginPortal()
+	maven { url "https://repo.spring.io/release" }
+}
+
+sourceCompatibility = 1.8
+targetCompatibility = 1.8
+
+dependencies {
+	checkstyle "io.spring.javaformat:spring-javaformat-checkstyle:${javaFormatVersion}"
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.10.0")
+	implementation("commons-codec:commons-codec:1.13")
+	implementation("org.apache.maven:maven-embedder:3.6.2")
+	implementation("org.asciidoctor:asciidoctor-gradle-jvm:3.0.0")
+	implementation("org.asciidoctor:asciidoctor-gradle-jvm-pdf:3.0.0")
+	implementation("org.gradle:test-retry-gradle-plugin:1.1.9")
+	implementation("org.springframework:spring-core:5.2.2.RELEASE")
+	implementation("org.springframework:spring-web:5.2.2.RELEASE")
+	implementation("com.google.code.gson:gson:2.8.5")
+	implementation("io.spring.javaformat:spring-javaformat-gradle-plugin:${javaFormatVersion}")
+	testImplementation("org.assertj:assertj-core:3.11.1")
+	testImplementation("org.apache.logging.log4j:log4j-core:2.12.1")
+	testImplementation("org.junit.jupiter:junit-jupiter:5.6.0")
+}
+
+checkstyle {
+	def archive = configurations.checkstyle.filter { it.name.startsWith("spring-javaformat-checkstyle")}
+	config = resources.text.fromArchiveEntry(archive, "io/spring/javaformat/checkstyle/checkstyle.xml")
+	toolVersion = 8.11
+}
+
+gradlePlugin {
+	plugins {
+		annotationProcessorPlugin {
+			id = "org.springframework.boot.annotation-processor"
+			implementationClass = "org.springframework.boot.build.processors.AnnotationProcessorPlugin"
+		}
+		autoConfigurationPlugin {
+			id = "org.springframework.boot.auto-configuration"
+			implementationClass = "org.springframework.boot.build.autoconfigure.AutoConfigurationPlugin"
+		}
+		bomPlugin {
+			id = "org.springframework.boot.bom"
+			implementationClass = "org.springframework.boot.build.bom.BomPlugin"
+		}
+		configurationPropertiesPlugin {
+			id = "org.springframework.boot.configuration-properties"
+			implementationClass = "org.springframework.boot.build.context.properties.ConfigurationPropertiesPlugin"
+		}
+		conventionsPlugin {
+			id = "org.springframework.boot.conventions"
+			implementationClass = "org.springframework.boot.build.ConventionsPlugin"
+		}
+		deployedPlugin {
+			id = "org.springframework.boot.deployed"
+			implementationClass = "org.springframework.boot.build.DeployedPlugin"
+		}
+		integrationTestPlugin {
+			id = "org.springframework.boot.integration-test"
+			implementationClass = "org.springframework.boot.build.test.IntegrationTestPlugin"
+		}
+		mavenPluginPlugin {
+			id = "org.springframework.boot.maven-plugin"
+			implementationClass = "org.springframework.boot.build.mavenplugin.MavenPluginPlugin"
+		}
+		mavenRepositoryPlugin {
+			id = "org.springframework.boot.maven-repository"
+			implementationClass = "org.springframework.boot.build.MavenRepositoryPlugin"
+		}
+		optionalDependenciesPlugin {
+			id = "org.springframework.boot.optional-dependencies"
+			implementationClass = "org.springframework.boot.build.optional.OptionalDependenciesPlugin"
+		}
+		starterPlugin {
+			id = "org.springframework.boot.starter"
+			implementationClass = "org.springframework.boot.build.starters.StarterPlugin"
+		}
+		testFailuresPlugin {
+			id = "org.springframework.boot.test-failures"
+			implementationClass = "org.springframework.boot.build.testing.TestFailuresPlugin"
+		}
+	}
+}
+
+test {
+	useJUnitPlatform()
+}

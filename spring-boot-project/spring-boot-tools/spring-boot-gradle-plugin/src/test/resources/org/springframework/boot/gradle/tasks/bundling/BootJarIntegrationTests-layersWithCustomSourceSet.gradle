@@ -1,0 +1,35 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{version}'
+}
+
+sourceSets {
+	custom
+}
+
+bootJar {
+	mainClass = 'com.example.Application'
+}
+
+repositories {
+	mavenCentral()
+	maven { url "file:repository" }
+}
+
+dependencies {
+	implementation("com.example:library:1.0-SNAPSHOT")
+	implementation("org.apache.commons:commons-lang3:3.9")
+	implementation("org.springframework:spring-core:5.2.5.RELEASE")
+}
+
+task listLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "list"
+}
+
+task extractLayers(type: JavaExec) {
+	classpath = bootJar.outputs.files
+	systemProperties = [ "jarmode": "layertools" ]
+	args "extract"
+}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -15,6 +15,8 @@
  */
 
 package org.springframework.boot.test.autoconfigure.jdbc;
+
+import java.util.Collections;
 
 import javax.sql.DataSource;
 
@@ -40,7 +42,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
 import org.springframework.core.annotation.Order;
+import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
+import org.springframework.core.env.MapPropertySource;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.util.Assert;
@@ -79,7 +83,7 @@ public class TestDatabaseAutoConfiguration {
 		@Override
 		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
 			Assert.isInstanceOf(ConfigurableListableBeanFactory.class, registry,
-					"Test Database Auto-configuration can only be " + "used with a ConfigurableListableBeanFactory");
+					"Test Database Auto-configuration can only be used with a ConfigurableListableBeanFactory");
 			process(registry, (ConfigurableListableBeanFactory) registry);
 		}
 
@@ -108,7 +112,7 @@ public class TestDatabaseAutoConfiguration {
 		private BeanDefinitionHolder getDataSourceBeanDefinition(ConfigurableListableBeanFactory beanFactory) {
 			String[] beanNames = beanFactory.getBeanNamesForType(DataSource.class);
 			if (ObjectUtils.isEmpty(beanNames)) {
-				logger.warn("No DataSource beans found, " + "embedded version will not be used");
+				logger.warn("No DataSource beans found, embedded version will not be used");
 				return null;
 			}
 			if (beanNames.length == 1) {
@@ -122,7 +126,7 @@ public class TestDatabaseAutoConfiguration {
 					return new BeanDefinitionHolder(beanDefinition, beanName);
 				}
 			}
-			logger.warn("No primary DataSource found, " + "embedded version will not be used");
+			logger.warn("No primary DataSource found, embedded version will not be used");
 			return null;
 		}
 
@@ -168,6 +172,10 @@ public class TestDatabaseAutoConfiguration {
 
 		EmbeddedDataSourceFactory(Environment environment) {
 			this.environment = environment;
+			if (environment instanceof ConfigurableEnvironment) {
+				((ConfigurableEnvironment) environment).getPropertySources().addFirst(new MapPropertySource(
+						"testDatabase", Collections.singletonMap("spring.datasource.schema-username", "")));
+			}
 		}
 
 		EmbeddedDatabase getEmbeddedDatabase() {
@@ -179,7 +187,7 @@ public class TestDatabaseAutoConfiguration {
 			Assert.state(connection != EmbeddedDatabaseConnection.NONE,
 					"Failed to replace DataSource with an embedded database for tests. If "
 							+ "you want an embedded database please put a supported one "
-							+ "on the classpath or tune the replace attribute of " + "@AutoConfigureTestDatabase.");
+							+ "on the classpath or tune the replace attribute of @AutoConfigureTestDatabase.");
 			return new EmbeddedDatabaseBuilder().generateUniqueName(true).setType(connection.getType()).build();
 		}
 

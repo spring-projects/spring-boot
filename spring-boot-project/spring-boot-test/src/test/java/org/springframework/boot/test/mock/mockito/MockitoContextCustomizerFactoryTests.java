@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,7 @@
 
 package org.springframework.boot.test.mock.mockito;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.MockitoAnnotations;
 
 import org.springframework.test.context.ContextCustomizer;
 
@@ -32,11 +30,6 @@ import static org.assertj.core.api.Assertions.assertThat;
 class MockitoContextCustomizerFactoryTests {
 
 	private final MockitoContextCustomizerFactory factory = new MockitoContextCustomizerFactory();
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void getContextCustomizerWithoutAnnotationReturnsCustomizer() {

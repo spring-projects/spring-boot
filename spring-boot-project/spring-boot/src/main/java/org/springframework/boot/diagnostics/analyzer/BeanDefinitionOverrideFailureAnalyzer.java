@@ -42,11 +42,15 @@ class BeanDefinitionOverrideFailureAnalyzer extends AbstractFailureAnalyzer<Bean
 	private String getDescription(BeanDefinitionOverrideException ex) {
 		StringWriter description = new StringWriter();
 		PrintWriter printer = new PrintWriter(description);
-		printer.printf(
-				"The bean '%s', defined in %s, could not be registered. A bean with that "
-						+ "name has already been defined in %s and overriding is disabled.",
-				ex.getBeanName(), ex.getBeanDefinition().getResourceDescription(),
-				ex.getExistingDefinition().getResourceDescription());
+		printer.printf("The bean '%s'", ex.getBeanName());
+		if (ex.getBeanDefinition().getResourceDescription() != null) {
+			printer.printf(", defined in %s,", ex.getBeanDefinition().getResourceDescription());
+		}
+		printer.printf(" could not be registered. A bean with that name has already been defined ");
+		if (ex.getExistingDefinition().getResourceDescription() != null) {
+			printer.printf("in %s ", ex.getExistingDefinition().getResourceDescription());
+		}
+		printer.printf("and overriding is disabled.");
 		return description.toString();
 	}
 

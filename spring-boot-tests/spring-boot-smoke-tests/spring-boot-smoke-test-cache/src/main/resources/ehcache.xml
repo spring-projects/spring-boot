@@ -1,7 +1,0 @@
-<ehcache xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-		 xsi:noNamespaceSchemaLocation="ehcache.xsd">
-	<cache name="countries"
-		   maxEntriesLocalHeap="200"
-		   timeToLiveSeconds="600">
-	</cache>
-</ehcache>

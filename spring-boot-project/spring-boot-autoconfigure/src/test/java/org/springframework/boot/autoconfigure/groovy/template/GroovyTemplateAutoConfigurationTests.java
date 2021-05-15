@@ -80,8 +80,7 @@ class GroovyTemplateAutoConfigurationTests {
 	@Test
 	void emptyTemplateLocation() {
 		new File(this.buildOutput.getTestResourcesLocation(), "empty-templates/empty-directory").mkdirs();
-		registerAndRefreshContext(
-				"spring.groovy.template.resource-loader-path:" + "classpath:/templates/empty-directory/");
+		registerAndRefreshContext("spring.groovy.template.resource-loader-path:classpath:/templates/empty-directory/");
 	}
 
 	@Test

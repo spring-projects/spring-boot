@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -94,12 +94,19 @@ public abstract class AbstractFieldValuesProcessorTests {
 		assertThat(values.get("durationMinutes")).isEqualTo("30m");
 		assertThat(values.get("durationHours")).isEqualTo("40h");
 		assertThat(values.get("durationDays")).isEqualTo("50d");
+		assertThat(values.get("durationZero")).isEqualTo(0);
 		assertThat(values.get("dataSizeNone")).isNull();
 		assertThat(values.get("dataSizeBytes")).isEqualTo("5B");
 		assertThat(values.get("dataSizeKilobytes")).isEqualTo("10KB");
 		assertThat(values.get("dataSizeMegabytes")).isEqualTo("20MB");
 		assertThat(values.get("dataSizeGigabytes")).isEqualTo("30GB");
 		assertThat(values.get("dataSizeTerabytes")).isEqualTo("40TB");
+		assertThat(values.get("periodNone")).isNull();
+		assertThat(values.get("periodDays")).isEqualTo("3d");
+		assertThat(values.get("periodWeeks")).isEqualTo("2w");
+		assertThat(values.get("periodMonths")).isEqualTo("10m");
+		assertThat(values.get("periodYears")).isEqualTo("15y");
+		assertThat(values.get("periodZero")).isEqualTo(0);
 	}
 
 	@SupportedAnnotationTypes({ "org.springframework.boot.configurationsample.ConfigurationProperties" })

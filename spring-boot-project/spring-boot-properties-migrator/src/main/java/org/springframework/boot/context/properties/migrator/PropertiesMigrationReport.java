@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -45,8 +45,8 @@ class PropertiesMigrationReport {
 			return null;
 		}
 		StringBuilder report = new StringBuilder();
-		report.append(String.format(
-				"%nThe use of configuration keys that have been " + "renamed was found in the environment:%n%n"));
+		report.append(String
+				.format("%nThe use of configuration keys that have been renamed was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
 		report.append("Each configuration key has been temporarily mapped to its "
@@ -68,10 +68,10 @@ class PropertiesMigrationReport {
 		}
 		StringBuilder report = new StringBuilder();
 		report.append(String.format(
-				"%nThe use of configuration keys that are no longer " + "supported was found in the environment:%n%n"));
+				"%nThe use of configuration keys that are no longer supported was found in the environment:%n%n"));
 		append(report, content);
 		report.append(String.format("%n"));
-		report.append("Please refer to the migration guide or reference guide for " + "potential alternatives.");
+		report.append("Please refer to the release notes or reference guide for potential alternatives.");
 		report.append(String.format("%n"));
 		return report.toString();
 	}

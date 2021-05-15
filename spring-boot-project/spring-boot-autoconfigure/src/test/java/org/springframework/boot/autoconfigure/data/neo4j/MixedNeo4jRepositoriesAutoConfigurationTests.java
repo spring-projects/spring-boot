@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,10 @@ package org.springframework.boot.autoconfigure.data.neo4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
-import org.neo4j.ogm.drivers.embedded.driver.EmbeddedDriver;
+import org.neo4j.driver.Config;
+import org.neo4j.driver.Driver;
+import org.neo4j.driver.GraphDatabase;
+import org.neo4j.driver.internal.logging.Slf4jLogging;
 
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration;
@@ -31,11 +34,12 @@ import org.springframework.boot.autoconfigure.data.neo4j.empty.EmptyMarker;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
-import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.util.TestPropertyValues;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
+import org.springframework.data.neo4j.config.AbstractNeo4jConfig;
 import org.springframework.data.neo4j.repository.config.EnableNeo4jRepositories;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -48,6 +52,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author Michael Hunger
  * @author Vince Bickers
  * @author Stephane Nicoll
+ * @author Michael J. Simons
  */
 class MixedNeo4jRepositoriesAutoConfigurationTests {
 
@@ -94,12 +99,12 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 
 	private void load(Class<?> config, String... environment) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
-		context.setClassLoader(new FilteredClassLoader(EmbeddedDriver.class));
 		TestPropertyValues.of(environment).and("spring.datasource.initialization-mode=never").applyTo(context);
 		context.register(config);
 		context.register(DataSourceAutoConfiguration.class, HibernateJpaAutoConfiguration.class,
 				JpaRepositoriesAutoConfiguration.class, Neo4jDataAutoConfiguration.class,
-				Neo4jRepositoriesAutoConfiguration.class);
+				Neo4jReactiveDataAutoConfiguration.class, Neo4jRepositoriesAutoConfiguration.class,
+				Neo4jReactiveRepositoriesAutoConfiguration.class);
 		context.refresh();
 		this.context = context;
 	}
@@ -108,7 +113,14 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@TestAutoConfigurationPackage(EmptyMarker.class)
 	// Not this package or its parent
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
-	static class TestConfiguration {
+	static class TestConfiguration extends AbstractNeo4jConfig {
+
+		@Override
+		@Bean
+		public Driver driver() {
+			return GraphDatabase.driver("bolt://neo4j.test:7687",
+					Config.builder().withLogging(new Slf4jLogging()).build());
+		}
 
 	}
 
@@ -117,7 +129,14 @@ class MixedNeo4jRepositoriesAutoConfigurationTests {
 	@EnableNeo4jRepositories(basePackageClasses = Country.class)
 	@EntityScan(basePackageClasses = City.class)
 	@EnableJpaRepositories(basePackageClasses = CityRepository.class)
-	static class MixedConfiguration {
+	static class MixedConfiguration extends AbstractNeo4jConfig {
+
+		@Override
+		@Bean
+		public Driver driver() {
+			return GraphDatabase.driver("bolt://neo4j.test:7687",
+					Config.builder().withLogging(new Slf4jLogging()).build());
+		}
 
 	}
 

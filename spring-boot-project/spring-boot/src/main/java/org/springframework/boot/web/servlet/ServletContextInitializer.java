@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2017 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.web.servlet;
 
+import javax.servlet.ServletContainerInitializer;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 
@@ -29,8 +30,9 @@ import org.springframework.web.WebApplicationInitializer;
  * detected by {@link SpringServletContainerInitializer} and hence will not be
  * automatically bootstrapped by the Servlet container.
  * <p>
- * This interface is primarily designed to allow {@link ServletContextInitializer}s to be
- * managed by Spring and not the Servlet container.
+ * This interface is designed to act in a similar way to
+ * {@link ServletContainerInitializer}, but have a lifecycle that's managed by Spring and
+ * not the Servlet container.
  * <p>
  * For configuration examples see {@link WebApplicationInitializer}.
  *

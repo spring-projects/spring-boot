@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,6 @@ import org.springframework.boot.context.properties.source.IterableConfigurationP
 import org.springframework.core.ResolvableType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
-import org.springframework.util.StringUtils;
 
 /**
  * Base class for {@link AggregateBinder AggregateBinders} that read a sequential run of
@@ -80,6 +79,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			ResolvableType elementType) {
 		ConfigurationProperty property = source.getConfigurationProperty(root);
 		if (property != null) {
+			getContext().setConfigurationProperty(property);
 			bindValue(target, collection.get(), aggregateType, elementType, property.getValue());
 		}
 		else {
@@ -89,7 +89,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private void bindValue(Bindable<?> target, Collection<Object> collection, ResolvableType aggregateType,
 			ResolvableType elementType, Object value) {
-		if (value instanceof String && !StringUtils.hasText((String) value)) {
+		if (value == null || value instanceof CharSequence && ((CharSequence) value).length() == 0) {
 			return;
 		}
 		Object aggregate = convert(value, aggregateType, target.getAnnotations());
@@ -100,7 +100,7 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 
 	private void bindIndexed(ConfigurationPropertySource source, ConfigurationPropertyName root,
 			AggregateElementBinder elementBinder, IndexedCollectionSupplier collection, ResolvableType elementType) {
-		MultiValueMap<String, ConfigurationProperty> knownIndexedChildren = getKnownIndexedChildren(source, root);
+		MultiValueMap<String, ConfigurationPropertyName> knownIndexedChildren = getKnownIndexedChildren(source, root);
 		for (int i = 0; i < Integer.MAX_VALUE; i++) {
 			ConfigurationPropertyName name = root.append((i != 0) ? "[" + i + "]" : INDEX_ZERO);
 			Object value = elementBinder.bind(name, Bindable.of(elementType), source);
@@ -110,12 +110,12 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			knownIndexedChildren.remove(name.getLastElement(Form.UNIFORM));
 			collection.get().add(value);
 		}
-		assertNoUnboundChildren(knownIndexedChildren);
+		assertNoUnboundChildren(source, knownIndexedChildren);
 	}
 
-	private MultiValueMap<String, ConfigurationProperty> getKnownIndexedChildren(ConfigurationPropertySource source,
+	private MultiValueMap<String, ConfigurationPropertyName> getKnownIndexedChildren(ConfigurationPropertySource source,
 			ConfigurationPropertyName root) {
-		MultiValueMap<String, ConfigurationProperty> children = new LinkedMultiValueMap<>();
+		MultiValueMap<String, ConfigurationPropertyName> children = new LinkedMultiValueMap<>();
 		if (!(source instanceof IterableConfigurationPropertySource)) {
 			return children;
 		}
@@ -123,17 +123,17 @@ abstract class IndexedElementsBinder<T> extends AggregateBinder<T> {
 			ConfigurationPropertyName choppedName = name.chop(root.getNumberOfElements() + 1);
 			if (choppedName.isLastElementIndexed()) {
 				String key = choppedName.getLastElement(Form.UNIFORM);
-				ConfigurationProperty value = source.getConfigurationProperty(name);
-				children.add(key, value);
+				children.add(key, name);
 			}
 		}
 		return children;
 	}
 
-	private void assertNoUnboundChildren(MultiValueMap<String, ConfigurationProperty> children) {
+	private void assertNoUnboundChildren(ConfigurationPropertySource source,
+			MultiValueMap<String, ConfigurationPropertyName> children) {
 		if (!children.isEmpty()) {
-			throw new UnboundConfigurationPropertiesException(
-					children.values().stream().flatMap(List::stream).collect(Collectors.toCollection(TreeSet::new)));
+			throw new UnboundConfigurationPropertiesException(children.values().stream().flatMap(List::stream)
+					.map(source::getConfigurationProperty).collect(Collectors.toCollection(TreeSet::new)));
 		}
 	}
 

@@ -16,7 +16,7 @@
 
 package org.test.command
 
-import java.util.Collection;
+import java.util.Collection
 
 class TestCommand implements Command {
 

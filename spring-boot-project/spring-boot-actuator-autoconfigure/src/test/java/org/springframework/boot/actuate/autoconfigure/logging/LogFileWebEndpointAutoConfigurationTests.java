@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.actuate.autoconfigure.logging;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import org.junit.jupiter.api.Test;
@@ -30,9 +28,9 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
 import org.springframework.core.io.Resource;
 import org.springframework.util.FileCopyUtils;
-import org.springframework.util.StreamUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.contentOf;
 
 /**
  * Tests for {@link LogFileWebEndpointAutoConfiguration}.
@@ -44,7 +42,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class LogFileWebEndpointAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(LogFileWebEndpointAutoConfiguration.class));
 
 	@Test
@@ -67,14 +65,6 @@ class LogFileWebEndpointAutoConfigurationTests {
 	}
 
 	@Test
-	@Deprecated
-	void runWhenLoggingFileIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("logging.file:test.log", "management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
-	}
-
-	@Test
 	void runWhenLoggingPathIsSetAndNotExposedShouldNotHaveEndpointBean() {
 		this.contextRunner.withPropertyValues("logging.file.path:test/logs")
 				.run((context) -> assertThat(context).doesNotHaveBean(LogFileWebEndpoint.class));
@@ -84,14 +74,6 @@ class LogFileWebEndpointAutoConfigurationTests {
 	void runWhenLoggingPathIsSetAndExposedShouldHaveEndpointBean() {
 		this.contextRunner
 				.withPropertyValues("logging.file.path:test/logs", "management.endpoints.web.exposure.include=logfile")
-				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
-	}
-
-	@Test
-	@Deprecated
-	void runWhenLoggingPathIsSetWithDeprecatedPropertyAndExposedShouldHaveEndpointBean() {
-		this.contextRunner
-				.withPropertyValues("logging.path:test/logs", "management.endpoints.web.exposure.include=logfile")
 				.run((context) -> assertThat(context).hasSingleBean(LogFileWebEndpoint.class));
 	}
 
@@ -119,9 +101,7 @@ class LogFileWebEndpointAutoConfigurationTests {
 					LogFileWebEndpoint endpoint = context.getBean(LogFileWebEndpoint.class);
 					Resource resource = endpoint.logFile();
 					assertThat(resource).isNotNull();
-					try (InputStream input = resource.getInputStream()) {
-						assertThat(StreamUtils.copyToString(input, StandardCharsets.UTF_8)).isEqualTo("--TEST--");
-					}
+					assertThat(contentOf(resource.getFile())).isEqualTo("--TEST--");
 				});
 	}
 

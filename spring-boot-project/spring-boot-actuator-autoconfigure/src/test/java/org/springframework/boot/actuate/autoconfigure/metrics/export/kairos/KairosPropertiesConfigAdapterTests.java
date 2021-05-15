@@ -41,7 +41,7 @@ class KairosPropertiesConfigAdapterTests
 	}
 
 	@Test
-	void whenPropertiesUrisIsSetAdapterUriReturnsIt() {
+	void whenPropertiesUriIsSetAdapterUriReturnsIt() {
 		KairosProperties properties = createProperties();
 		properties.setUri("https://kairos.example.com:8080/api/v1/datapoints");
 		assertThat(createConfigAdapter(properties).uri())

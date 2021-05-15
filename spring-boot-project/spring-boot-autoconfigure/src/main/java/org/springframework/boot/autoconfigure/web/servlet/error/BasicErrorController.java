@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.boot.autoconfigure.web.ErrorProperties;
-import org.springframework.boot.autoconfigure.web.ErrorProperties.IncludeStacktrace;
+import org.springframework.boot.web.error.ErrorAttributeOptions;
+import org.springframework.boot.web.error.ErrorAttributeOptions.Include;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.server.AbstractServletWebServerFactory;
 import org.springframework.http.HttpStatus;
@@ -32,6 +33,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.Assert;
+import org.springframework.web.HttpMediaTypeNotAcceptableException;
+import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.servlet.ModelAndView;
 
@@ -45,6 +48,7 @@ import org.springframework.web.servlet.ModelAndView;
  * @author Phillip Webb
  * @author Michael Stummvoll
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 1.0.0
  * @see ErrorAttributes
  * @see ErrorProperties
@@ -77,16 +81,11 @@ public class BasicErrorController extends AbstractErrorController {
 		this.errorProperties = errorProperties;
 	}
 
-	@Override
-	public String getErrorPath() {
-		return this.errorProperties.getPath();
-	}
-
 	@RequestMapping(produces = MediaType.TEXT_HTML_VALUE)
 	public ModelAndView errorHtml(HttpServletRequest request, HttpServletResponse response) {
 		HttpStatus status = getStatus(request);
 		Map<String, Object> model = Collections
-				.unmodifiableMap(getErrorAttributes(request, isIncludeStackTrace(request, MediaType.TEXT_HTML)));
+				.unmodifiableMap(getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.TEXT_HTML)));
 		response.setStatus(status.value());
 		ModelAndView modelAndView = resolveErrorView(request, response, status, model);
 		return (modelAndView != null) ? modelAndView : new ModelAndView("error", model);
@@ -94,9 +93,35 @@ public class BasicErrorController extends AbstractErrorController {
 
 	@RequestMapping
 	public ResponseEntity<Map<String, Object>> error(HttpServletRequest request) {
-		Map<String, Object> body = getErrorAttributes(request, isIncludeStackTrace(request, MediaType.ALL));
 		HttpStatus status = getStatus(request);
+		if (status == HttpStatus.NO_CONTENT) {
+			return new ResponseEntity<>(status);
+		}
+		Map<String, Object> body = getErrorAttributes(request, getErrorAttributeOptions(request, MediaType.ALL));
 		return new ResponseEntity<>(body, status);
+	}
+
+	@ExceptionHandler(HttpMediaTypeNotAcceptableException.class)
+	public ResponseEntity<String> mediaTypeNotAcceptable(HttpServletRequest request) {
+		HttpStatus status = getStatus(request);
+		return ResponseEntity.status(status).build();
+	}
+
+	protected ErrorAttributeOptions getErrorAttributeOptions(HttpServletRequest request, MediaType mediaType) {
+		ErrorAttributeOptions options = ErrorAttributeOptions.defaults();
+		if (this.errorProperties.isIncludeException()) {
+			options = options.including(Include.EXCEPTION);
+		}
+		if (isIncludeStackTrace(request, mediaType)) {
+			options = options.including(Include.STACK_TRACE);
+		}
+		if (isIncludeMessage(request, mediaType)) {
+			options = options.including(Include.MESSAGE);
+		}
+		if (isIncludeBindingErrors(request, mediaType)) {
+			options = options.including(Include.BINDING_ERRORS);
+		}
+		return options;
 	}
 
 	/**
@@ -106,14 +131,48 @@ public class BasicErrorController extends AbstractErrorController {
 	 * @return if the stacktrace attribute should be included
 	 */
 	protected boolean isIncludeStackTrace(HttpServletRequest request, MediaType produces) {
-		IncludeStacktrace include = getErrorProperties().getIncludeStacktrace();
-		if (include == IncludeStacktrace.ALWAYS) {
+		switch (getErrorProperties().getIncludeStacktrace()) {
+		case ALWAYS:
 			return true;
-		}
-		if (include == IncludeStacktrace.ON_TRACE_PARAM) {
+		case ON_PARAM:
 			return getTraceParameter(request);
+		default:
+			return false;
 		}
-		return false;
+	}
+
+	/**
+	 * Determine if the message attribute should be included.
+	 * @param request the source request
+	 * @param produces the media type produced (or {@code MediaType.ALL})
+	 * @return if the message attribute should be included
+	 */
+	protected boolean isIncludeMessage(HttpServletRequest request, MediaType produces) {
+		switch (getErrorProperties().getIncludeMessage()) {
+		case ALWAYS:
+			return true;
+		case ON_PARAM:
+			return getMessageParameter(request);
+		default:
+			return false;
+		}
+	}
+
+	/**
+	 * Determine if the errors attribute should be included.
+	 * @param request the source request
+	 * @param produces the media type produced (or {@code MediaType.ALL})
+	 * @return if the errors attribute should be included
+	 */
+	protected boolean isIncludeBindingErrors(HttpServletRequest request, MediaType produces) {
+		switch (getErrorProperties().getIncludeBindingErrors()) {
+		case ALWAYS:
+			return true;
+		case ON_PARAM:
+			return getErrorsParameter(request);
+		default:
+			return false;
+		}
 	}
 
 	/**

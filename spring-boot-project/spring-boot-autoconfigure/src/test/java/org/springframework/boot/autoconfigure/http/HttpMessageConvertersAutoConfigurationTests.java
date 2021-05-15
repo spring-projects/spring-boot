@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.http;
 
+import java.nio.charset.StandardCharsets;
+
 import javax.json.bind.Jsonb;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -28,6 +30,7 @@ import org.springframework.boot.autoconfigure.gson.GsonAutoConfiguration;
 import org.springframework.boot.autoconfigure.http.JacksonHttpMessageConvertersConfiguration.MappingJackson2HttpMessageConverterConfiguration;
 import org.springframework.boot.autoconfigure.jackson.JacksonAutoConfiguration;
 import org.springframework.boot.autoconfigure.jsonb.JsonbAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
@@ -62,7 +65,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class HttpMessageConvertersAutoConfigurationTests {
 
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class));
 
 	@Test
@@ -121,7 +124,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void gsonCanBePreferred() {
-		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:gson").run((context) -> {
+		allOptionsRunner().withPropertyValues("spring.mvc.converters.preferred-json-mapper:gson").run((context) -> {
 			assertConverterBeanExists(context, GsonHttpMessageConverter.class, "gsonHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, GsonHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(JsonbHttpMessageConverter.class);
@@ -152,7 +155,7 @@ class HttpMessageConvertersAutoConfigurationTests {
 
 	@Test
 	void jsonbCanBePreferred() {
-		allOptionsRunner().withPropertyValues("spring.http.converters.preferred-json-mapper:jsonb").run((context) -> {
+		allOptionsRunner().withPropertyValues("spring.mvc.converters.preferred-json-mapper:jsonb").run((context) -> {
 			assertConverterBeanExists(context, JsonbHttpMessageConverter.class, "jsonbHttpMessageConverter");
 			assertConverterBeanRegisteredWithHttpMessageConverters(context, JsonbHttpMessageConverter.class);
 			assertThat(context).doesNotHaveBean(GsonHttpMessageConverter.class);
@@ -235,6 +238,38 @@ class HttpMessageConvertersAutoConfigurationTests {
 		new ReactiveWebApplicationContextRunner()
 				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
 				.run((context) -> assertThat(context).doesNotHaveBean(HttpMessageConverters.class));
+	}
+
+	@Test
+	void whenEncodingCharsetIsNotConfiguredThenStringMessageConverterUsesUtf8() {
+		new WebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
+					assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
+							.isEqualTo(StandardCharsets.UTF_8);
+				});
+	}
+
+	@Test
+	void whenEncodingCharsetIsConfiguredThenStringMessageConverterUsesSpecificCharset() {
+		new WebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+				.withPropertyValues("server.servlet.encoding.charset=UTF-16").run((context) -> {
+					assertThat(context).hasSingleBean(StringHttpMessageConverter.class);
+					assertThat(context.getBean(StringHttpMessageConverter.class).getDefaultCharset())
+							.isEqualTo(StandardCharsets.UTF_16);
+				});
+	}
+
+	@Test // gh-21789
+	void whenAutoConfigurationIsActiveThenServerPropertiesConfigurationPropertiesAreNotEnabled() {
+		new WebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(HttpMessageConvertersAutoConfiguration.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(HttpMessageConverters.class);
+					assertThat(context).doesNotHaveBean(ServerProperties.class);
+				});
 	}
 
 	private ApplicationContextRunner allOptionsRunner() {

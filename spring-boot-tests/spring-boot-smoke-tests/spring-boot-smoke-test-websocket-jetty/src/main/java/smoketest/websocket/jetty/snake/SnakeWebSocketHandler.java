@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,7 +28,7 @@ import org.springframework.web.socket.handler.TextWebSocketHandler;
 
 public class SnakeWebSocketHandler extends TextWebSocketHandler {
 
-	private static final AtomicInteger snakeIds = new AtomicInteger(0);
+	private static final AtomicInteger snakeIds = new AtomicInteger();
 
 	private static final Random random = new Random();
 

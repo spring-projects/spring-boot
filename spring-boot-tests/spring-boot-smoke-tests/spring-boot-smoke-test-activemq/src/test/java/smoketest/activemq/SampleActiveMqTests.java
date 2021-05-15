@@ -39,10 +39,10 @@ class SampleActiveMqTests {
 	private Producer producer;
 
 	@Test
-	void sendSimpleMessage(CapturedOutput capturedOutput) throws InterruptedException {
+	void sendSimpleMessage(CapturedOutput output) throws InterruptedException {
 		this.producer.send("Test message");
 		Thread.sleep(1000L);
-		assertThat(capturedOutput).contains("Test message");
+		assertThat(output).contains("Test message");
 	}
 
 }

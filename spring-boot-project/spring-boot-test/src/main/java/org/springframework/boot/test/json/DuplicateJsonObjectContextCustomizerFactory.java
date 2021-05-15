@@ -17,7 +17,7 @@
 package org.springframework.boot.test.json;
 
 import java.net.URL;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 
@@ -57,36 +57,30 @@ class DuplicateJsonObjectContextCustomizerFactory implements ContextCustomizerFa
 		}
 
 		private List<URL> findJsonObjects() {
-			List<URL> jsonObjects = new ArrayList<>();
 			try {
 				Enumeration<URL> resources = getClass().getClassLoader().getResources("org/json/JSONObject.class");
-				while (resources.hasMoreElements()) {
-					jsonObjects.add(resources.nextElement());
-				}
+				return Collections.list(resources);
 			}
 			catch (Exception ex) {
 				// Continue
 			}
-			return jsonObjects;
+			return Collections.emptyList();
 		}
 
 		private void logDuplicateJsonObjectsWarning(List<URL> jsonObjects) {
 			StringBuilder message = new StringBuilder(
-					String.format("%n%nFound multiple occurrences of" + " org.json.JSONObject on the class path:%n%n"));
+					String.format("%n%nFound multiple occurrences of org.json.JSONObject on the class path:%n%n"));
 			for (URL jsonObject : jsonObjects) {
 				message.append(String.format("\t%s%n", jsonObject));
 			}
-			message.append(String
-					.format("%nYou may wish to exclude one of them to ensure" + " predictable runtime behavior%n"));
+			message.append(
+					String.format("%nYou may wish to exclude one of them to ensure predictable runtime behavior%n"));
 			this.logger.warn(message);
 		}
 
 		@Override
 		public boolean equals(Object obj) {
-			if (obj == null || obj.getClass() != getClass()) {
-				return false;
-			}
-			return true;
+			return (obj != null) && (getClass() == obj.getClass());
 		}
 
 		@Override

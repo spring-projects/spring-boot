@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,9 +17,9 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
+import java.util.Collection;
 
 import io.undertow.Undertow.Builder;
-import io.undertow.servlet.api.DeploymentInfo;
 
 import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 
@@ -34,18 +34,19 @@ import org.springframework.boot.web.server.ConfigurableWebServerFactory;
 public interface ConfigurableUndertowWebServerFactory extends ConfigurableWebServerFactory {
 
 	/**
+	 * Set {@link UndertowBuilderCustomizer}s that should be applied to the Undertow
+	 * {@link Builder}. Calling this method will replace any existing customizers.
+	 * @param customizers the customizers to set
+	 * @since 2.3.0
+	 */
+	void setBuilderCustomizers(Collection<? extends UndertowBuilderCustomizer> customizers);
+
+	/**
 	 * Add {@link UndertowBuilderCustomizer}s that should be used to customize the
 	 * Undertow {@link Builder}.
 	 * @param customizers the customizers to add
 	 */
 	void addBuilderCustomizers(UndertowBuilderCustomizer... customizers);
-
-	/**
-	 * Add {@link UndertowDeploymentInfoCustomizer}s that should be used to customize the
-	 * Undertow {@link DeploymentInfo}.
-	 * @param customizers the customizers to add
-	 */
-	void addDeploymentInfoCustomizers(UndertowDeploymentInfoCustomizer... customizers);
 
 	/**
 	 * Set the buffer size.

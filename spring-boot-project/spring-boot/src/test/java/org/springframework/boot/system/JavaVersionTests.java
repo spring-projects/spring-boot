@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,8 @@
 package org.springframework.boot.system;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.EnabledOnJre;
+import org.junit.jupiter.api.condition.JRE;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -75,6 +77,60 @@ class JavaVersionTests {
 	@Test
 	void isOlderThanWhenGreaterToSmallerShouldBeFalse() {
 		assertThat(JavaVersion.NINE.isOlderThan(JavaVersion.EIGHT)).isFalse();
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_8)
+	void currentJavaVersionEight() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.EIGHT);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_9)
+	void currentJavaVersionNine() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.NINE);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_10)
+	void currentJavaVersionTen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_11)
+	void currentJavaVersionEleven() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.ELEVEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_12)
+	void currentJavaVersionTwelve() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.TWELVE);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_13)
+	void currentJavaVersionThirteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.THIRTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_14)
+	void currentJavaVersionFourteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.FOURTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_15)
+	void currentJavaVersionFifteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.FIFTEEN);
+	}
+
+	@Test
+	@EnabledOnJre(JRE.JAVA_16)
+	void currentJavaVersionSixteen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SIXTEEN);
 	}
 
 }

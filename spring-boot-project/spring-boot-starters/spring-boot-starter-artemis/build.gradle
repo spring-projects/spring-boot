@@ -1,0 +1,17 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for JMS messaging using Apache Artemis"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
+	api("jakarta.jms:jakarta.jms-api")
+	api("jakarta.json:jakarta.json-api")
+	api("org.springframework:spring-jms")
+	api("org.apache.activemq:artemis-jms-client") {
+		exclude group: "commons-logging", module: "commons-logging"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-jms_2.0_spec"
+		exclude group: "org.apache.geronimo.specs", module: "geronimo-json_1.0_spec"
+	}
+}

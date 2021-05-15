@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.logging.LoggingSystem.NoOpLoggingSystem;
+import org.springframework.boot.logging.logback.LogbackLoggingSystem;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
@@ -34,6 +35,11 @@ class LoggingSystemTests {
 	@AfterEach
 	void clearSystemProperty() {
 		System.clearProperty(LoggingSystem.SYSTEM_PROPERTY);
+	}
+
+	@Test
+	void logbackIsTheDefaultLoggingSystem() {
+		assertThat(LoggingSystem.get(getClass().getClassLoader())).isInstanceOf(LogbackLoggingSystem.class);
 	}
 
 	@Test

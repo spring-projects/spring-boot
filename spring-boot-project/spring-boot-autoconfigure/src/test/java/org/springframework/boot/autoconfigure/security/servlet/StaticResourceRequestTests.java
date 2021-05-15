@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,7 +27,6 @@ import org.springframework.mock.web.MockHttpServletRequest;
 import org.springframework.mock.web.MockServletContext;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.web.context.WebApplicationContext;
-import org.springframework.web.context.support.StaticWebApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -49,8 +48,20 @@ class StaticResourceRequestTests {
 		assertMatcher(matcher).matches("/js/file.js");
 		assertMatcher(matcher).matches("/images/file.css");
 		assertMatcher(matcher).matches("/webjars/file.css");
-		assertMatcher(matcher).matches("/foo/favicon.ico");
+		assertMatcher(matcher).matches("/favicon.ico");
+		assertMatcher(matcher).matches("/favicon.png");
+		assertMatcher(matcher).matches("/icons/icon-48x48.png");
 		assertMatcher(matcher).doesNotMatch("/bar");
+	}
+
+	@Test
+	void atCommonLocationsWhenManagementContextShouldNeverMatch() {
+		RequestMatcher matcher = this.resourceRequest.atCommonLocations();
+		assertMatcher(matcher, "management").doesNotMatch("/css/file.css");
+		assertMatcher(matcher, "management").doesNotMatch("/js/file.js");
+		assertMatcher(matcher, "management").doesNotMatch("/images/file.css");
+		assertMatcher(matcher, "management").doesNotMatch("/webjars/file.css");
+		assertMatcher(matcher, "management").doesNotMatch("/foo/favicon.ico");
 	}
 
 	@Test
@@ -70,8 +81,8 @@ class StaticResourceRequestTests {
 	@Test
 	void atLocationWhenHasServletPathShouldMatchLocation() {
 		RequestMatcher matcher = this.resourceRequest.at(StaticResourceLocation.CSS);
-		assertMatcher(matcher, "/foo").matches("/foo", "/css/file.css");
-		assertMatcher(matcher, "/foo").doesNotMatch("/foo", "/js/file.js");
+		assertMatcher(matcher, null, "/foo").matches("/foo", "/css/file.css");
+		assertMatcher(matcher, null, "/foo").doesNotMatch("/foo", "/js/file.js");
 	}
 
 	@Test
@@ -87,15 +98,16 @@ class StaticResourceRequestTests {
 	}
 
 	private RequestMatcherAssert assertMatcher(RequestMatcher matcher) {
-		DispatcherServletPath dispatcherServletPath = () -> "";
-		StaticWebApplicationContext context = new StaticWebApplicationContext();
-		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
-		return assertThat(new RequestMatcherAssert(context, matcher));
+		return assertMatcher(matcher, null, "");
 	}
 
-	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, String path) {
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, String serverNamespace) {
+		return assertMatcher(matcher, serverNamespace, "");
+	}
+
+	private RequestMatcherAssert assertMatcher(RequestMatcher matcher, String serverNamespace, String path) {
 		DispatcherServletPath dispatcherServletPath = () -> path;
-		StaticWebApplicationContext context = new StaticWebApplicationContext();
+		TestWebApplicationContext context = new TestWebApplicationContext(serverNamespace);
 		context.registerBean(DispatcherServletPath.class, () -> dispatcherServletPath);
 		return assertThat(new RequestMatcherAssert(context, matcher));
 	}

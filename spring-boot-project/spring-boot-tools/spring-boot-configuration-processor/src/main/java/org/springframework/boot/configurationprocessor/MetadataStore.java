@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,9 +44,9 @@ public class MetadataStore {
 
 	private static final String ADDITIONAL_METADATA_PATH = "META-INF/additional-spring-configuration-metadata.json";
 
-	private static final String RESOURCES_FOLDER = "resources";
+	private static final String RESOURCES_DIRECTORY = "resources";
 
-	private static final String CLASSES_FOLDER = "classes";
+	private static final String CLASSES_DIRECTORY = "classes";
 
 	private final ProcessingEnvironment environment;
 
@@ -122,18 +122,18 @@ public class MetadataStore {
 				}
 			}
 		}
-		return new File(locateGradleResourcesFolder(standardLocation), ADDITIONAL_METADATA_PATH);
+		return new File(locateGradleResourcesDirectory(standardLocation), ADDITIONAL_METADATA_PATH);
 	}
 
-	private File locateGradleResourcesFolder(File standardAdditionalMetadataLocation) throws FileNotFoundException {
+	private File locateGradleResourcesDirectory(File standardAdditionalMetadataLocation) throws FileNotFoundException {
 		String path = standardAdditionalMetadataLocation.getPath();
-		int index = path.lastIndexOf(CLASSES_FOLDER);
+		int index = path.lastIndexOf(CLASSES_DIRECTORY);
 		if (index < 0) {
 			throw new FileNotFoundException();
 		}
-		String buildFolderPath = path.substring(0, index);
+		String buildDirectoryPath = path.substring(0, index);
 		File classOutputLocation = standardAdditionalMetadataLocation.getParentFile().getParentFile();
-		return new File(buildFolderPath, RESOURCES_FOLDER + '/' + classOutputLocation.getName());
+		return new File(buildDirectoryPath, RESOURCES_DIRECTORY + '/' + classOutputLocation.getName());
 	}
 
 }

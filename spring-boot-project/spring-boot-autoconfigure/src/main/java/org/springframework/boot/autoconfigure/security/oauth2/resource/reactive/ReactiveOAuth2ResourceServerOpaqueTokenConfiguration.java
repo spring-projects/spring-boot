@@ -23,29 +23,29 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.OAuth2Res
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
-import org.springframework.security.oauth2.server.resource.introspection.NimbusReactiveOAuth2TokenIntrospectionClient;
-import org.springframework.security.oauth2.server.resource.introspection.ReactiveOAuth2TokenIntrospectionClient;
+import org.springframework.security.config.web.server.ServerHttpSecurity.OAuth2ResourceServerSpec;
+import org.springframework.security.oauth2.server.resource.introspection.NimbusReactiveOpaqueTokenIntrospector;
+import org.springframework.security.oauth2.server.resource.introspection.ReactiveOpaqueTokenIntrospector;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 
 /**
- * Configures a {@link ReactiveOAuth2TokenIntrospectionClient} when a token introspection
+ * Configures a {@link ReactiveOpaqueTokenIntrospector} when a token introspection
  * endpoint is available. Also configures a {@link SecurityWebFilterChain} if a
- * {@link ReactiveOAuth2TokenIntrospectionClient} bean is found.
+ * {@link ReactiveOpaqueTokenIntrospector} bean is found.
  *
  * @author Madhura Bhave
  */
 class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(ReactiveOAuth2TokenIntrospectionClient.class)
+	@ConditionalOnMissingBean(ReactiveOpaqueTokenIntrospector.class)
 	static class OpaqueTokenIntrospectionClientConfiguration {
 
 		@Bean
 		@ConditionalOnProperty(name = "spring.security.oauth2.resourceserver.opaquetoken.introspection-uri")
-		NimbusReactiveOAuth2TokenIntrospectionClient oAuth2TokenIntrospectionClient(
-				OAuth2ResourceServerProperties properties) {
+		NimbusReactiveOpaqueTokenIntrospector opaqueTokenIntrospector(OAuth2ResourceServerProperties properties) {
 			OAuth2ResourceServerProperties.Opaquetoken opaqueToken = properties.getOpaquetoken();
-			return new NimbusReactiveOAuth2TokenIntrospectionClient(opaqueToken.getIntrospectionUri(),
+			return new NimbusReactiveOpaqueTokenIntrospector(opaqueToken.getIntrospectionUri(),
 					opaqueToken.getClientId(), opaqueToken.getClientSecret());
 		}
 
@@ -56,9 +56,10 @@ class ReactiveOAuth2ResourceServerOpaqueTokenConfiguration {
 	static class WebSecurityConfiguration {
 
 		@Bean
-		@ConditionalOnBean(ReactiveOAuth2TokenIntrospectionClient.class)
+		@ConditionalOnBean(ReactiveOpaqueTokenIntrospector.class)
 		SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-			http.authorizeExchange().anyExchange().authenticated().and().oauth2ResourceServer().opaqueToken();
+			http.authorizeExchange((exchanges) -> exchanges.anyExchange().authenticated());
+			http.oauth2ResourceServer(OAuth2ResourceServerSpec::opaqueToken);
 			return http.build();
 		}
 

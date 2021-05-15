@@ -1,0 +1,74 @@
+= Spring Boot Actuator Web API Documentation
+Andy Wilkinson
+:doctype: book
+:toc: left
+:toclevels: 4
+:numbered:
+:icons: font
+:hide-uri-scheme:
+:docinfo: shared,private
+
+This API documentation describes Spring Boot Actuators web endpoints.
+
+
+
+[[overview]]
+== Overview
+
+Before you proceed, you should read the following topics:
+
+* <<overview-endpoint-urls>>
+* <<overview-timestamps>>
+
+NOTE: In order to get the correct JSON responses documented below, Jackson must be available.
+
+[[overview-endpoint-urls]]
+=== URLs
+
+By default, all web endpoints are available beneath the path `/actuator` with URLs of
+the form `/actuator/\{id}`. The `/actuator` base path can be configured by using the
+`management.endpoints.web.base-path` property, as shown in the following example:
+
+[source,properties,indent=0]
+----
+	management.endpoints.web.base-path=/manage
+----
+
+The preceding `application.properties` example changes the form of the endpoint URLs from
+`/actuator/\{id}` to `/manage/\{id}`. For example, the URL `info` endpoint would become
+`/manage/info`.
+
+
+
+[[overview-timestamps]]
+=== Timestamps
+
+All timestamps that are consumed by the endpoints, either as query parameters or in the
+request body, must be formatted as an offset date and time as specified in
+https://en.wikipedia.org/wiki/ISO_8601[ISO 8601].
+
+
+
+include::endpoints/auditevents.adoc[leveloffset=+1]
+include::endpoints/beans.adoc[leveloffset=+1]
+include::endpoints/caches.adoc[leveloffset=+1]
+include::endpoints/conditions.adoc[leveloffset=+1]
+include::endpoints/configprops.adoc[leveloffset=+1]
+include::endpoints/env.adoc[leveloffset=+1]
+include::endpoints/flyway.adoc[leveloffset=+1]
+include::endpoints/health.adoc[leveloffset=+1]
+include::endpoints/heapdump.adoc[leveloffset=+1]
+include::endpoints/httptrace.adoc[leveloffset=+1]
+include::endpoints/info.adoc[leveloffset=+1]
+include::endpoints/integrationgraph.adoc[leveloffset=+1]
+include::endpoints/liquibase.adoc[leveloffset=+1]
+include::endpoints/logfile.adoc[leveloffset=+1]
+include::endpoints/loggers.adoc[leveloffset=+1]
+include::endpoints/mappings.adoc[leveloffset=+1]
+include::endpoints/metrics.adoc[leveloffset=+1]
+include::endpoints/prometheus.adoc[leveloffset=+1]
+include::endpoints/scheduledtasks.adoc[leveloffset=+1]
+include::endpoints/sessions.adoc[leveloffset=+1]
+include::endpoints/shutdown.adoc[leveloffset=+1]
+include::endpoints/startup.adoc[leveloffset=+1]
+include::endpoints/threaddump.adoc[leveloffset=+1]

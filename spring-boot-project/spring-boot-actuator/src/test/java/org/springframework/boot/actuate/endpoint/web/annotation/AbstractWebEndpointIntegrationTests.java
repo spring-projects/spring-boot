@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,7 @@ import org.springframework.boot.actuate.endpoint.annotation.DeleteOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
 import org.springframework.boot.actuate.endpoint.annotation.WriteOperation;
 import org.springframework.boot.actuate.endpoint.web.WebEndpointResponse;
 import org.springframework.context.ApplicationContext;
@@ -50,6 +51,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.lang.Nullable;
 import org.springframework.test.web.reactive.server.WebTestClient;
+import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.verify;
@@ -59,6 +61,7 @@ import static org.mockito.Mockito.verify;
  *
  * @param <T> the type of application context used by the tests
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 public abstract class AbstractWebEndpointIntegrationTests<T extends ConfigurableApplicationContext & AnnotationConfigRegistry> {
 
@@ -125,6 +128,20 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 	}
 
 	@Test
+	void matchAllRemainingPathsSelectorShouldMatchFullPath() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get().uri("/matchallremaining/one/two/three").exchange().expectStatus().isOk()
+						.expectBody().jsonPath("selection").isEqualTo("one|two|three"));
+	}
+
+	@Test
+	void matchAllRemainingPathsSelectorShouldDecodePath() {
+		load(MatchAllRemainingEndpointConfiguration.class,
+				(client) -> client.get().uri("/matchallremaining/one/two%20three/").exchange().expectStatus().isOk()
+						.expectBody().jsonPath("selection").isEqualTo("one|two three"));
+	}
+
+	@Test
 	void readOperationWithSingleQueryParameters() {
 		load(QueryEndpointConfiguration.class, (client) -> client.get().uri("/query?one=1&two=2").exchange()
 				.expectStatus().isOk().expectBody().jsonPath("query").isEqualTo("1 2"));
@@ -163,7 +180,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			Map<String, Object> body = new HashMap<>();
 			body.put("foo", "one");
 			body.put("bar", "two");
-			client.post().uri("/test").syncBody(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
+			client.post().uri("/test").bodyValue(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
 		});
 	}
 
@@ -194,7 +211,7 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		load(TestEndpointConfiguration.class, (context, client) -> {
 			Map<String, Object> body = new HashMap<>();
 			body.put("foo", "one");
-			client.post().uri("/test").syncBody(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
+			client.post().uri("/test").bodyValue(body).exchange().expectStatus().isNoContent().expectBody().isEmpty();
 			verify(context.getBean(EndpointDelegate.class)).write("one", null);
 		});
 	}
@@ -363,6 +380,12 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 				.expectStatus().isOk().expectBody(String.class).isEqualTo("ACTUATOR: true"));
 	}
 
+	@Test
+	void endpointCanProduceAResponseWithACustomStatus() {
+		load((context) -> context.register(CustomResponseStatusEndpointConfiguration.class),
+				(client) -> client.get().uri("/customstatus").exchange().expectStatus().isEqualTo(234));
+	}
+
 	protected abstract int getPort(T context);
 
 	protected void validateErrorBody(WebTestClient.BodyContentSpec body, HttpStatus status, String path,
@@ -393,8 +416,10 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 			BiConsumer<ApplicationContext, WebTestClient> consumer) {
 		T applicationContext = this.applicationContextSupplier.get();
 		contextCustomizer.accept(applicationContext);
-		applicationContext.getEnvironment().getPropertySources()
-				.addLast(new MapPropertySource("test", Collections.singletonMap("endpointPath", endpointPath)));
+		Map<String, Object> properties = new HashMap<>();
+		properties.put("endpointPath", endpointPath);
+		properties.put("server.error.include-message", "always");
+		applicationContext.getEnvironment().getPropertySources().addLast(new MapPropertySource("test", properties));
 		applicationContext.refresh();
 		try {
 			InetSocketAddress address = new InetSocketAddress(getPort(applicationContext));
@@ -414,6 +439,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@Bean
 		public TestEndpoint testEndpoint(EndpointDelegate endpointDelegate) {
 			return new TestEndpoint(endpointDelegate);
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class MatchAllRemainingEndpointConfiguration {
+
+		@Bean
+		MatchAllRemainingEndpoint matchAllRemainingEndpoint() {
+			return new MatchAllRemainingEndpoint();
 		}
 
 	}
@@ -594,6 +630,17 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 
 	}
 
+	@Configuration(proxyBeanMethods = false)
+	@Import(BaseConfiguration.class)
+	static class CustomResponseStatusEndpointConfiguration {
+
+		@Bean
+		CustomResponseStatusEndpoint customResponseStatusEndpoint() {
+			return new CustomResponseStatusEndpoint();
+		}
+
+	}
+
 	@Endpoint(id = "test")
 	static class TestEndpoint {
 
@@ -621,6 +668,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@DeleteOperation
 		Map<String, Object> deletePart(@Selector String part) {
 			return Collections.singletonMap("part", part);
+		}
+
+	}
+
+	@Endpoint(id = "matchallremaining")
+	static class MatchAllRemainingEndpoint {
+
+		@ReadOperation
+		Map<String, String> select(@Selector(match = Match.ALL_REMAINING) String... selection) {
+			return Collections.singletonMap("selection", StringUtils.arrayToDelimitedString(selection, "|"));
 		}
 
 	}
@@ -806,6 +863,16 @@ public abstract class AbstractWebEndpointIntegrationTests<T extends Configurable
 		@ReadOperation
 		String read(SecurityContext securityContext, String role) {
 			return role + ": " + securityContext.isUserInRole(role);
+		}
+
+	}
+
+	@Endpoint(id = "customstatus")
+	static class CustomResponseStatusEndpoint {
+
+		@ReadOperation
+		WebEndpointResponse<String> read() {
+			return new WebEndpointResponse<>("Custom status", 234);
 		}
 
 	}

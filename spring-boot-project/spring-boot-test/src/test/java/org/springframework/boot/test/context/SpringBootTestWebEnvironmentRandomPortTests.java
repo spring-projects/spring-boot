@@ -54,7 +54,6 @@ class SpringBootTestWebEnvironmentRandomPortTests extends AbstractSpringBootTest
 		@Bean
 		RestTemplateBuilder restTemplateBuilder() {
 			return new RestTemplateBuilder().additionalMessageConverters(new MyConverter());
-
 		}
 
 	}

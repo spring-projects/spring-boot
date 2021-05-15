@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,6 +38,7 @@ import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
 import org.springframework.context.ApplicationListener;
+import org.springframework.core.log.LogMessage;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpStatus;
@@ -114,8 +115,8 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 					return;
 				}
 				catch (SocketException ex) {
-					logger.warn("A failure occurred when uploading to " + this.uri
-							+ ". Upload will be retried in 2 seconds");
+					logger.warn(LogMessage.format(
+							"A failure occurred when uploading to %s. Upload will be retried in 2 seconds", this.uri));
 					logger.debug("Upload failure", ex);
 					Thread.sleep(2000);
 				}
@@ -129,7 +130,7 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 
 	private void logUpload(ClassLoaderFiles classLoaderFiles) {
 		int size = classLoaderFiles.size();
-		logger.info("Uploaded " + size + " class " + ((size != 1) ? "resources" : "resource"));
+		logger.info(LogMessage.format("Uploaded %s class %s", size, (size != 1) ? "resources" : "resource"));
 	}
 
 	private byte[] serialize(ClassLoaderFiles classLoaderFiles) throws IOException {
@@ -143,9 +144,9 @@ public class ClassPathChangeUploader implements ApplicationListener<ClassPathCha
 	private ClassLoaderFiles getClassLoaderFiles(ClassPathChangedEvent event) throws IOException {
 		ClassLoaderFiles files = new ClassLoaderFiles();
 		for (ChangedFiles changedFiles : event.getChangeSet()) {
-			String sourceFolder = changedFiles.getSourceFolder().getAbsolutePath();
+			String sourceDirectory = changedFiles.getSourceDirectory().getAbsolutePath();
 			for (ChangedFile changedFile : changedFiles) {
-				files.addFile(sourceFolder, changedFile.getRelativeName(), asClassLoaderFile(changedFile));
+				files.addFile(sourceDirectory, changedFile.getRelativeName(), asClassLoaderFile(changedFile));
 			}
 		}
 		return files;

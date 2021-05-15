@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ import org.springframework.boot.devtools.restart.Restarter;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceDirectory;
 import org.springframework.util.Assert;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.util.ResourceUtils;
@@ -48,29 +48,29 @@ public class RestartServer {
 
 	private static final Log logger = LogFactory.getLog(RestartServer.class);
 
-	private final SourceFolderUrlFilter sourceFolderUrlFilter;
+	private final SourceDirectoryUrlFilter sourceDirectoryUrlFilter;
 
 	private final ClassLoader classLoader;
 
 	/**
 	 * Create a new {@link RestartServer} instance.
-	 * @param sourceFolderUrlFilter the source filter used to link remote folder to the
-	 * local classpath
+	 * @param sourceDirectoryUrlFilter the source filter used to link remote directory to
+	 * the local classpath
 	 */
-	public RestartServer(SourceFolderUrlFilter sourceFolderUrlFilter) {
-		this(sourceFolderUrlFilter, Thread.currentThread().getContextClassLoader());
+	public RestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter) {
+		this(sourceDirectoryUrlFilter, Thread.currentThread().getContextClassLoader());
 	}
 
 	/**
 	 * Create a new {@link RestartServer} instance.
-	 * @param sourceFolderUrlFilter the source filter used to link remote folder to the
-	 * local classpath
+	 * @param sourceDirectoryUrlFilter the source filter used to link remote directory to
+	 * the local classpath
 	 * @param classLoader the application classloader
 	 */
-	public RestartServer(SourceFolderUrlFilter sourceFolderUrlFilter, ClassLoader classLoader) {
-		Assert.notNull(sourceFolderUrlFilter, "SourceFolderUrlFilter must not be null");
+	public RestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter, ClassLoader classLoader) {
+		Assert.notNull(sourceDirectoryUrlFilter, "SourceDirectoryUrlFilter must not be null");
 		Assert.notNull(classLoader, "ClassLoader must not be null");
-		this.sourceFolderUrlFilter = sourceFolderUrlFilter;
+		this.sourceDirectoryUrlFilter = sourceDirectoryUrlFilter;
 		this.classLoader = classLoader;
 	}
 
@@ -82,27 +82,27 @@ public class RestartServer {
 	public void updateAndRestart(ClassLoaderFiles files) {
 		Set<URL> urls = new LinkedHashSet<>();
 		Set<URL> classLoaderUrls = getClassLoaderUrls();
-		for (SourceFolder folder : files.getSourceFolders()) {
-			for (Entry<String, ClassLoaderFile> entry : folder.getFilesEntrySet()) {
+		for (SourceDirectory directory : files.getSourceDirectories()) {
+			for (Entry<String, ClassLoaderFile> entry : directory.getFilesEntrySet()) {
 				for (URL url : classLoaderUrls) {
 					if (updateFileSystem(url, entry.getKey(), entry.getValue())) {
 						urls.add(url);
 					}
 				}
 			}
-			urls.addAll(getMatchingUrls(classLoaderUrls, folder.getName()));
+			urls.addAll(getMatchingUrls(classLoaderUrls, directory.getName()));
 		}
 		updateTimeStamp(urls);
 		restart(urls, files);
 	}
 
 	private boolean updateFileSystem(URL url, String name, ClassLoaderFile classLoaderFile) {
-		if (!isFolderUrl(url.toString())) {
+		if (!isDirectoryUrl(url.toString())) {
 			return false;
 		}
 		try {
-			File folder = ResourceUtils.getFile(url);
-			File file = new File(folder, name);
+			File directory = ResourceUtils.getFile(url);
+			File file = new File(directory, name);
 			if (file.exists() && file.canWrite()) {
 				if (classLoaderFile.getKind() == Kind.DELETED) {
 					return file.delete();
@@ -117,16 +117,16 @@ public class RestartServer {
 		return false;
 	}
 
-	private boolean isFolderUrl(String urlString) {
+	private boolean isDirectoryUrl(String urlString) {
 		return urlString.startsWith("file:") && urlString.endsWith("/");
 	}
 
-	private Set<URL> getMatchingUrls(Set<URL> urls, String sourceFolder) {
+	private Set<URL> getMatchingUrls(Set<URL> urls, String sourceDirectory) {
 		Set<URL> matchingUrls = new LinkedHashSet<>();
 		for (URL url : urls) {
-			if (this.sourceFolderUrlFilter.isMatch(sourceFolder, url)) {
+			if (this.sourceDirectoryUrlFilter.isMatch(sourceDirectory, url)) {
 				if (logger.isDebugEnabled()) {
-					logger.debug("URL " + url + " matched against source folder " + sourceFolder);
+					logger.debug("URL " + url + " matched against source directory " + sourceDirectory);
 				}
 				matchingUrls.add(url);
 			}
@@ -144,7 +144,6 @@ public class RestartServer {
 			classLoader = classLoader.getParent();
 		}
 		return urls;
-
 	}
 
 	private void updateTimeStamp(Iterable<URL> urls) {

@@ -41,11 +41,11 @@ import java.util.Map;
  * <li>When the requested type is an int, other {@link Number} types will be coerced using
  * {@link Number#intValue() intValue}. Strings that can be coerced using
  * {@link Double#valueOf(String)} will be, and then cast to int.
- * <li><a id="lossy">When the requested type is a long, other {@link Number} types will
- * be coerced using {@link Number#longValue() longValue}. Strings that can be coerced
- * using {@link Double#valueOf(String)} will be, and then cast to long. This two-step
- * conversion is lossy for very large values. For example, the string
- * "9223372036854775806" yields the long 9223372036854775807.</a>
+ * <li><a id="lossy">When the requested type is a long, other {@link Number} types will be
+ * coerced using {@link Number#longValue() longValue}. Strings that can be coerced using
+ * {@link Double#valueOf(String)} will be, and then cast to long. This two-step conversion
+ * is lossy for very large values. For example, the string "9223372036854775806" yields
+ * the long 9223372036854775807.</a>
  * <li>When the requested type is a String, other non-null values will be coerced using
  * {@link String#valueOf(Object)}. Although null cannot be coerced, the sentinel value
  * {@link JSONObject#NULL} is coerced to the string "null".
@@ -117,7 +117,6 @@ public class JSONObject {
 	/**
 	 * Creates a new {@code JSONObject} by copying all name/value mappings from the given
 	 * map.
-	 *
 	 * @param copyFrom a map whose keys are of type {@link String} and whose values are of
 	 * supported types.
 	 * @throws NullPointerException if any of the map's keys are null.
@@ -334,7 +333,6 @@ public class JSONObject {
 
 	/**
 	 * Removes the named mapping if it exists; does nothing otherwise.
-	 *
 	 * @param name the name of the property
 	 * @return the value previously mapped by {@code name}, or null if there was no such
 	 * mapping.
@@ -430,7 +428,6 @@ public class JSONObject {
 	/**
 	 * Returns the value mapped by {@code name} if it exists and is a double or can be
 	 * coerced to a double.
-	 *
 	 * @param name the name of the property
 	 * @return the value
 	 * @throws JSONException if the mapping doesn't exist or cannot be coerced to a
@@ -690,8 +687,7 @@ public class JSONObject {
 	 * @return the array
 	 */
 	public JSONArray names() {
-		return this.nameValuePairs.isEmpty() ? null
-				: new JSONArray(new ArrayList<>(this.nameValuePairs.keySet()));
+		return this.nameValuePairs.isEmpty() ? null : new JSONArray(new ArrayList<>(this.nameValuePairs.keySet()));
 	}
 
 	/**
@@ -823,9 +819,9 @@ public class JSONObject {
 			if (o instanceof Map) {
 				return new JSONObject((Map) o);
 			}
-			if (o instanceof Boolean || o instanceof Byte || o instanceof Character
-					|| o instanceof Double || o instanceof Float || o instanceof Integer
-					|| o instanceof Long || o instanceof Short || o instanceof String) {
+			if (o instanceof Boolean || o instanceof Byte || o instanceof Character || o instanceof Double
+					|| o instanceof Float || o instanceof Integer || o instanceof Long || o instanceof Short
+					|| o instanceof String) {
 				return o;
 			}
 			if (o.getClass().getPackage().getName().startsWith("java.")) {

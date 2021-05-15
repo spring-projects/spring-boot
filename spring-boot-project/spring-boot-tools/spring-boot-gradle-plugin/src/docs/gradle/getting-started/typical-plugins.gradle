@@ -1,0 +1,15 @@
+plugins {
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+// tag::apply[]
+apply plugin: 'java'
+apply plugin: 'io.spring.dependency-management'
+// end::apply[]
+
+task verify {
+	doLast {
+		plugins.getPlugin(org.gradle.api.plugins.JavaPlugin.class)
+		plugins.getPlugin(io.spring.gradle.dependencymanagement.DependencyManagementPlugin.class)
+	}
+}

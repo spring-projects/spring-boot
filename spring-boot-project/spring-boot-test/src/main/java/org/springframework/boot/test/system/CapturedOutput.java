@@ -18,12 +18,12 @@ package org.springframework.boot.test.system;
 
 /**
  * Provides access to {@link System#out System.out} and {@link System#err System.err}
- * output that has been captured by the {@link OutputCaptureExtension}. Can be used to
- * apply assertions either using AssertJ or standard JUnit assertions. For example:
- * <pre class="code">
+ * output that has been captured by the {@link OutputCaptureExtension} or
+ * {@link OutputCaptureRule}. Can be used to apply assertions either using AssertJ or
+ * standard JUnit assertions. For example: <pre class="code">
  * assertThat(output).contains("started"); // Checks all output
  * assertThat(output.getErr()).contains("failed"); // Only checks System.err
- * assertThat(output.getOut()).contains("ok"); // Only checks System.put
+ * assertThat(output.getOut()).contains("ok"); // Only checks System.out
  * </pre>
  *
  * @author Madhura Bhave
@@ -51,19 +51,19 @@ public interface CapturedOutput extends CharSequence {
 
 	/**
 	 * Return all content (both {@link System#out System.out} and {@link System#err
-	 * System.err}) in the order that it was was captured.
+	 * System.err}) in the order that it was captured.
 	 * @return all captured output
 	 */
 	String getAll();
 
 	/**
-	 * Return {@link System#out System.out} content in the order that it was was captured.
+	 * Return {@link System#out System.out} content in the order that it was captured.
 	 * @return {@link System#out System.out} captured output
 	 */
 	String getOut();
 
 	/**
-	 * Return {@link System#err System.err} content in the order that it was was captured.
+	 * Return {@link System#err System.err} content in the order that it was captured.
 	 * @return {@link System#err System.err} captured output
 	 */
 	String getErr();

@@ -82,7 +82,7 @@ class RestAssuredRestDocsAutoConfigurationAdvancedConfigurationIntegrationTests 
 		assertThat(new File(defaultSnippetsDir, "response-fields.md")).isFile();
 	}
 
-	@TestConfiguration
+	@TestConfiguration(proxyBeanMethods = false)
 	static class CustomizationConfiguration {
 
 		@Bean

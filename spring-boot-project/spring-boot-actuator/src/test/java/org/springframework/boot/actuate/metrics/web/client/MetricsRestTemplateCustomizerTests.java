@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.actuate.metrics.web.client;
 
+import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -29,7 +30,11 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.http.HttpMethod;
+import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
+import org.springframework.http.client.ClientHttpRequestExecution;
+import org.springframework.http.client.ClientHttpRequestInterceptor;
+import org.springframework.http.client.ClientHttpResponse;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
@@ -105,6 +110,47 @@ class MetricsRestTemplateCustomizerTests {
 		assertThat(result).isEqualTo("OK");
 		this.registry.get("http.client.requests").tags("uri", "/test/123").timer();
 		this.mockServer.verify();
+	}
+
+	@Test
+	void interceptNestedRequest() {
+		this.mockServer.expect(MockRestRequestMatchers.requestTo("/test/123"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+
+		RestTemplate nestedRestTemplate = new RestTemplate();
+		MockRestServiceServer nestedMockServer = MockRestServiceServer.createServer(nestedRestTemplate);
+		nestedMockServer.expect(MockRestRequestMatchers.requestTo("/nestedTest/124"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+		this.customizer.customize(nestedRestTemplate);
+
+		TestInterceptor testInterceptor = new TestInterceptor(nestedRestTemplate);
+		this.restTemplate.getInterceptors().add(testInterceptor);
+
+		this.restTemplate.getForObject("/test/{id}", String.class, 123);
+		this.registry.get("http.client.requests").tags("uri", "/test/{id}").timer();
+		this.registry.get("http.client.requests").tags("uri", "/nestedTest/{nestedId}").timer();
+
+		this.mockServer.verify();
+		nestedMockServer.verify();
+	}
+
+	private static final class TestInterceptor implements ClientHttpRequestInterceptor {
+
+		private final RestTemplate restTemplate;
+
+		private TestInterceptor(RestTemplate restTemplate) {
+			this.restTemplate = restTemplate;
+		}
+
+		@Override
+		public ClientHttpResponse intercept(HttpRequest request, byte[] body, ClientHttpRequestExecution execution)
+				throws IOException {
+			this.restTemplate.getForObject("/nestedTest/{nestedId}", String.class, 124);
+			return execution.execute(request, body);
+		}
+
 	}
 
 }

@@ -1,0 +1,132 @@
+{
+	"Id": "sha256:44cc64492fb6a6d78d3e6d087f380ae6e479aa1b2c79823b32cdacfcc2f3d715",
+	"RepoTags": [
+		"paketo-buildpacks/cnb:base",
+		"paketo-buildpacks/builder:base-platform-api-0.2"
+	],
+	"RepoDigests": [
+		"paketo-buidpacks/cnb@sha256:5b03a853e636b78c44e475bbc514e2b7b140cc41cca8ab907e9753431ae8c0b0"
+	],
+	"Parent": "",
+	"Comment": "",
+	"Created": "1980-01-01T00:00:01Z",
+	"Container": "",
+	"ContainerConfig": {
+		"Hostname": "",
+		"Domainname": "",
+		"User": "",
+		"AttachStdin": false,
+		"AttachStdout": false,
+		"AttachStderr": false,
+		"Tty": false,
+		"OpenStdin": false,
+		"StdinOnce": false,
+		"Env": null,
+		"Cmd": null,
+		"Image": "",
+		"Volumes": null,
+		"WorkingDir": "",
+		"Entrypoint": null,
+		"OnBuild": null,
+		"Labels": null
+	},
+	"DockerVersion": "",
+	"Author": "",
+	"Config": {
+		"Hostname": "",
+		"Domainname": "",
+		"User": "1000:1000",
+		"AttachStdin": false,
+		"AttachStdout": false,
+		"AttachStderr": false,
+		"Tty": false,
+		"OpenStdin": false,
+		"StdinOnce": false,
+		"Env": [
+			"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+			"CNB_USER_ID=1000",
+			"CNB_GROUP_ID=1000",
+			"CNB_STACK_ID=io.buildpacks.stacks.bionic"
+		],
+		"Cmd": [
+			"/bin/bash"
+		],
+		"ArgsEscaped": true,
+		"Image": "sha256:2d153261a5e359c632a17377cfb5d1986c27b96c8b6e95334bf80f1029dbd4bb",
+		"Volumes": null,
+		"WorkingDir": "/layers",
+		"Entrypoint": null,
+		"OnBuild": null,
+		"Labels": {
+			"io.buildpacks.builder.metadata": "{\"description\":\"Ubuntu bionic base image with buildpacks for Java, NodeJS and Golang\",\"buildpacks\":[{\"id\":\"org.cloudfoundry.googlestackdriver\",\"version\":\"v1.1.11\"},{\"id\":\"org.cloudfoundry.springboot\",\"version\":\"v1.2.13\"},{\"id\":\"org.cloudfoundry.debug\",\"version\":\"v1.2.11\"},{\"id\":\"org.cloudfoundry.tomcat\",\"version\":\"v1.3.18\"},{\"id\":\"org.cloudfoundry.go\",\"version\":\"v0.0.4\"},{\"id\":\"org.cloudfoundry.openjdk\",\"version\":\"v1.2.14\"},{\"id\":\"org.cloudfoundry.buildsystem\",\"version\":\"v1.2.15\"},{\"id\":\"org.cloudfoundry.jvmapplication\",\"version\":\"v1.1.12\"},{\"id\":\"org.cloudfoundry.springautoreconfiguration\",\"version\":\"v1.1.11\"},{\"id\":\"org.cloudfoundry.archiveexpanding\",\"version\":\"v1.0.102\"},{\"id\":\"org.cloudfoundry.jmx\",\"version\":\"v1.1.12\"},{\"id\":\"org.cloudfoundry.nodejs\",\"version\":\"v2.0.8\"},{\"id\":\"org.cloudfoundry.jdbc\",\"version\":\"v1.1.14\"},{\"id\":\"org.cloudfoundry.procfile\",\"version\":\"v1.1.12\"},{\"id\":\"org.cloudfoundry.dotnet-core\",\"version\":\"v0.0.6\"},{\"id\":\"org.cloudfoundry.azureapplicationinsights\",\"version\":\"v1.1.12\"},{\"id\":\"org.cloudfoundry.distzip\",\"version\":\"v1.1.12\"},{\"id\":\"org.cloudfoundry.dep\",\"version\":\"0.0.101\"},{\"id\":\"org.cloudfoundry.go-compiler\",\"version\":\"0.0.105\"},{\"id\":\"org.cloudfoundry.go-mod\",\"version\":\"0.0.89\"},{\"id\":\"org.cloudfoundry.node-engine\",\"version\":\"0.0.163\"},{\"id\":\"org.cloudfoundry.npm\",\"version\":\"0.1.3\"},{\"id\":\"org.cloudfoundry.yarn-install\",\"version\":\"0.1.10\"},{\"id\":\"org.cloudfoundry.dotnet-core-aspnet\",\"version\":\"0.0.118\"},{\"id\":\"org.cloudfoundry.dotnet-core-build\",\"version\":\"0.0.68\"},{\"id\":\"org.cloudfoundry.dotnet-core-conf\",\"version\":\"0.0.115\"},{\"id\":\"org.cloudfoundry.dotnet-core-runtime\",\"version\":\"0.0.127\"},{\"id\":\"org.cloudfoundry.dotnet-core-sdk\",\"version\":\"0.0.122\"},{\"id\":\"org.cloudfoundry.icu\",\"version\":\"0.0.43\"},{\"id\":\"org.cloudfoundry.node-engine\",\"version\":\"0.0.158\"}],\"stack\":{\"runImage\":{\"image\":\"cloudfoundry/run:base-cnb\",\"mirrors\":null}},\"lifecycle\":{\"version\":\"0.7.2\",\"api\":{\"buildpack\":\"0.2\",\"platform\":\"0.3\"}},\"createdBy\":{\"name\":\"Pack CLI\",\"version\":\"v0.9.0 (git sha: d42c384a39f367588f2653f2a99702db910e5ad7)\"}}",
+			"io.buildpacks.buildpack.layers": "{\"org.cloudfoundry.archiveexpanding\":{\"v1.0.102\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:73b1a8ac1f7fca3d545766ce7fd3c56b40a63724ab78e464d71a29da0c6ac31c\"}},\"org.cloudfoundry.azureapplicationinsights\":{\"v1.1.12\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:a0a2f7c467efbb8b1ac222f09013b88b68f3c117ec6b6e9dc95564be50f271ab\"}},\"org.cloudfoundry.buildsystem\":{\"v1.2.15\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:3f50d3a0e1a969a9606b59e5295842d731e425108cb349ce6c69a5b30ea1bab9\"}},\"org.cloudfoundry.debug\":{\"v1.2.11\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:04559213a01cfac69a8d6a6facb58b8681666525c74f605207c40a61a0f4c9b7\"}},\"org.cloudfoundry.dep\":{\"0.0.101\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.tiny\"}],\"layerDiffID\":\"sha256:6aae3a2d671d369eec34dc9146ef267d06c87461f271fbfbe9136775ecf5dfb8\"}},\"org.cloudfoundry.distzip\":{\"v1.1.12\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:a0715e661e13d7d3ded5bdc068edd01e5b3aa0e2805152f4c8a1428b4e0673df\"}},\"org.cloudfoundry.dotnet-core\":{\"v0.0.6\":{\"api\":\"0.2\",\"order\":[{\"group\":[{\"id\":\"org.cloudfoundry.node-engine\",\"version\":\"0.0.158\",\"optional\":true},{\"id\":\"org.cloudfoundry.icu\",\"version\":\"0.0.43\",\"optional\":true},{\"id\":\"org.cloudfoundry.dotnet-core-runtime\",\"version\":\"0.0.127\",\"optional\":true},{\"id\":\"org.cloudfoundry.dotnet-core-aspnet\",\"version\":\"0.0.118\",\"optional\":true},{\"id\":\"org.cloudfoundry.dotnet-core-sdk\",\"version\":\"0.0.122\",\"optional\":true},{\"id\":\"org.cloudfoundry.dotnet-core-build\",\"version\":\"0.0.68\",\"optional\":true},{\"id\":\"org.cloudfoundry.dotnet-core-conf\",\"version\":\"0.0.115\"}]}],\"layerDiffID\":\"sha256:aa0effdf787ecfe74d60d6771006717fd1a9ce1ce0a8161624baa61b68120357\"}},\"org.cloudfoundry.dotnet-core-aspnet\":{\"0.0.118\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:a06615b5adc1a3afb7abd524e82f6900a28910927fcf0d4e9b85fd1fcbeb53ad\"}},\"org.cloudfoundry.dotnet-core-build\":{\"0.0.68\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:26d6f1e76275d17860005f7ab9b74fdd2283fcf84e0446bd88d49a6b4e9609f9\"}},\"org.cloudfoundry.dotnet-core-conf\":{\"0.0.115\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:55f7c052cf70c8ca01b8e241c0c5c8a9675599d4904c69bfb961a472e246238d\"}},\"org.cloudfoundry.dotnet-core-runtime\":{\"0.0.127\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:d9958b816a9ad179fca8c18d17c07e9814b152d461c685e1443bec6f990ab990\"}},\"org.cloudfoundry.dotnet-core-sdk\":{\"0.0.122\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:52142799a4b687fe6e5cf397c41064499ea6cc554b94904d46c1acade998e11f\"}},\"org.cloudfoundry.go\":{\"v0.0.4\":{\"api\":\"0.2\",\"order\":[{\"group\":[{\"id\":\"org.cloudfoundry.go-compiler\",\"version\":\"0.0.105\"},{\"id\":\"org.cloudfoundry.go-mod\",\"version\":\"0.0.89\"}]},{\"group\":[{\"id\":\"org.cloudfoundry.go-compiler\",\"version\":\"0.0.105\"},{\"id\":\"org.cloudfoundry.dep\",\"version\":\"0.0.101\"}]}],\"layerDiffID\":\"sha256:352a299d6af4773322ed3643d8f98b01aad6f15d838d1852e52a0a3ca56c6efb\"}},\"org.cloudfoundry.go-compiler\":{\"0.0.105\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.tiny\"}],\"layerDiffID\":\"sha256:cb21f14e306d94e437c5418d275bcc6efcea6bc9b3d26a400bdf54fa62242c24\"}},\"org.cloudfoundry.go-mod\":{\"0.0.89\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.tiny\"}],\"layerDiffID\":\"sha256:c9da8171f5ca048109ffba5e940e3a7d2db567eda281f92b0eb483173df06add\"}},\"org.cloudfoundry.googlestackdriver\":{\"v1.1.11\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:ff29efc56c31eeccc79a33c6e4abd7b1ab3547d95e1cf83974af65a493576c41\"}},\"org.cloudfoundry.icu\":{\"0.0.43\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:48063dcdd043f9c88604d10fe9542569be8f8111d46806c96b08d77763ffa347\"}},\"org.cloudfoundry.jdbc\":{\"v1.1.14\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:a9c9bbbd69c212b7ab3c1a7f03011ccc4d99a6fce1bf1c785325c7bcad789e62\"}},\"org.cloudfoundry.jmx\":{\"v1.1.12\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:da62dec6eb4ed884952a1b867fd89e3bfe3c510e5c849cc0ac7050ff867a2469\"}},\"org.cloudfoundry.jvmapplication\":{\"v1.1.12\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:c10732392b97c121a78a5f20201c2a5e834a2b8677196cdd49260a489a54fd22\"}},\"org.cloudfoundry.node-engine\":{\"0.0.158\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:70cf83155575fdb607f23ace41e31b1d5cb1c24dbbbf56f71c383b583724d339\"},\"0.0.163\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:11486cb955594f9d43909b60f94209bb6854f502a5a093207b657afbaa38a777\"}},\"org.cloudfoundry.nodejs\":{\"v2.0.8\":{\"api\":\"0.2\",\"order\":[{\"group\":[{\"id\":\"org.cloudfoundry.node-engine\",\"version\":\"0.0.163\"},{\"id\":\"org.cloudfoundry.yarn-install\",\"version\":\"0.1.10\"}]},{\"group\":[{\"id\":\"org.cloudfoundry.node-engine\",\"version\":\"0.0.163\"},{\"id\":\"org.cloudfoundry.npm\",\"version\":\"0.1.3\"}]}],\"layerDiffID\":\"sha256:76fe727e4aafc7f56f01282296ab736521c38b9d19c1ae5ebb193f9cd55fa109\"}},\"org.cloudfoundry.npm\":{\"0.1.3\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:243bbd007cb0ee99b704bfe0cf62e1301baa4095ab4c39b01293787a0e4234f1\"}},\"org.cloudfoundry.openjdk\":{\"v1.2.14\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:486b2abf434bb90cf04bab74f2f8bd2eb488ff90632b56eac4bddcbbf02e8151\"}},\"org.cloudfoundry.procfile\":{\"v1.1.12\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:b7b78159dfdaa0dd484c58652e02fa6b755abfd0adb88f106d16178144e46f33\"}},\"org.cloudfoundry.springautoreconfiguration\":{\"v1.1.11\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:c185540c10fea822c6db1b987fcfe22b55a4662648124b98475db4c9dcddb2ab\"}},\"org.cloudfoundry.springboot\":{\"v1.2.13\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:b87e68574cc7dccbe974fa760702ef650711036bf144fd9da1f3a2d8f6ac335f\"}},\"org.cloudfoundry.tomcat\":{\"v1.3.18\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"io.buildpacks.stacks.bionic\"},{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"}],\"layerDiffID\":\"sha256:467c0082c57b80b48487a9b8429887c0744ddc5b066b3f7678866bde89b78ab2\"}},\"org.cloudfoundry.yarn-install\":{\"0.1.10\":{\"api\":\"0.2\",\"stacks\":[{\"id\":\"org.cloudfoundry.stacks.cflinuxfs3\"},{\"id\":\"io.buildpacks.stacks.bionic\"}],\"layerDiffID\":\"sha256:6aefa0ba7ce01584b4a531b18e36470298cee3b30ecae0e0c64b532a5cebd6e7\"}}}",
+			"io.buildpacks.buildpack.order": "[{\"group\":[{\"id\":\"org.cloudfoundry.openjdk\"},{\"id\":\"org.cloudfoundry.buildsystem\",\"optional\":true},{\"id\":\"org.cloudfoundry.jvmapplication\"},{\"id\":\"org.cloudfoundry.tomcat\",\"optional\":true},{\"id\":\"org.cloudfoundry.springboot\",\"optional\":true},{\"id\":\"org.cloudfoundry.distzip\",\"optional\":true},{\"id\":\"org.cloudfoundry.procfile\",\"optional\":true},{\"id\":\"org.cloudfoundry.azureapplicationinsights\",\"optional\":true},{\"id\":\"org.cloudfoundry.debug\",\"optional\":true},{\"id\":\"org.cloudfoundry.googlestackdriver\",\"optional\":true},{\"id\":\"org.cloudfoundry.jdbc\",\"optional\":true},{\"id\":\"org.cloudfoundry.jmx\",\"optional\":true},{\"id\":\"org.cloudfoundry.springautoreconfiguration\",\"optional\":true}]},{\"group\":[{\"id\":\"org.cloudfoundry.nodejs\"}]},{\"group\":[{\"id\":\"org.cloudfoundry.go\"}]},{\"group\":[{\"id\":\"org.cloudfoundry.dotnet-core\"}]},{\"group\":[{\"id\":\"org.cloudfoundry.procfile\"}]}]",
+			"io.buildpacks.stack.id": "io.buildpacks.stacks.bionic",
+			"io.buildpacks.stack.mixins": "[\"build:git\",\"build:build-essential\"]"
+		}
+	},
+	"Architecture": "amd64",
+	"Os": "linux",
+	"Size": 688884758,
+	"VirtualSize": 688884758,
+	"GraphDriver": {
+		"Data": {
+			"LowerDir": "/var/lib/docker/overlay2/6a79181b2840da2706624f46ce5abd4448973b4f951925d5a276b273256063b2/diff:/var/lib/docker/overlay2/429419a203100f60ab16ec6c879fce975c8138422b9053f80accd6124c730fc2/diff:/var/lib/docker/overlay2/6e45ed6daf4f4f3b90fd1ec5fa958775000875661d3e8be3f1af218d192b058d/diff:/var/lib/docker/overlay2/22928ad308cdd55b3fe849d92b6e38c6bc303ba7c9beb8c0e79aa958e16b1864/diff:/var/lib/docker/overlay2/2ca9ec213226a1604f57c8e141d6f1168134a5cb2ccd8f91ee9be5a39036e6bf/diff:/var/lib/docker/overlay2/96ae944fe00ec20cf5b4441b112ebcc9395faaf08108c9ee38c62e1da33af1c8/diff:/var/lib/docker/overlay2/13ee52e300e476e27350c9ac6274dedf26af85c3079b42a41f9dfc92eff57a80/diff:/var/lib/docker/overlay2/223edb4cc62a2ba2b8bda866905a55c4798c6c32e31d22d60e6ed4f3169ce85e/diff:/var/lib/docker/overlay2/a41235cd7277299cb74ead47def3771885948719e24075ea3bf37580f3af7ae2/diff:/var/lib/docker/overlay2/ed0438e8e2c27b9d62ad21a0761237c350a2ffc9e52f47c019e4f627091c832e/diff:/var/lib/docker/overlay2/0c27c8229b31eafc57ab739b44962dcc07b72f3d8950888873ecb3cfd385032f/diff:/var/lib/docker/overlay2/0957cbcca052cd58bcf9a3d945b0e6876b0df79c1c534da1872c3415a019427d/diff:/var/lib/docker/overlay2/b621414d53d71349c07df8ed45e3e04b2e97bfbaf4bf0d86463f46e0f810eeb4/diff:/var/lib/docker/overlay2/ad521bc47f0bb44262358cf47c3d81a544d098494cf24a5b510620d34eb9c353/diff:/var/lib/docker/overlay2/081501d5bfbd927e69c10eb320513c7c0d5f00bea8cf9e55faa90579fd33adf4/diff:/var/lib/docker/overlay2/fb1ba66bee5568f5700c72865d020d4171a62bfdd099c3cc05b9a253d36a35a4/diff:/var/lib/docker/overlay2/06bcc6b3adeca727d554f1a745ee33242dfe1b3c6392023ac947666057303288/diff:/var/lib/docker/overlay2/1c5397d63d893202dffde29013ee826fb695bda26c718ee03ddde376be4da0a3/diff:/var/lib/docker/overlay2/76075fb7fd3c6b3fb116fb3b464e220918e56d94461c61af9a1aff288ebdba60/diff:/var/lib/docker/overlay2/43d1026bb7b618393912ecc9ddf57b604336184d5f8dc70bcf6332b5f08a3e8d/diff:/var/lib/docker/overlay2/ee27d1fba3deaca0556f7bab171cb3368f169011dd132cf335b5308728f6db8f/diff:/var/lib/docker/overlay2/464d3ec8d86ff31dcb5063ea25521368ea8e9c7964f65e15ff5e0e1ecdbe991e/diff:/var/lib/docker/overlay2/a4a80c33c8b78f68bdc9dbd5903cc2ba1d48e78b9a97d43acb018823ece8e6cb/diff:/var/lib/docker/overlay2/6494f2f1693cff8b16d51fa95620eb0bb691a76fb39b5175d953649577791297/diff:/var/lib/docker/overlay2/9d49e146f82eb5fc4fd81613538e9c5f5f95091fbbc8c49729c6c9140ae356de/diff:/var/lib/docker/overlay2/2934818c52bcd017abe000e71342d67fbc9ccb7dbc165ce05e3250e2110229a5/diff:/var/lib/docker/overlay2/651ca06b2bf75e2122855264287fc937f30d2b49229d628909895be7128b4eb6/diff:/var/lib/docker/overlay2/c93bab59be44fa1b66689dc059d26742d00d2e787d06c3236e1f116199c9807e/diff:/var/lib/docker/overlay2/d0a8e2a0c7e0df172f7a8ebe75e2dce371bb6cc65531b06799bc677c5b5e3627/diff:/var/lib/docker/overlay2/7d14bac240e0d7936351e3fac80b7fbe2a209f4de8992091c4f75e41f9627852/diff:/var/lib/docker/overlay2/d6b192ea137a4ae95e309d263ee8c890e35da02aacd9bdcf5adbd4c28a0c0a3f/diff:/var/lib/docker/overlay2/335bfb632ab7723e25fb5dc7b67389e6ec38178ef10bfbf83337501403e61574/diff:/var/lib/docker/overlay2/0293c7e3472da58f51cbdf15fb293ff71e32c1f80f83f00fb09f8941deef5e43/diff:/var/lib/docker/overlay2/55faa8b47bcb0dd29c3836580f451a0461dd499065af9c830beff6e8329ab484/diff:/var/lib/docker/overlay2/afcb6e109c1ba7d71b8a8b7e573d4ce04f22da3fe0ee523359db5cfb95e65bb6/diff:/var/lib/docker/overlay2/b42eefd9bf6629ae9d16e7aba6ba3939d37816aba7a0999f6d639012a3119be1/diff:/var/lib/docker/overlay2/a9832c8f81ee889a622ce4d95d9f4bab2f91d30e18f69bfd7cfc385c781068d4/diff:/var/lib/docker/overlay2/224041c135f13881a98b9e833584bedab81d5650061457f522a1ebd1daa2c77a/diff:/var/lib/docker/overlay2/73dfd4e2075fccb239b3d5e9b33b32b8e410bdc3cd5a620b41346f44cc5c51f7/diff:/var/lib/docker/overlay2/b3924ed7c91730f6714d33c455db888604b59ab093033b3f59ac16ecdd777987/diff:/var/lib/docker/overlay2/e36a32cd0ab20b216a8db1a8a166b17464399e4d587d22504088a7a6ef0a68a4/diff:/var/lib/docker/overlay2/3334e94fe191333b65f571912c0fcfbbf31aeb090a2fb9b4cfdbc32a37c0fe5f/diff",
+			"MergedDir": "/var/lib/docker/overlay2/f5d133c5929da8cc8266cbbc3e36f924f4a9c835f943fb436445a26b7e1bcc56/merged",
+			"UpperDir": "/var/lib/docker/overlay2/f5d133c5929da8cc8266cbbc3e36f924f4a9c835f943fb436445a26b7e1bcc56/diff",
+			"WorkDir": "/var/lib/docker/overlay2/f5d133c5929da8cc8266cbbc3e36f924f4a9c835f943fb436445a26b7e1bcc56/work"
+		},
+		"Name": "overlay2"
+	},
+	"RootFS": {
+		"Type": "layers",
+		"Layers": [
+			"sha256:c8be1b8f4d60d99c281fc2db75e0f56df42a83ad2f0b091621ce19357e19d853",
+			"sha256:977183d4e9995d9cd5ffdfc0f29e911ec9de777bcb0f507895daa1068477f76f",
+			"sha256:6597da2e2e52f4d438ad49a14ca79324f130a9ea08745505aa174a8db51cb79d",
+			"sha256:16542a8fc3be1bfaff6ed1daa7922e7c3b47b6c3a8d98b7fca58b9517bb99b75",
+			"sha256:2df36adfe1af661aebb75a0db796b074bb8f861fbc8f98f6f642570692b3b133",
+			"sha256:f499c7d34e01d860492ef1cc34b7d7e1319b3c3c81ee7d23258b21605b5902ca",
+			"sha256:c4bf1d4e5d4adb566b173a0769d247f67c5dd8ff90dfdcebd8c7060f1c06caa9",
+			"sha256:15259abd479904cbe0d8d421e5b05b2e5745e2bf82e62cdd7fb6d3eafbe4168a",
+			"sha256:6aa3691a73805f608e5fce69fb6bc89aec8362f58a6b4be2682515e9cfa3cc1a",
+			"sha256:2d6ad1b66f5660dd860c1fe2d90d26398fcfab4dc1c87c3d5e7c0fc24f8d6fb2",
+			"sha256:ff29efc56c31eeccc79a33c6e4abd7b1ab3547d95e1cf83974af65a493576c41",
+			"sha256:b87e68574cc7dccbe974fa760702ef650711036bf144fd9da1f3a2d8f6ac335f",
+			"sha256:04559213a01cfac69a8d6a6facb58b8681666525c74f605207c40a61a0f4c9b7",
+			"sha256:467c0082c57b80b48487a9b8429887c0744ddc5b066b3f7678866bde89b78ab2",
+			"sha256:352a299d6af4773322ed3643d8f98b01aad6f15d838d1852e52a0a3ca56c6efb",
+			"sha256:486b2abf434bb90cf04bab74f2f8bd2eb488ff90632b56eac4bddcbbf02e8151",
+			"sha256:3f50d3a0e1a969a9606b59e5295842d731e425108cb349ce6c69a5b30ea1bab9",
+			"sha256:c10732392b97c121a78a5f20201c2a5e834a2b8677196cdd49260a489a54fd22",
+			"sha256:c185540c10fea822c6db1b987fcfe22b55a4662648124b98475db4c9dcddb2ab",
+			"sha256:73b1a8ac1f7fca3d545766ce7fd3c56b40a63724ab78e464d71a29da0c6ac31c",
+			"sha256:da62dec6eb4ed884952a1b867fd89e3bfe3c510e5c849cc0ac7050ff867a2469",
+			"sha256:76fe727e4aafc7f56f01282296ab736521c38b9d19c1ae5ebb193f9cd55fa109",
+			"sha256:a9c9bbbd69c212b7ab3c1a7f03011ccc4d99a6fce1bf1c785325c7bcad789e62",
+			"sha256:b7b78159dfdaa0dd484c58652e02fa6b755abfd0adb88f106d16178144e46f33",
+			"sha256:aa0effdf787ecfe74d60d6771006717fd1a9ce1ce0a8161624baa61b68120357",
+			"sha256:a0a2f7c467efbb8b1ac222f09013b88b68f3c117ec6b6e9dc95564be50f271ab",
+			"sha256:a0715e661e13d7d3ded5bdc068edd01e5b3aa0e2805152f4c8a1428b4e0673df",
+			"sha256:6aae3a2d671d369eec34dc9146ef267d06c87461f271fbfbe9136775ecf5dfb8",
+			"sha256:cb21f14e306d94e437c5418d275bcc6efcea6bc9b3d26a400bdf54fa62242c24",
+			"sha256:c9da8171f5ca048109ffba5e940e3a7d2db567eda281f92b0eb483173df06add",
+			"sha256:11486cb955594f9d43909b60f94209bb6854f502a5a093207b657afbaa38a777",
+			"sha256:243bbd007cb0ee99b704bfe0cf62e1301baa4095ab4c39b01293787a0e4234f1",
+			"sha256:6aefa0ba7ce01584b4a531b18e36470298cee3b30ecae0e0c64b532a5cebd6e7",
+			"sha256:a06615b5adc1a3afb7abd524e82f6900a28910927fcf0d4e9b85fd1fcbeb53ad",
+			"sha256:26d6f1e76275d17860005f7ab9b74fdd2283fcf84e0446bd88d49a6b4e9609f9",
+			"sha256:55f7c052cf70c8ca01b8e241c0c5c8a9675599d4904c69bfb961a472e246238d",
+			"sha256:d9958b816a9ad179fca8c18d17c07e9814b152d461c685e1443bec6f990ab990",
+			"sha256:52142799a4b687fe6e5cf397c41064499ea6cc554b94904d46c1acade998e11f",
+			"sha256:48063dcdd043f9c88604d10fe9542569be8f8111d46806c96b08d77763ffa347",
+			"sha256:70cf83155575fdb607f23ace41e31b1d5cb1c24dbbbf56f71c383b583724d339",
+			"sha256:6cf0f8f815d5371cf5c04e7ebf76c62467948d693b8343184d1446036980d261",
+			"sha256:7cbffcbb09fc5e9d00372e80990016609c09cc3113429ddc951c4a19b1a5ec72",
+			"sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef"
+		]
+	},
+	"Metadata": {
+		"LastTagTime": "0001-01-01T00:00:00Z"
+	}
+}

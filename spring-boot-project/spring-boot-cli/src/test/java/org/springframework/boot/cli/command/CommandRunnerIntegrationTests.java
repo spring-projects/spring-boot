@@ -16,12 +16,10 @@
 
 package org.springframework.boot.cli.command;
 
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.cli.command.run.RunCommand;
-import org.springframework.boot.test.system.CapturedOutput;
-import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.cli.command.status.ExitStatus;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -29,26 +27,49 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Integration tests for {@link CommandRunner}.
  *
  * @author Dave Syer
+ * @author Andy Wilkinson
  */
-@ExtendWith(OutputCaptureExtension.class)
 class CommandRunnerIntegrationTests {
 
-	@Test
-	void debugAddsAutoconfigReport(CapturedOutput capturedOutput) {
-		CommandRunner runner = new CommandRunner("spring");
-		runner.addCommand(new RunCommand());
-		// -d counts as "debug" for the spring command, but not for the
-		// LoggingApplicationListener
-		runner.runAndHandleErrors("run", "samples/app.groovy", "-d");
-		assertThat(capturedOutput).contains("Negative matches:");
+	@BeforeEach
+	void clearDebug() {
+		System.clearProperty("debug");
 	}
 
 	@Test
-	void debugSwitchedOffForAppArgs(CapturedOutput capturedOutput) {
+	void debugEnabledAndArgumentRemovedWhenNotAnApplicationArgument() {
 		CommandRunner runner = new CommandRunner("spring");
-		runner.addCommand(new RunCommand());
-		runner.runAndHandleErrors("run", "samples/app.groovy", "--", "-d");
-		assertThat(capturedOutput).doesNotContain("Negative matches:");
+		ArgHandlingCommand command = new ArgHandlingCommand();
+		runner.addCommand(command);
+		runner.runAndHandleErrors("args", "samples/app.groovy", "--debug");
+		assertThat(command.args).containsExactly("samples/app.groovy");
+		assertThat(System.getProperty("debug")).isEqualTo("true");
+	}
+
+	@Test
+	void debugNotEnabledAndArgumentRetainedWhenAnApplicationArgument() {
+		CommandRunner runner = new CommandRunner("spring");
+		ArgHandlingCommand command = new ArgHandlingCommand();
+		runner.addCommand(command);
+		runner.runAndHandleErrors("args", "samples/app.groovy", "--", "--debug");
+		assertThat(command.args).containsExactly("samples/app.groovy", "--", "--debug");
+		assertThat(System.getProperty("debug")).isNull();
+	}
+
+	static class ArgHandlingCommand extends AbstractCommand {
+
+		private String[] args;
+
+		ArgHandlingCommand() {
+			super("args", "");
+		}
+
+		@Override
+		public ExitStatus run(String... args) throws Exception {
+			this.args = args;
+			return ExitStatus.OK;
+		}
+
 	}
 
 }

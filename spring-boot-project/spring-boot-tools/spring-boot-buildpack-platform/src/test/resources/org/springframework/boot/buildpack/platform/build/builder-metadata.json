@@ -1,0 +1,142 @@
+{
+	"description": "Ubuntu bionic base image with buildpacks for Java, NodeJS and Golang",
+	"buildpacks": [
+		{
+			"id": "org.cloudfoundry.googlestackdriver",
+			"version": "v1.1.11"
+		},
+		{
+			"id": "org.cloudfoundry.springboot",
+			"version": "v1.2.13"
+		},
+		{
+			"id": "org.cloudfoundry.debug",
+			"version": "v1.2.11"
+		},
+		{
+			"id": "org.cloudfoundry.tomcat",
+			"version": "v1.3.18"
+		},
+		{
+			"id": "org.cloudfoundry.go",
+			"version": "v0.0.4"
+		},
+		{
+			"id": "org.cloudfoundry.openjdk",
+			"version": "v1.2.14"
+		},
+		{
+			"id": "org.cloudfoundry.buildsystem",
+			"version": "v1.2.15"
+		},
+		{
+			"id": "org.cloudfoundry.jvmapplication",
+			"version": "v1.1.12"
+		},
+		{
+			"id": "org.cloudfoundry.springautoreconfiguration",
+			"version": "v1.1.11"
+		},
+		{
+			"id": "org.cloudfoundry.archiveexpanding",
+			"version": "v1.0.102"
+		},
+		{
+			"id": "org.cloudfoundry.jmx",
+			"version": "v1.1.12"
+		},
+		{
+			"id": "org.cloudfoundry.nodejs",
+			"version": "v2.0.8"
+		},
+		{
+			"id": "org.cloudfoundry.jdbc",
+			"version": "v1.1.14"
+		},
+		{
+			"id": "org.cloudfoundry.procfile",
+			"version": "v1.1.12"
+		},
+		{
+			"id": "org.cloudfoundry.dotnet-core",
+			"version": "v0.0.6"
+		},
+		{
+			"id": "org.cloudfoundry.azureapplicationinsights",
+			"version": "v1.1.12"
+		},
+		{
+			"id": "org.cloudfoundry.distzip",
+			"version": "v1.1.12"
+		},
+		{
+			"id": "org.cloudfoundry.dep",
+			"version": "0.0.101"
+		},
+		{
+			"id": "org.cloudfoundry.go-compiler",
+			"version": "0.0.105"
+		},
+		{
+			"id": "org.cloudfoundry.go-mod",
+			"version": "0.0.89"
+		},
+		{
+			"id": "org.cloudfoundry.node-engine",
+			"version": "0.0.163"
+		},
+		{
+			"id": "org.cloudfoundry.npm",
+			"version": "0.1.3"
+		},
+		{
+			"id": "org.cloudfoundry.yarn-install",
+			"version": "0.1.10"
+		},
+		{
+			"id": "org.cloudfoundry.dotnet-core-aspnet",
+			"version": "0.0.118"
+		},
+		{
+			"id": "org.cloudfoundry.dotnet-core-build",
+			"version": "0.0.68"
+		},
+		{
+			"id": "org.cloudfoundry.dotnet-core-conf",
+			"version": "0.0.115"
+		},
+		{
+			"id": "org.cloudfoundry.dotnet-core-runtime",
+			"version": "0.0.127"
+		},
+		{
+			"id": "org.cloudfoundry.dotnet-core-sdk",
+			"version": "0.0.122"
+		},
+		{
+			"id": "org.cloudfoundry.icu",
+			"version": "0.0.43"
+		},
+		{
+			"id": "org.cloudfoundry.node-engine",
+			"version": "0.0.158"
+		}
+	],
+	"stack": {
+		"runImage": {
+			"image": "cloudfoundry/run:base-cnb",
+			"mirrors": null
+		}
+	},
+	"lifecycle": {
+		"version": "0.7.2",
+		"api": {
+			"buildpack": "0.2",
+			"platform": "0.4"
+		}
+	},
+	"createdBy": {
+		"name": "Pack CLI",
+		"version": "v0.9.0 (git sha: d42c384a39f367588f2653f2a99702db910e5ad7)"
+	}
+}

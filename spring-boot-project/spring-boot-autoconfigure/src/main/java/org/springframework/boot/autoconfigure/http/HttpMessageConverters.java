@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.http;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -24,13 +23,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 
-import org.springframework.http.converter.FormHttpMessageConverter;
 import org.springframework.http.converter.HttpMessageConverter;
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.AbstractXmlHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.util.ClassUtils;
-import org.springframework.util.ReflectionUtils;
 import org.springframework.web.client.RestTemplate;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport;
 
@@ -44,8 +41,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupp
  * needed, otherwise default converters will be used.
  * <p>
  * NOTE: The default converters used are the same as standard Spring MVC (see
- * {@link WebMvcConfigurationSupport#getMessageConverters} with some slight re-ordering to
- * put XML converters at the back of the list.
+ * {@link WebMvcConfigurationSupport}) with some slight re-ordering to put XML converters
+ * at the back of the list.
  *
  * @author Dave Syer
  * @author Phillip Webb
@@ -140,17 +137,10 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 
 	private void configurePartConverters(AllEncompassingFormHttpMessageConverter formConverter,
 			Collection<HttpMessageConverter<?>> converters) {
-		List<HttpMessageConverter<?>> partConverters = extractPartConverters(formConverter);
+		List<HttpMessageConverter<?>> partConverters = formConverter.getPartConverters();
 		List<HttpMessageConverter<?>> combinedConverters = getCombinedConverters(converters, partConverters);
 		combinedConverters = postProcessPartConverters(combinedConverters);
 		formConverter.setPartConverters(combinedConverters);
-	}
-
-	@SuppressWarnings("unchecked")
-	private List<HttpMessageConverter<?>> extractPartConverters(FormHttpMessageConverter formConverter) {
-		Field field = ReflectionUtils.findField(FormHttpMessageConverter.class, "partConverters");
-		ReflectionUtils.makeAccessible(field);
-		return (List<HttpMessageConverter<?>>) ReflectionUtils.getField(field, formConverter);
 	}
 
 	/**
@@ -177,7 +167,7 @@ public class HttpMessageConverters implements Iterable<HttpMessageConverter<?>> 
 
 	private List<HttpMessageConverter<?>> getDefaultConverters() {
 		List<HttpMessageConverter<?>> converters = new ArrayList<>();
-		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation." + "WebMvcConfigurationSupport",
+		if (ClassUtils.isPresent("org.springframework.web.servlet.config.annotation.WebMvcConfigurationSupport",
 				null)) {
 			converters.addAll(new WebMvcConfigurationSupport() {
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,18 +58,20 @@ public class FileEncodingApplicationListener
 	@Override
 	public void onApplicationEvent(ApplicationEnvironmentPreparedEvent event) {
 		ConfigurableEnvironment environment = event.getEnvironment();
-		if (!environment.containsProperty("spring.mandatory-file-encoding")) {
+		String desired = environment.getProperty("spring.mandatory-file-encoding");
+		if (desired == null) {
 			return;
 		}
 		String encoding = System.getProperty("file.encoding");
-		String desired = environment.getProperty("spring.mandatory-file-encoding");
 		if (encoding != null && !desired.equalsIgnoreCase(encoding)) {
-			logger.error("System property 'file.encoding' is currently '" + encoding + "'. It should be '" + desired
-					+ "' (as defined in 'spring.mandatoryFileEncoding').");
-			logger.error("Environment variable LANG is '" + System.getenv("LANG")
-					+ "'. You could use a locale setting that matches encoding='" + desired + "'.");
-			logger.error("Environment variable LC_ALL is '" + System.getenv("LC_ALL")
-					+ "'. You could use a locale setting that matches encoding='" + desired + "'.");
+			if (logger.isErrorEnabled()) {
+				logger.error("System property 'file.encoding' is currently '" + encoding + "'. It should be '" + desired
+						+ "' (as defined in 'spring.mandatoryFileEncoding').");
+				logger.error("Environment variable LANG is '" + System.getenv("LANG")
+						+ "'. You could use a locale setting that matches encoding='" + desired + "'.");
+				logger.error("Environment variable LC_ALL is '" + System.getenv("LC_ALL")
+						+ "'. You could use a locale setting that matches encoding='" + desired + "'.");
+			}
 			throw new IllegalStateException("The Java Virtual Machine has not been configured to use the "
 					+ "desired default character encoding (" + desired + ").");
 		}

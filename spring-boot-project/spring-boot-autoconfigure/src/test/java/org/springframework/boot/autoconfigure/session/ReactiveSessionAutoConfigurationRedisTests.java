@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,8 +25,10 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
-import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
+import org.springframework.session.MapSession;
+import org.springframework.session.SaveMode;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -47,15 +49,27 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 		this.contextRunner.withPropertyValues("spring.session.store-type=redis")
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:"));
+				.run(validateSpringSessionUsesRedis("spring:session:", SaveMode.ON_SET_ATTRIBUTE));
 	}
 
 	@Test
 	void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveMongoOperationsSessionRepository.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveMongoSessionRepository.class))
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.run(validateSpringSessionUsesRedis("spring:session:"));
+				.run(validateSpringSessionUsesRedis("spring:session:", SaveMode.ON_SET_ATTRIBUTE));
+	}
+
+	@Test
+	void defaultConfigWithCustomTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=redis", "spring.session.timeout=1m")
+				.withConfiguration(
+						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
+				.run((context) -> {
+					ReactiveRedisSessionRepository repository = validateSessionRepository(context,
+							ReactiveRedisSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval", 60);
+				});
 	}
 
 	@Test
@@ -63,15 +77,20 @@ class ReactiveSessionAutoConfigurationRedisTests extends AbstractSessionAutoConf
 		this.contextRunner
 				.withConfiguration(
 						AutoConfigurations.of(RedisAutoConfiguration.class, RedisReactiveAutoConfiguration.class))
-				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo")
-				.run(validateSpringSessionUsesRedis("foo:"));
+				.withPropertyValues("spring.session.store-type=redis", "spring.session.redis.namespace=foo",
+						"spring.session.redis.save-mode=on-get-attribute")
+				.run(validateSpringSessionUsesRedis("foo:", SaveMode.ON_GET_ATTRIBUTE));
 	}
 
-	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace) {
+	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesRedis(String namespace,
+			SaveMode saveMode) {
 		return (context) -> {
-			ReactiveRedisOperationsSessionRepository repository = validateSessionRepository(context,
-					ReactiveRedisOperationsSessionRepository.class);
+			ReactiveRedisSessionRepository repository = validateSessionRepository(context,
+					ReactiveRedisSessionRepository.class);
+			assertThat(repository).hasFieldOrPropertyWithValue("defaultMaxInactiveInterval",
+					MapSession.DEFAULT_MAX_INACTIVE_INTERVAL_SECONDS);
 			assertThat(repository).hasFieldOrPropertyWithValue("namespace", namespace);
+			assertThat(repository).hasFieldOrPropertyWithValue("saveMode", saveMode);
 		};
 	}
 

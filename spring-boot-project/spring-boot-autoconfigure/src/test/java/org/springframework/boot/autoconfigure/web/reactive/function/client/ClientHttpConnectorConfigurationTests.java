@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,9 @@ import org.eclipse.jetty.io.ByteBufferPool;
 import org.eclipse.jetty.util.thread.Scheduler;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
+import org.springframework.context.annotation.Bean;
 import org.springframework.http.client.reactive.JettyClientHttpConnector;
 import org.springframework.http.client.reactive.JettyResourceFactory;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -34,6 +37,7 @@ import static org.mockito.Mockito.mock;
  * Tests for {@link ClientHttpConnectorConfiguration}.
  *
  * @author Phillip Webb
+ * @author Brian Clozel
  */
 class ClientHttpConnectorConfigurationTests {
 
@@ -66,6 +70,30 @@ class ClientHttpConnectorConfigurationTests {
 		ClientHttpConnectorConfiguration.JettyClient jettyClient = new ClientHttpConnectorConfiguration.JettyClient();
 		// We shouldn't usually call this method directly since it's on a non-proxy config
 		return ReflectionTestUtils.invokeMethod(jettyClient, "jettyClientHttpConnector", jettyResourceFactory);
+	}
+
+	@Test
+	void shouldApplyHttpClientMapper() {
+		new ReactiveWebApplicationContextRunner()
+				.withConfiguration(AutoConfigurations.of(ClientHttpConnectorConfiguration.ReactorNetty.class))
+				.withUserConfiguration(CustomHttpClientMapper.class).run((context) -> {
+					context.getBean("reactorClientHttpConnector");
+					assertThat(CustomHttpClientMapper.called).isTrue();
+				});
+	}
+
+	static class CustomHttpClientMapper {
+
+		static boolean called = false;
+
+		@Bean
+		ReactorNettyHttpClientMapper clientMapper() {
+			return (client) -> {
+				called = true;
+				return client.baseUrl("/test");
+			};
+		}
+
 	}
 
 }

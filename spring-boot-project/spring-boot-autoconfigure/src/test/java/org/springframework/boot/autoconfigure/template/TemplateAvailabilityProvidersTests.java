@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,8 +21,9 @@ import java.util.Collections;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.context.ApplicationContext;
 import org.springframework.core.io.ResourceLoader;
@@ -40,6 +41,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class TemplateAvailabilityProvidersTests {
 
 	private TemplateAvailabilityProviders providers;
@@ -58,7 +60,6 @@ class TemplateAvailabilityProvidersTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.providers = new TemplateAvailabilityProviders(Collections.singleton(this.provider));
 	}
 

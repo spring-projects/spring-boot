@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,7 @@
 package org.springframework.boot.convert;
 
 import java.text.ParseException;
+import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 
@@ -32,6 +33,7 @@ import org.springframework.format.FormatterRegistry;
 import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -89,6 +91,26 @@ class ApplicationConversionServiceTests {
 			verify(this.registry).addParser(context.getBean(ExampleParser.class));
 			verifyNoMoreInteractions(this.registry);
 		}
+	}
+
+	@Test
+	void isConvertViaObjectSourceTypeWhenObjectSourceReturnsTrue() {
+		// Uses ObjectToCollectionConverter
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(Long.class);
+		TypeDescriptor targetType = TypeDescriptor.valueOf(List.class);
+		assertThat(conversionService.canConvert(sourceType, targetType)).isTrue();
+		assertThat(conversionService.isConvertViaObjectSourceType(sourceType, targetType)).isTrue();
+	}
+
+	@Test
+	void isConvertViaObjectSourceTypeWhenNotObjectSourceReturnsFalse() {
+		// Uses StringToCollectionConverter
+		ApplicationConversionService conversionService = new ApplicationConversionService();
+		TypeDescriptor sourceType = TypeDescriptor.valueOf(String.class);
+		TypeDescriptor targetType = TypeDescriptor.valueOf(List.class);
+		assertThat(conversionService.canConvert(sourceType, targetType)).isTrue();
+		assertThat(conversionService.isConvertViaObjectSourceType(sourceType, targetType)).isFalse();
 	}
 
 	static class ExampleGenericConverter implements GenericConverter {

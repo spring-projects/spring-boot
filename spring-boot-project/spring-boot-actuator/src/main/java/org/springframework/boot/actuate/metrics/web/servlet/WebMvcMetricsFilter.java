@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ import org.springframework.web.util.NestedServletException;
  *
  * @author Jon Schneider
  * @author Phillip Webb
+ * @author Chanhyeong LEE
  * @since 2.0.0
  */
 public class WebMvcMetricsFilter extends OncePerRequestFilter {
@@ -59,22 +60,6 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 	private final String metricName;
 
 	private final AutoTimer autoTimer;
-
-	/**
-	 * Create a new {@link WebMvcMetricsFilter} instance.
-	 * @param registry the meter registry
-	 * @param tagsProvider the tags provider
-	 * @param metricName the metric name
-	 * @param autoTimeRequests if requests should be automatically timed
-	 * @since 2.0.7
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link #WebMvcMetricsFilter(MeterRegistry, WebMvcTagsProvider, String, AutoTimer)}
-	 */
-	@Deprecated
-	public WebMvcMetricsFilter(MeterRegistry registry, WebMvcTagsProvider tagsProvider, String metricName,
-			boolean autoTimeRequests) {
-		this(registry, tagsProvider, metricName, AutoTimer.ENABLED);
-	}
 
 	/**
 	 * Create a new {@link WebMvcMetricsFilter} instance.
@@ -139,13 +124,16 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 		Set<Timed> annotations = getTimedAnnotations(handler);
 		Timer.Sample timerSample = timingContext.getTimerSample();
 		if (annotations.isEmpty()) {
-			Builder builder = this.autoTimer.builder(this.metricName);
-			timerSample.stop(getTimer(builder, handler, request, response, exception));
-			return;
+			if (this.autoTimer.isEnabled()) {
+				Builder builder = this.autoTimer.builder(this.metricName);
+				timerSample.stop(getTimer(builder, handler, request, response, exception));
+			}
 		}
-		for (Timed annotation : annotations) {
-			Builder builder = Timer.builder(annotation, this.metricName);
-			timerSample.stop(getTimer(builder, handler, request, response, exception));
+		else {
+			for (Timed annotation : annotations) {
+				Builder builder = Timer.builder(annotation, this.metricName);
+				timerSample.stop(getTimer(builder, handler, request, response, exception));
+			}
 		}
 	}
 

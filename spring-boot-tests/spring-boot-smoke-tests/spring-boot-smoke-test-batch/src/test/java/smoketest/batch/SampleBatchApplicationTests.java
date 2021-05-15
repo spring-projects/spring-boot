@@ -29,9 +29,9 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleBatchApplicationTests {
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) {
+	void testDefaultSettings(CapturedOutput output) {
 		assertThat(SpringApplication.exit(SpringApplication.run(SampleBatchApplication.class))).isEqualTo(0);
-		assertThat(capturedOutput).contains("completed with the following parameters");
+		assertThat(output).contains("completed with the following parameters");
 	}
 
 }

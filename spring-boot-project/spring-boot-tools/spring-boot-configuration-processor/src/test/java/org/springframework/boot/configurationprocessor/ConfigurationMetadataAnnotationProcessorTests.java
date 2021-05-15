@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,11 @@ package org.springframework.boot.configurationprocessor;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.configurationprocessor.metadata.ConfigurationMetadata;
+import org.springframework.boot.configurationprocessor.metadata.ItemMetadata;
 import org.springframework.boot.configurationprocessor.metadata.Metadata;
+import org.springframework.boot.configurationsample.recursive.RecursiveProperties;
 import org.springframework.boot.configurationsample.simple.ClassWithNestedProperties;
+import org.springframework.boot.configurationsample.simple.DeprecatedFieldSingleProperty;
 import org.springframework.boot.configurationsample.simple.DeprecatedSingleProperty;
 import org.springframework.boot.configurationsample.simple.DescriptionProperties;
 import org.springframework.boot.configurationsample.simple.HierarchicalProperties;
@@ -35,8 +38,10 @@ import org.springframework.boot.configurationsample.simple.SimpleTypeProperties;
 import org.springframework.boot.configurationsample.specific.AnnotatedGetter;
 import org.springframework.boot.configurationsample.specific.BoxingPojo;
 import org.springframework.boot.configurationsample.specific.BuilderPojo;
+import org.springframework.boot.configurationsample.specific.DeprecatedLessPreciseTypePojo;
 import org.springframework.boot.configurationsample.specific.DeprecatedUnrelatedMethodPojo;
 import org.springframework.boot.configurationsample.specific.DoubleRegistrationProperties;
+import org.springframework.boot.configurationsample.specific.EmptyDefaultValueProperties;
 import org.springframework.boot.configurationsample.specific.ExcludedTypesPojo;
 import org.springframework.boot.configurationsample.specific.InnerClassAnnotatedGetterConfig;
 import org.springframework.boot.configurationsample.specific.InnerClassHierarchicalProperties;
@@ -63,6 +68,14 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * @author Jonas Keßler
  */
 class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGenerationTests {
+
+	@Test
+	void supportedAnnotations() {
+		assertThat(new ConfigurationMetadataAnnotationProcessor().getSupportedAnnotationTypes())
+				.containsExactlyInAnyOrder("org.springframework.boot.context.properties.ConfigurationProperties",
+						"org.springframework.context.annotation.Configuration",
+						"org.springframework.boot.actuate.endpoint.annotation.Endpoint");
+	}
 
 	@Test
 	void notAnnotated() {
@@ -168,6 +181,15 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
+	void singleDeprecatedFieldProperty() {
+		Class<?> type = DeprecatedFieldSingleProperty.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("singlefielddeprecated").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("singlefielddeprecated.name", String.class).fromSource(type)
+				.withDeprecation(null, null));
+	}
+
+	@Test
 	void deprecatedOnUnrelatedSetter() {
 		Class<?> type = DeprecatedUnrelatedMethodPojo.class;
 		ConfigurationMetadata metadata = compile(type);
@@ -179,12 +201,22 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	}
 
 	@Test
-	void boxingOnSetter() {
+	void deprecatedWithLessPreciseType() {
+		Class<?> type = DeprecatedLessPreciseTypePojo.class;
+		ConfigurationMetadata metadata = compile(type);
+		assertThat(metadata).has(Metadata.withGroup("not.deprecated").fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("not.deprecated.flag", Boolean.class).withDefaultValue(false)
+				.withNoDeprecation().fromSource(type));
+	}
+
+	@Test
+	void typBoxing() {
 		Class<?> type = BoxingPojo.class;
 		ConfigurationMetadata metadata = compile(type);
 		assertThat(metadata).has(Metadata.withGroup("boxing").fromSource(type));
 		assertThat(metadata)
 				.has(Metadata.withProperty("boxing.flag", Boolean.class).withDefaultValue(false).fromSource(type));
+		assertThat(metadata).has(Metadata.withProperty("boxing.another-flag", Boolean.class).fromSource(type));
 		assertThat(metadata).has(Metadata.withProperty("boxing.counter", Integer.class).fromSource(type));
 	}
 
@@ -349,6 +381,20 @@ class ConfigurationMetadataAnnotationProcessorTests extends AbstractMetadataGene
 	void constructorParameterPropertyWithInvalidDefaultValueOnCharacter() {
 		assertThatIllegalStateException().isThrownBy(() -> compile(InvalidDefaultValueCharacterProperties.class))
 				.withMessageContaining("Compilation failed");
+	}
+
+	@Test
+	void constructorParameterPropertyWithEmptyDefaultValueOnProperty() {
+		ConfigurationMetadata metadata = compile(EmptyDefaultValueProperties.class);
+		assertThat(metadata).has(Metadata.withProperty("test.name"));
+		ItemMetadata nameMetadata = metadata.getItems().stream().filter((item) -> item.getName().equals("test.name"))
+				.findFirst().get();
+		assertThat(nameMetadata.getDefaultValue()).isNull();
+	}
+
+	@Test
+	void recursivePropertiesDoNotCauseAStackOverflow() {
+		compile(RecursiveProperties.class);
 	}
 
 }

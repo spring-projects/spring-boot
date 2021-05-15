@@ -1,71 +1,126 @@
-buildscript {
-	repositories {
-		mavenLocal()
-		mavenCentral()
-	}
-	dependencies {
-		classpath("io.spring.javaformat:spring-javaformat-gradle-plugin:0.0.15")
-	}
-}
-
 plugins {
-	id 'java'
-	id 'eclipse'
+	id "java-gradle-plugin"
+	id "maven-publish"
+	id "org.asciidoctor.jvm.convert"
+	id "org.asciidoctor.jvm.pdf"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.maven-repository"
+	id "org.springframework.boot.optional-dependencies"
 }
 
-apply plugin: 'io.spring.javaformat'
+description = "Spring Boot Gradle Plugin"
+
+configurations {
+	asciidoctorExtensions {
+		extendsFrom dependencyManagement
+	}
+	documentation
+}
 
 repositories {
-	mavenLocal()
-	mavenCentral()
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+		}
+	}
 }
 
 dependencies {
-	implementation localGroovy()
-	implementation gradleApi()
-	implementation fileTree(dir: 'target/dependencies/compile', include: '*.jar')
-	testImplementation gradleTestKit()
-	testImplementation 'org.apache.commons:commons-compress:1.13'
-	testImplementation fileTree(dir: 'target/dependencies/test', include: '*.jar')
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-block-switch")
+
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
+	implementation(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	implementation("io.spring.gradle:dependency-management-plugin")
+	implementation("org.apache.commons:commons-compress")
+	implementation("org.springframework:spring-core")
+
+	optional("org.jetbrains.kotlin:kotlin-gradle-plugin:1.3.50")
+
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.testcontainers:junit-jupiter")
+	testImplementation("org.testcontainers:testcontainers")
 }
 
-jar {
-	manifest {
-		attributes 'Implementation-Version': (version ? version : 'unknown')
+gradlePlugin {
+	plugins {
+		springBootPlugin {
+			id = "org.springframework.boot"
+			displayName = "Spring Boot Gradle Plugin"
+			description = "Spring Boot Gradle Plugin"
+			implementationClass = "org.springframework.boot.gradle.plugin.SpringBootPlugin"
+		}
 	}
 }
 
-test {
-	useJUnitPlatform()
-	testLogging {
-		events "passed", "skipped", "failed"
+task preparePluginValidationClasses(type: Copy) {
+	destinationDir = file("$buildDir/classes/java/pluginValidation")
+	from(sourceSets.main.output.classesDirs) {
+		exclude "**/CreateBootStartScripts.class"
+	}
+}
+
+validatePlugins {
+	classes.setFrom preparePluginValidationClasses
+}
+
+task dependencyVersions(type: org.springframework.boot.build.constraints.ExtractVersionConstraints) {
+	enforcedPlatform(":spring-boot-project:spring-boot-dependencies")
+}
+
+tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
+	dependsOn dependencyVersions
+	inputs.dir('src/docs/gradle').withPathSensitivity(PathSensitivity.RELATIVE)
+	doFirst {
+		attributes "dependency-management-plugin-version": dependencyVersions.versionConstraints["io.spring.gradle:dependency-management-plugin"]
+	}
+}
+
+asciidoctor {
+	configurations "asciidoctorExtensions"
+	sources {
+		include "index.adoc"
+	}
+	attributes "stylesheet": "css/style.css"
+}
+
+asciidoctorPdf {
+	sources {
+		include "index.adoc"
 	}
 }
 
 javadoc {
 	options {
-		author()
-		stylesheetFile = file('src/main/javadoc/spring-javadoc.css')
-		links = [
-			'https://docs.oracle.com/javase/8/docs/api/',
-			'https://docs.gradle.org/current/javadoc/'
-		]
-		source = '8'
+		author = true
+		docTitle = "Spring Boot Gradle Plugin ${project.version} API"
+		encoding = "UTF-8"
+		memberLevel = "protected"
+		outputLevel = "quiet"
+		splitIndex = true
+		use = true
+		windowTitle = "Spring Boot Gradle Plugin ${project.version} API"
 	}
-	title = "${project.description} $version API"
 }
 
-task sourcesJar(type: Jar) {
-	classifier = 'sources'
-	from sourceSets.main.allSource
-}
-
-task javadocJar(type: Jar) {
-	classifier = "javadoc"
-	from javadoc
+task zip(type: Zip) {
+	dependsOn asciidoctor, asciidoctorPdf
+	duplicatesStrategy "fail"
+	from(asciidoctorPdf.outputDir) {
+		into "reference/pdf"
+		rename "index.pdf", "${project.name}-reference.pdf"
+	}
+	from(asciidoctor.outputDir) {
+		into "reference/htmlsingle"
+	}
+	from(javadoc) {
+		into "api"
+	}
 }
 
 artifacts {
-	archives sourcesJar
-	archives javadocJar
+	"documentation" zip
 }

@@ -74,8 +74,7 @@ class CompositeHandlerAdapter implements HandlerAdapter {
 	}
 
 	private List<HandlerAdapter> extractAdapters() {
-		List<HandlerAdapter> list = new ArrayList<>();
-		list.addAll(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
+		List<HandlerAdapter> list = new ArrayList<>(this.beanFactory.getBeansOfType(HandlerAdapter.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		return list;

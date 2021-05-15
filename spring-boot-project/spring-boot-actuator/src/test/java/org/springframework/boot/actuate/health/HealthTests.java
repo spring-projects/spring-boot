@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -32,6 +33,7 @@ import static org.assertj.core.api.Assertions.entry;
  * @author Phillip Webb
  * @author Michael Pratt
  * @author Stephane Nicoll
+ * @author Phillip Webb
  */
 class HealthTests {
 
@@ -174,6 +176,14 @@ class HealthTests {
 		Health health = Health.status(Status.UP).build();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
 		assertThat(health.getDetails()).isEmpty();
+	}
+
+	@Test
+	void serializeWithJacksonReturnsValidJson() throws Exception {
+		Health health = Health.down().withDetail("a", "b").build();
+		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(health);
+		assertThat(json).isEqualTo("{\"status\":\"DOWN\",\"details\":{\"a\":\"b\"}}");
 	}
 
 }

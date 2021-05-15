@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,16 +21,11 @@ import java.time.temporal.ChronoUnit;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
 
-import javax.annotation.PostConstruct;
-
-import org.springframework.beans.factory.ObjectProvider;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.convert.DurationUnit;
 import org.springframework.boot.web.servlet.DispatcherType;
-import org.springframework.boot.web.servlet.server.Session;
 import org.springframework.session.web.http.SessionRepositoryFilter;
 
 /**
@@ -57,20 +52,6 @@ public class SessionProperties {
 
 	private Servlet servlet = new Servlet();
 
-	private ServerProperties serverProperties;
-
-	@Autowired
-	void setServerProperties(ObjectProvider<ServerProperties> serverProperties) {
-		this.serverProperties = serverProperties.getIfUnique();
-	}
-
-	@PostConstruct
-	public void checkSessionTimeout() {
-		if (this.timeout == null && this.serverProperties != null) {
-			this.timeout = this.serverProperties.getServlet().getSession().getTimeout();
-		}
-	}
-
 	public StoreType getStoreType() {
 		return this.storeType;
 	}
@@ -79,11 +60,6 @@ public class SessionProperties {
 		this.storeType = storeType;
 	}
 
-	/**
-	 * Return the session timeout.
-	 * @return the session timeout
-	 * @see Session#getTimeout()
-	 */
 	public Duration getTimeout() {
 		return this.timeout;
 	}
@@ -98,6 +74,17 @@ public class SessionProperties {
 
 	public void setServlet(Servlet servlet) {
 		this.servlet = servlet;
+	}
+
+	/**
+	 * Determine the session timeout. If no timeout is configured, the
+	 * {@code fallbackTimeout} is used.
+	 * @param fallbackTimeout a fallback timeout value if the timeout isn't configured
+	 * @return the session timeout
+	 * @since 2.4.0
+	 */
+	public Duration determineTimeout(Supplier<Duration> fallbackTimeout) {
+		return (this.timeout != null) ? this.timeout : fallbackTimeout.get();
 	}
 
 	/**

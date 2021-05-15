@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ class ChangeableUrlsTests {
 	File tempDir;
 
 	@Test
-	void folderUrl() throws Exception {
+	void directoryUrl() throws Exception {
 		URL url = makeUrl("myproject");
 		assertThat(ChangeableUrls.fromUrls(url).size()).isEqualTo(1);
 	}
@@ -87,21 +87,24 @@ class ChangeableUrlsTests {
 		absolute.mkdirs();
 		URL absoluteUrl = absolute.toURI().toURL();
 		File jarWithClassPath = makeJarFileWithUrlsInManifestClassPath("project-core/target/classes/",
-				"project-web/target/classes/", "does-not-exist/target/classes", relative.getName() + "/", absoluteUrl);
+				"project-web/target/classes/", "project%20space/target/classes/", "does-not-exist/target/classes/",
+				relative.getName() + "/", absoluteUrl);
 		new File(jarWithClassPath.getParentFile(), "project-core/target/classes").mkdirs();
 		new File(jarWithClassPath.getParentFile(), "project-web/target/classes").mkdirs();
+		new File(jarWithClassPath.getParentFile(), "project space/target/classes").mkdirs();
 		ChangeableUrls urls = ChangeableUrls.fromClassLoader(
 				new URLClassLoader(new URL[] { jarWithClassPath.toURI().toURL(), makeJarFileWithNoManifest() }));
 		assertThat(urls.toList()).containsExactly(
 				new URL(jarWithClassPath.toURI().toURL(), "project-core/target/classes/"),
-				new URL(jarWithClassPath.toURI().toURL(), "project-web/target/classes/"), relative.toURI().toURL(),
+				new URL(jarWithClassPath.toURI().toURL(), "project-web/target/classes/"),
+				new URL(jarWithClassPath.toURI().toURL(), "project space/target/classes/"), relative.toURI().toURL(),
 				absoluteUrl);
 	}
 
 	private URL makeUrl(String name) throws IOException {
 		File file = new File(this.tempDir, UUID.randomUUID().toString());
 		file = new File(file, name);
-		file = new File(file, "target");
+		file = new File(file, "build");
 		file = new File(file, "classes");
 		file.mkdirs();
 		return file.toURI().toURL();

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,11 +20,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-import javax.annotation.PostConstruct;
-
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -60,12 +59,13 @@ public class HypermediaHttpMessageConverterConfiguration {
 	 * {@code Jackson2ModuleRegisteringBeanPostProcessor} has registered the converter and
 	 * it is unordered.
 	 */
-	private static class HalMessageConverterSupportedMediaTypesCustomizer implements BeanFactoryAware {
+	private static class HalMessageConverterSupportedMediaTypesCustomizer
+			implements BeanFactoryAware, InitializingBean {
 
 		private volatile BeanFactory beanFactory;
 
-		@PostConstruct
-		void configureHttpMessageConverters() {
+		@Override
+		public void afterPropertiesSet() {
 			if (this.beanFactory instanceof ListableBeanFactory) {
 				configureHttpMessageConverters(((ListableBeanFactory) this.beanFactory)
 						.getBeansOfType(RequestMappingHandlerAdapter.class).values());

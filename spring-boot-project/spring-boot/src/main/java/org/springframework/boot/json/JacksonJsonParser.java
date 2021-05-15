@@ -31,9 +31,9 @@ import com.fasterxml.jackson.databind.ObjectMapper;
  */
 public class JacksonJsonParser extends AbstractJsonParser {
 
-	private static final TypeReference<?> MAP_TYPE = new MapTypeReference();
+	private static final MapTypeReference MAP_TYPE = new MapTypeReference();
 
-	private static final TypeReference<?> LIST_TYPE = new ListTypeReference();
+	private static final ListTypeReference LIST_TYPE = new ListTypeReference();
 
 	private ObjectMapper objectMapper; // Late binding
 

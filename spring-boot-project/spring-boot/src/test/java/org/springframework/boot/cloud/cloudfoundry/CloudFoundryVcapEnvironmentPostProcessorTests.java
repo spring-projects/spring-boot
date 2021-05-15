@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package org.springframework.boot.cloud.cloudfoundry;
 
+import org.apache.commons.logging.LogFactory;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.cloud.CloudFoundryVcapEnvironmentPostProcessor;
@@ -33,25 +34,25 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 class CloudFoundryVcapEnvironmentPostProcessorTests {
 
-	private final CloudFoundryVcapEnvironmentPostProcessor initializer = new CloudFoundryVcapEnvironmentPostProcessor();
+	private final CloudFoundryVcapEnvironmentPostProcessor initializer = new CloudFoundryVcapEnvironmentPostProcessor(
+			LogFactory.getLog(getClass()));
 
 	private final ConfigurableApplicationContext context = new AnnotationConfigApplicationContext();
 
 	@Test
 	void testApplicationProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"VCAP_APPLICATION={\"application_users\":[]," + "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
+				"VCAP_APPLICATION={\"application_users\":[],\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
 						+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],"
-						+ "\"started_at\":\"2013-05-29 02:37:59 +0000\"," + "\"started_at_timestamp\":1369795079,"
+						+ "\"started_at\":\"2013-05-29 02:37:59 +0000\",\"started_at_timestamp\":1369795079,"
 						+ "\"host\":\"0.0.0.0\",\"port\":61034,"
 						+ "\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},"
 						+ "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
-						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\"," + "\"state_timestamp\":1369795079}");
+						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(this.context.getEnvironment().getProperty("vcap.application.instance_id"))
-				.isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
+		assertThat(getProperty("vcap.application.instance_id")).isEqualTo("bb7935245adf3e650dfb7c58a06e9ece");
 	}
 
 	@Test
@@ -59,7 +60,7 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
 				"VCAP_APPLICATION={\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\",\"instance_index\":0,\"uris\":[\"foo.cfapps.io\"]}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
-		assertThat(this.context.getEnvironment().getProperty("vcap.application.uris[0]")).isEqualTo("foo.cfapps.io");
+		assertThat(getProperty("vcap.application.uris[0]")).isEqualTo("foo.cfapps.io");
 	}
 
 	@Test
@@ -76,12 +77,12 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 						+ "\"instance_id\":\"bb7935245adf3e650dfb7c58a06e9ece\","
 						+ "\"instance_index\":0,\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"foo\",\"uris\":[\"foo.cfapps.io\"],"
-						+ "\"started_at\":\"2013-05-29 02:37:59 +0000\"," + "\"started_at_timestamp\":1369795079,"
+						+ "\"started_at\":\"2013-05-29 02:37:59 +0000\",\"started_at_timestamp\":1369795079,"
 						+ "\"host\":\"0.0.0.0\",\"port\":61034,"
 						+ "\"limits\":{\"mem\":128,\"disk\":1024,\"fds\":16384},"
 						+ "\"version\":\"3464e092-1c13-462e-a47c-807c30318a50\","
 						+ "\"name\":\"dsyerenv\",\"uris\":[\"dsyerenv.cfapps.io\"],"
-						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\"," + "\"state_timestamp\":1369795079}");
+						+ "\"users\":[],\"start\":\"2013-05-29 02:37:59 +0000\",\"state_timestamp\":1369795079}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
 		assertThat(getProperty("vcap")).isNull();
 	}
@@ -89,8 +90,8 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 	@Test
 	void testServiceProperties() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"VCAP_SERVICES={\"rds-mysql-n/a\":[{" + "\"name\":\"mysql\",\"label\":\"rds-mysql-n/a\","
-						+ "\"plan\":\"10mb\",\"credentials\":{" + "\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
+				"VCAP_SERVICES={\"rds-mysql-n/a\":[{\"name\":\"mysql\",\"label\":\"rds-mysql-n/a\","
+						+ "\"plan\":\"10mb\",\"credentials\":{\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
 						+ "\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
 						+ "\"ssl\":true,\"location\":null,"
 						+ "\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
@@ -106,11 +107,11 @@ class CloudFoundryVcapEnvironmentPostProcessorTests {
 	@Test
 	void testServicePropertiesWithoutNA() {
 		TestPropertySourceUtils.addInlinedPropertiesToEnvironment(this.context,
-				"VCAP_SERVICES={\"rds-mysql\":[{" + "\"name\":\"mysql\",\"label\":\"rds-mysql\",\"plan\":\"10mb\","
+				"VCAP_SERVICES={\"rds-mysql\":[{\"name\":\"mysql\",\"label\":\"rds-mysql\",\"plan\":\"10mb\","
 						+ "\"credentials\":{\"name\":\"d04fb13d27d964c62b267bbba1cffb9da\","
 						+ "\"hostname\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
 						+ "\"host\":\"mysql-service-public.clqg2e2w3ecf.us-east-1.rds.amazonaws.com\","
-						+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\"," + "\"username\":\"urpRuqTf8Cpe6\","
+						+ "\"port\":3306,\"user\":\"urpRuqTf8Cpe6\",\"username\":\"urpRuqTf8Cpe6\","
 						+ "\"password\":\"pxLsGVpsC9A5S\"}}]}");
 		this.initializer.postProcessEnvironment(this.context.getEnvironment(), null);
 		assertThat(getProperty("vcap.services.mysql.name")).isEqualTo("mysql");

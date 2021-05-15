@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,8 +23,9 @@ import java.util.Map;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
@@ -34,7 +35,6 @@ import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportM
 import org.springframework.boot.autoconfigure.web.servlet.MultipartAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration;
 import org.springframework.boot.test.util.TestPropertyValues;
-import org.springframework.boot.testsupport.assertj.Matched;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Condition;
@@ -47,8 +47,6 @@ import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.util.ClassUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.hamcrest.Matchers.containsString;
-import static org.hamcrest.Matchers.nullValue;
 
 /**
  * Tests for {@link ConditionEvaluationReport}.
@@ -56,6 +54,7 @@ import static org.hamcrest.Matchers.nullValue;
  * @author Greg Turnquist
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class ConditionEvaluationReportTests {
 
 	private DefaultListableBeanFactory beanFactory;
@@ -79,14 +78,13 @@ class ConditionEvaluationReportTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.beanFactory = new DefaultListableBeanFactory();
 		this.report = ConditionEvaluationReport.get(this.beanFactory);
 	}
 
 	@Test
 	void get() {
-		assertThat(this.report).isNotEqualTo(nullValue());
+		assertThat(this.report).isNotNull();
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 	}
 
@@ -95,8 +93,8 @@ class ConditionEvaluationReportTests {
 		this.beanFactory.setParentBeanFactory(new DefaultListableBeanFactory());
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
-		assertThat(this.report).isNotEqualTo(nullValue());
-		assertThat(this.report.getParent()).isNotEqualTo(nullValue());
+		assertThat(this.report).isNotNull();
+		assertThat(this.report.getParent()).isNotNull();
 		ConditionEvaluationReport.get((ConfigurableListableBeanFactory) this.beanFactory.getParentBeanFactory());
 		assertThat(this.report).isSameAs(ConditionEvaluationReport.get(this.beanFactory));
 		assertThat(this.report.getParent()).isSameAs(ConditionEvaluationReport
@@ -184,7 +182,7 @@ class ConditionEvaluationReportTests {
 		outcomes.add(this.condition1, new ConditionOutcome(true, "Message 1"));
 		outcomes.add(this.condition2, new ConditionOutcome(true, "Message 2"));
 		outcomes.add(this.condition3, new ConditionOutcome(true, "Message 2"));
-		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
+		assertThat(outcomes).hasSize(2);
 	}
 
 	@Test
@@ -193,15 +191,15 @@ class ConditionEvaluationReportTests {
 		ConditionEvaluationReport report = ConditionEvaluationReport.get(context.getBeanFactory());
 		String autoconfigKey = MultipartAutoConfiguration.class.getName();
 		ConditionAndOutcomes outcomes = report.getConditionAndOutcomesBySource().get(autoconfigKey);
-		assertThat(outcomes).isNotEqualTo(nullValue());
-		assertThat(getNumberOfOutcomes(outcomes)).isEqualTo(2);
+		assertThat(outcomes).isNotNull();
+		assertThat(outcomes).hasSize(2);
 		List<String> messages = new ArrayList<>();
 		for (ConditionAndOutcome outcome : outcomes) {
 			messages.add(outcome.getOutcome().getMessage());
 		}
-		assertThat(messages).areAtLeastOne(Matched.by(containsString("@ConditionalOnClass found required classes "
+		assertThat(messages).anyMatch((message) -> message.contains("@ConditionalOnClass found required classes "
 				+ "'javax.servlet.Servlet', 'org.springframework.web.multipart."
-				+ "support.StandardServletMultipartResolver', " + "'javax.servlet.MultipartConfigElement'")));
+				+ "support.StandardServletMultipartResolver', 'javax.servlet.MultipartConfigElement'"));
 		context.close();
 	}
 
@@ -250,16 +248,6 @@ class ConditionEvaluationReportTests {
 		assertThat(reportMessage)
 				.doesNotContain("org.springframework.boot.autoconfigure.web.servlet.WebMvcAutoConfiguration");
 		context.close();
-	}
-
-	private int getNumberOfOutcomes(ConditionAndOutcomes outcomes) {
-		Iterator<ConditionAndOutcome> iterator = outcomes.iterator();
-		int numberOfOutcomesAdded = 0;
-		while (iterator.hasNext()) {
-			numberOfOutcomesAdded++;
-			iterator.next();
-		}
-		return numberOfOutcomesAdded;
 	}
 
 	@Configuration(proxyBeanMethods = false)

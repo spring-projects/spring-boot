@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -54,21 +54,6 @@ public class MetricsWebFilter implements WebFilter {
 	 * @param registry the registry to which metrics are recorded
 	 * @param tagsProvider provider for metrics tags
 	 * @param metricName name of the metric to record
-	 * @param autoTimeRequests if requests should be automatically timed
-	 * @deprecated since 2.2.0 in favor of
-	 * {@link #MetricsWebFilter(MeterRegistry, WebFluxTagsProvider, String, AutoTimer)}
-	 */
-	@Deprecated
-	public MetricsWebFilter(MeterRegistry registry, WebFluxTagsProvider tagsProvider, String metricName,
-			boolean autoTimeRequests) {
-		this(registry, tagsProvider, metricName, AutoTimer.ENABLED);
-	}
-
-	/**
-	 * Create a new {@code MetricsWebFilter}.
-	 * @param registry the registry to which metrics are recorded
-	 * @param tagsProvider provider for metrics tags
-	 * @param metricName name of the metric to record
 	 * @param autoTimer the auto-timers to apply or {@code null} to disable auto-timing
 	 * @since 2.2.0
 	 */
@@ -85,7 +70,7 @@ public class MetricsWebFilter implements WebFilter {
 		if (!this.autoTimer.isEnabled()) {
 			return chain.filter(exchange);
 		}
-		return chain.filter(exchange).compose((call) -> filter(exchange, call));
+		return chain.filter(exchange).transformDeferred((call) -> filter(exchange, call));
 	}
 
 	private Publisher<Void> filter(ServerWebExchange exchange, Mono<Void> call) {

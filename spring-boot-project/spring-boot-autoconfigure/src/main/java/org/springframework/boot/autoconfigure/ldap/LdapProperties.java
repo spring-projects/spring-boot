@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,6 +21,7 @@ import java.util.Map;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.core.env.Environment;
+import org.springframework.ldap.core.LdapTemplate;
 import org.springframework.util.Assert;
 import org.springframework.util.ObjectUtils;
 
@@ -56,14 +57,17 @@ public class LdapProperties {
 	private String password;
 
 	/**
-	 * Whether read-only operations should use an anonymous environment.
+	 * Whether read-only operations should use an anonymous environment. Disabled by
+	 * default unless a username is set.
 	 */
-	private boolean anonymousReadOnly;
+	private Boolean anonymousReadOnly;
 
 	/**
 	 * LDAP specification settings.
 	 */
 	private final Map<String, String> baseEnvironment = new HashMap<>();
+
+	private final Template template = new Template();
 
 	public String[] getUrls() {
 		return this.urls;
@@ -97,16 +101,20 @@ public class LdapProperties {
 		this.password = password;
 	}
 
-	public boolean getAnonymousReadOnly() {
+	public Boolean getAnonymousReadOnly() {
 		return this.anonymousReadOnly;
 	}
 
-	public void setAnonymousReadOnly(boolean anonymousReadOnly) {
+	public void setAnonymousReadOnly(Boolean anonymousReadOnly) {
 		this.anonymousReadOnly = anonymousReadOnly;
 	}
 
 	public Map<String, String> getBaseEnvironment() {
 		return this.baseEnvironment;
+	}
+
+	public Template getTemplate() {
+		return this.template;
 	}
 
 	public String[] determineUrls(Environment environment) {
@@ -120,9 +128,58 @@ public class LdapProperties {
 		Assert.notNull(environment, "Environment must not be null");
 		String localPort = environment.getProperty("local.ldap.port");
 		if (localPort != null) {
-			return Integer.valueOf(localPort);
+			return Integer.parseInt(localPort);
 		}
 		return DEFAULT_PORT;
+	}
+
+	/**
+	 * {@link LdapTemplate settings}.
+	 */
+	public static class Template {
+
+		/**
+		 * Whether PartialResultException should be ignored in searches via the
+		 * LdapTemplate.
+		 */
+		private boolean ignorePartialResultException = false;
+
+		/**
+		 * Whether NameNotFoundException should be ignored in searches via the
+		 * LdapTemplate.
+		 */
+		private boolean ignoreNameNotFoundException = false;
+
+		/**
+		 * Whether SizeLimitExceededException should be ignored in searches via the
+		 * LdapTemplate.
+		 */
+		private boolean ignoreSizeLimitExceededException = true;
+
+		public boolean isIgnorePartialResultException() {
+			return this.ignorePartialResultException;
+		}
+
+		public void setIgnorePartialResultException(boolean ignorePartialResultException) {
+			this.ignorePartialResultException = ignorePartialResultException;
+		}
+
+		public boolean isIgnoreNameNotFoundException() {
+			return this.ignoreNameNotFoundException;
+		}
+
+		public void setIgnoreNameNotFoundException(boolean ignoreNameNotFoundException) {
+			this.ignoreNameNotFoundException = ignoreNameNotFoundException;
+		}
+
+		public boolean isIgnoreSizeLimitExceededException() {
+			return this.ignoreSizeLimitExceededException;
+		}
+
+		public void setIgnoreSizeLimitExceededException(Boolean ignoreSizeLimitExceededException) {
+			this.ignoreSizeLimitExceededException = ignoreSizeLimitExceededException;
+		}
+
 	}
 
 }

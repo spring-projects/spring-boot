@@ -1,0 +1,13 @@
+plugins {
+	id 'org.springframework.boot' version '{version}' apply false
+}
+
+task buildInfo(type: org.springframework.boot.gradle.tasks.buildinfo.BuildInfo) {
+	properties {
+		artifact = 'example'
+		group = 'com.example'
+		name = 'example'
+		additional = ['additional': 'alpha']
+		time = null
+	}
+}

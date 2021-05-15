@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -37,7 +37,7 @@ import org.springframework.boot.devtools.filewatch.ChangedFiles;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFile.Kind;
 import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles;
-import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceFolder;
+import org.springframework.boot.devtools.restart.classloader.ClassLoaderFiles.SourceDirectory;
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.mock.http.client.MockClientHttpRequest;
@@ -91,33 +91,33 @@ class ClassPathChangeUploaderTests {
 	}
 
 	@Test
-	void sendsClassLoaderFiles(@TempDir File sourceFolder) throws Exception {
-		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
+	void sendsClassLoaderFiles(@TempDir File sourceDirectory) throws Exception {
+		ClassPathChangedEvent event = createClassPathChangedEvent(sourceDirectory);
 		this.requestFactory.willRespond(HttpStatus.OK);
 		this.uploader.onApplicationEvent(event);
 		assertThat(this.requestFactory.getExecutedRequests()).hasSize(1);
 		MockClientHttpRequest request = this.requestFactory.getExecutedRequests().get(0);
-		verifyUploadRequest(sourceFolder, request);
+		verifyUploadRequest(sourceDirectory, request);
 	}
 
 	@Test
-	void retriesOnSocketException(@TempDir File sourceFolder) throws Exception {
-		ClassPathChangedEvent event = createClassPathChangedEvent(sourceFolder);
+	void retriesOnSocketException(@TempDir File sourceDirectory) throws Exception {
+		ClassPathChangedEvent event = createClassPathChangedEvent(sourceDirectory);
 		this.requestFactory.willRespond(new SocketException());
 		this.requestFactory.willRespond(HttpStatus.OK);
 		this.uploader.onApplicationEvent(event);
 		assertThat(this.requestFactory.getExecutedRequests()).hasSize(2);
-		verifyUploadRequest(sourceFolder, this.requestFactory.getExecutedRequests().get(1));
+		verifyUploadRequest(sourceDirectory, this.requestFactory.getExecutedRequests().get(1));
 	}
 
-	private void verifyUploadRequest(File sourceFolder, MockClientHttpRequest request)
+	private void verifyUploadRequest(File sourceDirectory, MockClientHttpRequest request)
 			throws IOException, ClassNotFoundException {
 		ClassLoaderFiles classLoaderFiles = deserialize(request.getBodyAsBytes());
-		Collection<SourceFolder> sourceFolders = classLoaderFiles.getSourceFolders();
-		assertThat(sourceFolders.size()).isEqualTo(1);
-		SourceFolder classSourceFolder = sourceFolders.iterator().next();
-		assertThat(classSourceFolder.getName()).isEqualTo(sourceFolder.getAbsolutePath());
-		Iterator<ClassLoaderFile> classFiles = classSourceFolder.getFiles().iterator();
+		Collection<SourceDirectory> sourceDirectories = classLoaderFiles.getSourceDirectories();
+		assertThat(sourceDirectories.size()).isEqualTo(1);
+		SourceDirectory classSourceDirectory = sourceDirectories.iterator().next();
+		assertThat(classSourceDirectory.getName()).isEqualTo(sourceDirectory.getAbsolutePath());
+		Iterator<ClassLoaderFile> classFiles = classSourceDirectory.getFiles().iterator();
 		assertClassFile(classFiles.next(), "File1", ClassLoaderFile.Kind.ADDED);
 		assertClassFile(classFiles.next(), "File2", ClassLoaderFile.Kind.MODIFIED);
 		assertClassFile(classFiles.next(), null, ClassLoaderFile.Kind.DELETED);
@@ -129,22 +129,21 @@ class ClassPathChangeUploaderTests {
 		assertThat(file.getKind()).isEqualTo(kind);
 	}
 
-	private ClassPathChangedEvent createClassPathChangedEvent(File sourceFolder) throws IOException {
+	private ClassPathChangedEvent createClassPathChangedEvent(File sourceDirectory) throws IOException {
 		Set<ChangedFile> files = new LinkedHashSet<>();
-		File file1 = createFile(sourceFolder, "File1");
-		File file2 = createFile(sourceFolder, "File2");
-		File file3 = createFile(sourceFolder, "File3");
-		files.add(new ChangedFile(sourceFolder, file1, Type.ADD));
-		files.add(new ChangedFile(sourceFolder, file2, Type.MODIFY));
-		files.add(new ChangedFile(sourceFolder, file3, Type.DELETE));
+		File file1 = createFile(sourceDirectory, "File1");
+		File file2 = createFile(sourceDirectory, "File2");
+		File file3 = createFile(sourceDirectory, "File3");
+		files.add(new ChangedFile(sourceDirectory, file1, Type.ADD));
+		files.add(new ChangedFile(sourceDirectory, file2, Type.MODIFY));
+		files.add(new ChangedFile(sourceDirectory, file3, Type.DELETE));
 		Set<ChangedFiles> changeSet = new LinkedHashSet<>();
-		changeSet.add(new ChangedFiles(sourceFolder, files));
-		ClassPathChangedEvent event = new ClassPathChangedEvent(this, changeSet, false);
-		return event;
+		changeSet.add(new ChangedFiles(sourceDirectory, files));
+		return new ClassPathChangedEvent(this, changeSet, false);
 	}
 
-	private File createFile(File sourceFolder, String name) throws IOException {
-		File file = new File(sourceFolder, name);
+	private File createFile(File sourceDirectory, String name) throws IOException {
+		File file = new File(sourceDirectory, name);
 		FileCopyUtils.copy(name.getBytes(), file);
 		return file;
 	}

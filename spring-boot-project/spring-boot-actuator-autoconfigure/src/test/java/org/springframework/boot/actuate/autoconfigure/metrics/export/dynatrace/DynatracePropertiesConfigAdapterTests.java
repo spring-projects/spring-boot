@@ -55,4 +55,11 @@ class DynatracePropertiesConfigAdapterTests {
 		assertThat(new DynatracePropertiesConfigAdapter(properties).technologyType()).isEqualTo("tech-1");
 	}
 
+	@Test
+	void whenPropertiesGroupIsSetAdapterGroupReturnsIt() {
+		DynatraceProperties properties = new DynatraceProperties();
+		properties.setGroup("group-1");
+		assertThat(new DynatracePropertiesConfigAdapter(properties).group()).isEqualTo("group-1");
+	}
+
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,6 @@ package org.springframework.boot.autoconfigureprocessor;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Properties;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -27,6 +25,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.testsupport.compiler.TestCompiler;
+import org.springframework.util.FileCopyUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -50,19 +49,16 @@ class AutoConfigureAnnotationProcessorTests {
 	@Test
 	void annotatedClass() throws Exception {
 		Properties properties = compile(TestClassConfiguration.class);
-		assertThat(properties).hasSize(6);
+		assertThat(properties).hasSize(7);
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration.ConditionalOnClass",
+				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration.ConditionalOnClass",
 				"java.io.InputStream,org.springframework.boot.autoconfigureprocessor."
 						+ "TestClassConfiguration$Nested,org.springframework.foo");
+		assertThat(properties).containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration");
 		assertThat(properties)
-				.containsKey("org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration");
-		assertThat(properties).containsKey(
-				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration.Configuration");
-		assertThat(properties).doesNotContainKey(
-				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration$Nested");
+				.containsKey("org.springframework.boot.autoconfigureprocessor.TestClassConfiguration$Nested");
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor." + "TestClassConfiguration.ConditionalOnBean",
+				"org.springframework.boot.autoconfigureprocessor.TestClassConfiguration.ConditionalOnBean",
 				"java.io.OutputStream");
 		assertThat(properties).containsEntry("org.springframework.boot.autoconfigureprocessor."
 				+ "TestClassConfiguration.ConditionalOnSingleCandidate", "java.io.OutputStream");
@@ -73,7 +69,7 @@ class AutoConfigureAnnotationProcessorTests {
 	@Test
 	void annotatedClassWithOnBeanThatHasName() throws Exception {
 		Properties properties = compile(TestOnBeanWithNameClassConfiguration.class);
-		assertThat(properties).hasSize(3);
+		assertThat(properties).hasSize(2);
 		assertThat(properties).containsEntry(
 				"org.springframework.boot.autoconfigureprocessor.TestOnBeanWithNameClassConfiguration.ConditionalOnBean",
 				"");
@@ -82,38 +78,43 @@ class AutoConfigureAnnotationProcessorTests {
 	@Test
 	void annotatedMethod() throws Exception {
 		Properties properties = compile(TestMethodConfiguration.class);
-		List<String> matching = new ArrayList<>();
-		for (Object key : properties.keySet()) {
-			if (key.toString().startsWith("org.springframework.boot.autoconfigureprocessor.TestMethodConfiguration")) {
-				matching.add(key.toString());
-			}
-		}
-		assertThat(matching).hasSize(2)
-				.contains("org.springframework.boot.autoconfigureprocessor." + "TestMethodConfiguration")
-				.contains("org.springframework.boot.autoconfigureprocessor." + "TestMethodConfiguration.Configuration");
+		assertThat(properties).isNull();
 	}
 
 	@Test
 	void annotatedClassWithOrder() throws Exception {
 		Properties properties = compile(TestOrderedClassConfiguration.class);
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor." + "TestOrderedClassConfiguration.ConditionalOnClass",
+				"org.springframework.boot.autoconfigureprocessor.TestOrderedClassConfiguration.ConditionalOnClass",
 				"java.io.InputStream,java.io.OutputStream");
 		assertThat(properties).containsEntry("org.springframework.boot.autoconfigureprocessor."
 				+ "TestOrderedClassConfiguration.AutoConfigureBefore", "test.before1,test.before2");
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor." + "TestOrderedClassConfiguration.AutoConfigureAfter",
+				"org.springframework.boot.autoconfigureprocessor.TestOrderedClassConfiguration.AutoConfigureAfter",
 				"java.io.ObjectInputStream");
 		assertThat(properties).containsEntry(
-				"org.springframework.boot.autoconfigureprocessor." + "TestOrderedClassConfiguration.AutoConfigureOrder",
+				"org.springframework.boot.autoconfigureprocessor.TestOrderedClassConfiguration.AutoConfigureOrder",
 				"123");
 	}
 
+	@Test // gh-19370
+	void propertiesAreFullRepeatable() throws Exception {
+		String first = new String(
+				FileCopyUtils.copyToByteArray(process(TestOrderedClassConfiguration.class).getWrittenFile()));
+		String second = new String(
+				FileCopyUtils.copyToByteArray(process(TestOrderedClassConfiguration.class).getWrittenFile()));
+		assertThat(first).isEqualTo(second).doesNotContain("#");
+	}
+
 	private Properties compile(Class<?>... types) throws IOException {
+		return process(types).getWrittenProperties();
+	}
+
+	private TestAutoConfigureAnnotationProcessor process(Class<?>... types) {
 		TestAutoConfigureAnnotationProcessor processor = new TestAutoConfigureAnnotationProcessor(
 				this.compiler.getOutputLocation());
 		this.compiler.getTask(types).call(processor);
-		return processor.getWrittenProperties();
+		return processor;
 	}
 
 }

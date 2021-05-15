@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,10 +20,10 @@ import java.util.Collections;
 
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.amqp.rabbit.core.ChannelCallback;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
@@ -41,6 +41,7 @@ import static org.mockito.Mockito.mock;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class RabbitHealthIndicatorTests {
 
 	@Mock
@@ -48,15 +49,6 @@ class RabbitHealthIndicatorTests {
 
 	@Mock
 	private Channel channel;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-		given(this.rabbitTemplate.execute(any())).willAnswer((invocation) -> {
-			ChannelCallback<?> callback = invocation.getArgument(0);
-			return callback.doInRabbit(this.channel);
-		});
-	}
 
 	@Test
 	void createWhenRabbitTemplateIsNullShouldThrowException() {
@@ -66,6 +58,7 @@ class RabbitHealthIndicatorTests {
 
 	@Test
 	void healthWhenConnectionSucceedsShouldReturnUpWithVersion() {
+		givenTemplateExecutionWillInvokeCallback();
 		Connection connection = mock(Connection.class);
 		given(this.channel.getConnection()).willReturn(connection);
 		given(connection.getServerProperties()).willReturn(Collections.singletonMap("version", "123"));
@@ -76,9 +69,17 @@ class RabbitHealthIndicatorTests {
 
 	@Test
 	void healthWhenConnectionFailsShouldReturnDown() {
+		givenTemplateExecutionWillInvokeCallback();
 		given(this.channel.getConnection()).willThrow(new RuntimeException());
 		Health health = new RabbitHealthIndicator(this.rabbitTemplate).health();
 		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
+	}
+
+	private void givenTemplateExecutionWillInvokeCallback() {
+		given(this.rabbitTemplate.execute(any())).willAnswer((invocation) -> {
+			ChannelCallback<?> callback = invocation.getArgument(0);
+			return callback.doInRabbit(this.channel);
+		});
 	}
 
 }

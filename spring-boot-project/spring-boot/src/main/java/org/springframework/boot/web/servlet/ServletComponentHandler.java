@@ -20,8 +20,8 @@ import java.lang.annotation.Annotation;
 import java.util.HashMap;
 import java.util.Map;
 
+import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
 import org.springframework.beans.factory.support.BeanDefinitionRegistry;
-import org.springframework.context.annotation.ScannedGenericBeanDefinition;
 import org.springframework.core.annotation.AnnotationAttributes;
 import org.springframework.core.type.filter.AnnotationTypeFilter;
 import org.springframework.core.type.filter.TypeFilter;
@@ -68,7 +68,7 @@ abstract class ServletComponentHandler {
 		return initParameters;
 	}
 
-	void handle(ScannedGenericBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
+	void handle(AnnotatedBeanDefinition beanDefinition, BeanDefinitionRegistry registry) {
 		Map<String, Object> attributes = beanDefinition.getMetadata()
 				.getAnnotationAttributes(this.annotationType.getName());
 		if (attributes != null) {
@@ -76,7 +76,7 @@ abstract class ServletComponentHandler {
 		}
 	}
 
-	protected abstract void doHandle(Map<String, Object> attributes, ScannedGenericBeanDefinition beanDefinition,
+	protected abstract void doHandle(Map<String, Object> attributes, AnnotatedBeanDefinition beanDefinition,
 			BeanDefinitionRegistry registry);
 
 }

@@ -26,6 +26,8 @@ example:
           - bar2: bling
 empty: ""
 null-value: null
+emptylist: []
+emptymap: {}
 ---
 
 spring:

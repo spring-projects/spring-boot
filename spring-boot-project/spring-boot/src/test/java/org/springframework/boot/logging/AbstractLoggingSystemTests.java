@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,17 +35,17 @@ public abstract class AbstractLoggingSystemTests {
 
 	private static final String JAVA_IO_TMPDIR = "java.io.tmpdir";
 
-	private String originalTempFolder;
+	private String originalTempDirectory;
 
 	@BeforeEach
 	void configureTempDir(@TempDir Path temp) {
-		this.originalTempFolder = System.getProperty(JAVA_IO_TMPDIR);
+		this.originalTempDirectory = System.getProperty(JAVA_IO_TMPDIR);
 		System.setProperty(JAVA_IO_TMPDIR, temp.toAbsolutePath().toString());
 	}
 
 	@AfterEach
 	void reinstateTempDir() {
-		System.setProperty(JAVA_IO_TMPDIR, this.originalTempFolder);
+		System.setProperty(JAVA_IO_TMPDIR, this.originalTempDirectory);
 	}
 
 	@AfterEach

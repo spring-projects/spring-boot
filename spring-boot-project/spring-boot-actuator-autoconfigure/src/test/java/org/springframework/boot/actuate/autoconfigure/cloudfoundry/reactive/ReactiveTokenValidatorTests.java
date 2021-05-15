@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,8 +31,9 @@ import java.util.concurrent.ConcurrentHashMap;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 import reactor.core.publisher.Mono;
 import reactor.test.StepVerifier;
 import reactor.test.publisher.PublisherProbe;
@@ -52,6 +53,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class ReactiveTokenValidatorTests {
 
 	private static final byte[] DOT = ".".getBytes();
@@ -85,7 +87,6 @@ class ReactiveTokenValidatorTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		VALID_KEYS.put("valid-key", VALID_KEY);
 		INVALID_KEYS.put("invalid-key", INVALID_KEY);
 		this.tokenValidator = new ReactiveTokenValidator(this.securityService);
@@ -159,7 +160,6 @@ class ReactiveTokenValidatorTests {
 	void validateTokenWhenCacheValidShouldNotFetchTokenKeys() throws Exception {
 		PublisherProbe<Map<String, String>> fetchTokenKeys = PublisherProbe.empty();
 		ReflectionTestUtils.setField(this.tokenValidator, "cachedTokenKeys", VALID_KEYS);
-		given(this.securityService.fetchTokenKeys()).willReturn(fetchTokenKeys.mono());
 		given(this.securityService.getUaaUrl()).willReturn(Mono.just("http://localhost:8080/uaa"));
 		String header = "{\"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{\"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";

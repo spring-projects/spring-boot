@@ -49,11 +49,8 @@ final class CollectionToDelimitedStringConverter implements ConditionalGenericCo
 		if (targetType == null || sourceElementType == null) {
 			return true;
 		}
-		if (this.conversionService.canConvert(sourceElementType, targetType)
-				|| sourceElementType.getType().isAssignableFrom(targetType.getType())) {
-			return true;
-		}
-		return false;
+		return this.conversionService.canConvert(sourceElementType, targetType)
+				|| sourceElementType.getType().isAssignableFrom(targetType.getType());
 	}
 
 	@Override

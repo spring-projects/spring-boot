@@ -54,7 +54,7 @@ public class SampleAtmosphereApplication {
 				"/chat/*");
 		registration.addInitParameter("org.atmosphere.cpr.packages", "smoketest");
 		registration.addInitParameter(
-				"org.atmosphere.interceptor.HeartbeatInterceptor" + ".clientHeartbeatFrequencyInSeconds", "10");
+				"org.atmosphere.interceptor.HeartbeatInterceptor.clientHeartbeatFrequencyInSeconds", "10");
 		registration.setLoadOnStartup(0);
 		// Need to occur before the EmbeddedAtmosphereInitializer
 		registration.setOrder(Ordered.HIGHEST_PRECEDENCE);

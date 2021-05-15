@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -46,7 +46,7 @@ import static org.mockito.Mockito.mock;
  */
 class DispatcherServletAutoConfigurationTests {
 
-	private WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
+	private final WebApplicationContextRunner contextRunner = new WebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(DispatcherServletAutoConfiguration.class));
 
 	@Test
@@ -83,13 +83,12 @@ class DispatcherServletAutoConfigurationTests {
 
 	@Test
 	void registrationOverrideWithAutowiredServlet() {
-		this.contextRunner.withUserConfiguration(CustomAutowiredRegistration.class, CustomDispatcherServletPath.class)
-				.run((context) -> {
-					ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
-					assertThat(registration.getUrlMappings()).containsExactly("/foo");
-					assertThat(registration.getServletName()).isEqualTo("customDispatcher");
-					assertThat(context).hasSingleBean(DispatcherServlet.class);
-				});
+		this.contextRunner.withUserConfiguration(CustomAutowiredRegistration.class).run((context) -> {
+			ServletRegistrationBean<?> registration = context.getBean(ServletRegistrationBean.class);
+			assertThat(registration.getUrlMappings()).containsExactly("/foo");
+			assertThat(registration.getServletName()).isEqualTo("customDispatcher");
+			assertThat(context).hasSingleBean(DispatcherServlet.class);
+		});
 	}
 
 	@Test
@@ -145,10 +144,11 @@ class DispatcherServletAutoConfigurationTests {
 	void dispatcherServletDefaultConfig() {
 		this.contextRunner.run((context) -> {
 			DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").containsExactly(false);
-			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").containsExactly(true);
-			assertThat(dispatcherServlet).extracting("dispatchTraceRequest").containsExactly(false);
-			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails").containsExactly(false);
+			assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(false);
+			assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(true);
+			assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(false);
+			assertThat(dispatcherServlet).extracting("enableLoggingRequestDetails").isEqualTo(false);
+			assertThat(dispatcherServlet).extracting("publishEvents").isEqualTo(true);
 			assertThat(context.getBean("dispatcherServletRegistration")).hasFieldOrPropertyWithValue("loadOnStartup",
 					-1);
 		});
@@ -156,13 +156,16 @@ class DispatcherServletAutoConfigurationTests {
 
 	@Test
 	void dispatcherServletCustomConfig() {
-		this.contextRunner.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:true",
-				"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
-				"spring.mvc.servlet.load-on-startup=5").run((context) -> {
+		this.contextRunner
+				.withPropertyValues("spring.mvc.throw-exception-if-no-handler-found:true",
+						"spring.mvc.dispatch-options-request:false", "spring.mvc.dispatch-trace-request:true",
+						"spring.mvc.publish-request-handled-events:false", "spring.mvc.servlet.load-on-startup=5")
+				.run((context) -> {
 					DispatcherServlet dispatcherServlet = context.getBean(DispatcherServlet.class);
-					assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").containsExactly(true);
-					assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").containsExactly(false);
-					assertThat(dispatcherServlet).extracting("dispatchTraceRequest").containsExactly(true);
+					assertThat(dispatcherServlet).extracting("throwExceptionIfNoHandlerFound").isEqualTo(true);
+					assertThat(dispatcherServlet).extracting("dispatchOptionsRequest").isEqualTo(false);
+					assertThat(dispatcherServlet).extracting("dispatchTraceRequest").isEqualTo(true);
+					assertThat(dispatcherServlet).extracting("publishEvents").isEqualTo(false);
 					assertThat(context.getBean("dispatcherServletRegistration"))
 							.hasFieldOrPropertyWithValue("loadOnStartup", 5);
 				});

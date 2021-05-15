@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,21 +19,15 @@ package org.springframework.boot.autoconfigure.data.elasticsearch;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.testcontainers.elasticsearch.ElasticsearchContainer;
-import org.testcontainers.junit.jupiter.Container;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
-import org.springframework.boot.autoconfigure.elasticsearch.rest.RestClientAutoConfiguration;
+import org.springframework.boot.autoconfigure.elasticsearch.ElasticsearchRestClientAutoConfiguration;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
-import org.springframework.boot.testsupport.testcontainers.DisabledWithoutDockerTestcontainers;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
-import org.springframework.data.elasticsearch.core.ElasticsearchTemplate;
-import org.springframework.data.elasticsearch.core.EntityMapper;
 import org.springframework.data.elasticsearch.core.ReactiveElasticsearchTemplate;
 import org.springframework.data.elasticsearch.core.convert.ElasticsearchConverter;
-import org.springframework.data.elasticsearch.core.mapping.SimpleElasticsearchMappingContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -44,16 +38,14 @@ import static org.mockito.Mockito.mock;
  * @author Phillip Webb
  * @author Artur Konczak
  * @author Brian Clozel
+ * @author Peter-Josef Meisch
+ * @author Scott Frederick
  */
-@DisabledWithoutDockerTestcontainers
 class ElasticsearchDataAutoConfigurationTests {
 
-	@Container
-	static final ElasticsearchContainer elasticsearch = new ElasticsearchContainer();
-
-	private ApplicationContextRunner contextRunner = new ApplicationContextRunner().withConfiguration(
-			AutoConfigurations.of(ElasticsearchAutoConfiguration.class, RestClientAutoConfiguration.class,
-					ReactiveRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class));
+	private final ApplicationContextRunner contextRunner = new ApplicationContextRunner()
+			.withConfiguration(AutoConfigurations.of(ElasticsearchRestClientAutoConfiguration.class,
+					ReactiveElasticsearchRestClientAutoConfiguration.class, ElasticsearchDataAutoConfiguration.class));
 
 	@BeforeEach
 	void setUp() {
@@ -66,34 +58,10 @@ class ElasticsearchDataAutoConfigurationTests {
 	}
 
 	@Test
-	void defaultTransportBeansAreRegistered() {
-		this.contextRunner
-				.withPropertyValues(
-						"spring.data.elasticsearch.cluster-nodes:" + elasticsearch.getTcpHost().getHostString() + ":"
-								+ elasticsearch.getTcpHost().getPort(),
-						"spring.data.elasticsearch.cluster-name:docker-cluster")
-				.run((context) -> assertThat(context).hasSingleBean(ElasticsearchTemplate.class)
-						.hasSingleBean(SimpleElasticsearchMappingContext.class)
-						.hasSingleBean(ElasticsearchConverter.class));
-	}
-
-	@Test
-	void defaultTransportBeansNotRegisteredIfNoTransportClient() {
-		this.contextRunner.run((context) -> assertThat(context).doesNotHaveBean(ElasticsearchTemplate.class));
-	}
-
-	@Test
 	void defaultRestBeansRegistered() {
 		this.contextRunner.run((context) -> assertThat(context).hasSingleBean(ElasticsearchRestTemplate.class)
 				.hasSingleBean(ReactiveElasticsearchTemplate.class).hasSingleBean(ElasticsearchConverter.class)
-				.hasSingleBean(SimpleElasticsearchMappingContext.class).hasSingleBean(EntityMapper.class)
 				.hasSingleBean(ElasticsearchConverter.class));
-	}
-
-	@Test
-	void customTransportTemplateShouldBeUsed() {
-		this.contextRunner.withUserConfiguration(CustomTransportTemplate.class).run((context) -> assertThat(context)
-				.getBeanNames(ElasticsearchTemplate.class).hasSize(1).contains("elasticsearchTemplate"));
 	}
 
 	@Test
@@ -107,16 +75,6 @@ class ElasticsearchDataAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(CustomReactiveRestTemplate.class)
 				.run((context) -> assertThat(context).getBeanNames(ReactiveElasticsearchTemplate.class).hasSize(1)
 						.contains("reactiveElasticsearchTemplate"));
-	}
-
-	@Configuration(proxyBeanMethods = false)
-	static class CustomTransportTemplate {
-
-		@Bean
-		ElasticsearchTemplate elasticsearchTemplate() {
-			return mock(ElasticsearchTemplate.class);
-		}
-
 	}
 
 	@Configuration(proxyBeanMethods = false)

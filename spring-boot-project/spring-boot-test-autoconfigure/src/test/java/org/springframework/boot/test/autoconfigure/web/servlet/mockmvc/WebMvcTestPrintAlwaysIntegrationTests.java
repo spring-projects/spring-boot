@@ -47,9 +47,9 @@ class WebMvcTestPrintAlwaysIntegrationTests {
 	private MockMvc mvc;
 
 	@Test
-	void shouldPrint(CapturedOutput capturedOutput) throws Exception {
+	void shouldPrint(CapturedOutput output) throws Exception {
 		this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
-		assertThat(capturedOutput).contains("Request URI = /one");
+		assertThat(output).contains("Request URI = /one");
 	}
 
 }

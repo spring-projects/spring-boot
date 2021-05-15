@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * @author Stephane Nicoll
  * @author Benedikt Ritter
  * @author Eddú Meléndez
+ * @author Scott Frederick
  * @since 1.1.0
  */
 @ConfigurationProperties(prefix = "spring.datasource")
@@ -59,7 +60,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	/**
 	 * Whether to generate a random datasource name.
 	 */
-	private boolean generateUniqueName;
+	private boolean generateUniqueName = true;
 
 	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
@@ -88,13 +89,14 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private String password;
 
 	/**
-	 * JNDI location of the datasource. Class, url, username & password are ignored when
+	 * JNDI location of the datasource. Class, url, username and password are ignored when
 	 * set.
 	 */
 	private String jndiName;
 
 	/**
-	 * Initialize the datasource with available DDL and DML scripts.
+	 * Mode to apply when determining if DataSource initialization should be performed
+	 * using the available DDL and DML scripts.
 	 */
 	private DataSourceInitializationMode initializationMode = DataSourceInitializationMode.EMBEDDED;
 
@@ -324,7 +326,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		if (StringUtils.hasText(this.username)) {
 			return this.username;
 		}
-		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(), determineUrl())) {
 			return "sa";
 		}
 		return null;
@@ -352,7 +354,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 		if (StringUtils.hasText(this.password)) {
 			return this.password;
 		}
-		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName())) {
+		if (EmbeddedDatabaseConnection.isEmbedded(determineDriverClassName(), determineUrl())) {
 			return "";
 		}
 		return null;

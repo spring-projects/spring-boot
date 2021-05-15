@@ -1,0 +1,6 @@
+[[goals]]
+== Goals
+The Spring Boot Plugin has the following goals:
+
+include::goals/overview.adoc[]
+

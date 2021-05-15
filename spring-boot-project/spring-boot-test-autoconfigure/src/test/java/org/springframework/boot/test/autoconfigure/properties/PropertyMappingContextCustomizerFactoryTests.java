@@ -33,7 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatExceptionOfType;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link PropertyMappingContextCustomizerFactory}.
@@ -53,7 +53,7 @@ class PropertyMappingContextCustomizerFactoryTests {
 		given(context.getEnvironment()).willReturn(environment);
 		given(context.getBeanFactory()).willReturn(beanFactory);
 		customizer.customizeContext(context, null);
-		verifyZeroInteractions(environment);
+		verifyNoInteractions(environment);
 	}
 
 	@Test

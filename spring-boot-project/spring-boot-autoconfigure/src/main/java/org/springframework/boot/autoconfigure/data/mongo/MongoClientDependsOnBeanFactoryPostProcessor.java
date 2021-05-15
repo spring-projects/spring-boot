@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,7 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.mongo;
 
-import com.mongodb.MongoClient;
+import com.mongodb.client.MongoClient;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -36,7 +36,12 @@ import org.springframework.data.mongodb.core.MongoClientFactoryBean;
 @Order(Ordered.LOWEST_PRECEDENCE)
 public class MongoClientDependsOnBeanFactoryPostProcessor extends AbstractDependsOnBeanFactoryPostProcessor {
 
-	public MongoClientDependsOnBeanFactoryPostProcessor(String... dependsOn) {
+	/**
+	 * Creates a new {@code MongoClientDependsOnBeanFactoryPostProcessor} that will set up
+	 * dependencies upon beans with the given types.
+	 * @param dependsOn types of the beans to depend upon
+	 */
+	public MongoClientDependsOnBeanFactoryPostProcessor(Class<?>... dependsOn) {
 		super(MongoClient.class, MongoClientFactoryBean.class, dependsOn);
 	}
 

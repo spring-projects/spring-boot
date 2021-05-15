@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -38,15 +38,17 @@ import org.springframework.boot.autoconfigure.condition.ConditionOutcome;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
-import org.springframework.boot.autoconfigure.data.jpa.EntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
+import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryDependsOnPostProcessor;
+import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration.DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor;
 import org.springframework.boot.devtools.autoconfigure.DevToolsDataSourceAutoConfiguration.DevToolsDataSourceCondition;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ConfigurationCondition;
+import org.springframework.context.annotation.Import;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.orm.jpa.AbstractEntityManagerFactoryBean;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
@@ -61,6 +63,7 @@ import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 @AutoConfigureAfter(DataSourceAutoConfiguration.class)
 @Conditional({ OnEnabledDevToolsCondition.class, DevToolsDataSourceCondition.class })
 @Configuration(proxyBeanMethods = false)
+@Import(DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor.class)
 public class DevToolsDataSourceAutoConfiguration {
 
 	@Bean
@@ -70,16 +73,15 @@ public class DevToolsDataSourceAutoConfiguration {
 	}
 
 	/**
-	 * Additional configuration to ensure that
-	 * {@link javax.persistence.EntityManagerFactory} beans depend on the
-	 * {@code inMemoryDatabaseShutdownExecutor} bean.
+	 * Post processor to ensure that {@link javax.persistence.EntityManagerFactory} beans
+	 * depend on the {@code inMemoryDatabaseShutdownExecutor} bean.
 	 */
-	@Configuration(proxyBeanMethods = false)
 	@ConditionalOnClass(LocalContainerEntityManagerFactoryBean.class)
 	@ConditionalOnBean(AbstractEntityManagerFactoryBean.class)
-	static class DatabaseShutdownExecutorJpaDependencyConfiguration extends EntityManagerFactoryDependsOnPostProcessor {
+	static class DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor
+			extends EntityManagerFactoryDependsOnPostProcessor {
 
-		DatabaseShutdownExecutorJpaDependencyConfiguration() {
+		DatabaseShutdownExecutorEntityManagerFactoryDependsOnPostProcessor() {
 			super("inMemoryDatabaseShutdownExecutor");
 		}
 
@@ -178,11 +180,11 @@ public class DevToolsDataSourceAutoConfiguration {
 		@Override
 		public ConditionOutcome getMatchOutcome(ConditionContext context, AnnotatedTypeMetadata metadata) {
 			ConditionMessage.Builder message = ConditionMessage.forCondition("DevTools DataSource Condition");
-			String[] dataSourceBeanNames = context.getBeanFactory().getBeanNamesForType(DataSource.class);
+			String[] dataSourceBeanNames = context.getBeanFactory().getBeanNamesForType(DataSource.class, true, false);
 			if (dataSourceBeanNames.length != 1) {
 				return ConditionOutcome.noMatch(message.didNotFind("a single DataSource bean").atAll());
 			}
-			if (context.getBeanFactory().getBeanNamesForType(DataSourceProperties.class).length != 1) {
+			if (context.getBeanFactory().getBeanNamesForType(DataSourceProperties.class, true, false).length != 1) {
 				return ConditionOutcome.noMatch(message.didNotFind("a single DataSourceProperties bean").atAll());
 			}
 			BeanDefinition dataSourceDefinition = context.getRegistry().getBeanDefinition(dataSourceBeanNames[0]);

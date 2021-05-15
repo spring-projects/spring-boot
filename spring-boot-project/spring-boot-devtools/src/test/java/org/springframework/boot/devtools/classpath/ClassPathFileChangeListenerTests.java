@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,12 +21,12 @@ import java.util.Collections;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.devtools.filewatch.ChangedFile;
 import org.springframework.boot.devtools.filewatch.ChangedFiles;
@@ -45,6 +45,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Phillip Webb
  */
+@ExtendWith(MockitoExtension.class)
 class ClassPathFileChangeListenerTests {
 
 	@Mock
@@ -58,11 +59,6 @@ class ClassPathFileChangeListenerTests {
 
 	@Captor
 	private ArgumentCaptor<ApplicationEvent> eventCaptor;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void eventPublisherMustNotBeNull() {
@@ -93,10 +89,10 @@ class ClassPathFileChangeListenerTests {
 	private void testSendsEvent(boolean restart) {
 		ClassPathFileChangeListener listener = new ClassPathFileChangeListener(this.eventPublisher,
 				this.restartStrategy, this.fileSystemWatcher);
-		File folder = new File("s1");
+		File directory = new File("s1");
 		File file = new File("f1");
-		ChangedFile file1 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
-		ChangedFile file2 = new ChangedFile(folder, file, ChangedFile.Type.ADD);
+		ChangedFile file1 = new ChangedFile(directory, file, ChangedFile.Type.ADD);
+		ChangedFile file2 = new ChangedFile(directory, file, ChangedFile.Type.ADD);
 		Set<ChangedFile> files = new LinkedHashSet<>();
 		files.add(file1);
 		files.add(file2);

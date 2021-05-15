@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,9 +31,10 @@ import java.util.function.Consumer;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException;
 import org.springframework.boot.actuate.autoconfigure.cloudfoundry.CloudFoundryAuthorizationException.Reason;
@@ -52,6 +53,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Madhura Bhave
  */
+@ExtendWith(MockitoExtension.class)
 class TokenValidatorTests {
 
 	private static final byte[] DOT = ".".getBytes();
@@ -85,7 +87,6 @@ class TokenValidatorTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.tokenValidator = new TokenValidator(this.securityService);
 	}
 
@@ -135,7 +136,6 @@ class TokenValidatorTests {
 	void validateTokenWhenSignatureInvalidShouldThrowException() throws Exception {
 		ReflectionTestUtils.setField(this.tokenValidator, "tokenKeys",
 				Collections.singletonMap("valid-key", INVALID_KEY));
-		given(this.securityService.getUaaUrl()).willReturn("http://localhost:8080/uaa");
 		String header = "{ \"alg\": \"RS256\",  \"kid\": \"valid-key\",\"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class).isThrownBy(
@@ -145,7 +145,6 @@ class TokenValidatorTests {
 
 	@Test
 	void validateTokenWhenTokenAlgorithmIsNotRS256ShouldThrowException() throws Exception {
-		given(this.securityService.fetchTokenKeys()).willReturn(VALID_KEYS);
 		String header = "{ \"alg\": \"HS256\",  \"typ\": \"JWT\"}";
 		String claims = "{ \"exp\": 2147483647, \"iss\": \"http://localhost:8080/uaa/oauth/token\", \"scope\": [\"actuator.read\"]}";
 		assertThatExceptionOfType(CloudFoundryAuthorizationException.class).isThrownBy(

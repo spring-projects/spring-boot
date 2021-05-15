@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.xnio.Option;
 import org.xnio.OptionMap;
+import org.xnio.Options;
 
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
@@ -51,6 +52,7 @@ import static org.mockito.Mockito.verify;
  * @author Phillip Webb
  * @author Artsiom Yudovin
  * @author Rafiullah Hamedy
+ * @author HaiTao Zhang
  */
 class UndertowWebServerFactoryCustomizerTests {
 
@@ -109,8 +111,8 @@ class UndertowWebServerFactoryCustomizerTests {
 
 	@Test
 	void customConnectionTimeout() {
-		bind("server.connectionTimeout=100");
-		assertThat(boundServerOption(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(100);
+		bind("server.undertow.no-request-timeout=1m");
+		assertThat(boundServerOption(UndertowOptions.NO_REQUEST_TIMEOUT)).isEqualTo(60000);
 	}
 
 	@Test
@@ -129,6 +131,22 @@ class UndertowWebServerFactoryCustomizerTests {
 	void customMaxCookies() {
 		bind("server.undertow.max-cookies=4");
 		assertThat(boundServerOption(UndertowOptions.MAX_COOKIES)).isEqualTo(4);
+	}
+
+	@Test
+	void customizeIoThreads() {
+		bind("server.undertow.threads.io=4");
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setIoThreads(4);
+	}
+
+	@Test
+	void customizeWorkerThreads() {
+		bind("server.undertow.threads.worker=10");
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setWorkerThreads(10);
 	}
 
 	@Test
@@ -169,13 +187,14 @@ class UndertowWebServerFactoryCustomizerTests {
 
 	@Test
 	void customSocketOption() {
-		bind("server.undertow.options.socket.ALWAYS_SET_KEEP_ALIVE=false");
-		assertThat(boundSocketOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+		bind("server.undertow.options.socket.CONNECTION_LOW_WATER=8");
+		assertThat(boundSocketOption(Options.CONNECTION_LOW_WATER)).isEqualTo(8);
 	}
 
+	@Test
 	void customSocketOptionShouldBeRelaxed() {
-		bind("server.undertow.options.socket.always-set-keep-alive=false");
-		assertThat(boundSocketOption(UndertowOptions.ALWAYS_SET_KEEP_ALIVE)).isFalse();
+		bind("server.undertow.options.socket.connection-low-water=8");
+		assertThat(boundSocketOption(Options.CONNECTION_LOW_WATER)).isEqualTo(8);
 	}
 
 	@Test
@@ -194,11 +213,20 @@ class UndertowWebServerFactoryCustomizerTests {
 	}
 
 	@Test
-	void setUseForwardHeaders() {
-		this.serverProperties.setUseForwardHeaders(true);
+	void forwardHeadersWhenStrategyIsNativeShouldConfigureValve() {
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NATIVE);
 		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
 		this.customizer.customize(factory);
 		verify(factory).setUseForwardHeaders(true);
+	}
+
+	@Test
+	void forwardHeadersWhenStrategyIsNoneShouldNotConfigureValve() {
+		this.environment.setProperty("DYNO", "-");
+		this.serverProperties.setForwardHeadersStrategy(ServerProperties.ForwardHeadersStrategy.NONE);
+		ConfigurableUndertowWebServerFactory factory = mock(ConfigurableUndertowWebServerFactory.class);
+		this.customizer.customize(factory);
+		verify(factory).setUseForwardHeaders(false);
 	}
 
 	private <T> T boundServerOption(Option<T> option) {

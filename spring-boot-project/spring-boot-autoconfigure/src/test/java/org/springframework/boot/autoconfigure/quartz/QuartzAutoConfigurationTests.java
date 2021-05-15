@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,16 @@
 
 package org.springframework.boot.autoconfigure.quartz;
 
+import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.util.concurrent.Executor;
 
 import javax.sql.DataSource;
 
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.junit.jupiter.api.io.TempDir;
 import org.quartz.Calendar;
 import org.quartz.JobBuilder;
 import org.quartz.JobDetail;
@@ -39,9 +43,11 @@ import org.quartz.simpl.RAMJobStore;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -52,15 +58,18 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Primary;
 import org.springframework.core.env.Environment;
+import org.springframework.core.io.ClassPathResource;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 import org.springframework.scheduling.quartz.LocalDataSourceJobStore;
 import org.springframework.scheduling.quartz.QuartzJobBean;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
+import org.springframework.transaction.PlatformTransactionManager;
 import org.springframework.util.Assert;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link QuartzAutoConfiguration}.
@@ -103,6 +112,19 @@ class QuartzAutoConfigurationTests {
 	}
 
 	@Test
+	void withDataSourceAndInMemoryStoreDoesNotInitializeDataSource() {
+		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=memory").run((context) -> {
+					JdbcTemplate jdbcTemplate = new JdbcTemplate(context.getBean("dataSource", DataSource.class));
+					assertThat(jdbcTemplate.queryForList("SHOW TABLES").stream()
+							.map((table) -> (String) table.get("TABLE_NAME")))
+									.noneMatch((name) -> name.startsWith("QRTZ"));
+				});
+	}
+
+	@Test
 	void withDataSourceNoTransactionManager() {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
 				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
@@ -114,6 +136,17 @@ class QuartzAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class, MultipleDataSourceConfiguration.class)
 				.withPropertyValues("spring.quartz.job-store-type=jdbc")
 				.run(assertDataSourceJobStore("quartzDataSource"));
+	}
+
+	@Test
+	void transactionManagerWithQuartzTransactionManagerUsedWhenMultiplePresent() {
+		this.contextRunner
+				.withUserConfiguration(QuartzJobsConfiguration.class, MultipleTransactionManagersConfiguration.class)
+				.withPropertyValues("spring.quartz.job-store-type=jdbc").run((context) -> {
+					SchedulerFactoryBean schedulerFactoryBean = context.getBean(SchedulerFactoryBean.class);
+					assertThat(schedulerFactoryBean).extracting("transactionManager")
+							.isEqualTo(context.getBean("quartzTransactionManager"));
+				});
 	}
 
 	private ContextConsumer<AssertableApplicationContext> assertDataSourceJobStore(String datasourceName) {
@@ -137,7 +170,7 @@ class QuartzAutoConfigurationTests {
 					Scheduler scheduler = context.getBean(Scheduler.class);
 					assertThat(scheduler.getMetaData().getThreadPoolSize()).isEqualTo(50);
 					Executor executor = context.getBean(Executor.class);
-					verifyZeroInteractions(executor);
+					verifyNoInteractions(executor);
 				});
 	}
 
@@ -154,7 +187,7 @@ class QuartzAutoConfigurationTests {
 	}
 
 	@Test
-	void withConfiguredJobAndTrigger(CapturedOutput capturedOutput) {
+	void withConfiguredJobAndTrigger(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(QuartzFullConfiguration.class)
 				.withPropertyValues("test-name=withConfiguredJobAndTrigger").run((context) -> {
 					assertThat(context).hasSingleBean(Scheduler.class);
@@ -162,7 +195,7 @@ class QuartzAutoConfigurationTests {
 					assertThat(scheduler.getJobDetail(JobKey.jobKey("fooJob"))).isNotNull();
 					assertThat(scheduler.getTrigger(TriggerKey.triggerKey("fooTrigger"))).isNotNull();
 					Thread.sleep(1000L);
-					assertThat(capturedOutput).contains("withConfiguredJobAndTrigger").contains("jobDataValue");
+					assertThat(output).contains("withConfiguredJobAndTrigger").contains("jobDataValue");
 				});
 	}
 
@@ -225,6 +258,31 @@ class QuartzAutoConfigurationTests {
 					assertThat(schedulerFactory).hasFieldOrPropertyWithValue("waitForJobsToCompleteOnShutdown", true);
 					assertThat(schedulerFactory).hasFieldOrPropertyWithValue("overwriteExistingJobs", true);
 				});
+	}
+
+	@Test
+	void withLiquibase() {
+		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class, LiquibaseAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc", "spring.quartz.jdbc.initialize-schema=never",
+						"spring.liquibase.change-log=classpath:org/quartz/impl/jdbcjobstore/liquibase.quartz.init.xml")
+				.run(assertDataSourceJobStore("dataSource"));
+	}
+
+	@Test
+	void withFlyway(@TempDir Path flywayLocation) throws Exception {
+		ClassPathResource tablesResource = new ClassPathResource("org/quartz/impl/jdbcjobstore/tables_h2.sql");
+		try (InputStream stream = tablesResource.getInputStream()) {
+			Files.copy(stream, flywayLocation.resolve("V2__quartz.sql"));
+		}
+		this.contextRunner.withUserConfiguration(QuartzJobsConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class, FlywayAutoConfiguration.class))
+				.withPropertyValues("spring.quartz.job-store-type=jdbc", "spring.quartz.jdbc.initialize-schema=never",
+						"spring.flyway.locations=filesystem:" + flywayLocation,
+						"spring.flyway.baseline-on-migrate=true")
+				.run(assertDataSourceJobStore("dataSource"));
 	}
 
 	@Test
@@ -381,6 +439,51 @@ class QuartzAutoConfigurationTests {
 			DataSourceProperties properties = new DataSourceProperties();
 			properties.setGenerateUniqueName(true);
 			properties.afterPropertiesSet();
+			return properties.initializeDataSourceBuilder().build();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MultipleTransactionManagersConfiguration extends BaseQuartzConfiguration {
+
+		private final DataSource primaryDataSource = createTestDataSource();
+
+		private final DataSource quartzDataSource = createTestDataSource();
+
+		@Bean
+		@Primary
+		DataSource applicationDataSource() {
+			return this.primaryDataSource;
+		}
+
+		@Bean
+		@QuartzDataSource
+		DataSource quartzDataSource() {
+			return this.quartzDataSource;
+		}
+
+		@Bean
+		@Primary
+		PlatformTransactionManager applicationTransactionManager() {
+			return new DataSourceTransactionManager(this.primaryDataSource);
+		}
+
+		@Bean
+		@QuartzTransactionManager
+		PlatformTransactionManager quartzTransactionManager() {
+			return new DataSourceTransactionManager(this.quartzDataSource);
+		}
+
+		private DataSource createTestDataSource() {
+			DataSourceProperties properties = new DataSourceProperties();
+			properties.setGenerateUniqueName(true);
+			try {
+				properties.afterPropertiesSet();
+			}
+			catch (Exception ex) {
+				throw new RuntimeException(ex);
+			}
 			return properties.initializeDataSourceBuilder().build();
 		}
 

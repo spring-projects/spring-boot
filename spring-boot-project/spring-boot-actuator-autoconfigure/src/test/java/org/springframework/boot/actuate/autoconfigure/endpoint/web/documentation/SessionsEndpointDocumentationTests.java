@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -70,8 +70,8 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 			fieldWithPath("attributeNames").description("Names of the attributes stored in the session."),
 			fieldWithPath("creationTime").description("Timestamp of when the session was created."),
 			fieldWithPath("lastAccessedTime").description("Timestamp of when the session was last accessed."),
-			fieldWithPath("maxInactiveInterval").description(
-					"Maximum permitted period of inactivity, in seconds, " + "before the session will expire."),
+			fieldWithPath("maxInactiveInterval")
+					.description("Maximum permitted period of inactivity, in seconds, before the session will expire."),
 			fieldWithPath("expired").description("Whether the session has expired."));
 
 	@MockBean
@@ -93,10 +93,6 @@ class SessionsEndpointDocumentationTests extends MockMvcEndpointDocumentationTes
 
 	@Test
 	void sessionWithId() throws Exception {
-		Map<String, Session> sessions = new HashMap<>();
-		sessions.put(sessionOne.getId(), sessionOne);
-		sessions.put(sessionTwo.getId(), sessionTwo);
-		sessions.put(sessionThree.getId(), sessionThree);
 		given(this.sessionRepository.findById(sessionTwo.getId())).willReturn(sessionTwo);
 		this.mockMvc.perform(get("/actuator/sessions/{id}", sessionTwo.getId())).andExpect(status().isOk())
 				.andDo(document("sessions/id", responseFields(sessionFields)));

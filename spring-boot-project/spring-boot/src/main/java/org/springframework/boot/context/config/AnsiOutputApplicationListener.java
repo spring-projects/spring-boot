@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.boot.ansi.AnsiOutput.Enabled;
 import org.springframework.boot.context.event.ApplicationEnvironmentPreparedEvent;
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.env.EnvironmentPostProcessorApplicationListener;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -46,8 +47,8 @@ public class AnsiOutputApplicationListener
 
 	@Override
 	public int getOrder() {
-		// Apply after ConfigFileApplicationListener has called EnvironmentPostProcessors
-		return ConfigFileApplicationListener.DEFAULT_ORDER + 1;
+		// Apply after EnvironmentPostProcessorApplicationListener
+		return EnvironmentPostProcessorApplicationListener.DEFAULT_ORDER + 1;
 	}
 
 }

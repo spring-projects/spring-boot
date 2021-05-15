@@ -5,7 +5,7 @@ plugins {
 }
 
 bootJar {
-	mainClassName = 'com.example.Application'
+	mainClass = 'com.example.Application'
 }
 
 group = 'com.example'
@@ -14,7 +14,7 @@ version = '1.0'
 publishing {
 	repositories {
 		maven {
-			url "$buildDir/repo"
+			url "${buildDir}/repo"
 		}
 	}
 	publications {

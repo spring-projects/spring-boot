@@ -53,15 +53,15 @@ class SampleAopApplicationTests {
 	}
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) throws Exception {
+	void testDefaultSettings(CapturedOutput output) throws Exception {
 		SampleAopApplication.main(new String[0]);
-		assertThat(capturedOutput).contains("Hello Phil");
+		assertThat(output).contains("Hello Phil");
 	}
 
 	@Test
-	void testCommandLineOverrides(CapturedOutput capturedOutput) throws Exception {
+	void testCommandLineOverrides(CapturedOutput output) throws Exception {
 		SampleAopApplication.main(new String[] { "--name=Gordon" });
-		assertThat(capturedOutput).contains("Hello Gordon");
+		assertThat(output).contains("Hello Gordon");
 	}
 
 }

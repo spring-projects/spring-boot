@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,8 +18,10 @@ package org.springframework.boot.autoconfigure.security.oauth2.client.servlet;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.security.ConditionalOnDefaultWebSecurity;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.oauth2.client.InMemoryOAuth2AuthorizedClientService;
@@ -27,6 +29,7 @@ import org.springframework.security.oauth2.client.OAuth2AuthorizedClientService;
 import org.springframework.security.oauth2.client.registration.ClientRegistrationRepository;
 import org.springframework.security.oauth2.client.web.AuthenticatedPrincipalOAuth2AuthorizedClientRepository;
 import org.springframework.security.oauth2.client.web.OAuth2AuthorizedClientRepository;
+import org.springframework.security.web.SecurityFilterChain;
 
 /**
  * {@link WebSecurityConfigurerAdapter} to add OAuth client support.
@@ -51,12 +54,15 @@ class OAuth2WebSecurityConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingBean(WebSecurityConfigurerAdapter.class)
-	static class OAuth2WebSecurityConfigurerAdapter extends WebSecurityConfigurerAdapter {
+	@ConditionalOnDefaultWebSecurity
+	static class OAuth2SecurityFilterChainConfiguration {
 
-		@Override
-		protected void configure(HttpSecurity http) throws Exception {
-			http.authorizeRequests().anyRequest().authenticated().and().oauth2Login().and().oauth2Client();
+		@Bean
+		SecurityFilterChain oauth2SecurityFilterChain(HttpSecurity http) throws Exception {
+			http.authorizeRequests((requests) -> requests.anyRequest().authenticated());
+			http.oauth2Login(Customizer.withDefaults());
+			http.oauth2Client();
+			return http.build();
 		}
 
 	}

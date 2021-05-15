@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -28,8 +28,8 @@ import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
-import org.springframework.session.data.mongo.ReactiveMongoOperationsSessionRepository;
-import org.springframework.session.data.redis.ReactiveRedisOperationsSessionRepository;
+import org.springframework.session.data.mongo.ReactiveMongoSessionRepository;
+import org.springframework.session.data.redis.ReactiveRedisSessionRepository;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -54,11 +54,24 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 
 	@Test
 	void defaultConfigWithUniqueStoreImplementation() {
-		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveRedisOperationsSessionRepository.class))
+		this.contextRunner.withClassLoader(new FilteredClassLoader(ReactiveRedisSessionRepository.class))
 				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
 						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
 				.run(validateSpringSessionUsesMongo("sessions"));
+	}
+
+	@Test
+	void defaultConfigWithCustomTimeout() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=mongodb", "spring.session.timeout=1m")
+				.withConfiguration(AutoConfigurations.of(EmbeddedMongoAutoConfiguration.class,
+						MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
+						MongoReactiveAutoConfiguration.class, MongoReactiveDataAutoConfiguration.class))
+				.run((context) -> {
+					ReactiveMongoSessionRepository repository = validateSessionRepository(context,
+							ReactiveMongoSessionRepository.class);
+					assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds", 60);
+				});
 	}
 
 	@Test
@@ -74,9 +87,11 @@ class ReactiveSessionAutoConfigurationMongoTests extends AbstractSessionAutoConf
 	private ContextConsumer<AssertableReactiveWebApplicationContext> validateSpringSessionUsesMongo(
 			String collectionName) {
 		return (context) -> {
-			ReactiveMongoOperationsSessionRepository repository = validateSessionRepository(context,
-					ReactiveMongoOperationsSessionRepository.class);
+			ReactiveMongoSessionRepository repository = validateSessionRepository(context,
+					ReactiveMongoSessionRepository.class);
 			assertThat(repository.getCollectionName()).isEqualTo(collectionName);
+			assertThat(repository).hasFieldOrPropertyWithValue("maxInactiveIntervalInSeconds",
+					ReactiveMongoSessionRepository.DEFAULT_INACTIVE_INTERVAL);
 		};
 	}
 

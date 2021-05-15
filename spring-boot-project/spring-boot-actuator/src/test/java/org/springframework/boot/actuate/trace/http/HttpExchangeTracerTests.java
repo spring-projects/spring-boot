@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.trace.http.HttpTrace.Request;
 import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
 
@@ -270,6 +271,29 @@ class HttpExchangeTracerTests {
 		assertThat(trace.getTimeTaken()).isNotNull();
 	}
 
+	@Test
+	void defaultIncludes() {
+		HttpHeaders requestHeaders = new HttpHeaders();
+		requestHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
+		requestHeaders.set(HttpHeaders.COOKIE, "value");
+		requestHeaders.set(HttpHeaders.AUTHORIZATION, "secret");
+		HttpExchangeTracer tracer = new HttpExchangeTracer(Include.defaultIncludes());
+		HttpTrace trace = tracer.receivedRequest(createRequest(requestHeaders));
+		HttpHeaders responseHeaders = new HttpHeaders();
+		responseHeaders.set(HttpHeaders.SET_COOKIE, "test=test");
+		responseHeaders.setContentLength(0);
+		tracer.sendingResponse(trace, createResponse(responseHeaders), this::createPrincipal, () -> "sessionId");
+		assertThat(trace.getTimeTaken()).isNotNull();
+		assertThat(trace.getPrincipal()).isNull();
+		assertThat(trace.getSession()).isNull();
+		assertThat(trace.getTimestamp()).isNotNull();
+		assertThat(trace.getRequest().getMethod()).isEqualTo("GET");
+		assertThat(trace.getRequest().getRemoteAddress()).isNull();
+		assertThat(trace.getResponse().getStatus()).isEqualTo(204);
+		assertThat(trace.getRequest().getHeaders()).containsOnlyKeys(HttpHeaders.ACCEPT);
+		assertThat(trace.getResponse().getHeaders()).containsOnlyKeys(HttpHeaders.CONTENT_LENGTH);
+	}
+
 	private TraceableRequest createRequest() {
 		return createRequest(Collections.singletonMap(HttpHeaders.ACCEPT, Arrays.asList("application/json")));
 	}
@@ -318,7 +342,7 @@ class HttpExchangeTracerTests {
 		@Override
 		protected void postProcessRequestHeaders(Map<String, List<String>> headers) {
 			headers.remove("to-remove");
-			headers.putIfAbsent("to-add", Collections.singletonList("42"));
+			headers.computeIfAbsent("to-add", (key) -> Collections.singletonList("42"));
 		}
 
 	}

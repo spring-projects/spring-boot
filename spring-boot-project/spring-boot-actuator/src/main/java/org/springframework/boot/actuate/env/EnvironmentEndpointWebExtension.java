@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,6 +26,7 @@ import org.springframework.boot.actuate.env.EnvironmentEndpoint.EnvironmentEntry
  * {@link EndpointWebExtension @EndpointWebExtension} for the {@link EnvironmentEndpoint}.
  *
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @EndpointWebExtension(endpoint = EnvironmentEndpoint.class)
@@ -40,14 +41,8 @@ public class EnvironmentEndpointWebExtension {
 	@ReadOperation
 	public WebEndpointResponse<EnvironmentEntryDescriptor> environmentEntry(@Selector String toMatch) {
 		EnvironmentEntryDescriptor descriptor = this.delegate.environmentEntry(toMatch);
-		return new WebEndpointResponse<>(descriptor, getStatus(descriptor));
-	}
-
-	private int getStatus(EnvironmentEntryDescriptor descriptor) {
-		if (descriptor.getProperty() == null) {
-			return WebEndpointResponse.STATUS_NOT_FOUND;
-		}
-		return WebEndpointResponse.STATUS_OK;
+		return (descriptor.getProperty() != null) ? new WebEndpointResponse<>(descriptor, WebEndpointResponse.STATUS_OK)
+				: new WebEndpointResponse<>(WebEndpointResponse.STATUS_NOT_FOUND);
 	}
 
 }

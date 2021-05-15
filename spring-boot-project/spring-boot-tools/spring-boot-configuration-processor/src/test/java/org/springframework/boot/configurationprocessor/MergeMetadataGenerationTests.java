@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -203,9 +203,9 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 
 	@Test
 	void mergingOfAdditionalMetadata() throws Exception {
-		File metaInfFolder = new File(getCompiler().getOutputLocation(), "META-INF");
-		metaInfFolder.mkdirs();
-		File additionalMetadataFile = new File(metaInfFolder, "additional-spring-configuration-metadata.json");
+		File metaInfDirectory = new File(getCompiler().getOutputLocation(), "META-INF");
+		metaInfDirectory.mkdirs();
+		File additionalMetadataFile = new File(metaInfDirectory, "additional-spring-configuration-metadata.json");
 		additionalMetadataFile.createNewFile();
 		JSONObject property = new JSONObject();
 		property.put("name", "foo");
@@ -273,9 +273,9 @@ class MergeMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	}
 
 	private File createAdditionalMetadataFile() throws IOException {
-		File metaInfFolder = new File(getCompiler().getOutputLocation(), "META-INF");
-		metaInfFolder.mkdirs();
-		File additionalMetadataFile = new File(metaInfFolder, "additional-spring-configuration-metadata.json");
+		File metaInfDirectory = new File(getCompiler().getOutputLocation(), "META-INF");
+		metaInfDirectory.mkdirs();
+		File additionalMetadataFile = new File(metaInfDirectory, "additional-spring-configuration-metadata.json");
 		additionalMetadataFile.createNewFile();
 		return additionalMetadataFile;
 	}

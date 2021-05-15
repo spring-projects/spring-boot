@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,7 @@ class ExplodedArchiveTests {
 	@TempDir
 	File tempDir;
 
-	private File rootFolder;
+	private File rootDirectory;
 
 	private ExplodedArchive archive;
 
@@ -71,17 +71,16 @@ class ExplodedArchiveTests {
 		createArchive(null);
 	}
 
-	private void createArchive(String folderName) throws Exception {
+	private void createArchive(String directoryName) throws Exception {
 		File file = new File(this.tempDir, "test.jar");
 		TestJarCreator.createTestJar(file);
-
-		this.rootFolder = (StringUtils.hasText(folderName) ? new File(this.tempDir, folderName)
+		this.rootDirectory = (StringUtils.hasText(directoryName) ? new File(this.tempDir, directoryName)
 				: new File(this.tempDir, UUID.randomUUID().toString()));
 		JarFile jarFile = new JarFile(file);
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
 			JarEntry entry = entries.nextElement();
-			File destination = new File(this.rootFolder.getAbsolutePath() + File.separator + entry.getName());
+			File destination = new File(this.rootDirectory.getAbsolutePath() + File.separator + entry.getName());
 			destination.getParentFile().mkdirs();
 			if (entry.isDirectory()) {
 				destination.mkdir();
@@ -90,7 +89,7 @@ class ExplodedArchiveTests {
 				FileCopyUtils.copy(jarFile.getInputStream(entry), new FileOutputStream(destination));
 			}
 		}
-		this.archive = new ExplodedArchive(this.rootFolder);
+		this.archive = new ExplodedArchive(this.rootDirectory);
 		jarFile.close();
 	}
 
@@ -102,26 +101,26 @@ class ExplodedArchiveTests {
 	@Test
 	void getEntries() {
 		Map<String, Archive.Entry> entries = getEntriesMap(this.archive);
-		assertThat(entries.size()).isEqualTo(12);
+		assertThat(entries).hasSize(12);
 	}
 
 	@Test
 	void getUrl() throws Exception {
-		assertThat(this.archive.getUrl()).isEqualTo(this.rootFolder.toURI().toURL());
+		assertThat(this.archive.getUrl()).isEqualTo(this.rootDirectory.toURI().toURL());
 	}
 
 	@Test
 	void getUrlWithSpaceInPath() throws Exception {
 		createArchive("spaces in the name");
-		assertThat(this.archive.getUrl()).isEqualTo(this.rootFolder.toURI().toURL());
+		assertThat(this.archive.getUrl()).isEqualTo(this.rootDirectory.toURI().toURL());
 	}
 
 	@Test
 	void getNestedArchive() throws Exception {
 		Entry entry = getEntriesMap(this.archive).get("nested.jar");
 		Archive nested = this.archive.getNestedArchive(entry);
-		assertThat(nested.getUrl().toString()).isEqualTo(this.rootFolder.toURI() + "nested.jar");
-		((JarFileArchive) nested).close();
+		assertThat(nested.getUrl().toString()).isEqualTo(this.rootDirectory.toURI() + "nested.jar");
+		nested.close();
 	}
 
 	@Test
@@ -130,7 +129,7 @@ class ExplodedArchiveTests {
 		Archive nested = this.archive.getNestedArchive(entry);
 		Map<String, Entry> nestedEntries = getEntriesMap(nested);
 		assertThat(nestedEntries.size()).isEqualTo(1);
-		assertThat(nested.getUrl().toString()).isEqualTo("file:" + this.rootFolder.toURI().getPath() + "d/");
+		assertThat(nested.getUrl().toString()).isEqualTo("file:" + this.rootDirectory.toURI().getPath() + "d/");
 	}
 
 	@Test

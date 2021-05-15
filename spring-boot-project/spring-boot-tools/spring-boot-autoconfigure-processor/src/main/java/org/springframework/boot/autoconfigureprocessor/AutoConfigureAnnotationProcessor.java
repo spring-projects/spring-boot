@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,9 @@
 package org.springframework.boot.autoconfigureprocessor;
 
 import java.io.IOException;
-import java.io.OutputStream;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -26,18 +28,18 @@ import java.util.HashSet;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
+import java.util.TreeMap;
 import java.util.stream.Stream;
 
 import javax.annotation.processing.AbstractProcessor;
+import javax.annotation.processing.Filer;
 import javax.annotation.processing.RoundEnvironment;
 import javax.annotation.processing.SupportedAnnotationTypes;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.AnnotationMirror;
 import javax.lang.model.element.AnnotationValue;
 import javax.lang.model.element.Element;
-import javax.lang.model.element.ElementKind;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.DeclaredType;
 import javax.tools.FileObject;
@@ -51,8 +53,7 @@ import javax.tools.StandardLocation;
  * @author Phillip Webb
  * @since 1.5.0
  */
-@SupportedAnnotationTypes({ "org.springframework.context.annotation.Configuration",
-		"org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
+@SupportedAnnotationTypes({ "org.springframework.boot.autoconfigure.condition.ConditionalOnClass",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnBean",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate",
 		"org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication",
@@ -61,13 +62,13 @@ import javax.tools.StandardLocation;
 		"org.springframework.boot.autoconfigure.AutoConfigureOrder" })
 public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
-	protected static final String PROPERTIES_PATH = "META-INF/" + "spring-autoconfigure-metadata.properties";
+	protected static final String PROPERTIES_PATH = "META-INF/spring-autoconfigure-metadata.properties";
 
 	private final Map<String, String> annotations;
 
 	private final Map<String, ValueExtractor> valueExtractors;
 
-	private final Properties properties = new Properties();
+	private final Map<String, String> properties = new TreeMap<>();
 
 	public AutoConfigureAnnotationProcessor() {
 		Map<String, String> annotations = new LinkedHashMap<>();
@@ -79,7 +80,6 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	protected void addAnnotations(Map<String, String> annotations) {
-		annotations.put("Configuration", "org.springframework.context.annotation.Configuration");
 		annotations.put("ConditionalOnClass", "org.springframework.boot.autoconfigure.condition.ConditionalOnClass");
 		annotations.put("ConditionalOnBean", "org.springframework.boot.autoconfigure.condition.ConditionalOnBean");
 		annotations.put("ConditionalOnSingleCandidate",
@@ -92,7 +92,6 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 	}
 
 	private void addValueExtractors(Map<String, ValueExtractor> attributes) {
-		attributes.put("Configuration", ValueExtractor.allFrom("value"));
 		attributes.put("ConditionalOnClass", new OnClassConditionValueExtractor());
 		attributes.put("ConditionalOnBean", new OnBeanConditionValueExtractor());
 		attributes.put("ConditionalOnSingleCandidate", new OnBeanConditionValueExtractor());
@@ -127,10 +126,7 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 		TypeElement annotationType = this.processingEnv.getElementUtils().getTypeElement(annotationName);
 		if (annotationType != null) {
 			for (Element element : roundEnv.getElementsAnnotatedWith(annotationType)) {
-				Element enclosingElement = element.getEnclosingElement();
-				if (enclosingElement != null && enclosingElement.getKind() == ElementKind.PACKAGE) {
-					processElement(element, propertyKey, annotationName);
-				}
+				processElement(element, propertyKey, annotationName);
 			}
 		}
 	}
@@ -180,10 +176,15 @@ public class AutoConfigureAnnotationProcessor extends AbstractProcessor {
 
 	private void writeProperties() throws IOException {
 		if (!this.properties.isEmpty()) {
-			FileObject file = this.processingEnv.getFiler().createResource(StandardLocation.CLASS_OUTPUT, "",
-					PROPERTIES_PATH);
-			try (OutputStream outputStream = file.openOutputStream()) {
-				this.properties.store(outputStream, null);
+			Filer filer = this.processingEnv.getFiler();
+			FileObject file = filer.createResource(StandardLocation.CLASS_OUTPUT, "", PROPERTIES_PATH);
+			try (Writer writer = new OutputStreamWriter(file.openOutputStream(), StandardCharsets.UTF_8)) {
+				for (Map.Entry<String, String> entry : this.properties.entrySet()) {
+					writer.append(entry.getKey());
+					writer.append("=");
+					writer.append(entry.getValue());
+					writer.append(System.lineSeparator());
+				}
 			}
 		}
 	}

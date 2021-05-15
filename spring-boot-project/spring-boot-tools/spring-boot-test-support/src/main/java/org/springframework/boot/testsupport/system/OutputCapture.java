@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,6 @@ import org.springframework.util.Assert;
  * @author Madhura Bhave
  * @author Phillip Webb
  * @author Andy Wilkinson
- * @see OutputCaptureExtension
- * @see OutputCaptureRule
  */
 class OutputCapture implements CapturedOutput {
 
@@ -61,7 +59,7 @@ class OutputCapture implements CapturedOutput {
 		if (obj == this) {
 			return true;
 		}
-		if (obj instanceof CapturedOutput || obj instanceof CharSequence) {
+		if (obj instanceof CharSequence) {
 			return getAll().equals(obj.toString());
 		}
 		return false;
@@ -79,7 +77,7 @@ class OutputCapture implements CapturedOutput {
 
 	/**
 	 * Return all content (both {@link System#out System.out} and {@link System#err
-	 * System.err}) in the order that it was was captured.
+	 * System.err}) in the order that it was captured.
 	 * @return all captured output
 	 */
 	@Override
@@ -88,7 +86,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * Return {@link System#out System.out} content in the order that it was was captured.
+	 * Return {@link System#out System.out} content in the order that it was captured.
 	 * @return {@link System#out System.out} captured output
 	 */
 	@Override
@@ -97,7 +95,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * Return {@link System#err System.err} content in the order that it was was captured.
+	 * Return {@link System#err System.err} content in the order that it was captured.
 	 * @return {@link System#err System.err} captured output
 	 */
 	@Override
@@ -113,7 +111,8 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	private String get(Predicate<Type> filter) {
-		Assert.state(!this.systemCaptures.isEmpty(), "No system captures found. Check that you have used @ExtendWith.");
+		Assert.state(!this.systemCaptures.isEmpty(),
+				"No system captures found. Please check your output capture registration.");
 		StringBuilder builder = new StringBuilder();
 		for (SystemCapture systemCapture : this.systemCaptures) {
 			systemCapture.append(builder, filter);
@@ -122,7 +121,7 @@ class OutputCapture implements CapturedOutput {
 	}
 
 	/**
-	 * A capture session that captures {@link System#out System.out} and {@link System#out
+	 * A capture session that captures {@link System#out System.out} and {@link System#err
 	 * System.err}.
 	 */
 	private static class SystemCapture {
@@ -195,7 +194,7 @@ class OutputCapture implements CapturedOutput {
 
 		private static PrintStream getSystemStream(PrintStream printStream) {
 			while (printStream instanceof PrintStreamCapture) {
-				return ((PrintStreamCapture) printStream).getParent();
+				printStream = ((PrintStreamCapture) printStream).getParent();
 			}
 			return printStream;
 		}

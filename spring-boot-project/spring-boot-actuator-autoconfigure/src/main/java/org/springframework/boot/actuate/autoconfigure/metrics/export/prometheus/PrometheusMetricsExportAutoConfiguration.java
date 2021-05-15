@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import io.micrometer.core.instrument.Clock;
 import io.micrometer.prometheus.PrometheusConfig;
 import io.micrometer.prometheus.PrometheusMeterRegistry;
 import io.prometheus.client.CollectorRegistry;
+import io.prometheus.client.exporter.BasicAuthHttpConnectionFactory;
 import io.prometheus.client.exporter.PushGateway;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -32,6 +33,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.actuate.autoconfigure.endpoint.condition.ConditionalOnAvailableEndpoint;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.ConditionalOnEnabledMetricsExport;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.simple.SimpleMetricsExportAutoConfiguration;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager;
 import org.springframework.boot.actuate.metrics.export.prometheus.PrometheusPushGatewayManager.ShutdownOperation;
@@ -48,6 +50,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.Environment;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for exporting metrics to Prometheus.
@@ -61,8 +64,7 @@ import org.springframework.core.log.LogMessage;
 @AutoConfigureAfter(MetricsAutoConfiguration.class)
 @ConditionalOnBean(Clock.class)
 @ConditionalOnClass(PrometheusMeterRegistry.class)
-@ConditionalOnProperty(prefix = "management.metrics.export.prometheus", name = "enabled", havingValue = "true",
-		matchIfMissing = true)
+@ConditionalOnEnabledMetricsExport("prometheus")
 @EnableConfigurationProperties(PrometheusProperties.class)
 public class PrometheusMetricsExportAutoConfiguration {
 
@@ -124,11 +126,16 @@ public class PrometheusMetricsExportAutoConfiguration {
 			String job = getJob(properties, environment);
 			Map<String, String> groupingKey = properties.getGroupingKey();
 			ShutdownOperation shutdownOperation = properties.getShutdownOperation();
-			return new PrometheusPushGatewayManager(getPushGateway(properties.getBaseUrl()), collectorRegistry,
-					pushRate, job, groupingKey, shutdownOperation);
+			PushGateway pushGateway = initializePushGateway(properties.getBaseUrl());
+			if (StringUtils.hasText(properties.getUsername())) {
+				pushGateway.setConnectionFactory(
+						new BasicAuthHttpConnectionFactory(properties.getUsername(), properties.getPassword()));
+			}
+			return new PrometheusPushGatewayManager(pushGateway, collectorRegistry, pushRate, job, groupingKey,
+					shutdownOperation);
 		}
 
-		private PushGateway getPushGateway(String url) {
+		private PushGateway initializePushGateway(String url) {
 			try {
 				return new PushGateway(new URL(url));
 			}

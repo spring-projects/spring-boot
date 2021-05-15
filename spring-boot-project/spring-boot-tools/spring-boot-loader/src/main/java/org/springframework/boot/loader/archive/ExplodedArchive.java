@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,8 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -29,7 +29,6 @@ import java.util.Deque;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
-import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.Set;
 import java.util.jar.Manifest;
@@ -39,6 +38,7 @@ import java.util.jar.Manifest;
  *
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Madhura Bhave
  * @since 1.0.0
  */
 public class ExplodedArchive implements Archive {
@@ -55,7 +55,7 @@ public class ExplodedArchive implements Archive {
 
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
-	 * @param root the root folder
+	 * @param root the root directory
 	 */
 	public ExplodedArchive(File root) {
 		this(root, true);
@@ -63,15 +63,14 @@ public class ExplodedArchive implements Archive {
 
 	/**
 	 * Create a new {@link ExplodedArchive} instance.
-	 * @param root the root folder
+	 * @param root the root directory
 	 * @param recursive if recursive searching should be used to locate the manifest.
-	 * Defaults to {@code true}, folders with a large tree might want to set this to
-	 * {@code
-	 * false}.
+	 * Defaults to {@code true}, directories with a large tree might want to set this to
+	 * {@code false}.
 	 */
 	public ExplodedArchive(File root, boolean recursive) {
 		if (!root.exists() || !root.isDirectory()) {
-			throw new IllegalArgumentException("Invalid source folder " + root);
+			throw new IllegalArgumentException("Invalid source directory " + root);
 		}
 		this.root = root;
 		this.recursive = recursive;
@@ -99,24 +98,24 @@ public class ExplodedArchive implements Archive {
 	}
 
 	@Override
-	public List<Archive> getNestedArchives(EntryFilter filter) throws IOException {
-		List<Archive> nestedArchives = new ArrayList<>();
-		for (Entry entry : this) {
-			if (filter.matches(entry)) {
-				nestedArchives.add(getNestedArchive(entry));
-			}
-		}
-		return Collections.unmodifiableList(nestedArchives);
+	public Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter) throws IOException {
+		return new ArchiveIterator(this.root, this.recursive, searchFilter, includeFilter);
 	}
 
 	@Override
+	@Deprecated
 	public Iterator<Entry> iterator() {
-		return new FileEntryIterator(this.root, this.recursive);
+		return new EntryIterator(this.root, this.recursive, null, null);
 	}
 
 	protected Archive getNestedArchive(Entry entry) throws IOException {
 		File file = ((FileEntry) entry).getFile();
-		return (file.isDirectory() ? new ExplodedArchive(file) : new JarFileArchive(file));
+		return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive((FileEntry) entry));
+	}
+
+	@Override
+	public boolean isExploded() {
+		return true;
 	}
 
 	@Override
@@ -132,21 +131,30 @@ public class ExplodedArchive implements Archive {
 	/**
 	 * File based {@link Entry} {@link Iterator}.
 	 */
-	private static class FileEntryIterator implements Iterator<Entry> {
+	private abstract static class AbstractIterator<T> implements Iterator<T> {
 
-		private final Comparator<File> entryComparator = new EntryComparator();
+		private static final Comparator<File> entryComparator = Comparator.comparing(File::getAbsolutePath);
 
 		private final File root;
 
 		private final boolean recursive;
 
+		private final EntryFilter searchFilter;
+
+		private final EntryFilter includeFilter;
+
 		private final Deque<Iterator<File>> stack = new LinkedList<>();
 
-		private File current;
+		private FileEntry current;
 
-		FileEntryIterator(File root, boolean recursive) {
+		private String rootUrl;
+
+		AbstractIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
 			this.root = root;
+			this.rootUrl = this.root.toURI().getPath();
 			this.recursive = recursive;
+			this.searchFilter = searchFilter;
+			this.includeFilter = includeFilter;
 			this.stack.add(listFiles(root));
 			this.current = poll();
 		}
@@ -157,34 +165,28 @@ public class ExplodedArchive implements Archive {
 		}
 
 		@Override
-		public Entry next() {
-			if (this.current == null) {
+		public T next() {
+			FileEntry entry = this.current;
+			if (entry == null) {
 				throw new NoSuchElementException();
 			}
-			File file = this.current;
-			if (file.isDirectory() && (this.recursive || file.getParentFile().equals(this.root))) {
-				this.stack.addFirst(listFiles(file));
-			}
 			this.current = poll();
-			String name = file.toURI().getPath().substring(this.root.toURI().getPath().length());
-			return new FileEntry(name, file);
+			return adapt(entry);
 		}
 
-		private Iterator<File> listFiles(File file) {
-			File[] files = file.listFiles();
-			if (files == null) {
-				return Collections.<File>emptyList().iterator();
-			}
-			Arrays.sort(files, this.entryComparator);
-			return Arrays.asList(files).iterator();
-		}
-
-		private File poll() {
+		private FileEntry poll() {
 			while (!this.stack.isEmpty()) {
 				while (this.stack.peek().hasNext()) {
 					File file = this.stack.peek().next();
-					if (!SKIPPED_NAMES.contains(file.getName())) {
-						return file;
+					if (SKIPPED_NAMES.contains(file.getName())) {
+						continue;
+					}
+					FileEntry entry = getFileEntry(file);
+					if (isListable(entry)) {
+						this.stack.addFirst(listFiles(file));
+					}
+					if (this.includeFilter == null || this.includeFilter.matches(entry)) {
+						return entry;
 					}
 				}
 				this.stack.poll();
@@ -192,21 +194,64 @@ public class ExplodedArchive implements Archive {
 			return null;
 		}
 
+		private FileEntry getFileEntry(File file) {
+			URI uri = file.toURI();
+			String name = uri.getPath().substring(this.rootUrl.length());
+			try {
+				return new FileEntry(name, file, uri.toURL());
+			}
+			catch (MalformedURLException ex) {
+				throw new IllegalStateException(ex);
+			}
+		}
+
+		private boolean isListable(FileEntry entry) {
+			return entry.isDirectory() && (this.recursive || entry.getFile().getParentFile().equals(this.root))
+					&& (this.searchFilter == null || this.searchFilter.matches(entry))
+					&& (this.includeFilter == null || !this.includeFilter.matches(entry));
+		}
+
+		private Iterator<File> listFiles(File file) {
+			File[] files = file.listFiles();
+			if (files == null) {
+				return Collections.emptyIterator();
+			}
+			Arrays.sort(files, entryComparator);
+			return Arrays.asList(files).iterator();
+		}
+
 		@Override
 		public void remove() {
 			throw new UnsupportedOperationException("remove");
 		}
 
-		/**
-		 * {@link Comparator} that orders {@link File} entries by their absolute paths.
-		 */
-		private static class EntryComparator implements Comparator<File> {
+		protected abstract T adapt(FileEntry entry);
 
-			@Override
-			public int compare(File o1, File o2) {
-				return o1.getAbsolutePath().compareTo(o2.getAbsolutePath());
-			}
+	}
 
+	private static class EntryIterator extends AbstractIterator<Entry> {
+
+		EntryIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
+			super(root, recursive, searchFilter, includeFilter);
+		}
+
+		@Override
+		protected Entry adapt(FileEntry entry) {
+			return entry;
+		}
+
+	}
+
+	private static class ArchiveIterator extends AbstractIterator<Archive> {
+
+		ArchiveIterator(File root, boolean recursive, EntryFilter searchFilter, EntryFilter includeFilter) {
+			super(root, recursive, searchFilter, includeFilter);
+		}
+
+		@Override
+		protected Archive adapt(FileEntry entry) {
+			File file = entry.getFile();
+			return (file.isDirectory() ? new ExplodedArchive(file) : new SimpleJarFileArchive(entry));
 		}
 
 	}
@@ -220,9 +265,12 @@ public class ExplodedArchive implements Archive {
 
 		private final File file;
 
-		FileEntry(String name, File file) {
+		private final URL url;
+
+		FileEntry(String name, File file, URL url) {
 			this.name = name;
 			this.file = file;
+			this.url = url;
 		}
 
 		File getFile() {
@@ -237,6 +285,56 @@ public class ExplodedArchive implements Archive {
 		@Override
 		public String getName() {
 			return this.name;
+		}
+
+		URL getUrl() {
+			return this.url;
+		}
+
+	}
+
+	/**
+	 * {@link Archive} implementation backed by a simple JAR file that doesn't itself
+	 * contain nested archives.
+	 */
+	private static class SimpleJarFileArchive implements Archive {
+
+		private final URL url;
+
+		SimpleJarFileArchive(FileEntry file) {
+			this.url = file.getUrl();
+		}
+
+		@Override
+		public URL getUrl() throws MalformedURLException {
+			return this.url;
+		}
+
+		@Override
+		public Manifest getManifest() throws IOException {
+			return null;
+		}
+
+		@Override
+		public Iterator<Archive> getNestedArchives(EntryFilter searchFilter, EntryFilter includeFilter)
+				throws IOException {
+			return Collections.emptyIterator();
+		}
+
+		@Override
+		@Deprecated
+		public Iterator<Entry> iterator() {
+			return Collections.emptyIterator();
+		}
+
+		@Override
+		public String toString() {
+			try {
+				return getUrl().toString();
+			}
+			catch (Exception ex) {
+				return "jar archive";
+			}
 		}
 
 	}

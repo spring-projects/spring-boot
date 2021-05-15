@@ -1,0 +1,16 @@
+plugins {
+	id "org.springframework.boot.starter"
+}
+
+description = "Starter for using jOOQ to access SQL databases. An alternative to spring-boot-starter-data-jpa or spring-boot-starter-jdbc"
+
+dependencies {
+	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-jdbc"))
+	api("jakarta.activation:jakarta.activation-api")
+	api("jakarta.xml.bind:jakarta.xml.bind-api")
+	api("org.springframework:spring-tx")
+	api("org.jooq:jooq") {
+		exclude group: "javax.activation", module: "javax.activation-api"
+		exclude group: "javax.xml.bind", module: "jaxb-api"
+	}
+}

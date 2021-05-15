@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.autoconfigure.jersey;
 import java.util.Collections;
 import java.util.EnumSet;
 
-import javax.annotation.PostConstruct;
 import javax.servlet.DispatcherType;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -95,22 +94,11 @@ public class JerseyAutoConfiguration implements ServletContextAware {
 
 	private final ResourceConfig config;
 
-	private final ObjectProvider<ResourceConfigCustomizer> customizers;
-
 	public JerseyAutoConfiguration(JerseyProperties jersey, ResourceConfig config,
 			ObjectProvider<ResourceConfigCustomizer> customizers) {
 		this.jersey = jersey;
 		this.config = config;
-		this.customizers = customizers;
-	}
-
-	@PostConstruct
-	public void path() {
-		customize();
-	}
-
-	private void customize() {
-		this.customizers.orderedStream().forEach((customizer) -> customizer.customize(this.config));
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(this.config));
 	}
 
 	@Bean

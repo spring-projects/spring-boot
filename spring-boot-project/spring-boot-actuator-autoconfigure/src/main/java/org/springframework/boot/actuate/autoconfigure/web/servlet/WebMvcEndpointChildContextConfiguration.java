@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,16 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnWebApplication.Type;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletAutoConfiguration;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletRegistrationBean;
+import org.springframework.boot.web.server.ErrorPage;
+import org.springframework.boot.web.server.WebServerFactoryCustomizer;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.filter.OrderedRequestContextFilter;
+import org.springframework.boot.web.servlet.server.ConfigurableServletWebServerFactory;
 import org.springframework.context.annotation.Bean;
+import org.springframework.core.Ordered;
 import org.springframework.web.context.request.RequestContextListener;
 import org.springframework.web.filter.RequestContextFilter;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -43,7 +48,7 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
  * @author Andy Wilkinson
  * @author Phillip Webb
  */
-@ManagementContextConfiguration(ManagementContextType.CHILD)
+@ManagementContextConfiguration(value = ManagementContextType.CHILD, proxyBeanMethods = false)
 @ConditionalOnWebApplication(type = Type.SERVLET)
 @ConditionalOnClass(DispatcherServlet.class)
 @EnableWebMvc
@@ -56,8 +61,14 @@ class WebMvcEndpointChildContextConfiguration {
 	 */
 	@Bean
 	@ConditionalOnBean(ErrorAttributes.class)
-	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes) {
-		return new ManagementErrorEndpoint(errorAttributes);
+	ManagementErrorEndpoint errorEndpoint(ErrorAttributes errorAttributes, ServerProperties serverProperties) {
+		return new ManagementErrorEndpoint(errorAttributes, serverProperties.getError());
+	}
+
+	@Bean
+	@ConditionalOnBean(ErrorAttributes.class)
+	ManagementErrorPageCustomizer managementErrorPageCustomizer(ServerProperties serverProperties) {
+		return new ManagementErrorPageCustomizer(serverProperties);
 	}
 
 	@Bean(name = DispatcherServletAutoConfiguration.DEFAULT_DISPATCHER_SERVLET_BEAN_NAME)
@@ -95,6 +106,31 @@ class WebMvcEndpointChildContextConfiguration {
 	@ConditionalOnMissingBean({ RequestContextListener.class, RequestContextFilter.class })
 	RequestContextFilter requestContextFilter() {
 		return new OrderedRequestContextFilter();
+	}
+
+	/**
+	 * {@link WebServerFactoryCustomizer} to add an {@link ErrorPage} so that the
+	 * {@link ManagementErrorEndpoint} can be used.
+	 */
+	private static class ManagementErrorPageCustomizer
+			implements WebServerFactoryCustomizer<ConfigurableServletWebServerFactory>, Ordered {
+
+		private final ServerProperties properties;
+
+		ManagementErrorPageCustomizer(ServerProperties properties) {
+			this.properties = properties;
+		}
+
+		@Override
+		public void customize(ConfigurableServletWebServerFactory factory) {
+			factory.addErrorPages(new ErrorPage(this.properties.getError().getPath()));
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
+		}
+
 	}
 
 }

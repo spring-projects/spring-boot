@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,8 +35,19 @@ class NewRelicPropertiesTests extends StepRegistryPropertiesTests {
 		NewRelicProperties properties = new NewRelicProperties();
 		NewRelicConfig config = (key) -> null;
 		assertStepRegistryDefaultValues(properties, config);
+		assertThat(properties.getClientProviderType()).isEqualTo(config.clientProviderType());
 		// apiKey and account are mandatory
 		assertThat(properties.getUri()).isEqualTo(config.uri());
+		assertThat(properties.isMeterNameEventTypeEnabled()).isEqualTo(config.meterNameEventTypeEnabled());
+	}
+
+	@Test
+	void eventTypeDefaultValueIsOverridden() {
+		NewRelicProperties properties = new NewRelicProperties();
+		NewRelicConfig config = (key) -> null;
+		assertThat(properties.getEventType()).isNotEqualTo(config.eventType());
+		assertThat(properties.getEventType()).isEqualTo("SpringBootSample");
+		assertThat(config.eventType()).isEqualTo("MicrometerSample");
 	}
 
 }

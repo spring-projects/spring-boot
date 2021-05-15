@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,16 +19,22 @@ package org.springframework.boot.autoconfigure.rsocket;
 import java.net.InetAddress;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.NestedConfigurationProperty;
+import org.springframework.boot.rsocket.server.RSocketServer;
+import org.springframework.boot.web.server.Ssl;
+import org.springframework.util.unit.DataSize;
 
 /**
  * {@link ConfigurationProperties properties} for RSocket support.
  *
  * @author Brian Clozel
+ * @author Chris Bono
  * @since 2.2.0
  */
 @ConfigurationProperties("spring.rsocket")
 public class RSocketProperties {
 
+	@NestedConfigurationProperty
 	private final Server server = new Server();
 
 	public Server getServer() {
@@ -50,13 +56,22 @@ public class RSocketProperties {
 		/**
 		 * RSocket transport protocol.
 		 */
-		private Transport transport = Transport.TCP;
+		private RSocketServer.Transport transport = RSocketServer.Transport.TCP;
 
 		/**
 		 * Path under which RSocket handles requests (only works with websocket
 		 * transport).
 		 */
 		private String mappingPath;
+
+		/**
+		 * Maximum transmission unit. Frames larger than the specified value are
+		 * fragmented.
+		 */
+		private DataSize fragmentSize;
+
+		@NestedConfigurationProperty
+		private Ssl ssl;
 
 		public Integer getPort() {
 			return this.port;
@@ -74,11 +89,11 @@ public class RSocketProperties {
 			this.address = address;
 		}
 
-		public Transport getTransport() {
+		public RSocketServer.Transport getTransport() {
 			return this.transport;
 		}
 
-		public void setTransport(Transport transport) {
+		public void setTransport(RSocketServer.Transport transport) {
 			this.transport = transport;
 		}
 
@@ -90,10 +105,20 @@ public class RSocketProperties {
 			this.mappingPath = mappingPath;
 		}
 
-		public enum Transport {
+		public DataSize getFragmentSize() {
+			return this.fragmentSize;
+		}
 
-			TCP, WEBSOCKET
+		public void setFragmentSize(DataSize fragmentSize) {
+			this.fragmentSize = fragmentSize;
+		}
 
+		public Ssl getSsl() {
+			return this.ssl;
+		}
+
+		public void setSsl(Ssl ssl) {
+			this.ssl = ssl;
 		}
 
 	}

@@ -29,10 +29,12 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.boot.autoconfigure.security.StaticResourceLocation;
 import org.springframework.boot.autoconfigure.web.servlet.DispatcherServletPath;
 import org.springframework.boot.security.servlet.ApplicationContextRequestMatcher;
+import org.springframework.boot.web.context.WebServerApplicationContext;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
 import org.springframework.util.Assert;
+import org.springframework.web.context.WebApplicationContext;
 
 /**
  * Used to create a {@link RequestMatcher} for static resources in commonly used
@@ -142,6 +144,11 @@ public final class StaticResourceRequest {
 		private Stream<String> getPatterns(DispatcherServletPath dispatcherServletPath) {
 			return this.locations.stream().flatMap(StaticResourceLocation::getPatterns)
 					.map(dispatcherServletPath::getRelativePath);
+		}
+
+		@Override
+		protected boolean ignoreApplicationContext(WebApplicationContext applicationContext) {
+			return WebServerApplicationContext.hasServerNamespace(applicationContext, "management");
 		}
 
 		@Override

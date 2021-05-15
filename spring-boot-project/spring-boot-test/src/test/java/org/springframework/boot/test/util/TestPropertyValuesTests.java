@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,14 @@
 
 package org.springframework.boot.test.util;
 
+import java.util.Arrays;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import java.util.stream.Stream;
+
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.util.TestPropertyValues.Pair;
 import org.springframework.boot.test.util.TestPropertyValues.Type;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
@@ -25,6 +31,7 @@ import org.springframework.core.env.StandardEnvironment;
 import org.springframework.core.env.SystemEnvironmentPropertySource;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.entry;
 
 /**
  * Tests for {@link TestPropertyValues}.
@@ -35,6 +42,47 @@ import static org.assertj.core.api.Assertions.assertThat;
 class TestPropertyValuesTests {
 
 	private final ConfigurableEnvironment environment = new StandardEnvironment();
+
+	@Test
+	void ofStringArrayCreatesValues() {
+		TestPropertyValues.of("spring:boot", "version:latest").applyTo(this.environment);
+		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
+		assertThat(this.environment.getProperty("version")).isEqualTo("latest");
+	}
+
+	@Test
+	void ofIterableCreatesValues() {
+		TestPropertyValues.of(Arrays.asList("spring:boot", "version:latest")).applyTo(this.environment);
+		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
+		assertThat(this.environment.getProperty("version")).isEqualTo("latest");
+	}
+
+	@Test
+	void ofStreamCreatesValues() {
+		TestPropertyValues.of(Stream.of("spring:boot", "version:latest")).applyTo(this.environment);
+		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
+		assertThat(this.environment.getProperty("version")).isEqualTo("latest");
+	}
+
+	@Test
+	void ofMapCreatesValues() {
+		Map<String, String> map = new LinkedHashMap<>();
+		map.put("spring", "boot");
+		map.put("version", "latest");
+		TestPropertyValues.of(map).applyTo(this.environment);
+		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
+		assertThat(this.environment.getProperty("version")).isEqualTo("latest");
+	}
+
+	@Test
+	void ofMappedStreamCreatesValues() {
+		TestPropertyValues.of(Stream.of("spring|boot", "version|latest"), (string) -> {
+			String[] split = string.split("\\|");
+			return Pair.of(split[0], split[1]);
+		}).applyTo(this.environment);
+		assertThat(this.environment.getProperty("spring")).isEqualTo("boot");
+		assertThat(this.environment.getProperty("version")).isEqualTo("latest");
+	}
 
 	@Test
 	void applyToEnvironmentShouldAttachConfigurationPropertySource() {
@@ -131,6 +179,25 @@ class TestPropertyValuesTests {
 		finally {
 			System.clearProperty("foo");
 		}
+	}
+
+	@Test
+	void pairOfCreatesPair() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		Pair.of("spring", "boot").addTo(map);
+		assertThat(map).containsOnly(entry("spring", "boot"));
+	}
+
+	@Test
+	void pairOfWhenNameAndValueAreEmptyReturnsNull() {
+		assertThat(Pair.of("", "")).isNull();
+	}
+
+	@Test
+	void pairFromMapEntryCreatesPair() {
+		Map<String, Object> map = new LinkedHashMap<>();
+		Pair.fromMapEntry(entry("spring", "boot")).addTo(map);
+		assertThat(map).containsOnly(entry("spring", "boot"));
 	}
 
 }

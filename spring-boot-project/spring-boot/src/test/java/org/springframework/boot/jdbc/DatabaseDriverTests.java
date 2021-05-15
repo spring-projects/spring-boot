@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -82,6 +82,7 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromProductName("DB3 XDB for AS/400")).isEqualTo(DatabaseDriver.DB2_AS400);
 		assertThat(DatabaseDriver.fromProductName("Teradata")).isEqualTo(DatabaseDriver.TERADATA);
 		assertThat(DatabaseDriver.fromProductName("Informix Dynamic Server")).isEqualTo(DatabaseDriver.INFORMIX);
+		assertThat(DatabaseDriver.fromProductName("Apache Phoenix")).isEqualTo(DatabaseDriver.PHOENIX);
 	}
 
 	@Test
@@ -112,6 +113,9 @@ class DatabaseDriverTests {
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-sqli://localhost:1533/sample"))
 				.isEqualTo(DatabaseDriver.INFORMIX);
 		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:informix-direct://sample")).isEqualTo(DatabaseDriver.INFORMIX);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:phoenix:localhost")).isEqualTo(DatabaseDriver.PHOENIX);
+		assertThat(DatabaseDriver.fromJdbcUrl("jdbc:tc:mysql://localhost:3306/sample"))
+				.isEqualTo(DatabaseDriver.TESTCONTAINERS);
 	}
 
 }

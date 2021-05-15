@@ -23,7 +23,7 @@ import org.junit.jupiter.api.Test;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link SpringBootExceptionHandler}.
@@ -43,7 +43,7 @@ class SpringBootExceptionHandlerTests {
 		Exception ex = new Exception();
 		this.handler.registerLoggedException(ex);
 		this.handler.uncaughtException(thread, ex);
-		verifyZeroInteractions(this.parent);
+		verifyNoInteractions(this.parent);
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -62,7 +62,7 @@ class DevToolsSettingsTests {
 
 	private URL makeUrl(File file, String name) throws IOException {
 		file = new File(file, name);
-		file = new File(file, "target");
+		file = new File(file, "build");
 		file = new File(file, "classes");
 		file.mkdirs();
 		return file.toURI().toURL();

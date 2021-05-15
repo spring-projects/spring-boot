@@ -1,0 +1,12 @@
+---
+platform: linux
+inputs:
+  - name: git-repo
+params:
+  GITHUB_REPO:
+  GITHUB_ORGANIZATION:
+  GITHUB_PASSWORD:
+  GITHUB_USERNAME:
+  MILESTONE:
+run:
+  path: git-repo/ci/scripts/detect-docker-updates.sh

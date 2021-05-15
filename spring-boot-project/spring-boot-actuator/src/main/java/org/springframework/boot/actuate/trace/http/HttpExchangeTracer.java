@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,6 +22,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 import java.util.function.Predicate;
 import java.util.function.Supplier;
@@ -68,8 +69,7 @@ public class HttpExchangeTracer {
 	 */
 	public final void sendingResponse(HttpTrace trace, TraceableResponse response, Supplier<Principal> principal,
 			Supplier<String> sessionId) {
-		setIfIncluded(Include.TIME_TAKEN, () -> System.currentTimeMillis() - trace.getTimestamp().toEpochMilli(),
-				trace::setTimeTaken);
+		setIfIncluded(Include.TIME_TAKEN, () -> calculateTimeTaken(trace), trace::setTimeTaken);
 		setIfIncluded(Include.SESSION_ID, sessionId, trace::setSessionId);
 		setIfIncluded(Include.PRINCIPAL, principal, trace::setPrincipal);
 		trace.setResponse(new HttpTrace.Response(new FilteredTraceableResponse(response)));
@@ -100,6 +100,10 @@ public class HttpExchangeTracer {
 		}
 		return headersSupplier.get().entrySet().stream().filter((entry) -> headerPredicate.test(entry.getKey()))
 				.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue));
+	}
+
+	private long calculateTimeTaken(HttpTrace trace) {
+		return TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - trace.getStartNanoTime());
 	}
 
 	private final class FilteredTraceableRequest implements TraceableRequest {

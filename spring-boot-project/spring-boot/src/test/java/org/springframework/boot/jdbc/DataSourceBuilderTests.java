@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,14 +20,20 @@ import java.io.Closeable;
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLClassLoader;
+import java.sql.SQLException;
 import java.util.Arrays;
 
 import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
+import oracle.jdbc.pool.OracleDataSource;
+import oracle.ucp.jdbc.PoolDataSourceImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
+import org.h2.Driver;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -35,6 +41,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  * Tests for {@link DataSourceBuilder}.
  *
  * @author Stephane Nicoll
+ * @author Fabio Grassi
  */
 class DataSourceBuilderTests {
 
@@ -51,6 +58,8 @@ class DataSourceBuilderTests {
 	void defaultToHikari() {
 		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").build();
 		assertThat(this.dataSource).isInstanceOf(HikariDataSource.class);
+		HikariDataSource hikariDataSource = (HikariDataSource) this.dataSource;
+		assertThat(hikariDataSource.getJdbcUrl()).isEqualTo("jdbc:h2:test");
 	}
 
 	@Test
@@ -61,7 +70,7 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
-	void defaultToCommonsDbcp2AsLastResort() {
+	void defaultToCommonsDbcp2IfNeitherHikariNorTomcatIsNotAvailable() {
 		this.dataSource = DataSourceBuilder
 				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
 				.url("jdbc:h2:test").build();
@@ -69,9 +78,59 @@ class DataSourceBuilderTests {
 	}
 
 	@Test
+	void defaultToOracleUcpAsLastResort() {
+		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari",
+				"org.apache.tomcat.jdbc.pool", "org.apache.commons.dbcp2")).url("jdbc:h2:test").build();
+		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
+	}
+
+	@Test
 	void specificTypeOfDataSource() {
 		HikariDataSource hikariDataSource = DataSourceBuilder.create().type(HikariDataSource.class).build();
 		assertThat(hikariDataSource).isInstanceOf(HikariDataSource.class);
+	}
+
+	@Test
+	void dataSourceCanBeCreatedWithSimpleDriverDataSource() {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(SimpleDriverDataSource.class).build();
+		assertThat(this.dataSource).isInstanceOf(SimpleDriverDataSource.class);
+		SimpleDriverDataSource simpleDriverDataSource = (SimpleDriverDataSource) this.dataSource;
+		assertThat(simpleDriverDataSource.getUrl()).isEqualTo("jdbc:h2:test");
+		assertThat(simpleDriverDataSource.getDriver()).isInstanceOf(Driver.class);
+	}
+
+	@Test
+	void dataSourceCanBeCreatedWithOracleDataSource() throws SQLException {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:oracle:thin:@localhost:1521:xe")
+				.type(OracleDataSource.class).username("test").build();
+		assertThat(this.dataSource).isInstanceOf(OracleDataSource.class);
+		OracleDataSource oracleDataSource = (OracleDataSource) this.dataSource;
+		assertThat(oracleDataSource.getURL()).isEqualTo("jdbc:oracle:thin:@localhost:1521:xe");
+		assertThat(oracleDataSource.getUser()).isEqualTo("test");
+	}
+
+	@Test
+	void dataSourceCanBeCreatedWithOracleUcpDataSource() {
+		this.dataSource = DataSourceBuilder.create().driverClassName("org.hsqldb.jdbc.JDBCDriver")
+				.type(PoolDataSourceImpl.class).username("test").build();
+		assertThat(this.dataSource).isInstanceOf(PoolDataSourceImpl.class);
+		PoolDataSourceImpl upcDataSource = (PoolDataSourceImpl) this.dataSource;
+		assertThat(upcDataSource.getConnectionFactoryClassName()).isEqualTo("org.hsqldb.jdbc.JDBCDriver");
+		assertThat(upcDataSource.getUser()).isEqualTo("test");
+	}
+
+	@Test
+	void dataSourceAliasesAreOnlyAppliedToRelevantDataSource() {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(TestDataSource.class).username("test")
+				.build();
+		assertThat(this.dataSource).isInstanceOf(TestDataSource.class);
+		TestDataSource testDataSource = (TestDataSource) this.dataSource;
+		assertThat(testDataSource.getUrl()).isEqualTo("jdbc:h2:test");
+		assertThat(testDataSource.getJdbcUrl()).isNull();
+		assertThat(testDataSource.getUsername()).isEqualTo("test");
+		assertThat(testDataSource.getUser()).isNull();
+		assertThat(testDataSource.getDriverClassName()).isEqualTo(Driver.class.getName());
+		assertThat(testDataSource.getDriverClass()).isNull();
 	}
 
 	final class HidePackagesClassLoader extends URLClassLoader {
@@ -89,6 +148,40 @@ class DataSourceBuilderTests {
 				throw new ClassNotFoundException();
 			}
 			return super.loadClass(name, resolve);
+		}
+
+	}
+
+	public static class TestDataSource extends org.apache.tomcat.jdbc.pool.DataSource {
+
+		private String jdbcUrl;
+
+		private String user;
+
+		private String driverClass;
+
+		public String getJdbcUrl() {
+			return this.jdbcUrl;
+		}
+
+		public void setJdbcUrl(String jdbcUrl) {
+			this.jdbcUrl = jdbcUrl;
+		}
+
+		public String getUser() {
+			return this.user;
+		}
+
+		public void setUser(String user) {
+			this.user = user;
+		}
+
+		public String getDriverClass() {
+			return this.driverClass;
+		}
+
+		public void setDriverClass(String driverClass) {
+			this.driverClass = driverClass;
 		}
 
 	}

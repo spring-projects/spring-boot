@@ -65,7 +65,7 @@ class SampleSessionApplicationTests {
 
 	private ResponseEntity<String> firstRequest(RestTemplate restTemplate, URI uri) {
 		HttpHeaders headers = new HttpHeaders();
-		headers.set("Authorization", "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes()));
+		headers.set("Authorization", getBasicAuth());
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
 		return restTemplate.exchange(request, String.class);
 	}
@@ -75,6 +75,10 @@ class SampleSessionApplicationTests {
 		headers.set("Cookie", cookie);
 		RequestEntity<Object> request = new RequestEntity<>(headers, HttpMethod.GET, uri);
 		return restTemplate.exchange(request, String.class);
+	}
+
+	private String getBasicAuth() {
+		return "Basic " + Base64.getEncoder().encodeToString("user:password".getBytes());
 	}
 
 }

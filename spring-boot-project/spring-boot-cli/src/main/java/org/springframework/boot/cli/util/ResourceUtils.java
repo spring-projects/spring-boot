@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,7 +102,7 @@ public abstract class ResourceUtils {
 		List<String> result = new ArrayList<>();
 		for (Resource resource : resources) {
 			if (resource.exists()) {
-				if (resource.getURI().getScheme().equals("file") && resource.getFile().isDirectory()) {
+				if ("file".equals(resource.getURI().getScheme()) && resource.getFile().isDirectory()) {
 					result.addAll(getChildFiles(resource));
 					continue;
 				}
@@ -124,7 +124,7 @@ public abstract class ResourceUtils {
 	}
 
 	private static String absolutePath(Resource resource) throws IOException {
-		if (!resource.getURI().getScheme().equals("file")) {
+		if (!"file".equals(resource.getURI().getScheme())) {
 			return resource.getURL().toExternalForm();
 		}
 		return resource.getFile().getAbsoluteFile().toURI().toString();
@@ -152,19 +152,17 @@ public abstract class ResourceUtils {
 			if (location.startsWith(CLASSPATH_URL_PREFIX)) {
 				return new ClassPathResource(location.substring(CLASSPATH_URL_PREFIX.length()), getClassLoader());
 			}
-			else {
-				if (location.startsWith(FILE_URL_PREFIX)) {
-					return this.files.getResource(location);
-				}
-				try {
-					// Try to parse the location as a URL...
-					URL url = new URL(location);
-					return new UrlResource(url);
-				}
-				catch (MalformedURLException ex) {
-					// No URL -> resolve as resource path.
-					return getResourceByPath(location);
-				}
+			if (location.startsWith(FILE_URL_PREFIX)) {
+				return this.files.getResource(location);
+			}
+			try {
+				// Try to parse the location as a URL...
+				URL url = new URL(location);
+				return new UrlResource(url);
+			}
+			catch (MalformedURLException ex) {
+				// No URL -> resolve as resource path.
+				return getResourceByPath(location);
 			}
 		}
 

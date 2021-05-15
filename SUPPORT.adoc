@@ -7,14 +7,13 @@ usage question please do not open a GitHub issue, but use one of the other chann
 described below.
 
 If you are reporting a bug, please help to speed up problem diagnosis by providing as
-much information as possible. Ideally, that would include a small
-https://github.com/spring-projects/spring-boot-issues[sample project] that reproduces the
-problem.
+much information as possible. Ideally, that would include a small sample project that
+reproduces the problem.
 
 == Stack Overflow
 The Spring Boot community monitors the
 https://stackoverflow.com/tags/spring-boot[`spring-boot`] tag on Stack Overflow. Before
-asking a question, please familiar yourself with Stack Overflow's
+asking a question, please familiarize yourself with Stack Overflow's
 https://stackoverflow.com/help/how-to-ask[advice on how to ask a good question].
 
 == Gitter

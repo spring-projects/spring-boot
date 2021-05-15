@@ -37,10 +37,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.ansi.AnsiBackground;
 import org.springframework.boot.ansi.AnsiColor;
 import org.springframework.boot.ansi.AnsiColors;
+import org.springframework.boot.ansi.AnsiColors.BitDepth;
 import org.springframework.boot.ansi.AnsiElement;
 import org.springframework.boot.ansi.AnsiOutput;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
+import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
 
 /**
@@ -61,12 +63,6 @@ public class ImageBanner implements Banner {
 
 	private static final double[] RGB_WEIGHT = { 0.2126d, 0.7152d, 0.0722d };
 
-	private static final char[] PIXEL = { ' ', '.', '*', ':', 'o', '&', '8', '#', '@' };
-
-	private static final int LUMINANCE_INCREMENT = 10;
-
-	private static final int LUMINANCE_START = LUMINANCE_INCREMENT * PIXEL.length;
-
 	private final Resource image;
 
 	public ImageBanner(Resource image) {
@@ -83,8 +79,8 @@ public class ImageBanner implements Banner {
 			printBanner(environment, out);
 		}
 		catch (Throwable ex) {
-			logger.warn("Image banner not printable: " + this.image + " (" + ex.getClass() + ": '" + ex.getMessage()
-					+ "')");
+			logger.warn(LogMessage.format("Image banner not printable: %s (%s: '%s')", this.image, ex.getClass(),
+					ex.getMessage()));
 			logger.debug("Image banner printing failure", ex);
 		}
 		finally {
@@ -102,14 +98,26 @@ public class ImageBanner implements Banner {
 		int height = getProperty(environment, "height", Integer.class, 0);
 		int margin = getProperty(environment, "margin", Integer.class, 2);
 		boolean invert = getProperty(environment, "invert", Boolean.class, false);
+		BitDepth bitDepth = getBitDepthProperty(environment);
+		PixelMode pixelMode = getPixelModeProperty(environment);
 		Frame[] frames = readFrames(width, height);
 		for (int i = 0; i < frames.length; i++) {
 			if (i > 0) {
 				resetCursor(frames[i - 1].getImage(), out);
 			}
-			printBanner(frames[i].getImage(), margin, invert, out);
+			printBanner(frames[i].getImage(), margin, invert, bitDepth, pixelMode, out);
 			sleep(frames[i].getDelayTime());
 		}
+	}
+
+	private BitDepth getBitDepthProperty(Environment environment) {
+		Integer bitDepth = getProperty(environment, "bitdepth", Integer.class, null);
+		return (bitDepth != null) ? BitDepth.of(bitDepth) : BitDepth.FOUR;
+	}
+
+	private PixelMode getPixelModeProperty(Environment environment) {
+		String pixelMode = getProperty(environment, "pixelmode", String.class, null);
+		return (pixelMode != null) ? PixelMode.valueOf(pixelMode.trim().toUpperCase()) : PixelMode.TEXT;
 	}
 
 	private <T> T getProperty(Environment environment, String name, Class<T> targetType, T defaultValue) {
@@ -190,25 +198,27 @@ public class ImageBanner implements Banner {
 		out.print("\033[" + lines + "A\r");
 	}
 
-	private void printBanner(BufferedImage image, int margin, boolean invert, PrintStream out) {
+	private void printBanner(BufferedImage image, int margin, boolean invert, BitDepth bitDepth, PixelMode pixelMode,
+			PrintStream out) {
 		AnsiElement background = invert ? AnsiBackground.BLACK : AnsiBackground.DEFAULT;
 		out.print(AnsiOutput.encode(AnsiColor.DEFAULT));
 		out.print(AnsiOutput.encode(background));
 		out.println();
 		out.println();
-		AnsiColor lastColor = AnsiColor.DEFAULT;
+		AnsiElement lastColor = AnsiColor.DEFAULT;
+		AnsiColors colors = new AnsiColors(bitDepth);
 		for (int y = 0; y < image.getHeight(); y++) {
 			for (int i = 0; i < margin; i++) {
 				out.print(" ");
 			}
 			for (int x = 0; x < image.getWidth(); x++) {
 				Color color = new Color(image.getRGB(x, y), false);
-				AnsiColor ansiColor = AnsiColors.getClosest(color);
+				AnsiElement ansiColor = colors.findClosest(color);
 				if (ansiColor != lastColor) {
 					out.print(AnsiOutput.encode(ansiColor));
 					lastColor = ansiColor;
 				}
-				out.print(getAsciiPixel(color, invert));
+				out.print(getAsciiPixel(color, invert, pixelMode));
 			}
 			out.println();
 		}
@@ -217,14 +227,17 @@ public class ImageBanner implements Banner {
 		out.println();
 	}
 
-	private char getAsciiPixel(Color color, boolean dark) {
+	private char getAsciiPixel(Color color, boolean dark, PixelMode pixelMode) {
+		char[] pixels = pixelMode.getPixels();
+		int increment = (10 / pixels.length) * 10;
+		int start = increment * pixels.length;
 		double luminance = getLuminance(color, dark);
-		for (int i = 0; i < PIXEL.length; i++) {
-			if (luminance >= (LUMINANCE_START - (i * LUMINANCE_INCREMENT))) {
-				return PIXEL[i];
+		for (int i = 0; i < pixels.length; i++) {
+			if (luminance >= (start - (i * increment))) {
+				return pixels[i];
 			}
 		}
-		return PIXEL[PIXEL.length - 1];
+		return pixels[pixels.length - 1];
 	}
 
 	private int getLuminance(Color color, boolean inverse) {
@@ -265,6 +278,33 @@ public class ImageBanner implements Banner {
 
 		int getDelayTime() {
 			return this.delayTime;
+		}
+
+	}
+
+	/**
+	 * Pixel modes supported by the image banner.
+	 */
+	public enum PixelMode {
+
+		/**
+		 * Use text chars for pixels.
+		 */
+		TEXT(' ', '.', '*', ':', 'o', '&', '8', '#', '@'),
+
+		/**
+		 * Use unicode block chars for pixels.
+		 */
+		BLOCK(' ', '\u2591', '\u2592', '\u2593', '\u2588');
+
+		private char[] pixels;
+
+		PixelMode(char... pixels) {
+			this.pixels = pixels;
+		}
+
+		char[] getPixels() {
+			return this.pixels;
 		}
 
 	}

@@ -81,7 +81,7 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 		this.beanClassLoader = classLoader;
 	}
 
-	protected List<String> filter(Collection<String> classNames, ClassNameFilter classNameFilter,
+	protected final List<String> filter(Collection<String> classNames, ClassNameFilter classNameFilter,
 			ClassLoader classLoader) {
 		if (CollectionUtils.isEmpty(classNames)) {
 			return Collections.emptyList();
@@ -93,6 +93,21 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 			}
 		}
 		return matches;
+	}
+
+	/**
+	 * Slightly faster variant of {@link ClassUtils#forName(String, ClassLoader)} that
+	 * doesn't deal with primitives, arrays or inner types.
+	 * @param className the class name to resolve
+	 * @param classLoader the class loader to use
+	 * @return a resolved class
+	 * @throws ClassNotFoundException if the class cannot be found
+	 */
+	protected static Class<?> resolve(String className, ClassLoader classLoader) throws ClassNotFoundException {
+		if (classLoader != null) {
+			return Class.forName(className, false, classLoader);
+		}
+		return Class.forName(className);
 	}
 
 	protected enum ClassNameFilter {
@@ -122,19 +137,12 @@ abstract class FilteringSpringBootCondition extends SpringBootCondition
 				classLoader = ClassUtils.getDefaultClassLoader();
 			}
 			try {
-				forName(className, classLoader);
+				resolve(className, classLoader);
 				return true;
 			}
 			catch (Throwable ex) {
 				return false;
 			}
-		}
-
-		private static Class<?> forName(String className, ClassLoader classLoader) throws ClassNotFoundException {
-			if (classLoader != null) {
-				return classLoader.loadClass(className);
-			}
-			return Class.forName(className);
 		}
 
 	}

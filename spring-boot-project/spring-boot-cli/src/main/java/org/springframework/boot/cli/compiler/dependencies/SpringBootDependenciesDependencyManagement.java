@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -42,8 +42,8 @@ public class SpringBootDependenciesDependencyManagement extends MavenModelDepend
 		modelProcessor.setModelReader(new DefaultModelReader());
 
 		try {
-			return modelProcessor.read(
-					SpringBootDependenciesDependencyManagement.class.getResourceAsStream("effective-pom.xml"), null);
+			return modelProcessor.read(SpringBootDependenciesDependencyManagement.class
+					.getResourceAsStream("spring-boot-dependencies-effective-bom.xml"), null);
 		}
 		catch (IOException ex) {
 			throw new IllegalStateException("Failed to build model from effective pom", ex);

@@ -40,7 +40,7 @@ class HikariDriverConfigurationFailureAnalyzerTests {
 		FailureAnalysis failureAnalysis = performAnalysis(TestConfiguration.class);
 		assertThat(failureAnalysis).isNotNull();
 		assertThat(failureAnalysis.getDescription()).isEqualTo(
-				"Configuration of the Hikari connection pool failed: " + "'dataSourceClassName' is not supported.");
+				"Configuration of the Hikari connection pool failed: 'dataSourceClassName' is not supported.");
 		assertThat(failureAnalysis.getAction()).contains("Spring Boot auto-configures only a driver");
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,6 @@ import org.springframework.boot.actuate.autoconfigure.endpoint.web.WebEndpointAu
 import org.springframework.boot.actuate.autoconfigure.health.HealthEndpointAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.info.InfoEndpointAutoConfiguration;
 import org.springframework.boot.actuate.health.HealthEndpoint;
-import org.springframework.boot.actuate.info.InfoEndpoint;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.AutoConfigureBefore;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -32,6 +31,7 @@ import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
@@ -39,8 +39,8 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactive Spring Security when
- * actuator is on the classpath. Specifically, it permits access to the health and info
- * endpoints while securing everything else.
+ * actuator is on the classpath. Specifically, it permits access to the health endpoint
+ * while securing everything else.
  *
  * @author Madhura Bhave
  * @since 2.1.0
@@ -56,9 +56,14 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 public class ReactiveManagementWebSecurityAutoConfiguration {
 
 	@Bean
-	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) {
-		return http.authorizeExchange().matchers(EndpointRequest.to(HealthEndpoint.class, InfoEndpoint.class))
-				.permitAll().anyExchange().authenticated().and().httpBasic().and().formLogin().and().build();
+	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+		http.authorizeExchange((exchanges) -> {
+			exchanges.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
+			exchanges.anyExchange().authenticated();
+		});
+		http.httpBasic(Customizer.withDefaults());
+		http.formLogin(Customizer.withDefaults());
+		return http.build();
 	}
 
 }

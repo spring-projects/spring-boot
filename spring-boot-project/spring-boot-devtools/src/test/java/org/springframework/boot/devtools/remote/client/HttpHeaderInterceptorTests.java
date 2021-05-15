@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,9 @@ import java.io.IOException;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.HttpRequest;
 import org.springframework.http.client.ClientHttpRequestExecution;
@@ -39,6 +40,7 @@ import static org.mockito.BDDMockito.given;
  * @author Rob Winch
  * @since 1.3.0
  */
+@ExtendWith(MockitoExtension.class)
 class HttpHeaderInterceptorTests {
 
 	private String name;
@@ -61,13 +63,11 @@ class HttpHeaderInterceptorTests {
 
 	@BeforeEach
 	void setup() throws Exception {
-		MockitoAnnotations.initMocks(this);
 		this.body = new byte[] {};
 		this.httpRequest = new MockHttpServletRequest();
 		this.request = new ServletServerHttpRequest(this.httpRequest);
 		this.name = "X-AUTH-TOKEN";
 		this.value = "secret";
-		given(this.execution.execute(this.request, this.body)).willReturn(this.response);
 		this.interceptor = new HttpHeaderInterceptor(this.name, this.value);
 	}
 
@@ -97,6 +97,7 @@ class HttpHeaderInterceptorTests {
 
 	@Test
 	void intercept() throws IOException {
+		given(this.execution.execute(this.request, this.body)).willReturn(this.response);
 		ClientHttpResponse result = this.interceptor.intercept(this.request, this.body, this.execution);
 		assertThat(this.request.getHeaders().getFirst(this.name)).isEqualTo(this.value);
 		assertThat(result).isEqualTo(this.response);

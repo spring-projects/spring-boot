@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,7 +29,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.boot.devtools.test.MockClientHttpRequestFactory;
 import org.springframework.boot.devtools.tunnel.client.HttpTunnelConnection.TunnelChannel;
@@ -50,7 +50,7 @@ import static org.mockito.Mockito.verify;
  * @author Rob Winch
  * @author Andy Wilkinson
  */
-@ExtendWith(OutputCaptureExtension.class)
+@ExtendWith({ OutputCaptureExtension.class, MockitoExtension.class })
 class HttpTunnelConnectionTests {
 
 	private String url;
@@ -66,7 +66,6 @@ class HttpTunnelConnectionTests {
 
 	@BeforeEach
 	void setup() {
-		MockitoAnnotations.initMocks(this);
 		this.url = "http://localhost:12345";
 		this.incomingData = new ByteArrayOutputStream();
 		this.incomingChannel = Channels.newChannel(this.incomingData);
@@ -139,11 +138,11 @@ class HttpTunnelConnectionTests {
 	}
 
 	@Test
-	void connectFailureLogsWarning(CapturedOutput capturedOutput) throws Exception {
+	void connectFailureLogsWarning(CapturedOutput output) throws Exception {
 		this.requestFactory.willRespond(new ConnectException());
 		TunnelChannel tunnel = openTunnel(true);
 		assertThat(tunnel.isOpen()).isFalse();
-		assertThat(capturedOutput).contains("Failed to connect to remote application at http://localhost:12345");
+		assertThat(output).contains("Failed to connect to remote application at http://localhost:12345");
 	}
 
 	private void write(TunnelChannel channel, String string) throws IOException {

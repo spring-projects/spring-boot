@@ -147,7 +147,7 @@ class JmsAutoConfigurationTests {
 		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
 				.withPropertyValues("spring.jms.listener.autoStartup=false",
 						"spring.jms.listener.acknowledgeMode=client", "spring.jms.listener.concurrency=2",
-						"spring.jms.listener.maxConcurrency=10")
+						"spring.jms.listener.receiveTimeout=2s", "spring.jms.listener.maxConcurrency=10")
 				.run(this::testJmsListenerContainerFactoryWithCustomSettings);
 	}
 
@@ -157,6 +157,18 @@ class JmsAutoConfigurationTests {
 		assertThat(container.getSessionAcknowledgeMode()).isEqualTo(Session.CLIENT_ACKNOWLEDGE);
 		assertThat(container.getConcurrentConsumers()).isEqualTo(2);
 		assertThat(container.getMaxConcurrentConsumers()).isEqualTo(10);
+		assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 2000L);
+	}
+
+	@Test
+	void testJmsListenerContainerFactoryWithDefaultSettings() {
+		this.contextRunner.withUserConfiguration(EnableJmsConfiguration.class)
+				.run(this::testJmsListenerContainerFactoryWithDefaultSettings);
+	}
+
+	private void testJmsListenerContainerFactoryWithDefaultSettings(AssertableApplicationContext loaded) {
+		DefaultMessageListenerContainer container = getContainer(loaded, "jmsListenerContainerFactory");
+		assertThat(container).hasFieldOrPropertyWithValue("receiveTimeout", 1000L);
 	}
 
 	@Test
@@ -517,7 +529,6 @@ class JmsAutoConfigurationTests {
 			configurer.configure(factory, connectionFactory);
 			factory.setCacheLevel(DefaultMessageListenerContainer.CACHE_CONSUMER);
 			return factory;
-
 		}
 
 	}

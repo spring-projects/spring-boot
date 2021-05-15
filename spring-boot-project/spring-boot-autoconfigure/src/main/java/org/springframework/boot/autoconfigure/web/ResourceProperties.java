@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,13 +17,10 @@
 package org.springframework.boot.autoconfigure.web;
 
 import java.time.Duration;
-import java.time.temporal.ChronoUnit;
-import java.util.concurrent.TimeUnit;
 
+import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.PropertyMapper;
-import org.springframework.boot.convert.DurationUnit;
-import org.springframework.http.CacheControl;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Properties used to configure resource handling.
@@ -34,135 +31,79 @@ import org.springframework.http.CacheControl;
  * @author Venil Noronha
  * @author Kristine Jetzke
  * @since 1.1.0
+ * @deprecated since 2.4.0 in favor of {@link WebProperties.Resources}
  */
+@Deprecated
 @ConfigurationProperties(prefix = "spring.resources", ignoreUnknownFields = false)
-public class ResourceProperties {
-
-	private static final String[] CLASSPATH_RESOURCE_LOCATIONS = { "classpath:/META-INF/resources/",
-			"classpath:/resources/", "classpath:/static/", "classpath:/public/" };
-
-	/**
-	 * Locations of static resources. Defaults to classpath:[/META-INF/resources/,
-	 * /resources/, /static/, /public/].
-	 */
-	private String[] staticLocations = CLASSPATH_RESOURCE_LOCATIONS;
-
-	/**
-	 * Whether to enable default resource handling.
-	 */
-	private boolean addMappings = true;
+public class ResourceProperties extends Resources {
 
 	private final Chain chain = new Chain();
 
 	private final Cache cache = new Cache();
 
+	@Override
+	@DeprecatedConfigurationProperty(replacement = "spring.web.resources.static-locations")
 	public String[] getStaticLocations() {
-		return this.staticLocations;
+		return super.getStaticLocations();
 	}
 
-	public void setStaticLocations(String[] staticLocations) {
-		this.staticLocations = appendSlashIfNecessary(staticLocations);
-	}
-
-	private String[] appendSlashIfNecessary(String[] staticLocations) {
-		String[] normalized = new String[staticLocations.length];
-		for (int i = 0; i < staticLocations.length; i++) {
-			String location = staticLocations[i];
-			normalized[i] = location.endsWith("/") ? location : location + "/";
-		}
-		return normalized;
-	}
-
+	@Override
+	@DeprecatedConfigurationProperty(replacement = "spring.web.resources.add-mappings")
 	public boolean isAddMappings() {
-		return this.addMappings;
+		return super.isAddMappings();
 	}
 
-	public void setAddMappings(boolean addMappings) {
-		this.addMappings = addMappings;
-	}
-
+	@Override
 	public Chain getChain() {
 		return this.chain;
 	}
 
+	@Override
 	public Cache getCache() {
 		return this.cache;
 	}
 
-	/**
-	 * Configuration for the Spring Resource Handling chain.
-	 */
-	public static class Chain {
+	@Deprecated
+	public static class Chain extends Resources.Chain {
 
-		/**
-		 * Whether to enable the Spring Resource Handling chain. By default, disabled
-		 * unless at least one strategy has been enabled.
-		 */
-		private Boolean enabled;
-
-		/**
-		 * Whether to enable caching in the Resource chain.
-		 */
-		private boolean cache = true;
+		private final org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy strategy = new org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy();
 
 		/**
 		 * Whether to enable HTML5 application cache manifest rewriting.
 		 */
 		private boolean htmlApplicationCache = false;
 
-		/**
-		 * Whether to enable resolution of already compressed resources (gzip, brotli).
-		 * Checks for a resource name with the '.gz' or '.br' file extensions.
-		 */
-		private boolean compressed = false;
-
-		private final Strategy strategy = new Strategy();
-
-		/**
-		 * Return whether the resource chain is enabled. Return {@code null} if no
-		 * specific settings are present.
-		 * @return whether the resource chain is enabled or {@code null} if no specified
-		 * settings are present.
-		 */
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.enabled")
 		public Boolean getEnabled() {
-			return getEnabled(getStrategy().getFixed().isEnabled(), getStrategy().getContent().isEnabled(),
-					this.enabled);
+			return super.getEnabled();
 		}
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.cache")
 		public boolean isCache() {
-			return this.cache;
+			return super.isCache();
 		}
 
-		public void setCache(boolean cache) {
-			this.cache = cache;
-		}
-
-		public Strategy getStrategy() {
-			return this.strategy;
-		}
-
+		@DeprecatedConfigurationProperty(reason = "The appcache manifest feature is being removed from browsers.")
 		public boolean isHtmlApplicationCache() {
 			return this.htmlApplicationCache;
 		}
 
 		public void setHtmlApplicationCache(boolean htmlApplicationCache) {
 			this.htmlApplicationCache = htmlApplicationCache;
+			this.customized = true;
 		}
 
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.compressed")
 		public boolean isCompressed() {
-			return this.compressed;
+			return super.isCompressed();
 		}
 
-		public void setCompressed(boolean compressed) {
-			this.compressed = compressed;
-		}
-
-		static Boolean getEnabled(boolean fixedEnabled, boolean contentEnabled, Boolean chainEnabled) {
-			return (fixedEnabled || contentEnabled) ? Boolean.TRUE : chainEnabled;
+		@Override
+		public org.springframework.boot.autoconfigure.web.ResourceProperties.Strategy getStrategy() {
+			return this.strategy;
 		}
 
 	}
@@ -170,17 +111,20 @@ public class ResourceProperties {
 	/**
 	 * Strategies for extracting and embedding a resource version in its URL path.
 	 */
-	public static class Strategy {
+	@Deprecated
+	public static class Strategy extends Resources.Chain.Strategy {
 
-		private final Fixed fixed = new Fixed();
+		private final org.springframework.boot.autoconfigure.web.ResourceProperties.Fixed fixed = new org.springframework.boot.autoconfigure.web.ResourceProperties.Fixed();
 
-		private final Content content = new Content();
+		private final org.springframework.boot.autoconfigure.web.ResourceProperties.Content content = new org.springframework.boot.autoconfigure.web.ResourceProperties.Content();
 
-		public Fixed getFixed() {
+		@Override
+		public org.springframework.boot.autoconfigure.web.ResourceProperties.Fixed getFixed() {
 			return this.fixed;
 		}
 
-		public Content getContent() {
+		@Override
+		public org.springframework.boot.autoconfigure.web.ResourceProperties.Content getContent() {
 			return this.content;
 		}
 
@@ -189,32 +133,19 @@ public class ResourceProperties {
 	/**
 	 * Version Strategy based on content hashing.
 	 */
-	public static class Content {
+	@Deprecated
+	public static class Content extends Resources.Chain.Strategy.Content {
 
-		/**
-		 * Whether to enable the content Version Strategy.
-		 */
-		private boolean enabled;
-
-		/**
-		 * Comma-separated list of patterns to apply to the content Version Strategy.
-		 */
-		private String[] paths = new String[] { "/**" };
-
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.strategy.content.enabled")
 		public boolean isEnabled() {
-			return this.enabled;
+			return super.isEnabled();
 		}
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.strategy.content.paths")
 		public String[] getPaths() {
-			return this.paths;
-		}
-
-		public void setPaths(String[] paths) {
-			this.paths = paths;
+			return super.getPaths();
 		}
 
 	}
@@ -222,45 +153,25 @@ public class ResourceProperties {
 	/**
 	 * Version Strategy based on a fixed version string.
 	 */
-	public static class Fixed {
+	@Deprecated
+	public static class Fixed extends Resources.Chain.Strategy.Fixed {
 
-		/**
-		 * Whether to enable the fixed Version Strategy.
-		 */
-		private boolean enabled;
-
-		/**
-		 * Comma-separated list of patterns to apply to the fixed Version Strategy.
-		 */
-		private String[] paths = new String[] { "/**" };
-
-		/**
-		 * Version string to use for the fixed Version Strategy.
-		 */
-		private String version;
-
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.strategy.fixed.enabled")
 		public boolean isEnabled() {
-			return this.enabled;
+			return super.isEnabled();
 		}
 
-		public void setEnabled(boolean enabled) {
-			this.enabled = enabled;
-		}
-
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.strategy.fixed.paths")
 		public String[] getPaths() {
-			return this.paths;
+			return super.getPaths();
 		}
 
-		public void setPaths(String[] paths) {
-			this.paths = paths;
-		}
-
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.chain.strategy.fixed.version")
 		public String getVersion() {
-			return this.version;
-		}
-
-		public void setVersion(String version) {
-			this.version = version;
+			return super.getVersion();
 		}
 
 	}
@@ -268,227 +179,99 @@ public class ResourceProperties {
 	/**
 	 * Cache configuration.
 	 */
-	public static class Cache {
+	@Deprecated
+	public static class Cache extends Resources.Cache {
 
-		/**
-		 * Cache period for the resources served by the resource handler. If a duration
-		 * suffix is not specified, seconds will be used. Can be overridden by the
-		 * 'spring.resources.cache.cachecontrol' properties.
-		 */
-		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration period;
-
-		/**
-		 * Cache control HTTP headers, only allows valid directive combinations. Overrides
-		 * the 'spring.resources.cache.period' property.
-		 */
 		private final Cachecontrol cachecontrol = new Cachecontrol();
 
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.period")
 		public Duration getPeriod() {
-			return this.period;
+			return super.getPeriod();
 		}
 
-		public void setPeriod(Duration period) {
-			this.period = period;
-		}
-
+		@Override
 		public Cachecontrol getCachecontrol() {
 			return this.cachecontrol;
+		}
+
+		@Override
+		@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.use-last-modified")
+		public boolean isUseLastModified() {
+			return super.isUseLastModified();
 		}
 
 		/**
 		 * Cache Control HTTP header configuration.
 		 */
-		public static class Cachecontrol {
+		@Deprecated
+		public static class Cachecontrol extends Resources.Cache.Cachecontrol {
 
-			/**
-			 * Maximum time the response should be cached, in seconds if no duration
-			 * suffix is not specified.
-			 */
-			@DurationUnit(ChronoUnit.SECONDS)
-			private Duration maxAge;
-
-			/**
-			 * Indicate that the cached response can be reused only if re-validated with
-			 * the server.
-			 */
-			private Boolean noCache;
-
-			/**
-			 * Indicate to not cache the response in any case.
-			 */
-			private Boolean noStore;
-
-			/**
-			 * Indicate that once it has become stale, a cache must not use the response
-			 * without re-validating it with the server.
-			 */
-			private Boolean mustRevalidate;
-
-			/**
-			 * Indicate intermediaries (caches and others) that they should not transform
-			 * the response content.
-			 */
-			private Boolean noTransform;
-
-			/**
-			 * Indicate that any cache may store the response.
-			 */
-			private Boolean cachePublic;
-
-			/**
-			 * Indicate that the response message is intended for a single user and must
-			 * not be stored by a shared cache.
-			 */
-			private Boolean cachePrivate;
-
-			/**
-			 * Same meaning as the "must-revalidate" directive, except that it does not
-			 * apply to private caches.
-			 */
-			private Boolean proxyRevalidate;
-
-			/**
-			 * Maximum time the response can be served after it becomes stale, in seconds
-			 * if no duration suffix is not specified.
-			 */
-			@DurationUnit(ChronoUnit.SECONDS)
-			private Duration staleWhileRevalidate;
-
-			/**
-			 * Maximum time the response may be used when errors are encountered, in
-			 * seconds if no duration suffix is not specified.
-			 */
-			@DurationUnit(ChronoUnit.SECONDS)
-			private Duration staleIfError;
-
-			/**
-			 * Maximum time the response should be cached by shared caches, in seconds if
-			 * no duration suffix is not specified.
-			 */
-			@DurationUnit(ChronoUnit.SECONDS)
-			private Duration sMaxAge;
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.max-age")
 			public Duration getMaxAge() {
-				return this.maxAge;
+				return super.getMaxAge();
 			}
 
-			public void setMaxAge(Duration maxAge) {
-				this.maxAge = maxAge;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.no-cache")
 			public Boolean getNoCache() {
-				return this.noCache;
+				return super.getNoCache();
 			}
 
-			public void setNoCache(Boolean noCache) {
-				this.noCache = noCache;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.no-store")
 			public Boolean getNoStore() {
-				return this.noStore;
+				return super.getNoStore();
 			}
 
-			public void setNoStore(Boolean noStore) {
-				this.noStore = noStore;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.must-revalidate")
 			public Boolean getMustRevalidate() {
-				return this.mustRevalidate;
+				return super.getMustRevalidate();
 			}
 
-			public void setMustRevalidate(Boolean mustRevalidate) {
-				this.mustRevalidate = mustRevalidate;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.no-transform")
 			public Boolean getNoTransform() {
-				return this.noTransform;
+				return super.getNoTransform();
 			}
 
-			public void setNoTransform(Boolean noTransform) {
-				this.noTransform = noTransform;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.cache-public")
 			public Boolean getCachePublic() {
-				return this.cachePublic;
+				return super.getCachePublic();
 			}
 
-			public void setCachePublic(Boolean cachePublic) {
-				this.cachePublic = cachePublic;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.cache-private")
 			public Boolean getCachePrivate() {
-				return this.cachePrivate;
+				return super.getCachePrivate();
 			}
 
-			public void setCachePrivate(Boolean cachePrivate) {
-				this.cachePrivate = cachePrivate;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.proxy-revalidate")
 			public Boolean getProxyRevalidate() {
-				return this.proxyRevalidate;
+				return super.getProxyRevalidate();
 			}
 
-			public void setProxyRevalidate(Boolean proxyRevalidate) {
-				this.proxyRevalidate = proxyRevalidate;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(
+					replacement = "spring.web.resources.cache.cachecontrol.stale-while-revalidate")
 			public Duration getStaleWhileRevalidate() {
-				return this.staleWhileRevalidate;
+				return super.getStaleWhileRevalidate();
 			}
 
-			public void setStaleWhileRevalidate(Duration staleWhileRevalidate) {
-				this.staleWhileRevalidate = staleWhileRevalidate;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.stale-if-error")
 			public Duration getStaleIfError() {
-				return this.staleIfError;
+				return super.getStaleIfError();
 			}
 
-			public void setStaleIfError(Duration staleIfError) {
-				this.staleIfError = staleIfError;
-			}
-
+			@Override
+			@DeprecatedConfigurationProperty(replacement = "spring.web.resources.cache.cachecontrol.s-max-age")
 			public Duration getSMaxAge() {
-				return this.sMaxAge;
-			}
-
-			public void setSMaxAge(Duration sMaxAge) {
-				this.sMaxAge = sMaxAge;
-			}
-
-			public CacheControl toHttpCacheControl() {
-				PropertyMapper map = PropertyMapper.get();
-				CacheControl control = createCacheControl();
-				map.from(this::getMustRevalidate).whenTrue().toCall(control::mustRevalidate);
-				map.from(this::getNoTransform).whenTrue().toCall(control::noTransform);
-				map.from(this::getCachePublic).whenTrue().toCall(control::cachePublic);
-				map.from(this::getCachePrivate).whenTrue().toCall(control::cachePrivate);
-				map.from(this::getProxyRevalidate).whenTrue().toCall(control::proxyRevalidate);
-				map.from(this::getStaleWhileRevalidate).whenNonNull()
-						.to((duration) -> control.staleWhileRevalidate(duration.getSeconds(), TimeUnit.SECONDS));
-				map.from(this::getStaleIfError).whenNonNull()
-						.to((duration) -> control.staleIfError(duration.getSeconds(), TimeUnit.SECONDS));
-				map.from(this::getSMaxAge).whenNonNull()
-						.to((duration) -> control.sMaxAge(duration.getSeconds(), TimeUnit.SECONDS));
-				// check if cacheControl remained untouched
-				if (control.getHeaderValue() == null) {
-					return null;
-				}
-				return control;
-			}
-
-			private CacheControl createCacheControl() {
-				if (Boolean.TRUE.equals(this.noStore)) {
-					return CacheControl.noStore();
-				}
-				if (Boolean.TRUE.equals(this.noCache)) {
-					return CacheControl.noCache();
-				}
-				if (this.maxAge != null) {
-					return CacheControl.maxAge(this.maxAge.getSeconds(), TimeUnit.SECONDS);
-				}
-				return CacheControl.empty();
+				return super.getSMaxAge();
 			}
 
 		}

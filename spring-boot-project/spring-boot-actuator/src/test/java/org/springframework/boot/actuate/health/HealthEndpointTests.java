@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,93 +17,78 @@
 package org.springframework.boot.actuate.health;
 
 import java.util.Collections;
-import java.util.HashMap;
 import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.actuate.health.HealthEndpointSupport.HealthResult;
+
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.entry;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link HealthEndpoint}.
  *
  * @author Phillip Webb
- * @author Christian Dupuis
- * @author Andy Wilkinson
- * @author Stephane Nicoll
+ * @author Scott Frederick
  */
-class HealthEndpointTests {
-
-	private static final HealthIndicator one = () -> new Health.Builder().status(Status.UP).withDetail("first", "1")
-			.build();
-
-	private static final HealthIndicator two = () -> new Health.Builder().status(Status.UP).withDetail("second", "2")
-			.build();
+class HealthEndpointTests
+		extends HealthEndpointSupportTests<HealthContributorRegistry, HealthContributor, HealthComponent> {
 
 	@Test
-	void statusAndFullDetailsAreExposed() {
-		Map<String, HealthIndicator> healthIndicators = new HashMap<>();
-		healthIndicators.put("up", one);
-		healthIndicators.put("upAgain", two);
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(healthIndicators));
-		Health health = endpoint.health();
+	void healthReturnsSystemHealth() {
+		this.registry.registerContributor("test", createContributor(this.up));
+		HealthComponent health = create(this.registry, this.groups).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnlyKeys("up", "upAgain");
-		Health upHealth = (Health) health.getDetails().get("up");
-		assertThat(upHealth.getDetails()).containsOnly(entry("first", "1"));
-		Health upAgainHealth = (Health) health.getDetails().get("upAgain");
-		assertThat(upAgainHealth.getDetails()).containsOnly(entry("second", "2"));
+		assertThat(health).isInstanceOf(SystemHealth.class);
 	}
 
 	@Test
-	void statusForComponentIsExposed() {
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(Collections.singletonMap("test", one)));
-		Health health = endpoint.healthForComponent("test");
-		assertThat(health).isNotNull();
+	void healthWithNoContributorReturnsUp() {
+		assertThat(this.registry).isEmpty();
+		HealthComponent health = create(this.registry,
+				HealthEndpointGroups.of(mock(HealthEndpointGroup.class), Collections.emptyMap())).health();
 		assertThat(health.getStatus()).isEqualTo(Status.UP);
-		assertThat(health.getDetails()).containsOnly(entry("first", "1"));
+		assertThat(health).isInstanceOf(Health.class);
 	}
 
 	@Test
-	void statusForUnknownComponentReturnNull() {
-		HealthEndpoint endpoint = new HealthEndpoint(createHealthIndicator(Collections.emptyMap()));
-		Health health = endpoint.healthForComponent("does-not-exist");
+	void healthWhenPathDoesNotExistReturnsNull() {
+		this.registry.registerContributor("test", createContributor(this.up));
+		HealthComponent health = create(this.registry, this.groups).healthForPath("missing");
 		assertThat(health).isNull();
 	}
 
 	@Test
-	void statusForComponentInstanceIsExposed() {
-		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(new OrderedHealthAggregator(),
-				Collections.singletonMap("sub", () -> Health.down().build()));
-		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(Collections.singletonMap("test", compositeIndicator)));
-		Health health = endpoint.healthForComponentInstance("test", "sub");
-		assertThat(health).isNotNull();
-		assertThat(health.getStatus()).isEqualTo(Status.DOWN);
-		assertThat(health.getDetails()).isEmpty();
+	void healthWhenPathExistsReturnsHealth() {
+		this.registry.registerContributor("test", createContributor(this.up));
+		HealthComponent health = create(this.registry, this.groups).healthForPath("test");
+		assertThat(health).isEqualTo(this.up);
 	}
 
-	@Test
-	void statusForUnknownComponentInstanceReturnNull() {
-		CompositeHealthIndicator compositeIndicator = new CompositeHealthIndicator(new OrderedHealthAggregator(),
-				Collections.singletonMap("sub", () -> Health.down().build()));
-		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(Collections.singletonMap("test", compositeIndicator)));
-		Health health = endpoint.healthForComponentInstance("test", "does-not-exist");
-		assertThat(health).isNull();
+	@Override
+	protected HealthEndpoint create(HealthContributorRegistry registry, HealthEndpointGroups groups) {
+		return new HealthEndpoint(registry, groups);
 	}
 
-	@Test
-	void statusForComponentInstanceThatIsNotACompositeReturnNull() {
-		HealthEndpoint endpoint = new HealthEndpoint(
-				createHealthIndicator(Collections.singletonMap("test", () -> Health.up().build())));
-		Health health = endpoint.healthForComponentInstance("test", "does-not-exist");
-		assertThat(health).isNull();
+	@Override
+	protected HealthContributorRegistry createRegistry() {
+		return new DefaultHealthContributorRegistry();
 	}
 
-	private HealthIndicator createHealthIndicator(Map<String, HealthIndicator> healthIndicators) {
-		return new CompositeHealthIndicator(new OrderedHealthAggregator(), healthIndicators);
+	@Override
+	protected HealthContributor createContributor(Health health) {
+		return (HealthIndicator) () -> health;
+	}
+
+	@Override
+	protected HealthContributor createCompositeContributor(Map<String, HealthContributor> contributors) {
+		return CompositeHealthContributor.fromMap(contributors);
+	}
+
+	@Override
+	protected HealthComponent getHealth(HealthResult<HealthComponent> result) {
+		return result.getHealth();
 	}
 
 }

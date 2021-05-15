@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,10 +16,15 @@
 
 package org.springframework.boot.actuate.health;
 
+import java.util.Map;
+import java.util.Set;
+
+import org.springframework.boot.actuate.endpoint.SecurityContext;
 import org.springframework.boot.actuate.endpoint.annotation.Endpoint;
 import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.actuate.endpoint.annotation.Selector;
-import org.springframework.util.Assert;
+import org.springframework.boot.actuate.endpoint.annotation.Selector.Match;
+import org.springframework.boot.actuate.endpoint.http.ApiVersion;
 
 /**
  * {@link Endpoint @Endpoint} to expose application health information.
@@ -28,60 +33,48 @@ import org.springframework.util.Assert;
  * @author Christian Dupuis
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  * @since 2.0.0
  */
 @Endpoint(id = "health")
-public class HealthEndpoint {
+public class HealthEndpoint extends HealthEndpointSupport<HealthContributor, HealthComponent> {
 
-	private final HealthIndicator healthIndicator;
+	private static final String[] EMPTY_PATH = {};
 
 	/**
-	 * Create a new {@link HealthEndpoint} instance that will use the given
-	 * {@code healthIndicator} to generate its response.
-	 * @param healthIndicator the health indicator
+	 * Create a new {@link HealthEndpoint} instance.
+	 * @param registry the health contributor registry
+	 * @param groups the health endpoint groups
 	 */
-	public HealthEndpoint(HealthIndicator healthIndicator) {
-		Assert.notNull(healthIndicator, "HealthIndicator must not be null");
-		this.healthIndicator = healthIndicator;
+	public HealthEndpoint(HealthContributorRegistry registry, HealthEndpointGroups groups) {
+		super(registry, groups);
 	}
 
 	@ReadOperation
-	public Health health() {
-		return this.healthIndicator.health();
+	public HealthComponent health() {
+		HealthComponent health = health(ApiVersion.V3, EMPTY_PATH);
+		return (health != null) ? health : DEFAULT_HEALTH;
 	}
 
-	/**
-	 * Return the {@link Health} of a particular component or {@code null} if such
-	 * component does not exist.
-	 * @param component the name of a particular {@link HealthIndicator}
-	 * @return the {@link Health} for the component or {@code null}
-	 */
 	@ReadOperation
-	public Health healthForComponent(@Selector String component) {
-		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator, component);
-		return (indicator != null) ? indicator.health() : null;
+	public HealthComponent healthForPath(@Selector(match = Match.ALL_REMAINING) String... path) {
+		return health(ApiVersion.V3, path);
 	}
 
-	/**
-	 * Return the {@link Health} of a particular {@code instance} managed by the specified
-	 * {@code component} or {@code null} if that particular component is not a
-	 * {@link CompositeHealthIndicator} or if such instance does not exist.
-	 * @param component the name of a particular {@link CompositeHealthIndicator}
-	 * @param instance the name of an instance managed by that component
-	 * @return the {@link Health} for the component instance of {@code null}
-	 */
-	@ReadOperation
-	public Health healthForComponentInstance(@Selector String component, @Selector String instance) {
-		HealthIndicator indicator = getNestedHealthIndicator(this.healthIndicator, component);
-		HealthIndicator nestedIndicator = getNestedHealthIndicator(indicator, instance);
-		return (nestedIndicator != null) ? nestedIndicator.health() : null;
+	private HealthComponent health(ApiVersion apiVersion, String... path) {
+		HealthResult<HealthComponent> result = getHealth(apiVersion, SecurityContext.NONE, true, path);
+		return (result != null) ? result.getHealth() : null;
 	}
 
-	private HealthIndicator getNestedHealthIndicator(HealthIndicator healthIndicator, String name) {
-		if (healthIndicator instanceof CompositeHealthIndicator) {
-			return ((CompositeHealthIndicator) healthIndicator).getRegistry().get(name);
-		}
-		return null;
+	@Override
+	protected HealthComponent getHealth(HealthContributor contributor, boolean includeDetails) {
+		return ((HealthIndicator) contributor).getHealth(includeDetails);
+	}
+
+	@Override
+	protected HealthComponent aggregateContributions(ApiVersion apiVersion, Map<String, HealthComponent> contributions,
+			StatusAggregator statusAggregator, boolean showComponents, Set<String> groupNames) {
+		return getCompositeHealth(apiVersion, contributions, statusAggregator, showComponents, groupNames);
 	}
 
 }

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,11 +23,10 @@ import java.util.Set;
 
 import javax.xml.transform.sax.SAXTransformerFactory;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.Mockito;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.http.client.ClientHttpRequestFactory;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
@@ -48,7 +47,7 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.verifyZeroInteractions;
+import static org.mockito.Mockito.verifyNoInteractions;
 
 /**
  * Tests for {@link WebServiceTemplateBuilder}.
@@ -56,6 +55,7 @@ import static org.mockito.Mockito.verifyZeroInteractions;
  * @author Stephane Nicoll
  * @author Dmytro Nosan
  */
+@ExtendWith(MockitoExtension.class)
 class WebServiceTemplateBuilderTests {
 
 	private final WebServiceTemplateBuilder builder = new WebServiceTemplateBuilder();
@@ -65,11 +65,6 @@ class WebServiceTemplateBuilderTests {
 
 	@Mock
 	private ClientInterceptor interceptor;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void createWithCustomizersShouldApplyCustomizers() {
@@ -199,8 +194,8 @@ class WebServiceTemplateBuilderTests {
 
 	@Test
 	void additionalInterceptorsShouldAddToExistingWebServiceTemplate() {
-		ClientInterceptor f1 = Mockito.mock(ClientInterceptor.class);
-		ClientInterceptor f2 = Mockito.mock(ClientInterceptor.class);
+		ClientInterceptor f1 = mock(ClientInterceptor.class);
+		ClientInterceptor f2 = mock(ClientInterceptor.class);
 		WebServiceTemplate webServiceTemplate = new WebServiceTemplate();
 		webServiceTemplate.setInterceptors(new ClientInterceptor[] { f1 });
 		this.builder.additionalInterceptors(f2).configure(webServiceTemplate);
@@ -242,7 +237,7 @@ class WebServiceTemplateBuilderTests {
 		WebServiceTemplateCustomizer customizer2 = mock(WebServiceTemplateCustomizer.class);
 		WebServiceTemplate template = this.builder.customizers(customizer1)
 				.customizers(Collections.singleton(customizer2)).build();
-		verifyZeroInteractions(customizer1);
+		verifyNoInteractions(customizer1);
 		verify(customizer2).customize(template);
 	}
 

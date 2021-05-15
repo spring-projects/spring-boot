@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationContextFactory;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -68,7 +69,8 @@ class SpringApplicationBuilderTests {
 	@Test
 	void profileAndProperties() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
-				.contextClass(StaticApplicationContext.class).profiles("foo").properties("foo=bar");
+				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
+				.profiles("foo").properties("foo=bar");
 		this.context = application.run();
 		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
 		assertThat(this.context.getEnvironment().getProperty("foo")).isEqualTo("bucket");
@@ -78,7 +80,8 @@ class SpringApplicationBuilderTests {
 	@Test
 	void propertiesAsMap() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
-				.contextClass(StaticApplicationContext.class).properties(Collections.singletonMap("bar", "foo"));
+				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
+				.properties(Collections.singletonMap("bar", "foo"));
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
 	}
@@ -86,7 +89,7 @@ class SpringApplicationBuilderTests {
 	@Test
 	void propertiesAsProperties() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
-				.contextClass(StaticApplicationContext.class)
+				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
 				.properties(StringUtils.splitArrayElementsIntoProperties(new String[] { "bar=foo" }, "="));
 		this.context = application.run();
 		assertThat(this.context.getEnvironment().getProperty("bar")).isEqualTo("foo");
@@ -95,7 +98,7 @@ class SpringApplicationBuilderTests {
 	@Test
 	void propertiesWithRepeatSeparator() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
-				.contextClass(StaticApplicationContext.class)
+				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class))
 				.properties("one=c:\\logging.file.name", "two=a:b", "three:c:\\logging.file.name", "four:a:b");
 		this.context = application.run();
 		ConfigurableEnvironment environment = this.context.getEnvironment();
@@ -106,6 +109,7 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	@SuppressWarnings("deprecation")
 	void specificApplicationContextClass() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
 				.contextClass(StaticApplicationContext.class);
@@ -114,9 +118,17 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
+	void specificApplicationContextFactory() {
+		SpringApplicationBuilder application = new SpringApplicationBuilder().sources(ExampleConfig.class)
+				.contextFactory(ApplicationContextFactory.ofContextClass(StaticApplicationContext.class));
+		this.context = application.run();
+		assertThat(this.context).isInstanceOf(StaticApplicationContext.class);
+	}
+
+	@Test
 	void parentContextCreationThatIsRunDirectly() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ChildConfig.class)
-				.contextClass(SpyApplicationContext.class);
+				.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		application.parent(ExampleConfig.class);
 		this.context = application.run("foo.bar=baz");
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
@@ -129,7 +141,7 @@ class SpringApplicationBuilderTests {
 	@Test
 	void parentContextCreationThatIsBuiltThenRun() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ChildConfig.class)
-				.contextClass(SpyApplicationContext.class);
+				.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		application.parent(ExampleConfig.class);
 		this.context = application.build("a=alpha").run("b=bravo");
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
@@ -141,7 +153,8 @@ class SpringApplicationBuilderTests {
 	@Test
 	void parentContextCreationWithChildShutdown() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ChildConfig.class)
-				.contextClass(SpyApplicationContext.class).registerShutdownHook(true);
+				.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class))
+				.registerShutdownHook(true);
 		application.parent(ExampleConfig.class);
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
@@ -151,17 +164,17 @@ class SpringApplicationBuilderTests {
 	@Test
 	void contextWithClassLoader() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
-				.contextClass(SpyApplicationContext.class);
+				.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass().getClassLoader());
 		application.resourceLoader(new DefaultResourceLoader(classLoader));
 		this.context = application.run();
-		assertThat(((SpyApplicationContext) this.context).getClassLoader()).isEqualTo(classLoader);
+		assertThat(this.context.getClassLoader()).isEqualTo(classLoader);
 	}
 
 	@Test
 	void parentContextWithClassLoader() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ChildConfig.class)
-				.contextClass(SpyApplicationContext.class);
+				.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass().getClassLoader());
 		application.resourceLoader(new DefaultResourceLoader(classLoader));
 		application.parent(ExampleConfig.class);
@@ -173,7 +186,7 @@ class SpringApplicationBuilderTests {
 	void parentFirstCreation() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.child(ChildConfig.class);
-		application.contextClass(SpyApplicationContext.class);
+		application.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
 		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook()).isFalse();
@@ -230,7 +243,7 @@ class SpringApplicationBuilderTests {
 	void parentContextIdentical() {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class);
 		application.parent(ExampleConfig.class);
-		application.contextClass(SpyApplicationContext.class);
+		application.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
 	}
@@ -240,7 +253,7 @@ class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.web(WebApplicationType.NONE);
 		this.context = application.run();
-		assertThat(application.application().getInitializers()).hasSize(4);
+		assertThat(application.application().getInitializers()).hasSize(5);
 	}
 
 	@Test
@@ -248,7 +261,7 @@ class SpringApplicationBuilderTests {
 		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
 				.child(ChildConfig.class).web(WebApplicationType.NONE);
 		this.context = application.run();
-		assertThat(application.application().getInitializers()).hasSize(5);
+		assertThat(application.application().getInitializers()).hasSize(6);
 	}
 
 	@Test
@@ -257,7 +270,7 @@ class SpringApplicationBuilderTests {
 				.web(WebApplicationType.NONE).initializers((ConfigurableApplicationContext applicationContext) -> {
 				});
 		this.context = application.run();
-		assertThat(application.application().getInitializers()).hasSize(5);
+		assertThat(application.application().getInitializers()).hasSize(6);
 	}
 
 	@Test
@@ -267,6 +280,15 @@ class SpringApplicationBuilderTests {
 		this.context = application.run();
 		this.context.getBean(ExampleConfig.class);
 		this.context.getBean(ChildConfig.class);
+	}
+
+	@Test
+	void addBootstrapper() {
+		SpringApplicationBuilder application = new SpringApplicationBuilder(ExampleConfig.class)
+				.web(WebApplicationType.NONE).addBootstrapper((context) -> context.addCloseListener(
+						(event) -> event.getApplicationContext().getBeanFactory().registerSingleton("test", "spring")));
+		this.context = application.run();
+		assertThat(this.context.getBean("test")).isEqualTo("spring");
 	}
 
 	@Configuration(proxyBeanMethods = false)

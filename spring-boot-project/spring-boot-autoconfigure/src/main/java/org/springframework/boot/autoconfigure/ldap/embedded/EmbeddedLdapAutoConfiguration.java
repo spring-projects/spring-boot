@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,6 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.SpringBootCondition;
 import org.springframework.boot.autoconfigure.ldap.LdapAutoConfiguration;
 import org.springframework.boot.autoconfigure.ldap.LdapProperties;
-import org.springframework.boot.autoconfigure.ldap.embedded.EmbeddedLdapProperties.Credential;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.context.properties.bind.Bindable;
 import org.springframework.boot.context.properties.bind.Binder;
@@ -58,6 +57,7 @@ import org.springframework.core.env.MutablePropertySources;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
+import org.springframework.ldap.core.ContextSource;
 import org.springframework.ldap.core.support.LdapContextSource;
 import org.springframework.util.StringUtils;
 
@@ -87,23 +87,10 @@ public class EmbeddedLdapAutoConfiguration {
 	}
 
 	@Bean
-	@DependsOn("directoryServer")
-	@ConditionalOnMissingBean
-	public LdapContextSource ldapContextSource(Environment environment, LdapProperties properties) {
-		LdapContextSource source = new LdapContextSource();
-		if (hasCredentials(this.embeddedProperties.getCredential())) {
-			source.setUserDn(this.embeddedProperties.getCredential().getUsername());
-			source.setPassword(this.embeddedProperties.getCredential().getPassword());
-		}
-		source.setUrls(properties.determineUrls(environment));
-		return source;
-	}
-
-	@Bean
 	public InMemoryDirectoryServer directoryServer(ApplicationContext applicationContext) throws LDAPException {
 		String[] baseDn = StringUtils.toStringArray(this.embeddedProperties.getBaseDn());
 		InMemoryDirectoryServerConfig config = new InMemoryDirectoryServerConfig(baseDn);
-		if (hasCredentials(this.embeddedProperties.getCredential())) {
+		if (this.embeddedProperties.getCredential().isAvailable()) {
 			config.addAdditionalBindCredentials(this.embeddedProperties.getCredential().getUsername(),
 					this.embeddedProperties.getCredential().getPassword());
 		}
@@ -138,10 +125,6 @@ public class EmbeddedLdapAutoConfiguration {
 		catch (Exception ex) {
 			throw new IllegalStateException("Unable to load schema " + resource.getDescription(), ex);
 		}
-	}
-
-	private boolean hasCredentials(Credential credential) {
-		return StringUtils.hasText(credential.getUsername()) && StringUtils.hasText(credential.getPassword());
 	}
 
 	private void importLdif(ApplicationContext applicationContext) throws LDAPException {
@@ -206,6 +189,26 @@ public class EmbeddedLdapAutoConfiguration {
 				return ConditionOutcome.match(message.because("Found base-dn property"));
 			}
 			return ConditionOutcome.noMatch(message.because("No base-dn property found"));
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ContextSource.class)
+	static class EmbeddedLdapContextConfiguration {
+
+		@Bean
+		@DependsOn("directoryServer")
+		@ConditionalOnMissingBean
+		LdapContextSource ldapContextSource(Environment environment, LdapProperties properties,
+				EmbeddedLdapProperties embeddedProperties) {
+			LdapContextSource source = new LdapContextSource();
+			if (embeddedProperties.getCredential().isAvailable()) {
+				source.setUserDn(embeddedProperties.getCredential().getUsername());
+				source.setPassword(embeddedProperties.getCredential().getPassword());
+			}
+			source.setUrls(properties.determineUrls(environment));
+			return source;
 		}
 
 	}

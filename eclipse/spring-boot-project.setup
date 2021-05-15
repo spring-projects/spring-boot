@@ -4,15 +4,15 @@
     xmlns:xmi="http://www.omg.org/XMI"
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
     xmlns:jdt="http://www.eclipse.org/oomph/setup/jdt/1.0"
-    xmlns:maven="http://www.eclipse.org/oomph/setup/maven/1.0"
+    xmlns:oomph="http://www.eclipse.org/buildship/oomph/1.0"
     xmlns:predicates="http://www.eclipse.org/oomph/predicates/1.0"
     xmlns:setup="http://www.eclipse.org/oomph/setup/1.0"
     xmlns:setup.p2="http://www.eclipse.org/oomph/setup/p2/1.0"
     xmlns:setup.workingsets="http://www.eclipse.org/oomph/setup/workingsets/1.0"
     xmlns:workingsets="http://www.eclipse.org/oomph/workingsets/1.0"
-    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/oomph/setup/maven/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Maven.ecore http://www.eclipse.org/oomph/predicates/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 https://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
-    name="spring.boot.2.2.x"
-    label="Spring Boot 2.2.x">
+    xsi:schemaLocation="http://www.eclipse.org/oomph/setup/jdt/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/JDT.ecore http://www.eclipse.org/buildship/oomph/1.0 https://raw.githubusercontent.com/eclipse/buildship/master/org.eclipse.buildship.oomph/model/GradleImport-1.0.ecore http://www.eclipse.org/oomph/predicates/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/Predicates.ecore http://www.eclipse.org/oomph/setup/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/SetupWorkingSets.ecore http://www.eclipse.org/oomph/workingsets/1.0 http://git.eclipse.org/c/oomph/org.eclipse.oomph.git/plain/setups/models/WorkingSets.ecore"
+    name="spring.boot.2.5.x"
+    label="Spring Boot 2.5.x">
   <setupTask
       xsi:type="setup:VariableTask"
       type="FOLDER"
@@ -59,7 +59,7 @@
     <requirement
         name="org.eclipse.jdt.feature.group"/>
     <requirement
-        name="io.spring.javaformat.eclipse.feature.feature.group" versionRange="[0.0.15,0.0.16)"/>
+        name="io.spring.javaformat.eclipse.feature.feature.group"/>
     <requirement
         name="org.eclipse.jst.server_adapters.feature.feature.group"/>
     <requirement
@@ -69,9 +69,11 @@
     <requirement
         name="org.eclipse.jst.web_ui.feature.feature.group"/>
     <requirement
-        name="org.eclipse.m2e.feature.feature.group" versionRange="[1.11.0, 1.12.0)"/>
+        name="org.eclipse.m2e.feature.feature.group"/>
     <requirement
-        name="org.eclipse.oomph.setup.maven.feature.group" versionRange="[1.12.0, 1.13.0)"/>
+        name="org.eclipse.oomph.setup.maven.feature.group"/>
+    <requirement
+        name="org.eclipse.oomph.setup.workingsets.feature.group"/>
     <requirement
         name="org.eclipse.wst.server_adapters.feature.feature.group"/>
     <requirement
@@ -79,30 +81,33 @@
     <requirement
         name="org.sonatype.m2e.buildhelper.feature.feature.group"/>
     <requirement
-          name="org.springframework.boot.ide.main.feature.feature.group"/>
+        name="org.springframework.boot.ide.main.feature.feature.group"/>
     <requirement
-          name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
+        name="org.springframework.ide.eclipse.boot.dash.feature.feature.group"/>
     <requirement
-          name="org.springframework.tooling.boot.ls.feature.feature.group"/>
+        name="org.springframework.tooling.boot.ls.feature.feature.group"/>
+    <requirement
+        name="org.eclipse.buildship.feature.group"/>
+    <requirement
+        name="org.eclipse.buildship.oomph.feature.group"/>
     <repository
         url="https://dl.bintray.com/spring/javaformat-eclipse/"/>
     <repository
         url="https://repo1.maven.org/maven2/.m2e/connectors/m2eclipse-buildhelper/0.15.0/N/0.15.0.201405280027/"/>
     <repository
-        url="https://download.springsource.com/release/TOOLS/sts4/update/e4.11/"/>
+        url="https://download.springsource.com/release/TOOLS/sts4/update/latest/"/>
+    <repository
+        url="https://download.eclipse.org/buildship/updates/e411/releases/"/>
     <description>
       Install the tools needed in the IDE to work with the
       source code for ${scope.project.label}
     </description>
   </setupTask>
   <setupTask
-      xsi:type="maven:MavenImportTask">
+      xsi:type="oomph:GradleImportTask">
     <sourceLocator
         rootFolder="${checkout.location}"
-        locateNestedProjects="true">
-        <excludedPath>spring-boot-project/spring-boot-tools/spring-boot-gradle-plugin</excludedPath>
-    </sourceLocator>
-    <description></description>
+        locateNestedProjects="true"/>
   </setupTask>
   <setupTask
       xsi:type="setup.workingsets:WorkingSetTask">
@@ -122,25 +127,43 @@
         name="spring-boot-tools">
       <predicate
           xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|.*-plugin|autoconfigure-processor)"/>
+          pattern="spring-boot-(tools|antlib|configuration-.*|loader|.*-tools|.*-layertools|.*-plugin|autoconfigure-processor|buildpack.*)"/>
     </workingSet>
     <workingSet
         name="spring-boot-starters">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-starter(s|-.*)"/>
+          xsi:type="predicates:OrPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-starter(s|-.*)"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-starter"/>
+      </predicate>
     </workingSet>
     <workingSet
         name="spring-boot-smoke-tests">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-smoke-test(s|-.*)"/>
+          xsi:type="predicates:OrPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-smoke-test(s|-.*)"/>
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-smoke-tests-invoker"/>
+      </predicate>
     </workingSet>
     <workingSet
         name="spring-boot-tests">
       <predicate
-          xsi:type="predicates:NamePredicate"
-          pattern="spring-boot-.*-test.*"/>
+          xsi:type="predicates:AndPredicate">
+        <operand
+            xsi:type="predicates:NamePredicate"
+            pattern="spring-boot-(.*-test|tests).*"/>
+        <operand
+            xsi:type="workingsets:ExclusionPredicate"
+            excludedWorkingSet="//@setupTasks.7/@workingSets.3"/>
+      </predicate>
     </workingSet>
   </setupTask>
   <setupTask

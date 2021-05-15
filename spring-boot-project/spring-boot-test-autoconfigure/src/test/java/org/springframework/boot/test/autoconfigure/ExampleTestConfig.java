@@ -25,7 +25,7 @@ import org.springframework.boot.test.context.TestConfiguration;
  *
  * @author Phillip Webb
  */
-@TestConfiguration
+@TestConfiguration(proxyBeanMethods = false)
 @EntityScan("some.other.package")
 public class ExampleTestConfig {
 

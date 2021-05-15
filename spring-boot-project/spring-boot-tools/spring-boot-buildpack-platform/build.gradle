@@ -1,0 +1,26 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Buildpack Platform"
+
+dependencies {
+	api("com.fasterxml.jackson.core:jackson-databind")
+	api("com.fasterxml.jackson.module:jackson-module-parameter-names")
+	api("net.java.dev.jna:jna-platform")
+	api("org.apache.commons:commons-compress:1.19")
+	api("org.apache.httpcomponents:httpclient")
+	api("org.springframework:spring-core")
+	
+	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
+	testImplementation("com.jayway.jsonpath:json-path")
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.testcontainers:testcontainers")
+	testImplementation("org.hamcrest:hamcrest")
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.mockito:mockito-core")
+	testImplementation("org.mockito:mockito-junit-jupiter")
+	testImplementation("org.skyscreamer:jsonassert")
+}

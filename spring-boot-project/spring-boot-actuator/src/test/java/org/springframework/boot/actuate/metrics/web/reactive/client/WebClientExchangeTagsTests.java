@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,6 @@ class WebClientExchangeTagsTests {
 		this.request = ClientRequest.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot"))
 				.attribute(URI_TEMPLATE_ATTRIBUTE, "https://example.org/projects/{project}").build();
 		this.response = mock(ClientResponse.class);
-		given(this.response.statusCode()).willReturn(HttpStatus.OK);
 	}
 
 	@Test
@@ -80,24 +79,44 @@ class WebClientExchangeTagsTests {
 	}
 
 	@Test
+	void uriWhenTemplateIsMissingShouldReturnPathWithQueryParams() {
+		this.request = ClientRequest
+				.create(HttpMethod.GET, URI.create("https://example.org/projects/spring-boot?section=docs")).build();
+		assertThat(WebClientExchangeTags.uri(this.request))
+				.isEqualTo(Tag.of("uri", "/projects/spring-boot?section=docs"));
+	}
+
+	@Test
 	void clientName() {
 		assertThat(WebClientExchangeTags.clientName(this.request)).isEqualTo(Tag.of("clientName", "example.org"));
 	}
 
 	@Test
 	void status() {
-		assertThat(WebClientExchangeTags.status(this.response)).isEqualTo(Tag.of("status", "200"));
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
+		assertThat(WebClientExchangeTags.status(this.response, null)).isEqualTo(Tag.of("status", "200"));
 	}
 
 	@Test
 	void statusWhenIOException() {
-		assertThat(WebClientExchangeTags.status(new IOException())).isEqualTo(Tag.of("status", "IO_ERROR"));
+		assertThat(WebClientExchangeTags.status(null, new IOException())).isEqualTo(Tag.of("status", "IO_ERROR"));
 	}
 
 	@Test
 	void statusWhenClientException() {
-		assertThat(WebClientExchangeTags.status(new IllegalArgumentException()))
+		assertThat(WebClientExchangeTags.status(null, new IllegalArgumentException()))
 				.isEqualTo(Tag.of("status", "CLIENT_ERROR"));
+	}
+
+	@Test
+	void statusWhenNonStandard() {
+		given(this.response.rawStatusCode()).willReturn(490);
+		assertThat(WebClientExchangeTags.status(this.response, null)).isEqualTo(Tag.of("status", "490"));
+	}
+
+	@Test
+	void statusWhenCancelled() {
+		assertThat(WebClientExchangeTags.status(null, null)).isEqualTo(Tag.of("status", "CLIENT_ERROR"));
 	}
 
 	@Test
@@ -108,42 +127,49 @@ class WebClientExchangeTagsTests {
 
 	@Test
 	void outcomeTagIsInformationalWhenResponseIs1xx() {
-		given(this.response.statusCode()).willReturn(HttpStatus.CONTINUE);
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.CONTINUE.value());
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("INFORMATIONAL");
 	}
 
 	@Test
 	void outcomeTagIsSuccessWhenResponseIs2xx() {
-		given(this.response.statusCode()).willReturn(HttpStatus.OK);
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.OK.value());
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("SUCCESS");
 	}
 
 	@Test
 	void outcomeTagIsRedirectionWhenResponseIs3xx() {
-		given(this.response.statusCode()).willReturn(HttpStatus.MOVED_PERMANENTLY);
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.MOVED_PERMANENTLY.value());
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("REDIRECTION");
 	}
 
 	@Test
 	void outcomeTagIsClientErrorWhenResponseIs4xx() {
-		given(this.response.statusCode()).willReturn(HttpStatus.BAD_REQUEST);
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.BAD_REQUEST.value());
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
 	}
 
 	@Test
 	void outcomeTagIsServerErrorWhenResponseIs5xx() {
-		given(this.response.statusCode()).willReturn(HttpStatus.BAD_GATEWAY);
+		given(this.response.rawStatusCode()).willReturn(HttpStatus.BAD_GATEWAY.value());
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
 	}
 
 	@Test
-	void outcomeTagIsUnknownWhenResponseStatusIsUnknown() {
-		given(this.response.statusCode()).willThrow(IllegalArgumentException.class);
+	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() {
+		given(this.response.rawStatusCode()).willReturn(490);
+		Tag tag = WebClientExchangeTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
+	}
+
+	@Test
+	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
+		given(this.response.rawStatusCode()).willReturn(701);
 		Tag tag = WebClientExchangeTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,10 +18,10 @@ package org.springframework.boot.cli.compiler.dependencies;
 
 import java.util.Arrays;
 
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
+import org.mockito.junit.jupiter.MockitoExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
@@ -31,6 +31,7 @@ import static org.mockito.BDDMockito.given;
  *
  * @author Andy Wilkinson
  */
+@ExtendWith(MockitoExtension.class)
 class CompositeDependencyManagementTests {
 
 	@Mock
@@ -38,11 +39,6 @@ class CompositeDependencyManagementTests {
 
 	@Mock
 	private DependencyManagement dependencyManagement2;
-
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
 
 	@Test
 	void unknownSpringBootVersion() {
@@ -55,7 +51,6 @@ class CompositeDependencyManagementTests {
 	@Test
 	void knownSpringBootVersion() {
 		given(this.dependencyManagement1.getSpringBootVersion()).willReturn("1.2.3");
-		given(this.dependencyManagement2.getSpringBootVersion()).willReturn("1.2.4");
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
 				.getSpringBootVersion()).isEqualTo("1.2.3");
 	}
@@ -71,7 +66,6 @@ class CompositeDependencyManagementTests {
 	@Test
 	void knownDependency() {
 		given(this.dependencyManagement1.find("artifact")).willReturn(new Dependency("test", "artifact", "1.2.3"));
-		given(this.dependencyManagement2.find("artifact")).willReturn(new Dependency("test", "artifact", "1.2.4"));
 		assertThat(new CompositeDependencyManagement(this.dependencyManagement1, this.dependencyManagement2)
 				.find("artifact")).isEqualTo(new Dependency("test", "artifact", "1.2.3"));
 	}

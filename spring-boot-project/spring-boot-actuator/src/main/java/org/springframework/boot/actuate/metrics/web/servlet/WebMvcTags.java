@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import io.micrometer.core.instrument.Tag;
 
+import org.springframework.boot.actuate.metrics.http.Outcome;
 import org.springframework.http.HttpStatus;
 import org.springframework.util.StringUtils;
 import org.springframework.web.servlet.HandlerMapping;
@@ -53,18 +54,6 @@ public final class WebMvcTags {
 	private static final Tag EXCEPTION_NONE = Tag.of("exception", "None");
 
 	private static final Tag STATUS_UNKNOWN = Tag.of("status", "UNKNOWN");
-
-	private static final Tag OUTCOME_UNKNOWN = Tag.of("outcome", "UNKNOWN");
-
-	private static final Tag OUTCOME_INFORMATIONAL = Tag.of("outcome", "INFORMATIONAL");
-
-	private static final Tag OUTCOME_SUCCESS = Tag.of("outcome", "SUCCESS");
-
-	private static final Tag OUTCOME_REDIRECTION = Tag.of("outcome", "REDIRECTION");
-
-	private static final Tag OUTCOME_CLIENT_ERROR = Tag.of("outcome", "CLIENT_ERROR");
-
-	private static final Tag OUTCOME_SERVER_ERROR = Tag.of("outcome", "SERVER_ERROR");
 
 	private static final Tag METHOD_UNKNOWN = Tag.of("method", "UNKNOWN");
 
@@ -105,9 +94,30 @@ public final class WebMvcTags {
 	 * @return the uri tag derived from the request
 	 */
 	public static Tag uri(HttpServletRequest request, HttpServletResponse response) {
+		return uri(request, response, false);
+	}
+
+	/**
+	 * Creates a {@code uri} tag based on the URI of the given {@code request}. Uses the
+	 * {@link HandlerMapping#BEST_MATCHING_PATTERN_ATTRIBUTE} best matching pattern if
+	 * available. Falling back to {@code REDIRECTION} for 3xx responses, {@code NOT_FOUND}
+	 * for 404 responses, {@code root} for requests with no path info, and {@code UNKNOWN}
+	 * for all other requests.
+	 * @param request the request
+	 * @param response the response
+	 * @param ignoreTrailingSlash whether to ignore the trailing slash
+	 * @return the uri tag derived from the request
+	 */
+	public static Tag uri(HttpServletRequest request, HttpServletResponse response, boolean ignoreTrailingSlash) {
 		if (request != null) {
 			String pattern = getMatchingPattern(request);
 			if (pattern != null) {
+				if (ignoreTrailingSlash && pattern.length() > 1) {
+					pattern = TRAILING_SLASH_PATTERN.matcher(pattern).replaceAll("");
+				}
+				if (pattern.isEmpty()) {
+					return URI_ROOT;
+				}
 				return Tag.of("uri", pattern);
 			}
 			if (response != null) {
@@ -154,7 +164,7 @@ public final class WebMvcTags {
 	}
 
 	/**
-	 * Creates a {@code exception} tag based on the {@link Class#getSimpleName() simple
+	 * Creates an {@code exception} tag based on the {@link Class#getSimpleName() simple
 	 * name} of the class of the given {@code exception}.
 	 * @param exception the exception, may be {@code null}
 	 * @return the exception tag derived from the exception
@@ -174,25 +184,8 @@ public final class WebMvcTags {
 	 * @since 2.1.0
 	 */
 	public static Tag outcome(HttpServletResponse response) {
-		if (response != null) {
-			HttpStatus status = extractStatus(response);
-			if (status != null) {
-				if (status.is1xxInformational()) {
-					return OUTCOME_INFORMATIONAL;
-				}
-				if (status.is2xxSuccessful()) {
-					return OUTCOME_SUCCESS;
-				}
-				if (status.is3xxRedirection()) {
-					return OUTCOME_REDIRECTION;
-				}
-				if (status.is4xxClientError()) {
-					return OUTCOME_CLIENT_ERROR;
-				}
-			}
-			return OUTCOME_SERVER_ERROR;
-		}
-		return OUTCOME_UNKNOWN;
+		Outcome outcome = (response != null) ? Outcome.forStatus(response.getStatus()) : Outcome.UNKNOWN;
+		return outcome.asTag();
 	}
 
 }

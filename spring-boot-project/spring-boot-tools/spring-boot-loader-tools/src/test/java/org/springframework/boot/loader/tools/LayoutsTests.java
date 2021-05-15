@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -56,19 +56,19 @@ class LayoutsTests {
 	@Test
 	void jarLayout() {
 		Layout layout = new Layouts.Jar();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE)).isEqualTo("BOOT-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM)).isEqualTo("BOOT-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED)).isEqualTo("BOOT-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME)).isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.COMPILE)).isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.CUSTOM)).isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.PROVIDED)).isEqualTo("BOOT-INF/lib/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.RUNTIME)).isEqualTo("BOOT-INF/lib/");
 	}
 
 	@Test
 	void warLayout() {
 		Layout layout = new Layouts.War();
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.COMPILE)).isEqualTo("WEB-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.CUSTOM)).isEqualTo("WEB-INF/lib/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.PROVIDED)).isEqualTo("WEB-INF/lib-provided/");
-		assertThat(layout.getLibraryDestination("lib.jar", LibraryScope.RUNTIME)).isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.COMPILE)).isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.CUSTOM)).isEqualTo("WEB-INF/lib/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.PROVIDED)).isEqualTo("WEB-INF/lib-provided/");
+		assertThat(layout.getLibraryLocation("lib.jar", LibraryScope.RUNTIME)).isEqualTo("WEB-INF/lib/");
 	}
 
 }

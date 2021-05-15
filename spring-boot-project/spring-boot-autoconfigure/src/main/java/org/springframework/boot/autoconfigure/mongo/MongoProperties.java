@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,11 @@
 
 package org.springframework.boot.autoconfigure.mongo;
 
-import com.mongodb.MongoClientURI;
+import com.mongodb.ConnectionString;
+import org.bson.UuidRepresentation;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
 
 /**
  * Configuration properties for Mongo.
@@ -58,7 +60,8 @@ public class MongoProperties {
 	private Integer port = null;
 
 	/**
-	 * Mongo database URI. Cannot be set with host, port and credentials.
+	 * Mongo database URI. Cannot be set with host, port, credentials and replica set
+	 * name.
 	 */
 	private String uri;
 
@@ -72,15 +75,11 @@ public class MongoProperties {
 	 */
 	private String authenticationDatabase;
 
-	/**
-	 * GridFS database name.
-	 */
-	private String gridFsDatabase;
+	private final Gridfs gridfs = new Gridfs();
 
 	/**
 	 * Login user of the mongo server. Cannot be set with URI.
 	 */
-
 	private String username;
 
 	/**
@@ -89,9 +88,19 @@ public class MongoProperties {
 	private char[] password;
 
 	/**
+	 * Required replica set name for the cluster. Cannot be set with URI.
+	 */
+	private String replicaSetName;
+
+	/**
 	 * Fully qualified name of the FieldNamingStrategy to use.
 	 */
 	private Class<?> fieldNamingStrategy;
+
+	/**
+	 * Representation to use when converting a UUID to a BSON binary value.
+	 */
+	private UuidRepresentation uuidRepresentation = UuidRepresentation.JAVA_LEGACY;
 
 	/**
 	 * Whether to enable auto-index creation.
@@ -138,12 +147,28 @@ public class MongoProperties {
 		this.password = password;
 	}
 
+	public String getReplicaSetName() {
+		return this.replicaSetName;
+	}
+
+	public void setReplicaSetName(String replicaSetName) {
+		this.replicaSetName = replicaSetName;
+	}
+
 	public Class<?> getFieldNamingStrategy() {
 		return this.fieldNamingStrategy;
 	}
 
 	public void setFieldNamingStrategy(Class<?> fieldNamingStrategy) {
 		this.fieldNamingStrategy = fieldNamingStrategy;
+	}
+
+	public UuidRepresentation getUuidRepresentation() {
+		return this.uuidRepresentation;
+	}
+
+	public void setUuidRepresentation(UuidRepresentation uuidRepresentation) {
+		this.uuidRepresentation = uuidRepresentation;
 	}
 
 	public String getUri() {
@@ -166,19 +191,31 @@ public class MongoProperties {
 		this.port = port;
 	}
 
-	public String getGridFsDatabase() {
-		return this.gridFsDatabase;
+	public Gridfs getGridfs() {
+		return this.gridfs;
 	}
 
+	/**
+	 * Return the GridFS database name.
+	 * @return the GridFS database name
+	 * @deprecated since 2.4.0 in favor of {@link Gridfs#getDatabase()}
+	 */
+	@DeprecatedConfigurationProperty(replacement = "spring.data.mongodb.gridfs.database")
+	@Deprecated
+	public String getGridFsDatabase() {
+		return this.gridfs.getDatabase();
+	}
+
+	@Deprecated
 	public void setGridFsDatabase(String gridFsDatabase) {
-		this.gridFsDatabase = gridFsDatabase;
+		this.gridfs.setDatabase(gridFsDatabase);
 	}
 
 	public String getMongoClientDatabase() {
 		if (this.database != null) {
 			return this.database;
 		}
-		return new MongoClientURI(determineUri()).getDatabase();
+		return new ConnectionString(determineUri()).getDatabase();
 	}
 
 	public Boolean isAutoIndexCreation() {
@@ -187,6 +224,36 @@ public class MongoProperties {
 
 	public void setAutoIndexCreation(Boolean autoIndexCreation) {
 		this.autoIndexCreation = autoIndexCreation;
+	}
+
+	public static class Gridfs {
+
+		/**
+		 * GridFS database name.
+		 */
+		private String database;
+
+		/**
+		 * GridFS bucket name.
+		 */
+		private String bucket;
+
+		public String getDatabase() {
+			return this.database;
+		}
+
+		public void setDatabase(String database) {
+			this.database = database;
+		}
+
+		public String getBucket() {
+			return this.bucket;
+		}
+
+		public void setBucket(String bucket) {
+			this.bucket = bucket;
+		}
+
 	}
 
 }

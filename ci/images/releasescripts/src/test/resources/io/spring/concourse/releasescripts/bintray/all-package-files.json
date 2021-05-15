@@ -1,0 +1,35 @@
+[
+  {
+    "name": "nutcracker-1.1-sources.jar",
+    "path": "org/jfrog/powerutils/nutcracker/1.1/nutcracker-1.1-sources.jar",
+    "package": "jfrog-power-utils",
+    "version": "1.1",
+    "repo": "jfrog-jars",
+    "owner": "jfrog",
+    "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
+    "size": 1234,
+    "sha256": "602e20176706d3cc7535f01ffdbe91b270ae5012"
+  },
+  {
+    "name": "nutcracker-1.1.pom",
+    "path": "org/jfrog/powerutils/nutcracker/1.1/nutcracker-1.1.pom",
+    "package": "jfrog-power-utils",
+    "version": "1.1",
+    "repo": "jfrog-jars",
+    "owner": "jfrog",
+    "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
+    "size": 1234,
+    "sha256": "602e20176706d3cc7535f01ffdbe91b270ae5013"
+  },
+  {
+    "name": "nutcracker-1.1.jar",
+    "path": "org/jfrog/powerutils/nutcracker/1.1/nutcracker-1.1.jar",
+    "package": "jfrog-power-utils",
+    "version": "1.1",
+    "repo": "jfrog-jars",
+    "owner": "jfrog",
+    "created": "ISO8601 (yyyy-MM-dd'T'HH:mm:ss.SSSZ)",
+    "size": 1234,
+    "sha256": "602e20176706d3cc7535f01ffdbe91b270ae5014"
+  }
+]

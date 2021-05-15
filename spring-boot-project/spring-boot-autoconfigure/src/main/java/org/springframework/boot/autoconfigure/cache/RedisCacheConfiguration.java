@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,6 +63,9 @@ class RedisCacheConfiguration {
 		if (!cacheNames.isEmpty()) {
 			builder.initialCacheNames(new LinkedHashSet<>(cacheNames));
 		}
+		if (cacheProperties.getRedis().isEnableStatistics()) {
+			builder.enableStatistics();
+		}
 		redisCacheManagerBuilderCustomizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
 		return cacheManagerCustomizers.customize(builder.build());
 	}
@@ -72,7 +75,6 @@ class RedisCacheConfiguration {
 			ObjectProvider<org.springframework.data.redis.cache.RedisCacheConfiguration> redisCacheConfiguration,
 			ClassLoader classLoader) {
 		return redisCacheConfiguration.getIfAvailable(() -> createConfiguration(cacheProperties, classLoader));
-
 	}
 
 	private org.springframework.data.redis.cache.RedisCacheConfiguration createConfiguration(
@@ -86,7 +88,7 @@ class RedisCacheConfiguration {
 			config = config.entryTtl(redisProperties.getTimeToLive());
 		}
 		if (redisProperties.getKeyPrefix() != null) {
-			config = config.prefixKeysWith(redisProperties.getKeyPrefix());
+			config = config.prefixCacheNameWith(redisProperties.getKeyPrefix());
 		}
 		if (!redisProperties.isCacheNullValues()) {
 			config = config.disableCachingNullValues();

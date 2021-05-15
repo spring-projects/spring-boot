@@ -61,25 +61,13 @@ public class NettyRSocketServer implements RSocketServer {
 
 	@Override
 	public void start() throws RSocketServerException {
-		if (this.lifecycleTimeout != null) {
-			this.channel = this.starter.block(this.lifecycleTimeout);
-		}
-		else {
-			this.channel = this.starter.block();
-		}
+		this.channel = block(this.starter, this.lifecycleTimeout);
 		logger.info("Netty RSocket started on port(s): " + address().getPort());
 		startDaemonAwaitThread(this.channel);
 	}
 
 	private void startDaemonAwaitThread(CloseableChannel channel) {
-		Thread awaitThread = new Thread("rsocket") {
-
-			@Override
-			public void run() {
-				channel.onClose().block();
-			}
-
-		};
+		Thread awaitThread = new Thread(() -> channel.onClose().block(), "rsocket");
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
 		awaitThread.start();
@@ -91,6 +79,10 @@ public class NettyRSocketServer implements RSocketServer {
 			this.channel.dispose();
 			this.channel = null;
 		}
+	}
+
+	private <T> T block(Mono<T> mono, Duration timeout) {
+		return (timeout != null) ? mono.block(timeout) : mono.block();
 	}
 
 }

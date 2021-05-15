@@ -1,0 +1,17 @@
+plugins {
+	id "java"
+	id "org.springframework.boot.conventions"
+}
+
+description = "Spring Boot Atmosphere smoke test"
+
+dependencies {
+	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web"))
+	implementation("org.atmosphere:atmosphere-runtime:2.6.1")
+
+	runtimeOnly("org.webjars:atmosphere-javascript:3.0.4")
+
+	testImplementation(enforcedPlatform(project(":spring-boot-project:spring-boot-dependencies")))
+	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.springframework:spring-websocket")
+}

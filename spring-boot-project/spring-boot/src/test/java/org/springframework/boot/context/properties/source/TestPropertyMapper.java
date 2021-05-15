@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,6 +17,9 @@
 package org.springframework.boot.context.properties.source;
 
 import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
 
 import org.springframework.util.LinkedMultiValueMap;
 import org.springframework.util.MultiValueMap;
@@ -26,33 +29,28 @@ import org.springframework.util.MultiValueMap;
  */
 class TestPropertyMapper implements PropertyMapper {
 
-	private MultiValueMap<String, PropertyMapping> fromSource = new LinkedMultiValueMap<>();
+	private MultiValueMap<ConfigurationPropertyName, String> fromConfig = new LinkedMultiValueMap<>();
 
-	private MultiValueMap<ConfigurationPropertyName, PropertyMapping> fromConfig = new LinkedMultiValueMap<>();
+	private Map<String, ConfigurationPropertyName> fromSource = new LinkedHashMap<>();
 
-	void addFromPropertySource(String from, String... to) {
-		for (String configurationPropertyName : to) {
-			this.fromSource.add(from,
-					new PropertyMapping(from, ConfigurationPropertyName.of(configurationPropertyName)));
-		}
+	void addFromPropertySource(String from, String to) {
+		this.fromSource.put(from, ConfigurationPropertyName.of(to));
 	}
 
 	void addFromConfigurationProperty(ConfigurationPropertyName from, String... to) {
 		for (String propertySourceName : to) {
-			this.fromConfig.add(from, new PropertyMapping(propertySourceName, from));
+			this.fromConfig.add(from, propertySourceName);
 		}
 	}
 
 	@Override
-	public PropertyMapping[] map(String propertySourceName) {
-		return this.fromSource.getOrDefault(propertySourceName, Collections.emptyList())
-				.toArray(new PropertyMapping[0]);
+	public List<String> map(ConfigurationPropertyName configurationPropertyName) {
+		return this.fromConfig.getOrDefault(configurationPropertyName, Collections.emptyList());
 	}
 
 	@Override
-	public PropertyMapping[] map(ConfigurationPropertyName configurationPropertyName) {
-		return this.fromConfig.getOrDefault(configurationPropertyName, Collections.emptyList())
-				.toArray(new PropertyMapping[0]);
+	public ConfigurationPropertyName map(String propertySourceName) {
+		return this.fromSource.getOrDefault(propertySourceName, ConfigurationPropertyName.EMPTY);
 	}
 
 }

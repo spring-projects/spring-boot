@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,6 +25,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.web.servlet.error.DefaultErrorAttributes;
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.web.servlet.HandlerExceptionResolver;
 import org.springframework.web.servlet.ModelAndView;
@@ -36,6 +37,7 @@ import org.springframework.web.servlet.mvc.support.DefaultHandlerExceptionResolv
  * @author Andy Wilkinson
  * @author Stephane Nicoll
  * @author Phillip Webb
+ * @author Scott Frederick
  */
 class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 
@@ -55,11 +57,12 @@ class CompositeHandlerExceptionResolver implements HandlerExceptionResolver {
 	}
 
 	private List<HandlerExceptionResolver> extractResolvers() {
-		List<HandlerExceptionResolver> list = new ArrayList<>();
-		list.addAll(this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
+		List<HandlerExceptionResolver> list = new ArrayList<>(
+				this.beanFactory.getBeansOfType(HandlerExceptionResolver.class).values());
 		list.remove(this);
 		AnnotationAwareOrderComparator.sort(list);
 		if (list.isEmpty()) {
+			list.add(new DefaultErrorAttributes());
 			list.add(new DefaultHandlerExceptionResolver());
 		}
 		return list;

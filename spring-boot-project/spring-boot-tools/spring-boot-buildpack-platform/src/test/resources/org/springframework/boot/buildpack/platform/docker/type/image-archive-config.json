@@ -1,0 +1,224 @@
+{
+	"config": {
+		"Hostname": "",
+		"Domainname": "",
+		"User": "vcap",
+		"AttachStdin": false,
+		"AttachStdout": false,
+		"AttachStderr": false,
+		"Tty": false,
+		"OpenStdin": false,
+		"StdinOnce": false,
+		"Env": [
+			"PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin",
+			"CNB_USER_ID=2000",
+			"CNB_GROUP_ID=2000",
+			"CNB_STACK_ID=org.cloudfoundry.stacks.cflinuxfs3"
+		],
+		"Cmd": null,
+		"Image": "sha256:523c8ade6e06f814469b2cf04c8045a74becee17088955f2657958476d3fba1f",
+		"Volumes": null,
+		"WorkingDir": "/layers",
+		"Entrypoint": null,
+		"OnBuild": null,
+		"Labels": {
+			"io.buildpacks.stack.id": "org.cloudfoundry.stacks.cflinuxfs3"
+		}
+	},
+	"created": "1980-01-01T00:00:01Z",
+	"history": [
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		},
+		{
+
+		}
+	],
+	"os": "linux",
+	"rootfs": {
+		"diff_ids": [
+			"sha256:733a8e5ce32984099ef675fce04730f6e2a6dcfdf5bd292fea01a8f936265342",
+			"sha256:7755b972f0b4f49de73ef5114fb3ba9c69d80f217e80da99f56f0d0a5dcb3d70",
+			"sha256:8f0b2d09ab4b38530a1630403967d11a601e56e02e79d3f56370d34fd071fe38",
+			"sha256:8debe4b6b4290dbbfecea9edea61c22fb455e69e3cbc7d63b17f8e1ab8ea669b",
+			"sha256:0c6ddab305e5452850f3c09fe15310dff8dc7221702d736dc7705882c1df9658",
+			"sha256:a9527973bb5d7ccdf88b5be8eb81e024094be1709df659af3127865463c1c188",
+			"sha256:480cd420e43c6895240c87c88969b87417549c02393cde1b6f71a3a3d5a2a620",
+			"sha256:391d950d763a33d8ae0373f218aa59907599f51e42cd864129591887e1291034",
+			"sha256:5b3ec0a6ed9e3de93bb082151f56b1cde5d7e31f2809039a1b5b55a5052fe873",
+			"sha256:ef935546e2c99da3e8962f2eb3cd6813e9e9a8b19bc8d15b56d1cac37f0342d5",
+			"sha256:6d644992d62bd09a2bbf490b7fe3aa1e35e6d0d2479583c2decec7092f193310",
+			"sha256:59d817c36a25078c8ec1f6de0d8336aec598037f89708ed13dbf661557a25084",
+			"sha256:6636ce01d12372e56a89ec77ea8d9ed510f8c701df1220750add4613764c05a4",
+			"sha256:96c7f369c29bbf11b971e4dbb6473e8991b666f9de046a414317634eb0a25d2a",
+			"sha256:3544ba1fa82d1e89619ed04c2485fab3445b1603959d224792d1183dd658033d",
+			"sha256:12d99406b52b526af152628cd72ba6eacf5d18484dc79cfdacd4b38a21620a2b",
+			"sha256:3b3cda9eceb0fca56c274e3be93daf53f59501e6b3628fabbaea8ea416eb757a",
+			"sha256:27ad0fc48c381eb77f69b4e80edccb4d8a2399f5cebd5a8c5a3e1c32313343a6",
+			"sha256:52845fb94361dad36cc4136e49b92c79ca59c16c579e2f51df0c58ba355c4367",
+			"sha256:7bf3a57229276fb913155b077d00a18ec6cba92c7f062728ca1c3bc3503c0b55",
+			"sha256:e5df92d3db931488225ca9f7290de0334225d4bd7c48fc2dcd380d0921bb6680",
+			"sha256:290ac64fbae3288821551371c8dda38fcf5dfa063a54cb270dcc395a090f5173",
+			"sha256:996aee90e29ed78d80a5a0c0e50d60a732a18fddae06f87b68bef183beddd2c4",
+			"sha256:30f6a316d4da01d694d8c17aa84b37f468cccc7184248e255486eb3095ebb87c",
+			"sha256:c694476a7241ba4e4a0663606d4d6eec7ed8624252c010fbef2713968e8f9436",
+			"sha256:ab9aaff2160873663388faea6d987cd8f2b5935137b81c64fde145bf2a330d54",
+			"sha256:e1f3ab860045b96235cbc1b89a3e73add955a303eb42905b570b6012b73b9184",
+			"sha256:0b260d90d097379d4351132b45110d013b98f4a335795baeb95788fcebcb7f3c",
+			"sha256:f0f5ecd72b4e0a38d3ad73b5756d8f209955932e9615715502a61dffe56f401a",
+			"sha256:b4cd790490e41c808e8d65f9ac8f2e58c79bc1a9919a713c4519e77b26dc2053",
+			"sha256:16b88c0e7f950c32c7496117d1efad90a8557a2badcb267d99a19676b1f0b76a",
+			"sha256:49d36ba00b17fb605f374ca7877ae129678de925d10fd1955f07c2b6f74dd1c9",
+			"sha256:b31d189a88ca43fee6077c25bcb623582d569193ed6ac11b4e5623558911e3de",
+			"sha256:3ecfd2822cf64c609c9c8489e2accfbc0b1de0f2a3637ff1b5d30768fb34b40c",
+			"sha256:a7f09c3e09b29c5503962a068f29e8726cb91d1dbce2fab688aee0a98189b2be",
+			"sha256:3d12e651068a0ff19afdd568b5d14ee5292f849542b31d6c9b099a09344e1f4d",
+			"sha256:f01e41975a9335f5983021b081bc700e46b85efb262670223c4db61eea0a3ebd",
+			"sha256:2b1b655bb8752f631e786c4c55670315d8569acccfe26402942977c216f2803a",
+			"sha256:0943c634f5c24311ebdeca6fef5682a4a374c89a831700d188bff7f987470004",
+			"sha256:9a183e56c86d376b408bdf922746d0a657f62b0e18c7c8f82a496b87710c576f",
+			"sha256:d919f3c2f534ddbb0b6057f82bca36051ce80a2a9cd3016c320ae276884311f5",
+			"sha256:108a3eb288f8094aab6ffd822c593902e48e85c8a37b7da2bd21b15f785d92c5",
+			"sha256:f8b5dcfa1d082af23bb2b2c08526131921329d48d1614d9f2f163a997176087a",
+			"sha256:ee13e75c33e0af49fbf6c3aaa5bbd102fc468c2d554c4f94763d35a33964dfe4",
+			"sha256:2571abab1776d4c2e427fba10d61531afff2ab0789f89ef46ce925b6a5d98e0f",
+			"sha256:5f70bf18a086007016e948b04aed3b82103a36bea41755b6cddfaf10ace3c6ef",
+			"sha256:bb09e17fd1bd2ee47155f1349645fcd9fff31e1247c7ed99cad469f1c16a4216"
+		]
+	}
+}

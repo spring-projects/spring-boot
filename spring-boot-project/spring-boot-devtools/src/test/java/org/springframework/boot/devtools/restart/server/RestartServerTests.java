@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -43,9 +43,9 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class RestartServerTests {
 
 	@Test
-	void sourceFolderUrlFilterMustNotBeNull() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new RestartServer((SourceFolderUrlFilter) null))
-				.withMessageContaining("SourceFolderUrlFilter must not be null");
+	void sourceDirectoryUrlFilterMustNotBeNull() {
+		assertThatIllegalArgumentException().isThrownBy(() -> new RestartServer((SourceDirectoryUrlFilter) null))
+				.withMessageContaining("SourceDirectoryUrlFilter must not be null");
 	}
 
 	@Test
@@ -56,7 +56,7 @@ class RestartServerTests {
 		URL url4 = new URL("file:/proj/module-d.jar!/");
 		URLClassLoader classLoaderA = new URLClassLoader(new URL[] { url1, url2 });
 		URLClassLoader classLoaderB = new URLClassLoader(new URL[] { url3, url4 }, classLoaderA);
-		SourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
+		SourceDirectoryUrlFilter filter = new DefaultSourceDirectoryUrlFilter();
 		MockRestartServer server = new MockRestartServer(filter, classLoaderB);
 		ClassLoaderFiles files = new ClassLoaderFiles();
 		ClassLoaderFile fileA = new ClassLoaderFile(Kind.ADDED, new byte[0]);
@@ -70,14 +70,14 @@ class RestartServerTests {
 	}
 
 	@Test
-	void updateSetsJarLastModified(@TempDir File folder) throws Exception {
+	void updateSetsJarLastModified(@TempDir File directory) throws Exception {
 		long startTime = System.currentTimeMillis();
-		File jarFile = new File(folder, "module-a.jar");
+		File jarFile = new File(directory, "module-a.jar");
 		new FileOutputStream(jarFile).close();
 		jarFile.setLastModified(0);
 		URL url = jarFile.toURI().toURL();
 		URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
-		SourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
+		SourceDirectoryUrlFilter filter = new DefaultSourceDirectoryUrlFilter();
 		MockRestartServer server = new MockRestartServer(filter, classLoader);
 		ClassLoaderFiles files = new ClassLoaderFiles();
 		ClassLoaderFile fileA = new ClassLoaderFile(Kind.ADDED, new byte[0]);
@@ -87,15 +87,15 @@ class RestartServerTests {
 	}
 
 	@Test
-	void updateReplacesLocalFilesWhenPossible(@TempDir File folder) throws Exception {
+	void updateReplacesLocalFilesWhenPossible(@TempDir File directory) throws Exception {
 		// This is critical for Cloud Foundry support where the application is
 		// run exploded and resources can be found from the servlet root (outside of the
 		// classloader)
-		File classFile = new File(folder, "ClassA.class");
+		File classFile = new File(directory, "ClassA.class");
 		FileCopyUtils.copy("abc".getBytes(), classFile);
-		URL url = folder.toURI().toURL();
+		URL url = directory.toURI().toURL();
 		URLClassLoader classLoader = new URLClassLoader(new URL[] { url });
-		SourceFolderUrlFilter filter = new DefaultSourceFolderUrlFilter();
+		SourceDirectoryUrlFilter filter = new DefaultSourceDirectoryUrlFilter();
 		MockRestartServer server = new MockRestartServer(filter, classLoader);
 		ClassLoaderFiles files = new ClassLoaderFiles();
 		ClassLoaderFile fileA = new ClassLoaderFile(Kind.ADDED, "def".getBytes());
@@ -106,8 +106,8 @@ class RestartServerTests {
 
 	static class MockRestartServer extends RestartServer {
 
-		MockRestartServer(SourceFolderUrlFilter sourceFolderUrlFilter, ClassLoader classLoader) {
-			super(sourceFolderUrlFilter, classLoader);
+		MockRestartServer(SourceDirectoryUrlFilter sourceDirectoryUrlFilter, ClassLoader classLoader) {
+			super(sourceDirectoryUrlFilter, classLoader);
 		}
 
 		private Set<URL> restartUrls;

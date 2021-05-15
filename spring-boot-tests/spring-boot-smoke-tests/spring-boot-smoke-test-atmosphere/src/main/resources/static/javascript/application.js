@@ -44,8 +44,7 @@ $(function() {
 									+ request.reconnectInterval
 						}));
 		subSocket
-				.push(atmosphere.util
-						.stringifyJSON({
+				.push(JSON.stringify({
 							author : author,
 							message : 'is inactive and closed the connection. Will reconnect in '
 									+ request.reconnectInterval
@@ -81,7 +80,7 @@ $(function() {
 
 		var message = response.responseBody;
 		try {
-			var json = atmosphere.util.parseJSON(message);
+			var json = JSON.parse(message);
 		} catch (e) {
 			console.log('This doesn\'t look like a valid JSON: ', message);
 			return;
@@ -105,7 +104,7 @@ $(function() {
 			text : 'Server closed the connection after a timeout'
 		}));
 		if (subSocket) {
-			subSocket.push(atmosphere.util.stringifyJSON({
+			subSocket.push(JSON.stringify({
 				author : author,
 				message : 'disconnecting'
 			}));
@@ -140,7 +139,7 @@ $(function() {
 				author = msg;
 			}
 
-			subSocket.push(atmosphere.util.stringifyJSON({
+			subSocket.push(JSON.stringify({
 				author : author,
 				message : msg
 			}));

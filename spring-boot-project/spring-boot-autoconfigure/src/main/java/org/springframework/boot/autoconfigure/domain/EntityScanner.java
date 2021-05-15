@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -63,9 +63,8 @@ public class EntityScanner {
 		if (packages.isEmpty()) {
 			return Collections.emptySet();
 		}
-		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
-		scanner.setEnvironment(this.context.getEnvironment());
-		scanner.setResourceLoader(this.context);
+		ClassPathScanningCandidateComponentProvider scanner = createClassPathScanningCandidateComponentProvider(
+				this.context);
 		for (Class<? extends Annotation> annotationType : annotationTypes) {
 			scanner.addIncludeFilter(new AnnotationTypeFilter(annotationType));
 		}
@@ -78,6 +77,22 @@ public class EntityScanner {
 			}
 		}
 		return entitySet;
+	}
+
+	/**
+	 * Create a {@link ClassPathScanningCandidateComponentProvider} to scan entities based
+	 * on the specified {@link ApplicationContext}.
+	 * @param context the {@link ApplicationContext} to use
+	 * @return a {@link ClassPathScanningCandidateComponentProvider} suitable to scan
+	 * entities
+	 * @since 2.4.0
+	 */
+	protected ClassPathScanningCandidateComponentProvider createClassPathScanningCandidateComponentProvider(
+			ApplicationContext context) {
+		ClassPathScanningCandidateComponentProvider scanner = new ClassPathScanningCandidateComponentProvider(false);
+		scanner.setEnvironment(context.getEnvironment());
+		scanner.setResourceLoader(context);
+		return scanner;
 	}
 
 	private List<String> getPackages() {

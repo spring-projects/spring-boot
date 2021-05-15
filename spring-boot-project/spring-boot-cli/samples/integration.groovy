@@ -5,11 +5,11 @@ package org.test
 class SpringIntegrationExample implements CommandLineRunner {
 
 	@Autowired
-	private ApplicationContext context;
+	private ApplicationContext context
 
 	@Bean
 	DirectChannel input() {
-		new DirectChannel();
+		new DirectChannel()
 	}
 
 	@Override

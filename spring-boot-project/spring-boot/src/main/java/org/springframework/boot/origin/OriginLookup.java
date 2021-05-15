@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,6 +34,16 @@ public interface OriginLookup<K> {
 	 * @return the origin of the key or {@code null}
 	 */
 	Origin getOrigin(K key);
+
+	/**
+	 * Return {@code true} if this lookup is immutable and has contents that will never
+	 * change.
+	 * @return if the lookup is immutable
+	 * @since 2.2.0
+	 */
+	default boolean isImmutable() {
+		return false;
+	}
 
 	/**
 	 * Attempt to lookup the origin from the given source. If the source is not a

@@ -36,7 +36,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 class SampleElasticsearchApplicationTests {
 
 	@Test
-	void testDefaultSettings(CapturedOutput capturedOutput) {
+	void testDefaultSettings(CapturedOutput output) {
 		try {
 			new SpringApplicationBuilder(SampleElasticsearchApplication.class).run();
 		}
@@ -46,7 +46,7 @@ class SampleElasticsearchApplicationTests {
 			}
 			throw ex;
 		}
-		assertThat(capturedOutput).contains("firstName='Alice', lastName='Smith'");
+		assertThat(output).contains("firstName='Alice', lastName='Smith'");
 	}
 
 	private boolean elasticsearchRunning(Exception ex) {

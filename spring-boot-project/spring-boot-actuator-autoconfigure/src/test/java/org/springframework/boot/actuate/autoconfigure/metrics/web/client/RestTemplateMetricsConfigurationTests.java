@@ -75,22 +75,21 @@ class RestTemplateMetricsConfigurationTests {
 	}
 
 	@Test
-	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput capturedOutput) {
+	void afterMaxUrisReachedFurtherUrisAreDenied(CapturedOutput output) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=2").run((context) -> {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(2);
-			assertThat(capturedOutput).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
+			assertThat(output).contains("Reached the maximum number of URI tags for 'http.client.requests'.")
 					.contains("Are you using 'uriVariables'?");
 		});
 	}
 
 	@Test
-	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput capturedOutput) {
+	void shouldNotDenyNorLogIfMaxUrisIsNotReached(CapturedOutput output) {
 		this.contextRunner.withPropertyValues("management.metrics.web.client.max-uri-tags=5").run((context) -> {
 			MeterRegistry registry = getInitializedMeterRegistry(context);
 			assertThat(registry.get("http.client.requests").meters()).hasSize(3);
-			assertThat(capturedOutput)
-					.doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
+			assertThat(output).doesNotContain("Reached the maximum number of URI tags for 'http.client.requests'.")
 					.doesNotContain("Are you using 'uriVariables'?");
 		});
 	}

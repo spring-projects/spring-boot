@@ -16,13 +16,13 @@
 
 package org.springframework.boot.test.json;
 
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.runner.RunWith;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.boot.test.system.OutputCaptureRule;
-import org.springframework.boot.testsupport.runner.classpath.ClassPathOverrides;
-import org.springframework.boot.testsupport.runner.classpath.ModifiedClassPathRunner;
+import org.springframework.boot.testsupport.classpath.ClassPathOverrides;
+import org.springframework.boot.testsupport.system.CapturedOutput;
+import org.springframework.boot.testsupport.system.OutputCaptureExtension;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,19 +31,22 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Andy Wilkinson
  */
-@RunWith(ModifiedClassPathRunner.class)
+@ExtendWith(OutputCaptureExtension.class)
 @ClassPathOverrides("org.json:json:20140107")
-public class DuplicateJsonObjectContextCustomizerFactoryTests {
+class DuplicateJsonObjectContextCustomizerFactoryTests {
 
-	@Rule
-	public OutputCaptureRule output = new OutputCaptureRule();
+	private CapturedOutput output;
+
+	@BeforeEach
+	void setup(CapturedOutput output) {
+		this.output = output;
+	}
 
 	@Test
-	public void warningForMultipleVersions() {
+	void warningForMultipleVersions() {
 		new DuplicateJsonObjectContextCustomizerFactory().createContextCustomizer(null, null).customizeContext(null,
 				null);
-		assertThat(this.output.toString())
-				.contains("Found multiple occurrences of org.json.JSONObject on the class path:");
+		assertThat(this.output).contains("Found multiple occurrences of org.json.JSONObject on the class path:");
 	}
 
 }

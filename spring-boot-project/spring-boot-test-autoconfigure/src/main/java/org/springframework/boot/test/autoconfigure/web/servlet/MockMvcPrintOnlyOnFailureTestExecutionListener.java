@@ -36,11 +36,12 @@ class MockMvcPrintOnlyOnFailureTestExecutionListener extends AbstractTestExecuti
 
 	@Override
 	public void afterTestMethod(TestContext testContext) throws Exception {
-		if (testContext.getTestException() != null) {
-			DeferredLinesWriter writer = DeferredLinesWriter.get(testContext.getApplicationContext());
-			if (writer != null) {
+		DeferredLinesWriter writer = DeferredLinesWriter.get(testContext.getApplicationContext());
+		if (writer != null) {
+			if (testContext.getTestException() != null) {
 				writer.writeDeferredResult();
 			}
+			writer.clear();
 		}
 
 	}

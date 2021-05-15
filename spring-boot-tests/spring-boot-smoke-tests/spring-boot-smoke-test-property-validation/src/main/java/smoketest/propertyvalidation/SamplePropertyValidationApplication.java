@@ -19,10 +19,12 @@ package smoketest.propertyvalidation;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.builder.SpringApplicationBuilder;
+import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.validation.Validator;
 
 @SpringBootApplication
+@ConfigurationPropertiesScan
 public class SamplePropertyValidationApplication implements CommandLineRunner {
 
 	private final SampleProperties properties;

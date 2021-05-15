@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -104,13 +104,12 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			return new LoggingLinesWriter();
 		}
 		return new SystemLinesWriter(this.print);
-
 	}
 
 	private void addFilters(ConfigurableMockMvcBuilder<?> builder) {
 		FilterRegistrationBeans registrations = new FilterRegistrationBeans(this.context);
 		registrations.stream().map(AbstractFilterRegistrationBean.class::cast)
-				.filter(AbstractFilterRegistrationBean::isEnabled)
+				.filter(AbstractFilterRegistrationBean<?>::isEnabled)
 				.forEach((registration) -> addFilter(builder, registration));
 	}
 
@@ -226,7 +225,7 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		private final LinesWriter delegate;
 
-		private final List<String> lines = new ArrayList<>();
+		private final ThreadLocal<List<String>> lines = ThreadLocal.withInitial(ArrayList::new);
 
 		DeferredLinesWriter(WebApplicationContext context, LinesWriter delegate) {
 			Assert.state(context instanceof ConfigurableApplicationContext,
@@ -237,11 +236,11 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 
 		@Override
 		public void write(List<String> lines) {
-			this.lines.addAll(lines);
+			this.lines.get().addAll(lines);
 		}
 
 		void writeDeferredResult() {
-			this.delegate.write(this.lines);
+			this.delegate.write(this.lines.get());
 		}
 
 		static DeferredLinesWriter get(ApplicationContext applicationContext) {
@@ -251,6 +250,10 @@ public class SpringBootMockMvcBuilderCustomizer implements MockMvcBuilderCustomi
 			catch (NoSuchBeanDefinitionException ex) {
 				return null;
 			}
+		}
+
+		void clear() {
+			this.lines.get().clear();
 		}
 
 	}

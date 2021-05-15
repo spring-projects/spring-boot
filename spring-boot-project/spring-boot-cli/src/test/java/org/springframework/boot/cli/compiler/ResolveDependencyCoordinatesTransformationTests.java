@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,6 @@ import org.codehaus.groovy.ast.expr.Expression;
 import org.codehaus.groovy.ast.expr.VariableExpression;
 import org.codehaus.groovy.ast.stmt.BlockStatement;
 import org.codehaus.groovy.ast.stmt.ExpressionStatement;
-import org.codehaus.groovy.ast.stmt.Statement;
 import org.codehaus.groovy.control.SourceUnit;
 import org.codehaus.groovy.control.io.ReaderSource;
 import org.codehaus.groovy.transform.ASTTransformation;
@@ -88,7 +87,8 @@ final class ResolveDependencyCoordinatesTransformationTests {
 
 	@Test
 	void transformationOfAnnotationOnImport() {
-		this.moduleNode.addImport(null, null, Arrays.asList(this.grabAnnotation));
+		ClassNode classNode = new ClassNode("Test", 0, new ClassNode(Object.class));
+		this.moduleNode.addImport("alias", classNode, Arrays.asList(this.grabAnnotation));
 		assertGrabAnnotationHasBeenTransformed();
 	}
 
@@ -101,14 +101,16 @@ final class ResolveDependencyCoordinatesTransformationTests {
 
 	@Test
 	void transformationOfAnnotationOnStaticImport() {
-		this.moduleNode.addStaticImport(null, null, null, Arrays.asList(this.grabAnnotation));
+		ClassNode classNode = new ClassNode("Test", 0, new ClassNode(Object.class));
+		this.moduleNode.addStaticImport(classNode, "field", "alias", Arrays.asList(this.grabAnnotation));
 
 		assertGrabAnnotationHasBeenTransformed();
 	}
 
 	@Test
 	void transformationOfAnnotationOnStaticStarImport() {
-		this.moduleNode.addStaticStarImport(null, null, Arrays.asList(this.grabAnnotation));
+		ClassNode classNode = new ClassNode("Test", 0, new ClassNode(Object.class));
+		this.moduleNode.addStaticStarImport("test", classNode, Arrays.asList(this.grabAnnotation));
 
 		assertGrabAnnotationHasBeenTransformed();
 	}
@@ -197,8 +199,8 @@ final class ResolveDependencyCoordinatesTransformationTests {
 				new ConstantExpression("test"));
 		declarationExpression.addAnnotation(this.grabAnnotation);
 
-		BlockStatement code = new BlockStatement(
-				Arrays.asList((Statement) new ExpressionStatement(declarationExpression)), new VariableScope());
+		BlockStatement code = new BlockStatement(Arrays.asList(new ExpressionStatement(declarationExpression)),
+				new VariableScope());
 
 		MethodNode methodNode = new MethodNode("test", 0, new ClassNode(Void.class), new Parameter[0], new ClassNode[0],
 				code);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,6 +64,7 @@ import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.config.annotation.web.WebSecurityConfigurer;
 import org.springframework.security.config.annotation.web.builders.WebSecurity;
+import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.servlet.DispatcherServlet;
@@ -158,18 +159,23 @@ public class CloudFoundryActuatorAutoConfiguration {
 	 * specific paths. The Cloud foundry endpoints are protected by their own security
 	 * interceptor.
 	 */
-	@ConditionalOnClass(WebSecurity.class)
-	@Order(SecurityProperties.IGNORED_ORDER)
+	@ConditionalOnClass({ WebSecurityCustomizer.class, WebSecurity.class })
 	@Configuration(proxyBeanMethods = false)
-	public static class IgnoredPathsWebSecurityConfigurer implements WebSecurityConfigurer<WebSecurity> {
+	public static class IgnoredCloudFoundryPathsWebSecurityConfiguration {
 
-		@Override
-		public void init(WebSecurity builder) throws Exception {
-			builder.ignoring().requestMatchers(new AntPathRequestMatcher("/cloudfoundryapplication/**"));
+		@Bean
+		IgnoredCloudFoundryPathsWebSecurityCustomizer ignoreCloudFoundryPathsWebSecurityCustomizer() {
+			return new IgnoredCloudFoundryPathsWebSecurityCustomizer();
 		}
 
+	}
+
+	@Order(SecurityProperties.IGNORED_ORDER)
+	static class IgnoredCloudFoundryPathsWebSecurityCustomizer implements WebSecurityCustomizer {
+
 		@Override
-		public void configure(WebSecurity builder) throws Exception {
+		public void customize(WebSecurity web) {
+			web.ignoring().requestMatchers(new AntPathRequestMatcher("/cloudfoundryapplication/**"));
 		}
 
 	}

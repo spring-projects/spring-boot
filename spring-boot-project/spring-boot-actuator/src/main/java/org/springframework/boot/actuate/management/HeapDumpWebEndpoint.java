@@ -27,8 +27,8 @@ import java.lang.reflect.Method;
 import java.nio.ByteBuffer;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.file.Files;
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -106,7 +106,7 @@ public class HeapDumpWebEndpoint {
 	}
 
 	private File createTempFile(boolean live) throws IOException {
-		String date = new SimpleDateFormat("yyyy-MM-dd-HH-mm").format(new Date());
+		String date = DateTimeFormatter.ofPattern("yyyy-MM-dd-HH-mm").format(LocalDateTime.now());
 		File file = File.createTempFile("heapdump" + date + (live ? "-live" : ""), ".hprof");
 		file.delete();
 		return file;

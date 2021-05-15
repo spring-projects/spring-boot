@@ -1,0 +1,17 @@
+plugins {
+	id "java-library"
+	id "org.springframework.boot.conventions"
+	id "org.springframework.boot.deployed"
+}
+
+description = "Spring Boot Configuration Metadata"
+
+dependencies {
+	api(platform(project(path: ":spring-boot-project:spring-boot-parent")))
+
+	implementation("com.vaadin.external.google:android-json")
+
+	testImplementation("org.junit.jupiter:junit-jupiter")
+	testImplementation("org.assertj:assertj-core")
+	testImplementation("org.springframework:spring-core")
+}

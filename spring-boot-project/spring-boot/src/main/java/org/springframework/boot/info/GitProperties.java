@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2018 the original author or authors.
+ * Copyright 2012-2019 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,9 @@
 
 package org.springframework.boot.info;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.time.Instant;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Properties;
 
 /**
@@ -108,11 +108,11 @@ public class GitProperties extends InfoProperties {
 		if (epoch != null) {
 			return String.valueOf(epoch);
 		}
-		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+		DateTimeFormatter format = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ssZ");
 		try {
-			return String.valueOf(format.parse(s).getTime());
+			return String.valueOf(format.parse(s, Instant::from).toEpochMilli());
 		}
-		catch (ParseException ex) {
+		catch (DateTimeParseException ex) {
 			return s;
 		}
 	}

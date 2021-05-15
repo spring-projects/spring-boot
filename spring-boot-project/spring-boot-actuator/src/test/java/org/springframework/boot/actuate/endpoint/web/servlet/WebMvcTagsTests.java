@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,10 +52,32 @@ class WebMvcTagsTests {
 
 	@Test
 	void uriTagValueIsBestMatchingPatternWhenAvailable() {
-		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/spring");
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/spring/");
 		this.response.setStatus(301);
 		Tag tag = WebMvcTags.uri(this.request, this.response);
+		assertThat(tag.getValue()).isEqualTo("/spring/");
+	}
+
+	@Test
+	void uriTagValueIsRootWhenBestMatchingPatternIsEmpty() {
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "");
+		this.response.setStatus(301);
+		Tag tag = WebMvcTags.uri(this.request, this.response);
+		assertThat(tag.getValue()).isEqualTo("root");
+	}
+
+	@Test
+	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashRemoveTrailingSlash() {
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/spring/");
+		Tag tag = WebMvcTags.uri(this.request, this.response, true);
 		assertThat(tag.getValue()).isEqualTo("/spring");
+	}
+
+	@Test
+	void uriTagValueWithBestMatchingPatternAndIgnoreTrailingSlashKeepSingleSlash() {
+		this.request.setAttribute(HandlerMapping.BEST_MATCHING_PATTERN_ATTRIBUTE, "/");
+		Tag tag = WebMvcTags.uri(this.request, this.response, true);
+		assertThat(tag.getValue()).isEqualTo("/");
 	}
 
 	@Test
@@ -137,10 +159,24 @@ class WebMvcTagsTests {
 	}
 
 	@Test
+	void outcomeTagIsClientErrorWhenResponseIsNonStandardInClientSeries() {
+		this.response.setStatus(490);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("CLIENT_ERROR");
+	}
+
+	@Test
 	void outcomeTagIsServerErrorWhenResponseIs5xx() {
 		this.response.setStatus(500);
 		Tag tag = WebMvcTags.outcome(this.response);
 		assertThat(tag.getValue()).isEqualTo("SERVER_ERROR");
+	}
+
+	@Test
+	void outcomeTagIsUnknownWhenResponseStatusIsInUnknownSeries() {
+		this.response.setStatus(701);
+		Tag tag = WebMvcTags.outcome(this.response);
+		assertThat(tag.getValue()).isEqualTo("UNKNOWN");
 	}
 
 }

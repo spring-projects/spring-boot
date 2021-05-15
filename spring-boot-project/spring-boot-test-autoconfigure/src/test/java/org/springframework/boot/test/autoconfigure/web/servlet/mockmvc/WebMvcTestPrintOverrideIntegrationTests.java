@@ -48,9 +48,9 @@ class WebMvcTestPrintOverrideIntegrationTests {
 	private MockMvc mvc;
 
 	@Test
-	void shouldNotPrint(CapturedOutput capturedOutput) throws Exception {
+	void shouldNotPrint(CapturedOutput output) throws Exception {
 		this.mvc.perform(get("/one")).andExpect(content().string("one")).andExpect(status().isOk());
-		assertThat(capturedOutput).doesNotContain("Request URI = /one");
+		assertThat(output).doesNotContain("Request URI = /one");
 	}
 
 }

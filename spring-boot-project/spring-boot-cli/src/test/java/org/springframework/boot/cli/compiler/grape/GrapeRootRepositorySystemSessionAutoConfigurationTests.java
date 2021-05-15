@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,11 +24,11 @@ import org.eclipse.aether.RepositorySystem;
 import org.eclipse.aether.internal.impl.SimpleLocalRepositoryManagerFactory;
 import org.eclipse.aether.repository.LocalRepository;
 import org.eclipse.aether.repository.LocalRepositoryManager;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
+import org.mockito.junit.jupiter.MockitoExtension;
 import org.mockito.stubbing.Answer;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +44,7 @@ import static org.mockito.Mockito.verify;
  *
  * @author Andy Wilkinson
  */
+@ExtendWith(MockitoExtension.class)
 class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 
 	private DefaultRepositorySystemSession session = MavenRepositorySystemUtils.newSession();
@@ -51,19 +52,8 @@ class GrapeRootRepositorySystemSessionAutoConfigurationTests {
 	@Mock
 	private RepositorySystem repositorySystem;
 
-	@BeforeEach
-	void setup() {
-		MockitoAnnotations.initMocks(this);
-	}
-
 	@Test
 	void noLocalRepositoryWhenNoGrapeRoot() {
-		given(this.repositorySystem.newLocalRepositoryManager(eq(this.session), any(LocalRepository.class)))
-				.willAnswer((invocation) -> {
-					LocalRepository localRepository = invocation.getArgument(1);
-					return new SimpleLocalRepositoryManagerFactory().newInstance(
-							GrapeRootRepositorySystemSessionAutoConfigurationTests.this.session, localRepository);
-				});
 		new GrapeRootRepositorySystemSessionAutoConfiguration().apply(this.session, this.repositorySystem);
 		verify(this.repositorySystem, never()).newLocalRepositoryManager(eq(this.session), any(LocalRepository.class));
 		assertThat(this.session.getLocalRepository()).isNull();

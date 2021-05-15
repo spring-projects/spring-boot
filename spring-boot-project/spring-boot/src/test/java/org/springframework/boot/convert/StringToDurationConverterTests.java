@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,72 +50,72 @@ class StringToDurationConverterTests {
 
 	@ConversionServiceTest
 	void convertWhenSimpleNanosShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10ns")).isEqualTo(Duration.ofNanos(10));
-		assertThat(convert(conversionService, "10NS")).isEqualTo(Duration.ofNanos(10));
-		assertThat(convert(conversionService, "+10ns")).isEqualTo(Duration.ofNanos(10));
-		assertThat(convert(conversionService, "-10ns")).isEqualTo(Duration.ofNanos(-10));
+		assertThat(convert(conversionService, "10ns")).hasNanos(10);
+		assertThat(convert(conversionService, "10NS")).hasNanos(10);
+		assertThat(convert(conversionService, "+10ns")).hasNanos(10);
+		assertThat(convert(conversionService, "-10ns")).hasNanos(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleMicrosShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10us")).isEqualTo(Duration.ofNanos(10000));
-		assertThat(convert(conversionService, "10US")).isEqualTo(Duration.ofNanos(10000));
-		assertThat(convert(conversionService, "+10us")).isEqualTo(Duration.ofNanos(10000));
-		assertThat(convert(conversionService, "-10us")).isEqualTo(Duration.ofNanos(-10000));
+		assertThat(convert(conversionService, "10us")).hasNanos(10000);
+		assertThat(convert(conversionService, "10US")).hasNanos(10000);
+		assertThat(convert(conversionService, "+10us")).hasNanos(10000);
+		assertThat(convert(conversionService, "-10us")).hasNanos(-10000);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleMillisShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10ms")).isEqualTo(Duration.ofMillis(10));
-		assertThat(convert(conversionService, "10MS")).isEqualTo(Duration.ofMillis(10));
-		assertThat(convert(conversionService, "+10ms")).isEqualTo(Duration.ofMillis(10));
-		assertThat(convert(conversionService, "-10ms")).isEqualTo(Duration.ofMillis(-10));
+		assertThat(convert(conversionService, "10ms")).hasMillis(10);
+		assertThat(convert(conversionService, "10MS")).hasMillis(10);
+		assertThat(convert(conversionService, "+10ms")).hasMillis(10);
+		assertThat(convert(conversionService, "-10ms")).hasMillis(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleSecondsShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10s")).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert(conversionService, "10S")).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert(conversionService, "+10s")).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert(conversionService, "-10s")).isEqualTo(Duration.ofSeconds(-10));
+		assertThat(convert(conversionService, "10s")).hasSeconds(10);
+		assertThat(convert(conversionService, "10S")).hasSeconds(10);
+		assertThat(convert(conversionService, "+10s")).hasSeconds(10);
+		assertThat(convert(conversionService, "-10s")).hasSeconds(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleMinutesShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10m")).isEqualTo(Duration.ofMinutes(10));
-		assertThat(convert(conversionService, "10M")).isEqualTo(Duration.ofMinutes(10));
-		assertThat(convert(conversionService, "+10m")).isEqualTo(Duration.ofMinutes(10));
-		assertThat(convert(conversionService, "-10m")).isEqualTo(Duration.ofMinutes(-10));
+		assertThat(convert(conversionService, "10m")).hasMinutes(10);
+		assertThat(convert(conversionService, "10M")).hasMinutes(10);
+		assertThat(convert(conversionService, "+10m")).hasMinutes(10);
+		assertThat(convert(conversionService, "-10m")).hasMinutes(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleHoursShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10h")).isEqualTo(Duration.ofHours(10));
-		assertThat(convert(conversionService, "10H")).isEqualTo(Duration.ofHours(10));
-		assertThat(convert(conversionService, "+10h")).isEqualTo(Duration.ofHours(10));
-		assertThat(convert(conversionService, "-10h")).isEqualTo(Duration.ofHours(-10));
+		assertThat(convert(conversionService, "10h")).hasHours(10);
+		assertThat(convert(conversionService, "10H")).hasHours(10);
+		assertThat(convert(conversionService, "+10h")).hasHours(10);
+		assertThat(convert(conversionService, "-10h")).hasHours(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleDaysShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10d")).isEqualTo(Duration.ofDays(10));
-		assertThat(convert(conversionService, "10D")).isEqualTo(Duration.ofDays(10));
-		assertThat(convert(conversionService, "+10d")).isEqualTo(Duration.ofDays(10));
-		assertThat(convert(conversionService, "-10d")).isEqualTo(Duration.ofDays(-10));
+		assertThat(convert(conversionService, "10d")).hasDays(10);
+		assertThat(convert(conversionService, "10D")).hasDays(10);
+		assertThat(convert(conversionService, "+10d")).hasDays(10);
+		assertThat(convert(conversionService, "-10d")).hasDays(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleWithoutSuffixShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10")).isEqualTo(Duration.ofMillis(10));
-		assertThat(convert(conversionService, "+10")).isEqualTo(Duration.ofMillis(10));
-		assertThat(convert(conversionService, "-10")).isEqualTo(Duration.ofMillis(-10));
+		assertThat(convert(conversionService, "10")).hasMillis(10);
+		assertThat(convert(conversionService, "+10")).hasMillis(10);
+		assertThat(convert(conversionService, "-10")).hasMillis(-10);
 	}
 
 	@ConversionServiceTest
 	void convertWhenSimpleWithoutSuffixButWithAnnotationShouldReturnDuration(ConversionService conversionService) {
-		assertThat(convert(conversionService, "10", ChronoUnit.SECONDS, null)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert(conversionService, "+10", ChronoUnit.SECONDS, null)).isEqualTo(Duration.ofSeconds(10));
-		assertThat(convert(conversionService, "-10", ChronoUnit.SECONDS, null)).isEqualTo(Duration.ofSeconds(-10));
+		assertThat(convert(conversionService, "10", ChronoUnit.SECONDS, null)).hasSeconds(10);
+		assertThat(convert(conversionService, "+10", ChronoUnit.SECONDS, null)).hasSeconds(10);
+		assertThat(convert(conversionService, "-10", ChronoUnit.SECONDS, null)).hasSeconds(-10);
 	}
 
 	@ConversionServiceTest

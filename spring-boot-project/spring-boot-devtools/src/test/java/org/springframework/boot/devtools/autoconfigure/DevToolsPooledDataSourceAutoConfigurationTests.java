@@ -20,16 +20,18 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.Duration;
 import java.util.Properties;
 
 import javax.sql.DataSource;
 
+import com.zaxxer.hikari.HikariDataSource;
+import com.zaxxer.hikari.HikariPoolMXBean;
 import org.apache.derby.jdbc.EmbeddedDriver;
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.junit.jupiter.api.condition.DisabledOnOs;
-import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -123,13 +125,17 @@ class DevToolsPooledDataSourceAutoConfigurationTests extends AbstractDevToolsDat
 	}
 
 	@Test
-	@DisabledOnOs(OS.WINDOWS)
 	void inMemoryDerbyIsShutdown() throws Exception {
 		ConfigurableApplicationContext context = getContext(
 				() -> createContext("org.apache.derby.jdbc.EmbeddedDriver", "jdbc:derby:memory:test;create=true",
 						DataSourceAutoConfiguration.class, DataSourceSpyConfiguration.class));
-		JdbcTemplate jdbc = new JdbcTemplate(context.getBean(DataSource.class));
+		HikariDataSource dataSource = context.getBean(HikariDataSource.class);
+		JdbcTemplate jdbc = new JdbcTemplate(dataSource);
 		jdbc.execute("SELECT 1 FROM SYSIBM.SYSDUMMY1");
+		HikariPoolMXBean pool = dataSource.getHikariPoolMXBean();
+		// Prevent a race between Hikari's initialization and Derby shutdown
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(pool::getIdleConnections,
+				(idle) -> idle == dataSource.getMinimumIdle());
 		context.close();
 		// Connect should fail as DB no longer exists
 		assertThatExceptionOfType(SQLException.class)

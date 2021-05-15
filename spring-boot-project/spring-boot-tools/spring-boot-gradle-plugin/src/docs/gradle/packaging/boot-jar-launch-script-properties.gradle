@@ -1,0 +1,16 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '{gradle-project-version}'
+}
+
+bootJar {
+	mainClass = 'com.example.ExampleApplication'
+}
+
+// tag::launch-script-properties[]
+bootJar {
+	launchScript {
+		properties 'logFilename': 'example-app.log'
+	}
+}
+// end::launch-script-properties[]

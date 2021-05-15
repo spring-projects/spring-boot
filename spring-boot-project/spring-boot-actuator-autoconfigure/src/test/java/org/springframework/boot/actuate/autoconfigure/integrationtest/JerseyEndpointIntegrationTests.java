@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -47,12 +47,12 @@ class JerseyEndpointIntegrationTests {
 
 	@Test
 	void linksAreProvidedToAllEndpointTypes() {
-		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class });
+		testJerseyEndpoints(new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class });
 	}
 
 	@Test
 	void actuatorEndpointsWhenUserProvidedResourceConfigBeanNotAvailable() {
-		testJerseyEndpoints(new Class[] { EndpointsConfiguration.class });
+		testJerseyEndpoints(new Class<?>[] { EndpointsConfiguration.class });
 	}
 
 	protected void testJerseyEndpoints(Class<?>[] userConfigurations) {

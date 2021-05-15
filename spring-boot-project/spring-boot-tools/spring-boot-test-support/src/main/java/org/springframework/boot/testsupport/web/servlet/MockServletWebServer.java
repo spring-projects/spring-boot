@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,7 +25,6 @@ import java.util.Map;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterRegistration;
-import javax.servlet.RequestDispatcher;
 import javax.servlet.Servlet;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
@@ -34,6 +33,7 @@ import javax.servlet.ServletRegistration;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.lenient;
 import static org.mockito.Mockito.mock;
 
 /**
@@ -66,27 +66,26 @@ public abstract class MockServletWebServer {
 	private void initialize() {
 		try {
 			this.servletContext = mock(ServletContext.class);
-			given(this.servletContext.addServlet(anyString(), any(Servlet.class))).willAnswer((invocation) -> {
+			lenient().doAnswer((invocation) -> {
 				RegisteredServlet registeredServlet = new RegisteredServlet(invocation.getArgument(1));
 				MockServletWebServer.this.registeredServlets.add(registeredServlet);
 				return registeredServlet.getRegistration();
-			});
-			given(this.servletContext.addFilter(anyString(), any(Filter.class))).willAnswer((invocation) -> {
+			}).when(this.servletContext).addServlet(anyString(), any(Servlet.class));
+			lenient().doAnswer((invocation) -> {
 				RegisteredFilter registeredFilter = new RegisteredFilter(invocation.getArgument(1));
 				MockServletWebServer.this.registeredFilters.add(registeredFilter);
 				return registeredFilter.getRegistration();
-			});
+			}).when(this.servletContext).addFilter(anyString(), any(Filter.class));
 			final Map<String, String> initParameters = new HashMap<>();
-			given(this.servletContext.setInitParameter(anyString(), anyString())).will((invocation) -> {
+			lenient().doAnswer((invocation) -> {
 				initParameters.put(invocation.getArgument(0), invocation.getArgument(1));
 				return null;
-			});
+			}).when(this.servletContext).setInitParameter(anyString(), anyString());
 			given(this.servletContext.getInitParameterNames())
 					.willReturn(Collections.enumeration(initParameters.keySet()));
-			given(this.servletContext.getInitParameter(anyString()))
-					.willAnswer((invocation) -> initParameters.get(invocation.getArgument(0)));
+			lenient().doAnswer((invocation) -> initParameters.get(invocation.getArgument(0))).when(this.servletContext)
+					.getInitParameter(anyString());
 			given(this.servletContext.getAttributeNames()).willReturn(Collections.emptyEnumeration());
-			given(this.servletContext.getNamedDispatcher("default")).willReturn(mock(RequestDispatcher.class));
 			for (Initializer initializer : this.initializers) {
 				initializer.onStartup(this.servletContext);
 			}

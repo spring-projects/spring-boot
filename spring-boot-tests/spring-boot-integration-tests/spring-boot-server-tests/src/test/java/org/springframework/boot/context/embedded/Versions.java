@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,43 +16,28 @@
 
 package org.springframework.boot.context.embedded;
 
-import java.io.File;
-import java.io.FileReader;
-
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathFactory;
-
-import org.xml.sax.InputSource;
-
-import org.springframework.util.StringUtils;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.util.Properties;
 
 /**
- * Provides access to dependency versions by querying the project's pom.
+ * Provides access to the current Boot version by referring to {@code gradle.properties}.
  *
  * @author Andy Wilkinson
  */
 final class Versions {
 
-	private static final String PROPERTIES = "/*[local-name()='project']/*[local-name()='properties']";
-
 	private Versions() {
 	}
 
 	static String getBootVersion() {
-		String baseDir = StringUtils.cleanPath(new File(".").getAbsolutePath());
-		String mainBaseDir = evaluateExpression("pom.xml", PROPERTIES + "/*[local-name()='main.basedir']/text()");
-		mainBaseDir = mainBaseDir.replace("${basedir}", baseDir);
-		return evaluateExpression(mainBaseDir + "/pom.xml", PROPERTIES + "/*[local-name()='revision']/text()");
-	}
-
-	private static String evaluateExpression(String file, String expression) {
-		try {
-			InputSource source = new InputSource(new FileReader(file));
-			XPath xpath = XPathFactory.newInstance().newXPath();
-			return xpath.compile(expression).evaluate(source);
+		Properties gradleProperties = new Properties();
+		try (FileInputStream input = new FileInputStream("../../../gradle.properties")) {
+			gradleProperties.load(input);
+			return gradleProperties.getProperty("version");
 		}
-		catch (Exception ex) {
-			throw new IllegalStateException("Failed to evaluate expression", ex);
+		catch (IOException ex) {
+			throw new RuntimeException(ex);
 		}
 	}
 

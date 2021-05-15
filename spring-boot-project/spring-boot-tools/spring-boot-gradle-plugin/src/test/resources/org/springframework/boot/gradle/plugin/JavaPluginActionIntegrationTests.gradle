@@ -8,14 +8,30 @@ if (project.hasProperty('applyJavaPlugin')) {
 
 task('taskExists') {
 	doFirst {
-		println "$taskName exists = ${tasks.findByName(taskName) != null}"
+		println "${taskName} exists = ${tasks.findByName(taskName) != null}"
 	}
 }
 
 task('javaCompileEncoding') {
 	doFirst {
 		tasks.withType(JavaCompile) {
-			println "$name = ${options.encoding}"
+			println "${name} = ${options.encoding}"
+		}
+	}
+}
+
+task('configurationExists') {
+	doFirst {
+		println "${configurationName} exists = ${configurations.findByName(configurationName) != null}"
+	}
+}
+
+task('configurationAttributes') {
+	doFirst {
+		def attributes = configurations.findByName(configurationName).attributes
+		println "${attributes.keySet().size()} ${configurationName} attributes:"		
+		attributes.keySet().each { attribute ->
+			println "    ${attribute}: ${attributes.getAttribute(attribute)}" 
 		}
 	}
 }

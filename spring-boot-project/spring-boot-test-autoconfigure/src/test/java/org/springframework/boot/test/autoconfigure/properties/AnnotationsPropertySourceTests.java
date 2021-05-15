@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2020 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,8 +19,13 @@ package org.springframework.boot.test.autoconfigure.properties;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level1;
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.DeeplyNestedAnnotations.Level2;
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.EnclosingClass.PropertyMappedAnnotationOnEnclosingClass;
+import org.springframework.boot.test.autoconfigure.properties.AnnotationsPropertySourceTests.NestedAnnotations.Entry;
 import org.springframework.core.annotation.AliasFor;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -153,6 +158,14 @@ class AnnotationsPropertySourceTests {
 	}
 
 	@Test
+	void typeLevelAnnotationOnEnclosingClass() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertyMappedAnnotationOnEnclosingClass.class);
+		assertThat(source.getPropertyNames()).containsExactly("value");
+		assertThat(source.getProperty("value")).isEqualTo("abc");
+	}
+
+	@Test
 	void aliasedPropertyMappedAttributeOnSuperClass() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(
 				AliasedPropertyMappedAnnotationOnSuperClass.class);
@@ -170,6 +183,26 @@ class AnnotationsPropertySourceTests {
 	void enumValueNotMapped() {
 		AnnotationsPropertySource source = new AnnotationsPropertySource(EnumValueNotMapped.class);
 		assertThat(source.containsProperty("testenum.value")).isFalse();
+	}
+
+	@Test
+	void nestedAnnotationsMapped() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(PropertyMappedWithNestedAnnotations.class);
+		assertThat(source.getProperty("testnested")).isNull();
+		assertThat(source.getProperty("testnested.entries[0]")).isNull();
+		assertThat(source.getProperty("testnested.entries[0].value")).isEqualTo("one");
+		assertThat(source.getProperty("testnested.entries[1]")).isNull();
+		assertThat(source.getProperty("testnested.entries[1].value")).isEqualTo("two");
+	}
+
+	@Test
+	void deeplyNestedAnnotationsMapped() {
+		AnnotationsPropertySource source = new AnnotationsPropertySource(
+				PropertyMappedWithDeeplyNestedAnnotations.class);
+		assertThat(source.getProperty("testdeeplynested")).isNull();
+		assertThat(source.getProperty("testdeeplynested.level1")).isNull();
+		assertThat(source.getProperty("testdeeplynested.level1.level2")).isNull();
+		assertThat(source.getProperty("testdeeplynested.level1.level2.value")).isEqualTo("level2");
 	}
 
 	static class NoAnnotation {
@@ -363,6 +396,15 @@ class AnnotationsPropertySourceTests {
 
 	}
 
+	@TypeLevelAnnotation("abc")
+	static class EnclosingClass {
+
+		class PropertyMappedAnnotationOnEnclosingClass {
+
+		}
+
+	}
+
 	static class AliasedPropertyMappedAnnotationOnSuperClass extends PropertyMappedAttributeWithAnAlias {
 
 	}
@@ -393,6 +435,63 @@ class AnnotationsPropertySourceTests {
 		ONE,
 
 		TWO
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@PropertyMapping("testnested")
+	@interface NestedAnnotations {
+
+		Entry[] entries();
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@interface Entry {
+
+			String value();
+
+		}
+
+	}
+
+	@NestedAnnotations(entries = { @Entry("one"), @Entry("two") })
+	static class PropertyMappedWithNestedAnnotations {
+
+	}
+
+	@Retention(RetentionPolicy.RUNTIME)
+	@PropertyMapping("testdeeplynested")
+	@interface DeeplyNestedAnnotations {
+
+		Level1 level1();
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@interface Level1 {
+
+			Level2 level2();
+
+		}
+
+		@Retention(RetentionPolicy.RUNTIME)
+		@interface Level2 {
+
+			String value();
+
+		}
+
+	}
+
+	@DeeplyNestedAnnotations(level1 = @Level1(level2 = @Level2("level2")))
+	static class PropertyMappedWithDeeplyNestedAnnotations {
+
+	}
+
+	@TypeLevelAnnotation("outer")
+	static class OuterWithTypeLevel {
+
+		@Nested
+		static class NestedClass {
+
+		}
 
 	}
 
