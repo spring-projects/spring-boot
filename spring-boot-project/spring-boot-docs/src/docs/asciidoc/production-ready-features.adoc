@@ -135,6 +135,7 @@ If your application is a web application (Spring MVC, Spring WebFlux, or Jersey)
 
 | `heapdump`
 | Returns an `hprof` heap dump file.
+  Requires a HotSpot JVM.
 
 | `jolokia`
 | Exposes JMX beans over HTTP (when Jolokia is on the classpath, not available for WebFlux).
