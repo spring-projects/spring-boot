@@ -150,6 +150,7 @@ import org.springframework.util.StringUtils;
  * @author Madhura Bhave
  * @author Brian Clozel
  * @author Ethan Rubinson
+ * @author Nguyen Bao Sach
  * @since 1.0.0
  * @see #run(Class, String[])
  * @see #run(Class[], String[])
@@ -802,21 +803,19 @@ public class SpringApplication {
 	private void handleRunFailure(ConfigurableApplicationContext context, Throwable exception,
 			SpringApplicationRunListeners listeners) {
 		try {
-			try {
-				handleExitCode(context, exception);
-				if (listeners != null) {
-					listeners.failed(context, exception);
-				}
-			}
-			finally {
-				reportFailure(getExceptionReporters(context), exception);
-				if (context != null) {
-					context.close();
-				}
+			handleExitCode(context, exception);
+			if (listeners != null) {
+				listeners.failed(context, exception);
 			}
 		}
 		catch (Exception ex) {
 			logger.warn("Unable to close ApplicationContext", ex);
+		}
+		finally {
+			reportFailure(getExceptionReporters(context), exception);
+			if (context != null) {
+				context.close();
+			}
 		}
 		ReflectionUtils.rethrowRuntimeException(exception);
 	}
@@ -1367,23 +1366,21 @@ public class SpringApplication {
 		Assert.notNull(context, "Context must not be null");
 		int exitCode = 0;
 		try {
-			try {
-				ExitCodeGenerators generators = new ExitCodeGenerators();
-				Collection<ExitCodeGenerator> beans = context.getBeansOfType(ExitCodeGenerator.class).values();
-				generators.addAll(exitCodeGenerators);
-				generators.addAll(beans);
-				exitCode = generators.getExitCode();
-				if (exitCode != 0) {
-					context.publishEvent(new ExitCodeEvent(context, exitCode));
-				}
-			}
-			finally {
-				close(context);
+			ExitCodeGenerators generators = new ExitCodeGenerators();
+			Collection<ExitCodeGenerator> beans = context.getBeansOfType(ExitCodeGenerator.class).values();
+			generators.addAll(exitCodeGenerators);
+			generators.addAll(beans);
+			exitCode = generators.getExitCode();
+			if (exitCode != 0) {
+				context.publishEvent(new ExitCodeEvent(context, exitCode));
 			}
 		}
 		catch (Exception ex) {
 			ex.printStackTrace();
 			exitCode = (exitCode != 0) ? exitCode : 1;
+		}
+		finally {
+			close(context);
 		}
 		return exitCode;
 	}
