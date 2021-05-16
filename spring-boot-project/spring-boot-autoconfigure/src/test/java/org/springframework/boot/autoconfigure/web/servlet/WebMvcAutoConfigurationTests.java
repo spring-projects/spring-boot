@@ -847,7 +847,6 @@ class WebMvcAutoConfigurationTests {
 
 	@Test
 	@Deprecated
-	@SuppressWarnings("deprecation")
 	void useSuffixPatternMatch() {
 		this.contextRunner.withPropertyValues("spring.mvc.pathmatch.use-suffix-pattern:true",
 				"spring.mvc.pathmatch.use-registered-suffix-pattern:true").run((context) -> {
