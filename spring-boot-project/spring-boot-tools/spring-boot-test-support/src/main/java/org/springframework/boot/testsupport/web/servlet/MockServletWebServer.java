@@ -30,6 +30,9 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRegistration;
 
+import org.mockito.Answers;
+import org.mockito.Mockito;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.given;
@@ -65,7 +68,8 @@ public abstract class MockServletWebServer {
 
 	private void initialize() {
 		try {
-			this.servletContext = mock(ServletContext.class);
+			this.servletContext = mock(ServletContext.class,
+					Mockito.withSettings().defaultAnswer(Answers.RETURNS_DEEP_STUBS));
 			lenient().doAnswer((invocation) -> {
 				RegisteredServlet registeredServlet = new RegisteredServlet(invocation.getArgument(1));
 				MockServletWebServer.this.registeredServlets.add(registeredServlet);
