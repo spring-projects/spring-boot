@@ -19,6 +19,7 @@ package org.springframework.boot.web.servlet.server;
 import java.io.File;
 import java.net.URL;
 import java.nio.charset.Charset;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -37,6 +38,7 @@ import javax.servlet.SessionCookieConfig;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.web.server.AbstractConfigurableWebServerFactory;
 import org.springframework.boot.web.server.MimeMappings;
 import org.springframework.boot.web.servlet.ServletContextInitializer;
@@ -317,27 +319,14 @@ public abstract class AbstractServletWebServerFactory extends AbstractConfigurab
 
 		private void configureSessionCookie(SessionCookieConfig config) {
 			Session.Cookie cookie = this.session.getCookie();
-			if (cookie.getName() != null) {
-				config.setName(cookie.getName());
-			}
-			if (cookie.getDomain() != null) {
-				config.setDomain(cookie.getDomain());
-			}
-			if (cookie.getPath() != null) {
-				config.setPath(cookie.getPath());
-			}
-			if (cookie.getComment() != null) {
-				config.setComment(cookie.getComment());
-			}
-			if (cookie.getHttpOnly() != null) {
-				config.setHttpOnly(cookie.getHttpOnly());
-			}
-			if (cookie.getSecure() != null) {
-				config.setSecure(cookie.getSecure());
-			}
-			if (cookie.getMaxAge() != null) {
-				config.setMaxAge((int) cookie.getMaxAge().getSeconds());
-			}
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(cookie::getName).to(config::setName);
+			map.from(cookie::getDomain).to(config::setDomain);
+			map.from(cookie::getPath).to(config::setPath);
+			map.from(cookie::getComment).to(config::setComment);
+			map.from(cookie::getHttpOnly).to(config::setHttpOnly);
+			map.from(cookie::getSecure).to(config::setSecure);
+			map.from(cookie::getMaxAge).asInt(Duration::getSeconds).to(config::setMaxAge);
 		}
 
 		private Set<javax.servlet.SessionTrackingMode> unwrap(Set<Session.SessionTrackingMode> modes) {
