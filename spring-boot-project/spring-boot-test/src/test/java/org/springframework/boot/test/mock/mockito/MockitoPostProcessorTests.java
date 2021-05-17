@@ -303,7 +303,7 @@ class MockitoPostProcessorTests {
 			return true;
 		}
 
-	};
+	}
 
 	static class FactoryBeanRegisteringPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
