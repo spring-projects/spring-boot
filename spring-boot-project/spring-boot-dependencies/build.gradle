@@ -1017,7 +1017,7 @@ bom {
 			]
 		}
 	}
-	library("Kotlin Coroutines", "1.4.3") {
+	library("Kotlin Coroutines", "1.5.0") {
 		group("org.jetbrains.kotlinx") {
 			imports = [
 				"kotlinx-coroutines-bom"
