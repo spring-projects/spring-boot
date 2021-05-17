@@ -828,7 +828,7 @@ bom {
 			]
 		}
 	}
-	library("JBoss Transaction SPI", "7.6.0.Final") {
+	library("JBoss Transaction SPI", "7.6.1.Final") {
 		group("org.jboss") {
 			modules = [
 				"jboss-transaction-spi"
