@@ -357,7 +357,7 @@ bom {
 			]
 		}
 	}
-	library("Groovy", "3.0.7") {
+	library("Groovy", "3.0.8") {
 		group("org.codehaus.groovy") {
 			imports = [
 				"groovy-bom"
