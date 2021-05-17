@@ -297,6 +297,8 @@ class ConfigDataEnvironment {
 				binder.bind(Profiles.INCLUDE_PROFILES, STRING_LIST).ifBound((includes) -> {
 					if (!contributor.isActive(activationContext)) {
 						InactiveConfigDataAccessException.throwIfPropertyFound(contributor, Profiles.INCLUDE_PROFILES);
+						InactiveConfigDataAccessException.throwIfPropertyFound(contributor,
+								Profiles.INCLUDE_PROFILES.append("[0]"));
 					}
 					result.addAll(includes);
 				});
