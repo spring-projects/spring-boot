@@ -889,7 +889,7 @@ bom {
 			]
 		}
 	}
-	library("JUnit Jupiter", "5.7.1") {
+	library("JUnit Jupiter", "5.7.2") {
 		group("org.junit") {
 			imports = [
 				"junit-bom"
