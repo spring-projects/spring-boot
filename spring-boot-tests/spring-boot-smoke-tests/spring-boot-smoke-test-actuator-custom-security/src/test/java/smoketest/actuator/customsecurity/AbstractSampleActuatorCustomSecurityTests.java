@@ -46,9 +46,6 @@ abstract class AbstractSampleActuatorCustomSecurityTests {
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = restTemplate().getForEntity(getPath() + "/", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("error")).isEqualTo("Unauthorized");
 		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 

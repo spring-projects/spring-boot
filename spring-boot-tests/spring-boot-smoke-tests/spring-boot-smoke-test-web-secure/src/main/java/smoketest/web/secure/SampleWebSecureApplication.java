@@ -66,8 +66,10 @@ public class SampleWebSecureApplication implements WebMvcConfigurer {
 		SecurityFilterChain configure(HttpSecurity http) throws Exception {
 			http.authorizeRequests((requests) -> {
 				requests.requestMatchers(PathRequest.toStaticResources().atCommonLocations()).permitAll();
+				requests.antMatchers("/public/**").permitAll();
 				requests.anyRequest().fullyAuthenticated();
 			});
+			http.httpBasic();
 			http.formLogin((form) -> {
 				form.loginPage("/login");
 				form.failureUrl("/login?error").permitAll();

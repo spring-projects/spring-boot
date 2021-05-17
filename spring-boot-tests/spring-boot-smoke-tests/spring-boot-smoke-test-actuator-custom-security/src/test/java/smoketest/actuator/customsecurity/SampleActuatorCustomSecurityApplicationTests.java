@@ -66,9 +66,7 @@ class SampleActuatorCustomSecurityApplicationTests extends AbstractSampleActuato
 		@SuppressWarnings("rawtypes")
 		ResponseEntity<Map> entity = restTemplate().getForEntity(getPath() + "/foo", Map.class);
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.INTERNAL_SERVER_ERROR);
-		@SuppressWarnings("unchecked")
-		Map<String, Object> body = entity.getBody();
-		assertThat((String) body.get("message")).contains("Expected exception in controller");
+		assertThat(entity.getBody()).isNull();
 	}
 
 	@Test

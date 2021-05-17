@@ -61,8 +61,6 @@ class ServletPathSampleActuatorApplicationTests {
 	void testHomeIsSecure() {
 		ResponseEntity<Map<String, Object>> entity = asMapEntity(this.restTemplate.getForEntity("/spring/", Map.class));
 		assertThat(entity.getStatusCode()).isEqualTo(HttpStatus.UNAUTHORIZED);
-		Map<String, Object> body = entity.getBody();
-		assertThat(body.get("error")).isEqualTo("Unauthorized");
 		assertThat(entity.getHeaders()).doesNotContainKey("Set-Cookie");
 	}
 
