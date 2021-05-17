@@ -16,7 +16,7 @@
 
 package smoketest.data.couchbase;
 
-import com.couchbase.client.core.error.FeatureNotAvailableException;
+import com.couchbase.client.core.error.AmbiguousTimeoutException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
@@ -46,10 +46,10 @@ class SampleCouchbaseApplicationTests {
 	private boolean serverNotRunning(RuntimeException ex) {
 		NestedCheckedException nested = new NestedCheckedException("failed", ex) {
 		};
-		if (nested.contains(FeatureNotAvailableException.class)) {
+		if (nested.contains(AmbiguousTimeoutException.class)) {
 			Throwable root = nested.getRootCause();
 			// This is not ideal, we should have a better way to know what is going on
-			if (root.getMessage().contains("The cluster does not support cluster-level queries")) {
+			if (root.getMessage().contains("QueryRequest, Reason: TIMEOUT")) {
 				return true;
 			}
 		}
