@@ -944,7 +944,7 @@ bom {
 			]
 		}
 	}
-	library("Json-smart", "2.4.2") {
+	library("Json-smart", "2.4.7") {
 		group("net.minidev") {
 			modules = [
 				"json-smart"
