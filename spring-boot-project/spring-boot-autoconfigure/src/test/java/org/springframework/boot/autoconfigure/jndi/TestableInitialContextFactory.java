@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,7 +35,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 	private static TestableContext context;
 
 	@Override
-	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+	public Context getInitialContext(Hashtable<?, ?> environment) {
 		return getContext();
 	}
 
@@ -78,7 +78,7 @@ public class TestableInitialContextFactory implements InitialContextFactory {
 		}
 
 		@Override
-		public Object lookup(String name) throws NamingException {
+		public Object lookup(String name) {
 			return this.bindings.get(name);
 		}
 

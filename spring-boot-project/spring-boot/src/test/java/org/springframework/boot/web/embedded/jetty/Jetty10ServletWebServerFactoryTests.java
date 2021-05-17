@@ -47,7 +47,7 @@ public class Jetty10ServletWebServerFactoryTests extends JettyServletWebServerFa
 	@Test
 	@Override
 	@Disabled("Jetty 10 adds methods to Configuration that we can't mock while compiling against 9")
-	protected void jettyConfigurations() throws Exception {
+	protected void jettyConfigurations() {
 	}
 
 }

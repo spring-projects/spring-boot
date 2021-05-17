@@ -24,7 +24,6 @@ import org.apache.activemq.ActiveMQConnectionFactory;
 import org.junit.jupiter.api.Test;
 import org.messaginghub.pooled.jms.JmsPoolConnectionFactory;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jms.activemq.ActiveMQAutoConfiguration;
@@ -440,7 +439,7 @@ class JmsAutoConfigurationTests {
 	static class TestConfiguration4 implements BeanPostProcessor {
 
 		@Override
-		public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+		public Object postProcessAfterInitialization(Object bean, String beanName) {
 			if (bean.getClass().isAssignableFrom(JmsTemplate.class)) {
 				JmsTemplate jmsTemplate = (JmsTemplate) bean;
 				jmsTemplate.setPubSubDomain(true);
@@ -449,7 +448,7 @@ class JmsAutoConfigurationTests {
 		}
 
 		@Override
-		public Object postProcessBeforeInitialization(Object bean, String beanName) throws BeansException {
+		public Object postProcessBeforeInitialization(Object bean, String beanName) {
 			return bean;
 		}
 

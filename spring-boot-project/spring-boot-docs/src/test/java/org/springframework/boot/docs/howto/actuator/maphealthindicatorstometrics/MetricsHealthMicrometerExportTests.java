@@ -47,7 +47,7 @@ class MetricsHealthMicrometerExportTests {
 	private MeterRegistry registry;
 
 	@Test
-	void registryExportsHealth() throws Exception {
+	void registryExportsHealth() {
 		Gauge gauge = this.registry.get("health").gauge();
 		assertThat(gauge.value()).isEqualTo(2);
 	}

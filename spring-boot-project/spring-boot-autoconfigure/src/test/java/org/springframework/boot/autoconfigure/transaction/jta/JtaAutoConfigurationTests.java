@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.transaction.jta;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 
 import javax.jms.ConnectionFactory;
@@ -115,7 +114,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	void defaultAtomikosTransactionManagerName(@TempDir Path dir) throws IOException {
+	void defaultAtomikosTransactionManagerName(@TempDir Path dir) {
 		this.context = new AnnotationConfigApplicationContext();
 		File logs = new File(dir.toFile(), "jta");
 		TestPropertyValues.of("spring.jta.logDir:" + logs.getAbsolutePath()).applyTo(this.context);

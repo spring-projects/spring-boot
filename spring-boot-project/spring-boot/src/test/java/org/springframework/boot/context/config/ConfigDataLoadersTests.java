@@ -88,7 +88,7 @@ class ConfigDataLoadersTests {
 	}
 
 	@Test
-	void loadWhenMultipleLoadersSupportLocationThrowsException() throws Exception {
+	void loadWhenMultipleLoadersSupportLocationThrowsException() {
 		TestConfigDataResource location = new TestConfigDataResource("test");
 		ConfigDataLoaders loaders = new ConfigDataLoaders(this.logFactory, this.bootstrapContext,
 				Arrays.asList(LoggingConfigDataLoader.class.getName(), TestConfigDataLoader.class.getName()));

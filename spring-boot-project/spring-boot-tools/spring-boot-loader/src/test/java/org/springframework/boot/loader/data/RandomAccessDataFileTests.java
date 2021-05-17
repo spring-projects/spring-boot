@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -96,23 +96,23 @@ class RandomAccessDataFileTests {
 	}
 
 	@Test
-	void readWhenOffsetIsBeyondEOFShouldThrowException() throws Exception {
+	void readWhenOffsetIsBeyondEOFShouldThrowException() {
 		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> this.file.read(257, 0));
 	}
 
 	@Test
-	void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException() throws Exception {
+	void readWhenOffsetIsBeyondEndOfSubsectionShouldThrowException() {
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
 		assertThatExceptionOfType(IndexOutOfBoundsException.class).isThrownBy(() -> subsection.read(11, 0));
 	}
 
 	@Test
-	void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException() throws Exception {
+	void readWhenOffsetPlusLengthGreaterThanEOFShouldThrowException() {
 		assertThatExceptionOfType(EOFException.class).isThrownBy(() -> this.file.read(256, 1));
 	}
 
 	@Test
-	void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException() throws Exception {
+	void readWhenOffsetPlusLengthGreaterThanEndOfSubsectionShouldThrowException() {
 		RandomAccessData subsection = this.file.getSubsection(0, 10);
 		assertThatExceptionOfType(EOFException.class).isThrownBy(() -> subsection.read(10, 1));
 	}
@@ -125,13 +125,13 @@ class RandomAccessDataFileTests {
 	}
 
 	@Test
-	void inputStreamReadNullBytes() throws Exception {
+	void inputStreamReadNullBytes() {
 		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null))
 				.withMessage("Bytes must not be null");
 	}
 
 	@Test
-	void inputStreamReadNullBytesWithOffset() throws Exception {
+	void inputStreamReadNullBytesWithOffset() {
 		assertThatNullPointerException().isThrownBy(() -> this.inputStream.read(null, 0, 1))
 				.withMessage("Bytes must not be null");
 	}

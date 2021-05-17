@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,7 +21,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import org.mockito.ArgumentCaptor;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.AbstractBeanDefinition;
@@ -106,11 +105,11 @@ class SharedMetadataReaderFactoryContextInitializerTests {
 	static class PostProcessor implements BeanDefinitionRegistryPostProcessor {
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 		}
 
 		@Override
-		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) throws BeansException {
+		public void postProcessBeanDefinitionRegistry(BeanDefinitionRegistry registry) {
 			for (String name : registry.getBeanDefinitionNames()) {
 				BeanDefinition definition = registry.getBeanDefinition(name);
 				definition.setAttribute("seen", true);

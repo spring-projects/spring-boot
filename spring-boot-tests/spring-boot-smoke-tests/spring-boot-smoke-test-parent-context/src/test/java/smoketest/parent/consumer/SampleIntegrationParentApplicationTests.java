@@ -58,7 +58,7 @@ class SampleIntegrationParentApplicationTests {
 		}
 	}
 
-	private void awaitOutputContaining(File outputDir, String requiredContents) throws Exception {
+	private void awaitOutputContaining(File outputDir, String requiredContents) {
 		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(() -> outputIn(outputDir),
 				containsString(requiredContents));
 	}

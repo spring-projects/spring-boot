@@ -179,14 +179,13 @@ class ConfigDataLocationResolversTests {
 
 		@Override
 		public List<TestConfigDataResource> resolve(ConfigDataLocationResolverContext context,
-				ConfigDataLocation location)
-				throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
+				ConfigDataLocation location) {
 			return Collections.singletonList(new TestConfigDataResource(this, location, false));
 		}
 
 		@Override
 		public List<TestConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
-				ConfigDataLocation location, Profiles profiles) throws ConfigDataLocationNotFoundException {
+				ConfigDataLocation location, Profiles profiles) {
 			return Collections.singletonList(new TestConfigDataResource(this, location, true));
 		}
 

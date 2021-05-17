@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,7 +39,7 @@ class DataObjectPropertyNameTests {
 	}
 
 	@Test
-	void toDashedFormWhenContainsIndexedAddsNoDashToIndex() throws Exception {
+	void toDashedFormWhenContainsIndexedAddsNoDashToIndex() {
 		assertThat(DataObjectPropertyName.toDashedForm("test[fooBar]")).isEqualTo("test[fooBar]");
 		assertThat(DataObjectPropertyName.toDashedForm("testAgain[fooBar]")).isEqualTo("test-again[fooBar]");
 	}

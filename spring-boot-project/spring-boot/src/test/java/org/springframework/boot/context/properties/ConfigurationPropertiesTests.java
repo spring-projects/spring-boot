@@ -41,7 +41,6 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.InitializingBean;
@@ -382,7 +381,7 @@ class ConfigurationPropertiesTests {
 		this.context = new AnnotationConfigApplicationContext() {
 
 			@Override
-			protected void onRefresh() throws BeansException {
+			protected void onRefresh() {
 				assertThat(WithFactoryBeanConfiguration.factoryBeanInitialized).as("Initialized too early").isFalse();
 				super.onRefresh();
 			}
@@ -2298,7 +2297,7 @@ class ConfigurationPropertiesTests {
 	static class PersonPropertyEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
+		public void setAsText(String text) {
 			String[] content = text.split(",");
 			setValue(new Person(content[1], content[0]));
 		}
