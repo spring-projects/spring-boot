@@ -65,7 +65,6 @@ dependencies {
 	optional("org.hamcrest:hamcrest-library")
 	optional("org.hibernate:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.jboss:jboss-transaction-spi")
 	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core")
 	optional("org.postgresql:postgresql")
