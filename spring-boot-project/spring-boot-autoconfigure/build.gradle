@@ -91,7 +91,6 @@ dependencies {
 	optional("org.infinispan:infinispan-jcache")
 	optional("org.infinispan:infinispan-spring5-embedded")
 	optional("org.influxdb:influxdb-java")
-	optional("org.jboss:jboss-transaction-spi")
 	optional("org.jooq:jooq")
 	optional("org.liquibase:liquibase-core")
 	optional("org.messaginghub:pooled-jms")

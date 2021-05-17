@@ -61,7 +61,6 @@ dependencies {
 	optional("org.hamcrest:hamcrest-library")
 	optional("org.hibernate:hibernate-core")
 	optional("org.hibernate.validator:hibernate-validator")
-	optional("org.jboss:jboss-transaction-spi")
 	optional("org.liquibase:liquibase-core")
 	optional("org.slf4j:jul-to-slf4j")
 	optional("org.slf4j:slf4j-api")
