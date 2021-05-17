@@ -7606,7 +7606,9 @@ include::{test-examples}/test/system/OutputCaptureTests.java[tag=test]
 ==== TestRestTemplate
 `TestRestTemplate` is a convenience alternative to Spring's `RestTemplate` that is useful in integration tests.
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
-In either case, the template behaves in a test-friendly way by not throwing exceptions on server-side errors.
+In either case, the template is fault tolerant.
+This means that it behaves in a test-friendly way by not throwing exceptions on 4xx and 5xx errors.
+Instead, such errors can be detected via the returned `ResponseEntity` and its status code.
 
 TIP: Spring Framework 5.0 provides a new `WebTestClient` that works for <<boot-features-testing-spring-boot-applications-testing-autoconfigured-webflux-tests, WebFlux integration tests>> and both <<boot-features-testing-spring-boot-applications-testing-with-running-server, WebFlux and MVC end-to-end testing>>.
 It provides a fluent API for assertions, unlike `TestRestTemplate`.
