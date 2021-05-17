@@ -1534,7 +1534,7 @@ bom {
 			]
 		}
 	}
-	library("SAAJ Impl", "1.5.2") {
+	library("SAAJ Impl", "1.5.3") {
 		prohibit("[2.0.0-M1,)") {
 			because "it uses the jakarta.* namespace"
 		}
