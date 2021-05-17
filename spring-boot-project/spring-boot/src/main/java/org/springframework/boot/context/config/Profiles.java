@@ -114,6 +114,9 @@ public class Profiles implements Iterable<String> {
 		if (!StringUtils.hasLength(environmentPropertyValue)) {
 			return !type.getDefaultValue().equals(environmentProfiles);
 		}
+		if (type.getDefaultValue().equals(environmentProfiles)) {
+			return false;
+		}
 		return !environmentPropertyProfiles.equals(environmentProfiles);
 	}
 
