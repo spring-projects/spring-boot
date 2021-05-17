@@ -986,7 +986,7 @@ bom {
 			]
 		}
 	}
-	library("Kafka", "2.7.0") {
+	library("Kafka", "2.7.1") {
 		group("org.apache.kafka") {
 			modules = [
 				"connect-api",
