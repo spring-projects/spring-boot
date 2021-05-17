@@ -444,22 +444,19 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 
 NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2.0, Jetty 9.4 does not support Servlet 4.0.
 
-The following Gradle example shows how to use Undertow in place of Reactor Netty for Spring WebFlux:
+The following Gradle example configures the necessary dependencies and a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	configurations.all {
-		resolutionStrategy.dependencySubstitution.all { dependency ->
-			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-reactor-netty') {
-				dependency.useTarget("org.springframework.boot:spring-boot-starter-undertow:$dependency.requested.version", 'Use Undertow instead of Reactor Netty')
-			}
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-undertow"
+	implementation "org.springframework.boot:spring-boot-starter-webflux"
+	modules {
+		module("org.springframework.boot:spring-boot-starter-reactor-netty") {
+			replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Reactor Netty")
 		}
 	}
-
-	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-webflux'
-		// ...
-	}
+}
 ----
 
 NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` class, so you may need to keep a dependency on Netty even when you need to include a different HTTP server.
@@ -1460,19 +1457,17 @@ The following example shows how to set up the starters in Maven:
 	</dependency>
 ----
 
-And the following example shows one way to set up the starters in Gradle:
+Gradle provides a few different ways to set up the starters.
+One way is to use a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement].
+To do so, declare a dependency on the Log4j 2 starter and tell Gradle that any occurrences of the default logging starter should be replaced by the Log4j 2 starter, as shown in the following example:
 
 [source,groovy,indent=0,subs="verbatim,quotes,attributes"]
 ----
-	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web'
-	}
-
-	configurations.all {
-		resolutionStrategy.dependencySubstitution.all { dependency ->
-			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-logging') {
-				dependency.useTarget("org.springframework.boot:spring-boot-starter-log4j2:$dependency.requested.version", 'Use Log4j2 instead of Logback')
-			}
+dependencies {
+	implementation "org.springframework.boot:spring-boot-starter-log4j2"
+	modules {
+		module("org.springframework.boot:spring-boot-starter-logging") {
+			replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
 		}
 	}
 }
