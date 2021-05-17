@@ -117,7 +117,7 @@ class LoggingApplicationListenerTests {
 	private CapturedOutput output;
 
 	@BeforeEach
-	void init(CapturedOutput output) throws SecurityException, IOException {
+	void init(CapturedOutput output) throws IOException {
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.output = output;
 		this.logFile = new File(this.tempDir.toFile(), "foo.log");

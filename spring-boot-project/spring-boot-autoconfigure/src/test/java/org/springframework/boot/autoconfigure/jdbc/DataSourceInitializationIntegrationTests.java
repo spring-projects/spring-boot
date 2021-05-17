@@ -33,7 +33,6 @@ import javax.sql.DataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.Test;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -348,7 +347,7 @@ class DataSourceInitializationIntegrationTests {
 			return new BeanPostProcessor() {
 
 				@Override
-				public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+				public Object postProcessAfterInitialization(Object bean, String beanName) {
 					if (bean instanceof DataSource) {
 						return new DataSourceProxy((DataSource) bean);
 					}

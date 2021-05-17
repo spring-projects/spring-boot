@@ -46,9 +46,7 @@ import java.util.stream.Stream;
 import java.util.zip.ZipEntry;
 
 import org.gradle.testkit.runner.BuildResult;
-import org.gradle.testkit.runner.InvalidRunnerConfigurationException;
 import org.gradle.testkit.runner.TaskOutcome;
-import org.gradle.testkit.runner.UnexpectedBuildFailure;
 import org.junit.jupiter.api.TestTemplate;
 
 import org.springframework.boot.gradle.testkit.GradleBuild;
@@ -92,8 +90,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void reproducibleArchive()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure, IOException, InterruptedException {
+	void reproducibleArchive() throws IOException, InterruptedException {
 		assertThat(this.gradleBuild.build(this.taskName).task(":" + this.taskName).getOutcome())
 				.isEqualTo(TaskOutcome.SUCCESS);
 		File jar = new File(this.gradleBuild.getProjectDir(), "build/libs").listFiles()[0];
@@ -229,8 +226,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void upToDateWhenBuiltWithDefaultLayeredAndThenWithExplicitLayered()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
+	void upToDateWhenBuiltWithDefaultLayeredAndThenWithExplicitLayered() {
 		assertThat(this.gradleBuild.scriptProperty("layered", "").build("" + this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.scriptProperty("layered", "layered {}").build("" + this.taskName)
@@ -238,8 +234,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void notUpToDateWhenBuiltWithoutLayersAndThenWithLayers()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
+	void notUpToDateWhenBuiltWithoutLayersAndThenWithLayers() {
 		assertThat(this.gradleBuild.scriptProperty("layerEnablement", "enabled = false").build(this.taskName)
 				.task(":" + this.taskName).getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.scriptProperty("layerEnablement", "enabled = true").build(this.taskName)
@@ -247,8 +242,7 @@ abstract class AbstractBootArchiveIntegrationTests {
 	}
 
 	@TestTemplate
-	void notUpToDateWhenBuiltWithLayerToolsAndThenWithoutLayerTools()
-			throws InvalidRunnerConfigurationException, UnexpectedBuildFailure {
+	void notUpToDateWhenBuiltWithLayerToolsAndThenWithoutLayerTools() {
 		assertThat(this.gradleBuild.scriptProperty("layerTools", "").build(this.taskName).task(":" + this.taskName)
 				.getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(this.gradleBuild.scriptProperty("layerTools", "includeLayerTools = false").build(this.taskName)

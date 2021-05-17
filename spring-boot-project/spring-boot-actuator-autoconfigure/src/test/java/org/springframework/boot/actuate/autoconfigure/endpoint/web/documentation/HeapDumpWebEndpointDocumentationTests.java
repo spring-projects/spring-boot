@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -65,7 +65,7 @@ class HeapDumpWebEndpointDocumentationTests extends MockMvcEndpointDocumentation
 			return new HeapDumpWebEndpoint() {
 
 				@Override
-				protected HeapDumper createHeapDumper() throws HeapDumperUnavailableException {
+				protected HeapDumper createHeapDumper() {
 					return (file, live) -> FileCopyUtils.copy("<<binary content>>", new FileWriter(file));
 				}
 

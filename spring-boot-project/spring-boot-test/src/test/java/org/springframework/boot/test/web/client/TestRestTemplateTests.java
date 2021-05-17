@@ -150,7 +150,7 @@ class TestRestTemplateTests {
 		ReflectionUtils.doWithMethods(RestOperations.class, new MethodCallback() {
 
 			@Override
-			public void doWith(Method method) throws IllegalArgumentException {
+			public void doWith(Method method) {
 				Method equivalent = ReflectionUtils.findMethod(TestRestTemplate.class, method.getName(),
 						method.getParameterTypes());
 				assertThat(equivalent).as("Method %s not found", method).isNotNull();

@@ -93,7 +93,7 @@ class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void mbeanDataSourceIsExcludedFromExport() throws IllegalStateException {
+	void mbeanDataSourceIsExcludedFromExport() {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 
@@ -110,7 +110,7 @@ class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void mbeanDataSourceIsExcludedFromExportByAllExporters() throws IllegalStateException {
+	void mbeanDataSourceIsExcludedFromExportByAllExporters() {
 		DataSource dataSource = new BasicDataSource();
 		configureJndi("foo", dataSource);
 		this.context = new AnnotationConfigApplicationContext();
@@ -127,7 +127,7 @@ class JndiDataSourceAutoConfigurationTests {
 
 	@SuppressWarnings("unchecked")
 	@Test
-	void standardDataSourceIsNotExcludedFromExport() throws IllegalStateException {
+	void standardDataSourceIsNotExcludedFromExport() {
 		DataSource dataSource = mock(DataSource.class);
 		configureJndi("foo", dataSource);
 
@@ -142,7 +142,7 @@ class JndiDataSourceAutoConfigurationTests {
 		assertThat(excludedBeans).isEmpty();
 	}
 
-	private void configureJndi(String name, DataSource dataSource) throws IllegalStateException {
+	private void configureJndi(String name, DataSource dataSource) {
 		TestableInitialContextFactory.bind(name, dataSource);
 	}
 
