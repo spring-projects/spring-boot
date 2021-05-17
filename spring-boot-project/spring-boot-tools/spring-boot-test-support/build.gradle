@@ -29,9 +29,12 @@ dependencies {
 	implementation("org.hamcrest:hamcrest-core")
 	implementation("org.hamcrest:hamcrest-library")
 	implementation("org.springframework:spring-core")
+	implementation("org.springframework:spring-test")
 
+	testImplementation("javax.servlet:javax.servlet-api")
 	testImplementation("org.junit.jupiter:junit-jupiter")
 	testImplementation("org.springframework:spring-context")
 
 	testRuntimeOnly("org.hibernate.validator:hibernate-validator")
+	testRuntimeOnly("org.mockito:mockito-core")
 }
