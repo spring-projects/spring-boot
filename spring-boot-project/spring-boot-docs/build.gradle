@@ -218,7 +218,7 @@ task documentVersionProperties(type: org.springframework.boot.build.constraints.
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("${buildDir}/docs/generated/application-properties/documented-application-properties/")
+	outputDir = file("${buildDir}/docs/generated/")
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {

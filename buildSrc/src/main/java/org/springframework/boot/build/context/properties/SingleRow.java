@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,24 +20,22 @@ import java.util.Arrays;
 import java.util.stream.Collectors;
 
 /**
- * Table entry containing a single configuration property.
+ * Table row containing a single configuration property.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  */
-class SingleConfigurationTableEntry extends ConfigurationTableEntry {
+class SingleRow extends Row {
+
+	private final String displayName;
 
 	private final String description;
 
 	private final String defaultValue;
 
-	private final String anchor;
-
-	SingleConfigurationTableEntry(ConfigurationProperty property) {
-		this.key = property.getName();
-		this.anchor = this.key;
-		if (property.getType() != null && property.getType().startsWith("java.util.Map")) {
-			this.key += ".*";
-		}
+	SingleRow(Snippet snippet, ConfigurationProperty property) {
+		super(snippet, property.getName());
+		this.displayName = property.getDisplayName();
 		this.description = property.getDescription();
 		this.defaultValue = getDefaultValue(property.getDefaultValue());
 	}
@@ -54,14 +52,25 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 	}
 
 	@Override
-	void write(AsciidocBuilder builder) {
-		builder.appendln("|[[" + this.anchor + "]]<<" + this.anchor + ",`+", this.key, "+`>>");
-		writeDefaultValue(builder);
-		writeDescription(builder);
-		builder.appendln();
+	void write(Asciidoc asciidoc) {
+		asciidoc.append("|");
+		asciidoc.append("[[" + getAnchor() + "]]");
+		asciidoc.appendln("<<" + getAnchor() + ",`+", this.displayName, "+`>>");
+		writeDescription(asciidoc);
+		writeDefaultValue(asciidoc);
 	}
 
-	private void writeDefaultValue(AsciidocBuilder builder) {
+	private void writeDescription(Asciidoc builder) {
+		if (this.description == null || this.description.isEmpty()) {
+			builder.appendln("|");
+		}
+		else {
+			String cleanedDescription = this.description.replace("|", "\\|").replace("<", "&lt;").replace(">", "&gt;");
+			builder.appendln("|+++", cleanedDescription, "+++");
+		}
+	}
+
+	private void writeDefaultValue(Asciidoc builder) {
 		String defaultValue = (this.defaultValue != null) ? this.defaultValue : "";
 		if (defaultValue.isEmpty()) {
 			builder.appendln("|");
@@ -69,16 +78,6 @@ class SingleConfigurationTableEntry extends ConfigurationTableEntry {
 		else {
 			defaultValue = defaultValue.replace("\\", "\\\\").replace("|", "\\|");
 			builder.appendln("|`+", defaultValue, "+`");
-		}
-	}
-
-	private void writeDescription(AsciidocBuilder builder) {
-		if (this.description == null || this.description.isEmpty()) {
-			builder.append("|");
-		}
-		else {
-			String cleanedDescription = this.description.replace("|", "\\|").replace("<", "&lt;").replace(">", "&gt;");
-			builder.append("|+++", cleanedDescription, "+++");
 		}
 	}
 

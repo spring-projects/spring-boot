@@ -1,3 +1,0 @@
-[[application-properties.transaction]]
-== Transaction Properties [[transaction-properties]]
-include::documented-application-properties/transaction.adoc[]

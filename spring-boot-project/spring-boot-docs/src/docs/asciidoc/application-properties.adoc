@@ -1,6 +1,6 @@
 [appendix]
 [[application-properties]]
-= Common Application properties
+= Common Application Properties
 include::attributes.adoc[]
 
 

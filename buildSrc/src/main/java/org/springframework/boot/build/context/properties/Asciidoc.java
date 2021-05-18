@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -21,34 +21,34 @@ package org.springframework.boot.build.context.properties;
  *
  * @author Phillip Webb
  */
-class AsciidocBuilder {
+class Asciidoc {
 
 	private final StringBuilder content;
 
-	AsciidocBuilder() {
+	Asciidoc() {
 		this.content = new StringBuilder();
 	}
 
-	AsciidocBuilder appendKey(Object... items) {
+	Asciidoc appendWithHardLineBreaks(Object... items) {
 		for (Object item : items) {
 			appendln("`+", item, "+` +");
 		}
 		return this;
 	}
 
-	AsciidocBuilder newLine() {
-		return append(System.lineSeparator());
-	}
-
-	AsciidocBuilder appendln(Object... items) {
+	Asciidoc appendln(Object... items) {
 		return append(items).newLine();
 	}
 
-	AsciidocBuilder append(Object... items) {
+	Asciidoc append(Object... items) {
 		for (Object item : items) {
 			this.content.append(item);
 		}
 		return this;
+	}
+
+	Asciidoc newLine() {
+		return append(System.lineSeparator());
 	}
 
 	@Override

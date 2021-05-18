@@ -1,5 +1,5 @@
 /*
- * Copyright 2019-2020 the original author or authors.
+ * Copyright 2019-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,12 +16,14 @@
 
 package org.springframework.boot.build.context.properties;
 
+import java.util.Map;
+
 /**
  * A configuration property.
  *
  * @author Andy Wilkinson
  */
-public class ConfigurationProperty {
+class ConfigurationProperty {
 
 	private final String name;
 
@@ -45,29 +47,42 @@ public class ConfigurationProperty {
 		this.deprecated = deprecated;
 	}
 
-	public String getName() {
+	String getName() {
 		return this.name;
 	}
 
-	public String getType() {
+	String getDisplayName() {
+		return (getType() != null && getType().startsWith("java.util.Map")) ? getName() + ".*" : getName();
+	}
+
+	String getType() {
 		return this.type;
 	}
 
-	public Object getDefaultValue() {
+	Object getDefaultValue() {
 		return this.defaultValue;
 	}
 
-	public String getDescription() {
+	String getDescription() {
 		return this.description;
 	}
 
-	public boolean isDeprecated() {
+	boolean isDeprecated() {
 		return this.deprecated;
 	}
 
 	@Override
 	public String toString() {
 		return "ConfigurationProperty [name=" + this.name + ", type=" + this.type + "]";
+	}
+
+	static ConfigurationProperty fromJsonProperties(Map<String, Object> property) {
+		String name = (String) property.get("name");
+		String type = (String) property.get("type");
+		Object defaultValue = property.get("defaultValue");
+		String description = (String) property.get("description");
+		boolean deprecated = property.containsKey("deprecated");
+		return new ConfigurationProperty(name, type, defaultValue, description, deprecated);
 	}
 
 }

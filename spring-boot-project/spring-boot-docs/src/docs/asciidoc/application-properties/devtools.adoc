@@ -1,3 +1,0 @@
-[[application-properties.devtools]]
-== Devtools Properties [[devtools-properties]]
-include::documented-application-properties/devtools.adoc[]

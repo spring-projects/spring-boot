@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,19 +17,21 @@
 package org.springframework.boot.build.context.properties;
 
 /**
- * Abstract class for entries in {@link ConfigurationTable}.
+ * Abstract class for rows in {@link Table}.
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  */
-abstract class ConfigurationTableEntry implements Comparable<ConfigurationTableEntry> {
+abstract class Row implements Comparable<Row> {
 
-	protected String key;
+	private final Snippet snippet;
 
-	String getKey() {
-		return this.key;
+	private final String id;
+
+	protected Row(Snippet snippet, String id) {
+		this.snippet = snippet;
+		this.id = id;
 	}
-
-	abstract void write(AsciidocBuilder builder);
 
 	@Override
 	public boolean equals(Object obj) {
@@ -39,18 +41,24 @@ abstract class ConfigurationTableEntry implements Comparable<ConfigurationTableE
 		if (obj == null || getClass() != obj.getClass()) {
 			return false;
 		}
-		ConfigurationTableEntry other = (ConfigurationTableEntry) obj;
-		return this.key.equals(other.key);
+		Row other = (Row) obj;
+		return this.id.equals(other.id);
 	}
 
 	@Override
 	public int hashCode() {
-		return this.key.hashCode();
+		return this.id.hashCode();
 	}
 
 	@Override
-	public int compareTo(ConfigurationTableEntry other) {
-		return this.key.compareTo(other.getKey());
+	public int compareTo(Row other) {
+		return this.id.compareTo(other.id);
 	}
+
+	String getAnchor() {
+		return this.snippet.getAnchor() + "." + this.id;
+	}
+
+	abstract void write(Asciidoc asciidoc);
 
 }

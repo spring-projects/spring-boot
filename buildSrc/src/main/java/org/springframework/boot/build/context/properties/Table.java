@@ -16,7 +16,6 @@
 
 package org.springframework.boot.build.context.properties;
 
-import java.util.Arrays;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -25,36 +24,24 @@ import java.util.TreeSet;
  *
  * @author Brian Clozel
  */
-class ConfigurationTable {
+class Table {
 
-	private final String id;
+	private final Set<Row> rows = new TreeSet<>();
 
-	private final Set<ConfigurationTableEntry> entries;
-
-	ConfigurationTable(String id) {
-		this.id = id;
-		this.entries = new TreeSet<>();
+	void addRow(Row row) {
+		this.rows.add(row);
 	}
 
-	String getId() {
-		return this.id;
-	}
-
-	void addEntry(ConfigurationTableEntry... entries) {
-		this.entries.addAll(Arrays.asList(entries));
-	}
-
-	String toAsciidocTable() {
-		AsciidocBuilder builder = new AsciidocBuilder();
-		builder.appendln("[cols=\"4,3,3\", options=\"header\"]");
-		builder.appendln("|===");
-		builder.appendln("|Key|Default Value|Description");
-		builder.appendln();
-		this.entries.forEach((entry) -> {
-			entry.write(builder);
-			builder.appendln();
+	void write(Asciidoc asciidoc) {
+		asciidoc.appendln("[cols=\"4,3,3\", options=\"header\"]");
+		asciidoc.appendln("|===");
+		asciidoc.appendln("|Name|Description|Default Value");
+		asciidoc.appendln();
+		this.rows.forEach((entry) -> {
+			entry.write(asciidoc);
+			asciidoc.appendln();
 		});
-		return builder.appendln("|===").toString();
+		asciidoc.appendln("|===");
 	}
 
 }
