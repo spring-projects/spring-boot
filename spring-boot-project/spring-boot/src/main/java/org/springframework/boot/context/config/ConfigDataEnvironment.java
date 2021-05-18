@@ -233,7 +233,8 @@ class ConfigDataEnvironment {
 		contributors = processWithoutProfiles(contributors, importer, activationContext);
 		activationContext = withProfiles(contributors, activationContext);
 		contributors = processWithProfiles(contributors, importer, activationContext);
-		applyToEnvironment(contributors, activationContext, importer.getLoadedLocations());
+		applyToEnvironment(contributors, activationContext, importer.getLoadedLocations(),
+				importer.getOptionalLocations());
 	}
 
 	private ConfigDataEnvironmentContributors processInitial(ConfigDataEnvironmentContributors contributors,
@@ -322,9 +323,10 @@ class ConfigDataEnvironment {
 	}
 
 	private void applyToEnvironment(ConfigDataEnvironmentContributors contributors,
-			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations) {
+			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations,
+			Set<ConfigDataLocation> optionalLocations) {
 		checkForInvalidProperties(contributors);
-		checkMandatoryLocations(contributors, activationContext, loadedLocations);
+		checkMandatoryLocations(contributors, activationContext, loadedLocations, optionalLocations);
 		MutablePropertySources propertySources = this.environment.getPropertySources();
 		this.logger.trace("Applying config data environment contributions");
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
@@ -359,7 +361,8 @@ class ConfigDataEnvironment {
 	}
 
 	private void checkMandatoryLocations(ConfigDataEnvironmentContributors contributors,
-			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations) {
+			ConfigDataActivationContext activationContext, Set<ConfigDataLocation> loadedLocations,
+			Set<ConfigDataLocation> optionalLocations) {
 		Set<ConfigDataLocation> mandatoryLocations = new LinkedHashSet<>();
 		for (ConfigDataEnvironmentContributor contributor : contributors) {
 			if (contributor.isActive(activationContext)) {
@@ -372,6 +375,7 @@ class ConfigDataEnvironment {
 			}
 		}
 		mandatoryLocations.removeAll(loadedLocations);
+		mandatoryLocations.removeAll(optionalLocations);
 		if (!mandatoryLocations.isEmpty()) {
 			for (ConfigDataLocation mandatoryLocation : mandatoryLocations) {
 				this.notFoundAction.handle(this.logger, new ConfigDataLocationNotFoundException(mandatoryLocation));
