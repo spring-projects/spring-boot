@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.testcontainers.dynamicproperties;
+package org.springframework.boot.docs.howto.testing.testcontainers.dynamicproperties;
 
 import org.junit.jupiter.api.Test;
 import org.testcontainers.containers.Neo4jContainer;

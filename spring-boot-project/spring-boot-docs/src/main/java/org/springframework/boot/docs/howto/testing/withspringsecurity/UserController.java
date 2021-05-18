@@ -14,25 +14,8 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.testcontainers.vanilla;
+package org.springframework.boot.docs.howto.testing.withspringsecurity;
 
-import org.junit.jupiter.api.Test;
-import org.testcontainers.containers.Neo4jContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
-
-import org.springframework.boot.test.context.SpringBootTest;
-
-@SpringBootTest
-@Testcontainers
-class MyIntegrationTests {
-
-	@Container
-	static Neo4jContainer<?> neo4j = new Neo4jContainer<>("neo4j:4.2");
-
-	@Test
-	void myTest() {
-		// ...
-	}
+class UserController {
 
 }

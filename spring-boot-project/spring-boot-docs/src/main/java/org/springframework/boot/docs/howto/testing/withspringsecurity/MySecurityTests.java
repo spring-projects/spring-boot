@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.docs.howto.testingwithspringsecurity;
+package org.springframework.boot.docs.howto.testing.withspringsecurity;
 
 import org.junit.jupiter.api.Test;
 
