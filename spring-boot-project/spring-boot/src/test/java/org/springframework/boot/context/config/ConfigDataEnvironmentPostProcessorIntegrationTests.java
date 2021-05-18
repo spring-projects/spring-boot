@@ -46,6 +46,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -582,6 +583,12 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	void runWhenResolvedIsOptionalDoesNotThrowException() {
+		ApplicationContext context = this.application.run("--spring.config.location=test:optionalresult");
+		assertThat(context.getEnvironment().containsProperty("spring")).isFalse();
+	}
+
+	@Test
 	@Disabled("Disabled until spring.profiles suppport is dropped")
 	void runWhenUsingInvalidPropertyThrowsException() {
 		assertThatExceptionOfType(InvalidConfigDataPropertyException.class).isThrownBy(
@@ -749,6 +756,46 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
+
+	}
+
+	static class LocationResolver implements ConfigDataLocationResolver<TestConfigDataResource> {
+
+		@Override
+		public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
+			return location.hasPrefix("test:");
+
+		}
+
+		@Override
+		public List<TestConfigDataResource> resolve(ConfigDataLocationResolverContext context,
+				ConfigDataLocation location)
+				throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
+			return Collections.singletonList(new TestConfigDataResource(location));
+		}
+
+	}
+
+	static class Loader implements ConfigDataLoader<TestConfigDataResource> {
+
+		@Override
+		public ConfigData load(ConfigDataLoaderContext context, TestConfigDataResource resource)
+				throws IOException, ConfigDataResourceNotFoundException {
+			if (resource.isOptional()) {
+				return null;
+			}
+			MapPropertySource propertySource = new MapPropertySource("loaded",
+					Collections.singletonMap("spring", "boot"));
+			return new ConfigData(Collections.singleton(propertySource));
+		}
+
+	}
+
+	static class TestConfigDataResource extends ConfigDataResource {
+
+		TestConfigDataResource(ConfigDataLocation location) {
+			super(location.toString().contains("optionalresult"));
+		}
 
 	}
 

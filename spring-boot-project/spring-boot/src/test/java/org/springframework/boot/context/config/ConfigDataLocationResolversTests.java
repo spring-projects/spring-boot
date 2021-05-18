@@ -168,7 +168,26 @@ class ConfigDataLocationResolversTests {
 				.satisfies((ex) -> assertThat(ex.getLocation()).isEqualTo(location));
 	}
 
+	@Test
+	void resolveWhenOptional() {
+		ConfigDataLocationResolvers resolvers = new ConfigDataLocationResolvers(this.logFactory, this.bootstrapContext,
+				this.binder, this.resourceLoader, Arrays.asList(OptionalResourceTestResolver.class.getName()));
+		ConfigDataLocation location = ConfigDataLocation.of("OptionalResourceTestResolver:test");
+		List<ConfigDataResolutionResult> resolved = resolvers.resolve(this.context, location, null);
+		assertThat(resolved.get(0).getResource().isOptional()).isTrue();
+	}
+
 	static class TestResolver implements ConfigDataLocationResolver<TestConfigDataResource> {
+
+		private final boolean optionalResource;
+
+		TestResolver() {
+			this(false);
+		}
+
+		TestResolver(boolean optionalResource) {
+			this.optionalResource = optionalResource;
+		}
 
 		@Override
 		public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
@@ -181,13 +200,13 @@ class ConfigDataLocationResolversTests {
 		public List<TestConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 				ConfigDataLocation location)
 				throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
-			return Collections.singletonList(new TestConfigDataResource(this, location, false));
+			return Collections.singletonList(new TestConfigDataResource(this.optionalResource, this, location, false));
 		}
 
 		@Override
 		public List<TestConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
 				ConfigDataLocation location, Profiles profiles) throws ConfigDataLocationNotFoundException {
-			return Collections.singletonList(new TestConfigDataResource(this, location, true));
+			return Collections.singletonList(new TestConfigDataResource(this.optionalResource, this, location, true));
 		}
 
 	}
@@ -250,6 +269,14 @@ class ConfigDataLocationResolversTests {
 
 	}
 
+	static class OptionalResourceTestResolver extends TestResolver {
+
+		OptionalResourceTestResolver() {
+			super(true);
+		}
+
+	}
+
 	static class TestConfigDataResource extends ConfigDataResource {
 
 		private final TestResolver resolver;
@@ -258,7 +285,9 @@ class ConfigDataLocationResolversTests {
 
 		private final boolean profileSpecific;
 
-		TestConfigDataResource(TestResolver resolver, ConfigDataLocation location, boolean profileSpecific) {
+		TestConfigDataResource(boolean optional, TestResolver resolver, ConfigDataLocation location,
+				boolean profileSpecific) {
+			super(optional);
 			this.resolver = resolver;
 			this.location = location;
 			this.profileSpecific = profileSpecific;

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,6 +50,8 @@ class ConfigDataImporter {
 	private final Set<ConfigDataResource> loaded = new HashSet<>();
 
 	private final Set<ConfigDataLocation> loadedLocations = new HashSet<>();
+
+	private final Set<ConfigDataLocation> optionalLocations = new HashSet<>();
 
 	/**
 	 * Create a new {@link ConfigDataImporter} instance.
@@ -103,7 +105,7 @@ class ConfigDataImporter {
 			return this.resolvers.resolve(locationResolverContext, location, profiles);
 		}
 		catch (ConfigDataNotFoundException ex) {
-			handle(ex, location);
+			handle(ex, location, null);
 			return Collections.emptyList();
 		}
 	}
@@ -115,6 +117,9 @@ class ConfigDataImporter {
 			ConfigDataResolutionResult candidate = candidates.get(i);
 			ConfigDataLocation location = candidate.getLocation();
 			ConfigDataResource resource = candidate.getResource();
+			if (resource.isOptional()) {
+				this.optionalLocations.add(location);
+			}
 			if (this.loaded.contains(resource)) {
 				this.loadedLocations.add(location);
 			}
@@ -128,26 +133,33 @@ class ConfigDataImporter {
 					}
 				}
 				catch (ConfigDataNotFoundException ex) {
-					handle(ex, location);
+					handle(ex, location, resource);
 				}
 			}
 		}
 		return Collections.unmodifiableMap(result);
 	}
 
-	private void handle(ConfigDataNotFoundException ex, ConfigDataLocation location) {
+	private void handle(ConfigDataNotFoundException ex, ConfigDataLocation location, ConfigDataResource resource) {
 		if (ex instanceof ConfigDataResourceNotFoundException) {
 			ex = ((ConfigDataResourceNotFoundException) ex).withLocation(location);
 		}
-		getNotFoundAction(location).handle(this.logger, ex);
+		getNotFoundAction(location, resource).handle(this.logger, ex);
 	}
 
-	private ConfigDataNotFoundAction getNotFoundAction(ConfigDataLocation location) {
-		return (!location.isOptional()) ? this.notFoundAction : ConfigDataNotFoundAction.IGNORE;
+	private ConfigDataNotFoundAction getNotFoundAction(ConfigDataLocation location, ConfigDataResource resource) {
+		if (location.isOptional() || (resource != null && resource.isOptional())) {
+			return ConfigDataNotFoundAction.IGNORE;
+		}
+		return this.notFoundAction;
 	}
 
 	Set<ConfigDataLocation> getLoadedLocations() {
 		return this.loadedLocations;
+	}
+
+	Set<ConfigDataLocation> getOptionalLocations() {
+		return this.optionalLocations;
 	}
 
 }

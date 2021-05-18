@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -26,5 +26,27 @@ package org.springframework.boot.context.config;
  * @since 2.4.0
  */
 public abstract class ConfigDataResource {
+
+	private final boolean optional;
+
+	/**
+	 * Create a new non-optional {@link ConfigDataResource} instance.
+	 */
+	public ConfigDataResource() {
+		this(false);
+	}
+
+	/**
+	 * Create a new {@link ConfigDataResource} instance.
+	 * @param optional if the resource is optional
+	 * @since 2.4.6
+	 */
+	protected ConfigDataResource(boolean optional) {
+		this.optional = optional;
+	}
+
+	boolean isOptional() {
+		return this.optional;
+	}
 
 }
