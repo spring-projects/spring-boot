@@ -1,11 +1,18 @@
-[[howto.testing-with-spring-security]]
-== Testing With Spring Security
+[[howto.testing]]
+== Testing
+Spring Boot includes a number of testing utilities and support classes as well as a dedicated starter that provides common test dependencies.
+This section answers common questions about testing.
+
+
+
+[[howto.testing.with-spring-security]]
+=== Testing With Spring Security
 Spring Security provides support for running tests as a specific user.
 For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
 
 [source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/testingwithspringsecurity/MySecurityTests.java[]
+include::{docs-java}/howto/testing/withspringsecurity/MySecurityTests.java[]
 ----
 
 Spring Security provides comprehensive integration with Spring MVC Test and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.

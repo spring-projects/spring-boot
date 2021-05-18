@@ -23,8 +23,6 @@ include::howto/webserver.adoc[]
 
 include::howto/spring-mvc.adoc[]
 
-include::howto/testing-with-spring-security.adoc[]
-
 include::howto/jersey.adoc[]
 
 include::howto/http-clients.adoc[]
@@ -44,6 +42,8 @@ include::howto/actuator.adoc[]
 include::howto/security.adoc[]
 
 include::howto/hotswapping.adoc[]
+
+include::howto/testing.adoc[]
 
 include::howto/build.adoc[]
 

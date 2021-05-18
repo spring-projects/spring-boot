@@ -404,7 +404,7 @@ If you define your own `webDriver` scope you may find it stops working when you 
 
 If you have Spring Security on the classpath, `@WebMvcTest` will also scan `WebSecurityConfigurer` beans.
 Instead of disabling security completely for such tests, you can use Spring Security's test support.
-More details on how to use Spring Security's `MockMvc` support can be found in this _<<howto#howto.testing-with-spring-security>>_ how-to section.
+More details on how to use Spring Security's `MockMvc` support can be found in this _<<howto#howto.testing.with-spring-security>>_ how-to section.
 
 TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run <<features#features.testing.spring-boot-applications.with-running-server, full end-to-end tests with an actual server>>.
 
