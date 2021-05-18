@@ -872,10 +872,10 @@ Alternatively, you can specify a source for your test, which disables the behavi
 ==== Using Spock to Test Spring Boot Applications
 If you wish to use Spock to test a Spring Boot application, you should add a dependency on Spock's `spock-spring` module to your application's build.
 `spock-spring` integrates Spring's test framework into Spock.
-See https://spockframework.org/spock/docs/2.0-M4/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
+See https://spockframework.org/spock/docs/2.0/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
 
 NOTE: As of Spring Boot 2.5.x and its support for Groovy 3.x you have two options to make use of Spock:
-Either use the latest Spock 2.0 milestone or release that is compatible with Groovy 3.x or stick with Spock 1.3 and downgrade Spring Boot's Groovy version to 2.5.x.
+Either use the latest Spock 2.x release that is compatible with Groovy 3.x or stick with Spock 1.3 and downgrade Spring Boot's Groovy version to 2.5.x.
 
 
 
