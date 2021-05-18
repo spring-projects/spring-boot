@@ -133,7 +133,7 @@ bom {
 			]
 		}
 	}
-	library("Spock Framework", "2.0-M4-groovy-3.0") {
+	library("Spock Framework", "2.0-groovy-3.0") {
 		group("org.spockframework") {
 			modules = [
 				"spock-core",
