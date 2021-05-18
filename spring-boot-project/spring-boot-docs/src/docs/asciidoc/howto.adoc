@@ -48,5 +48,3 @@ include::howto/testing.adoc[]
 include::howto/build.adoc[]
 
 include::howto/traditional-deployment.adoc[]
-
-include::howto/jedis-instead-of-lettuce.adoc[]
