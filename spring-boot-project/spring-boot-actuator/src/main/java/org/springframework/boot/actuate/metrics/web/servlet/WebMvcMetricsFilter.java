@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.core.annotation.MergedAnnotationCollectors;
@@ -52,6 +54,8 @@ import org.springframework.web.util.NestedServletException;
  * @since 2.0.0
  */
 public class WebMvcMetricsFilter extends OncePerRequestFilter {
+
+	private static final Log logger = LogFactory.getLog(WebMvcMetricsFilter.class);
 
 	private final MeterRegistry registry;
 
@@ -120,20 +124,26 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private void record(TimingContext timingContext, HttpServletRequest request, HttpServletResponse response,
 			Throwable exception) {
-		Object handler = getHandler(request);
-		Set<Timed> annotations = getTimedAnnotations(handler);
-		Timer.Sample timerSample = timingContext.getTimerSample();
-		if (annotations.isEmpty()) {
-			if (this.autoTimer.isEnabled()) {
-				Builder builder = this.autoTimer.builder(this.metricName);
-				timerSample.stop(getTimer(builder, handler, request, response, exception));
+		try {
+			Object handler = getHandler(request);
+			Set<Timed> annotations = getTimedAnnotations(handler);
+			Timer.Sample timerSample = timingContext.getTimerSample();
+			if (annotations.isEmpty()) {
+				if (this.autoTimer.isEnabled()) {
+					Builder builder = this.autoTimer.builder(this.metricName);
+					timerSample.stop(getTimer(builder, handler, request, response, exception));
+				}
+			}
+			else {
+				for (Timed annotation : annotations) {
+					Builder builder = Timer.builder(annotation, this.metricName);
+					timerSample.stop(getTimer(builder, handler, request, response, exception));
+				}
 			}
 		}
-		else {
-			for (Timed annotation : annotations) {
-				Builder builder = Timer.builder(annotation, this.metricName);
-				timerSample.stop(getTimer(builder, handler, request, response, exception));
-			}
+		catch (Exception ex) {
+			logger.warn("Failed to record timer metrics", ex);
+			// Allow request-response exchange to continue, unaffected by metrics problem
 		}
 	}
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,6 +19,7 @@ package org.springframework.boot.actuate.metrics.web.servlet;
 import java.util.concurrent.Callable;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CyclicBarrier;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
 import io.micrometer.core.annotation.Timed;
@@ -76,6 +77,9 @@ class LongTaskTimingHandlerInterceptorTests {
 	@Autowired
 	private CyclicBarrier callableBarrier;
 
+	@Autowired
+	private FaultyWebMvcTagsProvider tagsProvider;
+
 	private MockMvc mvc;
 
 	@BeforeEach
@@ -117,6 +121,26 @@ class LongTaskTimingHandlerInterceptorTests {
 				.isEqualTo(0);
 	}
 
+	@Test
+	void whenMetricsRecordingFailsResponseIsUnaffected() throws Exception {
+		this.tagsProvider.failOnce();
+		AtomicReference<MvcResult> result = new AtomicReference<>();
+		Thread backgroundRequest = new Thread(() -> {
+			try {
+				result.set(
+						this.mvc.perform(get("/api/c1/callable/10")).andExpect(request().asyncStarted()).andReturn());
+			}
+			catch (Exception ex) {
+				fail("Failed to execute async request", ex);
+			}
+		});
+		backgroundRequest.start();
+		this.callableBarrier.await(10, TimeUnit.SECONDS);
+		this.callableBarrier.await(10, TimeUnit.SECONDS);
+		backgroundRequest.join();
+		this.mvc.perform(asyncDispatch(result.get())).andExpect(status().isOk());
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	@EnableWebMvc
 	@Import(Controller1.class)
@@ -138,13 +162,17 @@ class LongTaskTimingHandlerInterceptorTests {
 		}
 
 		@Bean
-		WebMvcConfigurer handlerInterceptorConfigurer(MeterRegistry meterRegistry) {
+		FaultyWebMvcTagsProvider webMvcTagsProvider() {
+			return new FaultyWebMvcTagsProvider();
+		}
+
+		@Bean
+		WebMvcConfigurer handlerInterceptorConfigurer(MeterRegistry meterRegistry, WebMvcTagsProvider tagsProvider) {
 			return new WebMvcConfigurer() {
 
 				@Override
 				public void addInterceptors(InterceptorRegistry registry) {
-					registry.addInterceptor(
-							new LongTaskTimingHandlerInterceptor(meterRegistry, new DefaultWebMvcTagsProvider()));
+					registry.addInterceptor(new LongTaskTimingHandlerInterceptor(meterRegistry, tagsProvider));
 				}
 
 			};

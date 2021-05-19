@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.LongTaskTimer;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.core.annotation.MergedAnnotationCollectors;
 import org.springframework.core.annotation.MergedAnnotations;
@@ -45,6 +47,8 @@ import org.springframework.web.servlet.HandlerInterceptor;
  * @since 2.0.7
  */
 public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
+
+	private static final Log logger = LogFactory.getLog(LongTaskTimingHandlerInterceptor.class);
 
 	private final MeterRegistry registry;
 
@@ -90,12 +94,18 @@ public class LongTaskTimingHandlerInterceptor implements HandlerInterceptor {
 	private Collection<LongTaskTimer.Sample> getLongTaskTimerSamples(HttpServletRequest request, Object handler,
 			Set<Timed> annotations) {
 		List<LongTaskTimer.Sample> samples = new ArrayList<>();
-		annotations.stream().filter(Timed::longTask).forEach((annotation) -> {
-			Iterable<Tag> tags = this.tagsProvider.getLongRequestTags(request, handler);
-			LongTaskTimer.Builder builder = LongTaskTimer.builder(annotation).tags(tags);
-			LongTaskTimer timer = builder.register(this.registry);
-			samples.add(timer.start());
-		});
+		try {
+			annotations.stream().filter(Timed::longTask).forEach((annotation) -> {
+				Iterable<Tag> tags = this.tagsProvider.getLongRequestTags(request, handler);
+				LongTaskTimer.Builder builder = LongTaskTimer.builder(annotation).tags(tags);
+				LongTaskTimer timer = builder.register(this.registry);
+				samples.add(timer.start());
+			});
+		}
+		catch (Exception ex) {
+			logger.warn("Failed to start long task timers", ex);
+			// Allow request-response exchange to continue, unaffected by metrics problem
+		}
 		return samples;
 	}
 
