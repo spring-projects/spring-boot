@@ -143,9 +143,9 @@ class ProfilesTests {
 	@Test
 	void getActiveWhenHasAdditionalIncludesAdditional() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.active", "d,e,f");
 		Binder binder = Binder.get(environment);
-		Profiles profiles = new Profiles(environment, binder, Arrays.asList("d", "e", "f"));
+		Profiles profiles = new Profiles(environment, binder, Arrays.asList("a", "b", "c"));
 		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 
