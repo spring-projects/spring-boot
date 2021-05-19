@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,8 @@ import java.util.concurrent.TimeUnit;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
@@ -40,6 +42,8 @@ import org.springframework.web.server.WebFilterChain;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class MetricsWebFilter implements WebFilter {
+
+	private static Log logger = LogFactory.getLog(MetricsWebFilter.class);
 
 	private final MeterRegistry registry;
 
@@ -97,9 +101,15 @@ public class MetricsWebFilter implements WebFilter {
 	}
 
 	private void record(ServerWebExchange exchange, long start, Throwable cause) {
-		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
-		this.autoTimer.builder(this.metricName).tags(tags).register(this.registry).record(System.nanoTime() - start,
-				TimeUnit.NANOSECONDS);
+		try {
+			Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
+			this.autoTimer.builder(this.metricName).tags(tags).register(this.registry).record(System.nanoTime() - start,
+					TimeUnit.NANOSECONDS);
+		}
+		catch (Exception ex) {
+			logger.warn("Failed to record timer metrics", ex);
+			// Allow exchange to continue, unaffected by metrics problem
+		}
 	}
 
 }

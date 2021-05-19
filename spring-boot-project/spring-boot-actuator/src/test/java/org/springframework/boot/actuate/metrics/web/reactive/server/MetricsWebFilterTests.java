@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,10 @@
 package org.springframework.boot.actuate.metrics.web.reactive.server;
 
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -29,6 +31,7 @@ import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
 import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -43,6 +46,8 @@ class MetricsWebFilterTests {
 
 	private static final String REQUEST_METRICS_NAME = "http.server.requests";
 
+	private final FaultyWebFluxTagsProvider tagsProvider = new FaultyWebFluxTagsProvider();
+
 	private SimpleMeterRegistry registry;
 
 	private MetricsWebFilter webFilter;
@@ -51,7 +56,7 @@ class MetricsWebFilterTests {
 	void setup() {
 		MockClock clock = new MockClock();
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
-		this.webFilter = new MetricsWebFilter(this.registry, new DefaultWebFluxTagsProvider(true), REQUEST_METRICS_NAME,
+		this.webFilter = new MetricsWebFilter(this.registry, this.tagsProvider, REQUEST_METRICS_NAME,
 				AutoTimer.ENABLED);
 	}
 
@@ -116,6 +121,14 @@ class MetricsWebFilterTests {
 		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag("status", "200").timer().count()).isEqualTo(2);
 	}
 
+	@Test
+	void whenMetricsRecordingFailsThenExchangeFilteringSucceeds() {
+		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
+		this.tagsProvider.failOnce();
+		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
+				.block(Duration.ofSeconds(30));
+	}
+
 	private MockServerWebExchange createExchange(String path, String pathPattern) {
 		PathPatternParser parser = new PathPatternParser();
 		MockServerWebExchange exchange = MockServerWebExchange.from(MockServerHttpRequest.get(path).build());
@@ -125,6 +138,28 @@ class MetricsWebFilterTests {
 
 	private void assertMetricsContainsTag(String tagKey, String tagValue) {
 		assertThat(this.registry.get(REQUEST_METRICS_NAME).tag(tagKey, tagValue).timer().count()).isEqualTo(1);
+	}
+
+	class FaultyWebFluxTagsProvider extends DefaultWebFluxTagsProvider {
+
+		private volatile AtomicBoolean fail = new AtomicBoolean(false);
+
+		FaultyWebFluxTagsProvider() {
+			super(true);
+		}
+
+		@Override
+		public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable exception) {
+			if (this.fail.compareAndSet(true, false)) {
+				throw new RuntimeException();
+			}
+			return super.httpRequestTags(exchange, exception);
+		}
+
+		void failOnce() {
+			this.fail.set(true);
+		}
+
 	}
 
 }

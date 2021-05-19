@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -121,6 +121,9 @@ class WebMvcMetricsFilterTests {
 	@Qualifier("completableFutureBarrier")
 	private CyclicBarrier completableFutureBarrier;
 
+	@Autowired
+	private FaultyWebMvcTagsProvider tagsProvider;
+
 	@BeforeEach
 	void setupMockMvc() {
 		this.mvc = MockMvcBuilders.webAppContextSetup(this.context)
@@ -190,6 +193,12 @@ class WebMvcMetricsFilterTests {
 		assertThatIOException().isThrownBy(() -> this.mvc.perform(asyncDispatch(result)).andReturn());
 		assertThat(this.registry.get("http.server.requests").tags("exception", "IOException").timer().count())
 				.isEqualTo(1L);
+	}
+
+	@Test
+	void whenMetricsRecordingFailsResponseIsUnaffected() throws Exception {
+		this.tagsProvider.failOnce();
+		this.mvc.perform(get("/api/c1/10")).andExpect(status().isOk());
 	}
 
 	@Test
@@ -363,9 +372,14 @@ class WebMvcMetricsFilterTests {
 		}
 
 		@Bean
-		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, WebApplicationContext ctx) {
-			return new WebMvcMetricsFilter(registry, new DefaultWebMvcTagsProvider(true), "http.server.requests",
-					AutoTimer.ENABLED);
+		WebMvcMetricsFilter webMetricsFilter(MeterRegistry registry, FaultyWebMvcTagsProvider tagsProvider,
+				WebApplicationContext ctx) {
+			return new WebMvcMetricsFilter(registry, tagsProvider, "http.server.requests", AutoTimer.ENABLED);
+		}
+
+		@Bean
+		FaultyWebMvcTagsProvider faultyWebMvcTagsProvider() {
+			return new FaultyWebMvcTagsProvider();
 		}
 
 	}
