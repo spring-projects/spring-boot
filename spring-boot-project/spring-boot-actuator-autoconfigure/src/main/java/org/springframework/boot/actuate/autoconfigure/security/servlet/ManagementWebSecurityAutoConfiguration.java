@@ -36,6 +36,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Security when actuator is
@@ -64,6 +65,9 @@ public class ManagementWebSecurityAutoConfiguration {
 			requests.requestMatchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 			requests.anyRequest().authenticated();
 		});
+		if (ClassUtils.isPresent("org.springframework.web.servlet.DispatcherServlet", null)) {
+			http.cors();
+		}
 		http.formLogin(Customizer.withDefaults());
 		http.httpBasic(Customizer.withDefaults());
 		return http.build();
