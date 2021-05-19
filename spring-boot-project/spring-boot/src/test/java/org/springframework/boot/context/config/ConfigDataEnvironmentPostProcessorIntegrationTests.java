@@ -308,7 +308,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void runWhenProfilesPresentBeforeConfigFileProcessingAugmentsProfileActivatedByConfigFile() {
 		this.application.setAdditionalProfiles("other");
 		ConfigurableApplicationContext context = this.application.run("--spring.config.name=enableprofile");
-		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("myprofile", "other");
+		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("other", "myprofile");
 		String property = context.getEnvironment().getProperty("other.property");
 		assertThat(property).isEqualTo("fromotherpropertiesfile");
 		property = context.getEnvironment().getProperty("the.property");

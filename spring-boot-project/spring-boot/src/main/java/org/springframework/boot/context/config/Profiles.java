@@ -145,15 +145,16 @@ public class Profiles implements Iterable<String> {
 		return reversed;
 	}
 
-	private List<String> asUniqueItemList(Collection<String> strings) {
-		return asUniqueItemList(strings, null);
+	private List<String> asUniqueItemList(Collection<String> profiles) {
+		return asUniqueItemList(profiles, null);
 	}
 
-	private List<String> asUniqueItemList(Collection<String> strings, Collection<String> additional) {
-		LinkedHashSet<String> uniqueItems = new LinkedHashSet<>(strings);
+	private List<String> asUniqueItemList(Collection<String> profiles, Collection<String> additional) {
+		LinkedHashSet<String> uniqueItems = new LinkedHashSet<>();
 		if (!CollectionUtils.isEmpty(additional)) {
 			uniqueItems.addAll(additional);
 		}
+		uniqueItems.addAll(profiles);
 		return Collections.unmodifiableList(new ArrayList<>(uniqueItems));
 	}
 
