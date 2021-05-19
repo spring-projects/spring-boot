@@ -11,6 +11,8 @@ The task is automatically created when the `java` or `war` plugin is applied and
 NOTE: The `bootBuildImage` task can not be used with a <<packaging-executable-configuring-launch-script, fully executable Spring Boot archive>> that includes a launch script.
 Disable launch script configuration in the `bootJar` task when building a jar file that is intended to be used with `bootBuildImage`.
 
+
+
 [[build-image-docker-daemon]]
 === Docker Daemon
 The `bootBuildImage` task requires access to a Docker daemon.

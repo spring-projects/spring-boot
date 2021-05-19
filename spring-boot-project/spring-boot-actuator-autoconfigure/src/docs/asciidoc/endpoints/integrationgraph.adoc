@@ -1,6 +1,5 @@
 [[integrationgraph]]
 = Spring Integration graph (`integrationgraph`)
-
 The `integrationgraph` endpoint exposes a graph containing all Spring Integration components.
 
 

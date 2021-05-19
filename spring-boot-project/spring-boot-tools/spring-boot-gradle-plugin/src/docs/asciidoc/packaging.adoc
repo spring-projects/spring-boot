@@ -37,7 +37,6 @@ include::../gradle/packaging/war-container-dependency.gradle[tags=dependencies]
 include::../gradle/packaging/war-container-dependency.gradle.kts[tags=dependencies]
 ----
 
-
 This ensures that they are package in the war file's `WEB-INF/lib-provided` directory from where they will not conflict with the external container's own classes.
 
 NOTE: `providedRuntime` is preferred to Gradle's `compileOnly` configuration as, among other limitations, `compileOnly` dependencies are not on the test classpath so any web-based integration tests will fail.
@@ -153,6 +152,7 @@ For example, `ExampleApplication` becomes `ExampleApplicationKt`.
 If another name is defined using `@JvmName` then that name should be used.
 
 
+
 [[packaging-executable-configuring-including-development-only-dependencies]]
 ==== Including Development-only Dependencies
 By default all dependencies declared in the `developmentOnly` configuration will be excluded from an executable jar or war.
@@ -192,7 +192,6 @@ include::../gradle/packaging/boot-jar-requires-unpack.gradle[tags=requires-unpac
 ----
 include::../gradle/packaging/boot-jar-requires-unpack.gradle.kts[tags=requires-unpack]
 ----
-
 
 For more control a closure can also be used.
 The closure is passed a `FileTreeElement` and should return a `boolean` indicating whether or not unpacking is required.

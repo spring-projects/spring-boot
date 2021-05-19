@@ -53,7 +53,6 @@ Overriding versions may cause compatibility issues and should be done with care.
 
 [[managing-dependencies-dependency-management-plugin-using-in-isolation]]
 ==== Using Spring Boot's Dependency Management in Isolation
-
 Spring Boot's dependency management can be used in a project without applying Spring Boot's plugin to that project.
 The `SpringBootPlugin` class provides a `BOM_COORDINATES` constant that can be used to import the bom without having to know its group ID, artifact ID, or version.
 
@@ -113,7 +112,6 @@ include::../gradle/managing-dependencies/configure-bom.gradle[tags=configure-bom
 ----
 include::../gradle/managing-dependencies/configure-bom.gradle.kts[tags=configure-bom]
 ----
-
 
 The Kotlin code above is a bit awkward.
 That's because we're using the imperative way of applying the dependency management plugin.

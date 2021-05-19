@@ -7,13 +7,9 @@ To use the Spring Boot Maven Plugin, include the appropriate XML in the `plugins
 include::../maven/getting-started/pom.xml[tags=getting-started]
 ----
 
-
-
 If you use a milestone or snapshot release, you also need to add the appropriate `pluginRepository` elements, as shown in the following listing:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
 ----
 include::../maven/getting-started/plugin-repositories-pom.xml[tags=plugin-repositories]
 ----
-
-

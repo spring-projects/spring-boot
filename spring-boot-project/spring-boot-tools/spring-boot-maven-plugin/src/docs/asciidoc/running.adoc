@@ -26,7 +26,6 @@ To enable it, just add the following dependency to your project:
 include::../maven/running/devtools-pom.xml[tags=devtools]
 ----
 
-
 When `devtools` is running, it detects change when you recompile your application and automatically refreshes it.
 This works for not only resources but code as well.
 It also provides a LiveReload server so that it can automatically trigger a browser refresh whenever things change.
@@ -176,6 +175,3 @@ The profiles to enable can be specified on the command line as well, make sure t
 ----
 	$ mvn spring-boot:run -Dspring-boot.run.profiles=local,dev
 ----
-
-
-

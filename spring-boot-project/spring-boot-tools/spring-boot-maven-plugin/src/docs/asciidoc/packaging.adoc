@@ -1,6 +1,5 @@
 [[repackage]]
 == Packaging Executable Archives
-
 The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
 
 Packaging an executable archive is performed by the `repackage` goal, as shown in the following example:
@@ -71,6 +70,7 @@ include::../maven/packaging/disable-layers-pom.xml[tags=disable-layers]
 ----
 
 
+
 [[repackage-layers-configuration]]
 ==== Custom Layers Configuration
 Depending on your application, you may want to tune how layers are created and add new ones.
@@ -88,8 +88,6 @@ The following example shows how the default ordering described above can be defi
 ----
 include::../maven/packaging/layers.xml[tags=layers]
 ----
-
-
 
 The `layers` XML format is defined in three sections:
 
@@ -151,7 +149,6 @@ In that setup, only the configuration should be specified, as shown in the follo
 include::../maven/packaging/repackage-configuration-pom.xml[tags=repackage-configuration]
 ----
 
-
 This configuration will generate two artifacts: the original one and the repackaged counter part produced by the repackage goal.
 Both will be installed/deployed transparently.
 
@@ -162,7 +159,6 @@ The following configuration installs/deploys a single `task` classified artifact
 ----
 include::../maven/packaging/classified-artifact-pom.xml[tags=classified-artifact]
 ----
-
 
 As both the `maven-jar-plugin` and the `spring-boot-maven-plugin` runs at the same phase, it is important that the jar plugin is defined first (so that it runs before the repackage goal).
 Again, if you are using `spring-boot-starter-parent`, this can be simplified as follows:

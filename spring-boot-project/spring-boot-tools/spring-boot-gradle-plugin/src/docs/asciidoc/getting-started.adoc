@@ -85,7 +85,6 @@ For example, when the `java` plugin is applied a task for building an executable
 A typical Spring Boot project will apply the {groovy-plugin}[`groovy`], {java-plugin}[`java`], or {kotlin-plugin}[`org.jetbrains.kotlin.jvm`] plugin as a minimum and also use the {dependency-management-plugin}[`io.spring.dependency-management`] plugin or Gradle's native bom support for dependency management.
 For example:
 
-
 [source,groovy,indent=0,subs="verbatim,attributes",role="primary"]
 .Groovy
 ----

@@ -1,3 +1,4 @@
+[[spring-boot-gradle-plugin-documentation]]
 = Spring Boot Gradle Plugin Reference Guide
 Andy Wilkinson, Scott Frederick
 :doctype: book
@@ -9,7 +10,6 @@ Andy Wilkinson, Scott Frederick
 :hide-uri-scheme:
 :docinfo: shared,private
 :attribute-missing: warn
-
 :dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dependency-management-plugin-documentation: https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/
 :gradle-userguide: https://docs.gradle.org/current/userguide
@@ -39,6 +39,7 @@ Andy Wilkinson, Scott Frederick
 :paketo-java-reference: {paketo-reference}/buildpacks/language-family-buildpacks/java
 
 
+
 [[introduction]]
 == Introduction
 The Spring Boot Gradle Plugin provides Spring Boot support in https://gradle.org[Gradle].
@@ -48,10 +49,17 @@ Spring Boot's Gradle plugin requires Gradle 6.8, 6.9, or 7.x and can be used wit
 In addition to this user guide, {api-documentation}[API documentation] is also available.
 
 include::getting-started.adoc[]
+
 include::managing-dependencies.adoc[]
+
 include::packaging.adoc[]
+
 include::packaging-oci-image.adoc[]
+
 include::publishing.adoc[]
+
 include::running.adoc[]
+
 include::integrating-with-actuator.adoc[]
+
 include::reacting.adoc[]
