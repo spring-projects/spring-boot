@@ -34,6 +34,7 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.oauth2.resource.reactive.ReactiveOAuth2ResourceServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveUserDetailsServiceAutoConfiguration;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration;
 import org.springframework.boot.test.context.assertj.AssertableReactiveWebApplicationContext;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.context.ApplicationContext;
@@ -67,9 +68,9 @@ class ReactiveManagementWebSecurityAutoConfigurationTests {
 	private final ReactiveWebApplicationContextRunner contextRunner = new ReactiveWebApplicationContextRunner()
 			.withConfiguration(AutoConfigurations.of(HealthContributorAutoConfiguration.class,
 					HealthEndpointAutoConfiguration.class, InfoEndpointAutoConfiguration.class,
-					EnvironmentEndpointAutoConfiguration.class, EndpointAutoConfiguration.class,
-					WebEndpointAutoConfiguration.class, ReactiveSecurityAutoConfiguration.class,
-					ReactiveUserDetailsServiceAutoConfiguration.class,
+					WebFluxAutoConfiguration.class, EnvironmentEndpointAutoConfiguration.class,
+					EndpointAutoConfiguration.class, WebEndpointAutoConfiguration.class,
+					ReactiveSecurityAutoConfiguration.class, ReactiveUserDetailsServiceAutoConfiguration.class,
 					ReactiveManagementWebSecurityAutoConfiguration.class));
 
 	@Test
