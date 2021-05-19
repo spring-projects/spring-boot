@@ -198,7 +198,7 @@ The following table shows the default exposure for the built-in endpoints:
 
 | `info`
 | Yes
-| Yes
+| No
 
 | `integrationgraph`
 | Yes
@@ -273,7 +273,7 @@ To change which endpoints are exposed, use the following technology-specific `in
 |
 
 | configprop:management.endpoints.web.exposure.include[]
-| `info, health`
+| `health`
 |===
 
 The `include` property lists the IDs of the endpoints that are exposed.
