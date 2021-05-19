@@ -64,7 +64,7 @@ class JerseyEndpointIntegrationTests {
 	@Test
 	void actuatorEndpointsWhenSecurityAvailable() {
 		WebApplicationContextRunner contextRunner = getContextRunner(
-				new Class[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class },
+				new Class<?>[] { EndpointsConfiguration.class, ResourceConfigConfiguration.class },
 				getAutoconfigurations(SecurityAutoConfiguration.class, ManagementWebSecurityAutoConfiguration.class));
 		contextRunner.run((context) -> {
 			int port = context.getSourceApplicationContext(AnnotationConfigServletWebServerApplicationContext.class)
