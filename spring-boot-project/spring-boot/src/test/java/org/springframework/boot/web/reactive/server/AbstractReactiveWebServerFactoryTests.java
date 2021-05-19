@@ -425,6 +425,30 @@ public abstract class AbstractReactiveWebServerFactoryTests {
 	}
 
 	@Test
+	void whenARequestIsActiveAfterGracefulShutdownEndsThenStopWillComplete() throws InterruptedException {
+		AbstractReactiveWebServerFactory factory = getFactory();
+		factory.setShutdown(Shutdown.GRACEFUL);
+		BlockingHandler blockingHandler = new BlockingHandler();
+		this.webServer = factory.getWebServer(blockingHandler);
+		this.webServer.start();
+		Mono<ResponseEntity<Void>> request = getWebClient(this.webServer.getPort()).build().get().retrieve()
+				.toBodilessEntity();
+		AtomicReference<ResponseEntity<Void>> responseReference = new AtomicReference<>();
+		CountDownLatch responseLatch = new CountDownLatch(1);
+		request.subscribe((response) -> {
+			responseReference.set(response);
+			responseLatch.countDown();
+		});
+		blockingHandler.awaitQueue();
+		AtomicReference<GracefulShutdownResult> result = new AtomicReference<>();
+		this.webServer.shutDownGracefully(result::set);
+		this.webServer.stop();
+		Awaitility.await().atMost(Duration.ofSeconds(30))
+				.until(() -> GracefulShutdownResult.REQUESTS_ACTIVE == result.get());
+		blockingHandler.completeOne();
+	}
+
+	@Test
 	void whenARequestIsActiveThenStopWillComplete() throws InterruptedException, BrokenBarrierException {
 		AbstractReactiveWebServerFactory factory = getFactory();
 		BlockingHandler blockingHandler = new BlockingHandler();
