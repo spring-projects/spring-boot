@@ -173,6 +173,7 @@ public class JettyServletWebServerFactory extends AbstractServletWebServerFactor
 	private Server createServer(InetSocketAddress address) {
 		Server server = new Server(getThreadPool());
 		server.setConnectors(new Connector[] { createConnector(address, server) });
+		server.setStopTimeout(0);
 		return server;
 	}
 
