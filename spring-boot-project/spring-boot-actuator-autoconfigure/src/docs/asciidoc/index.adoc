@@ -7,6 +7,7 @@ Andy Wilkinson
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
+:attribute-missing: warn
 
 This API documentation describes Spring Boot Actuators web endpoints.
 

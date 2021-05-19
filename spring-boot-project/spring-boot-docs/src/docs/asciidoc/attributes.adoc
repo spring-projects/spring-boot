@@ -9,6 +9,7 @@
 :sectnums:
 :hide-uri-scheme:
 :docinfo: shared,private
+:attribute-missing: warn
 :chomp: default headers packages
 :spring-boot-artifactory-repo: snapshot
 :github-tag: main

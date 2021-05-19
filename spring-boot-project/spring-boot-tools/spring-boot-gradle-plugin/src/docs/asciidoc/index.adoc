@@ -8,6 +8,7 @@ Andy Wilkinson, Scott Frederick
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
+:attribute-missing: warn
 
 :dependency-management-plugin: https://github.com/spring-gradle-plugins/dependency-management-plugin
 :dependency-management-plugin-documentation: https://docs.spring.io/dependency-management-plugin/docs/current/reference/html/

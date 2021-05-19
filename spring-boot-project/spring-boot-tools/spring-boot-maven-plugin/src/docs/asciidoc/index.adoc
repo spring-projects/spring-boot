@@ -8,6 +8,7 @@ Stephane Nicoll, Andy Wilkinson, Scott Frederick
 :icons: font
 :hide-uri-scheme:
 :docinfo: shared,private
+:attribute-missing: warn
 
 :buildpacks-reference: https://buildpacks.io/docs
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{gradle-project-version}
