@@ -96,8 +96,8 @@ class AsciidoctorConventions {
 	private void createAsciidoctorExtensionsConfiguration(Project project) {
 		ConfigurationContainer configurations = project.getConfigurations();
 		Configuration asciidoctorExtensions = configurations.maybeCreate(EXTENSIONS_CONFIGURATION);
-		asciidoctorExtensions.getDependencies().add(project.getDependencies()
-				.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.1-SNAPSHOT"));
+		asciidoctorExtensions.getDependencies().add(
+				project.getDependencies().create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.1"));
 		asciidoctorExtensions.getDependencies()
 				.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
 		Configuration dependencyManagement = configurations.findByName("dependencyManagement");
