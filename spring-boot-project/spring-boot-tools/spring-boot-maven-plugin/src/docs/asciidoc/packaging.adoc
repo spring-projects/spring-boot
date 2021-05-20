@@ -1,5 +1,5 @@
-[[repackage]]
-== Packaging Executable Archives
+[[packaging]]
+= Packaging Executable Archives
 The plugin can create executable archives (jar files and war files) that contain all of an application's dependencies and can then be run with `java -jar`.
 
 Packaging an executable archive is performed by the `repackage` goal, as shown in the following example:
@@ -12,7 +12,7 @@ include::../maven/packaging/repackage-pom.xml[tags=repackage]
 TIP: If you are using `spring-boot-starter-parent`, such execution is already pre-configured with a `repackage` execution ID so that only the plugin definition should be added.
 
 The example above repackages a `jar` or `war` archive that is built during the package phase of the Maven lifecycle, including any `provided` dependencies that are defined in the project.
-If some of these dependencies need to be excluded, you can use one of the `exclude` options; see the <<repackage-example-exclude-dependency,dependency exclusion>> for more details.
+If some of these dependencies need to be excluded, you can use one of the `exclude` options; see the <<packaging.examples.exclude-dependency,dependency exclusion>> for more details.
 
 The original (i.e. non-executable) artifact is renamed to `.original` by default but it is also possible to keep the original artifact using a custom classifier.
 
@@ -39,8 +39,8 @@ The `layout` property defaults to a value determined by the archive type (`jar` 
 
 
 
-[[repackage-layers]]
-=== Layered Jar or War
+[[packaging.layers]]
+== Layered Jar or War
 A repackaged jar contains the application's classes and dependencies in `BOOT-INF/classes` and `BOOT-INF/lib` respectively.
 Similarly, an executable war contains the application's classes in `WEB-INF/classes` and dependencies in `WEB-INF/lib` and `WEB-INF/lib-provided`.
 For cases where a docker image needs to be built from the contents of a jar or war, it's useful to be able to separate these directories further so that they can be written into distinct layers.
@@ -71,8 +71,8 @@ include::../maven/packaging/disable-layers-pom.xml[tags=disable-layers]
 
 
 
-[[repackage-layers-configuration]]
-==== Custom Layers Configuration
+[[packaging.layers.configuration=]]
+=== Custom Layers Configuration
 Depending on your application, you may want to tune how layers are created and add new ones.
 This can be done using a separate configuration file that should be registered as shown below:
 
@@ -123,13 +123,13 @@ include::goals/repackage.adoc[leveloffset=+1]
 
 
 
-[[repackage-examples]]
-=== Examples
+[[packaging.examples]]
+== Examples
 
 
 
-[[repackage-example-custom-classifier]]
-==== Custom Classifier
+[[packaging.examples.custom-classifier]]
+=== Custom Classifier
 By default, the `repackage` goal replaces the original artifact with the repackaged one.
 That is a sane behavior for modules that represent an application but if your module is used as a dependency of another module, you need to provide a classifier for the repackaged one.
 The reason for that is that application classes are packaged in `BOOT-INF/classes` so that the dependent module cannot load a repackaged jar's classes.
@@ -170,8 +170,8 @@ include::../maven/packaging/jar-plugin-first-pom.xml[tags=jar-plugin-first]
 
 
 
-[[repackage-example-custom-name]]
-==== Custom Name
+[[packaging.examples.custom-name]]
+=== Custom Name
 If you need the repackaged jar to have a different local name than the one defined by the `artifactId` attribute of the project, use the standard `finalName`, as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
@@ -183,8 +183,8 @@ This configuration will generate the repackaged artifact in `target/my-app.jar`.
 
 
 
-[[repackage-example-local-artifact]]
-==== Local Repackaged Artifact
+[[packaging.examples.local-artifact]]
+=== Local Repackaged Artifact
 By default, the `repackage` goal replaces the original artifact with the executable one.
 If you need to only deploy the original jar and yet be able to run your app with the regular file name, configure the plugin as follows:
 
@@ -198,8 +198,8 @@ Only the original one will be installed/deployed.
 
 
 
-[[repackage-example-custom-layout]]
-==== Custom Layout
+[[packaging.examples.custom-layout]]
+=== Custom Layout
 Spring Boot repackages the jar file for this project using a custom layout factory defined in the additional jar file, provided as a dependency to the build plugin:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
@@ -214,8 +214,8 @@ Layout factories are always ignored if an explicit <<goals-repackage-parameters-
 
 
 
-[[repackage-example-exclude-dependency]]
-==== Dependency Exclusion
+[[packaging.examples.exclude-dependency]]
+=== Dependency Exclusion
 By default, both the `repackage` and the `run` goals will include any `provided` dependencies that are defined in the project.
 A Spring Boot project should consider `provided` dependencies as "container" dependencies that are required to run the application.
 
@@ -243,8 +243,8 @@ include::../maven/packaging/exclude-artifact-group-pom.xml[tags=exclude-artifact
 
 
 
-[[repackage-layered-archive-tools]]
-==== Layered Archive Tools
+[[packaging.examples.layered-archive-tools]]
+=== Layered Archive Tools
 When a layered jar or war is created, the `spring-boot-jarmode-layertools` jar will be added as a dependency to your archive.
 With this jar on the classpath, you can launch your application in a special mode which allows the bootstrap code to run something entirely different from your application, for example, something that extracts the layers.
 If you wish to exclude this dependency, you can do so in the following manner:
@@ -256,8 +256,8 @@ include::../maven/packaging/exclude-dependency-pom.xml[tags=exclude-dependency]
 
 
 
-[[repackage-layered-archive-additional-layers]]
-==== Custom Layers Configuration
+[[packaging.examples.custom-layers-configuration]]
+=== Custom Layers Configuration
 The default setup splits dependencies into snapshot and non-snapshot, however, you may have more complex rules.
 For example, you may want to isolate company-specific dependencies of your project in a dedicated layer.
 The following `layers.xml` configuration shown one such setup:

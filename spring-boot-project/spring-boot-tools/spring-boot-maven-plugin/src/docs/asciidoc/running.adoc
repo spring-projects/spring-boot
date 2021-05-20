@@ -1,5 +1,5 @@
 [[run]]
-== Running your Application with Maven
+= Running your Application with Maven
 The plugin includes a run goal which can be used to launch your application from the command line, as shown in the following example:
 
 [indent=0]
@@ -7,13 +7,13 @@ The plugin includes a run goal which can be used to launch your application from
 	$ mvn spring-boot:run
 ----
 
-Application arguments can be specified using the `arguments` parameter, see <<run-example-application-arguments,using application arguments>> for more details.
+Application arguments can be specified using the `arguments` parameter, see <<run.examples.using-application-arguments,using application arguments>> for more details.
 
 By default the application is executed in a forked process and setting properties on the command-line will not affect the application.
-If you need to specify some JVM arguments (i.e. for debugging purposes), you can use the `jvmArguments` parameter, see <<run-example-debug,Debug the application>> for more details.
-There is also explicit support for <<run-example-system-properties,system properties>> and <<run-example-environment-variables,environment variables>>.
+If you need to specify some JVM arguments (i.e. for debugging purposes), you can use the `jvmArguments` parameter, see <<run.examples.debug,Debug the application>> for more details.
+There is also explicit support for <<run.examples.system-properties,system properties>> and <<run.examples.environment-variables,environment variables>>.
 
-As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see <<run-example-active-profiles,Specify active profiles>>.
+As enabling a profile is quite common, there is dedicated `profiles` property that offers a shortcut for `-Dspring-boot.run.jvmArguments="-Dspring.profiles.active=dev"`, see <<run.examples.specify-active-profiles,Specify active profiles>>.
 
 Although this is not recommended, it is possible to execute the application directly from the Maven JVM by disabling the `fork` property.
 Doing so means that the `jvmArguments`, `systemPropertyVariables`, `environmentVariables` and `agents` options are ignored.
@@ -54,7 +54,7 @@ It is also a helpful way of allowing your front end developers to work without n
 NOTE: A side effect of using this feature is that filtering of resources at build time will not work.
 
 In order to be consistent with the `repackage` goal, the `run` goal builds the classpath in such a way that any dependency that is excluded in the plugin's configuration gets excluded from the classpath as well.
-For more details, see <<repackage-example-exclude-dependency,the dedicated example>>.
+For more details, see <<packaging.examples.exclude-dependency,the dedicated example>>.
 
 Sometimes it is useful to include test dependencies when running the application.
 For example, if you want to run your application in a test mode that uses stub classes.
@@ -66,13 +66,13 @@ include::goals/run.adoc[leveloffset=+1]
 
 
 
-[[run-examples]]
-=== Examples
+[[run.examples]]
+== Examples
 
 
 
-[[run-example-debug]]
-==== Debug the Application
+[[run.examples.debug]]
+=== Debug the Application
 By default, the `run` goal runs your application in a forked process.
 If you need to debug it, you should add the necessary JVM arguments to enable remote debugging.
 The following configuration suspend the process until a debugger has joined on port 5005:
@@ -91,8 +91,8 @@ These arguments can be specified on the command line as well, make sure to wrap 
 
 
 
-[[run-example-system-properties]]
-==== Using System Properties
+[[run.examples.system-properties]]
+=== Using System Properties
 System properties can be specified using the `systemPropertyVariables` attribute.
 The following example sets `property1` to `test` and `property2` to 42:
 
@@ -117,8 +117,8 @@ In the following example, the value for `property1` is `overridden`:
 
 
 
-[[run-example-environment-variables]]
-==== Using Environment Variables
+[[run.examples.environment-variables]]
+=== Using Environment Variables
 Environment variables can be specified using the `environmentVariables` attribute.
 The following example sets the 'ENV1', 'ENV2', 'ENV3', 'ENV4' env variables:
 
@@ -137,8 +137,8 @@ Environment variables defined this way take precedence over existing values.
 
 
 
-[[run-example-application-arguments]]
-==== Using Application Arguments
+[[run.examples.using-application-arguments]]
+=== Using Application Arguments
 Application arguments can be specified using the `arguments` attribute.
 The following example sets two arguments: `property1` and `property2=42`:
 
@@ -158,8 +158,8 @@ In the following example, two arguments are available: `property1` and `property
 
 
 
-[[run-example-active-profiles]]
-==== Specify Active Profiles
+[[run.examples.specify-active-profiles]]
+=== Specify Active Profiles
 The active profiles to use for a particular application can be specified using the `profiles` argument.
 
 The following configuration enables the `local` and `dev` profiles:

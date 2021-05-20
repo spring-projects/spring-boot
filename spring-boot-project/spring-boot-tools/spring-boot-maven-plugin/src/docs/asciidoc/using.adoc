@@ -1,5 +1,5 @@
 [[using]]
-== Using the Plugin
+= Using the Plugin
 Maven users can inherit from the `spring-boot-starter-parent` project to obtain sensible defaults.
 The parent project provides the following features:
 
@@ -17,8 +17,8 @@ NOTE: Since the `application.properties` and `application.yml` files accept Spri
 
 
 
-[[using-parent-pom]]
-=== Inheriting the Starter Parent POM
+[[using.parent-pom]]
+== Inheriting the Starter Parent POM
 To configure your project to inherit from the `spring-boot-starter-parent`, set the `parent` as follows:
 
 [source,xml,indent=0,subs="verbatim,quotes,attributes"]
@@ -46,8 +46,8 @@ Browse the {version-properties-appendix}[`Dependency versions Appendix`] in the 
 
 
 
-[[using-import]]
-=== Using Spring Boot without the Parent POM
+[[using.import]]
+== Using Spring Boot without the Parent POM
 There may be reasons for you not to inherit from the `spring-boot-starter-parent` POM.
 You may have your own corporate standard parent that you need to use or you may prefer to explicitly declare all your Maven configuration.
 
@@ -69,8 +69,8 @@ include::../maven/using/no-starter-parent-override-dependencies-pom.xml[tags=no-
 
 
 
-[[using-overriding-command-line]]
-=== Overriding settings on the command-line
+[[using.overriding-command-line]]
+== Overriding settings on the command-line
 The plugin offers a number of user properties, starting with `spring-boot`, to let you customize the configuration from the command-line.
 
 For instance, you could tune the profiles to enable when running the application as follows:
