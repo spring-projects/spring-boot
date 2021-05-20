@@ -18,6 +18,7 @@ repositories {
 		url "https://repo.spring.io/release"
 		mavenContent {
 			includeGroup "io.spring.asciidoctor"
+			includeGroup "io.spring.asciidoctor.backends"
 		}
 	}
 }
