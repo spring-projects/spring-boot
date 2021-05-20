@@ -1,5 +1,5 @@
 [[getting-started]]
-== Getting Started
+= Getting Started
 To get started with the plugin it needs to be applied to your project.
 
 ifeval::["{spring-boot-artifactory-repo}" == "release"]
