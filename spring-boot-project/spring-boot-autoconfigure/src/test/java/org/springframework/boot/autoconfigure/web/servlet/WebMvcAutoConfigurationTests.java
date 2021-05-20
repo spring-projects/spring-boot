@@ -32,6 +32,7 @@ import java.util.concurrent.Executor;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Consumer;
 
+import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.ValidatorFactory;
@@ -52,9 +53,11 @@ import org.springframework.boot.context.properties.IncompatibleConfigurationExce
 import org.springframework.boot.test.context.assertj.AssertableWebApplicationContext;
 import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.WebApplicationContextRunner;
+import org.springframework.boot.web.embedded.tomcat.TomcatServletWebServerFactory;
 import org.springframework.boot.web.server.WebServerFactoryCustomizerBeanPostProcessor;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.boot.web.servlet.ServletRegistrationBean;
+import org.springframework.boot.web.servlet.context.AnnotationConfigServletWebServerApplicationContext;
 import org.springframework.boot.web.servlet.filter.OrderedFormContentFilter;
 import org.springframework.boot.web.servlet.server.ServletWebServerFactory;
 import org.springframework.context.ApplicationContext;
@@ -82,6 +85,7 @@ import org.springframework.web.accept.ContentNegotiationStrategy;
 import org.springframework.web.accept.ParameterContentNegotiationStrategy;
 import org.springframework.web.bind.support.ConfigurableWebBindingInitializer;
 import org.springframework.web.context.request.ServletWebRequest;
+import org.springframework.web.context.support.AnnotationConfigWebApplicationContext;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.FormContentFilter;
 import org.springframework.web.filter.HiddenHttpMethodFilter;
@@ -99,6 +103,7 @@ import org.springframework.web.servlet.ViewResolver;
 import org.springframework.web.servlet.config.annotation.AsyncSupportConfigurer;
 import org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.handler.AbstractHandlerExceptionResolver;
@@ -1005,6 +1010,25 @@ class WebMvcAutoConfigurationTests {
 						(handler) -> assertThat(handler.isUseLastModified()).isFalse()));
 	}
 
+	@Test // gh-25743
+	void addResourceHandlersAppliesToChildAndParentContext() {
+		try (AnnotationConfigServletWebServerApplicationContext context = new AnnotationConfigServletWebServerApplicationContext()) {
+			context.register(WebMvcAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
+					HttpMessageConvertersAutoConfiguration.class, PropertyPlaceholderAutoConfiguration.class,
+					ResourceHandlersWithChildAndParentContextConfiguration.class);
+			context.refresh();
+			SimpleUrlHandlerMapping resourceHandlerMapping = context.getBean("resourceHandlerMapping",
+					SimpleUrlHandlerMapping.class);
+			DispatcherServlet extraDispatcherServlet = context.getBean("extraDispatcherServlet",
+					DispatcherServlet.class);
+			SimpleUrlHandlerMapping extraResourceHandlerMapping = extraDispatcherServlet.getWebApplicationContext()
+					.getBean("resourceHandlerMapping", SimpleUrlHandlerMapping.class);
+			assertThat(resourceHandlerMapping).isNotSameAs(extraResourceHandlerMapping);
+			assertThat(resourceHandlerMapping.getUrlMap()).containsKey("/**");
+			assertThat(extraResourceHandlerMapping.getUrlMap()).containsKey("/**");
+		}
+	}
+
 	private void assertResourceHttpRequestHandler(AssertableWebApplicationContext context,
 			Consumer<ResourceHttpRequestHandler> handlerConsumer) {
 		Map<String, Object> handlerMap = getHandlerMap(context.getBean("resourceHandlerMapping", HandlerMapping.class));
@@ -1459,7 +1483,6 @@ class WebMvcAutoConfigurationTests {
 
 		@Override
 		public void setThemeName(HttpServletRequest request, HttpServletResponse response, String themeName) {
-
 		}
 
 	}
@@ -1475,6 +1498,51 @@ class WebMvcAutoConfigurationTests {
 		protected void updateFlashMaps(List<FlashMap> flashMaps, HttpServletRequest request,
 				HttpServletResponse response) {
 
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class ResourceHandlersWithChildAndParentContextConfiguration {
+
+		@Bean
+		TomcatServletWebServerFactory webServerFactory() {
+			return new TomcatServletWebServerFactory(0);
+		}
+
+		@Bean
+		ServletRegistrationBean<?> additionalDispatcherServlet(DispatcherServlet extraDispatcherServlet) {
+			ServletRegistrationBean<?> registration = new ServletRegistrationBean<>(extraDispatcherServlet, "/extra/*");
+			registration.setName("additionalDispatcherServlet");
+			registration.setLoadOnStartup(1);
+			return registration;
+		}
+
+		@Bean
+		private DispatcherServlet extraDispatcherServlet() throws ServletException {
+			DispatcherServlet dispatcherServlet = new DispatcherServlet();
+			AnnotationConfigWebApplicationContext applicationContext = new AnnotationConfigWebApplicationContext();
+			applicationContext.register(ResourceHandlersWithChildAndParentContextChildConfiguration.class);
+			dispatcherServlet.setApplicationContext(applicationContext);
+			return dispatcherServlet;
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	@EnableWebMvc
+	static class ResourceHandlersWithChildAndParentContextChildConfiguration {
+
+		@Bean
+		WebMvcConfigurer myConfigurer() {
+			return new WebMvcConfigurer() {
+
+				@Override
+				public void addResourceHandlers(ResourceHandlerRegistry registry) {
+					registry.addResourceHandler("/testtesttest");
+				}
+
+			};
 		}
 
 	}
