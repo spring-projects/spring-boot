@@ -4,7 +4,7 @@ The `loggers` endpoint provides access to the application's loggers and the conf
 
 
 
-[[loggers-all]]
+[[loggers.all]]
 == Retrieving All Loggers
 To retrieve the application's loggers, make a `GET` request to `/actuator/loggers`, as shown in the following curl-based example:
 
@@ -16,7 +16,7 @@ include::{snippets}/loggers/all/http-response.adoc[]
 
 
 
-[[loggers-all-response-structure]]
+[[loggers.all.response-structure]]
 === Response Structure
 The response contains details of the application's loggers.
 The following table describes the structure of the response:
@@ -26,7 +26,7 @@ include::{snippets}/loggers/all/response-fields.adoc[]
 
 
 
-[[loggers-single]]
+[[loggers.single]]
 == Retrieving a Single Logger
 To retrieve a single logger, make a `GET` request to `/actuator/loggers/{logger.name}`, as shown in the following curl-based example:
 
@@ -39,7 +39,7 @@ include::{snippets}/loggers/single/http-response.adoc[]
 
 
 
-[[loggers-single-response-structure]]
+[[loggers.single.response-structure]]
 === Response Structure
 The response contains details of the requested logger.
 The following table describes the structure of the response:
@@ -49,7 +49,7 @@ include::{snippets}/loggers/single/response-fields.adoc[]
 
 
 
-[[loggers-group]]
+[[loggers.group]]
 == Retrieving a Single Group
 To retrieve a single group, make a `GET` request to `/actuator/loggers/{group.name}`,
 as shown in the following curl-based example:
@@ -63,7 +63,7 @@ include::{snippets}/loggers/group/http-response.adoc[]
 
 
 
-[[loggers-group-response-structure]]
+[[loggers.group.response-structure]]
 === Response Structure
 The response contains details of the requested group.
 The following table describes the structure of the response:
@@ -73,7 +73,7 @@ include::{snippets}/loggers/group/response-fields.adoc[]
 
 
 
-[[loggers-setting-level]]
+[[loggers.setting-level]]
 == Setting a Log Level
 To set the level of a logger, make a `POST` request to `/actuator/loggers/{logger.name}` with a JSON body that specifies the configured level for the logger, as shown in the following curl-based example:
 
@@ -83,7 +83,7 @@ The preceding example sets the `configuredLevel` of the `com.example` logger to 
 
 
 
-[[loggers-setting-level-request-structure]]
+[[loggers.setting-level.request-structure]]
 === Request Structure
 The request specifies the desired level of the logger.
 The following table describes the structure of the request:
@@ -93,7 +93,7 @@ include::{snippets}/loggers/set/request-fields.adoc[]
 
 
 
-[[loggers-group-setting-level]]
+[[loggers.group-setting-level]]
 == Setting a Log Level for a Group
 To set the level of a logger, make a `POST` request to `/actuator/loggers/{group.name}` with a JSON body that specifies the configured level for the logger group, as shown in the following curl-based example:
 
@@ -103,7 +103,7 @@ The preceding example sets the `configuredLevel` of the `test` logger group to `
 
 
 
-[[loggers-group-setting-level-request-structure]]
+[[loggers.group-setting-level.request-structure]]
 === Request Structure
 The request specifies the desired level of the logger group.
 The following table describes the structure of the request:
@@ -113,7 +113,7 @@ include::{snippets}/loggers/set/request-fields.adoc[]
 
 
 
-[[loggers-clearing-level]]
+[[loggers.clearing-level]]
 == Clearing a Log Level
 To clear the level of a logger, make a `POST` request to `/actuator/loggers/{logger.name}` with a JSON body containing an empty object, as shown in the following curl-based example:
 

@@ -4,7 +4,7 @@ The `prometheus` endpoint provides Spring Boot application's metrics in the form
 
 
 
-[[prometheus-retrieving]]
+[[prometheus.retrieving]]
 == Retrieving All Metrics
 To retrieve all metrics, make a `GET` request to `/actuator/prometheus`, as shown in the following curl-based example:
 
@@ -25,7 +25,7 @@ include::{snippets}/prometheus/openmetrics/http-response.adoc[]
 
 
 
-[[prometheus-retrieving-query-parameters]]
+[[prometheus.retrieving.query-parameters]]
 === Query Parameters
 The endpoint uses query parameters to limit the samples that it returns.
 The following table shows the supported query parameters:
@@ -35,7 +35,7 @@ include::{snippets}/prometheus/names/request-parameters.adoc[]
 
 
 
-[[prometheus-retrieving-names]]
+[[prometheus.retrieving-names]]
 == Retrieving Filtered Metrics
 To retrieve metrics matching specific names, make a `GET` request to `/actuator/prometheus` with the `includedNames` query parameter, as shown in the following curl-based example:
 

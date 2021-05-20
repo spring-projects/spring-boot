@@ -4,7 +4,7 @@ The `metrics` endpoint provides access to application metrics.
 
 
 
-[[metrics-retrieving-names]]
+[[metrics.retrieving-names]]
 == Retrieving Metric Names
 To retrieve the names of the available metrics, make a `GET` request to `/actuator/metrics`, as shown in the following curl-based example:
 
@@ -16,7 +16,7 @@ include::{snippets}/metrics/names/http-response.adoc[]
 
 
 
-[[metrics-retrieving-names-response-structure]]
+[[metrics.retrieving-names.response-structure]]
 === Response Structure
 The response contains details of the metric names.
 The following table describes the structure of the response:
@@ -26,7 +26,7 @@ include::{snippets}/metrics/names/response-fields.adoc[]
 
 
 
-[[metrics-retrieving-metric]]
+[[metrics.retrieving-metric]]
 == Retrieving a Metric
 To retrieve a metric, make a `GET` request to `/actuator/metrics/{metric.name}`, as shown in the following curl-based example:
 
@@ -39,9 +39,9 @@ include::{snippets}/metrics/metric/http-response.adoc[]
 
 
 
-[[metrics-retrieving-metric-query-parameters]]
+[[metrics.retrieving-metric.query-parameters]]
 === Query Parameters
-The endpoint uses query parameters to <<metrics-drilling-down,drill down>> into a metric by using its tags.
+The endpoint uses query parameters to <<metrics.drilling-down,drill down>> into a metric by using its tags.
 The following table shows the single supported query parameter:
 
 [cols="2,4"]
@@ -49,7 +49,7 @@ include::{snippets}/metrics/metric-with-tags/request-parameters.adoc[]
 
 
 
-[[metrics-retrieving-metric-response-structure]]
+[[metrics.retrieving-metric.response-structure]]
 === Response structure
 The response contains details of the metric.
 The following table describes the structure of the response:
@@ -58,7 +58,7 @@ include::{snippets}/metrics/metric/response-fields.adoc[]
 
 
 
-[[metrics-drilling-down]]
+[[metrics.drilling-down]]
 == Drilling Down
 To drill down into a metric, make a `GET` request to `/actuator/metrics/{metric.name}` using the `tag` query parameter, as shown in the following curl-based example:
 

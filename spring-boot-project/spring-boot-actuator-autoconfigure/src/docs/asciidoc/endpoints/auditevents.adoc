@@ -4,7 +4,7 @@ The `auditevents` endpoint provides information about the application's audit ev
 
 
 
-[[audit-events-retrieving]]
+[[audit-events.retrieving]]
 == Retrieving Audit Events
 To retrieve the audit events, make a `GET` request to `/actuator/auditevents`, as shown in the following curl-based example:
 
@@ -17,7 +17,7 @@ include::{snippets}/auditevents/filtered/http-response.adoc[]
 
 
 
-[[audit-events-retrieving-query-parameters]]
+[[audit-events.retrieving.query-parameters]]
 === Query Parameters
 The endpoint uses query parameters to limit the events that it returns.
 The following table shows the supported query parameters:
@@ -27,7 +27,7 @@ include::{snippets}/auditevents/filtered/request-parameters.adoc[]
 
 
 
-[[audit-events-retrieving-response-structure]]
+[[audit-events.retrieving.response-structure]]
 === Response Structure
 The response contains details of all of the audit events that matched the query.
 The following table describes the structure of the response:

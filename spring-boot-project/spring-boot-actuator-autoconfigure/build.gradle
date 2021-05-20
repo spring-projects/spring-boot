@@ -13,8 +13,18 @@ configurations {
 	documentation
 }
 
+repositories {
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+		}
+	}
+}
+
 dependencies {
 	asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 
 	api(project(":spring-boot-project:spring-boot-actuator"))
 
