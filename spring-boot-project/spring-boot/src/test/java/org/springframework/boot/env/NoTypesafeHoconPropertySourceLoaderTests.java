@@ -26,6 +26,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
  * Tests for {@link HoconPropertySourceLoader} when lightbend's config is not available.
  *
  * @author Madhura Bhave
+ * @author Mario Daniel Ruiz Saavedra
  */
 @ClassPathExclusions("config-*.jar")
 class NoTypesafeHoconPropertySourceLoaderTests {

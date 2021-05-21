@@ -30,11 +30,13 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Tests for {@link YamlPropertySourceLoader}.
+ * Tests for {@link HoconPropertySourceLoader}.
  *
  * @author Dave Syer
  * @author Phillip Webb
  * @author Andy Wilkinson
+ * @author Mario Daniel Ruiz Saavedra
+ * @author Dmitry Pavlov
  */
 class HoconPropertySourceLoaderTests {
 
@@ -73,6 +75,27 @@ class HoconPropertySourceLoaderTests {
 				System.out.println(name + " = " + enumerableSource.getProperty(name));
 			}
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	private <T extends PropertySource<?>> T loadProperties(PropertySourceLoader propertySourceLoader, String path) throws IOException {
+		List<PropertySource<?>> source = propertySourceLoader.load("hocon", new ClassPathResource(path));
+		assertThat("One property source expected", source.size(), is(1));
+		return (T) source.get(0);
+	}
+
+	@Test
+	void propertyOriginIsCorrectlyDetermined() throws IOException {
+		OriginTrackedMapPropertySource hoconParse = loadProperties(new HoconPropertySourceLoader(), "/application.conf");
+
+		verifyPropertyHasOriginOnLine(hoconParse, "spring.datasource.url", 3);
+		verifyPropertyHasOriginOnLine(hoconParse, "server.port", 9);
+		verifyPropertyHasOriginOnLine(hoconParse, "myApp.configuration.connectionSettings.two.two_sub", 20);
+	}
+
+	void verifyPropertyHasOriginOnLine(OriginTrackedMapPropertySource hoconParse, String name, int lineNumber) {
+		Object propertyOrigin = hoconParse.getOrigin(name);
+		assertThat(propertyOrigin.toString(), is("class path resource [application.conf]:" + lineNumber + ":1"));
 	}
 
 }
