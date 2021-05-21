@@ -1,0 +1,31 @@
+// This comment is here just to show you that HOCON supports comments
+# This is a comment too
+
+name = "Martin D'vloper"
+job = "Developer"
+skill = "Elite"
+employed = true
+// Quotes are optional for strings
+foods = ["Apple", Orange, "Strawberry", "Mango"]
+languages {
+  perl = Elite
+  python = Elite
+  pascal = Lame
+}
+education: "4 GCSEs\n3 A-Levels\nBSc in the Internet of Things"
+example {
+  foo {
+    name = "springboot"
+    url = "https://springboot.example.com/"
+
+    bar {
+      bar1 = "baz"
+      bar2 = "bling"
+    }
+  }
+}
+duration = 5s
+empty = ""
+null-value = null
+emptylist = []
+emptymap = {}

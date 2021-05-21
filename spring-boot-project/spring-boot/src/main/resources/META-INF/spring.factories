@@ -7,7 +7,8 @@ org.springframework.boot.logging.java.JavaLoggingSystem.Factory
 # PropertySource Loaders
 org.springframework.boot.env.PropertySourceLoader=\
 org.springframework.boot.env.PropertiesPropertySourceLoader,\
-org.springframework.boot.env.YamlPropertySourceLoader
+org.springframework.boot.env.YamlPropertySourceLoader,\
+org.springframework.boot.env.HoconPropertySourceLoader
 
 # ConfigData Location Resolvers
 org.springframework.boot.context.config.ConfigDataLocationResolver=\

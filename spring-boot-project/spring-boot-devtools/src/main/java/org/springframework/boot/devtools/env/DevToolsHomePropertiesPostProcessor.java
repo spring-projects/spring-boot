@@ -28,10 +28,7 @@ import java.util.function.Function;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.devtools.system.DevToolsEnablementDeducer;
-import org.springframework.boot.env.EnvironmentPostProcessor;
-import org.springframework.boot.env.PropertiesPropertySourceLoader;
-import org.springframework.boot.env.PropertySourceLoader;
-import org.springframework.boot.env.YamlPropertySourceLoader;
+import org.springframework.boot.env.*;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.io.FileSystemResource;
@@ -64,6 +61,9 @@ public class DevToolsHomePropertiesPostProcessor implements EnvironmentPostProce
 		propertySourceLoaders.add(new PropertiesPropertySourceLoader());
 		if (ClassUtils.isPresent("org.yaml.snakeyaml.Yaml", null)) {
 			propertySourceLoaders.add(new YamlPropertySourceLoader());
+		}
+		if(ClassUtils.isPresent("com.typesafe.config.ConfigFactory", null)) {
+			propertySourceLoaders.add(new HoconPropertySourceLoader());
 		}
 		PROPERTY_SOURCE_LOADERS = Collections.unmodifiableSet(propertySourceLoaders);
 	}

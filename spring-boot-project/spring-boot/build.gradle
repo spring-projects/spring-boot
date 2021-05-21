@@ -81,6 +81,7 @@ dependencies {
 	optional("org.springframework.security:spring-security-web")
 	optional("org.springframework.ws:spring-ws-core")
 	optional("org.yaml:snakeyaml")
+	optional("com.typesafe:config")
 	optional("org.jetbrains.kotlin:kotlin-reflect")
 	optional("org.jetbrains.kotlin:kotlin-stdlib")
 

@@ -1807,6 +1807,15 @@ bom {
 			]
 		}
 	}
+
+	library ("Typesafe Config", "1.4.1") {
+		group("com.typesafe"){
+			modules = [
+					"config"
+			]
+		}
+	}
+
 	library("UnboundID LDAPSDK", "4.0.14") {
 		group("com.unboundid") {
 			modules = [
