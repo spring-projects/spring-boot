@@ -38,7 +38,7 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessorTests {
 	private MetricsRepositoryMethodInvocationListener listener = mock(MetricsRepositoryMethodInvocationListener.class);
 
 	private MetricsRepositoryMethodInvocationListenerBeanPostProcessor postProcessor = new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
-			this.listener);
+			() -> this.listener);
 
 	@Test
 	@SuppressWarnings("rawtypes")
