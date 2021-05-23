@@ -53,7 +53,7 @@ TIP: See the {spring-boot-gradle-plugin-docs}#integrating-with-actuator-build-in
 Both Maven and Gradle allow generating a `git.properties` file containing information about the state of your `git` source code repository when the project was built.
 
 For Maven users, the `spring-boot-starter-parent` POM includes a pre-configured plugin to generate a `git.properties` file.
-To use it, add the following declaration to your POM:
+To use it, add the following declaration for the https://github.com/git-commit-id/git-commit-id-maven-plugin[`Git Commit Id Plugin`] to your POM:
 
 [source,xml,indent=0,subs="verbatim"]
 ----
