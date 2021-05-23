@@ -149,14 +149,14 @@ class JavaPluginActionIntegrationTests {
 
 	@TestTemplate
 	void productionRuntimeClasspathIsConfiguredWithResolvabilityAndConsumabilityThatMatchesRuntimeClasspath() {
-		String productionRuntime = this.gradleBuild.build("configurationResolvabilityAndConsumability",
-				"-PconfigurationName=runtimeClasspath", "-PapplyJavaPlugin").getOutput();
-		assertThat(productionRuntime).contains("canBeResolved: true");
-		assertThat(productionRuntime).contains("canBeConsumed: false");
 		String runtime = this.gradleBuild.build("configurationResolvabilityAndConsumability",
-				"-PconfigurationName=productionRuntimeClasspath", "-PapplyJavaPlugin").getOutput();
+				"-PconfigurationName=runtimeClasspath", "-PapplyJavaPlugin").getOutput();
 		assertThat(runtime).contains("canBeResolved: true");
 		assertThat(runtime).contains("canBeConsumed: false");
+		String productionRuntime = this.gradleBuild.build("configurationResolvabilityAndConsumability",
+				"-PconfigurationName=productionRuntimeClasspath", "-PapplyJavaPlugin").getOutput();
+		assertThat(productionRuntime).contains("canBeResolved: true");
+		assertThat(productionRuntime).contains("canBeConsumed: false");
 	}
 
 	private void createMinimalMainSource() throws IOException {

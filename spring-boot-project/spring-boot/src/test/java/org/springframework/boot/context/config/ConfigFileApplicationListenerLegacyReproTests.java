@@ -33,6 +33,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  *
  * @author Phillip Webb
  * @author Dave Syer
+ * @author Nguyen Bao Sach
  */
 @ExtendWith(UseLegacyProcessing.class)
 class ConfigFileApplicationListenerLegacyReproTests {

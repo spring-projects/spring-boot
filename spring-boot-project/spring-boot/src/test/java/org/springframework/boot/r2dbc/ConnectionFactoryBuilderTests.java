@@ -232,6 +232,9 @@ class ConnectionFactoryBuilderTests {
 
 		ACQUIRE_RETRY(PoolingConnectionFactoryProvider.ACQUIRE_RETRY, 4, "acquireRetry"),
 
+		BACKGROUND_EVICTION_INTERVAL(PoolingConnectionFactoryProvider.BACKGROUND_EVICTION_INTERVAL,
+				Duration.ofSeconds(120), "backgroundEvictionInterval"),
+
 		INITIAL_SIZE(PoolingConnectionFactoryProvider.INITIAL_SIZE, 2, "initialSize"),
 
 		MAX_SIZE(PoolingConnectionFactoryProvider.MAX_SIZE, 8, "maxSize"),

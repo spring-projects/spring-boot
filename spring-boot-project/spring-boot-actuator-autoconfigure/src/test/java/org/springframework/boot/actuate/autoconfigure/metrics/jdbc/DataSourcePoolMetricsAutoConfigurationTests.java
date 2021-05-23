@@ -28,7 +28,6 @@ import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.aop.framework.ProxyFactory;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.autoconfigure.metrics.test.MetricsRun;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -312,7 +311,7 @@ class DataSourcePoolMetricsAutoConfigurationTests {
 			}
 
 			@Override
-			public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
+			public Object postProcessAfterInitialization(Object bean, String beanName) {
 				if (bean instanceof HikariDataSource) {
 					try {
 						((HikariDataSource) bean).getConnection().close();

@@ -1,3 +1,0 @@
-[[application-properties.json]]
-== JSON Properties [[json-properties]]
-include::documented-application-properties/json.adoc[]

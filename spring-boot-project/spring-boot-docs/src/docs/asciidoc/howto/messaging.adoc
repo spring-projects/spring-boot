@@ -1,6 +1,6 @@
 [[howto.messaging]]
 == Messaging
-Spring Boot offers a number of starters that include messaging.
+Spring Boot offers a number of starters to support messaging.
 This section answers questions that arise from using messaging with Spring Boot.
 
 

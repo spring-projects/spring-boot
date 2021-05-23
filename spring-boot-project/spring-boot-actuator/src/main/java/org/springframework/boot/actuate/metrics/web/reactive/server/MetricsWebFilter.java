@@ -23,6 +23,8 @@ import java.util.concurrent.TimeUnit;
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.reactivestreams.Publisher;
 import reactor.core.publisher.Mono;
 
@@ -48,6 +50,8 @@ import org.springframework.web.server.WebFilterChain;
  */
 @Order(Ordered.HIGHEST_PRECEDENCE + 1)
 public class MetricsWebFilter implements WebFilter {
+
+	private static Log logger = LogFactory.getLog(MetricsWebFilter.class);
 
 	private final MeterRegistry registry;
 
@@ -98,13 +102,19 @@ public class MetricsWebFilter implements WebFilter {
 	}
 
 	private void record(ServerWebExchange exchange, Throwable cause, long start) {
-		cause = (cause != null) ? cause : exchange.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE);
-		Object handler = exchange.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
-		Set<Timed> annotations = getTimedAnnotations(handler);
-		Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
-		long duration = System.nanoTime() - start;
-		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-				(builder) -> builder.tags(tags).register(this.registry).record(duration, TimeUnit.NANOSECONDS));
+		try {
+			cause = (cause != null) ? cause : exchange.getAttribute(ErrorAttributes.ERROR_ATTRIBUTE);
+			Object handler = exchange.getAttribute(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE);
+			Set<Timed> annotations = getTimedAnnotations(handler);
+			Iterable<Tag> tags = this.tagsProvider.httpRequestTags(exchange, cause);
+			long duration = System.nanoTime() - start;
+			AutoTimer.apply(this.autoTimer, this.metricName, annotations,
+					(builder) -> builder.tags(tags).register(this.registry).record(duration, TimeUnit.NANOSECONDS));
+		}
+		catch (Exception ex) {
+			logger.warn("Failed to record timer metrics", ex);
+			// Allow exchange to continue, unaffected by metrics problem
+		}
 	}
 
 	private Set<Timed> getTimedAnnotations(Object handler) {

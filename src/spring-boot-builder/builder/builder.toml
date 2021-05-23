@@ -1,0 +1,17 @@
+# Buildpacks to include in builder
+[[buildpacks]]
+id = "spring-boot/test-info"
+version = "0.0.1"
+uri = "../buildpacks/test-info"
+
+# Order used for detection
+[[order]]
+[[order.group]]
+id = "spring-boot/test-info"
+version = "0.0.1"
+
+# Stack that will be used by the builder
+[stack]
+id = "io.paketo.stacks.tiny"
+build-image = "projects.registry.vmware.com/springboot/build:tiny-cnb"
+run-image = "projects.registry.vmware.com/springboot/run:tiny-cnb"

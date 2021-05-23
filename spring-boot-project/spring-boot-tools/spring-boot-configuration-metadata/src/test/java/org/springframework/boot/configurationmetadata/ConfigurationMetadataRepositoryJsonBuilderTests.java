@@ -34,7 +34,7 @@ import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException
 class ConfigurationMetadataRepositoryJsonBuilderTests extends AbstractConfigurationMetadataTests {
 
 	@Test
-	void nullResource() throws IOException {
+	void nullResource() {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> ConfigurationMetadataRepositoryJsonBuilder.create().withJsonResource(null));
 	}

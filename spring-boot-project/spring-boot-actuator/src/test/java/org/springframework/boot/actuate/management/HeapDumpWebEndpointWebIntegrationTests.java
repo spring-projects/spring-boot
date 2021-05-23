@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -59,13 +59,13 @@ class HeapDumpWebEndpointWebIntegrationTests {
 	}
 
 	@WebEndpointTest
-	void getRequestShouldReturnHeapDumpInResponseBody(WebTestClient client) throws Exception {
+	void getRequestShouldReturnHeapDumpInResponseBody(WebTestClient client) {
 		client.get().uri("/actuator/heapdump").exchange().expectStatus().isOk().expectHeader()
 				.contentType(MediaType.APPLICATION_OCTET_STREAM).expectBody(String.class).isEqualTo("HEAPDUMP");
 		assertHeapDumpFileIsDeleted();
 	}
 
-	private void assertHeapDumpFileIsDeleted() throws InterruptedException {
+	private void assertHeapDumpFileIsDeleted() {
 		Awaitility.waitAtMost(Duration.ofSeconds(5)).until(this.endpoint.file::exists, is(false));
 	}
 

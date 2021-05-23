@@ -33,9 +33,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.Customizer;
 import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.SecurityWebFiltersOrder;
 import org.springframework.security.config.web.server.ServerHttpSecurity;
 import org.springframework.security.web.server.SecurityWebFilterChain;
 import org.springframework.security.web.server.WebFilterChainProxy;
+import org.springframework.web.cors.reactive.PreFlightRequestHandler;
+import org.springframework.web.cors.reactive.PreFlightRequestWebFilter;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Reactive Spring Security when
@@ -56,11 +59,13 @@ import org.springframework.security.web.server.WebFilterChainProxy;
 public class ReactiveManagementWebSecurityAutoConfiguration {
 
 	@Bean
-	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http) throws Exception {
+	public SecurityWebFilterChain springSecurityFilterChain(ServerHttpSecurity http, PreFlightRequestHandler handler) {
 		http.authorizeExchange((exchanges) -> {
 			exchanges.matchers(EndpointRequest.to(HealthEndpoint.class)).permitAll();
 			exchanges.anyExchange().authenticated();
 		});
+		PreFlightRequestWebFilter filter = new PreFlightRequestWebFilter(handler);
+		http.addFilterAt(filter, SecurityWebFiltersOrder.CORS);
 		http.httpBasic(Customizer.withDefaults());
 		http.formLogin(Customizer.withDefaults());
 		return http.build();

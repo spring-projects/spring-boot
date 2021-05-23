@@ -1,5 +1,5 @@
 [[build-image]]
-== Packaging OCI Images
+= Packaging OCI Images
 The plugin can create an https://github.com/opencontainers/image-spec[OCI image] from a jar or war file using https://buildpacks.io/[Cloud Native Buildpacks] (CNB).
 Images can be built using the `build-image` goal.
 
@@ -14,13 +14,13 @@ It is possible to automate the creation of an image whenever the `package` phase
 include::../maven/packaging-oci-image/pom.xml[tags=packaging-oci-image]
 ----
 
-TIP: While the buildpack runs from an <<repackage,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
+TIP: While the buildpack runs from an <<packaging,executable archive>>, it is not necessary to execute the `repackage` goal first as the executable archive is created automatically if necessary.
 When the `build-image` repackages the application, it applies the same settings as the `repackage` goal would, i.e. dependencies can be excluded using one of the exclude options, and Devtools is automatically excluded by default (you can control that using the `excludeDevtools` property).
 
 
 
-[[build-image-docker-daemon]]
-=== Docker Daemon
+[[build-image.docker-daemon]]
+== Docker Daemon
 The `build-image` goal requires access to a Docker daemon.
 By default, it will communicate with a Docker daemon over a local connection.
 This works with https://docs.docker.com/install/[Docker Engine] on all supported platforms without configuration.
@@ -59,12 +59,12 @@ The following table summarizes the available parameters:
 | Path to certificate and key files for HTTPS (required if `tlsVerify` is `true`, ignored otherwise)
 |===
 
-For more details, see also <<build-image-example-docker,examples>>.
+For more details, see also <<build-image.examples.docker,examples>>.
 
 
 
-[[build-image-docker-registry]]
-=== Docker Registry
+[[build-image.docker-registry]]
+== Docker Registry
 If the Docker images specified by the `builder` or `runImage` parameters are stored in a private Docker image registry that requires authentication, the authentication credentials can be provided using `docker.builderRegistry` parameters.
 
 If the generated Docker image is to be published to a Docker image registry, the authentication credentials can be provided using `docker.publishRegistry` parameters.
@@ -93,12 +93,12 @@ The following table summarizes the available parameters for `docker.builderRegis
 | Identity token for the Docker image registry user. Required for token authentication.
 |===
 
-For more details, see also <<build-image-example-docker,examples>>.
+For more details, see also <<build-image.examples.docker,examples>>.
 
 
 
-[[build-image-customization]]
-=== Image Customizations
+[[build-image.customization]]
+== Image Customizations
 The plugin invokes a {buildpacks-reference}/concepts/components/builder/[builder] to orchestrate the generation of an image.
 The builder includes multiple {buildpacks-reference}/concepts/components/buildpack[buildpacks] that can inspect the application to influence the generated image.
 By default, the plugin chooses a builder image.
@@ -182,21 +182,21 @@ Where `<options>` can contain:
 
 NOTE: The plugin detects the target Java compatibility of the project using the compiler's plugin configuration or the `maven.compiler.target` property.
 When using the default Paketo builder and buildpacks, the plugin instructs the buildpacks to install the same Java version.
-You can override this behaviour as shown in the <<build-image-example-builder-configuration,builder configuration>> examples.
+You can override this behaviour as shown in the <<build-image.examples.builder-configuration,builder configuration>> examples.
 
-For more details, see also <<build-image-examples,examples>>.
+For more details, see also <<build-image.examples,examples>>.
 
 include::goals/build-image.adoc[leveloffset=+1]
 
 
 
-[[build-image-examples]]
-=== Examples
+[[build-image.examples]]
+== Examples
 
 
 
-[[build-image-example-custom-image-builder]]
-==== Custom Image Builder
+[[build-image.examples.custom-image-builder]]
+=== Custom Image Builder
 If you need to customize the builder used to create the image or the run image used to launch the built image, configure the plugin as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
@@ -215,8 +215,8 @@ The builder and run image can be specified on the command line as well, as shown
 
 
 
-[[build-image-example-builder-configuration]]
-==== Builder Configuration
+[[build-image.examples.builder-configuration]]
+=== Builder Configuration
 If the builder exposes configuration options using environment variables, those can be set using the `env` attributes.
 
 The following is an example of {paketo-java-reference}/#configuring-the-jvm-version[configuring the JVM version] used by the Paketo Java buildpacks at build time:
@@ -236,8 +236,8 @@ include::../maven/packaging-oci-image/paketo-pom.xml[tags=paketo]
 
 
 
-[[build-image-example-runtime-jvm-configuration]]
-==== Runtime JVM Configuration
+[[build-image.examples.runtime-jvm-configuration]]
+=== Runtime JVM Configuration
 Paketo Java buildpacks {paketo-java-reference}/#runtime-jvm-configuration[configure the JVM runtime environment] by setting the `JAVA_TOOL_OPTIONS` environment variable.
 The buildpack-provided `JAVA_TOOL_OPTIONS` value can be modified to customize JVM runtime behavior when the application image is launched in a container.
 
@@ -250,8 +250,8 @@ include::../maven/packaging-oci-image/runtime-jvm-configuration-pom.xml[tags=run
 
 
 
-[[build-image-example-custom-image-name]]
-==== Custom Image Name
+[[build-image.examples.custom-image-name]]
+=== Custom Image Name
 By default, the image name is inferred from the `artifactId` and the `version` of the project, something like `docker.io/library/${project.artifactId}:${project.version}`.
 You can take control over the name, as shown in the following example:
 
@@ -272,8 +272,8 @@ The image name can be specified on the command line as well, as shown in this ex
 
 
 
-[[build-image-example-buildpacks]]
-==== Buildpacks
+[[build-image.examples.buildpacks]]
+=== Buildpacks
 By default, the builder will use buildpacks included in the builder image and apply them in a pre-defined order.
 An alternative set of buildpacks can be provided to apply buildpacks that are not included in the builder, or to change the order of included buildpacks.
 When one or more buildpacks are provided, only the specified buildpacks will be applied.
@@ -315,8 +315,8 @@ An OCI image containing a https://buildpacks.io/docs/buildpack-author-guide/pack
 
 
 
-[[build-image-example-publish]]
-==== Image Publishing
+[[build-image.examples.publish]]
+=== Image Publishing
 The generated image can be published to a Docker registry by enabling a `publish` option and configuring authentication for the registry using `docker.publishRegistry` parameters.
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]
@@ -333,8 +333,8 @@ The `publish` option can be specified on the command line as well, as shown in t
 
 
 
-[[build-image-example-docker]]
-==== Docker Configuration
+[[build-image.examples.docker]]
+=== Docker Configuration
 If you need the plugin to communicate with the Docker daemon using a remote connection instead of the default local connection, the connection details can be provided using `docker` parameters as shown in the following example:
 
 [source,xml,indent=0,subs="verbatim,attributes",tabsize=4]

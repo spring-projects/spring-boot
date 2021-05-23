@@ -185,7 +185,7 @@ class RestartClassLoaderTests {
 	}
 
 	@Test
-	void getDeletedClass() throws Exception {
+	void getDeletedClass() {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.DELETED, null));
 		assertThatExceptionOfType(ClassNotFoundException.class)
@@ -193,7 +193,7 @@ class RestartClassLoaderTests {
 	}
 
 	@Test
-	void getUpdatedClass() throws Exception {
+	void getUpdatedClass() {
 		String name = PACKAGE_PATH + "/Sample.class";
 		this.updatedFiles.addFile(name, new ClassLoaderFile(Kind.MODIFIED, new byte[10]));
 		assertThatExceptionOfType(ClassFormatError.class)

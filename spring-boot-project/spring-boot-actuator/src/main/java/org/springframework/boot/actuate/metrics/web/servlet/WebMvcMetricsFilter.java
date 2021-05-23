@@ -30,6 +30,8 @@ import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Timer;
 import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.Timer.Sample;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
 import org.springframework.boot.actuate.metrics.annotation.TimedAnnotations;
@@ -51,6 +53,8 @@ import org.springframework.web.util.NestedServletException;
  * @since 2.0.0
  */
 public class WebMvcMetricsFilter extends OncePerRequestFilter {
+
+	private static final Log logger = LogFactory.getLog(WebMvcMetricsFilter.class);
 
 	private final MeterRegistry registry;
 
@@ -127,11 +131,17 @@ public class WebMvcMetricsFilter extends OncePerRequestFilter {
 
 	private void record(TimingContext timingContext, HttpServletRequest request, HttpServletResponse response,
 			Throwable exception) {
-		Object handler = getHandler(request);
-		Set<Timed> annotations = getTimedAnnotations(handler);
-		Timer.Sample timerSample = timingContext.getTimerSample();
-		AutoTimer.apply(this.autoTimer, this.metricName, annotations,
-				(builder) -> timerSample.stop(getTimer(builder, handler, request, response, exception)));
+		try {
+			Object handler = getHandler(request);
+			Set<Timed> annotations = getTimedAnnotations(handler);
+			Timer.Sample timerSample = timingContext.getTimerSample();
+			AutoTimer.apply(this.autoTimer, this.metricName, annotations,
+					(builder) -> timerSample.stop(getTimer(builder, handler, request, response, exception)));
+		}
+		catch (Exception ex) {
+			logger.warn("Failed to record timer metrics", ex);
+			// Allow request-response exchange to continue, unaffected by metrics problem
+		}
 	}
 
 	private Object getHandler(HttpServletRequest request) {

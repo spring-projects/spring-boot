@@ -7,5 +7,6 @@ sourceCompatibility = '1.8'
 targetCompatibility = '1.8'
 
 bootBuildImage {
-	buildpacks = [ "paketo-buildpacks/java" ]
+	builder = "projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1"
+	buildpacks = [ "spring-boot/test-info" ]
 }

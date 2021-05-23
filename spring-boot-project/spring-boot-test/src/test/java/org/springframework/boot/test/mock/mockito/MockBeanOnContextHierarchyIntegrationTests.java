@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -19,7 +19,6 @@ package org.springframework.boot.test.mock.mockito;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBeanOnContextHierarchyIntegrationTests.ChildConfig;
 import org.springframework.boot.test.mock.mockito.MockBeanOnContextHierarchyIntegrationTests.ParentConfig;
@@ -73,7 +72,7 @@ class MockBeanOnContextHierarchyIntegrationTests {
 		private ApplicationContext context;
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) {
 			this.context = applicationContext;
 		}
 

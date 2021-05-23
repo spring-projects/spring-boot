@@ -17,7 +17,6 @@
 package org.springframework.boot.autoconfigure.transaction.jta;
 
 import java.io.File;
-import java.io.IOException;
 import java.nio.file.Path;
 
 import javax.jms.ConnectionFactory;
@@ -45,6 +44,7 @@ import org.springframework.boot.jta.atomikos.AtomikosDataSourceBean;
 import org.springframework.boot.jta.atomikos.AtomikosDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.jta.atomikos.AtomikosProperties;
 import org.springframework.boot.test.util.TestPropertyValues;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -65,6 +65,9 @@ import static org.mockito.Mockito.mock;
  * @author Nishant Raut
  */
 class JtaAutoConfigurationTests {
+
+	private final File atomikosLogs = new File(new BuildOutput(JtaAutoConfigurationTests.class).getRootLocation(),
+			"atomikos-logs");
 
 	private AnnotationConfigApplicationContext context;
 
@@ -96,7 +99,10 @@ class JtaAutoConfigurationTests {
 
 	@Test
 	void atomikosSanityCheck() {
-		this.context = new AnnotationConfigApplicationContext(JtaProperties.class, AtomikosJtaConfiguration.class);
+		this.context = new AnnotationConfigApplicationContext();
+		TestPropertyValues.of("spring.jta.log-dir:" + this.atomikosLogs).applyTo(this.context);
+		this.context.register(JtaProperties.class, AtomikosJtaConfiguration.class);
+		this.context.refresh();
 		this.context.getBean(AtomikosProperties.class);
 		this.context.getBean(UserTransactionService.class);
 		this.context.getBean(UserTransactionManager.class);
@@ -108,7 +114,7 @@ class JtaAutoConfigurationTests {
 	}
 
 	@Test
-	void defaultAtomikosTransactionManagerName(@TempDir Path dir) throws IOException {
+	void defaultAtomikosTransactionManagerName(@TempDir Path dir) {
 		this.context = new AnnotationConfigApplicationContext();
 		File logs = new File(dir.toFile(), "jta");
 		TestPropertyValues.of("spring.jta.logDir:" + logs.getAbsolutePath()).applyTo(this.context);
@@ -123,7 +129,8 @@ class JtaAutoConfigurationTests {
 	void atomikosConnectionFactoryPoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.jta.atomikos.connectionfactory.minPoolSize:5",
-				"spring.jta.atomikos.connectionfactory.maxPoolSize:10").applyTo(this.context);
+				"spring.jta.atomikos.connectionfactory.maxPoolSize:10", "spring.jta.log-dir:" + this.atomikosLogs)
+				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
 		AtomikosConnectionFactoryBean connectionFactory = this.context.getBean(AtomikosConnectionFactoryBean.class);
@@ -134,8 +141,8 @@ class JtaAutoConfigurationTests {
 	@Test
 	void atomikosDataSourcePoolConfiguration() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.jta.atomikos.datasource.minPoolSize:5", "spring.jta.atomikos.datasource.maxPoolSize:10")
+		TestPropertyValues.of("spring.jta.atomikos.datasource.minPoolSize:5",
+				"spring.jta.atomikos.datasource.maxPoolSize:10", "spring.jta.log-dir:" + this.atomikosLogs)
 				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class, PoolConfiguration.class);
 		this.context.refresh();
@@ -147,8 +154,8 @@ class JtaAutoConfigurationTests {
 	@Test
 	void atomikosCustomizeJtaTransactionManagerUsingProperties() {
 		this.context = new AnnotationConfigApplicationContext();
-		TestPropertyValues
-				.of("spring.transaction.default-timeout:30", "spring.transaction.rollback-on-commit-failure:true")
+		TestPropertyValues.of("spring.transaction.default-timeout:30",
+				"spring.transaction.rollback-on-commit-failure:true", "spring.jta.log-dir:" + this.atomikosLogs)
 				.applyTo(this.context);
 		this.context.register(AtomikosJtaConfiguration.class, TransactionAutoConfiguration.class);
 		this.context.refresh();

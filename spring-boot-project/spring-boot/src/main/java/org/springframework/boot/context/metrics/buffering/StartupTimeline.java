@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2020 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,9 +18,8 @@ package org.springframework.boot.context.metrics.buffering;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.core.metrics.StartupStep;
 
@@ -38,10 +37,9 @@ public class StartupTimeline {
 
 	private final List<TimelineEvent> events;
 
-	StartupTimeline(Instant startTime, long startNanoTime, Collection<BufferedStartupStep> events) {
+	StartupTimeline(Instant startTime, List<TimelineEvent> events) {
 		this.startTime = startTime;
-		this.events = events.stream().map((event) -> new TimelineEvent(event, startTime, startNanoTime))
-				.collect(Collectors.toList());
+		this.events = Collections.unmodifiableList(events);
 	}
 
 	/**
@@ -67,19 +65,16 @@ public class StartupTimeline {
 	 */
 	public static class TimelineEvent {
 
-		private final StartupStep startupStep;
-
-		private final Instant startTime;
+		private final BufferedStartupStep step;
 
 		private final Instant endTime;
 
 		private final Duration duration;
 
-		TimelineEvent(BufferedStartupStep startupStep, Instant startupDate, long startupNanoTime) {
-			this.startupStep = startupStep;
-			this.startTime = startupDate.plus(Duration.ofNanos(startupStep.getStartTime() - startupNanoTime));
-			this.endTime = startupDate.plus(Duration.ofNanos(startupStep.getEndTime() - startupNanoTime));
-			this.duration = Duration.ofNanos(startupStep.getEndTime() - startupStep.getStartTime());
+		TimelineEvent(BufferedStartupStep step, Instant endTime) {
+			this.step = step;
+			this.endTime = endTime;
+			this.duration = Duration.between(step.getStartTime(), endTime);
 		}
 
 		/**
@@ -87,7 +82,7 @@ public class StartupTimeline {
 		 * @return the start time
 		 */
 		public Instant getStartTime() {
-			return this.startTime;
+			return this.step.getStartTime();
 		}
 
 		/**
@@ -112,7 +107,7 @@ public class StartupTimeline {
 		 * @return the step information.
 		 */
 		public StartupStep getStartupStep() {
-			return this.startupStep;
+			return this.step;
 		}
 
 	}

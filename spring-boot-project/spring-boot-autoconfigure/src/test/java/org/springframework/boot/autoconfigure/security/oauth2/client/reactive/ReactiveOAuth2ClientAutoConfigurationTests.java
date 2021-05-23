@@ -23,7 +23,6 @@ import java.util.List;
 import org.junit.jupiter.api.Test;
 import reactor.core.publisher.Flux;
 
-import org.springframework.beans.BeansException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.security.reactive.ReactiveSecurityAutoConfiguration;
 import org.springframework.boot.test.context.FilteredClassLoader;
@@ -253,7 +252,7 @@ class ReactiveOAuth2ClientAutoConfigurationTests {
 		static class TestServerHttpSecurity extends ServerHttpSecurity implements ApplicationContextAware {
 
 			@Override
-			public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+			public void setApplicationContext(ApplicationContext applicationContext) {
 				super.setApplicationContext(applicationContext);
 			}
 

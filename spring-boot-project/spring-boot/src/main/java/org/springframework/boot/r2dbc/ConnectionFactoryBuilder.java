@@ -231,6 +231,8 @@ public final class ConnectionFactoryBuilder {
 				ConnectionFactory connectionFactory) {
 			ConnectionPoolConfiguration.Builder builder = ConnectionPoolConfiguration.builder(connectionFactory);
 			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from((Object) options.getValue(PoolingConnectionFactoryProvider.BACKGROUND_EVICTION_INTERVAL))
+					.as(this::toDuration).to(builder::backgroundEvictionInterval);
 			map.from((Object) options.getValue(PoolingConnectionFactoryProvider.INITIAL_SIZE)).as(this::toInteger)
 					.to(builder::initialSize);
 			map.from((Object) options.getValue(PoolingConnectionFactoryProvider.MAX_SIZE)).as(this::toInteger)

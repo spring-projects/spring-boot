@@ -12,6 +12,16 @@ configurations {
 	documentation
 }
 
+repositories {
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+			includeGroup "io.spring.asciidoctor.backends"
+		}
+	}
+}
+
 dependencies {
 	compileOnly("org.apache.maven.plugin-tools:maven-plugin-annotations")
 	compileOnly("org.sonatype.plexus:plexus-build-api")

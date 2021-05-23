@@ -18,6 +18,7 @@ package org.springframework.boot.actuate.autoconfigure.metrics.data;
 
 import io.micrometer.core.instrument.MeterRegistry;
 
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.actuate.autoconfigure.metrics.CompositeMeterRegistryAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsAutoConfiguration;
 import org.springframework.boot.actuate.autoconfigure.metrics.MetricsProperties;
@@ -72,9 +73,9 @@ public class RepositoryMetricsAutoConfiguration {
 
 	@Bean
 	public static MetricsRepositoryMethodInvocationListenerBeanPostProcessor metricsRepositoryMethodInvocationListenerBeanPostProcessor(
-			MetricsRepositoryMethodInvocationListener metricsRepositoryMethodInvocationListener) {
+			ObjectProvider<MetricsRepositoryMethodInvocationListener> metricsRepositoryMethodInvocationListener) {
 		return new MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
-				metricsRepositoryMethodInvocationListener);
+				metricsRepositoryMethodInvocationListener::getObject);
 	}
 
 }

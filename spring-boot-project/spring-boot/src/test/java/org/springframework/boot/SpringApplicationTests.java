@@ -40,7 +40,6 @@ import org.mockito.InOrder;
 import org.mockito.Mockito;
 import reactor.core.publisher.Mono;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.CachedIntrospectionResults;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -146,6 +145,7 @@ import static org.mockito.Mockito.verifyNoMoreInteractions;
  * @author Brian Clozel
  * @author Artsiom Yudovin
  * @author Marten Deinum
+ * @author Nguyen Bao Sach
  */
 @ExtendWith(OutputCaptureExtension.class)
 class SpringApplicationTests {
@@ -592,15 +592,14 @@ class SpringApplicationTests {
 	}
 
 	@Test
-	void addProfilesOrder() {
+	void additionalProfilesOrderedBeforeActiveProfiles() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
 		application.setWebApplicationType(WebApplicationType.NONE);
 		application.setAdditionalProfiles("foo");
 		ConfigurableEnvironment environment = new StandardEnvironment();
 		application.setEnvironment(environment);
 		this.context = application.run("--spring.profiles.active=bar,spam");
-		// Since Boot 2.4 additional should always be last
-		assertThat(environment.getActiveProfiles()).containsExactly("bar", "spam", "foo");
+		assertThat(environment.getActiveProfiles()).containsExactly("foo", "bar", "spam");
 	}
 
 	@Test
@@ -1658,7 +1657,7 @@ class SpringApplicationTests {
 		}
 
 		@Override
-		public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+		public void setApplicationContext(ApplicationContext applicationContext) {
 			this.applicationContext = applicationContext;
 		}
 

@@ -124,6 +124,7 @@ final class ImageBuildpack implements Buildpack {
 		private void copyLayerTar(Path path, OutputStream out) throws IOException {
 			try (TarArchiveInputStream tarIn = new TarArchiveInputStream(Files.newInputStream(path));
 					TarArchiveOutputStream tarOut = new TarArchiveOutputStream(out)) {
+				tarOut.setLongFileMode(TarArchiveOutputStream.LONGFILE_POSIX);
 				TarArchiveEntry entry = tarIn.getNextTarEntry();
 				while (entry != null) {
 					if (entry.isFile()) {

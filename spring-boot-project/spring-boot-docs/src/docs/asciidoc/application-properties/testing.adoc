@@ -1,3 +1,0 @@
-[[application-properties.testing]]
-== Testing Properties [[testing-properties]]
-include::documented-application-properties/testing.adoc[]

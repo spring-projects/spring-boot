@@ -16,12 +16,16 @@
 
 package org.springframework.boot.context.config;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.context.properties.bind.Binder;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySource;
+import org.springframework.boot.context.properties.source.ConfigurationPropertySources;
 import org.springframework.boot.context.properties.source.MapConfigurationPropertySource;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
@@ -69,6 +73,18 @@ class ProfilesTests {
 		Binder binder = new Binder(
 				new MapConfigurationPropertySource(Collections.singletonMap("spring.profiles.active", "d,e,f")));
 		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
+	}
+
+	@Test
+	void getActiveWhenEnvironmentProfilesAndBinderPropertyShouldReturnEnvironmentProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.active", "a,b,c");
+		List<ConfigurationPropertySource> sources = new ArrayList<>();
+		ConfigurationPropertySources.get(environment).forEach(sources::add);
+		sources.add(new MapConfigurationPropertySource(Collections.singletonMap("spring.profiles.active", "d,e,f")));
+		Binder binder = new Binder(sources);
+		Profiles profiles = new Profiles(environment, binder, null);
 		assertThat(profiles.getActive()).containsExactly("a", "b", "c");
 	}
 
@@ -79,7 +95,7 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.active", "d,e,f");
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
-		assertThat(profiles.getActive()).containsExactly("a", "b", "c");
+		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 
 	@Test
@@ -102,7 +118,7 @@ class ProfilesTests {
 		environment.setProperty("spring.profiles.active[2]", "f");
 		Binder binder = Binder.get(environment);
 		Profiles profiles = new Profiles(environment, binder, null);
-		assertThat(profiles.getActive()).containsExactly("a", "b", "c");
+		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 
 	@Test
@@ -127,9 +143,9 @@ class ProfilesTests {
 	@Test
 	void getActiveWhenHasAdditionalIncludesAdditional() {
 		MockEnvironment environment = new MockEnvironment();
-		environment.setProperty("spring.profiles.active", "a,b,c");
+		environment.setProperty("spring.profiles.active", "d,e,f");
 		Binder binder = Binder.get(environment);
-		Profiles profiles = new Profiles(environment, binder, Arrays.asList("d", "e", "f"));
+		Profiles profiles = new Profiles(environment, binder, Arrays.asList("a", "b", "c"));
 		assertThat(profiles.getActive()).containsExactly("a", "b", "c", "d", "e", "f");
 	}
 
@@ -148,6 +164,18 @@ class ProfilesTests {
 				new MapConfigurationPropertySource(Collections.singletonMap("spring.profiles.default", "a,b,c")));
 		Profiles profiles = new Profiles(environment, binder, null);
 		assertThat(profiles.getDefault()).containsExactly("a", "b", "c");
+	}
+
+	@Test
+	void getDefaultWhenDefaultEnvironmentProfileAndBinderProperty() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("spring.profiles.default", "default");
+		List<ConfigurationPropertySource> sources = new ArrayList<>();
+		ConfigurationPropertySources.get(environment).forEach(sources::add);
+		sources.add(new MapConfigurationPropertySource(Collections.singletonMap("spring.profiles.default", "a,b,c")));
+		Binder binder = new Binder(sources);
+		Profiles profiles = new Profiles(environment, binder, null);
+		assertThat(profiles.getDefault()).containsExactly("default");
 	}
 
 	@Test
@@ -210,7 +238,7 @@ class ProfilesTests {
 	}
 
 	@Test
-	void getDefaultWhenEnvironmentProfilesInBindNotationAndEnvironmentPropertyReturnsEnvironmentProfiles() {
+	void getDefaultWhenEnvironmentProfilesInBindNotationAndEnvironmentPropertyReturnsBoth() {
 		MockEnvironment environment = new MockEnvironment();
 		environment.setDefaultProfiles("a", "b", "c");
 		environment.setProperty("spring.profiles.default[0]", "d");

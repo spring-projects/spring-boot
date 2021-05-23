@@ -24,6 +24,7 @@ import io.micrometer.core.instrument.Meter;
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.Timer;
+import io.micrometer.core.instrument.binder.MeterBinder;
 import io.micrometer.core.instrument.distribution.HistogramSnapshot;
 import org.junit.jupiter.api.Test;
 
@@ -125,6 +126,13 @@ class RepositoryMetricsAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void doesNotTriggerEarlyInitializationThatPreventsMeterBindersFromBindingMeters() {
+		this.contextRunner.withUserConfiguration(MeterBinderConfiguration.class)
+				.run((context) -> assertThat(context.getBean(MeterRegistry.class).find("binder.test").counter())
+						.isNotNull());
+	}
+
 	private MeterRegistry getInitializedMeterRegistry(AssertableApplicationContext context,
 			Class<?> repositoryInterface) {
 		MetricsRepositoryMethodInvocationListener listener = context
@@ -154,6 +162,16 @@ class RepositoryMetricsAutoConfigurationTests {
 		@Override
 		public Iterable<Tag> repositoryTags(RepositoryMethodInvocation invocation) {
 			return Collections.emptyList();
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class MeterBinderConfiguration {
+
+		@Bean
+		MeterBinder meterBinder() {
+			return (registry) -> registry.counter("binder.test");
 		}
 
 	}

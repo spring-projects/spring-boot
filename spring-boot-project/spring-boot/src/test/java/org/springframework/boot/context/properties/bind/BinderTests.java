@@ -461,7 +461,7 @@ class BinderTests {
 	static class JavaBeanPropertyEditor extends PropertyEditorSupport {
 
 		@Override
-		public void setAsText(String text) throws IllegalArgumentException {
+		public void setAsText(String text) {
 			JavaBean value = new JavaBean();
 			value.setValue(text);
 			setValue(value);

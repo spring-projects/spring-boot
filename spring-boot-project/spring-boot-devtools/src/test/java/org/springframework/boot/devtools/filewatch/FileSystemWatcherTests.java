@@ -110,7 +110,7 @@ class FileSystemWatcherTests {
 	}
 
 	@Test
-	void cannotAddSourceDirectoryToStartedListener() throws Exception {
+	void cannotAddSourceDirectoryToStartedListener() {
 		this.watcher.start();
 		assertThatIllegalStateException().isThrownBy(() -> this.watcher.addSourceDirectory(this.tempDir))
 				.withMessageContaining("FileSystemWatcher already started");
@@ -300,7 +300,7 @@ class FileSystemWatcherTests {
 		this.watcher.addListener((changeSet) -> FileSystemWatcherTests.this.changes.add(changeSet));
 	}
 
-	private File startWithNewDirectory() throws IOException {
+	private File startWithNewDirectory() {
 		File directory = new File(this.tempDir, UUID.randomUUID().toString());
 		directory.mkdir();
 		this.watcher.addSourceDirectory(directory);

@@ -1,0 +1,47 @@
+[[howto.testing]]
+== Testing
+Spring Boot includes a number of testing utilities and support classes as well as a dedicated starter that provides common test dependencies.
+This section answers common questions about testing.
+
+
+
+[[howto.testing.with-spring-security]]
+=== Testing With Spring Security
+Spring Security provides support for running tests as a specific user.
+For example, the test in the snippet below will run with an authenticated user that has the `ADMIN` role.
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/testing/withspringsecurity/MySecurityTests.java[]
+----
+
+Spring Security provides comprehensive integration with Spring MVC Test and this can also be used when testing controllers using the `@WebMvcTest` slice and `MockMvc`.
+
+For additional details on Spring Security's testing support, refer to Spring Security's {spring-security-docs}#test[reference documentation]).
+
+
+
+
+[[howto.testing.testcontainers]]
+===  Use Testcontainers for Integration Testing
+The https://www.testcontainers.org/[Testcontainers] library provides a way to manage services running inside Docker containers.
+It integrates with JUnit, allowing you to write a test class that can start up a container before any of the tests run.
+Testcontainers is especially useful for writing integration tests that talk to a real backend service such as MySQL, MongoDB, Cassandra etc.
+Testcontainers can be used in a Spring Boot test as follows:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/testing/testcontainers/vanilla/MyIntegrationTests.java[]
+----
+
+This will start up a docker container running Neo4j (if Docker is running locally) before any of the tests are run.
+In most cases, you will need to configure the application using details from the running container, such as container IP or port.
+
+This can be done with a static `@DynamicPropertySource` method that allows adding dynamic property values to the Spring Environment.
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/testing/testcontainers/dynamicproperties/MyIntegrationTests.java[]
+----
+
+The above configuration allows Neo4j-related beans in the application to communicate with Neo4j running inside the Testcontainers-managed Docker container.

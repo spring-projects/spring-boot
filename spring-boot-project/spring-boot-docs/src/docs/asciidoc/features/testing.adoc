@@ -404,7 +404,7 @@ If you define your own `webDriver` scope you may find it stops working when you 
 
 If you have Spring Security on the classpath, `@WebMvcTest` will also scan `WebSecurityConfigurer` beans.
 Instead of disabling security completely for such tests, you can use Spring Security's test support.
-More details on how to use Spring Security's `MockMvc` support can be found in this _<<howto#howto.testing-with-spring-security>>_ how-to section.
+More details on how to use Spring Security's `MockMvc` support can be found in this _<<howto#howto.testing.with-spring-security>>_ how-to section.
 
 TIP: Sometimes writing Spring MVC tests is not enough; Spring Boot can help you run <<features#features.testing.spring-boot-applications.with-running-server, full end-to-end tests with an actual server>>.
 
@@ -870,12 +870,10 @@ Alternatively, you can specify a source for your test, which disables the behavi
 
 [[features.testing.spring-boot-applications.spock]]
 ==== Using Spock to Test Spring Boot Applications
-If you wish to use Spock to test a Spring Boot application, you should add a dependency on Spock's `spock-spring` module to your application's build.
+Spock 2.x can be used to test a Spring Boot application.
+To do so, add a dependency on Spock's `spock-spring` module to your application's build.
 `spock-spring` integrates Spring's test framework into Spock.
-See https://spockframework.org/spock/docs/2.0-M4/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
-
-NOTE: As of Spring Boot 2.5.x and its support for Groovy 3.x you have two options to make use of Spock:
-Either use the latest Spock 2.0 milestone or release that is compatible with Groovy 3.x or stick with Spock 1.3 and downgrade Spring Boot's Groovy version to 2.5.x.
+See https://spockframework.org/spock/docs/2.0/modules.html#_spring_module[the documentation for Spock's Spring module] for further details.
 
 
 
@@ -929,7 +927,9 @@ include::{docs-java}/features/testing/utilities/outputcapture/MyOutputCaptureTes
 ==== TestRestTemplate
 `TestRestTemplate` is a convenience alternative to Spring's `RestTemplate` that is useful in integration tests.
 You can get a vanilla template or one that sends Basic HTTP authentication (with a username and password).
-In either case, the template behaves in a test-friendly way by not throwing exceptions on server-side errors.
+In either case, the template is fault tolerant.
+This means that it behaves in a test-friendly way by not throwing exceptions on 4xx and 5xx errors.
+Instead, such errors can be detected via the returned `ResponseEntity` and its status code.
 
 TIP: Spring Framework 5.0 provides a new `WebTestClient` that works for <<features#features.testing.spring-boot-applications.spring-webflux-tests, WebFlux integration tests>> and both <<features#features.testing.spring-boot-applications.with-running-server, WebFlux and MVC end-to-end testing>>.
 It provides a fluent API for assertions, unlike `TestRestTemplate`.

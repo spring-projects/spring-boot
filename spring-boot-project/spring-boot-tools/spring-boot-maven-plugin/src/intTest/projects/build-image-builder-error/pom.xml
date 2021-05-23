@@ -23,8 +23,9 @@
 						</goals>
 						<configuration>
 							<image>
+								<builder>projects.registry.vmware.com/springboot/spring-boot-cnb-builder:0.0.1</builder>
 								<env>
-									<BP_JVM_VERSION>13.9.9</BP_JVM_VERSION>
+									<FORCE_FAILURE>true</FORCE_FAILURE>
 								</env>
 							</image>
 						</configuration>

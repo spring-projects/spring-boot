@@ -46,6 +46,7 @@ import org.springframework.boot.context.properties.bind.Binder;
 import org.springframework.boot.context.properties.source.ConfigurationProperty;
 import org.springframework.boot.context.properties.source.ConfigurationPropertyName;
 import org.springframework.boot.origin.Origin;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.env.ConfigurableEnvironment;
@@ -307,7 +308,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void runWhenProfilesPresentBeforeConfigFileProcessingAugmentsProfileActivatedByConfigFile() {
 		this.application.setAdditionalProfiles("other");
 		ConfigurableApplicationContext context = this.application.run("--spring.config.name=enableprofile");
-		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("myprofile", "other");
+		assertThat(context.getEnvironment().getActiveProfiles()).containsExactly("other", "myprofile");
 		String property = context.getEnvironment().getProperty("other.property");
 		assertThat(property).isEqualTo("fromotherpropertiesfile");
 		property = context.getEnvironment().getProperty("the.property");
@@ -547,7 +548,7 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenConfigLocationHasNonOptionalMissingFileDirectoryThrowsResourceNotFoundException() {
 		File location = new File(this.temp, "application.unknown");
-		assertThatExceptionOfType(ConfigDataResourceNotFoundException.class).isThrownBy(() -> this.application
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(() -> this.application
 				.run("--spring.config.location=" + StringUtils.cleanPath(location.getAbsolutePath()) + "/"));
 	}
 
@@ -567,12 +568,24 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	void runWhenConfigLocationHasMandatoryDirectoryThatDoesntExistThrowsException() {
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
+				() -> this.application.run("--spring.config.location=" + StringUtils.cleanPath("invalid/")));
+	}
+
+	@Test
 	void runWhenConfigLocationHasNonOptionalEmptyFileDoesNotThrowException() throws IOException {
 		File location = new File(this.temp, "application.properties");
 		FileCopyUtils.copy(new byte[0], location);
 		assertThatNoException()
 				.isThrownBy(() -> this.application.run("--spring.config.location=classpath:/application.properties,"
 						+ StringUtils.cleanPath(location.getAbsolutePath())));
+	}
+
+	@Test
+	void runWhenResolvedIsOptionalDoesNotThrowException() {
+		ApplicationContext context = this.application.run("--spring.config.location=test:optionalresult");
+		assertThat(context.getEnvironment().containsProperty("spring")).isFalse();
 	}
 
 	@Test
@@ -686,11 +699,30 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	@Test
 	void runWhenHasWildcardLocationLoadsFromAllMatchingLocations() {
 		ConfigurableApplicationContext context = this.application.run(
-				"--spring.config.location=optional:file:src/test/resources/config/*/",
-				"--spring.config.name=testproperties");
+				"--spring.config.location=file:src/test/resources/config/*/", "--spring.config.name=testproperties");
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getProperty("first.property")).isEqualTo("apple");
 		assertThat(environment.getProperty("second.property")).isEqualTo("ball");
+	}
+
+	@Test
+	void runWhenMandatoryWildcardLocationHasEmptyFileDirectory() {
+		assertThatNoException()
+				.isThrownBy(() -> this.application.run("--spring.config.location=file:src/test/resources/config/*/"));
+	}
+
+	@Test
+	void runWhenMandatoryWildcardLocationHasNoSubdirectories() {
+		assertThatIllegalStateException().isThrownBy(
+				() -> this.application.run("--spring.config.location=file:src/test/resources/config/0-empty/*/"))
+				.withMessage(
+						"No subdirectories found for mandatory directory location 'file:src/test/resources/config/0-empty/*/'.");
+	}
+
+	@Test
+	void runWhenHasMandatoryWildcardLocationThatDoesNotExist() {
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
+				.isThrownBy(() -> this.application.run("--spring.config.location=file:invalid/*/"));
 	}
 
 	@Test // gh-24990
@@ -724,6 +756,46 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class Config {
+
+	}
+
+	static class LocationResolver implements ConfigDataLocationResolver<TestConfigDataResource> {
+
+		@Override
+		public boolean isResolvable(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
+			return location.hasPrefix("test:");
+
+		}
+
+		@Override
+		public List<TestConfigDataResource> resolve(ConfigDataLocationResolverContext context,
+				ConfigDataLocation location)
+				throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
+			return Collections.singletonList(new TestConfigDataResource(location));
+		}
+
+	}
+
+	static class Loader implements ConfigDataLoader<TestConfigDataResource> {
+
+		@Override
+		public ConfigData load(ConfigDataLoaderContext context, TestConfigDataResource resource)
+				throws IOException, ConfigDataResourceNotFoundException {
+			if (resource.isOptional()) {
+				return null;
+			}
+			MapPropertySource propertySource = new MapPropertySource("loaded",
+					Collections.singletonMap("spring", "boot"));
+			return new ConfigData(Collections.singleton(propertySource));
+		}
+
+	}
+
+	static class TestConfigDataResource extends ConfigDataResource {
+
+		TestConfigDataResource(ConfigDataLocation location) {
+			super(location.toString().contains("optionalresult"));
+		}
 
 	}
 

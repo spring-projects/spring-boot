@@ -133,7 +133,7 @@ bom {
 			]
 		}
 	}
-	library("Spock Framework", "2.0-M4-groovy-3.0") {
+	library("Spock Framework", "2.0-groovy-3.0") {
 		group("org.spockframework") {
 			modules = [
 				"spock-core",
@@ -148,7 +148,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Asciidoctor Extensions", "0.6.0-SNAPSHOT") {
+	library("Spring Asciidoctor Extensions", "0.6.0") {
 		group("io.spring.asciidoctor") {
 			modules = [
 				"spring-asciidoctor-extensions-spring-boot",

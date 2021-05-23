@@ -82,14 +82,13 @@ class ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegra
 		}
 
 		@Override
-		public List<Resource> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location)
-				throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
+		public List<Resource> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location) {
 			return Collections.emptyList();
 		}
 
 		@Override
 		public List<Resource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
-				ConfigDataLocation location, Profiles profiles) throws ConfigDataLocationNotFoundException {
+				ConfigDataLocation location, Profiles profiles) {
 			return Collections.singletonList(new Resource(profiles));
 		}
 
@@ -98,8 +97,7 @@ class ConfigDataEnvironmentPostProcessorImportCombinedWithProfileSpecificIntegra
 	static class Loader implements ConfigDataLoader<Resource> {
 
 		@Override
-		public ConfigData load(ConfigDataLoaderContext context, Resource resource)
-				throws IOException, ConfigDataResourceNotFoundException {
+		public ConfigData load(ConfigDataLoaderContext context, Resource resource) throws IOException {
 			List<PropertySource<?>> propertySources = new ArrayList<>();
 			Map<PropertySource<?>, Options> propertySourceOptions = new HashMap<>();
 			propertySources.add(new MapPropertySource("icwps1", Collections.singletonMap("prop", "fromicwps1")));

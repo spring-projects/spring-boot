@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -52,7 +52,7 @@ class LayersIndexTests {
 	}
 
 	@Test
-	void writeToWhenSimpleNamesSortsAlphabetically() throws Exception {
+	void writeToWhenSimpleNamesSortsAlphabetically() {
 		LayersIndex index = new LayersIndex(LAYER_A);
 		index.add(LAYER_A, "cat");
 		index.add(LAYER_A, "dog");

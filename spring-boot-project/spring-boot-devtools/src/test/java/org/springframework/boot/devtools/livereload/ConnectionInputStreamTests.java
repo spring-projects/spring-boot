@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -58,13 +58,13 @@ class ConnectionInputStreamTests {
 	}
 
 	@Test
-	void checkedRead() throws Exception {
+	void checkedRead() {
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
 		assertThatIOException().isThrownBy(inputStream::checkedRead).withMessageContaining("End of stream");
 	}
 
 	@Test
-	void checkedReadArray() throws Exception {
+	void checkedReadArray() {
 		byte[] buffer = new byte[100];
 		ConnectionInputStream inputStream = new ConnectionInputStream(new ByteArrayInputStream(NO_BYTES));
 		assertThatIOException().isThrownBy(() -> inputStream.checkedRead(buffer, 0, buffer.length))

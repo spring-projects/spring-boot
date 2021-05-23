@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,6 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 
 import org.springframework.beans.BeanWrapper;
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.FactoryBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.BeanFactoryPostProcessor;
@@ -304,12 +303,12 @@ class MockitoPostProcessorTests {
 			return true;
 		}
 
-	};
+	}
 
 	static class FactoryBeanRegisteringPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 		@Override
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 			RootBeanDefinition beanDefinition = new RootBeanDefinition(TestFactoryBean.class);
 			((BeanDefinitionRegistry) beanFactory).registerBeanDefinition("test", beanDefinition);
 		}
@@ -325,7 +324,7 @@ class MockitoPostProcessorTests {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) throws BeansException {
+		public void postProcessBeanFactory(ConfigurableListableBeanFactory beanFactory) {
 			Map<String, BeanWrapper> cache = (Map<String, BeanWrapper>) ReflectionTestUtils.getField(beanFactory,
 					"factoryBeanInstanceCache");
 			Assert.isTrue(cache.isEmpty(), "Early initialization of factory bean triggered.");

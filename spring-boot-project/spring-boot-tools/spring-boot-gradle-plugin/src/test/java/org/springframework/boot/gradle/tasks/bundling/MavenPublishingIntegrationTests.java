@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.gradle.tasks.bundling;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 
 import org.gradle.testkit.runner.BuildResult;
 import org.gradle.testkit.runner.TaskOutcome;
@@ -41,7 +39,7 @@ class MavenPublishingIntegrationTests {
 	GradleBuild gradleBuild;
 
 	@TestTemplate
-	void bootJarCanBePublished() throws FileNotFoundException, IOException {
+	void bootJarCanBePublished() {
 		BuildResult result = this.gradleBuild.build("publish");
 		assertThat(result.task(":publish").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("jar")).isFile();
@@ -50,7 +48,7 @@ class MavenPublishingIntegrationTests {
 	}
 
 	@TestTemplate
-	void bootWarCanBePublished() throws IOException {
+	void bootWarCanBePublished() {
 		BuildResult result = this.gradleBuild.build("publish");
 		assertThat(result.task(":publish").getOutcome()).isEqualTo(TaskOutcome.SUCCESS);
 		assertThat(artifactWithSuffix("war")).isFile();

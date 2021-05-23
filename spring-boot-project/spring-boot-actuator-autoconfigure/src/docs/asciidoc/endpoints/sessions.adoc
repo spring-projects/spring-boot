@@ -1,13 +1,11 @@
 [[sessions]]
 = Sessions (`sessions`)
-
 The `sessions` endpoint provides information about the application's HTTP sessions that are managed by Spring Session.
 
 
 
-[[sessions-retrieving]]
+[[sessions.retrieving]]
 == Retrieving Sessions
-
 To retrieve the sessions, make a `GET` request to `/actuator/sessions`, as shown in the following curl-based example:
 
 include::{snippets}/sessions/username/curl-request.adoc[]
@@ -19,9 +17,8 @@ include::{snippets}/sessions/username/http-response.adoc[]
 
 
 
-[[sessions-retrieving-query-parameters]]
+[[sessions.retrieving.query-parameters]]
 === Query Parameters
-
 The endpoint uses query parameters to limit the sessions that it returns.
 The following table shows the single required query parameter:
 
@@ -30,9 +27,8 @@ include::{snippets}/sessions/username/request-parameters.adoc[]
 
 
 
-[[sessions-retrieving-response-structure]]
+[[sessions.retrieving.response-structure]]
 === Response Structure
-
 The response contains details of the matching sessions.
 The following table describes the structure of the response:
 
@@ -41,9 +37,8 @@ include::{snippets}/sessions/username/response-fields.adoc[]
 
 
 
-[[sessions-retrieving-id]]
+[[sessions.retrieving-id]]
 == Retrieving a Single Session
-
 To retrieve a single session, make a `GET` request to `/actuator/sessions/\{id}`, as shown in the following curl-based example:
 
 include::{snippets}/sessions/id/curl-request.adoc[]
@@ -55,9 +50,8 @@ include::{snippets}/sessions/id/http-response.adoc[]
 
 
 
-[[sessions-retrieving-id-response-structure]]
+[[sessions.retrieving-id.response-structure]]
 === Response Structure
-
 The response contains details of the requested session.
 The following table describes the structure of the response:
 
@@ -66,9 +60,8 @@ include::{snippets}/sessions/id/response-fields.adoc[]
 
 
 
-[[sessions-deleting]]
+[[sessions.deleting]]
 == Deleting a Session
-
 To delete a session, make a `DELETE` request to `/actuator/sessions/\{id}`, as shown in the following curl-based example:
 
 include::{snippets}/sessions/delete/curl-request.adoc[]

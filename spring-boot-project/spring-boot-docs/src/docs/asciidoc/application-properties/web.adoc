@@ -1,3 +1,0 @@
-[[application-properties.web]]
-== Web Properties [[web-properties]]
-include::documented-application-properties/web.adoc[]

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -57,7 +57,7 @@ class SampleIntegrationApplicationTests {
 	}
 
 	@Test
-	void testVanillaExchange(@TempDir Path temp) throws Exception {
+	void testVanillaExchange(@TempDir Path temp) {
 		File inputDir = new File(temp.toFile(), "input");
 		File outputDir = new File(temp.toFile(), "output");
 		this.context = SpringApplication.run(SampleIntegrationApplication.class, "--service.input-dir=" + inputDir,
@@ -68,7 +68,7 @@ class SampleIntegrationApplicationTests {
 	}
 
 	@Test
-	void testMessageGateway(@TempDir Path temp) throws Exception {
+	void testMessageGateway(@TempDir Path temp) {
 		File inputDir = new File(temp.toFile(), "input");
 		File outputDir = new File(temp.toFile(), "output");
 		this.context = SpringApplication.run(SampleIntegrationApplication.class, "testviamg",
@@ -76,7 +76,7 @@ class SampleIntegrationApplicationTests {
 		awaitOutputContaining(this.context.getBean(ServiceProperties.class).getOutputDir(), "testviamg");
 	}
 
-	private void awaitOutputContaining(File outputDir, String requiredContents) throws Exception {
+	private void awaitOutputContaining(File outputDir, String requiredContents) {
 		Awaitility.waitAtMost(Duration.ofSeconds(30)).until(() -> outputIn(outputDir),
 				containsString(requiredContents));
 	}
