@@ -1767,6 +1767,27 @@
       "defaultValue": false
     },
     {
+      "name": "spring.webflux.session.cookie.name",
+      "type": "java.lang.String",
+      "defaultValue": "SESSION"
+    },
+    {
+      "name": "spring.webflux.session.cookie.domain",
+      "defaultValue": "lax"
+    },
+    {
+      "name": "spring.webflux.session.cookie.same-site",
+      "defaultValue": "lax"
+    },
+    {
+      "name": "spring.webflux.session.cookie.same-site",
+      "defaultValue": "lax"
+    },
+    {
+      "name": "spring.webflux.session.cookie.same-site",
+      "defaultValue": "lax"
+    },
+    {
       "name": "spring.webflux.session.cookie.same-site",
       "defaultValue": "lax"
     },

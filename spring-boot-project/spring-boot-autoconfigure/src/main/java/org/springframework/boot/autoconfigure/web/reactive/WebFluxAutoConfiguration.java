@@ -39,8 +39,11 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Cookie;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.SameSite;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
@@ -310,11 +313,24 @@ public class WebFluxAutoConfiguration {
 		public WebSessionManager webSessionManager() {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
 			CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
-			webSessionIdResolver.addCookieInitializer((cookie) -> cookie
-					.sameSite(this.webFluxProperties.getSession().getCookie().getSameSite().attribute()));
+			webSessionIdResolver.setCookieName(this.webFluxProperties.getSession().getCookie().getName());
+			webSessionIdResolver.addCookieInitializer((cookie) -> applyOtherProperties(cookie));
 			webSessionManager.setSessionIdResolver(webSessionIdResolver);
 			return webSessionManager;
 		}
+
+		private void applyOtherProperties(org.springframework.http.ResponseCookie.ResponseCookieBuilder cookieBuilder) {
+			Cookie cookie = this.webFluxProperties.getSession().getCookie();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(cookie::getDomain).to(cookieBuilder::domain);
+			map.from(cookie::getPath).to(cookieBuilder::path);
+			map.from(cookie::getMaxAge).to(cookieBuilder::maxAge);
+			map.from(cookie::getHttpOnly).to(cookieBuilder::httpOnly);
+			map.from(cookie::getSecure).to(cookieBuilder::secure);
+			map.from(cookie::getSameSite).as(SameSite::attribute).to(cookieBuilder::sameSite);
+		}
+
+
 
 	}
 
