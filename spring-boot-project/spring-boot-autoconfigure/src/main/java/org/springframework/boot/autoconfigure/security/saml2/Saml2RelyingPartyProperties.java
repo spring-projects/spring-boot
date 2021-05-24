@@ -277,7 +277,7 @@ public class Saml2RelyingPartyProperties {
 			/**
 			 * Whether to redirect or post authentication requests.
 			 */
-			private Saml2MessageBinding binding = Saml2MessageBinding.REDIRECT;
+			private Saml2MessageBinding binding;
 
 			/**
 			 * Whether to sign authentication requests.

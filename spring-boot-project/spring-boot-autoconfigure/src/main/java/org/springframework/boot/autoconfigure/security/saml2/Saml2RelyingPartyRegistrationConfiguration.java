@@ -98,7 +98,8 @@ class Saml2RelyingPartyRegistrationConfiguration {
 		Saml2RelyingPartyProperties.Identityprovider identityprovider = properties.getIdentityprovider();
 		return (details) -> {
 			map.from(identityprovider::getEntityId).to(details::entityId);
-			map.from(identityprovider.getSinglesignon()::getBinding).to(details::singleSignOnServiceBinding);
+			map.from(identityprovider.getSinglesignon()::getBinding).whenNonNull()
+					.to(details::singleSignOnServiceBinding);
 			map.from(identityprovider.getSinglesignon()::getUrl).to(details::singleSignOnServiceLocation);
 			map.from(identityprovider.getSinglesignon()::isSignRequest).when((signRequest) -> !usingMetadata)
 					.to(details::wantAuthnRequestsSigned);
