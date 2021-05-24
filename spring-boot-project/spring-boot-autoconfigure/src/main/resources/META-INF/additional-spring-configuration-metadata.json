@@ -164,7 +164,7 @@
     },
     {
       "name": "server.servlet.session.cookie.domain",
-      "description": " Domain for the session cookie."
+      "description": "Domain for the session cookie."
     },
     {
       "name": "server.servlet.session.cookie.http-only",
