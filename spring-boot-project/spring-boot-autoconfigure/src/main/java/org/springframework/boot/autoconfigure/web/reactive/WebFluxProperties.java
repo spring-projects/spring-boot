@@ -16,7 +16,11 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
+
 import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.convert.DurationUnit;
 import org.springframework.util.StringUtils;
 
 /**
@@ -124,20 +128,144 @@ public class WebFluxProperties {
 
 	public static class Session {
 
+		/**
+		 * Session timeout. If a duration suffix is not specified, seconds will be used.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration timeout = Duration.ofMinutes(30);
+
 		private final Cookie cookie = new Cookie();
 
 		public Cookie getCookie() {
 			return this.cookie;
 		}
 
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
+		}
+
 	}
 
 	public static class Cookie {
+
+		private static final String COOKIE_NAME = "SESSION";
+
+		/**
+		 * Name attribute value for session Cookies.
+		 */
+		private String name = COOKIE_NAME;
+
+		/**
+		 * Domain attribute value for session Cookies.
+		 */
+		private String domain;
+
+		/**
+		 * Path attribute value for session Cookies.
+		 */
+		private String path;
+
+		/**
+		 * Maximum age of the session cookie. If a duration suffix is not specified,
+		 * seconds will be used. A positive value indicates when the cookie expires
+		 * relative to the current time. A value of 0 means the cookie should expire
+		 * immediately. A negative value means no "Max-Age" attribute in which case the
+		 * cookie is removed when the browser is closed.
+		 */
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration maxAge = Duration.ofSeconds(-1);
+
+		/**
+		 * HttpOnly attribute value for session Cookies.
+		 */
+		private Boolean httpOnly = true;
+
+		/**
+		 * Secure attribute value for session Cookies.
+		 */
+		private Boolean secure;
 
 		/**
 		 * SameSite attribute value for session Cookies.
 		 */
 		private SameSite sameSite = SameSite.LAX;
+
+		/**
+		 * Return the session cookie name.
+		 * @return the session cookie name
+		 */
+		public String getName() {
+			return this.name;
+		}
+
+		public void setName(String name) {
+			this.name = name;
+		}
+
+		/**
+		 * Return the domain for the session cookie.
+		 * @return the session cookie domain
+		 */
+		public String getDomain() {
+			return this.domain;
+		}
+
+		public void setDomain(String domain) {
+			this.domain = domain;
+		}
+
+		/**
+		 * Return the path of the session cookie.
+		 * @return the session cookie path
+		 */
+		public String getPath() {
+			return this.path;
+		}
+
+		public void setPath(String path) {
+			this.path = path;
+		}
+
+		/**
+		 * Return the maximum age of the session cookie.
+		 * @return the maximum age of the session cookie
+		 */
+		public Duration getMaxAge() {
+			return this.maxAge;
+		}
+
+		public void setMaxAge(Duration maxAge) {
+			this.maxAge = maxAge;
+		}
+
+		/**
+		 * Return whether to use "HttpOnly" cookies for session cookies.
+		 * @return {@code true} to use "HttpOnly" cookies for session cookies.
+		 */
+		public Boolean getHttpOnly() {
+			return this.httpOnly;
+		}
+
+		public void setHttpOnly(Boolean httpOnly) {
+			this.httpOnly = httpOnly;
+		}
+
+		/**
+		 * Return whether to always mark the session cookie as secure.
+		 * @return {@code true} to mark the session cookie as secure even if the request
+		 * that initiated the corresponding session is using plain HTTP
+		 */
+		public Boolean getSecure() {
+			return this.secure;
+		}
+
+		public void setSecure(Boolean secure) {
+			this.secure = secure;
+		}
 
 		public SameSite getSameSite() {
 			return this.sameSite;

@@ -2028,6 +2028,26 @@
       "defaultValue": false
     },
     {
+      "name": "spring.webflux.session.timeout",
+      "defaultValue": "30m"
+    },
+    {
+      "name": "spring.webflux.session.cookie.name",
+      "defaultValue": "SESSION"
+    },
+    {
+      "name": "spring.webflux.session.cookie.path",
+      "defaultValue": "server.servlet.context-path"
+    },
+    {
+      "name": "spring.webflux.session.cookie.max-age",
+      "defaultValue": "-1s"
+    },
+    {
+      "name": "spring.webflux.session.cookie.http-only",
+      "defaultValue": true
+    },
+    {
       "name": "spring.webflux.session.cookie.same-site",
       "defaultValue": "lax"
     },

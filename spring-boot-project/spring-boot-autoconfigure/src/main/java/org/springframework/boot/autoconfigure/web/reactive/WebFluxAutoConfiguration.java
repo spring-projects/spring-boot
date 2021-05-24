@@ -21,6 +21,7 @@ import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -40,8 +41,11 @@ import org.springframework.boot.autoconfigure.web.WebProperties;
 import org.springframework.boot.autoconfigure.web.WebProperties.Resources;
 import org.springframework.boot.autoconfigure.web.format.DateTimeFormatters;
 import org.springframework.boot.autoconfigure.web.format.WebConversionService;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Cookie;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.Format;
+import org.springframework.boot.autoconfigure.web.reactive.WebFluxProperties.SameSite;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.boot.web.codec.CodecCustomizer;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
@@ -72,12 +76,14 @@ import org.springframework.web.reactive.result.method.annotation.ArgumentResolve
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.WebSession;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
+import org.springframework.web.server.session.InMemoryWebSessionStore;
 import org.springframework.web.server.session.WebSessionIdResolver;
 import org.springframework.web.server.session.WebSessionManager;
 
@@ -92,6 +98,7 @@ import org.springframework.web.server.session.WebSessionManager;
  * @author Eddú Meléndez
  * @author Artsiom Yudovin
  * @author Chris Bono
+ * @author Weix Sun
  * @since 2.0.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -304,6 +311,9 @@ public class WebFluxAutoConfiguration {
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
 		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
+			DefaultInMemoryWebSessionStore sessionStore = new DefaultInMemoryWebSessionStore(
+					this.webFluxProperties.getSession().getTimeout());
+			webSessionManager.setSessionStore(sessionStore);
 			webSessionManager.setSessionIdResolver(webSessionIdResolver.getIfAvailable(cookieWebSessionIdResolver()));
 			return webSessionManager;
 		}
@@ -311,10 +321,39 @@ public class WebFluxAutoConfiguration {
 		private Supplier<WebSessionIdResolver> cookieWebSessionIdResolver() {
 			return () -> {
 				CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
-				webSessionIdResolver.addCookieInitializer((cookie) -> cookie
-						.sameSite(this.webFluxProperties.getSession().getCookie().getSameSite().attribute()));
+				webSessionIdResolver.setCookieName(this.webFluxProperties.getSession().getCookie().getName());
+				webSessionIdResolver.addCookieInitializer((cookie) -> applyOtherProperties(cookie));
 				return webSessionIdResolver;
 			};
+		}
+
+		private void applyOtherProperties(org.springframework.http.ResponseCookie.ResponseCookieBuilder cookieBuilder) {
+			Cookie cookie = this.webFluxProperties.getSession().getCookie();
+			PropertyMapper map = PropertyMapper.get().alwaysApplyingWhenNonNull();
+			map.from(cookie::getDomain).to(cookieBuilder::domain);
+			map.from(cookie::getPath).to(cookieBuilder::path);
+			map.from(cookie::getMaxAge).to(cookieBuilder::maxAge);
+			map.from(cookie::getHttpOnly).to(cookieBuilder::httpOnly);
+			map.from(cookie::getSecure).to(cookieBuilder::secure);
+			map.from(cookie::getSameSite).as(SameSite::attribute).to(cookieBuilder::sameSite);
+		}
+
+		static final class DefaultInMemoryWebSessionStore extends InMemoryWebSessionStore {
+
+			private final Duration timeout;
+
+			private DefaultInMemoryWebSessionStore(Duration timeout) {
+				this.timeout = timeout;
+			}
+
+			@Override
+			public Mono<WebSession> createWebSession() {
+				return super.createWebSession().flatMap((inMemoryWebSession) -> {
+					inMemoryWebSession.setMaxIdleTime(this.timeout);
+					return Mono.just(inMemoryWebSession);
+				});
+			}
+
 		}
 
 	}
