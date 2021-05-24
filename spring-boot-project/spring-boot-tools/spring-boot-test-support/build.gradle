@@ -14,6 +14,7 @@ dependencies {
 	compileOnly("org.elasticsearch:elasticsearch")
 	compileOnly("org.junit.jupiter:junit-jupiter")
 	compileOnly("org.junit.platform:junit-platform-engine")
+	compileOnly("org.junit.platform:junit-platform-launcher")
 	compileOnly("org.mockito:mockito-core")
 	compileOnly("org.springframework:spring-context")
 	compileOnly("org.springframework.data:spring-data-redis")
