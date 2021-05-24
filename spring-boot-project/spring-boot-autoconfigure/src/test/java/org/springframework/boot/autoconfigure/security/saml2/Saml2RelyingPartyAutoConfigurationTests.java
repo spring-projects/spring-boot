@@ -136,6 +136,50 @@ class Saml2RelyingPartyAutoConfigurationTests {
 	}
 
 	@Test
+	void autoconfigurationShouldUseBindingFromMetadataUrlIfPresent() throws Exception {
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server, new ClassPathResource("saml/idp-metadata"));
+			this.contextRunner.withPropertyValues(PREFIX + ".foo.identityprovider.metadata-uri=" + metadataUrl)
+					.run((context) -> {
+						RelyingPartyRegistrationRepository repository = context
+								.getBean(RelyingPartyRegistrationRepository.class);
+						RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+						assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
+								.isEqualTo(Saml2MessageBinding.POST);
+					});
+		}
+	}
+
+	@Test
+	void autoconfigurationWhenMetadataUrlAndPropertyPresentShouldUseBindingFromProperty() throws Exception {
+		try (MockWebServer server = new MockWebServer()) {
+			server.start();
+			String metadataUrl = server.url("").toString();
+			setupMockResponse(server, new ClassPathResource("saml/idp-metadata"));
+			this.contextRunner.withPropertyValues(PREFIX + ".foo.identityprovider.metadata-uri=" + metadataUrl,
+					PREFIX + ".foo.identityprovider.singlesignon.binding=redirect").run((context) -> {
+						RelyingPartyRegistrationRepository repository = context
+								.getBean(RelyingPartyRegistrationRepository.class);
+						RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+						assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
+								.isEqualTo(Saml2MessageBinding.REDIRECT);
+					});
+		}
+	}
+
+	@Test
+	void autoconfigurationWhenNoMetadataUrlOrPropertyPresentShouldUseRedirectBinding() {
+		this.contextRunner.withPropertyValues(getPropertyValuesWithoutSsoBinding()).run((context) -> {
+			RelyingPartyRegistrationRepository repository = context.getBean(RelyingPartyRegistrationRepository.class);
+			RelyingPartyRegistration registration = repository.findByRegistrationId("foo");
+			assertThat(registration.getAssertingPartyDetails().getSingleSignOnServiceBinding())
+					.isEqualTo(Saml2MessageBinding.REDIRECT);
+		});
+	}
+
+	@Test
 	void relyingPartyRegistrationRepositoryShouldBeConditionalOnMissingBean() {
 		this.contextRunner.withPropertyValues(getPropertyValues())
 				.withUserConfiguration(RegistrationRepositoryConfiguration.class).run((context) -> {
@@ -176,6 +220,14 @@ class Saml2RelyingPartyAutoConfigurationTests {
 				+ ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
 				PREFIX + ".foo.identityprovider.singlesignon.binding=post",
 				PREFIX + ".foo.identityprovider.singlesignon.sign-request=" + signRequests,
+				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
+				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
+	}
+
+	private String[] getPropertyValuesWithoutSsoBinding() {
+		return new String[] { PREFIX
+				+ ".foo.identityprovider.singlesignon.url=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/SSOService.php",
+				PREFIX + ".foo.identityprovider.singlesignon.sign-request=false",
 				PREFIX + ".foo.identityprovider.entity-id=https://simplesaml-for-spring-saml.cfapps.io/saml2/idp/metadata.php",
 				PREFIX + ".foo.identityprovider.verification.credentials[0].certificate-location=classpath:saml/certificate-location" };
 	}
