@@ -168,7 +168,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	public T build() {
 		DataSourceProperties<T> properties = DataSourceProperties.forType(this.classLoader, this.type);
-		DataSourceProperties<T> derriveFromProperties = (this.deriveFrom != null)
+		DataSourceProperties<T> deriveFromProperties = (this.deriveFrom != null)
 				? DataSourceProperties.forType(this.classLoader, this.type) : null;
 		Class<? extends T> instanceType = (this.type != null) ? this.type : properties.getDataSourceInstanceType();
 		T dataSource = BeanUtils.instantiateClass(instanceType);
@@ -179,8 +179,8 @@ public final class DataSourceBuilder<T extends DataSource> {
 				properties.set(dataSource, property, value);
 				applied.add(property);
 			}
-			else if (derriveFromProperties != null && properties.canSet(property)) {
-				String value = derriveFromProperties.get(this.deriveFrom, property);
+			else if (deriveFromProperties != null && properties.canSet(property)) {
+				String value = deriveFromProperties.get(this.deriveFrom, property);
 				if (value != null) {
 					properties.set(dataSource, property, value);
 					applied.add(property);
@@ -230,7 +230,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 				dataSource = dataSource.unwrap(DataSource.class);
 			}
 			catch (SQLException ex) {
-				throw new IllegalStateException("Unable to unwap embedded database", ex);
+				throw new IllegalStateException("Unable to unwrap embedded database", ex);
 			}
 		}
 		return new DataSourceBuilder<>(dataSource);
@@ -475,7 +475,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		private final Map<DataSourceProperty, Method> setters;
 
-		private Class<T> dataSourceType;
+		private final Class<T> dataSourceType;
 
 		ReflectionDataSourceProperties(Class<T> dataSourceType) {
 			Assert.state(dataSourceType != null, "No supported DataSource type found");
@@ -521,7 +521,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 		private Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> setters2) {
 			Method method = setters2.get(property);
 			UnsupportedDataSourcePropertyException.throwIf(method == null,
-					() -> "Unable to find sutable method for " + property);
+					() -> "Unable to find suitable method for " + property);
 			ReflectionUtils.makeAccessible(method);
 			return method;
 		}
@@ -543,7 +543,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Hikari.
+	 * {@link DataSourceProperties} for Hikari.
 	 */
 	private static class HikariDataSourceProperties extends MappedDataSourceProperties<HikariDataSource> {
 
@@ -558,7 +558,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Tomcat Pool.
+	 * {@link DataSourceProperties} for Tomcat Pool.
 	 */
 	private static class TomcatPoolDataSourceProperties
 			extends MappedDataSourceProperties<org.apache.tomcat.jdbc.pool.DataSource> {
@@ -577,7 +577,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for DBCP2.
+	 * {@link DataSourceProperties} for DBCP2.
 	 */
 	private static class MappedDbcp2DataSource extends MappedDataSourceProperties<BasicDataSource> {
 
@@ -592,7 +592,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Oracle Pool.
+	 * {@link DataSourceProperties} for Oracle Pool.
 	 */
 	private static class OraclePoolDataSourceProperties extends MappedDataSourceProperties<PoolDataSource> {
 
@@ -612,7 +612,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Spring's {@link SimpleDriverDataSource}.
+	 * {@link DataSourceProperties} for Spring's {@link SimpleDriverDataSource}.
 	 */
 	private static class SimpleDataSourceProperties extends MappedDataSourceProperties<SimpleDriverDataSource> {
 
@@ -628,7 +628,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Oracle.
+	 * {@link DataSourceProperties} for Oracle.
 	 */
 	private static class OracleDataSourceProperties extends MappedDataSourceProperties<OracleDataSource> {
 
@@ -641,7 +641,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for H2.
+	 * {@link DataSourceProperties} for H2.
 	 */
 	private static class H2DataSourceProperties extends MappedDataSourceProperties<JdbcDataSource> {
 
@@ -654,7 +654,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Postgres.
+	 * {@link DataSourceProperties} for Postgres.
 	 */
 	private static class PostgresDataSourceProperties extends MappedDataSourceProperties<PGSimpleDataSource> {
 
