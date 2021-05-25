@@ -285,7 +285,7 @@ There is also a `spring.jpa.generate-ddl` flag, but it is not used if Hibernate 
 If you are running a web application, Spring Boot by default registers {spring-framework-api}/orm/jpa/support/OpenEntityManagerInViewInterceptor.html[`OpenEntityManagerInViewInterceptor`] to apply the "`Open EntityManager in View`" pattern, to allow for lazy loading in web views.
 If you do not want this behavior, you should set `spring.jpa.open-in-view` to `false` in your `application.properties`.
 
-
+WARNING: If session in view is enabled, it keeps an entity manager active the whole web request, that uses an active database connection from the limited connection pool. In some cases, this behavior may use up all available connections, leading to connection unavailable errors.
 
 [[features.sql.jdbc]]
 === Spring Data JDBC
