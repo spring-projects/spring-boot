@@ -49,13 +49,6 @@ class Saml2RelyingPartyPropertiesTests {
 	}
 
 	@Test
-	void customizeSsoBindingDefaultsToRedirect() {
-		this.properties.getRegistration().put("simplesamlphp", new Saml2RelyingPartyProperties.Registration());
-		assertThat(this.properties.getRegistration().get("simplesamlphp").getIdentityprovider().getSinglesignon()
-				.getBinding()).isEqualTo(Saml2MessageBinding.REDIRECT);
-	}
-
-	@Test
 	void customizeSsoBinding() {
 		bind("spring.security.saml2.relyingparty.registration.simplesamlphp.identity-provider.single-sign-on.binding",
 				"post");
