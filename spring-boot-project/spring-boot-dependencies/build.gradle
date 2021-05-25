@@ -849,7 +849,7 @@ bom {
 			]
 		}
 	}
-	library("Jersey", "2.33") {
+	library("Jersey", "2.34") {
 		prohibit("[3.0.0-M1,)") {
 			because "it uses the jakarta.* namespace"
 		}
