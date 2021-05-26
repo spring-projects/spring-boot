@@ -253,18 +253,25 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	private enum DataSourceProperty {
 
-		URL("url", "URL"),
+		URL(false, "url", "URL"),
 
-		DRIVER_CLASS_NAME("driverClassName"),
+		DRIVER_CLASS_NAME(true, "driverClassName"),
 
-		USERNAME("username", "user"),
+		USERNAME(false, "username", "user"),
 
-		PASSWORD("password");
+		PASSWORD(false, "password");
+
+		private boolean optional;
 
 		private final String[] names;
 
-		DataSourceProperty(String... names) {
+		DataSourceProperty(boolean optional, String... names) {
+			this.optional = optional;
 			this.names = names;
+		}
+
+		boolean isOptional() {
+			return this.optional;
 		}
 
 		@Override
@@ -343,18 +350,23 @@ public final class DataSourceBuilder<T extends DataSource> {
 		@Override
 		public void set(T dataSource, DataSourceProperty property, String value) {
 			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
-			mappedProperty.set(dataSource, value);
+			if (mappedProperty != null) {
+				mappedProperty.set(dataSource, value);
+			}
 		}
 
 		@Override
 		public String get(T dataSource, DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
-			return mappedProperty.get(dataSource);
+			if (mappedProperty != null) {
+				return mappedProperty.get(dataSource);
+			}
+			return null;
 		}
 
 		private MappedDataSourceProperty<T, ?> getMapping(DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = this.mappedProperties.get(property);
-			UnsupportedDataSourcePropertyException.throwIf(mappedProperty == null,
+			UnsupportedDataSourcePropertyException.throwIf(!property.isOptional() && mappedProperty == null,
 					() -> "No mapping found for " + property);
 			return mappedProperty;
 		}
@@ -439,8 +451,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		void set(T dataSource, String value) {
 			try {
-				UnsupportedDataSourcePropertyException.throwIf(this.setter == null,
-						() -> "No setter mapped for '" + this.property + "' property");
+				if (this.setter == null) {
+					UnsupportedDataSourcePropertyException.throwIf(!this.property.isOptional(),
+							() -> "No setter mapped for '" + this.property + "' property");
+					return;
+				}
 				this.setter.set(dataSource, convertFromString(value));
 			}
 			catch (SQLException ex) {
@@ -450,8 +465,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		String get(T dataSource) {
 			try {
-				UnsupportedDataSourcePropertyException.throwIf(this.getter == null,
-						() -> "No getter mapped for '" + this.property + "' property");
+				if (this.getter == null) {
+					UnsupportedDataSourcePropertyException.throwIf(!this.property.isOptional(),
+							() -> "No getter mapped for '" + this.property + "' property");
+					return null;
+				}
 				return convertToString(this.getter.get(dataSource));
 			}
 			catch (SQLException ex) {
@@ -522,19 +540,27 @@ public final class DataSourceBuilder<T extends DataSource> {
 		@Override
 		public void set(T dataSource, DataSourceProperty property, String value) {
 			Method method = getMethod(property, this.setters);
-			ReflectionUtils.invokeMethod(method, dataSource, value);
+			if (method != null) {
+				ReflectionUtils.invokeMethod(method, dataSource, value);
+			}
 		}
 
 		@Override
 		public String get(T dataSource, DataSourceProperty property) {
 			Method method = getMethod(property, this.getters);
-			return (String) ReflectionUtils.invokeMethod(method, dataSource);
+			if (method != null) {
+				return (String) ReflectionUtils.invokeMethod(method, dataSource);
+			}
+			return null;
 		}
 
-		private Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> setters2) {
-			Method method = setters2.get(property);
-			UnsupportedDataSourcePropertyException.throwIf(method == null,
-					() -> "Unable to find suitable method for " + property);
+		private Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> methods) {
+			Method method = methods.get(property);
+			if (method == null) {
+				UnsupportedDataSourcePropertyException.throwIf(!property.isOptional(),
+						() -> "Unable to find suitable method for " + property);
+				return null;
+			}
 			ReflectionUtils.makeAccessible(method);
 			return method;
 		}
