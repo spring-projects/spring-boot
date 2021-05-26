@@ -43,6 +43,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.log.LogMessage;
 import org.springframework.util.Assert;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -265,10 +266,13 @@ public class StandardConfigDataLocationResolver
 	}
 
 	private Set<StandardConfigDataResource> resolvePatternEmptyDirectories(StandardConfigDataReference reference) {
-		Resource[] resources = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
-		Assert.state(resources.length > 0,
-				"No subdirectories found for mandatory directory location '" + reference.getDirectory() + "'.");
-		return Arrays.stream(resources).filter(Resource::exists)
+		Resource[] subdirectories = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
+		ConfigDataLocation location = reference.getConfigDataLocation();
+		if (location.isOptional() && ObjectUtils.isEmpty(subdirectories)) {
+			String message = String.format("Config data location '%s' contains no subdirectories", location);
+			throw new ConfigDataLocationNotFoundException(location, message, null);
+		}
+		return Arrays.stream(subdirectories).filter(Resource::exists)
 				.map((resource) -> new StandardConfigDataResource(reference, resource, true))
 				.collect(Collectors.toCollection(LinkedHashSet::new));
 	}

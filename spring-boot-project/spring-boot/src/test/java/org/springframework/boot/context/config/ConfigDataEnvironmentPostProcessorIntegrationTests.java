@@ -713,16 +713,27 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	@Test
 	void runWhenMandatoryWildcardLocationHasNoSubdirectories() {
-		assertThatIllegalStateException().isThrownBy(
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
 				() -> this.application.run("--spring.config.location=file:src/test/resources/config/0-empty/*/"))
-				.withMessage(
-						"No subdirectories found for mandatory directory location 'file:src/test/resources/config/0-empty/*/'.");
+				.withMessage("Config data location 'file:src/test/resources/config/0-empty/*/' cannot be found");
 	}
 
 	@Test
 	void runWhenHasMandatoryWildcardLocationThatDoesNotExist() {
 		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
 				.isThrownBy(() -> this.application.run("--spring.config.location=file:invalid/*/"));
+	}
+
+	@Test
+	void runWhenHasOptionalWildcardLocationThatDoesNotExistDoesNotThrow() {
+		assertThatNoException()
+				.isThrownBy(() -> this.application.run("--spring.config.location=optional:file:invalid/*/"));
+	}
+
+	@Test
+	void runWhenOptionalWildcardLocationHasNoSubdirectoriesDoesNotThrow() {
+		assertThatNoException().isThrownBy(() -> this.application
+				.run("--spring.config.location=optional:file:src/test/resources/config/0-empty/*/"));
 	}
 
 	@Test // gh-24990
