@@ -47,6 +47,7 @@ public class ConventionsPlugin implements Plugin<Project> {
 		new MavenPublishingConventions().apply(project);
 		new AsciidoctorConventions().apply(project);
 		new KotlinConventions().apply(project);
+		new EclipseConventions().apply(project);
 	}
 
 }
