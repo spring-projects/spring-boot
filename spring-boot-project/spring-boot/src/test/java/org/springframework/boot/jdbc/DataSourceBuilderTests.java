@@ -73,10 +73,25 @@ class DataSourceBuilderTests {
 		assertThat(hikariDataSource.getJdbcUrl()).isEqualTo("jdbc:h2:test");
 	}
 
+	@Test // gh-26633
+	void buildWhenHikariDataSourceWithNullPasswordReturnsHikariDataSource() {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").username("test").password(null).build();
+		assertThat(this.dataSource).isInstanceOf(HikariDataSource.class);
+		HikariDataSource hikariDataSource = (HikariDataSource) this.dataSource;
+		assertThat(hikariDataSource.getJdbcUrl()).isEqualTo("jdbc:h2:test");
+	}
+
 	@Test
 	void buildWhenHikariNotAvailableReturnsTomcatDataSource() {
 		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari")).url("jdbc:h2:test")
 				.build();
+		assertThat(this.dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
+	}
+
+	@Test // gh-26633
+	void buildWhenTomcatDataSourceWithNullPasswordReturnsDataSource() {
+		this.dataSource = DataSourceBuilder.create(new HidePackagesClassLoader("com.zaxxer.hikari")).url("jdbc:h2:test")
+				.username("test").password(null).build();
 		assertThat(this.dataSource).isInstanceOf(org.apache.tomcat.jdbc.pool.DataSource.class);
 	}
 
@@ -85,6 +100,14 @@ class DataSourceBuilderTests {
 		this.dataSource = DataSourceBuilder
 				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
 				.url("jdbc:h2:test").build();
+		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
+	}
+
+	@Test // gh-26633
+	void buildWhenDbcp2DataSourceWithNullPasswordReturnsDbcp2DataSource() {
+		this.dataSource = DataSourceBuilder
+				.create(new HidePackagesClassLoader("com.zaxxer.hikari", "org.apache.tomcat.jdbc.pool"))
+				.url("jdbc:h2:test").username("test").password(null).build();
 		assertThat(this.dataSource).isInstanceOf(BasicDataSource.class);
 	}
 

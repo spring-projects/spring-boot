@@ -176,8 +176,10 @@ public final class DataSourceBuilder<T extends DataSource> {
 		for (DataSourceProperty property : DataSourceProperty.values()) {
 			if (this.values.containsKey(property)) {
 				String value = this.values.get(property);
-				properties.set(dataSource, property, value);
-				applied.add(property);
+				if (value != null) {
+					properties.set(dataSource, property, value);
+					applied.add(property);
+				}
 			}
 			else if (deriveFromProperties != null && properties.canSet(property)) {
 				String value = deriveFromProperties.get(this.deriveFrom, property);
