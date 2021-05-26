@@ -132,14 +132,15 @@ class DataSourceBuilderTests {
 	@Test
 	void buildWhenH2TypeSpecifiedReturnsExpectedDataSource() {
 		this.dataSource = DataSourceBuilder.create().url("jdbc:h2:test").type(JdbcDataSource.class).username("test")
-				.build();
+				.password("secret").build();
 		assertThat(this.dataSource).isInstanceOf(JdbcDataSource.class);
 		JdbcDataSource h2DataSource = (JdbcDataSource) this.dataSource;
 		assertThat(h2DataSource.getUser()).isEqualTo("test");
+		assertThat(h2DataSource.getPassword()).isEqualTo("secret");
 	}
 
 	@Test
-	void buildWhenPostgressTypeSpecifiedReturnsExpectedDataSource() {
+	void buildWhenPostgresTypeSpecifiedReturnsExpectedDataSource() {
 		this.dataSource = DataSourceBuilder.create().url("jdbc:postgresql://localhost/test")
 				.type(PGSimpleDataSource.class).username("test").build();
 		assertThat(this.dataSource).isInstanceOf(PGSimpleDataSource.class);
