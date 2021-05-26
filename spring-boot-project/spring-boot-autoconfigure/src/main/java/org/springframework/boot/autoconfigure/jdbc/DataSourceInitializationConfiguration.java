@@ -64,7 +64,7 @@ class DataSourceInitializationConfiguration {
 
 	private static DataSource determineDataSource(Supplier<DataSource> dataSource, String username, String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			DataSourceBuilder.derivedFrom(dataSource.get()).type(SimpleDriverDataSource.class).username(username)
+			return DataSourceBuilder.derivedFrom(dataSource.get()).type(SimpleDriverDataSource.class).username(username)
 					.password(password).build();
 		}
 		return dataSource.get();
