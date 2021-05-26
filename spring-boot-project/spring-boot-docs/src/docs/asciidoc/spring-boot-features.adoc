@@ -1667,6 +1667,14 @@ For example, you could include it in your `application.properties`, as shown in 
 
 You could also specify it on the command line by using the following switch: `--spring.profiles.active=dev,hsqldb`.
 
+If no profile is active, a default profile is enabled.
+The name of the default profile is `default` and it can be tuned using the configprop:spring.profiles.default[] `Environment` property, as shown in the following example:
+
+[source,properties,indent=0,configprops]
+----
+	spring.profiles.default=none
+----
+
 
 
 [[boot-features-adding-active-profiles]]
