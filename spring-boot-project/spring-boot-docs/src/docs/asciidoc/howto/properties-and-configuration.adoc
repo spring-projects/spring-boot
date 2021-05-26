@@ -239,6 +239,24 @@ See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section f
 
 
 
+[[howto.properties-and-configuration.set-default-spring-profile-name]]
+=== Set the Default Profile Name
+The default profile is a profile that is enabled if no profile is active.
+By default, the name of the default profile is `default`, but it could be changed using a System property (configprop:spring.profiles.default[]) or an OS environment variable (configprop:spring.profiles.default[format=envvar]).
+
+In Spring Boot, you can also set the default profile name in `application.properties`, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  profiles:
+	    default: "dev"
+----
+
+See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section for more information.
+
+
+
 [[howto.properties-and-configuration.change-configuration-depending-on-the-environment]]
 === Change Configuration Depending on the Environment
 Spring Boot supports multi-document YAML and Properties files (see <<features#features.external-config.files.multi-document>> for details) which can be activated conditionally based on the active profiles.
