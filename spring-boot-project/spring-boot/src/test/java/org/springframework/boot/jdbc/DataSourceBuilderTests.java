@@ -26,6 +26,7 @@ import java.util.Arrays;
 
 import javax.sql.DataSource;
 
+import com.microsoft.sqlserver.jdbc.SQLServerDataSource;
 import com.zaxxer.hikari.HikariDataSource;
 import oracle.jdbc.internal.OpaqueString;
 import oracle.jdbc.pool.OracleDataSource;
@@ -146,6 +147,15 @@ class DataSourceBuilderTests {
 		assertThat(this.dataSource).isInstanceOf(PGSimpleDataSource.class);
 		PGSimpleDataSource pgDataSource = (PGSimpleDataSource) this.dataSource;
 		assertThat(pgDataSource.getUser()).isEqualTo("test");
+	}
+
+	@Test // gh-26647
+	void buildWhenSqlServerTypeSpecifiedReturnsExpectedDataSource() {
+		this.dataSource = DataSourceBuilder.create().url("jdbc:sqlserver://localhost/test")
+				.type(SQLServerDataSource.class).username("test").build();
+		assertThat(this.dataSource).isInstanceOf(SQLServerDataSource.class);
+		SQLServerDataSource sqlServerDataSource = (SQLServerDataSource) this.dataSource;
+		assertThat(sqlServerDataSource.getUser()).isEqualTo("test");
 	}
 
 	@Test

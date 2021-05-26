@@ -251,31 +251,42 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	private enum DataSourceProperty {
 
-		URL("url"),
+		URL("url", "URL"),
 
 		DRIVER_CLASS_NAME("driverClassName"),
 
-		USERNAME("username"),
+		USERNAME("username", "user"),
 
 		PASSWORD("password");
 
-		private final String name;
+		private final String[] names;
 
-		DataSourceProperty(String name) {
-			this.name = name;
+		DataSourceProperty(String... names) {
+			this.names = names;
 		}
 
 		@Override
 		public String toString() {
-			return this.name;
+			return this.names[0];
 		}
 
 		Method findSetter(Class<?> type) {
-			return ReflectionUtils.findMethod(type, "set" + StringUtils.capitalize(this.name), String.class);
+			return extracted("set", type);
 		}
 
 		Method findGetter(Class<?> type) {
-			return ReflectionUtils.findMethod(type, "get" + StringUtils.capitalize(this.name), String.class);
+			return extracted("get", type);
+		}
+
+		private Method extracted(String prefix, Class<?> type) {
+			for (String candidate : this.names) {
+				Method method = ReflectionUtils.findMethod(type, prefix + StringUtils.capitalize(candidate),
+						String.class);
+				if (method != null) {
+					return method;
+				}
+			}
+			return null;
 		}
 
 	}
