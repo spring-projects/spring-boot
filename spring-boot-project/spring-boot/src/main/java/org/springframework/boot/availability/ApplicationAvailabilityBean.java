@@ -38,9 +38,17 @@ import org.springframework.util.Assert;
 public class ApplicationAvailabilityBean
 		implements ApplicationAvailability, ApplicationListener<AvailabilityChangeEvent<?>> {
 
-	private static final Log logger = LogFactory.getLog(ApplicationAvailabilityBean.class);
-
 	private final Map<Class<? extends AvailabilityState>, AvailabilityChangeEvent<?>> events = new HashMap<>();
+
+	private final Log logger;
+
+	public ApplicationAvailabilityBean() {
+		this(LogFactory.getLog(ApplicationAvailabilityBean.class));
+	}
+
+	ApplicationAvailabilityBean(Log logger) {
+		this.logger = logger;
+	}
 
 	@Override
 	public <S extends AvailabilityState> S getState(Class<S> stateType, S defaultState) {
@@ -65,8 +73,8 @@ public class ApplicationAvailabilityBean
 	@Override
 	public void onApplicationEvent(AvailabilityChangeEvent<?> event) {
 		Class<? extends AvailabilityState> type = getStateType(event.getState());
-		if (logger.isInfoEnabled()) {
-			logger.info(getLogMessage(type, event));
+		if (this.logger.isDebugEnabled()) {
+			this.logger.debug(getLogMessage(type, event));
 		}
 		this.events.put(type, event);
 	}
