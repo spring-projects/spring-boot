@@ -91,7 +91,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	private Class<T> type;
 
-	private final T deriveFrom;
+	private final DataSource deriveFrom;
 
 	private DataSourceBuilder(ClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -168,25 +168,18 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	public T build() {
 		DataSourceProperties<T> properties = DataSourceProperties.forType(this.classLoader, this.type);
-		DataSourceProperties<T> deriveFromProperties = (this.deriveFrom != null)
-				? DataSourceProperties.forType(this.classLoader, this.type) : null;
+		DataSourceProperties<DataSource> deriveFromProperties = getDeriveFromProperties();
 		Class<? extends T> instanceType = (this.type != null) ? this.type : properties.getDataSourceInstanceType();
 		T dataSource = BeanUtils.instantiateClass(instanceType);
 		Set<DataSourceProperty> applied = new HashSet<>();
 		for (DataSourceProperty property : DataSourceProperty.values()) {
-			if (this.values.containsKey(property)) {
-				String value = this.values.get(property);
-				if (value != null) {
-					properties.set(dataSource, property, value);
-					applied.add(property);
-				}
+			String value = this.values.get(property);
+			if (!this.values.containsKey(property) && deriveFromProperties != null && properties.canSet(property)) {
+				value = deriveFromProperties.get(this.deriveFrom, property);
 			}
-			else if (deriveFromProperties != null && properties.canSet(property)) {
-				String value = deriveFromProperties.get(this.deriveFrom, property);
-				if (value != null) {
-					properties.set(dataSource, property, value);
-					applied.add(property);
-				}
+			if (value != null) {
+				properties.set(dataSource, property, value);
+				applied.add(property);
 			}
 		}
 		if (!applied.contains(DataSourceProperty.DRIVER_CLASS_NAME)
@@ -197,6 +190,14 @@ public final class DataSourceBuilder<T extends DataSource> {
 			properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
 		}
 		return dataSource;
+	}
+
+	@SuppressWarnings("unchecked")
+	private DataSourceProperties<DataSource> getDeriveFromProperties() {
+		if (this.deriveFrom == null) {
+			return null;
+		}
+		return DataSourceProperties.forType(this.classLoader, (Class<DataSource>) this.deriveFrom.getClass());
 	}
 
 	/**

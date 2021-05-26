@@ -318,6 +318,19 @@ class DataSourceBuilderTests {
 		assertThat(built.getUrl()).startsWith("jdbc:hsqldb:mem");
 	}
 
+	@Test // gh-26644
+	void buildWhenDerivedFromExistingDatabaseWithTypeChange() {
+		HikariDataSource dataSource = new HikariDataSource();
+		dataSource.setUsername("test");
+		dataSource.setPassword("secret");
+		dataSource.setJdbcUrl("jdbc:postgresql://localhost:5432/postgres");
+		DataSourceBuilder<?> builder = DataSourceBuilder.derivedFrom(dataSource).type(SimpleDriverDataSource.class);
+		SimpleDriverDataSource built = (SimpleDriverDataSource) builder.username("test2").password("secret2").build();
+		assertThat(built.getUsername()).isEqualTo("test2");
+		assertThat(built.getPassword()).isEqualTo("secret2");
+		assertThat(built.getUrl()).isEqualTo("jdbc:postgresql://localhost:5432/postgres");
+	}
+
 	final class HidePackagesClassLoader extends URLClassLoader {
 
 		private final String[] hiddenPackages;
