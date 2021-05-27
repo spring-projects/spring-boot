@@ -268,7 +268,7 @@ public class StandardConfigDataLocationResolver
 	private Set<StandardConfigDataResource> resolvePatternEmptyDirectories(StandardConfigDataReference reference) {
 		Resource[] subdirectories = this.resourceLoader.getResources(reference.getDirectory(), ResourceType.DIRECTORY);
 		ConfigDataLocation location = reference.getConfigDataLocation();
-		if (location.isOptional() && ObjectUtils.isEmpty(subdirectories)) {
+		if (!location.isOptional() && ObjectUtils.isEmpty(subdirectories)) {
 			String message = String.format("Config data location '%s' contains no subdirectories", location);
 			throw new ConfigDataLocationNotFoundException(location, message, null);
 		}
