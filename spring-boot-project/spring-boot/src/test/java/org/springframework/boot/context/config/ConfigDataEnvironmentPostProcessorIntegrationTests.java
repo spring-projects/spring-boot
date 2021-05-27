@@ -720,12 +720,6 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
-	void runWhenOptionalWildcardLocationHasNoSubdirectories() {
-		assertThatNoException().isThrownBy(() -> this.application
-				.run("--spring.config.location=optional:file:src/test/resources/config/0-empty/*/"));
-	}
-
-	@Test
 	void runWhenHasMandatoryWildcardLocationThatDoesNotExist() {
 		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class)
 				.isThrownBy(() -> this.application.run("--spring.config.location=file:invalid/*/"));
