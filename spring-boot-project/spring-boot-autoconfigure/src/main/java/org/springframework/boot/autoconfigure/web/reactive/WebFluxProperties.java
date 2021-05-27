@@ -138,7 +138,9 @@ public class WebFluxProperties {
 
 	public static class Cookie {
 
-		private String name;
+		private static final String COOKIE_NAME = "SESSION";
+
+		private String name = COOKIE_NAME;
 
 		private String domain;
 
@@ -147,7 +149,7 @@ public class WebFluxProperties {
 		@DurationUnit(ChronoUnit.SECONDS)
 		private Duration maxAge;
 
-		private Boolean httpOnly;
+		private Boolean httpOnly = true;
 
 		private Boolean secure;
 

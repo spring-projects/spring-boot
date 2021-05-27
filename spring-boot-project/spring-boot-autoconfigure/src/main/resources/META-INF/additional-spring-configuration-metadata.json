@@ -1768,24 +1768,30 @@
     },
     {
       "name": "spring.webflux.session.cookie.name",
-      "type": "java.lang.String",
+      "description": "Session cookie name.",
       "defaultValue": "SESSION"
     },
     {
       "name": "spring.webflux.session.cookie.domain",
-      "defaultValue": "lax"
+      "description": "Domain for the session cookie."
     },
     {
-      "name": "spring.webflux.session.cookie.same-site",
-      "defaultValue": "lax"
+      "name": "spring.webflux.session.cookie.path",
+      "description": "Path of the session cookie.",
+      "defaultValue": "server.servlet.context-path"
     },
     {
-      "name": "spring.webflux.session.cookie.same-site",
-      "defaultValue": "lax"
+      "name": "spring.webflux.session.cookie.max-age",
+      "description": "Maximum age of the session cookie. If a duration suffix is not specified, seconds will be used."
     },
     {
-      "name": "spring.webflux.session.cookie.same-site",
-      "defaultValue": "lax"
+      "name": "spring.webflux.session.cookie.http-only",
+      "description": "Whether to use \"HttpOnly\" cookies for session cookies.",
+      "defaultValue": true
+    },
+    {
+      "name": "spring.webflux.session.cookie.secure",
+      "description": "Whether to always mark the session cookie as secure."
     },
     {
       "name": "spring.webflux.session.cookie.same-site",
