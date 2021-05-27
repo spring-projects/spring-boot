@@ -715,7 +715,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	void runWhenMandatoryWildcardLocationHasNoSubdirectories() {
 		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(
 				() -> this.application.run("--spring.config.location=file:src/test/resources/config/0-empty/*/"))
-				.withMessage("Config data location 'file:src/test/resources/config/0-empty/*/' cannot be found");
+				.withMessage(
+						"Config data location 'file:src/test/resources/config/0-empty/*/' contains no subdirectories");
 	}
 
 	@Test
