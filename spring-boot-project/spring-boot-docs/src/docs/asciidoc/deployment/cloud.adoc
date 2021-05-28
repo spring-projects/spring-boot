@@ -138,6 +138,10 @@ The preStop handler can be configured via the PodSpec in the pod's configuration
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<features#features.graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
 
+NOTE: When Kubernetes sends a SIGTERM signal to the pod, it waits for a specified time called the termination grace period (the default for which is 30 seconds).
+If the containers are still running after the grace period, they are sent the SIGKILL signal and forcibly removed.
+If the pod takes longer than 30 seconds to shut down, which could be because you've increased spring.lifecycle.timeout-per-shutdown-phase, make sure to increase the termination grace period by setting the `terminationGracePeriodSeconds` option in the Pod YAML.
+
 
 
 [[deployment.cloud.heroku]]
