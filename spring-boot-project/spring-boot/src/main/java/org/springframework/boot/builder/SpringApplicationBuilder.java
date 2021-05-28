@@ -97,9 +97,9 @@ public class SpringApplicationBuilder {
 		this.application = createSpringApplication(sources);
 	}
 
-    public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
-            this.application = createSpringApplication(resourceLoader, sources);
-    }
+	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
+		this.application = createSpringApplication(resourceLoader, sources);
+	}
 
 	/**
 	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
@@ -113,19 +113,18 @@ public class SpringApplicationBuilder {
 		return new SpringApplication(sources);
 	}
 
-    /**
-     * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
-     * given sources. Subclasses may override in order to provide a custom subclass of
-     * {@link org.springframework.boot.SpringApplication}
-     * @param resourceLoader the resource loader
-     * @param sources the sources
-     * @return the {@link org.springframework.boot.SpringApplication} instance
-     * @since 1.1.0
-     */
-    protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
-        return new SpringApplication(resourceLoader, sources);
-    }
-
+	/**
+	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
+	 * given sources. Subclasses may override in order to provide a custom subclass of
+	 * {@link org.springframework.boot.SpringApplication}
+	 * @param resourceLoader the resource loader
+	 * @param sources the sources
+	 * @return the {@link org.springframework.boot.SpringApplication} instance
+	 * @since 1.1.0
+	 */
+	protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
+		return new SpringApplication(resourceLoader, sources);
+	}
 
 	/**
 	 * Accessor for the current application context.
