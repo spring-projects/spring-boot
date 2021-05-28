@@ -94,7 +94,11 @@ public class SpringApplicationBuilder {
 	private boolean configuredAsChild = false;
 
 	public SpringApplicationBuilder(Class<?>... sources) {
-		this.application = createSpringApplication(sources);
+		this.application = createSpringApplication(null, sources);
+	}
+
+	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
+		this.application = createSpringApplication(resourceLoader, sources);
 	}
 
 	/**
@@ -104,9 +108,26 @@ public class SpringApplicationBuilder {
 	 * @param sources the sources
 	 * @return the {@link org.springframework.boot.SpringApplication} instance
 	 * @since 1.1.0
+	 * @deprecated Use {@link #createSpringApplication(ResourceLoader, Class...)} with
+	 * null resource loader
 	 */
 	protected SpringApplication createSpringApplication(Class<?>... sources) {
 		return new SpringApplication(sources);
+	}
+
+	/**
+	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
+	 * given sources. Subclasses may override in order to provide a custom subclass of
+	 * {@link org.springframework.boot.SpringApplication}
+	 * @param resourceLoader the resource loader, can be null to use default resource
+	 * loader (see
+	 * {@link org.springframework.boot.SpringApplication#SpringApplication(ResourceLoader, Class...)})
+	 * @param sources the sources
+	 * @return the {@link org.springframework.boot.SpringApplication} instance
+	 * @since 2.5.0
+	 */
+	protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
+		return new SpringApplication(resourceLoader, sources);
 	}
 
 	/**
