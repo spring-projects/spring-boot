@@ -307,6 +307,16 @@ class SpringApplicationBuilderTests {
 		assertThat(builder.application().getEnvironmentPrefix()).isEqualTo("test");
 	}
 
+	@Test
+	void createWithResourceLoader() {
+		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass().getClassLoader());
+		SpringApplicationBuilder application = new SpringApplicationBuilder(new DefaultResourceLoader(classLoader),
+				ExampleConfig.class)
+						.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
+		this.context = application.run();
+		assertThat(this.context.getClassLoader()).isEqualTo(classLoader);
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class ExampleConfig {
 
