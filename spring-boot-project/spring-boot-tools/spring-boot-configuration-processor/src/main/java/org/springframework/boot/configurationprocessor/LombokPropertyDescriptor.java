@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -102,11 +102,8 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 		if (lombokMethodAnnotationOnElement != null) {
 			return isAccessLevelPublic(env, lombokMethodAnnotationOnElement);
 		}
-		return (hasAnnotation(env, LOMBOK_DATA_ANNOTATION) || hasAnnotation(env, LOMBOK_VALUE_ANNOTATION));
-	}
-
-	private boolean hasAnnotation(MetadataGenerationEnvironment env, String lombokAnnotation) {
-		return (env.getAnnotation(getOwnerElement(), lombokAnnotation) != null);
+		return (env.hasAnnotation(getOwnerElement(), LOMBOK_DATA_ANNOTATION)
+				|| env.hasAnnotation(getOwnerElement(), LOMBOK_VALUE_ANNOTATION));
 	}
 
 	private boolean isAccessLevelPublic(MetadataGenerationEnvironment env, AnnotationMirror lombokAnnotation) {
