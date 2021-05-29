@@ -62,6 +62,8 @@ public class NettyWebServer implements WebServer {
 	 */
 	private static final int ERROR_NO_EACCES = -13;
 
+	private static final int ERROR_INVALID_PORT = -1;
+
 	private static final Predicate<HttpServerRequest> ALWAYS = (request) -> true;
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
@@ -210,14 +212,19 @@ public class NettyWebServer implements WebServer {
 	@Override
 	public int getPort() {
 		if (this.disposableServer != null) {
-			try {
-				return this.disposableServer.port();
-			}
-			catch (UnsupportedOperationException ex) {
-				return -1;
-			}
+			return tryToGetPort();
 		}
-		return -1;
+
+		return ERROR_INVALID_PORT;
+	}
+
+	private int tryToGetPort() {
+		try {
+			return this.disposableServer.port();
+		}
+		catch (UnsupportedOperationException ex) {
+			return ERROR_INVALID_PORT;
+		}
 	}
 
 }
