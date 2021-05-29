@@ -133,15 +133,18 @@ public class NettyWebServer implements WebServer {
 
 	DisposableServer startHttpServer() {
 		HttpServer server = this.httpServer;
+
 		if (this.routeProviders.isEmpty()) {
 			server = server.handle(this.handler);
 		}
 		else {
 			server = server.route(this::applyRouteProviders);
 		}
+
 		if (this.lifecycleTimeout != null) {
 			return server.bindNow(this.lifecycleTimeout);
 		}
+
 		return server.bindNow();
 	}
 
@@ -181,6 +184,7 @@ public class NettyWebServer implements WebServer {
 			}
 
 		};
+
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
 		awaitThread.start();
@@ -209,15 +213,21 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public int getPort() {
+		int port = -1;
 		if (this.disposableServer != null) {
-			try {
-				return this.disposableServer.port();
-			}
-			catch (UnsupportedOperationException ex) {
-				return -1;
-			}
+			port = tryToGetPort();
 		}
-		return -1;
+
+		return port;
+	}
+
+	private int tryToGetPort() {
+		try {
+			return this.disposableServer.port();
+		}
+		catch (UnsupportedOperationException ex) {
+			return -1;
+		}
 	}
 
 }
