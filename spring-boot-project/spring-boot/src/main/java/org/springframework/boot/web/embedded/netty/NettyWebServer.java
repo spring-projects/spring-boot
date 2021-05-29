@@ -213,12 +213,11 @@ public class NettyWebServer implements WebServer {
 
 	@Override
 	public int getPort() {
-		int port = -1;
 		if (this.disposableServer != null) {
-			port = tryToGetPort();
+			return tryToGetPort();
 		}
 
-		return port;
+		return -1;
 	}
 
 	private int tryToGetPort() {
