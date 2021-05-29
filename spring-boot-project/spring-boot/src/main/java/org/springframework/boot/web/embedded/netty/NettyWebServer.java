@@ -62,6 +62,8 @@ public class NettyWebServer implements WebServer {
 	 */
 	private static final int ERROR_NO_EACCES = -13;
 
+	private static final int ERROR_INVALID_PORT = -1;
+
 	private static final Predicate<HttpServerRequest> ALWAYS = (request) -> true;
 
 	private static final Log logger = LogFactory.getLog(NettyWebServer.class);
@@ -133,18 +135,15 @@ public class NettyWebServer implements WebServer {
 
 	DisposableServer startHttpServer() {
 		HttpServer server = this.httpServer;
-
 		if (this.routeProviders.isEmpty()) {
 			server = server.handle(this.handler);
 		}
 		else {
 			server = server.route(this::applyRouteProviders);
 		}
-
 		if (this.lifecycleTimeout != null) {
 			return server.bindNow(this.lifecycleTimeout);
 		}
-
 		return server.bindNow();
 	}
 
@@ -184,7 +183,6 @@ public class NettyWebServer implements WebServer {
 			}
 
 		};
-
 		awaitThread.setContextClassLoader(getClass().getClassLoader());
 		awaitThread.setDaemon(false);
 		awaitThread.start();
@@ -217,7 +215,7 @@ public class NettyWebServer implements WebServer {
 			return tryToGetPort();
 		}
 
-		return -1;
+		return ERROR_INVALID_PORT;
 	}
 
 	private int tryToGetPort() {
@@ -225,7 +223,7 @@ public class NettyWebServer implements WebServer {
 			return this.disposableServer.port();
 		}
 		catch (UnsupportedOperationException ex) {
-			return -1;
+			return ERROR_INVALID_PORT;
 		}
 	}
 
