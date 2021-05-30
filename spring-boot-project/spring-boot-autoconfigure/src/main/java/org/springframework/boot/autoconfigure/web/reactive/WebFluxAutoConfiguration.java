@@ -20,6 +20,7 @@ import java.time.Duration;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import reactor.core.publisher.Mono;
 
 import org.springframework.beans.factory.ListableBeanFactory;
 import org.springframework.beans.factory.ObjectProvider;
@@ -74,12 +75,14 @@ import org.springframework.web.reactive.result.method.annotation.ArgumentResolve
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerAdapter;
 import org.springframework.web.reactive.result.method.annotation.RequestMappingHandlerMapping;
 import org.springframework.web.reactive.result.view.ViewResolver;
+import org.springframework.web.server.WebSession;
 import org.springframework.web.server.adapter.WebHttpHandlerBuilder;
 import org.springframework.web.server.i18n.AcceptHeaderLocaleContextResolver;
 import org.springframework.web.server.i18n.FixedLocaleContextResolver;
 import org.springframework.web.server.i18n.LocaleContextResolver;
 import org.springframework.web.server.session.CookieWebSessionIdResolver;
 import org.springframework.web.server.session.DefaultWebSessionManager;
+import org.springframework.web.server.session.InMemoryWebSessionStore;
 import org.springframework.web.server.session.WebSessionManager;
 
 /**
@@ -312,6 +315,9 @@ public class WebFluxAutoConfiguration {
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
 		public WebSessionManager webSessionManager() {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
+			DefaultInMemoryWebSessionStore sessionStore = new DefaultInMemoryWebSessionStore(
+					this.webFluxProperties.getSession().getTimeout());
+			webSessionManager.setSessionStore(sessionStore);
 			CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
 			webSessionIdResolver.setCookieName(this.webFluxProperties.getSession().getCookie().getName());
 			webSessionIdResolver.addCookieInitializer((cookie) -> applyOtherProperties(cookie));
@@ -330,7 +336,23 @@ public class WebFluxAutoConfiguration {
 			map.from(cookie::getSameSite).as(SameSite::attribute).to(cookieBuilder::sameSite);
 		}
 
+		private static final class DefaultInMemoryWebSessionStore extends InMemoryWebSessionStore {
 
+			private final Duration timeout;
+
+			private DefaultInMemoryWebSessionStore(Duration timeout) {
+				this.timeout = timeout;
+			}
+
+			@Override
+			public Mono<WebSession> createWebSession() {
+				return super.createWebSession().flatMap((inMemoryWebSession) -> {
+					inMemoryWebSession.setMaxIdleTime(this.timeout);
+					return Mono.just(inMemoryWebSession);
+				});
+			}
+
+		}
 
 	}
 

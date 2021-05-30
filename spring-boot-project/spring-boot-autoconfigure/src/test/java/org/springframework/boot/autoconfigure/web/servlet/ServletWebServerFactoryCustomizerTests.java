@@ -114,7 +114,7 @@ class ServletWebServerFactoryCustomizerTests {
 		this.customizer.customize(factory);
 		ArgumentCaptor<Session> sessionCaptor = ArgumentCaptor.forClass(Session.class);
 		verify(factory).setSession(sessionCaptor.capture());
-		assertThat(sessionCaptor.getValue().getTimeout()).hasSeconds(123);
+		assertThat(sessionCaptor.getValue().getTimeout()).hasSeconds(124);
 		Cookie cookie = sessionCaptor.getValue().getCookie();
 		assertThat(cookie.getName()).isEqualTo("testname");
 		assertThat(cookie.getDomain()).isEqualTo("testdomain");

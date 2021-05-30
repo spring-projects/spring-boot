@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.web.reactive;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.ZoneId;
@@ -56,6 +57,7 @@ import org.springframework.format.Parser;
 import org.springframework.format.Printer;
 import org.springframework.format.support.FormattingConversionService;
 import org.springframework.http.CacheControl;
+import org.springframework.http.ResponseCookie;
 import org.springframework.http.codec.ServerCodecConfigurer;
 import org.springframework.http.server.reactive.HttpHandler;
 import org.springframework.mock.http.server.reactive.MockServerHttpRequest;
@@ -564,16 +566,28 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void customSameSteConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run((context) -> {
-			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
-			MockServerWebExchange exchange = MockServerWebExchange.from(request);
-			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
-			WebSession webSession = webSessionManager.getSession(exchange).block();
-			webSession.start();
-			exchange.getResponse().setComplete().block();
-			assertThat(exchange.getResponse().getCookies().get("SESSION")).isNotEmpty()
-					.allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
-		});
+		this.contextRunner.withPropertyValues("spring.webflux.session.timeout:123", "spring.webflux.session.cookie.name:JSESSIONID",
+				"spring.webflux.session.cookie.domain:.example.com", "spring.webflux.session.cookie.path:/example",
+				"spring.webflux.session.cookie.max-age:60", "spring.webflux.session.cookie.http-only:false",
+				"spring.webflux.session.cookie.secure:false", "spring.webflux.session.cookie.same-site:strict")
+				.run((context) -> {
+					MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
+					MockServerWebExchange exchange = MockServerWebExchange.from(request);
+					WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
+					WebSession webSession = webSessionManager.getSession(exchange).block();
+					webSession.start();
+					exchange.getResponse().setComplete().block();
+					assertThat(webSession.getMaxIdleTime()).hasSeconds(123);
+					List<ResponseCookie> cookies = exchange.getResponse().getCookies().get("JSESSIONID");
+					assertThat(cookies).isNotEmpty();
+					assertThat(cookies).allMatch((cookie) -> cookie.getDomain().equals(".example.com"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getPath().equals("/example"));
+					assertThat(cookies).allMatch((cookie) -> cookie.getMaxAge().equals(Duration.ofSeconds(60)));
+					assertThat(cookies).allMatch((cookie) -> cookie.isHttpOnly() == false);
+					assertThat(cookies).allMatch((cookie) -> cookie.isSecure() == false);
+					assertThat(cookies).allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
+
+				});
 	}
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {

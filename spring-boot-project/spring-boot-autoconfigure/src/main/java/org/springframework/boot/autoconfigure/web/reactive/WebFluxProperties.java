@@ -128,10 +128,21 @@ public class WebFluxProperties {
 
 	public static class Session {
 
+		@DurationUnit(ChronoUnit.SECONDS)
+		private Duration timeout = Duration.ofMinutes(30);
+
 		private final Cookie cookie = new Cookie();
 
 		public Cookie getCookie() {
 			return this.cookie;
+		}
+
+		public Duration getTimeout() {
+			return this.timeout;
+		}
+
+		public void setTimeout(Duration timeout) {
+			this.timeout = timeout;
 		}
 
 	}
@@ -147,7 +158,7 @@ public class WebFluxProperties {
 		private String path;
 
 		@DurationUnit(ChronoUnit.SECONDS)
-		private Duration maxAge;
+		private Duration maxAge = Duration.ofSeconds(-1);
 
 		private Boolean httpOnly = true;
 
@@ -187,7 +198,7 @@ public class WebFluxProperties {
 		 * @return the session cookie path
 		 */
 		public String getPath() {
-			return path;
+			return this.path;
 		}
 
 		public void setPath(String path) {
@@ -199,7 +210,7 @@ public class WebFluxProperties {
 		 * @return the maximum age of the session cookie
 		 */
 		public Duration getMaxAge() {
-			return maxAge;
+			return this.maxAge;
 		}
 
 		public void setMaxAge(Duration maxAge) {
@@ -211,7 +222,7 @@ public class WebFluxProperties {
 		 * @return {@code true} to use "HttpOnly" cookies for session cookies.
 		 */
 		public Boolean getHttpOnly() {
-			return httpOnly;
+			return this.httpOnly;
 		}
 
 		public void setHttpOnly(Boolean httpOnly) {
@@ -224,7 +235,7 @@ public class WebFluxProperties {
 		 * that initiated the corresponding session is using plain HTTP
 		 */
 		public Boolean getSecure() {
-			return secure;
+			return this.secure;
 		}
 
 		public void setSecure(Boolean secure) {
