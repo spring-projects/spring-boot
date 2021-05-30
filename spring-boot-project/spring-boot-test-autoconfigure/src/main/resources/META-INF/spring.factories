@@ -196,6 +196,14 @@ org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAuto
 org.springframework.boot.test.autoconfigure.webservices.client.AutoConfigureMockWebServiceServer=\
 org.springframework.boot.test.autoconfigure.webservices.client.MockWebServiceServerAutoConfiguration
 
+# AutoConfigureWebServiceServer auto-configuration imports
+org.springframework.boot.test.autoconfigure.webservices.server.AutoConfigureWebServiceServer=\
+org.springframework.boot.autoconfigure.webservices.WebServicesAutoConfiguration
+
+# AutoConfigureMockWebServiceClient auto-configuration imports
+org.springframework.boot.test.autoconfigure.webservices.server.AutoConfigureMockWebServiceClient=\
+org.springframework.boot.test.autoconfigure.webservices.server.MockWebServiceClientAutoConfiguration
+
 # DefaultTestExecutionListenersPostProcessors
 org.springframework.boot.test.context.DefaultTestExecutionListenersPostProcessor=\
 org.springframework.boot.test.autoconfigure.SpringBootDependencyInjectionTestExecutionListener$PostProcessor
