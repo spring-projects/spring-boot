@@ -28,6 +28,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Consumer;
 
 import javax.validation.ValidatorFactory;
 
@@ -40,8 +41,10 @@ import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.validation.ValidationAutoConfiguration;
 import org.springframework.boot.autoconfigure.validation.ValidatorAdapter;
 import org.springframework.boot.autoconfigure.web.reactive.WebFluxAutoConfiguration.WebFluxConfig;
+import org.springframework.boot.test.context.runner.ContextConsumer;
 import org.springframework.boot.test.context.runner.ReactiveWebApplicationContextRunner;
 import org.springframework.boot.web.codec.CodecCustomizer;
+import org.springframework.boot.web.reactive.context.ReactiveWebApplicationContext;
 import org.springframework.boot.web.reactive.filter.OrderedHiddenHttpMethodFilter;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
@@ -566,29 +569,28 @@ class WebFluxAutoConfigurationTests {
 
 	@Test
 	void customWebSessionIdResolverShouldBeApplied() {
-		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolvers.class).run((context) -> {
-			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
-			MockServerWebExchange exchange = MockServerWebExchange.from(request);
-			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
-			WebSession webSession = webSessionManager.getSession(exchange).block();
-			webSession.start();
-			exchange.getResponse().setComplete().block();
-			assertThat(exchange.getResponse().getCookies().get("JSESSIONID")).isNotEmpty();
-		});
+		this.contextRunner.withUserConfiguration(CustomWebSessionIdResolver.class).run(assertExchangeWithSession(
+				(exchange) -> assertThat(exchange.getResponse().getCookies().get("TEST")).isNotEmpty()));
 	}
 
 	@Test
-	void customSameSteConfigurationShouldBeApplied() {
-		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run((context) -> {
+	void customSameSiteConfigurationShouldBeApplied() {
+		this.contextRunner.withPropertyValues("spring.webflux.session.cookie.same-site:strict").run(
+				assertExchangeWithSession((exchange) -> assertThat(exchange.getResponse().getCookies().get("SESSION"))
+						.isNotEmpty().allMatch((cookie) -> cookie.getSameSite().equals("Strict"))));
+	}
+
+	private ContextConsumer<ReactiveWebApplicationContext> assertExchangeWithSession(
+			Consumer<MockServerWebExchange> exchange) {
+		return (context) -> {
 			MockServerHttpRequest request = MockServerHttpRequest.get("/").build();
-			MockServerWebExchange exchange = MockServerWebExchange.from(request);
+			MockServerWebExchange webExchange = MockServerWebExchange.from(request);
 			WebSessionManager webSessionManager = context.getBean(WebSessionManager.class);
-			WebSession webSession = webSessionManager.getSession(exchange).block();
+			WebSession webSession = webSessionManager.getSession(webExchange).block();
 			webSession.start();
-			exchange.getResponse().setComplete().block();
-			assertThat(exchange.getResponse().getCookies().get("SESSION")).isNotEmpty()
-					.allMatch((cookie) -> cookie.getSameSite().equals("Strict"));
-		});
+			webExchange.getResponse().setComplete().block();
+			exchange.accept(webExchange);
+		};
 	}
 
 	private Map<PathPattern, Object> getHandlerMap(ApplicationContext context) {
@@ -600,12 +602,12 @@ class WebFluxAutoConfigurationTests {
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	static class CustomWebSessionIdResolvers {
+	static class CustomWebSessionIdResolver {
 
 		@Bean
 		WebSessionIdResolver webSessionIdResolver() {
 			CookieWebSessionIdResolver resolver = new CookieWebSessionIdResolver();
-			resolver.setCookieName("JSESSIONID");
+			resolver.setCookieName("TEST");
 			return resolver;
 		}
 

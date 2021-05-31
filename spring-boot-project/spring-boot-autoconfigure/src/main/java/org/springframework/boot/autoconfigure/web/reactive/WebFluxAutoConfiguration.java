@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.web.reactive;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -308,17 +309,19 @@ public class WebFluxAutoConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(name = WebHttpHandlerBuilder.WEB_SESSION_MANAGER_BEAN_NAME)
-		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolvers) {
+		public WebSessionManager webSessionManager(ObjectProvider<WebSessionIdResolver> webSessionIdResolver) {
 			DefaultWebSessionManager webSessionManager = new DefaultWebSessionManager();
-			if (webSessionIdResolvers.getIfAvailable() != null) {
-				webSessionManager.setSessionIdResolver(webSessionIdResolvers.getIfAvailable());
-				return webSessionManager;
-			}
-			CookieWebSessionIdResolver cookieWebSessionIdResolver = new CookieWebSessionIdResolver();
-			cookieWebSessionIdResolver.addCookieInitializer((cookie) -> cookie
-					.sameSite(this.webFluxProperties.getSession().getCookie().getSameSite().attribute()));
-			webSessionManager.setSessionIdResolver(cookieWebSessionIdResolver);
+			webSessionManager.setSessionIdResolver(webSessionIdResolver.getIfAvailable(cookieWebSessionIdResolver()));
 			return webSessionManager;
+		}
+
+		private Supplier<WebSessionIdResolver> cookieWebSessionIdResolver() {
+			return () -> {
+				CookieWebSessionIdResolver webSessionIdResolver = new CookieWebSessionIdResolver();
+				webSessionIdResolver.addCookieInitializer((cookie) -> cookie
+						.sameSite(this.webFluxProperties.getSession().getCookie().getSameSite().attribute()));
+				return webSessionIdResolver;
+			};
 		}
 
 	}
