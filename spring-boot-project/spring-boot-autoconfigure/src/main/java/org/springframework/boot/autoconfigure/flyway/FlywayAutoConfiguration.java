@@ -258,7 +258,7 @@ public class FlywayAutoConfiguration {
 					.to((ignoreMigrationPatterns) -> configuration
 							.ignoreMigrationPatterns(ignoreMigrationPatterns.toArray(new String[0])));
 			// No method reference for compatibility with Flyway version < 7.9
-			map.from(properties.getDetectEncoding()).whenNonNull()
+			map.from(properties.getDetectEncoding())
 					.to((detectEncoding) -> configuration.detectEncoding(detectEncoding));
 		}
 
