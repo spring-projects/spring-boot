@@ -117,7 +117,7 @@ public class TomcatWebServerFactoryCustomizer
 				.to((relaxedChars) -> customizeRelaxedPathChars(factory, relaxedChars));
 		propertyMapper.from(tomcatProperties::getRelaxedQueryChars).as(this::joinCharacters).whenHasText()
 				.to((relaxedChars) -> customizeRelaxedQueryChars(factory, relaxedChars));
-		propertyMapper.from(tomcatProperties::getRejectIllegalHeader).whenNonNull()
+		propertyMapper.from(tomcatProperties::isRejectIllegalHeader)
 				.to((rejectIllegalHeader) -> customizeRejectIllegalHeader(factory, rejectIllegalHeader));
 		customizeStaticResources(factory);
 		customizeErrorReportValve(properties.getError(), factory);

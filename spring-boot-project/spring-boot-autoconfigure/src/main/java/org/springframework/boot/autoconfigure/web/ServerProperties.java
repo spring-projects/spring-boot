@@ -410,6 +410,11 @@ public class ServerProperties {
 		private Duration connectionTimeout;
 
 		/**
+		 * Whether to reject requests with illegal header names or values.
+		 */
+		private boolean rejectIllegalHeader = true;
+
+		/**
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
@@ -423,11 +428,6 @@ public class ServerProperties {
 		 * Remote Ip Valve configuration.
 		 */
 		private final Remoteip remoteip = new Remoteip();
-
-		/**
-		 * reject illegal header setting.
-		 */
-		private Boolean rejectIllegalHeader;
 
 		public DataSize getMaxHttpFormPostSize() {
 			return this.maxHttpFormPostSize;
@@ -565,6 +565,14 @@ public class ServerProperties {
 			this.connectionTimeout = connectionTimeout;
 		}
 
+		public boolean isRejectIllegalHeader() {
+			return this.rejectIllegalHeader;
+		}
+
+		public void setRejectIllegalHeader(boolean rejectIllegalHeader) {
+			this.rejectIllegalHeader = rejectIllegalHeader;
+		}
+
 		public Resource getResource() {
 			return this.resource;
 		}
@@ -575,14 +583,6 @@ public class ServerProperties {
 
 		public Remoteip getRemoteip() {
 			return this.remoteip;
-		}
-
-		public Boolean getRejectIllegalHeader() {
-			return this.rejectIllegalHeader;
-		}
-
-		public void setRejectIllegalHeader(Boolean rejectIllegalHeader) {
-			this.rejectIllegalHeader = rejectIllegalHeader;
 		}
 
 		/**
