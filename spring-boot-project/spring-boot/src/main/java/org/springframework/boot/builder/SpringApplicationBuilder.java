@@ -94,7 +94,7 @@ public class SpringApplicationBuilder {
 	private boolean configuredAsChild = false;
 
 	public SpringApplicationBuilder(Class<?>... sources) {
-		this.application = createSpringApplication(null, sources);
+		this(null, sources);
 	}
 
 	public SpringApplicationBuilder(ResourceLoader resourceLoader, Class<?>... sources) {
@@ -102,29 +102,27 @@ public class SpringApplicationBuilder {
 	}
 
 	/**
-	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
-	 * given sources. Subclasses may override in order to provide a custom subclass of
-	 * {@link org.springframework.boot.SpringApplication}
+	 * Creates a new {@link SpringApplication} instance from the given sources. Subclasses
+	 * may override in order to provide a custom subclass of {@link SpringApplication}
 	 * @param sources the sources
-	 * @return the {@link org.springframework.boot.SpringApplication} instance
+	 * @return the {@link SpringApplication} instance
 	 * @since 1.1.0
-	 * @deprecated Use {@link #createSpringApplication(ResourceLoader, Class...)} with
-	 * null resource loader
+	 * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+	 * {@link #createSpringApplication(ResourceLoader, Class...)}
 	 */
+	@Deprecated
 	protected SpringApplication createSpringApplication(Class<?>... sources) {
 		return new SpringApplication(sources);
 	}
 
 	/**
-	 * Creates a new {@link org.springframework.boot.SpringApplication} instances from the
-	 * given sources. Subclasses may override in order to provide a custom subclass of
-	 * {@link org.springframework.boot.SpringApplication}
-	 * @param resourceLoader the resource loader, can be null to use default resource
-	 * loader (see
-	 * {@link org.springframework.boot.SpringApplication#SpringApplication(ResourceLoader, Class...)})
+	 * Creates a new {@link SpringApplication} instances from the given sources using the
+	 * given {@link ResourceLoader}. Subclasses may override in order to provide a custom
+	 * subclass of {@link SpringApplication}
+	 * @param resourceLoader the resource loader (can be null)
 	 * @param sources the sources
-	 * @return the {@link org.springframework.boot.SpringApplication} instance
-	 * @since 2.5.0
+	 * @return the {@link SpringApplication} instance
+	 * @since 2.6.0
 	 */
 	protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
 		return new SpringApplication(resourceLoader, sources);

@@ -20,11 +20,13 @@ import java.net.URL;
 import java.net.URLClassLoader;
 import java.util.Collections;
 
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.SpringApplicationShutdownHookInstance;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
@@ -41,6 +43,7 @@ import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.verify;
 
@@ -310,13 +313,19 @@ class SpringApplicationBuilderTests {
 	}
 
 	@Test
-	void createWithResourceLoader() {
-		ClassLoader classLoader = new URLClassLoader(new URL[0], getClass().getClassLoader());
-		SpringApplicationBuilder application = new SpringApplicationBuilder(new DefaultResourceLoader(classLoader),
-				ExampleConfig.class)
-						.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
-		this.context = application.run();
-		assertThat(this.context.getClassLoader()).isEqualTo(classLoader);
+	void customApplicationWithResourceLoader() {
+		ResourceLoader resourceLoader = mock(ResourceLoader.class);
+		SpringApplicationBuilder applicationBuilder = new SpringApplicationBuilder(resourceLoader,
+				ExampleConfig.class) {
+			@Override
+			protected SpringApplication createSpringApplication(ResourceLoader resourceLoader, Class<?>... sources) {
+				return new CustomSpringApplication(resourceLoader, sources);
+			}
+		};
+		SpringApplication application = applicationBuilder.build();
+		assertThat(application).isInstanceOf(CustomSpringApplication.class)
+				.asInstanceOf(InstanceOfAssertFactories.type(CustomSpringApplication.class))
+				.satisfies((customApp) -> assertThat(customApp.resourceLoader).isEqualTo(resourceLoader));
 	}
 
 	@Configuration(proxyBeanMethods = false)
@@ -326,6 +335,17 @@ class SpringApplicationBuilderTests {
 
 	@Configuration(proxyBeanMethods = false)
 	static class ChildConfig {
+
+	}
+
+	static class CustomSpringApplication extends SpringApplication {
+
+		private final ResourceLoader resourceLoader;
+
+		CustomSpringApplication(ResourceLoader resourceLoader, Class<?>... primarySources) {
+			super(resourceLoader, primarySources);
+			this.resourceLoader = resourceLoader;
+		}
 
 	}
 
