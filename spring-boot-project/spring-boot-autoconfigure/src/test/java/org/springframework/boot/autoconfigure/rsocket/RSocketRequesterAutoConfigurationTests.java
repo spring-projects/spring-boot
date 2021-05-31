@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -64,14 +64,12 @@ class RSocketRequesterAutoConfigurationTests {
 	}
 
 	@Test
-	void rSocketConnectorConfigurersArePickedUp() {
+	void shouldCreateBuilderWithAvailableRSocketConnectorConfigurers() {
 		RSocketConnectorConfigurer first = mock(RSocketConnectorConfigurer.class);
 		RSocketConnectorConfigurer second = mock(RSocketConnectorConfigurer.class);
-		this.contextRunner.withBean("firstRSocketConnectorConfigurer", RSocketConnectorConfigurer.class, () -> first)
-				.withBean("secondRSocketConnectorConfigurer", RSocketConnectorConfigurer.class, () -> second)
-				.run((context) -> {
+		this.contextRunner.withBean("first", RSocketConnectorConfigurer.class, () -> first)
+				.withBean("second", RSocketConnectorConfigurer.class, () -> second).run((context) -> {
 					assertThat(context).getBeans(RSocketConnectorConfigurer.class).hasSize(2);
-
 					RSocketRequester.Builder builder = context.getBean(RSocketRequester.Builder.class);
 					assertThat(builder).extracting("rsocketConnectorConfigurers", as(InstanceOfAssertFactories.LIST))
 							.containsExactly(first, second);

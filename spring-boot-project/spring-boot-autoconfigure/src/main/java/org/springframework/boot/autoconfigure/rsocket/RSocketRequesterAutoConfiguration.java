@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Scope;
 import org.springframework.messaging.rsocket.RSocketConnectorConfigurer;
 import org.springframework.messaging.rsocket.RSocketRequester;
+import org.springframework.messaging.rsocket.RSocketRequester.Builder;
 import org.springframework.messaging.rsocket.RSocketStrategies;
 
 /**
@@ -39,7 +40,6 @@ import org.springframework.messaging.rsocket.RSocketStrategies;
  * requester instances with different configurations.
  *
  * @author Brian Clozel
- * @author Nguyen Bao Sach
  * @since 2.2.0
  */
 @Configuration(proxyBeanMethods = false)
@@ -52,9 +52,9 @@ public class RSocketRequesterAutoConfiguration {
 	@ConditionalOnMissingBean
 	public RSocketRequester.Builder rSocketRequesterBuilder(RSocketStrategies strategies,
 			ObjectProvider<RSocketConnectorConfigurer> connectorConfigurers) {
-		return connectorConfigurers.orderedStream()
-				.collect(RSocketRequester::builder, RSocketRequester.Builder::rsocketConnector, (first, second) -> {
-				}).rsocketStrategies(strategies);
+		Builder builder = RSocketRequester.builder().rsocketStrategies(strategies);
+		connectorConfigurers.orderedStream().forEach(builder::rsocketConnector);
+		return builder;
 	}
 
 }
