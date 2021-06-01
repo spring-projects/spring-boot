@@ -22,7 +22,7 @@
 		<dependency>
 			<groupId>org.bouncycastle</groupId>
 			<artifactId>bcpg-jdk15to18</artifactId>
-			<version>1.68</version>
+			<version>1.15</version>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
