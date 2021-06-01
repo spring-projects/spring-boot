@@ -9,6 +9,7 @@ dependencies {
 	api("com.sun.mail:jakarta.mail")
 	api("org.springframework.security:spring-security-config") {
 		exclude group: "org.springframework.security", module: "spring-security-crypto"
+        exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8"
 	}
 	api("org.springframework.security:spring-security-core") {
 		exclude group: "org.springframework.security", module: "spring-security-crypto"

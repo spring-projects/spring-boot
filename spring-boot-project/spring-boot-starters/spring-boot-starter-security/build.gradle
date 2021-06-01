@@ -9,6 +9,7 @@ dependencies {
 	api("org.springframework:spring-aop")
 	api("org.springframework.security:spring-security-config") {
 		exclude group: "org.springframework.security", module: "spring-security-crypto"
+        exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8"
 	}
 	api("org.springframework.security:spring-security-web") {
 		exclude group: "org.springframework.security", module: "spring-security-crypto"
