@@ -44,6 +44,7 @@ import org.springframework.data.redis.connection.lettuce.LettuceClientConfigurat
 import org.springframework.data.redis.connection.lettuce.LettuceClientConfiguration.LettuceClientConfigurationBuilder;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
+import org.springframework.util.ClassUtils;
 import org.springframework.util.StringUtils;
 
 /**
@@ -57,6 +58,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnClass(RedisClient.class)
 @ConditionalOnProperty(name = "spring.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
+
+	private static final boolean POOl2_IS_PRESENT = ClassUtils.isPresent(PoolBuilderFactory.GENERIC_OBJECT_POOL_CONFIG_CLASS_NAME,null);
 
 	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
@@ -105,7 +108,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
-		if (pool.isEnabled()) {
+		if (POOl2_IS_PRESENT) {
+			if (pool.getEnabled() !=null && pool.getEnabled() == false) {
+				return LettuceClientConfiguration.builder();
+			}
 			return new PoolBuilderFactory().createBuilder(pool);
 		}
 		return LettuceClientConfiguration.builder();
@@ -168,6 +174,8 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	 * Inner class to allow optional commons-pool2 dependency.
 	 */
 	private static class PoolBuilderFactory {
+
+		private static final String GENERIC_OBJECT_POOL_CONFIG_CLASS_NAME = "org.apache.commons.pool2.impl.GenericObjectPoolConfig";
 
 		LettuceClientConfigurationBuilder createBuilder(Pool properties) {
 			return LettucePoolingClientConfiguration.builder().poolConfig(getPoolConfig(properties));

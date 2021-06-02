@@ -156,8 +156,8 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithPoolUsingDefaultValue() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.enabled:true")
+	void testEnableConnectionPoolWhenCommons_pool2OnTheClasspath() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo")
 				.run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
