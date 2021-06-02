@@ -133,8 +133,11 @@ class DirectoryBuildpackTests {
 				entries.add(entry);
 				entry = tar.getNextTarEntry();
 			}
-			assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(
+			assertThat(entries).extracting("name", "mode").containsExactlyInAnyOrder(tuple("/cnb/", 0755),
+					tuple("/cnb/buildpacks/", 0755), tuple("/cnb/buildpacks/example_buildpack1/", 0755),
+					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/", 0755),
 					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml", 0644),
+					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/", 0755),
 					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/detect", 0744),
 					tuple("/cnb/buildpacks/example_buildpack1/0.0.1/bin/build", 0744));
 		}

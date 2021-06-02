@@ -44,8 +44,8 @@ class TarLayoutWriter implements Layout, Closeable {
 	}
 
 	@Override
-	public void directory(String name, Owner owner) throws IOException {
-		this.outputStream.putArchiveEntry(createDirectoryEntry(name, owner));
+	public void directory(String name, Owner owner, int mode) throws IOException {
+		this.outputStream.putArchiveEntry(createDirectoryEntry(name, owner, mode));
 		this.outputStream.closeArchiveEntry();
 	}
 
@@ -56,8 +56,8 @@ class TarLayoutWriter implements Layout, Closeable {
 		this.outputStream.closeArchiveEntry();
 	}
 
-	private TarArchiveEntry createDirectoryEntry(String name, Owner owner) {
-		return createEntry(name, owner, TarConstants.LF_DIR, 0755, 0);
+	private TarArchiveEntry createDirectoryEntry(String name, Owner owner, int mode) {
+		return createEntry(name, owner, TarConstants.LF_DIR, mode, 0);
 	}
 
 	private TarArchiveEntry createFileEntry(String name, Owner owner, int mode, int size) {
