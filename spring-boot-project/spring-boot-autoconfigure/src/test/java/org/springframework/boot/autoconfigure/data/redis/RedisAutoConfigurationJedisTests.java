@@ -146,7 +146,7 @@ class RedisAutoConfigurationJedisTests {
 
 	@Test
 	void testRedisConfigurationDisabledPool() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.enabled=false")
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.jedis.pool.enabled:false")
 				.run((context) -> {
 					JedisConnectionFactory cf = context.getBean(JedisConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");

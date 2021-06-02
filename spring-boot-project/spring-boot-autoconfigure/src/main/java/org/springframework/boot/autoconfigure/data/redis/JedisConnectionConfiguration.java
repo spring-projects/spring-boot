@@ -24,12 +24,9 @@ import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties.ClientType;
-import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.core.env.Environment;
 import org.springframework.data.redis.connection.RedisClusterConfiguration;
 import org.springframework.data.redis.connection.RedisConnectionFactory;
 import org.springframework.data.redis.connection.RedisSentinelConfiguration;
@@ -60,13 +57,13 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean
 	JedisConnectionFactory redisConnectionFactory(
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers, Environment environment) {
-		return createJedisConnectionFactory(builderCustomizers, environment);
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
+		return createJedisConnectionFactory(builderCustomizers);
 	}
 
 	private JedisConnectionFactory createJedisConnectionFactory(
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers, Environment environment) {
-		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers, environment);
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
+		JedisClientConfiguration clientConfiguration = getJedisClientConfiguration(builderCustomizers);
 		if (getSentinelConfig() != null) {
 			return new JedisConnectionFactory(getSentinelConfig(), clientConfiguration);
 		}
@@ -77,9 +74,12 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private JedisClientConfiguration getJedisClientConfiguration(
-			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers, Environment environment) {
+			ObjectProvider<JedisClientConfigurationBuilderCustomizer> builderCustomizers) {
 		JedisClientConfigurationBuilder builder = applyProperties(JedisClientConfiguration.builder());
-		createPoolingBuilder(builder, environment, getProperties().getJedis().getPool());
+		RedisProperties.Pool pool = getProperties().getJedis().getPool();
+		if (pool.isEnabled()) {
+			applyPooling(pool, builder);
+		}
 		if (StringUtils.hasText(getProperties().getUrl())) {
 			customizeConfigurationFromUrl(builder);
 		}
@@ -94,19 +94,6 @@ class JedisConnectionConfiguration extends RedisConnectionConfiguration {
 		map.from(getProperties().getConnectTimeout()).to(builder::connectTimeout);
 		map.from(getProperties().getClientName()).whenHasText().to(builder::clientName);
 		return builder;
-	}
-
-	private void createPoolingBuilder(JedisClientConfigurationBuilder builder, Environment environment, Pool pool) {
-		final boolean poolEnabled = environment.getProperty("spring.redis.jedis.pool.enabled", Boolean.class, true);
-		if (poolEnabled) {
-			applyPooling(pool, builder);
-			return;
-		}
-		final boolean isSentinelConfig = (getSentinelConfig() != null);
-		// Jedis Sentinel cannot operate without a pool.
-		if (isSentinelConfig) {
-			throw new RedisClientPoolingException(ClientType.JEDIS);
-		}
 	}
 
 	private void applyPooling(RedisProperties.Pool pool,

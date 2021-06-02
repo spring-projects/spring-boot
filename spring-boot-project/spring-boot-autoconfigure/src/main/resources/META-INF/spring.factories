@@ -157,7 +157,6 @@ org.springframework.boot.autoconfigure.webservices.client.WebServiceTemplateAuto
 
 # Failure analyzers
 org.springframework.boot.diagnostics.FailureAnalyzer=\
-org.springframework.boot.autoconfigure.data.redis.RedisClientPoolingFailureAnalyzer,\
 org.springframework.boot.autoconfigure.data.redis.RedisUrlSyntaxFailureAnalyzer,\
 org.springframework.boot.autoconfigure.diagnostics.analyzer.NoSuchBeanDefinitionFailureAnalyzer,\
 org.springframework.boot.autoconfigure.flyway.FlywayMigrationScriptMissingFailureAnalyzer,\

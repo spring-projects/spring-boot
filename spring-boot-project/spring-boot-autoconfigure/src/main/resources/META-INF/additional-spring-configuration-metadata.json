@@ -1678,18 +1678,6 @@
       }
     },
     {
-      "name": "spring.redis.lettuce.pool.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable lettuce pool. If true, make sure \"commons-pool2\" exists on the classpath.",
-      "defaultValue": true
-    },
-    {
-      "name": "spring.redis.jedis.pool.enabled",
-      "type": "java.lang.Boolean",
-      "description": "Whether to enable jedis pool.",
-      "defaultValue": true
-    },
-    {
       "name": "spring.resources.chain.gzipped",
       "type": "java.lang.Boolean",
       "description": "Whether to enable resolution of already gzipped resources. Checks for a resource name variant with the \"*.gz\" extension.",
