@@ -22,6 +22,7 @@ import java.util.UUID;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.spy;
 
@@ -67,9 +68,34 @@ class RandomValuePropertySourceTests {
 	}
 
 	@Test
+	void intRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int[4,4]"))
+				.withMessage("Lower bound must be less than upper bound.");
+	}
+
+	@Test
+	void intRangeWhenLowerBoundNegative() {
+		Integer value = (Integer) this.source.getProperty("random.int[-4,4]");
+		assertThat(value >= -4).isTrue();
+		assertThat(value < 4).isTrue();
+	}
+
+	@Test
 	void intMax() {
 		Integer value = (Integer) this.source.getProperty("random.int(10)");
 		assertThat(value).isNotNull().isLessThan(10);
+	}
+
+	@Test
+	void intMaxZero() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(0)"))
+				.withMessage("Bound must be positive.");
+	}
+
+	@Test
+	void intNegativeBound() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.int(-5)"))
+				.withMessage("Bound must be positive.");
 	}
 
 	@Test
@@ -85,9 +111,34 @@ class RandomValuePropertySourceTests {
 	}
 
 	@Test
+	void longRangeWhenLowerBoundEqualsUpperBoundShouldFailWithIllegalArgumentException() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long[4,4]"))
+				.withMessage("Lower bound must be less than upper bound.");
+	}
+
+	@Test
+	void longRangeWhenLowerBoundNegativeShouldFailWithIllegalArgumentException() {
+		Long value = (Long) this.source.getProperty("random.long[-4,4]");
+		assertThat(value >= -4).isTrue();
+		assertThat(value < 4).isTrue();
+	}
+
+	@Test
 	void longMax() {
 		Long value = (Long) this.source.getProperty("random.long(10)");
 		assertThat(value).isNotNull().isLessThan(10L);
+	}
+
+	@Test
+	void longMaxZero() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(0)"))
+				.withMessage("Bound must be positive.");
+	}
+
+	@Test
+	void longNegativeBound() {
+		assertThatIllegalArgumentException().isThrownBy(() -> this.source.getProperty("random.long(-5)"))
+				.withMessage("Bound must be positive.");
 	}
 
 	@Test

@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,8 +16,13 @@
 
 package org.springframework.boot.env;
 
+import java.util.OptionalInt;
+import java.util.OptionalLong;
 import java.util.Random;
 import java.util.UUID;
+import java.util.function.BiPredicate;
+import java.util.function.Function;
+import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.PropertySource;
 import org.springframework.core.env.StandardEnvironment;
+import org.springframework.util.Assert;
 import org.springframework.util.DigestUtils;
 import org.springframework.util.StringUtils;
 
@@ -44,11 +50,13 @@ import org.springframework.util.StringUtils;
  * suffix whose syntax is:
  * <p>
  * {@code OPEN value (,max) CLOSE} where the {@code OPEN,CLOSE} are any character and
- * {@code value,max} are integers. If {@code max} is provided then {@code value} is the
- * minimum value and {@code max} is the maximum (exclusive).
+ * {@code value,max} are integers. If {@code max} is not provided, then 0 is used as the
+ * lower bound and {@code value} is the upper bound. If {@code max} is provided then
+ * {@code value} is the minimum value and {@code max} is the maximum (exclusive).
  *
  * @author Dave Syer
  * @author Matt Benson
+ * @author Madhura Bhave
  * @since 1.0.0
  */
 public class RandomValuePropertySource extends PropertySource<Random> {
@@ -113,22 +121,21 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 	}
 
 	private int getNextIntInRange(String range) {
-		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
-		int start = Integer.parseInt(tokens[0]);
-		if (tokens.length == 1) {
-			return getSource().nextInt(start);
+		Range<Integer> intRange = Range.get(range, Integer::parseInt, (t) -> t > 0, 0, (t1, t2) -> t1 < t2);
+		OptionalInt first = getSource().ints(1, intRange.getMin(), intRange.getMax()).findFirst();
+		if (!first.isPresent()) {
+			throw new RuntimeException("Could not get random number for range '" + range + "'");
 		}
-		return start + getSource().nextInt(Integer.parseInt(tokens[1]) - start);
+		return first.getAsInt();
 	}
 
 	private long getNextLongInRange(String range) {
-		String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
-		if (tokens.length == 1) {
-			return Math.abs(getSource().nextLong() % Long.parseLong(tokens[0]));
+		Range<Long> longRange = Range.get(range, Long::parseLong, (t) -> t > 0L, 0L, (t1, t2) -> t1 < t2);
+		OptionalLong first = getSource().longs(1, longRange.getMin(), longRange.getMax()).findFirst();
+		if (!first.isPresent()) {
+			throw new RuntimeException("Could not get random number for range '" + range + "'");
 		}
-		long lowerBound = Long.parseLong(tokens[0]);
-		long upperBound = Long.parseLong(tokens[1]) - lowerBound;
-		return lowerBound + Math.abs(getSource().nextLong() % upperBound);
+		return first.getAsLong();
 	}
 
 	private Object getRandomBytes() {
@@ -141,6 +148,41 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		environment.getPropertySources().addAfter(StandardEnvironment.SYSTEM_ENVIRONMENT_PROPERTY_SOURCE_NAME,
 				new RandomValuePropertySource(RANDOM_PROPERTY_SOURCE_NAME));
 		logger.trace("RandomValuePropertySource add to Environment");
+	}
+
+	static final class Range<T extends Number> {
+
+		private final T min;
+
+		private final T max;
+
+		private Range(T min, T max) {
+			this.min = min;
+			this.max = max;
+
+		}
+
+		static <T extends Number> Range<T> get(String range, Function<String, T> parse, Predicate<T> boundValidator,
+				T defaultMin, BiPredicate<T, T> rangeValidator) {
+			String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
+			T token1 = parse.apply(tokens[0]);
+			if (tokens.length == 1) {
+				Assert.isTrue(boundValidator.test(token1), "Bound must be positive.");
+				return new Range<>(defaultMin, token1);
+			}
+			T token2 = parse.apply(tokens[1]);
+			Assert.isTrue(rangeValidator.test(token1, token2), "Lower bound must be less than upper bound.");
+			return new Range<>(token1, token2);
+		}
+
+		T getMin() {
+			return this.min;
+		}
+
+		T getMax() {
+			return this.max;
+		}
+
 	}
 
 }
