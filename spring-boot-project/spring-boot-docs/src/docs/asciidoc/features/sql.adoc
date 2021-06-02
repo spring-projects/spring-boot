@@ -243,7 +243,7 @@ For JPA components (such as converters) that are created as Spring beans, use `O
 ====
 
 TIP: We have barely scratched the surface of Spring Data JPA.
-For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
+For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference documentation].
 
 
 
