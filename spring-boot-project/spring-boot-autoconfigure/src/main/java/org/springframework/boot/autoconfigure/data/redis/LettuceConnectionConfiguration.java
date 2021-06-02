@@ -59,7 +59,8 @@ import org.springframework.util.StringUtils;
 @ConditionalOnProperty(name = "spring.redis.client-type", havingValue = "lettuce", matchIfMissing = true)
 class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
-	private static final boolean POOl2_IS_PRESENT = ClassUtils.isPresent(PoolBuilderFactory.GENERIC_OBJECT_POOL_CONFIG_CLASS_NAME,null);
+	private static final boolean POOl2_IS_PRESENT = ClassUtils
+			.isPresent(PoolBuilderFactory.GENERIC_OBJECT_POOL_CONFIG_CLASS_NAME, null);
 
 	LettuceConnectionConfiguration(RedisProperties properties,
 			ObjectProvider<RedisSentinelConfiguration> sentinelConfigurationProvider,
@@ -109,7 +110,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
 		if (POOl2_IS_PRESENT) {
-			if (pool.getEnabled() !=null && pool.getEnabled() == false) {
+			if (pool.getEnabled() != null && !pool.getEnabled()) {
 				return LettuceClientConfiguration.builder();
 			}
 			return new PoolBuilderFactory().createBuilder(pool);
