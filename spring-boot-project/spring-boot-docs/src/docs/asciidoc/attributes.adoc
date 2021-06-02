@@ -68,6 +68,7 @@
 :spring-data-geode: https://spring.io/projects/spring-data-geode
 :spring-data-jpa: https://spring.io/projects/spring-data-jpa
 :spring-data-jpa-api: https://docs.spring.io/spring-data/jpa/docs/{spring-data-jpa-version}/api/org/springframework/data/jpa
+:spring-data-jpa-docs: https://docs.spring.io/spring-data/jpa/docs/{spring-data-jpa-version}/reference/html
 :spring-data-jdbc-docs: https://docs.spring.io/spring-data/jdbc/docs/{spring-data-jdbc-version}/reference/html/
 :spring-data-ldap: https://spring.io/projects/spring-data-ldap
 :spring-data-mongodb: https://spring.io/projects/spring-data-mongodb
