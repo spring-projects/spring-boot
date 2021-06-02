@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,19 +14,16 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa.city;
+package org.springframework.boot.docs.features.sql.jpaandspringdata.repositories;
 
+import org.springframework.boot.docs.features.sql.jpaandspringdata.entityclasses.Country;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.repository.Repository;
+import org.springframework.data.repository.history.RevisionRepository;
 
-public interface CityRepository extends JpaRepository<City, Long> {
+public interface CountryRepository extends RevisionRepository<Country, Long, Integer>, Repository<Country, Long> {
 
-	@Override
-	Page<City> findAll(Pageable pageable);
-
-	Page<City> findByNameLikeAndCountryLikeAllIgnoringCase(String name, String country, Pageable pageable);
-
-	City findByNameAndCountryAllIgnoringCase(String name, String country);
+	Page<Country> findAll(Pageable pageable);
 
 }

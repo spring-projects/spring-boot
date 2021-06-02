@@ -60,6 +60,8 @@
 :spring-data-couchbase-docs: https://docs.spring.io/spring-data/couchbase/docs/{spring-data-couchbase-version}/reference/html/
 :spring-data-elasticsearch: https://spring.io/projects/spring-data-elasticsearch
 :spring-data-elasticsearch-docs: https://docs.spring.io/spring-data/elasticsearch/docs/current/reference/html/
+:spring-data-envers: https://spring.io/projects/spring-data-envers
+:spring-data-envers-doc: https://docs.spring.io/spring-data/envers/docs/{spring-data-envers-version}/reference/html/
 :spring-data-gemfire: https://spring.io/projects/spring-data-gemfire
 :spring-data-geode: https://spring.io/projects/spring-data-geode
 :spring-data-jpa: https://spring.io/projects/spring-data-jpa

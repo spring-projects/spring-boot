@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.autoconfigure.data.jpa.city;
+package org.springframework.boot.docs.features.sql.jpaandspringdata.entityclasses;
 
 import java.io.Serializable;
 
@@ -23,54 +23,33 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 
-@Entity
-public class City implements Serializable {
+import org.hibernate.envers.Audited;
 
-	private static final long serialVersionUID = 1L;
+@Entity
+public class Country implements Serializable {
 
 	@Id
 	@GeneratedValue
 	private Long id;
 
+	@Audited
 	@Column(nullable = false)
 	private String name;
 
-	@Column(nullable = false)
-	private String state;
-
-	@Column(nullable = false)
-	private String country;
-
-	@Column(nullable = false)
-	private String map;
-
-	protected City() {
+	public Long getId() {
+		return this.id;
 	}
 
-	public City(String name, String country) {
-		this.name = name;
-		this.country = country;
+	public void setId(Long id) {
+		this.id = id;
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public String getState() {
-		return this.state;
-	}
-
-	public String getCountry() {
-		return this.country;
-	}
-
-	public String getMap() {
-		return this.map;
-	}
-
-	@Override
-	public String toString() {
-		return getName() + "," + getState() + "," + getCountry();
+	public void setName(String name) {
+		this.name = name;
 	}
 
 }

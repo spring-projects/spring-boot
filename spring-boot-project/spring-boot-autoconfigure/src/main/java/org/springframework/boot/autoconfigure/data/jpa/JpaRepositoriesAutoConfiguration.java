@@ -26,8 +26,8 @@ import org.springframework.boot.autoconfigure.condition.AnyNestedCondition;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
 import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryBuilderCustomizer;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -35,7 +35,9 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.type.AnnotationMetadata;
 import org.springframework.data.envers.repository.config.EnableEnversRepositories;
 import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -43,6 +45,7 @@ import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 import org.springframework.data.repository.history.RevisionRepository;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
@@ -74,6 +77,7 @@ import org.springframework.data.repository.history.RevisionRepository;
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
+@Import(JpaRepositoriesImportSelector.class)
 @AutoConfigureAfter({ HibernateJpaAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
 
@@ -115,17 +119,21 @@ public class JpaRepositoriesAutoConfiguration {
 
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnClass(EnableEnversRepositories.class)
-	@Import(EnversRevisionRepositoriesRegistrar.class)
-	public static class EnversRevisionRepositoriesRegistrarConfiguration {
+	static class JpaRepositoriesImportSelector implements ImportSelector {
 
-	}
+		private static final boolean ENVERS_AVAILABLE = ClassUtils.isPresent(
+				"org.springframework.data.envers.repository.config.EnableEnversRepositories",
+				JpaRepositoriesImportSelector.class.getClassLoader());
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnMissingClass("org.springframework.data.envers.repository.config.EnableEnversRepositories")
-	@Import(JpaRepositoriesRegistrar.class)
-	public static class JpaRepositoriesRegistrarConfiguration {
+		@Override
+		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+			return new String[] { determineImport() };
+		}
+
+		private String determineImport() {
+			return ENVERS_AVAILABLE ? EnversRevisionRepositoriesRegistrar.class.getName()
+					: JpaRepositoriesRegistrar.class.getName();
+		}
 
 	}
 
