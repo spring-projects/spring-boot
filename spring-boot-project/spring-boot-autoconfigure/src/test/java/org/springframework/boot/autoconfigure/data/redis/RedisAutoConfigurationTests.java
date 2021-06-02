@@ -31,6 +31,7 @@ import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.data.redis.RedisProperties.Pool;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -156,25 +157,24 @@ class RedisAutoConfigurationTests {
 	}
 
 	@Test
-	void testRedisConfigurationWithPoolUsingDefaultValue() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.enabled:true")
-				.run((context) -> {
-					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
-					assertThat(cf.getHostName()).isEqualTo("foo");
-					GenericObjectPoolConfig<?> poolConfig = getPoolingClientConfiguration(cf).getPoolConfig();
-					assertThat(poolConfig.getMinIdle()).isEqualTo(0);
-					assertThat(poolConfig.getMaxIdle()).isEqualTo(8);
-					assertThat(poolConfig.getMaxTotal()).isEqualTo(8);
-					assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(-1);
-				});
+	void testRedisConfigurationUsePoolByDefault() {
+		Pool defaultPool = new RedisProperties().getLettuce().getPool();
+		this.contextRunner.withPropertyValues("spring.redis.host:foo").run((context) -> {
+			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
+			assertThat(cf.getHostName()).isEqualTo("foo");
+			GenericObjectPoolConfig<?> poolConfig = getPoolingClientConfiguration(cf).getPoolConfig();
+			assertThat(poolConfig.getMinIdle()).isEqualTo(defaultPool.getMinIdle());
+			assertThat(poolConfig.getMaxIdle()).isEqualTo(defaultPool.getMaxIdle());
+			assertThat(poolConfig.getMaxTotal()).isEqualTo(defaultPool.getMaxActive());
+			assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(defaultPool.getMaxWait().toMillis());
+		});
 	}
 
 	@Test
-	void testRedisConfigurationWithPoolUsingCustomValue() {
-		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.enabled:true",
-				"spring.redis.lettuce.pool.min-idle:1", "spring.redis.lettuce.pool.max-idle:4",
-				"spring.redis.lettuce.pool.max-active:16", "spring.redis.lettuce.pool.max-wait:2000",
-				"spring.redis.lettuce.pool.time-between-eviction-runs:30000",
+	void testRedisConfigurationWithCustomPoolSettings() {
+		this.contextRunner.withPropertyValues("spring.redis.host:foo", "spring.redis.lettuce.pool.min-idle:1",
+				"spring.redis.lettuce.pool.max-idle:4", "spring.redis.lettuce.pool.max-active:16",
+				"spring.redis.lettuce.pool.max-wait:2000", "spring.redis.lettuce.pool.time-between-eviction-runs:30000",
 				"spring.redis.lettuce.shutdown-timeout:1000").run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");

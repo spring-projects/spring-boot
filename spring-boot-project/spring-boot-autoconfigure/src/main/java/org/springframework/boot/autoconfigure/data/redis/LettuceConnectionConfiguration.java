@@ -51,7 +51,6 @@ import org.springframework.util.StringUtils;
  *
  * @author Mark Paluch
  * @author Andy Wilkinson
- * @author Weix Sun
  */
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnClass(RedisClient.class)
@@ -105,7 +104,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 	}
 
 	private LettuceClientConfigurationBuilder createBuilder(Pool pool) {
-		if (pool.isEnabled()) {
+		if (isPoolEnabled(pool)) {
 			return new PoolBuilderFactory().createBuilder(pool);
 		}
 		return LettuceClientConfiguration.builder();

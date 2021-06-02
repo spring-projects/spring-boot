@@ -233,7 +233,11 @@ public class RedisProperties {
 	 */
 	public static class Pool {
 
-		private boolean enabled;
+		/**
+		 * Whether to enable the pool. Enabled automatically if "commons-pool2" is
+		 * available.
+		 */
+		private Boolean enabled;
 
 		/**
 		 * Maximum number of "idle" connections in the pool. Use a negative value to
@@ -267,11 +271,11 @@ public class RedisProperties {
 		 */
 		private Duration timeBetweenEvictionRuns;
 
-		public boolean isEnabled() {
+		public Boolean getEnabled() {
 			return this.enabled;
 		}
 
-		public void setEnabled(boolean enabled) {
+		public void setEnabled(Boolean enabled) {
 			this.enabled = enabled;
 		}
 
@@ -406,13 +410,7 @@ public class RedisProperties {
 		/**
 		 * Jedis pool configuration.
 		 */
-		private final Pool pool;
-
-		public Jedis() {
-			Pool pool = new Pool();
-			pool.setEnabled(true);
-			this.pool = pool;
-		}
+		private final Pool pool = new Pool();
 
 		public Pool getPool() {
 			return this.pool;
