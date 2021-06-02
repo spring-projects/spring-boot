@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,10 +44,8 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
  * <p>
  * Activates when there is a bean of type {@link javax.sql.DataSource} configured in the
- * context, the Spring Data JPA
- * {@link org.springframework.data.jpa.repository.JpaRepository} type is on the classpath,
- * and there is no other, existing
- * {@link org.springframework.data.jpa.repository.JpaRepository} configured.
+ * context, the Spring Data JPA {@link JpaRepository} type is on the classpath, and there
+ * is no other, existing {@link JpaRepository} configured.
  * <p>
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
  * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
