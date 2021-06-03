@@ -135,6 +135,9 @@ public class StandardConfigDataLocationResolver
 	@Override
 	public List<StandardConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location, Profiles profiles) {
+		if (context.getParent() != null) {
+			return null;
+		}
 		return resolve(getProfileSpecificReferences(context, location, profiles));
 	}
 

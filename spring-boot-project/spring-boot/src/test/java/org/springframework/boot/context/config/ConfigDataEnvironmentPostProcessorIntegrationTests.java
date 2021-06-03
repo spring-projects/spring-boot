@@ -614,7 +614,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		this.application.setAdditionalProfiles("dev");
 		ConfigurableApplicationContext context = this.application
 				.run("--spring.config.location=classpath:application-import-with-profile-variant.properties");
-		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported-dev");
+		assertThat(context.getEnvironment().getProperty("my.value"))
+				.isEqualTo("application-import-with-profile-variant-dev");
 	}
 
 	@Test
@@ -622,7 +623,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		this.application.setAdditionalProfiles("dev");
 		ConfigurableApplicationContext context = this.application.run(
 				"--spring.config.location=classpath:application-import-with-profile-variant-and-direct-profile-import.properties");
-		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported-dev");
+		assertThat(context.getEnvironment().getProperty("my.value"))
+				.isEqualTo("application-import-with-profile-variant-imported-dev");
 	}
 
 	@Test
@@ -744,6 +746,19 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.getProperty("test1")).isEqualTo("test1");
 		assertThat(environment.getProperty("test2")).isEqualTo("test2");
+	}
+
+	@Test // gh-26752
+	void runWhenHasProfileSpecificImportWithImportDoesNotImportSecondProfileSpecificFile() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.name=application-profile-specific-import-with-import");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p1")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p2")).isFalse();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p1")).isFalse();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p2")).isFalse();
 	}
 
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
