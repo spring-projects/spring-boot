@@ -75,14 +75,16 @@ class ConfigDataImporter {
 	 * @param locationResolverContext the location resolver context
 	 * @param loaderContext the loader context
 	 * @param locations the locations to resolve
+	 * @param resolveProfileSpecific if profile specific resolution should be attempted
 	 * @return a map of the loaded locations and data
 	 */
 	Map<ConfigDataResolutionResult, ConfigData> resolveAndLoad(ConfigDataActivationContext activationContext,
 			ConfigDataLocationResolverContext locationResolverContext, ConfigDataLoaderContext loaderContext,
-			List<ConfigDataLocation> locations) {
+			List<ConfigDataLocation> locations, boolean resolveProfileSpecific) {
 		try {
 			Profiles profiles = (activationContext != null) ? activationContext.getProfiles() : null;
-			List<ConfigDataResolutionResult> resolved = resolve(locationResolverContext, profiles, locations);
+			List<ConfigDataResolutionResult> resolved = resolve(locationResolverContext, profiles, locations,
+					resolveProfileSpecific);
 			return load(loaderContext, resolved);
 		}
 		catch (IOException ex) {
@@ -91,18 +93,18 @@ class ConfigDataImporter {
 	}
 
 	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext locationResolverContext,
-			Profiles profiles, List<ConfigDataLocation> locations) {
+			Profiles profiles, List<ConfigDataLocation> locations, boolean resolveProfileSpecific) {
 		List<ConfigDataResolutionResult> resolved = new ArrayList<>(locations.size());
 		for (ConfigDataLocation location : locations) {
-			resolved.addAll(resolve(locationResolverContext, profiles, location));
+			resolved.addAll(resolve(locationResolverContext, profiles, location, resolveProfileSpecific));
 		}
 		return Collections.unmodifiableList(resolved);
 	}
 
 	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext locationResolverContext,
-			Profiles profiles, ConfigDataLocation location) {
+			Profiles profiles, ConfigDataLocation location, boolean resolveProfileSpecific) {
 		try {
-			return this.resolvers.resolve(locationResolverContext, location, profiles);
+			return this.resolvers.resolve(locationResolverContext, location, profiles, resolveProfileSpecific);
 		}
 		catch (ConfigDataNotFoundException ex) {
 			handle(ex, location, null);
