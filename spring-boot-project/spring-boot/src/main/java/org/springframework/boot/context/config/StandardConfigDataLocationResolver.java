@@ -115,7 +115,16 @@ public class StandardConfigDataLocationResolver
 	@Override
 	public List<StandardConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 			ConfigDataLocation location) throws ConfigDataNotFoundException {
-		return resolve(getReferences(context, location));
+		return resolve(getReferences(context, location.split()));
+	}
+
+	private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
+			ConfigDataLocation[] configDataLocations) {
+		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
+		for (ConfigDataLocation configDataLocation : configDataLocations) {
+			references.addAll(getReferences(context, configDataLocation));
+		}
+		return references;
 	}
 
 	private Set<StandardConfigDataReference> getReferences(ConfigDataLocationResolverContext context,
@@ -138,15 +147,17 @@ public class StandardConfigDataLocationResolver
 		if (context.getParent() != null) {
 			return null;
 		}
-		return resolve(getProfileSpecificReferences(context, location, profiles));
+		return resolve(getProfileSpecificReferences(context, location.split(), profiles));
 	}
 
 	private Set<StandardConfigDataReference> getProfileSpecificReferences(ConfigDataLocationResolverContext context,
-			ConfigDataLocation configDataLocation, Profiles profiles) {
+			ConfigDataLocation[] configDataLocations, Profiles profiles) {
 		Set<StandardConfigDataReference> references = new LinkedHashSet<>();
-		String resourceLocation = getResourceLocation(context, configDataLocation);
 		for (String profile : profiles) {
-			references.addAll(getReferences(configDataLocation, resourceLocation, profile));
+			for (ConfigDataLocation configDataLocation : configDataLocations) {
+				String resourceLocation = getResourceLocation(context, configDataLocation);
+				references.addAll(getReferences(configDataLocation, resourceLocation, profile));
+			}
 		}
 		return references;
 	}

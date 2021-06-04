@@ -97,6 +97,32 @@ public final class ConfigDataLocation implements OriginProvider {
 		return this.origin;
 	}
 
+	/**
+	 * Return an array of {@link ConfigDataLocation} elements built by splitting this
+	 * {@link ConfigDataLocation} around a delimiter of {@code ";"}.
+	 * @return the split locations
+	 * @since 2.4.7
+	 */
+	public ConfigDataLocation[] split() {
+		return split(";");
+	}
+
+	/**
+	 * Return an array of {@link ConfigDataLocation} elements built by splitting this
+	 * {@link ConfigDataLocation} around the specified delimiter.
+	 * @param delimiter the delimiter to split on
+	 * @return the split locations
+	 * @since 2.4.7
+	 */
+	public ConfigDataLocation[] split(String delimiter) {
+		String[] values = StringUtils.delimitedListToStringArray(toString(), delimiter);
+		ConfigDataLocation[] result = new ConfigDataLocation[values.length];
+		for (int i = 0; i < values.length; i++) {
+			result[i] = of(values[i]).withOrigin(getOrigin());
+		}
+		return result;
+	}
+
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj) {
