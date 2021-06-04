@@ -98,22 +98,23 @@ class ConfigDataLocationResolvers {
 	}
 
 	List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolverContext context, ConfigDataLocation location,
-			Profiles profiles) {
+			Profiles profiles, boolean resolveProfileSpecific) {
 		if (location == null) {
 			return Collections.emptyList();
 		}
 		for (ConfigDataLocationResolver<?> resolver : getResolvers()) {
 			if (resolver.isResolvable(context, location)) {
-				return resolve(resolver, context, location, profiles);
+				return resolve(resolver, context, location, profiles, resolveProfileSpecific);
 			}
 		}
 		throw new UnsupportedConfigDataLocationException(location);
 	}
 
 	private List<ConfigDataResolutionResult> resolve(ConfigDataLocationResolver<?> resolver,
-			ConfigDataLocationResolverContext context, ConfigDataLocation location, Profiles profiles) {
+			ConfigDataLocationResolverContext context, ConfigDataLocation location, Profiles profiles,
+			boolean resolveProfileSpecific) {
 		List<ConfigDataResolutionResult> resolved = resolve(location, false, () -> resolver.resolve(context, location));
-		if (profiles == null) {
+		if (profiles == null || !resolveProfileSpecific) {
 			return resolved;
 		}
 		List<ConfigDataResolutionResult> profileSpecific = resolve(location, true,

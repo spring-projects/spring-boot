@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
@@ -59,6 +60,7 @@ import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.FileCopyUtils;
+import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -761,6 +763,15 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p2")).isFalse();
 	}
 
+	@Test // gh-26753
+	void runWhenHasProfileSpecificImportWithCustomImportDoesNotResolveProfileSpecific() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.name=application-profile-specific-import-with-custom-import");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.containsProperty("test:boot")).isTrue();
+		assertThat(environment.containsProperty("test:boot:ps")).isFalse();
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
 		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
 
@@ -798,7 +809,14 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		public List<TestConfigDataResource> resolve(ConfigDataLocationResolverContext context,
 				ConfigDataLocation location)
 				throws ConfigDataLocationNotFoundException, ConfigDataResourceNotFoundException {
-			return Collections.singletonList(new TestConfigDataResource(location));
+			return Collections.singletonList(new TestConfigDataResource(location, false));
+		}
+
+		@Override
+		public List<TestConfigDataResource> resolveProfileSpecific(ConfigDataLocationResolverContext context,
+				ConfigDataLocation location, org.springframework.boot.context.config.Profiles profiles)
+				throws ConfigDataLocationNotFoundException {
+			return Collections.singletonList(new TestConfigDataResource(location, true));
 		}
 
 	}
@@ -811,8 +829,13 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 			if (resource.isOptional()) {
 				return null;
 			}
-			MapPropertySource propertySource = new MapPropertySource("loaded",
-					Collections.singletonMap("spring", "boot"));
+			Map<String, Object> map = new LinkedHashMap<>();
+			if (!resource.isProfileSpecific()) {
+				map.put("spring", "boot");
+			}
+			String suffix = (!resource.isProfileSpecific()) ? "" : ":ps";
+			map.put(resource.toString() + suffix, "true");
+			MapPropertySource propertySource = new MapPropertySource("loaded" + suffix, map);
 			return new ConfigData(Collections.singleton(propertySource));
 		}
 
@@ -820,8 +843,41 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 
 	static class TestConfigDataResource extends ConfigDataResource {
 
-		TestConfigDataResource(ConfigDataLocation location) {
+		private final ConfigDataLocation location;
+
+		private boolean profileSpecific;
+
+		TestConfigDataResource(ConfigDataLocation location, boolean profileSpecific) {
 			super(location.toString().contains("optionalresult"));
+			this.location = location;
+			this.profileSpecific = profileSpecific;
+		}
+
+		boolean isProfileSpecific() {
+			return this.profileSpecific;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (this == obj) {
+				return true;
+			}
+			if (obj == null || getClass() != obj.getClass()) {
+				return false;
+			}
+			TestConfigDataResource other = (TestConfigDataResource) obj;
+			return ObjectUtils.nullSafeEquals(this.location, other.location)
+					&& this.profileSpecific == other.profileSpecific;
+		}
+
+		@Override
+		public int hashCode() {
+			return 0;
+		}
+
+		@Override
+		public String toString() {
+			return this.location.toString();
 		}
 
 	}
