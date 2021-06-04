@@ -64,7 +64,7 @@ When Gradle's {application-plugin}[`application` plugin] is applied to a project
 
 
 
-[[reacting-to-other-plugins-maven]]
+[[reacting-to-other-plugins.maven]]
 == Reacting to the Maven plugin
 WARNING: Support for reacting to Gradle's `maven` plugin is deprecated and will be removed in a future release.
 Please use the `maven-publish` plugin instead.
