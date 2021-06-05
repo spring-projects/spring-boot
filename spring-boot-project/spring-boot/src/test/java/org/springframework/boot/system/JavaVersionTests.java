@@ -133,4 +133,10 @@ class JavaVersionTests {
 		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SIXTEEN);
 	}
 
+	@Test
+	@EnabledOnJre(JRE.JAVA_17)
+	void currentJavaVersionSeventeen() {
+		assertThat(JavaVersion.getJavaVersion()).isEqualTo(JavaVersion.SEVENTEEN);
+	}
+
 }
