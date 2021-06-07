@@ -30,12 +30,6 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  */
 public abstract class AbstractBeansOfTypeDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-	/**
-	 * Returns the bean types that should be detected as being database initializers.
-	 * @return the database initializer bean types
-	 */
-	protected abstract Set<Class<?>> getDatabaseInitializerBeanTypes();
-
 	@Override
 	public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
 		try {
@@ -46,5 +40,11 @@ public abstract class AbstractBeansOfTypeDatabaseInitializerDetector implements 
 			return Collections.emptySet();
 		}
 	}
+
+	/**
+	 * Returns the bean types that should be detected as being database initializers.
+	 * @return the database initializer bean types
+	 */
+	protected abstract Set<Class<?>> getDatabaseInitializerBeanTypes();
 
 }
