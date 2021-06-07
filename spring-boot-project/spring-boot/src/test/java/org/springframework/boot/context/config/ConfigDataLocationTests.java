@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -132,6 +132,38 @@ class ConfigDataLocationTests {
 	@Test
 	void ofReturnsLocation() {
 		assertThat(ConfigDataLocation.of("test")).hasToString("test");
+	}
+
+	@Test
+	void splitWhenNoSemiColonReturnsSingleElement() {
+		ConfigDataLocation location = ConfigDataLocation.of("test");
+		ConfigDataLocation[] split = location.split();
+		assertThat(split).containsExactly(ConfigDataLocation.of("test"));
+	}
+
+	@Test
+	void splitWhenSemiColonReturnsElements() {
+		ConfigDataLocation location = ConfigDataLocation.of("one;two;three");
+		ConfigDataLocation[] split = location.split();
+		assertThat(split).containsExactly(ConfigDataLocation.of("one"), ConfigDataLocation.of("two"),
+				ConfigDataLocation.of("three"));
+	}
+
+	@Test
+	void splitOnCharReturnsElements() {
+		ConfigDataLocation location = ConfigDataLocation.of("one::two::three");
+		ConfigDataLocation[] split = location.split("::");
+		assertThat(split).containsExactly(ConfigDataLocation.of("one"), ConfigDataLocation.of("two"),
+				ConfigDataLocation.of("three"));
+	}
+
+	@Test
+	void splitWhenHasOriginReturnsElementsWithOriginSet() {
+		Origin origin = mock(Origin.class);
+		ConfigDataLocation location = ConfigDataLocation.of("a;b").withOrigin(origin);
+		ConfigDataLocation[] split = location.split();
+		assertThat(split[0].getOrigin()).isEqualTo(origin);
+		assertThat(split[1].getOrigin()).isEqualTo(origin);
 	}
 
 }

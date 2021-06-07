@@ -772,6 +772,21 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(environment.containsProperty("test:boot:ps")).isFalse();
 	}
 
+	@Test // gh-26593
+	void runWhenHasFilesInRootAndConfigWithProfiles() {
+		ConfigurableApplicationContext context = this.application
+				.run("--spring.config.name=file-in-root-and-config-with-profile", "--spring.profiles.active=p1,p2");
+		ConfigurableEnvironment environment = context.getEnvironment();
+		assertThat(environment.containsProperty("file-in-root-and-config-with-profile")).isTrue();
+		assertThat(environment.containsProperty("file-in-root-and-config-with-profile-p1")).isTrue();
+		assertThat(environment.containsProperty("file-in-root-and-config-with-profile-p2")).isTrue();
+		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile")).isTrue();
+		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile-p1")).isTrue();
+		assertThat(environment.containsProperty("config-file-in-root-and-config-with-profile-p2")).isTrue();
+		assertThat(environment.getProperty("v1")).isEqualTo("config-file-in-root-and-config-with-profile-p2");
+		assertThat(environment.getProperty("v2")).isEqualTo("file-in-root-and-config-with-profile-p2");
+	}
+
 	private Condition<ConfigurableEnvironment> matchingPropertySource(final String sourceName) {
 		return new Condition<ConfigurableEnvironment>("environment containing property source " + sourceName) {
 

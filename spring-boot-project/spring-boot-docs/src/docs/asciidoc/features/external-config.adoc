@@ -103,25 +103,29 @@ This means that the JSON cannot override properties from lower order property so
 === External Application Properties [[features.external-config.files]]
 Spring Boot will automatically find and load `application.properties` and `application.yaml` files from the following locations when your application starts:
 
-. The classpath root
-. The classpath `/config` package
-. The current directory
-. The `/config` subdirectory in the current directory
-. Immediate child directories of the `/config` subdirectory
+. From the classpath
+.. The classpath root
+.. The classpath `/config` package
+. From the current directory
+.. The current directory
+.. The `/config` subdirectory in the current directory
+.. Immediate child directories of the `/config` subdirectory
 
 The list is ordered by precedence (with values from lower items overriding earlier ones).
 Documents from the loaded files are added as `PropertySources` to the Spring `Environment`.
 
 If you do not like `application` as the configuration file name, you can switch to another file name by specifying a configprop:spring.config.name[] environment property.
-You can also refer to an explicit location by using the `spring.config.location` environment property (which is a comma-separated list of directory locations or file paths).
-The following example shows how to specify a different file name:
+For example, to look for `myproject.properties` and `myproject.yaml` files you can run your application as follows:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar myproject.jar --spring.config.name=myproject
 ----
 
-The following example shows how to specify two locations:
+You can also refer to an explicit location by using the configprop:spring.config.location[] environment property.
+This properties accepts a comma-separated list of one or more locations to check.
+
+The following example shows how to specify two distinct files:
 
 [source,shell,indent=0,subs="verbatim"]
 ----
@@ -135,14 +139,19 @@ TIP: Use the prefix `optional:` if the <<features#features.external-config.files
 WARNING: `spring.config.name`, `spring.config.location`, and `spring.config.additional-location` are used very early to determine which files have to be loaded.
 They must be defined as an environment property (typically an OS environment variable, a system property, or a command-line argument).
 
-If `spring.config.location` contains directories (as opposed to files), they must end in `/` or the system-dependent `File.separator`.
+If `spring.config.location` contains directories (as opposed to files), they should end in `/`.
 At runtime they will be appended with the names generated from `spring.config.name` before being loaded.
-If `spring.config.location` contains files, they are used as-is.
+Files specified in `spring.config.location` are used as-is.
 
-Whether specified directly or contained in a directory, file references must include a file extension in their name.
-Typical extensions that are supported out-of-the-box are `.properties`, `.yaml`, and `.yml`.
+In most situations, each configprop:spring.config.location[] item you add will reference a single file or directory.
+Locations are processed in the order that they are defined and later ones can override the values of earlier ones.
 
-When multiple locations are specified, the later ones can override the values of earlier ones.
+[[features.external-config.files.location-groups]]
+If you have a complex location setup, and you use profile-specific configuration files, you may need to provide further hints so that Spring Boot knows how they should be grouped.
+A location group is a collection of locations that are all considered at the same level.
+For example, you might want to group all classpath locations, then all external locations.
+Items within a location group should be separated with `;`.
+See the example in the "`<<features.external-config.files.profile-specific>>`" section for more details.
 
 Locations configured by using `spring.config.location` replace the default locations.
 For example, if `spring.config.location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
@@ -154,11 +163,8 @@ If you prefer to add additional locations, rather than replacing them, you can u
 Properties loaded from additional locations can override those in the default locations.
 For example, if `spring.config.additional-location` is configured with the value `optional:classpath:/custom-config/,optional:file:./custom-config/`, the complete set of locations considered is:
 
-. `optional:classpath:/`
-. `optional:classpath:/config/`
-. `optional:file:./`
-. `optional:file:./config/`
-. `optional:file:./config/*/`
+. `optional:classpath:/;optional:classpath:/config/`
+. `optional:file:./;optional:file:./config/;optional:file:./config/*/`
 . `optional:classpath:custom-config/`
 . `optional:file:./custom-config/`
 
@@ -218,6 +224,35 @@ For example, if your application activates a profile named `prod` and uses YAML 
 Profile-specific properties are loaded from the same locations as standard `application.properties`, with profile-specific files always overriding the non-specific ones.
 If several profiles are specified, a last-wins strategy applies.
 For example, if profiles `prod,live` are specified by the configprop:spring.profiles.active[] property, values in `application-prod.properties` can be overridden by those in `application-live.properties`.
+
+[NOTE]
+====
+The last-wins strategy applies at the <<features.external-config.files.location-groups,location group>> level.
+A configprop:spring.config.location[] of `classpath:/cfg/,classpath:/ext/` will not have the same override rules as `classpath:/cfg/;classpath:/ext/`.
+
+For example, continuing our `prod,live` example above, we might have the following files:
+
+----
+/cfg
+  application-live.properties
+/ext
+  application-live.properties
+  application-prod.properties
+----
+
+When we have a configprop:spring.config.location[] of `classpath:/cfg/,classpath:/ext/` we process all `/cfg` files before all `/ext` files:
+
+. `/cfg/application-live.properties`
+. `/ext/application-prod.properties`
+. `/ext/application-live.properties`
+
+
+When we have `classpath:/cfg/;classpath:/ext/` instead (with a `;` delimiter) we process `/cfg` and `/ext` at the same level:
+
+. `/ext/application-prod.properties`
+. `/cfg/application-live.properties`
+. `/ext/application-live.properties`
+====
 
 The `Environment` has a set of default profiles (by default, `[default]`) that are used if no active profiles are set.
 In other words, if no profiles are explicitly activated, then properties from `application-default` are considered.
