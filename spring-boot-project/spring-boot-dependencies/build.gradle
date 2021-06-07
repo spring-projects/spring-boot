@@ -398,7 +398,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.4.31.Final") {
+	library("Hibernate", "5.4.32.Final") {
 		group("org.hibernate") {
 			modules = [
 				"hibernate-c3p0",
