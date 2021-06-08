@@ -403,7 +403,7 @@ bom {
 			]
 		}
 	}
-	library("Hibernate", "5.4.31.Final") {
+	library("Hibernate", "5.4.32.Final") {
 		prohibit("[6.0.0.Alpha2,)") {
 			because "it uses the jakarta.* namespace"
 		}
