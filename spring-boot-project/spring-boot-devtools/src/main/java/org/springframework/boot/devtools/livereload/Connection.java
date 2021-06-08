@@ -41,7 +41,7 @@ class Connection {
 
 	private static final Log logger = LogFactory.getLog(Connection.class);
 
-	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
+	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
 	public static final String WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
@@ -77,7 +77,7 @@ class Connection {
 	 * @throws Exception in case of errors
 	 */
 	void run() throws Exception {
-		if (this.header.contains("Upgrade: websocket") && this.header.contains("Sec-WebSocket-Version: 13")) {
+		if (this.header.contains("Upgrade: websocket") && this.header.toLowerCase().contains("sec-websocket-version: 13")) {
 			runWebSocket();
 		}
 		if (this.header.contains("GET /livereload.js")) {
