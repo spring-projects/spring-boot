@@ -40,6 +40,7 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
@@ -54,6 +55,7 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link DatabaseInitializationDependencyConfigurer}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DatabaseInitializationDependencyConfigurerTests {
 
@@ -64,7 +66,8 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	@BeforeEach
 	void resetMocks() {
-		reset(MockDatabaseInitializerDetector.instance, MockedDependsOnDatabaseInitializationDetector.instance);
+		reset(MockDatabaseInitializerDetector.instance, OrderedMockDatabaseInitializerDetector.instance,
+				MockedDependsOnDatabaseInitializationDetector.instance);
 	}
 
 	@Test
@@ -100,6 +103,30 @@ class DatabaseInitializationDependencyConfigurerTests {
 					verify(MockDatabaseInitializerDetector.instance).detectionComplete(context.getBeanFactory(),
 							Collections.singleton("alpha"));
 					assertThat(bravo.getDependsOn()).containsExactly("alpha");
+				});
+	}
+
+	@Test
+	void whenDependenciesAreConfiguredDetectedDatabaseInitializersAreInitializedInCorrectOrder() {
+		BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition bravo = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition charlie = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
+				OrderedMockDatabaseInitializerDetector.class, MockedDependsOnDatabaseInitializationDetector.class),
+				(context) -> {
+					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(Collections.singleton("alpha"));
+					given(OrderedMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(Collections.singleton("bravo"));
+					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(Collections.singleton("charlie"));
+					context.registerBeanDefinition("alpha", alpha);
+					context.registerBeanDefinition("bravo", bravo);
+					context.registerBeanDefinition("charlie", charlie);
+					context.refresh();
+					assertThat(charlie.getDependsOn()).containsExactly("alpha", "bravo");
+					assertThat(bravo.getDependsOn()).containsExactly("alpha");
+					assertThat(alpha.getDependsOn()).isNullOrEmpty();
 				});
 	}
 
@@ -158,13 +185,29 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-			return MockDatabaseInitializerDetector.instance.detect(beanFactory);
+			return instance.detect(beanFactory);
 		}
 
 		@Override
 		public void detectionComplete(ConfigurableListableBeanFactory beanFactory,
 				Set<String> databaseInitializerNames) {
 			instance.detectionComplete(beanFactory, databaseInitializerNames);
+		}
+
+	}
+
+	static class OrderedMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
+
+		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+
+		@Override
+		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
+			return instance.detect(beanFactory);
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.LOWEST_PRECEDENCE;
 		}
 
 	}

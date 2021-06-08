@@ -34,4 +34,9 @@ class FlywayMigrationInitializerDatabaseInitializerDetector extends AbstractBean
 		return Collections.singleton(FlywayMigrationInitializer.class);
 	}
 
+	@Override
+	public int getOrder() {
+		return 1;
+	}
+
 }

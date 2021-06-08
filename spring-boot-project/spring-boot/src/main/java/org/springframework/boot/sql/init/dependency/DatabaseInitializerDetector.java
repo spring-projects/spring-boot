@@ -21,6 +21,7 @@ import java.util.Set;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
+import org.springframework.core.Ordered;
 
 /**
  * Detects beans that initialize an SQL database. Implementations should be registered in
@@ -30,7 +31,7 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
  * @author Andy Wilkinson
  * @since 2.5.0
  */
-public interface DatabaseInitializerDetector {
+public interface DatabaseInitializerDetector extends Ordered {
 
 	/**
 	 * Detect beans defined in the given {@code beanFactory} that initialize a
@@ -50,6 +51,11 @@ public interface DatabaseInitializerDetector {
 	 */
 	default void detectionComplete(ConfigurableListableBeanFactory beanFactory,
 			Set<String> dataSourceInitializerNames) {
+	}
+
+	@Override
+	default int getOrder() {
+		return 0;
 	}
 
 }

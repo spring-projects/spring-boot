@@ -98,10 +98,20 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 			if (initializerBeanNames.isEmpty()) {
 				return;
 			}
-			for (String dependsOnInitializationBeanNames : detectDependsOnInitializationBeanNames(beanFactory)) {
-				BeanDefinition definition = getBeanDefinition(dependsOnInitializationBeanNames, beanFactory);
-				definition.setDependsOn(merge(definition.getDependsOn(), initializerBeanNames));
+			String previousInitializerBeanName = null;
+			for (String initializerBeanName : initializerBeanNames) {
+				BeanDefinition beanDefinition = getBeanDefinition(initializerBeanName, beanFactory);
+				beanDefinition.setDependsOn(merge(beanDefinition.getDependsOn(), previousInitializerBeanName));
+				previousInitializerBeanName = initializerBeanName;
 			}
+			for (String dependsOnInitializationBeanNames : detectDependsOnInitializationBeanNames(beanFactory)) {
+				BeanDefinition beanDefinition = getBeanDefinition(dependsOnInitializationBeanNames, beanFactory);
+				beanDefinition.setDependsOn(merge(beanDefinition.getDependsOn(), initializerBeanNames));
+			}
+		}
+
+		private String[] merge(String[] source, String additional) {
+			return merge(source, (additional != null) ? Collections.singleton(additional) : Collections.emptySet());
 		}
 
 		private String[] merge(String[] source, Set<String> additional) {
@@ -112,7 +122,7 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 
 		private Set<String> detectInitializerBeanNames(ConfigurableListableBeanFactory beanFactory) {
 			List<DatabaseInitializerDetector> detectors = getDetectors(beanFactory, DatabaseInitializerDetector.class);
-			Set<String> beanNames = new HashSet<>();
+			Set<String> beanNames = new LinkedHashSet<>();
 			for (DatabaseInitializerDetector detector : detectors) {
 				for (String beanName : detector.detect(beanFactory)) {
 					BeanDefinition beanDefinition = beanFactory.getBeanDefinition(beanName);
