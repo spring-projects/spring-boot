@@ -182,7 +182,7 @@ do as they were designed before this was clarified.
 | https://github.com/okta/okta-spring-boot
 
 | https://www.optaplanner.org/[OptaPlanner]
-| https://github.com/kiegroup/optaplanner/tree/master/optaplanner-integration/optaplanner-spring-boot-starter
+| https://github.com/kiegroup/optaplanner/tree/master/optaplanner-spring-integration (https://github.com/kiegroup/optaplanner-quickstarts/tree/stable/spring-boot-school-timetabling[quickstart example])
 
 | https://orika-mapper.github.io/orika-docs/[Orika]
 | https://github.com/akihyro/orika-spring-boot-starter
