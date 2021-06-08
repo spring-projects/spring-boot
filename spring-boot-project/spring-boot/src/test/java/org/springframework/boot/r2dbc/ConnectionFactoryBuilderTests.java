@@ -141,8 +141,8 @@ class ConnectionFactoryBuilderTests {
 				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(intialDatabaseName)).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		String derivedDatabaseName = UUID.randomUUID().toString();
-		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(connectionFactory).database(derivedDatabaseName)
-				.build();
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(connectionFactory)
+				.database(derivedDatabaseName).build();
 		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
 		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.DATABASE)).isEqualTo(derivedDatabaseName);
 		assertMatchingOptions(derivedOptions, initialOptions, ConnectionFactoryOptions.CONNECT_TIMEOUT,
@@ -156,7 +156,7 @@ class ConnectionFactoryBuilderTests {
 		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
 				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString())).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
-		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(connectionFactory).username("admin")
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(connectionFactory).username("admin")
 				.password("secret").build();
 		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
 		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("admin");
@@ -173,7 +173,7 @@ class ConnectionFactoryBuilderTests {
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		ConnectionPoolConfiguration poolConfiguration = ConnectionPoolConfiguration.builder(connectionFactory).build();
 		ConnectionPool pool = new ConnectionPool(poolConfiguration);
-		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(pool).username("admin").password("secret")
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(pool).username("admin").password("secret")
 				.build();
 		assertThat(derived).isNotInstanceOf(ConnectionPool.class).isInstanceOf(OptionsCapableConnectionFactory.class);
 		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();

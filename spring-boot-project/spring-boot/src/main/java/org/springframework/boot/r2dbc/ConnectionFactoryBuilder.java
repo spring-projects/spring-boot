@@ -92,8 +92,23 @@ public final class ConnectionFactoryBuilder {
 	 * @param connectionFactory the connection factory whose options are to be used to
 	 * initialize the builder
 	 * @return a new builder initialized with the options from the connection factory
+	 * @deprecated since 2.5.0 for removal in 2.7.0 in favor of
+	 * {@link #derivedFrom(ConnectionFactory)}
 	 */
+	@Deprecated
 	public static ConnectionFactoryBuilder derivefrom(ConnectionFactory connectionFactory) {
+		return derivedFrom(connectionFactory);
+	}
+
+	/**
+	 * Initialize a new {@link ConnectionFactoryBuilder} derived from the options of the
+	 * specified {@code connectionFactory}.
+	 * @param connectionFactory the connection factory whose options are to be used to
+	 * initialize the builder
+	 * @return a new builder initialized with the options from the connection factory
+	 * @since 2.5.1
+	 */
+	public static ConnectionFactoryBuilder derivedFrom(ConnectionFactory connectionFactory) {
 		ConnectionFactoryOptions options = extractOptionsIfPossible(connectionFactory);
 		if (options == null) {
 			throw new IllegalArgumentException(

@@ -50,7 +50,8 @@ class R2dbcInitializationConfiguration {
 	private static ConnectionFactory determineConnectionFactory(ConnectionFactory connectionFactory, String username,
 			String password) {
 		if (StringUtils.hasText(username) && StringUtils.hasText(password)) {
-			return ConnectionFactoryBuilder.derivefrom(connectionFactory).username(username).password(password).build();
+			return ConnectionFactoryBuilder.derivedFrom(connectionFactory).username(username).password(password)
+					.build();
 		}
 		return connectionFactory;
 	}
