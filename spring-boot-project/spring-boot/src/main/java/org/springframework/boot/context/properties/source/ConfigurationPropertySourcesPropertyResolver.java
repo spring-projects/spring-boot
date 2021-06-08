@@ -71,7 +71,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 	}
 
 	private <T> T getProperty(String key, Class<T> targetValueType, boolean resolveNestedPlaceholders) {
-		Object value = findPropertyValue(key, targetValueType);
+		Object value = findPropertyValue(key);
 		if (value == null) {
 			return null;
 		}
@@ -81,7 +81,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 		return convertValueIfNecessary(value, targetValueType);
 	}
 
-	private Object findPropertyValue(String key, Class<?> targetValueType) {
+	private Object findPropertyValue(String key) {
 		ConfigurationPropertySourcesPropertySource attached = getAttached();
 		if (attached != null) {
 			ConfigurationPropertyName name = ConfigurationPropertyName.of(key, true);
@@ -94,7 +94,7 @@ class ConfigurationPropertySourcesPropertyResolver extends AbstractPropertyResol
 				}
 			}
 		}
-		return this.defaultResolver.getProperty(key, targetValueType, false);
+		return this.defaultResolver.getProperty(key, Object.class, false);
 	}
 
 	private ConfigurationPropertySourcesPropertySource getAttached() {
