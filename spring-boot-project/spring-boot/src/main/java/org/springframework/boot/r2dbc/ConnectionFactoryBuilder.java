@@ -221,10 +221,9 @@ public final class ConnectionFactoryBuilder {
 			String[] protocols = protocol.split(COLON, 2);
 			String driverDelegate = protocols[0];
 			String protocolDelegate = (protocols.length != 2) ? "" : protocols[1];
-			ConnectionFactoryOptions newOptions = ConnectionFactoryOptions.builder().from(options)
+			return ConnectionFactoryOptions.builder().from(options)
 					.option(ConnectionFactoryOptions.DRIVER, driverDelegate)
 					.option(ConnectionFactoryOptions.PROTOCOL, protocolDelegate).build();
-			return newOptions;
 		}
 
 		ConnectionPoolConfiguration connectionPoolConfiguration(ConnectionFactoryOptions options,
@@ -253,8 +252,7 @@ public final class ConnectionFactoryBuilder {
 			map.from(options.getValue(PoolingConnectionFactoryProvider.VALIDATION_QUERY)).to(builder::validationQuery);
 			map.from((Object) options.getValue(PoolingConnectionFactoryProvider.VALIDATION_DEPTH))
 					.as(this::toValidationDepth).to(builder::validationDepth);
-			ConnectionPoolConfiguration build = builder.build();
-			return build;
+			return builder.build();
 		}
 
 		private Integer toInteger(Object object) {

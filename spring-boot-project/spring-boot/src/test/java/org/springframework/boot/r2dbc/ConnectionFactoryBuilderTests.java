@@ -188,7 +188,7 @@ class ConnectionFactoryBuilderTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@MethodSource("poolingConnectionProviderOptions")
 	void optionIsMappedWhenCreatingPoolConfiguration(Option option) {
-		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID().toString();
+		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID();
 		ExpectedOption expectedOption = ExpectedOption.get(option);
 		ConnectionFactoryOptions options = ConnectionFactoryBuilder.withUrl(url).configure((builder) -> builder
 				.option(PoolingConnectionFactoryProvider.POOL_NAME, "defaultName").option(option, expectedOption.value))
@@ -202,7 +202,7 @@ class ConnectionFactoryBuilderTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@MethodSource("poolingConnectionProviderOptions")
 	void stringlyTypedOptionIsMappedWhenCreatingPoolConfiguration(Option option) {
-		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID().toString();
+		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID();
 		ExpectedOption expectedOption = ExpectedOption.get(option);
 		ConnectionFactoryOptions options = ConnectionFactoryBuilder.withUrl(url)
 				.configure((builder) -> builder.option(PoolingConnectionFactoryProvider.POOL_NAME, "defaultName")
@@ -213,19 +213,19 @@ class ConnectionFactoryBuilderTests {
 		assertThat(configuration).extracting(expectedOption.property).isEqualTo(expectedOption.value);
 	}
 
+	private static Iterable<Arguments> poolingConnectionProviderOptions() {
+		List<Arguments> arguments = new ArrayList<>();
+		ReflectionUtils.doWithFields(PoolingConnectionFactoryProvider.class,
+				(field) -> arguments.add(Arguments.of(ReflectionUtils.getField(field, null))),
+				(field) -> Option.class.equals(field.getType()));
+		return arguments;
+	}
+
 	private void assertMatchingOptions(ConnectionFactoryOptions actualOptions, ConnectionFactoryOptions expectedOptions,
 			Option<?>... optionsToCheck) {
 		for (Option<?> option : optionsToCheck) {
 			assertThat(actualOptions.getValue(option)).as(option.name()).isEqualTo(expectedOptions.getValue(option));
 		}
-	}
-
-	private static Iterable<Arguments> poolingConnectionProviderOptions() {
-		List<Arguments> arguments = new ArrayList<>();
-		ReflectionUtils.doWithFields(PoolingConnectionFactoryProvider.class,
-				(field) -> arguments.add(Arguments.of((Option<?>) ReflectionUtils.getField(field, null))),
-				(field) -> Option.class.equals(field.getType()));
-		return arguments;
 	}
 
 	private enum ExpectedOption {
