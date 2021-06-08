@@ -27,11 +27,15 @@ import java.util.Collections;
 import java.util.Set;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.condition.DisabledOnOs;
+import org.junit.jupiter.api.condition.EnabledOnOs;
+import org.junit.jupiter.api.condition.OS;
 import org.junit.jupiter.api.io.TempDir;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIOException;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
+import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
 
 /**
  * Tests for {@link FilePermissions}.
@@ -44,6 +48,7 @@ class FilePermissionsTests {
 	Path tempDir;
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	void umaskForPath() throws IOException {
 		FileAttribute<Set<PosixFilePermission>> fileAttribute = PosixFilePermissions
 				.asFileAttribute(PosixFilePermissions.fromString("rw-r-----"));
@@ -52,9 +57,18 @@ class FilePermissionsTests {
 	}
 
 	@Test
+	@DisabledOnOs(OS.WINDOWS)
 	void umaskForPathWithNonExistentFile() throws IOException {
 		assertThatIOException()
 				.isThrownBy(() -> FilePermissions.umaskForPath(Paths.get(this.tempDir.toString(), "does-not-exist")));
+	}
+
+	@Test
+	@EnabledOnOs(OS.WINDOWS)
+	void umaskForPathOnWindowsFails() throws IOException {
+		Path tempFile = Files.createTempFile("umask", null);
+		assertThatIllegalStateException().isThrownBy(() -> FilePermissions.umaskForPath(tempFile))
+				.withMessageContaining("Unsupported file type for retrieving Posix attributes");
 	}
 
 	@Test
