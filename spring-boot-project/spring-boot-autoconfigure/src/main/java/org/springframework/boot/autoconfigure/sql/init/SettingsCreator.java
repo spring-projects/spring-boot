@@ -41,6 +41,7 @@ final class SettingsCreator {
 		settings.setContinueOnError(properties.isContinueOnError());
 		settings.setSeparator(properties.getSeparator());
 		settings.setEncoding(properties.getEncoding());
+		settings.setMode(properties.getMode());
 		return settings;
 	}
 

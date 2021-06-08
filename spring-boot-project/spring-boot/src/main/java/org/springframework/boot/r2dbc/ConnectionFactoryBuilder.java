@@ -29,7 +29,6 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import io.r2dbc.spi.ConnectionFactoryOptions.Builder;
 import io.r2dbc.spi.ValidationDepth;
-import io.r2dbc.spi.Wrapped;
 
 import org.springframework.boot.context.properties.PropertyMapper;
 import org.springframework.util.Assert;
@@ -104,14 +103,9 @@ public final class ConnectionFactoryBuilder {
 	}
 
 	private static ConnectionFactoryOptions extractOptionsIfPossible(ConnectionFactory connectionFactory) {
-		if (connectionFactory instanceof OptionsCapableConnectionFactory) {
-			return ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
-		}
-		if (connectionFactory instanceof Wrapped) {
-			Object unwrapped = ((Wrapped<?>) connectionFactory).unwrap();
-			if (unwrapped instanceof ConnectionFactory) {
-				return extractOptionsIfPossible((ConnectionFactory) unwrapped);
-			}
+		OptionsCapableConnectionFactory optionsCapable = OptionsCapableConnectionFactory.unwrapFrom(connectionFactory);
+		if (optionsCapable != null) {
+			return optionsCapable.getOptions();
 		}
 		return null;
 	}

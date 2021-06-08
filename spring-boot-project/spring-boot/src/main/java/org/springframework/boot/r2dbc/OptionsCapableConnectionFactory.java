@@ -67,4 +67,28 @@ public class OptionsCapableConnectionFactory implements Wrapped<ConnectionFactor
 		return this.delegate;
 	}
 
+	/**
+	 * Returns, if possible, an {@code OptionsCapableConnectionFactory} by unwrapping the
+	 * given {@code connectionFactory} as necessary. If the given
+	 * {@code connectionFactory} does not wrap an {@code OptionsCapableConnectionFactory}
+	 * and is not itself an {@code OptionsCapableConnectionFactory}, {@code null} is
+	 * returned.
+	 * @param connectionFactory the connection factory to unwrap
+	 * @return the {@code OptionsCapableConnectionFactory} or {@code null}
+	 * @since 2.5.1
+	 */
+	public static OptionsCapableConnectionFactory unwrapFrom(ConnectionFactory connectionFactory) {
+		if (connectionFactory instanceof OptionsCapableConnectionFactory) {
+			return (OptionsCapableConnectionFactory) connectionFactory;
+		}
+		if (connectionFactory instanceof Wrapped) {
+			Object unwrapped = ((Wrapped<?>) connectionFactory).unwrap();
+			if (unwrapped instanceof ConnectionFactory) {
+				return unwrapFrom((ConnectionFactory) unwrapped);
+			}
+		}
+		return null;
+
+	}
+
 }

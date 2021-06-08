@@ -27,8 +27,10 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.logging.ConditionEvaluationReportLoggingListener;
 import org.springframework.boot.autoconfigure.r2dbc.R2dbcAutoConfiguration;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.logging.LogLevel;
 import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
@@ -64,9 +66,18 @@ public class SqlInitializationAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void whenConnectionFactoryIsAvailableAndInitializationIsDisabledThenInitializerIsNotAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
 				.withPropertyValues("spring.sql.init.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
+	}
+
+	@Test
+	void whenConnectionFactoryIsAvailableAndModeIsNeverThenInitializerIsNotAutoConfigured() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
+				.withInitializer(new ConditionEvaluationReportLoggingListener(LogLevel.INFO))
+				.withPropertyValues("spring.sql.init.mode:never")
 				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
 	}
 
@@ -77,9 +88,17 @@ public class SqlInitializationAutoConfigurationTests {
 	}
 
 	@Test
+	@Deprecated
 	void whenDataSourceIsAvailableAndInitializationIsDisabledThenInitializerIsNotAutoConfigured() {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.sql.init.enabled:false")
+				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
+	}
+
+	@Test
+	void whenDataSourceIsAvailableAndModeIsNeverThenThenInitializerIsNotAutoConfigured() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withPropertyValues("spring.sql.init.mode:never")
 				.run((context) -> assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class));
 	}
 
@@ -133,6 +152,11 @@ public class SqlInitializationAutoConfigurationTests {
 				protected void runScripts(List<Resource> resources, boolean continueOnError, String separator,
 						Charset encoding) {
 					// No-op
+				}
+
+				@Override
+				protected boolean isEmbeddedDatabase() {
+					return true;
 				}
 
 			};

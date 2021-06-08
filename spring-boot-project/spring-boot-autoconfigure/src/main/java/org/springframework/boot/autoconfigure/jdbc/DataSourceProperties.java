@@ -392,7 +392,7 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	}
 
 	@Deprecated
-	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.enabled")
+	@DeprecatedConfigurationProperty(replacement = "spring.sql.init.mode")
 	public DataSourceInitializationMode getInitializationMode() {
 		return this.initializationMode;
 	}

@@ -61,7 +61,8 @@ class HikariDriverConfigurationFailureAnalyzerTests {
 	private BeanCreationException createFailure(Class<?> configuration) {
 		AnnotationConfigApplicationContext context = new AnnotationConfigApplicationContext();
 		TestPropertyValues.of("spring.datasource.type=" + HikariDataSource.class.getName(),
-				"spring.datasource.hikari.data-source-class-name=com.example.Foo").applyTo(context);
+				"spring.datasource.hikari.data-source-class-name=com.example.Foo", "spring.sql.init.mode=always")
+				.applyTo(context);
 		context.register(configuration);
 		try {
 			context.refresh();

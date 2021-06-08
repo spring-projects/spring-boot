@@ -24,6 +24,7 @@ import org.springframework.boot.r2dbc.ConnectionFactoryBuilder;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializerTests;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.r2dbc.core.DatabaseClient;
 
 /**
@@ -33,18 +34,38 @@ import org.springframework.r2dbc.core.DatabaseClient;
  */
 class R2dbcScriptDatabaseInitializerTests extends AbstractScriptDatabaseInitializerTests {
 
-	private final ConnectionFactory connectionFactory = ConnectionFactoryBuilder
+	private final ConnectionFactory embeddedConnectionFactory = ConnectionFactoryBuilder
 			.withUrl("r2dbc:h2:mem:///" + UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE")
 			.build();
 
+	private final ConnectionFactory standaloneConnectionFactory = ConnectionFactoryBuilder.withUrl("r2dbc:h2:file:///"
+			+ new BuildOutput(R2dbcScriptDatabaseInitializerTests.class).getRootLocation().getAbsolutePath() + "/"
+			+ UUID.randomUUID() + "?options=DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE").build();
+
 	@Override
-	protected AbstractScriptDatabaseInitializer createInitializer(DatabaseInitializationSettings settings) {
-		return new R2dbcScriptDatabaseInitializer(this.connectionFactory, settings);
+	protected AbstractScriptDatabaseInitializer createEmbeddedDatabaseInitializer(
+			DatabaseInitializationSettings settings) {
+		return new R2dbcScriptDatabaseInitializer(this.embeddedConnectionFactory, settings);
 	}
 
 	@Override
-	protected int numberOfRows(String sql) {
-		return DatabaseClient.create(this.connectionFactory).sql(sql).map((row, metadata) -> row.get(0)).first()
+	protected AbstractScriptDatabaseInitializer createStandaloneDatabaseInitializer(
+			DatabaseInitializationSettings settings) {
+		return new R2dbcScriptDatabaseInitializer(this.standaloneConnectionFactory, settings);
+	}
+
+	@Override
+	protected int numberOfEmbeddedRows(String sql) {
+		return numberOfRows(this.embeddedConnectionFactory, sql);
+	}
+
+	@Override
+	protected int numberOfStandaloneRows(String sql) {
+		return numberOfRows(this.standaloneConnectionFactory, sql);
+	}
+
+	private int numberOfRows(ConnectionFactory connectionFactory, String sql) {
+		return DatabaseClient.create(connectionFactory).sql(sql).map((row, metadata) -> row.get(0)).first()
 				.map((number) -> ((Number) number).intValue()).block();
 	}
 

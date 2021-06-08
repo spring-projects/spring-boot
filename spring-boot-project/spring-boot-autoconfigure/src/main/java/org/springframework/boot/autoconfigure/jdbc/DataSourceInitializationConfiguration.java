@@ -16,7 +16,6 @@
 
 package org.springframework.boot.autoconfigure.jdbc;
 
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -40,15 +39,14 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfi
 import org.springframework.boot.autoconfigure.jdbc.DataSourceInitializationConfiguration.SharedCredentialsDataSourceInitializationConfiguration.DataSourceInitializationCondition;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
-import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.sql.init.dependency.DatabaseInitializationDependencyConfigurer;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ConditionContext;
 import org.springframework.context.annotation.DependsOn;
 import org.springframework.core.env.Environment;
-import org.springframework.core.io.Resource;
 import org.springframework.core.type.AnnotatedTypeMetadata;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
 import org.springframework.util.StringUtils;
@@ -80,6 +78,19 @@ class DataSourceInitializationConfiguration {
 		return fallbackLocations;
 	}
 
+	private static DatabaseInitializationMode mapMode(DataSourceInitializationMode mode) {
+		switch (mode) {
+		case ALWAYS:
+			return DatabaseInitializationMode.ALWAYS;
+		case EMBEDDED:
+			return DatabaseInitializationMode.EMBEDDED;
+		case NEVER:
+			return DatabaseInitializationMode.NEVER;
+		default:
+			throw new IllegalStateException("Unexpected initialization mode '" + mode + "'");
+		}
+	}
+
 	// Fully-qualified to work around javac bug in JDK 1.8
 	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
 	@org.springframework.context.annotation.Conditional(DifferentCredentialsCondition.class)
@@ -96,10 +107,10 @@ class DataSourceInitializationConfiguration {
 			settings.setContinueOnError(properties.isContinueOnError());
 			settings.setSeparator(properties.getSeparator());
 			settings.setEncoding(properties.getSqlScriptEncoding());
+			settings.setMode(mapMode(properties.getInitializationMode()));
 			DataSource initializationDataSource = determineDataSource(dataSource::getObject,
 					properties.getSchemaUsername(), properties.getSchemaPassword());
-			return new InitializationModeDataSourceScriptDatabaseInitializer(initializationDataSource, settings,
-					properties.getInitializationMode());
+			return new DataSourceScriptDatabaseInitializer(initializationDataSource, settings);
 		}
 
 		@Bean
@@ -111,10 +122,10 @@ class DataSourceInitializationConfiguration {
 			settings.setContinueOnError(properties.isContinueOnError());
 			settings.setSeparator(properties.getSeparator());
 			settings.setEncoding(properties.getSqlScriptEncoding());
+			settings.setMode(mapMode(properties.getInitializationMode()));
 			DataSource initializationDataSource = determineDataSource(dataSource::getObject,
 					properties.getDataUsername(), properties.getDataPassword());
-			return new InitializationModeDataSourceScriptDatabaseInitializer(initializationDataSource, settings,
-					properties.getInitializationMode());
+			return new DataSourceScriptDatabaseInitializer(initializationDataSource, settings);
 		}
 
 		static class DifferentCredentialsCondition extends AnyNestedCondition {
@@ -154,8 +165,8 @@ class DataSourceInitializationConfiguration {
 			settings.setContinueOnError(properties.isContinueOnError());
 			settings.setSeparator(properties.getSeparator());
 			settings.setEncoding(properties.getSqlScriptEncoding());
-			return new InitializationModeDataSourceScriptDatabaseInitializer(dataSource, settings,
-					properties.getInitializationMode());
+			settings.setMode(mapMode(properties.getInitializationMode()));
+			return new DataSourceScriptDatabaseInitializer(dataSource, settings);
 		}
 
 		static class DataSourceInitializationCondition extends SpringBootCondition {
@@ -182,27 +193,6 @@ class DataSourceInitializationConfiguration {
 						message.found("configured property", "configured properties").items(configuredProperties));
 			}
 
-		}
-
-	}
-
-	static class InitializationModeDataSourceScriptDatabaseInitializer extends DataSourceScriptDatabaseInitializer {
-
-		private final DataSourceInitializationMode mode;
-
-		InitializationModeDataSourceScriptDatabaseInitializer(DataSource dataSource,
-				DatabaseInitializationSettings settings, DataSourceInitializationMode mode) {
-			super(dataSource, settings);
-			this.mode = mode;
-		}
-
-		@Override
-		protected void runScripts(List<Resource> resources, boolean continueOnError, String separator,
-				Charset encoding) {
-			if (this.mode == DataSourceInitializationMode.ALWAYS || (this.mode == DataSourceInitializationMode.EMBEDDED
-					&& EmbeddedDatabaseConnection.isEmbedded(getDataSource()))) {
-				super.runScripts(resources, continueOnError, separator, encoding);
-			}
 		}
 
 	}

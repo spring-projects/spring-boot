@@ -1746,7 +1746,11 @@
       "name": "spring.sql.init.enabled",
       "type": "java.lang.Boolean",
       "description": "Whether basic script-based initialization of an SQL database is enabled.",
-      "defaultValue": true
+      "defaultValue": true,
+      "deprecation": {
+        "replacement": "spring.sql.init.mode",
+        "level": "error"
+      }
     },
     {
       "name": "spring.thymeleaf.prefix",

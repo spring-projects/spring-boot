@@ -159,7 +159,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 
 	@Test
 	void testFlywaySwitchOffDdlAuto() {
-		contextRunner().withPropertyValues("spring.sql.init.enabled:false", "spring.flyway.locations:classpath:db/city")
+		contextRunner().withPropertyValues("spring.sql.init.mode:never", "spring.flyway.locations:classpath:db/city")
 				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasNotFailed());
 	}
@@ -167,7 +167,7 @@ class HibernateJpaAutoConfigurationTests extends AbstractJpaAutoConfigurationTes
 	@Test
 	void testFlywayPlusValidation() {
 		contextRunner()
-				.withPropertyValues("spring.sql.init.enabled:false", "spring.flyway.locations:classpath:db/city",
+				.withPropertyValues("spring.sql.init.mode:never", "spring.flyway.locations:classpath:db/city",
 						"spring.jpa.hibernate.ddl-auto:validate")
 				.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
 				.run((context) -> assertThat(context).hasNotFailed());

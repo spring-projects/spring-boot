@@ -43,7 +43,9 @@ It loads SQL from the standard root classpath locations: `schema.sql` and `data.
 In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of configprop:spring.sql.init.platform[].
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
-SQL database initialization can be disabled by setting configprop:spring.sql.init.enabled[] to `false`.
+By default, SQL database initialization is only performed when using an embedded in-memory database.
+To always initialize an SQL database, irrespective of its type, set configprop:spring.sql.init.mode[] to `always`.
+Similarly, to disable initialization, set configprop:spring.sql.init.mode[] to `never`.
 By default, Spring Boot enables the fail-fast feature of its script-based database initializer.
 This means that, if the scripts cause exceptions, the application fails to start.
 You can tune that behavior by setting configprop:spring.sql.init.continue-on-error[].
