@@ -107,33 +107,34 @@ The name of the generated image is deduced from project properties.
 The `image` parameter allows configuration of the builder and how it should operate on the project.
 The following table summarizes the available parameters and their default values:
 
+[cols="1,4,1"]
 |===
-| Parameter | Description | User property | Default value
+| Parameter / (User Property)| Description | Default value
 
-| `builder`
+| `builder` +
+(`spring-boot.build-image.builder`)
 | Name of the Builder image to use.
-| `spring-boot.build-image.builder`
 | `paketobuildpacks/builder:base`
 
-| `runImage`
+| `runImage` +
+(`spring-boot.build-image.runImage`)
 | Name of the run image to use.
-| `spring-boot.build-image.runImage`
 | No default value, indicating the run image specified in Builder metadata should be used.
 
-| `name`
+| `name` +
+(`spring-boot.build-image.imageName`)
 | {spring-boot-api}/buildpack/platform/docker/type/ImageReference.html#of-java.lang.String-[Image name] for the generated image.
-| `spring-boot.build-image.imageName`
-| `docker.io/library/${project.artifactId}:${project.version}`
+| `docker.io/library/` +
+`${project.artifactId}:${project.version}`
 
-| `pullPolicy`
+| `pullPolicy` +
+(`spring-boot.build-image.pullPolicy`)
 | {spring-boot-api}/buildpack/platform/build/PullPolicy.html[Policy] used to determine when to pull the builder and run images from the registry.
 Acceptable values are `ALWAYS`, `NEVER`, and `IF_NOT_PRESENT`.
-| `spring-boot.build-image.pullPolicy`
 | `ALWAYS`
 
 | `env`
 | Environment variables that should be passed to the builder.
-|
 |
 
 | `buildpacks`
@@ -145,7 +146,6 @@ Buildpack references must be in one of the following forms:
 * Buildpack in a directory on the file system - `[file://]<path>`
 * Buildpack in a gzipped tar (.tgz) file on the file system - `[file://]<path>/<file name>`
 * Buildpack in an OCI image - `[docker://]<host>/<repo>[:<tag>][@<digest>]`
-|
 | None, indicating the builder should use the buildpacks included in it.
 
 | `bindings`
@@ -162,21 +162,19 @@ Where `<options>` can contain:
 * `rw` to mount the volume as readable and writable in the container
 * `volume-opt=key=value` to specify key-value pairs consisting of an option name and its value
 |
-|
 
-| `cleanCache`
+| `cleanCache` +
+(`spring-boot.build-image.cleanCache`)
 | Whether to clean the cache before building.
-| `spring-boot.build-image.cleanCache`
 | `false`
 
 | `verboseLogging`
 | Enables verbose logging of builder operations.
-|
 | `false`
 
-| `publish`
+| `publish` +
+(`spring-boot.build-image.publish`)
 | Whether to publish the generated image to a Docker registry.
-| `spring-boot.build-image.publish`
 | `false`
 |===
 
