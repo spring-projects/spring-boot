@@ -1749,7 +1749,7 @@
       "defaultValue": true,
       "deprecation": {
         "replacement": "spring.sql.init.mode",
-        "level": "error"
+        "level": "warning"
       }
     },
     {
