@@ -89,4 +89,13 @@ class WarIntegrationTests extends AbstractArchiveIntegrationTests {
 		});
 	}
 
+	@TestTemplate
+	void whenEntryIsExcludedItShouldNotBePresentInTheRepackagedWar(MavenBuild mavenBuild) {
+		mavenBuild.project("war-exclude-entry").execute((project) -> {
+			File war = new File(project, "target/war-exclude-entry-0.0.1.BUILD-SNAPSHOT.war");
+			assertThat(jar(war)).hasEntryWithNameStartingWith("WEB-INF/lib/spring-context")
+					.doesNotHaveEntryWithNameStartingWith("WEB-INF/lib/spring-core");
+		});
+	}
+
 }

@@ -42,7 +42,7 @@ public class JarModeLibrary extends Library {
 	}
 
 	public JarModeLibrary(LibraryCoordinates coordinates) {
-		super(getJarName(coordinates), null, LibraryScope.RUNTIME, coordinates, false);
+		super(getJarName(coordinates), null, LibraryScope.RUNTIME, coordinates, false, false, true);
 	}
 
 	private static LibraryCoordinates createCoordinates(String artifactId) {

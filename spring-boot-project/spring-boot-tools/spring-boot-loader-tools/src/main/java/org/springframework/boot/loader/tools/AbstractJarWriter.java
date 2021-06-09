@@ -30,6 +30,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Predicate;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.JarInputStream;
@@ -88,23 +89,42 @@ public abstract class AbstractJarWriter implements LoaderClassesWriter {
 	 * Write all entries from the specified jar file.
 	 * @param jarFile the source jar file
 	 * @throws IOException if the entries cannot be written
+	 * @deprecated since 2.4.8 for removal in 2.6.0 in favor of
+	 * {@link #writeEntries(JarFile, EntryTransformer, UnpackHandler, Predicate)}
 	 */
+	@Deprecated
 	public void writeEntries(JarFile jarFile) throws IOException {
-		writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER);
+		writeEntries(jarFile, EntryTransformer.NONE, UnpackHandler.NEVER, (entry) -> true);
 	}
 
-	final void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler)
-			throws IOException {
+	/**
+	 * Write required entries from the specified jar file.
+	 * @param jarFile the source jar file
+	 * @param entryTransformer the entity transformer used to change the entry
+	 * @param unpackHandler the unpack handler
+	 * @param entryFilter a predicate used to filter the written entries
+	 * @throws IOException if the entries cannot be written
+	 * @since 2.4.8
+	 */
+	public void writeEntries(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+			Predicate<JarEntry> entryFilter) throws IOException {
 		Enumeration<JarEntry> entries = jarFile.entries();
 		while (entries.hasMoreElements()) {
-			JarArchiveEntry entry = new JarArchiveEntry(entries.nextElement());
-			setUpEntry(jarFile, entry);
-			try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
-				EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
-				JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
-				if (transformedEntry != null) {
-					writeEntry(transformedEntry, entryWriter, unpackHandler, true);
-				}
+			JarEntry entry = entries.nextElement();
+			if (entryFilter.test(entry)) {
+				writeEntry(jarFile, entryTransformer, unpackHandler, new JarArchiveEntry(entry));
+			}
+		}
+	}
+
+	private void writeEntry(JarFile jarFile, EntryTransformer entryTransformer, UnpackHandler unpackHandler,
+			JarArchiveEntry entry) throws IOException {
+		setUpEntry(jarFile, entry);
+		try (ZipHeaderPeekInputStream inputStream = new ZipHeaderPeekInputStream(jarFile.getInputStream(entry))) {
+			EntryWriter entryWriter = new InputStreamEntryWriter(inputStream);
+			JarArchiveEntry transformedEntry = entryTransformer.transform(entry);
+			if (transformedEntry != null) {
+				writeEntry(transformedEntry, entryWriter, unpackHandler, true);
 			}
 		}
 	}
