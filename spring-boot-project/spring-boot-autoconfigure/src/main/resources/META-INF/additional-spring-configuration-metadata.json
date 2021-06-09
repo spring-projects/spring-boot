@@ -1753,6 +1753,10 @@
       }
     },
     {
+      "name": "spring.sql.init.mode",
+      "defaultValue": "embedded"
+    },
+    {
       "name": "spring.thymeleaf.prefix",
       "defaultValue": "classpath:/templates/"
     },
