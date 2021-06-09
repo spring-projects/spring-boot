@@ -13,16 +13,6 @@ configurations {
 	documentation
 }
 
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-			includeGroup "io.spring.asciidoctor.backends"
-		}
-	}
-}
-
 dependencies {
 	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 

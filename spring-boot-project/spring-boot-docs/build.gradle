@@ -17,16 +17,6 @@ configurations {
 	testSlices
 }
 
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-			includeGroup "io.spring.asciidoctor.backends"
-		}
-	}
-}
-
 jar {
 	enabled = false
 }
@@ -224,7 +214,6 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	baseDirFollowsSourceDir()
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
 	}

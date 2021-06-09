@@ -168,7 +168,6 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	baseDirFollowsSourceDir()
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
 		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]

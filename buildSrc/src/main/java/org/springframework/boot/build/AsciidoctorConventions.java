@@ -27,8 +27,6 @@ import org.asciidoctor.gradle.jvm.AsciidoctorJExtension;
 import org.asciidoctor.gradle.jvm.AsciidoctorJPlugin;
 import org.asciidoctor.gradle.jvm.AsciidoctorTask;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.tasks.PathSensitivity;
 import org.gradle.api.tasks.Sync;
 
@@ -40,9 +38,16 @@ import org.springframework.util.StringUtils;
  * the plugin is applied:
  *
  * <ul>
+ * <li>The {@code https://repo.spring.io/release} Maven repository is configured and
+ * limited to dependencies in the following groups:
+ * <ul>
+ * <li>{@code io.spring.asciidoctor}
+ * <li>{@code io.spring.asciidoctor.backends}
+ * <li>{@code io.spring.docresources}
+ * </ul>
  * <li>All warnings are made fatal.
  * <li>The version of AsciidoctorJ is upgraded to 2.4.3.
- * <li>A {@code asciidoctorExtensions} configuration is created.
+ * <li>An {@code asciidoctorExtensions} configuration is created.
  * <li>For each {@link AsciidoctorTask} (HTML only):
  * <ul>
  * <li>A task is created to sync the documentation resources to its output directory.
@@ -56,6 +61,7 @@ import org.springframework.util.StringUtils;
  * the current version, etc.
  * <li>{@link AbstractAsciidoctorTask#baseDirFollowsSourceDir() baseDirFollowsSourceDir()}
  * is enabled.
+ * <li>{@code asciidoctorExtensions} is added to the task's configurations.
  * </ul>
  * </ul>
  *
@@ -63,13 +69,13 @@ import org.springframework.util.StringUtils;
  */
 class AsciidoctorConventions {
 
-	private static final String EXTENSIONS_CONFIGURATION = "asciidoctorExtensions";
-
 	private static final String ASCIIDOCTORJ_VERSION = "2.4.3";
+
+	private static final String EXTENSIONS_CONFIGURATION_NAME = "asciidoctorExtensions";
 
 	void apply(Project project) {
 		project.getPlugins().withType(AsciidoctorJPlugin.class, (asciidoctorPlugin) -> {
-			configureDocResourcesRepository(project);
+			configureDocumentationDependenciesRepository(project);
 			makeAllWarningsFatal(project);
 			upgradeAsciidoctorJVersion(project);
 			createAsciidoctorExtensionsConfiguration(project);
@@ -78,10 +84,14 @@ class AsciidoctorConventions {
 		});
 	}
 
-	private void configureDocResourcesRepository(Project project) {
+	private void configureDocumentationDependenciesRepository(Project project) {
 		project.getRepositories().maven((mavenRepo) -> {
-			mavenRepo.setUrl(URI.create("https://repo.spring.io/snapshot"));
-			mavenRepo.mavenContent((mavenContent) -> mavenContent.includeGroup("io.spring.asciidoctor.backends"));
+			mavenRepo.setUrl(URI.create("https://repo.spring.io/release"));
+			mavenRepo.mavenContent((mavenContent) -> {
+				mavenContent.includeGroup("io.spring.asciidoctor");
+				mavenContent.includeGroup("io.spring.asciidoctor.backends");
+				mavenContent.includeGroup("io.spring.docresources");
+			});
 		});
 	}
 
@@ -94,20 +104,18 @@ class AsciidoctorConventions {
 	}
 
 	private void createAsciidoctorExtensionsConfiguration(Project project) {
-		ConfigurationContainer configurations = project.getConfigurations();
-		Configuration asciidoctorExtensions = configurations.maybeCreate(EXTENSIONS_CONFIGURATION);
-		asciidoctorExtensions.getDependencies().add(
-				project.getDependencies().create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.1"));
-		asciidoctorExtensions.getDependencies()
-				.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
-		Configuration dependencyManagement = configurations.findByName("dependencyManagement");
-		if (dependencyManagement != null) {
-			asciidoctorExtensions.extendsFrom(dependencyManagement);
-		}
+		project.getConfigurations().create(EXTENSIONS_CONFIGURATION_NAME, (configuration) -> {
+			project.getConfigurations().matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
+					.all((dependencyManagement) -> configuration.extendsFrom(dependencyManagement));
+			configuration.getDependencies().add(project.getDependencies()
+					.create("io.spring.asciidoctor.backends:spring-asciidoctor-backends:0.0.1"));
+			configuration.getDependencies()
+					.add(project.getDependencies().create("org.asciidoctor:asciidoctorj-pdf:1.5.3"));
+		});
 	}
 
 	private void configureAsciidoctorTask(Project project, AbstractAsciidoctorTask asciidoctorTask) {
-		asciidoctorTask.configurations(EXTENSIONS_CONFIGURATION);
+		asciidoctorTask.configurations(EXTENSIONS_CONFIGURATION_NAME);
 		configureCommonAttributes(project, asciidoctorTask);
 		configureOptions(asciidoctorTask);
 		asciidoctorTask.baseDirFollowsSourceDir();
