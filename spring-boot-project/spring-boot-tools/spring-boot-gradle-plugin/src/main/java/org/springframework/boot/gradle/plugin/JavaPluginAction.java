@@ -151,14 +151,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 				}
 				return Collections.emptyList();
 			});
-			try {
-				run.getMainClass().convention(resolveProvider.flatMap(ResolveMainClassName::readMainClassName));
-			}
-			catch (NoSuchMethodError ex) {
-				run.getInputs().file(resolveProvider.map((task) -> task.getOutputFile()));
-				run.conventionMapping("main",
-						() -> resolveProvider.flatMap(ResolveMainClassName::readMainClassName).get());
-			}
+			run.getMainClass().convention(resolveProvider.flatMap(ResolveMainClassName::readMainClassName));
 			configureToolchainConvention(project, run);
 		});
 	}
