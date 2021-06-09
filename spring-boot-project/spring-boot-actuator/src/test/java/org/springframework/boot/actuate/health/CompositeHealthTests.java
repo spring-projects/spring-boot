@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.LinkedHashMap;
 import java.util.Map;
 
+import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 
@@ -75,6 +76,19 @@ class CompositeHealthTests {
 		components.put("db2", Health.down().withDetail("a", "b").build());
 		CompositeHealth health = new CompositeHealth(ApiVersion.V2, Status.UP, components);
 		ObjectMapper mapper = new ObjectMapper();
+		String json = mapper.writeValueAsString(health);
+		assertThat(json).isEqualTo("{\"status\":\"UP\",\"details\":{\"db1\":{\"status\":\"UP\"},"
+				+ "\"db2\":{\"status\":\"DOWN\",\"details\":{\"a\":\"b\"}}}}");
+	}
+
+	@Test // gh-26797
+	void serializeV2WithJacksonAndDisabledCanOverrideAccessModifiersReturnsValidJson() throws Exception {
+		Map<String, HealthComponent> components = new LinkedHashMap<>();
+		components.put("db1", Health.up().build());
+		components.put("db2", Health.down().withDetail("a", "b").build());
+		CompositeHealth health = new CompositeHealth(ApiVersion.V2, Status.UP, components);
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.disable(MapperFeature.CAN_OVERRIDE_ACCESS_MODIFIERS);
 		String json = mapper.writeValueAsString(health);
 		assertThat(json).isEqualTo("{\"status\":\"UP\",\"details\":{\"db1\":{\"status\":\"UP\"},"
 				+ "\"db2\":{\"status\":\"DOWN\",\"details\":{\"a\":\"b\"}}}}");
