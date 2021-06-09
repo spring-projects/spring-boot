@@ -25,6 +25,7 @@ import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationContextFactory;
+import org.springframework.boot.SpringApplicationShutdownHookInstance;
 import org.springframework.boot.WebApplicationType;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ConfigurableApplicationContext;
@@ -55,6 +56,7 @@ class SpringApplicationBuilderTests {
 	@AfterEach
 	void close() {
 		close(this.context);
+		SpringApplicationShutdownHookInstance.reset();
 	}
 
 	private void close(ApplicationContext context) {
@@ -132,7 +134,7 @@ class SpringApplicationBuilderTests {
 		application.parent(ExampleConfig.class);
 		this.context = application.run("foo.bar=baz");
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook()).isFalse();
+		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(this.context);
 		assertThat(this.context.getParent().getBean(ApplicationArguments.class).getNonOptionArgs())
 				.contains("foo.bar=baz");
 		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs()).contains("foo.bar=baz");
@@ -145,7 +147,7 @@ class SpringApplicationBuilderTests {
 		application.parent(ExampleConfig.class);
 		this.context = application.build("a=alpha").run("b=bravo");
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook()).isFalse();
+		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(this.context);
 		assertThat(this.context.getParent().getBean(ApplicationArguments.class).getNonOptionArgs()).contains("a=alpha");
 		assertThat(this.context.getBean(ApplicationArguments.class).getNonOptionArgs()).contains("b=bravo");
 	}
@@ -158,7 +160,7 @@ class SpringApplicationBuilderTests {
 		application.parent(ExampleConfig.class);
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook()).isTrue();
+		assertThat(SpringApplicationShutdownHookInstance.get()).registeredApplicationContext(this.context);
 	}
 
 	@Test
@@ -189,7 +191,7 @@ class SpringApplicationBuilderTests {
 		application.contextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
 		this.context = application.run();
 		verify(((SpyApplicationContext) this.context).getApplicationContext()).setParent(any(ApplicationContext.class));
-		assertThat(((SpyApplicationContext) this.context).getRegisteredShutdownHook()).isFalse();
+		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(this.context);
 	}
 
 	@Test
@@ -323,8 +325,6 @@ class SpringApplicationBuilderTests {
 
 		private ResourceLoader resourceLoader;
 
-		private boolean registeredShutdownHook;
-
 		@Override
 		public void setParent(ApplicationContext parent) {
 			this.applicationContext.setParent(parent);
@@ -342,16 +342,6 @@ class SpringApplicationBuilderTests {
 
 		ResourceLoader getResourceLoader() {
 			return this.resourceLoader;
-		}
-
-		@Override
-		public void registerShutdownHook() {
-			super.registerShutdownHook();
-			this.registeredShutdownHook = true;
-		}
-
-		boolean getRegisteredShutdownHook() {
-			return this.registeredShutdownHook;
 		}
 
 		@Override

@@ -184,6 +184,7 @@ class SpringApplicationTests {
 		}
 		System.clearProperty("spring.main.banner-mode");
 		System.clearProperty(CachedIntrospectionResults.IGNORE_BEANINFO_PROPERTY_NAME);
+		SpringApplicationShutdownHookInstance.reset();
 	}
 
 	@Test
@@ -910,10 +911,18 @@ class SpringApplicationTests {
 	@Test
 	void registerShutdownHook() {
 		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
+		application.setWebApplicationType(WebApplicationType.NONE);
 		this.context = application.run();
-		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
-		verify(applicationContext.getApplicationContext()).registerShutdownHook();
+		assertThat(SpringApplicationShutdownHookInstance.get()).registeredApplicationContext(this.context);
+	}
+
+	@Test
+	void registerShutdownHookOff() {
+		SpringApplication application = new SpringApplication(ExampleConfig.class);
+		application.setWebApplicationType(WebApplicationType.NONE);
+		application.setRegisterShutdownHook(false);
+		this.context = application.run();
+		assertThat(SpringApplicationShutdownHookInstance.get()).didNotRegisterApplicationContext(this.context);
 	}
 
 	@Test
@@ -1007,16 +1016,6 @@ class SpringApplicationTests {
 		assertThatExceptionOfType(BeanCreationException.class).isThrownBy(application::run);
 		verify(listener).onApplicationEvent(isA(ApplicationFailedEvent.class));
 		verifyNoMoreInteractions(listener);
-	}
-
-	@Test
-	void registerShutdownHookOff() {
-		SpringApplication application = new SpringApplication(ExampleConfig.class);
-		application.setApplicationContextFactory(ApplicationContextFactory.ofContextClass(SpyApplicationContext.class));
-		application.setRegisterShutdownHook(false);
-		this.context = application.run();
-		SpyApplicationContext applicationContext = (SpyApplicationContext) this.context;
-		verify(applicationContext.getApplicationContext(), never()).registerShutdownHook();
 	}
 
 	@Test
@@ -1344,6 +1343,7 @@ class SpringApplicationTests {
 		@Override
 		public void close() {
 			this.applicationContext.close();
+			super.close();
 		}
 
 	}

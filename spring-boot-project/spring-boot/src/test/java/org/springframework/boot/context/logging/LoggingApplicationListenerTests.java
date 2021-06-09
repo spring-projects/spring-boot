@@ -415,7 +415,7 @@ class LoggingApplicationListenerTests {
 		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNotNull();
-		listener.shutdownHook.start();
+		listener.shutdownHook.run();
 		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30, TimeUnit.SECONDS)).isTrue();
 	}
 
@@ -634,10 +634,10 @@ class LoggingApplicationListenerTests {
 
 	static class TestLoggingApplicationListener extends LoggingApplicationListener {
 
-		private Thread shutdownHook;
+		private Runnable shutdownHook;
 
 		@Override
-		void registerShutdownHook(Thread shutdownHook) {
+		void registerShutdownHook(Runnable shutdownHook) {
 			this.shutdownHook = shutdownHook;
 		}
 
