@@ -15,19 +15,7 @@ toolchain {
 }
 
 configurations {
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	documentation
-}
-
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-		}
-	}
 }
 
 dependencies {
@@ -85,7 +73,6 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 }
 
 asciidoctor {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}

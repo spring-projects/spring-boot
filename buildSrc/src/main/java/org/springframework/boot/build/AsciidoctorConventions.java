@@ -46,8 +46,15 @@ import org.springframework.util.StringUtils;
  * the plugin is applied:
  *
  * <ul>
+ * <li>The {@code https://repo.spring.io/release} Maven repository is configured and
+ * limited to dependencies in the following groups:
+ * <ul>
+ * <li>{@code io.spring.asciidoctor}
+ * <li>{@code io.spring.docresources}
+ * </ul>
  * <li>All warnings are made fatal.
  * <li>The version of AsciidoctorJ is upgraded to 2.4.1.
+ * <li>An {@code asciidoctorExtensions} configuration is created.
  * <li>A task is created to resolve and unzip our documentation resources (CSS and
  * Javascript).
  * <li>For each {@link AsciidoctorTask} (HTML only):
@@ -64,6 +71,7 @@ import org.springframework.util.StringUtils;
  * the current version, etc.
  * <li>{@link AbstractAsciidoctorTask#baseDirFollowsSourceDir() baseDirFollowsSourceDir()}
  * is enabled.
+ * <li>{@code asciidoctorExtensions} is added to the task's configurations.
  * </ul>
  * </ul>
  *
@@ -73,16 +81,20 @@ class AsciidoctorConventions {
 
 	private static final String ASCIIDOCTORJ_VERSION = "2.4.1";
 
+	private static final String EXTENSIONS_CONFIGURATION_NAME = "asciidoctorExtensions";
+
 	void apply(Project project) {
 		project.getPlugins().withType(AsciidoctorJPlugin.class, (asciidoctorPlugin) -> {
-			configureDocResourcesRepository(project);
+			configureDocumentationDependenciesRepository(project);
 			makeAllWarningsFatal(project);
 			upgradeAsciidoctorJVersion(project);
+			Configuration asciidoctorExtensions = createAsciidoctorExtensionsConfiguration(project);
 			UnzipDocumentationResources unzipResources = createUnzipDocumentationResourcesTask(project);
 			project.getTasks().withType(AbstractAsciidoctorTask.class, (asciidoctorTask) -> {
 				configureCommonAttributes(project, asciidoctorTask);
 				configureOptions(asciidoctorTask);
 				asciidoctorTask.baseDirFollowsSourceDir();
+				asciidoctorTask.configurations(asciidoctorExtensions);
 				Sync syncSource = createSyncDocumentationSourceTask(project, asciidoctorTask);
 				if (asciidoctorTask instanceof AsciidoctorTask) {
 					configureHtmlOnlyAttributes(asciidoctorTask);
@@ -104,10 +116,13 @@ class AsciidoctorConventions {
 		});
 	}
 
-	private void configureDocResourcesRepository(Project project) {
+	private void configureDocumentationDependenciesRepository(Project project) {
 		project.getRepositories().maven((mavenRepo) -> {
 			mavenRepo.setUrl(URI.create("https://repo.spring.io/release"));
-			mavenRepo.mavenContent((mavenContent) -> mavenContent.includeGroup("io.spring.docresources"));
+			mavenRepo.mavenContent((mavenContent) -> {
+				mavenContent.includeGroup("io.spring.asciidoctor");
+				mavenContent.includeGroup("io.spring.docresources");
+			});
 		});
 	}
 
@@ -117,6 +132,13 @@ class AsciidoctorConventions {
 
 	private void upgradeAsciidoctorJVersion(Project project) {
 		project.getExtensions().getByType(AsciidoctorJExtension.class).setVersion(ASCIIDOCTORJ_VERSION);
+	}
+
+	private Configuration createAsciidoctorExtensionsConfiguration(Project project) {
+		return project.getConfigurations().create(EXTENSIONS_CONFIGURATION_NAME,
+				(configuration) -> project.getConfigurations()
+						.matching((candidate) -> "dependencyManagement".equals(candidate.getName()))
+						.all((dependencyManagement) -> configuration.extendsFrom(dependencyManagement)));
 	}
 
 	private UnzipDocumentationResources createUnzipDocumentationResourcesTask(Project project) {

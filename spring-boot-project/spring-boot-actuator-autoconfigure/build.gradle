@@ -11,9 +11,6 @@ plugins {
 description = "Spring Boot Actuator AutoConfigure"
 
 configurations {
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	documentation
 }
 
@@ -158,7 +155,6 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	baseDirFollowsSourceDir()
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
 		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
@@ -170,14 +166,12 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 }
 
 asciidoctor {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}
 }
 
 asciidoctorPdf {
-	configurations "asciidoctorExtensions"
 	sources {
 		include "index.adoc"
 	}

@@ -10,23 +10,11 @@ description = "Spring Boot Docs"
 
 configurations {
 	actuatorApiDocumentation
-	asciidoctorExtensions {
-		extendsFrom dependencyManagement
-	}
 	autoConfiguration
 	configurationProperties
 	gradlePluginDocumentation
 	mavenPluginDocumentation
 	testSlices
-}
-
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-		}
-	}
 }
 
 jar {
@@ -187,8 +175,6 @@ task documentConfigurationProperties(type: org.springframework.boot.build.contex
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	configurations "asciidoctorExtensions"
-	baseDirFollowsSourceDir()
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
 	}
