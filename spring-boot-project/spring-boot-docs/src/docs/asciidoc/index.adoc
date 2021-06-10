@@ -4,14 +4,17 @@ include::authors.adoc[]
 v{spring-boot-version}
 include::attributes.adoc[]
 
+This document is also available as {spring-boot-docs}/html/[Multi-page HTML], {spring-boot-docs}/htmlsingle/[Single page HTML] and {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF].
 
 
 The reference documentation consists of the following sections:
 
 [horizontal]
 <<legal#legal,Legal>> :: Legal information.
-<<documentation#documentation,Documentation Overview>> :: About the Documentation, Getting Help, First Steps, and more.
+<<getting-help#getting-help,Getting Help>> :: Resources for getting help.
+<<documentation#documentation,Documentation Overview>> :: About the Documentation, First Steps, and more.
 <<getting-started#getting-started,Getting Started>> :: Introducing Spring Boot, System Requirements, Servlet Containers, Installing Spring Boot, Developing Your First Spring Boot Application
+<<upgrading#upgrading,Upgrading Spring Boot Applications>> :: Upgrading from 1.x, Upgrading to a new feature release, Upgrading the Spring Boot CLI
 <<using#using,Using Spring Boot>> :: Build Systems, Structuring Your Code, Configuration, Spring Beans and Dependency Injection, DevTools, and more.
 <<features#features,Spring Boot Features>> :: Profiles, Logging, Security, Caching, Spring Integration, Testing, and more.
 <<actuator#actuator,Spring Boot Actuator>> :: Monitoring, Metrics, Auditing, and more.

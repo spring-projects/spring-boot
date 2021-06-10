@@ -4,13 +4,18 @@ include::authors.adoc[]
 v{spring-boot-version}
 include::attributes.adoc[]
 
+This document is also available as {spring-boot-docs}/html/[Multi-page HTML], {spring-boot-docs}/htmlsingle/[Single page HTML] and {spring-boot-docs}/pdf/spring-boot-reference.pdf[PDF].
 
 
 include::legal.adoc[leveloffset=+1]
 
+include::getting-help.adoc[leveloffset=+1]
+
 include::documentation.adoc[leveloffset=+1]
 
 include::getting-started.adoc[leveloffset=+1]
+
+include::upgrading.adoc[leveloffset=+1]
 
 include::using.adoc[leveloffset=+1]
 
