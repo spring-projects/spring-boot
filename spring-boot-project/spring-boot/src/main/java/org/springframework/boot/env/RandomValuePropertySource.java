@@ -20,9 +20,7 @@ import java.util.OptionalInt;
 import java.util.OptionalLong;
 import java.util.Random;
 import java.util.UUID;
-import java.util.function.BiPredicate;
 import java.util.function.Function;
-import java.util.function.Predicate;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -98,11 +96,11 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		}
 		String range = getRange(type, "int");
 		if (range != null) {
-			return getNextIntInRange(range);
+			return getNextIntInRange(Range.of(range, Integer::parseInt));
 		}
 		range = getRange(type, "long");
 		if (range != null) {
-			return getNextLongInRange(range);
+			return getNextLongInRange(Range.of(range, Long::parseLong));
 		}
 		if (type.equals("uuid")) {
 			return UUID.randomUUID().toString();
@@ -120,22 +118,20 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 		return null;
 	}
 
-	private int getNextIntInRange(String range) {
-		Range<Integer> intRange = Range.get(range, Integer::parseInt, (t) -> t > 0, 0, (t1, t2) -> t1 < t2);
-		OptionalInt first = getSource().ints(1, intRange.getMin(), intRange.getMax()).findFirst();
-		if (!first.isPresent()) {
-			throw new RuntimeException("Could not get random number for range '" + range + "'");
-		}
+	private int getNextIntInRange(Range<Integer> range) {
+		OptionalInt first = getSource().ints(1, range.getMin(), range.getMax()).findFirst();
+		assertPresent(first.isPresent(), range);
 		return first.getAsInt();
 	}
 
-	private long getNextLongInRange(String range) {
-		Range<Long> longRange = Range.get(range, Long::parseLong, (t) -> t > 0L, 0L, (t1, t2) -> t1 < t2);
-		OptionalLong first = getSource().longs(1, longRange.getMin(), longRange.getMax()).findFirst();
-		if (!first.isPresent()) {
-			throw new RuntimeException("Could not get random number for range '" + range + "'");
-		}
+	private long getNextLongInRange(Range<Long> range) {
+		OptionalLong first = getSource().longs(1, range.getMin(), range.getMax()).findFirst();
+		assertPresent(first.isPresent(), range);
 		return first.getAsLong();
+	}
+
+	private void assertPresent(boolean present, Range<?> range) {
+		Assert.state(present, () -> "Could not get random number for range '" + range + "'");
 	}
 
 	private Object getRandomBytes() {
@@ -152,27 +148,16 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 
 	static final class Range<T extends Number> {
 
+		private final String value;
+
 		private final T min;
 
 		private final T max;
 
-		private Range(T min, T max) {
+		private Range(String value, T min, T max) {
+			this.value = value;
 			this.min = min;
 			this.max = max;
-
-		}
-
-		static <T extends Number> Range<T> get(String range, Function<String, T> parse, Predicate<T> boundValidator,
-				T defaultMin, BiPredicate<T, T> rangeValidator) {
-			String[] tokens = StringUtils.commaDelimitedListToStringArray(range);
-			T token1 = parse.apply(tokens[0]);
-			if (tokens.length == 1) {
-				Assert.isTrue(boundValidator.test(token1), "Bound must be positive.");
-				return new Range<>(defaultMin, token1);
-			}
-			T token2 = parse.apply(tokens[1]);
-			Assert.isTrue(rangeValidator.test(token1, token2), "Lower bound must be less than upper bound.");
-			return new Range<>(token1, token2);
 		}
 
 		T getMin() {
@@ -181,6 +166,24 @@ public class RandomValuePropertySource extends PropertySource<Random> {
 
 		T getMax() {
 			return this.max;
+		}
+
+		@Override
+		public String toString() {
+			return this.value;
+		}
+
+		static <T extends Number & Comparable<T>> Range<T> of(String value, Function<String, T> parse) {
+			T zero = parse.apply("0");
+			String[] tokens = StringUtils.commaDelimitedListToStringArray(value);
+			T min = parse.apply(tokens[0]);
+			if (tokens.length == 1) {
+				Assert.isTrue(min.compareTo(zero) > 0, "Bound must be positive.");
+				return new Range<>(value, zero, min);
+			}
+			T max = parse.apply(tokens[1]);
+			Assert.isTrue(min.compareTo(max) < 0, "Lower bound must be less than upper bound.");
+			return new Range<>(value, min, max);
 		}
 
 	}
