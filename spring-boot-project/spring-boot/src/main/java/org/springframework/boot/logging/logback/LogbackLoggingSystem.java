@@ -281,7 +281,7 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public Runnable getShutdownHandler() {
-		return new ShutdownHandler();
+		return () -> getLoggerContext().stop();
 	}
 
 	private ch.qos.logback.classic.Logger getLogger(String name) {
@@ -326,15 +326,6 @@ public class LogbackLoggingSystem extends Slf4JLoggingSystem {
 
 	private void markAsUninitialized(LoggerContext loggerContext) {
 		loggerContext.removeObject(LoggingSystem.class.getName());
-	}
-
-	private final class ShutdownHandler implements Runnable {
-
-		@Override
-		public void run() {
-			getLoggerContext().stop();
-		}
-
 	}
 
 	/**
