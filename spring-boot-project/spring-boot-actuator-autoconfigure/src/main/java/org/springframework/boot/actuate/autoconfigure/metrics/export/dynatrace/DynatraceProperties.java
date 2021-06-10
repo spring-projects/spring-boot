@@ -20,6 +20,7 @@ import io.micrometer.dynatrace.DynatraceApiVersion;
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
+import java.util.Collections;
 import java.util.Map;
 
 /**
@@ -27,6 +28,7 @@ import java.util.Map;
  * metrics export.
  *
  * @author Andy Wilkinson
+ * @author Georg Pirklbauer
  * @since 2.1.0
  */
 @ConfigurationProperties(prefix = "management.metrics.export.dynatrace")
@@ -156,7 +158,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	public Map<String, String> getDefaultDimensions() {
-		return defaultDimensions;
+		return defaultDimensions != null ? Collections.unmodifiableMap(defaultDimensions) : null;
 	}
 
 	public void setDefaultDimensions(Map<String, String> defaultDimensions) {
