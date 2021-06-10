@@ -1,5 +1,5 @@
 [[using]]
-= Using Spring Boot
+= Developing with Spring Boot
 include::attributes.adoc[]
 
 
