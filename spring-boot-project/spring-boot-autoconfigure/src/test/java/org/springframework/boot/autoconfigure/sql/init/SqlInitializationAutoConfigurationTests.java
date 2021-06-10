@@ -35,10 +35,12 @@ import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitialization;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -138,6 +140,26 @@ public class SqlInitializationAutoConfigurationTests {
 							"sqlInitializationAutoConfigurationTests.DependsOnInitializedDatabaseConfiguration");
 					assertThat(beanDefinition.getDependsOn())
 							.containsExactlyInAnyOrder("dataSourceScriptDatabaseInitializer");
+				});
+	}
+
+	@Test
+	void whenADataSourceIsAvailableAndSpringJdbcIsNotThenAutoConfigurationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
+				.withClassLoader(new FilteredClassLoader(DatabasePopulator.class)).run((context) -> {
+					assertThat(context).hasSingleBean(DataSource.class);
+					assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
+				});
+	}
+
+	@Test
+	void whenAConnectionFactoryIsAvailableAndSpringR2dbcIsNotThenAutoConfigurationBacksOff() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(R2dbcAutoConfiguration.class))
+				.withClassLoader(
+						new FilteredClassLoader(org.springframework.r2dbc.connection.init.DatabasePopulator.class))
+				.run((context) -> {
+					assertThat(context).hasSingleBean(ConnectionFactory.class);
+					assertThat(context).doesNotHaveBean(AbstractScriptDatabaseInitializer.class);
 				});
 	}
 

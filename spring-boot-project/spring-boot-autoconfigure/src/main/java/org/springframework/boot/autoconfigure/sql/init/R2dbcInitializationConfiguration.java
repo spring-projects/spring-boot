@@ -25,6 +25,7 @@ import org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.r2dbc.connection.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 /**
@@ -34,7 +35,7 @@ import org.springframework.util.StringUtils;
  * @author Andy Wilkinson
  */
 @Configuration(proxyBeanMethods = false)
-@ConditionalOnClass(ConnectionFactory.class)
+@ConditionalOnClass({ ConnectionFactory.class, DatabasePopulator.class })
 @ConditionalOnSingleCandidate(ConnectionFactory.class)
 class R2dbcInitializationConfiguration {
 

@@ -18,6 +18,7 @@ package org.springframework.boot.autoconfigure.sql.init;
 
 import javax.sql.DataSource;
 
+import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnSingleCandidate;
 import org.springframework.boot.jdbc.DataSourceBuilder;
@@ -27,11 +28,13 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
+import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
 
 @Configuration(proxyBeanMethods = false)
 @ConditionalOnMissingBean(AbstractScriptDatabaseInitializer.class)
 @ConditionalOnSingleCandidate(DataSource.class)
+@ConditionalOnClass(DatabasePopulator.class)
 class DataSourceInitializationConfiguration {
 
 	@Bean
