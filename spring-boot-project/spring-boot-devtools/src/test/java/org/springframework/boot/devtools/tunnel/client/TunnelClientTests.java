@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,9 @@ import java.nio.ByteBuffer;
 import java.nio.channels.Channels;
 import java.nio.channels.SocketChannel;
 import java.nio.channels.WritableByteChannel;
+import java.time.Duration;
 
+import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -85,9 +87,10 @@ class TunnelClientTests {
 		TunnelClient client = new TunnelClient(0, this.tunnelConnection);
 		int port = client.start();
 		SocketChannel channel = SocketChannel.open(new InetSocketAddress(port));
-		Thread.sleep(200);
+		Awaitility.await().atMost(Duration.ofSeconds(30)).until(this.tunnelConnection::getOpenedTimes,
+				(times) -> times == 1);
+		assertThat(this.tunnelConnection.isOpen()).isTrue();
 		client.stop();
-		assertThat(this.tunnelConnection.getOpenedTimes()).isEqualTo(1);
 		assertThat(this.tunnelConnection.isOpen()).isFalse();
 		assertThat(channel.read(ByteBuffer.allocate(1))).isEqualTo(-1);
 	}
