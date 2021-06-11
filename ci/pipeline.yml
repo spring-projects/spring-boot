@@ -464,6 +464,8 @@ jobs:
     params:
       <<: *artifactory-repo-put-params
       repo: libs-staging-local
+    get_params:
+      threads: 8
   - put: git-repo
     params:
       repository: stage-git-repo
@@ -484,6 +486,8 @@ jobs:
     params:
       <<: *artifactory-repo-put-params
       repo: libs-staging-local
+    get_params:
+      threads: 8
   - put: git-repo
     params:
       repository: stage-git-repo
@@ -504,6 +508,8 @@ jobs:
     params:
       <<: *artifactory-repo-put-params
       repo: libs-staging-local
+    get_params:
+      threads: 8
   - put: git-repo
     params:
       repository: stage-git-repo
@@ -577,6 +583,7 @@ jobs:
     params:
       download_artifacts: true
       save_build_info: true
+      threads: 8
   - task: promote
     image: ci-image
     file: git-repo/ci/tasks/promote.yml
