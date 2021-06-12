@@ -410,6 +410,11 @@ public class ServerProperties {
 		private Duration connectionTimeout;
 
 		/**
+		 * Whether to reject requests with illegal header names or values.
+		 */
+		private boolean rejectIllegalHeader = true;
+
+		/**
 		 * Static resource configuration.
 		 */
 		private final Resource resource = new Resource();
@@ -558,6 +563,14 @@ public class ServerProperties {
 
 		public void setConnectionTimeout(Duration connectionTimeout) {
 			this.connectionTimeout = connectionTimeout;
+		}
+
+		public boolean isRejectIllegalHeader() {
+			return this.rejectIllegalHeader;
+		}
+
+		public void setRejectIllegalHeader(boolean rejectIllegalHeader) {
+			this.rejectIllegalHeader = rejectIllegalHeader;
 		}
 
 		public Resource getResource() {
