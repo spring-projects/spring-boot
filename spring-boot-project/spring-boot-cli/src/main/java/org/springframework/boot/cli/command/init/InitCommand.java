@@ -137,7 +137,7 @@ public class InitCommand extends OptionParsingCommand {
 					.withRequiredArg();
 			this.name = option(Arrays.asList("name", "n"), "Project name; infer application name").withRequiredArg();
 			this.description = option("description", "Project description").withRequiredArg();
-			this.packageName = option("package-name", "Package name").withRequiredArg();
+			this.packageName = option("packageName", "Package name").withRequiredArg();
 			this.type = option(Arrays.asList("type", "t"),
 					"Project type. Not normally needed if you use --build "
 							+ "and/or --format. Check the capabilities of the service (--list) for more details")
