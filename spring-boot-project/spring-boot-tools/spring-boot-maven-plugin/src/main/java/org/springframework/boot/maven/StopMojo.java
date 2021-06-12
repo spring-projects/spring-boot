@@ -62,15 +62,15 @@ public class StopMojo extends AbstractMojo {
 	 * The JMX name of the automatically deployed MBean managing the lifecycle of the
 	 * application.
 	 */
-	@Parameter
-	private String jmxName = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME;
+	@Parameter(defaultValue = SpringApplicationAdminClient.DEFAULT_OBJECT_NAME)
+	private String jmxName;
 
 	/**
 	 * The port to use to lookup the platform MBeanServer if the application has been
 	 * forked.
 	 */
-	@Parameter
-	private int jmxPort = 9001;
+	@Parameter(defaultValue = "9001")
+	private int jmxPort;
 
 	/**
 	 * Skip the execution.
