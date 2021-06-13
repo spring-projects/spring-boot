@@ -6,7 +6,7 @@ The recommended way to do that is through the starters, which all depend on `spr
 For a web application, you need only `spring-boot-starter-web`, since it depends transitively on the logging starter.
 If you use Maven, the following dependency adds logging for you:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -19,7 +19,7 @@ If Logback is available, it is the first choice.
 
 If the only change you need to make to logging is to set the levels of various loggers, you can do so in `application.properties` by using the "logging.level" prefix, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	logging:
 	  level:
@@ -55,7 +55,7 @@ In addition, a legacy `base.xml` file is provided for compatibility with earlier
 
 A typical custom `logback.xml` file would look something like this:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<configuration>
@@ -91,7 +91,7 @@ Any `logback-spring.groovy` files will not be detected.
 ==== Configure Logback for File-only Output
 If you want to disable console logging and write output only to a file, you need a custom `logback-spring.xml` that imports `file-appender.xml` but not `console-appender.xml`, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<configuration>
@@ -106,7 +106,7 @@ If you want to disable console logging and write output only to a file, you need
 
 You also need to add `logging.file.name` to your `application.properties` or `application.yaml`, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	logging:
 	  file:
@@ -124,7 +124,7 @@ If you do not use the starters, you need to provide (at least) `spring-jcl` in a
 The recommended path is through the starters, even though it requires some jiggling.
 The following example shows how to set up the starters in Maven:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -146,22 +146,20 @@ The following example shows how to set up the starters in Maven:
 	</dependency>
 ----
 
-And the following example shows one way to set up the starters in Gradle:
+Gradle provides a few different ways to set up the starters.
+One way is to use a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement].
+To do so, declare a dependency on the Log4j 2 starter and tell Gradle that any occurrences of the default logging starter should be replaced by the Log4j 2 starter, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-web'
-	}
-
-	configurations.all {
-		resolutionStrategy.dependencySubstitution.all { dependency ->
-			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-logging') {
-				dependency.useTarget("org.springframework.boot:spring-boot-starter-log4j2:$dependency.requested.version", 'Use Log4j2 instead of Logback')
+		implementation "org.springframework.boot:spring-boot-starter-log4j2"
+		modules {
+			module("org.springframework.boot:spring-boot-starter-logging") {
+				replacedBy("org.springframework.boot:spring-boot-starter-log4j2", "Use Log4j2 instead of Logback")
 			}
 		}
 	}
-}
 ----
 
 NOTE: The Log4j starters gather together the dependencies for common logging requirements (such as having Tomcat use `java.util.logging` but configuring the output using Log4j 2).

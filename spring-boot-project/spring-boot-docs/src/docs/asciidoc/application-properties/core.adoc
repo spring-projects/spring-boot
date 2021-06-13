@@ -1,3 +1,0 @@
-[[application-properties.core]]
-== Core Properties [[core-properties]]
-include::documented-application-properties/core.adoc[]

@@ -19,7 +19,7 @@ If your configuration defines an instance name, Spring Boot tries to locate an e
 
 You could also specify the Hazelcast configuration file to use through configuration, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  hazelcast:

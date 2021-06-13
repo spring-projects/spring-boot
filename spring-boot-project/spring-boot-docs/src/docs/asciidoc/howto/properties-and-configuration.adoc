@@ -16,7 +16,7 @@ This is possible in both Maven and Gradle.
 You can automatically expand properties from the Maven project by using resource filtering.
 If you use the `spring-boot-starter-parent`, you can then refer to your Maven '`project properties`' with `@..@` placeholders, as shown in the following example:
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	app:
 	  encoding: "@project.build.sourceEncoding@"
@@ -33,7 +33,7 @@ See the {spring-boot-maven-plugin-docs}#getting-started[plugin usage page] for m
 
 If you do not use the starter parent, you need to include the following  element inside the `<build/>` element of your `pom.xml`:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<resources>
 		<resource>
@@ -45,7 +45,7 @@ If you do not use the starter parent, you need to include the following  element
 
 You also need to include the following element inside `<plugins/>`:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<plugin>
 		<groupId>org.apache.maven.plugins</groupId>
@@ -69,7 +69,7 @@ If that property is not set to `false`, these may be expanded by the build.
 ==== Automatic Property Expansion Using Gradle
 You can automatically expand properties from the Gradle project by configuring the Java plugin's `processResources` task to do so, as shown in the following example:
 
-[source,groovy,indent=0]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	processResources {
 		expand(project.properties)
@@ -78,7 +78,7 @@ You can automatically expand properties from the Gradle project by configuring t
 
 You can then refer to your Gradle project's properties by using placeholders, as shown in the following example:
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	app:
 	  name: "${name}"
@@ -93,11 +93,11 @@ To use Spring property placeholders together with automatic expansion, escape th
 
 [[howto.properties-and-configuration.externalize-configuration]]
 === Externalize the Configuration of SpringApplication
-A `SpringApplication` has bean properties (mainly setters), so you can use its Java API as you create the application to modify its behavior.
+A `SpringApplication` has bean property setters, so you can use its Java API as you create the application to modify its behavior.
 Alternatively, you can externalize the configuration by setting properties in `+spring.main.*+`.
 For example, in `application.properties`, you might have the following settings:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  main:
@@ -107,28 +107,37 @@ For example, in `application.properties`, you might have the following settings:
 
 Then the Spring Boot banner is not printed on startup, and the application is not starting an embedded web server.
 
-Properties defined in external configuration override the values specified with the Java API, with the notable exception of the sources used to create the `ApplicationContext`.
-Consider the following application:
+Properties defined in external configuration override and replace the values specified with the Java API, with the notable exception of the primary sources.
+Primary sources are those provided to the `SpringApplication` constructor:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	new SpringApplicationBuilder()
-		.bannerMode(Banner.Mode.OFF)
-		.sources(demo.MyApp.class)
-		.run(args);
+include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/application/MyApplication.java[]
 ----
 
-Now consider the following configuration:
+Or to `sources(...)` method of a `SpringApplicationBuilder`:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/howto/propertiesandconfiguration/externalizeconfiguration/builder/MyApplication.java[]
+----
+
+Given the examples above, if we have the following configuration:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  main:
-	    sources: "com.acme.Config,com.acme.ExtraConfig"
+	    sources: "com.example.MyDatabaseConfig,com.example.MyJmsConfig"
 	    banner-mode: "console"
 ----
 
-The actual application _now_ shows the banner (as overridden by configuration) and uses three sources for the `ApplicationContext` (in the following order): `demo.MyApp`, `com.acme.Config`, and `com.acme.ExtraConfig`.
+The actual application will show the banner (as overridden by configuration) and uses three sources for the `ApplicationContext`.
+The application sources are:
+
+.`MyApplication` (from the code)
+.`MyDatabaseConfig` (from the external config)
+.`MyJmsConfig`(from the external config)
 
 
 
@@ -156,7 +165,7 @@ See {spring-boot-module-code}/context/config/ConfigFileApplicationListener.java[
 Some people like to use (for example) `--port=9000` instead of `--server.port=9000` to set configuration properties on the command line.
 You can enable this behavior by using placeholders in `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  port: "${port:8080}"
@@ -174,7 +183,7 @@ In those two platforms, the `PORT` environment variable is set automatically and
 === Use YAML for External Properties
 YAML is a superset of JSON and, as such, is a convenient syntax for storing external properties in a hierarchical format, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,subs="verbatim"]
 ----
 	spring:
 	  application:
@@ -192,7 +201,7 @@ A YAML file is parsed to a Java `Map<String,Object>` (like a JSON object), and S
 
 The preceding example YAML corresponds to the following `application.properties` file:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops]
+[source,properties,indent=0,subs="verbatim",configprops]
 ----
 	spring.application.name=cruncher
 	spring.datasource.driver-class-name=com.mysql.jdbc.Driver
@@ -209,14 +218,14 @@ See "`<<features#features.external-config.yaml>>`" in the '`Spring Boot features
 The Spring `Environment` has an API for this, but you would normally set a System property (configprop:spring.profiles.active[]) or an OS environment variable (configprop:spring.profiles.active[format=envvar]).
 Also, you can launch your application with a `-D` argument (remember to put it before the main class or jar archive), as follows:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar -Dspring.profiles.active=production demo-0.0.1-SNAPSHOT.jar
 ----
 
 In Spring Boot, you can also set the active profile in `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  profiles:
@@ -230,6 +239,24 @@ See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section f
 
 
 
+[[howto.properties-and-configuration.set-default-spring-profile-name]]
+=== Set the Default Profile Name
+The default profile is a profile that is enabled if no profile is active.
+By default, the name of the default profile is `default`, but it could be changed using a System property (configprop:spring.profiles.default[]) or an OS environment variable (configprop:spring.profiles.default[format=envvar]).
+
+In Spring Boot, you can also set the default profile name in `application.properties`, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  profiles:
+	    default: "dev"
+----
+
+See "`<<features#features.profiles>>`" in the "`Spring Boot features`" section for more information.
+
+
+
 [[howto.properties-and-configuration.change-configuration-depending-on-the-environment]]
 === Change Configuration Depending on the Environment
 Spring Boot supports multi-document YAML and Properties files (see <<features#features.external-config.files.multi-document>> for details) which can be activated conditionally based on the active profiles.
@@ -237,7 +264,7 @@ Spring Boot supports multi-document YAML and Properties files (see <<features#fe
 If a document contains a `spring.config.activate.on-profile` key, then the profiles value (a comma-separated list of profiles or a profile expression) is fed into the Spring `Environment.acceptsProfiles()` method.
 If the profile expression matches then that document is included in the final merge (otherwise, it is not), as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim,attributes",configprops,configblocks]
 ----
 	server:
 	  port: 9000

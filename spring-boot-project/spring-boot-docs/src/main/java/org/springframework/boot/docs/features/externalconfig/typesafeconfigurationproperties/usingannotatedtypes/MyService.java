@@ -21,9 +21,9 @@ import org.springframework.stereotype.Service;
 @Service
 public class MyService {
 
-	private final AcmeProperties properties;
+	private final SomeProperties properties;
 
-	public MyService(AcmeProperties properties) {
+	public MyService(SomeProperties properties) {
 		this.properties = properties;
 	}
 

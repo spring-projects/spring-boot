@@ -89,6 +89,7 @@ final class TarGzipBuildpack implements Buildpack {
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(
 				new GzipCompressorInputStream(Files.newInputStream(this.path)));
 				TarArchiveOutputStream output = new TarArchiveOutputStream(outputStream)) {
+			writeBasePathEntries(output, basePath);
 			TarArchiveEntry entry = tar.getNextTarEntry();
 			while (entry != null) {
 				entry.setName(basePath + "/" + entry.getName());
@@ -98,6 +99,16 @@ final class TarGzipBuildpack implements Buildpack {
 				entry = tar.getNextTarEntry();
 			}
 			output.finish();
+		}
+	}
+
+	private void writeBasePathEntries(TarArchiveOutputStream output, Path basePath) throws IOException {
+		int pathCount = basePath.getNameCount();
+		for (int pathIndex = 1; pathIndex < pathCount + 1; pathIndex++) {
+			String name = "/" + basePath.subpath(0, pathIndex) + "/";
+			TarArchiveEntry entry = new TarArchiveEntry(name);
+			output.putArchiveEntry(entry);
+			output.closeArchiveEntry();
 		}
 	}
 

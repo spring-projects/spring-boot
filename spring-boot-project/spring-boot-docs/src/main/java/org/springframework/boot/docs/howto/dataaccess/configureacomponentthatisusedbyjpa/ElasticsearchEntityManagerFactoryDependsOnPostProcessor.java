@@ -29,7 +29,7 @@ import org.springframework.stereotype.Component;
 public class ElasticsearchEntityManagerFactoryDependsOnPostProcessor
 		extends EntityManagerFactoryDependsOnPostProcessor {
 
-	ElasticsearchEntityManagerFactoryDependsOnPostProcessor() {
+	public ElasticsearchEntityManagerFactoryDependsOnPostProcessor() {
 		super("elasticsearchClient");
 	}
 

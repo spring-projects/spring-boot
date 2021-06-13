@@ -147,6 +147,18 @@ class JavaPluginActionIntegrationTests {
 						.contains("org.gradle.dependency.bundling: external");
 	}
 
+	@TestTemplate
+	void productionRuntimeClasspathIsConfiguredWithResolvabilityAndConsumabilityThatMatchesRuntimeClasspath() {
+		String runtime = this.gradleBuild.build("configurationResolvabilityAndConsumability",
+				"-PconfigurationName=runtimeClasspath", "-PapplyJavaPlugin").getOutput();
+		assertThat(runtime).contains("canBeResolved: true");
+		assertThat(runtime).contains("canBeConsumed: false");
+		String productionRuntime = this.gradleBuild.build("configurationResolvabilityAndConsumability",
+				"-PconfigurationName=productionRuntimeClasspath", "-PapplyJavaPlugin").getOutput();
+		assertThat(productionRuntime).contains("canBeResolved: true");
+		assertThat(productionRuntime).contains("canBeConsumed: false");
+	}
+
 	private void createMinimalMainSource() throws IOException {
 		File examplePackage = new File(this.gradleBuild.getProjectDir(), "src/main/java/com/example");
 		examplePackage.mkdirs();

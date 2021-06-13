@@ -4,12 +4,13 @@ If you have Spring WebFlux on your classpath, you can also choose to use `WebCli
 Compared to `RestTemplate`, this client has a more functional feel and is fully reactive.
 You can learn more about the `WebClient` in the dedicated {spring-framework-docs}/web-reactive.html#webflux-client[section in the Spring Framework docs].
 
-Spring Boot creates and pre-configures a `WebClient.Builder` for you; it is strongly advised to inject it in your components and use it to create `WebClient` instances.
+Spring Boot creates and pre-configures a `WebClient.Builder` for you.
+It is strongly advised to inject it in your components and use it to create `WebClient` instances.
 Spring Boot is configuring that builder to share HTTP resources, reflect codecs setup in the same fashion as the server ones (see <<features#features.developing-web-applications.spring-webflux.httpcodecs,WebFlux HTTP codecs auto-configuration>>), and more.
 
 The following code shows a typical example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/webclient/MyService.java[]
 ----

@@ -1,7 +1,7 @@
 plugins {
 	id "java"
+	id "groovy"
 	id "org.asciidoctor.jvm.convert"
-	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
 }
@@ -15,15 +15,6 @@ configurations {
 	gradlePluginDocumentation
 	mavenPluginDocumentation
 	testSlices
-}
-
-repositories {
-	maven {
-		url "https://repo.spring.io/release"
-		mavenContent {
-			includeGroup "io.spring.asciidoctor"
-		}
-	}
 }
 
 jar {
@@ -63,12 +54,17 @@ dependencies {
 	gradlePluginDocumentation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-gradle-plugin", configuration: "documentation"))
 
 	implementation(project(path: ":spring-boot-project:spring-boot-actuator"))
+	implementation(project(path: ":spring-boot-project:spring-boot-actuator-autoconfigure"))
 	implementation(project(path: ":spring-boot-project:spring-boot-autoconfigure"))
+	implementation(project(path: ":spring-boot-project:spring-boot-cli"))
+	implementation(project(path: ":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test"))
 	implementation(project(path: ":spring-boot-project:spring-boot-test-autoconfigure"))
 	implementation("ch.qos.logback:logback-classic")
 	implementation("com.zaxxer:HikariCP")
 	implementation("io.micrometer:micrometer-core")
+	implementation("io.micrometer:micrometer-registry-graphite")
+	implementation("io.micrometer:micrometer-registry-jmx")
 	implementation("io.projectreactor.netty:reactor-netty-http")
 	implementation("io.r2dbc:r2dbc-postgresql")
 	implementation("io.undertow:undertow-core")
@@ -83,6 +79,7 @@ dependencies {
 	implementation("org.apache.tomcat.embed:tomcat-embed-core")
 	implementation("org.assertj:assertj-core")
 	implementation("org.glassfish.jersey.core:jersey-server")
+	implementation("org.glassfish.jersey.containers:jersey-container-servlet-core")
 	implementation("org.hibernate:hibernate-jcache")
 	implementation("org.jooq:jooq")
 	implementation("org.mockito:mockito-core")
@@ -94,14 +91,16 @@ dependencies {
 	implementation("org.springframework:spring-orm")
 	implementation("org.springframework:spring-test")
 	implementation("org.springframework:spring-web")
-	implementation("org.springframework:spring-webmvc")
 	implementation("org.springframework:spring-webflux")
+	implementation("org.springframework:spring-webmvc")
+	implementation("org.springframework:spring-websocket")
 	implementation("org.springframework.amqp:spring-amqp")
 	implementation("org.springframework.amqp:spring-rabbit")
 	implementation("org.springframework.batch:spring-batch-core")
 	implementation("org.springframework.data:spring-data-cassandra")
 	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-elasticsearch")
+	implementation("org.springframework.data:spring-data-jpa")
 	implementation("org.springframework.data:spring-data-ldap")
 	implementation("org.springframework.data:spring-data-mongodb")
 	implementation("org.springframework.data:spring-data-neo4j")
@@ -114,9 +113,12 @@ dependencies {
 	implementation("org.springframework.restdocs:spring-restdocs-webtestclient")
 	implementation("org.springframework.security:spring-security-config")
 	implementation("org.springframework.security:spring-security-oauth2-client")
+	implementation("org.springframework.security:spring-security-test")
 	implementation("org.springframework.security:spring-security-web")
 	implementation("org.springframework.ws:spring-ws-core")
 	implementation("org.springframework.ws:spring-ws-test")
+	implementation("org.testcontainers:junit-jupiter")
+	implementation("org.testcontainers:neo4j")
 	implementation("org.junit.jupiter:junit-jupiter")
 	implementation("org.yaml:snakeyaml")
 
@@ -207,12 +209,11 @@ task documentVersionProperties(type: org.springframework.boot.build.constraints.
 
 task documentConfigurationProperties(type: org.springframework.boot.build.context.properties.DocumentConfigurationProperties) {
 	configurationPropertyMetadata = configurations.configurationProperties
-	outputDir = file("${buildDir}/docs/generated/application-properties/documented-application-properties/")
+	outputDir = file("${buildDir}/docs/generated/")
 }
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	baseDirFollowsSourceDir()
 	asciidoctorj {
 		fatalWarnings = ['^((?!successfully validated).)*$']
 	}
@@ -245,7 +246,7 @@ asciidoctor {
 	}
 }
 
-asciidoctorPdf {
+task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "*.singleadoc"
 	}
@@ -273,6 +274,9 @@ syncDocumentationSourceForAsciidoctor {
 	from("src/test/java") {
 		into "test/java"
 	}
+	from("src/main/groovy") {
+		into "main/groovy"
+	}
 }
 
 syncDocumentationSourceForAsciidoctorMultipage {
@@ -291,6 +295,9 @@ syncDocumentationSourceForAsciidoctorMultipage {
 	from("src/test/java") {
 		into "test/java"
 	}
+	from("src/main/groovy") {
+		into "main/groovy"
+	}
 }
 
 syncDocumentationSourceForAsciidoctorPdf {
@@ -308,6 +315,9 @@ syncDocumentationSourceForAsciidoctorPdf {
 	}
 	from("src/test/java") {
 		into "test/java"
+	}
+	from("src/main/groovy") {
+		into "main/groovy"
 	}
 }
 

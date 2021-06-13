@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,7 +24,6 @@ import javax.sql.DataSource;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 
-import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
@@ -115,7 +114,7 @@ class H2ConsoleAutoConfigurationTests {
 
 	@Test
 	@ExtendWith(OutputCaptureExtension.class)
-	void dataSourceUrlIsLoggedWhenAvailable(CapturedOutput output) throws BeansException {
+	void dataSourceUrlIsLoggedWhenAvailable(CapturedOutput output) {
 		this.contextRunner.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class))
 				.withPropertyValues("spring.h2.console.enabled=true").run((context) -> {
 					try (Connection connection = context.getBean(DataSource.class).getConnection()) {

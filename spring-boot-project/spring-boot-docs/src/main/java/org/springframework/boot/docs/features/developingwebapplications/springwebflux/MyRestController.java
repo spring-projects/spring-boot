@@ -44,7 +44,7 @@ public class MyRestController {
 	}
 
 	@GetMapping("/{user}/customers")
-	Flux<Customer> getUserCustomers(@PathVariable Long userId) {
+	public Flux<Customer> getUserCustomers(@PathVariable Long userId) {
 		return this.userRepository.findById(userId).flatMapMany(this.customerRepository::findByUser);
 	}
 

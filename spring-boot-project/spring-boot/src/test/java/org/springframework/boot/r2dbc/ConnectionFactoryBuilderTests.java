@@ -141,8 +141,8 @@ class ConnectionFactoryBuilderTests {
 				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(intialDatabaseName)).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		String derivedDatabaseName = UUID.randomUUID().toString();
-		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(connectionFactory).database(derivedDatabaseName)
-				.build();
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(connectionFactory)
+				.database(derivedDatabaseName).build();
 		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
 		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.DATABASE)).isEqualTo(derivedDatabaseName);
 		assertMatchingOptions(derivedOptions, initialOptions, ConnectionFactoryOptions.CONNECT_TIMEOUT,
@@ -156,7 +156,7 @@ class ConnectionFactoryBuilderTests {
 		ConnectionFactory connectionFactory = ConnectionFactoryBuilder
 				.withUrl(EmbeddedDatabaseConnection.H2.getUrl(UUID.randomUUID().toString())).build();
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
-		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(connectionFactory).username("admin")
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(connectionFactory).username("admin")
 				.password("secret").build();
 		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
 		assertThat(derivedOptions.getRequiredValue(ConnectionFactoryOptions.USER)).isEqualTo("admin");
@@ -173,7 +173,7 @@ class ConnectionFactoryBuilderTests {
 		ConnectionFactoryOptions initialOptions = ((OptionsCapableConnectionFactory) connectionFactory).getOptions();
 		ConnectionPoolConfiguration poolConfiguration = ConnectionPoolConfiguration.builder(connectionFactory).build();
 		ConnectionPool pool = new ConnectionPool(poolConfiguration);
-		ConnectionFactory derived = ConnectionFactoryBuilder.derivefrom(pool).username("admin").password("secret")
+		ConnectionFactory derived = ConnectionFactoryBuilder.derivedFrom(pool).username("admin").password("secret")
 				.build();
 		assertThat(derived).isNotInstanceOf(ConnectionPool.class).isInstanceOf(OptionsCapableConnectionFactory.class);
 		ConnectionFactoryOptions derivedOptions = ((OptionsCapableConnectionFactory) derived).getOptions();
@@ -188,7 +188,7 @@ class ConnectionFactoryBuilderTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@MethodSource("poolingConnectionProviderOptions")
 	void optionIsMappedWhenCreatingPoolConfiguration(Option option) {
-		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID().toString();
+		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID();
 		ExpectedOption expectedOption = ExpectedOption.get(option);
 		ConnectionFactoryOptions options = ConnectionFactoryBuilder.withUrl(url).configure((builder) -> builder
 				.option(PoolingConnectionFactoryProvider.POOL_NAME, "defaultName").option(option, expectedOption.value))
@@ -202,7 +202,7 @@ class ConnectionFactoryBuilderTests {
 	@SuppressWarnings({ "rawtypes", "unchecked" })
 	@MethodSource("poolingConnectionProviderOptions")
 	void stringlyTypedOptionIsMappedWhenCreatingPoolConfiguration(Option option) {
-		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID().toString();
+		String url = "r2dbc:pool:h2:mem:///" + UUID.randomUUID();
 		ExpectedOption expectedOption = ExpectedOption.get(option);
 		ConnectionFactoryOptions options = ConnectionFactoryBuilder.withUrl(url)
 				.configure((builder) -> builder.option(PoolingConnectionFactoryProvider.POOL_NAME, "defaultName")
@@ -213,6 +213,14 @@ class ConnectionFactoryBuilderTests {
 		assertThat(configuration).extracting(expectedOption.property).isEqualTo(expectedOption.value);
 	}
 
+	private static Iterable<Arguments> poolingConnectionProviderOptions() {
+		List<Arguments> arguments = new ArrayList<>();
+		ReflectionUtils.doWithFields(PoolingConnectionFactoryProvider.class,
+				(field) -> arguments.add(Arguments.of(ReflectionUtils.getField(field, null))),
+				(field) -> Option.class.equals(field.getType()));
+		return arguments;
+	}
+
 	private void assertMatchingOptions(ConnectionFactoryOptions actualOptions, ConnectionFactoryOptions expectedOptions,
 			Option<?>... optionsToCheck) {
 		for (Option<?> option : optionsToCheck) {
@@ -220,17 +228,12 @@ class ConnectionFactoryBuilderTests {
 		}
 	}
 
-	private static Iterable<Arguments> poolingConnectionProviderOptions() {
-		List<Arguments> arguments = new ArrayList<>();
-		ReflectionUtils.doWithFields(PoolingConnectionFactoryProvider.class,
-				(field) -> arguments.add(Arguments.of((Option<?>) ReflectionUtils.getField(field, null))),
-				(field) -> Option.class.equals(field.getType()));
-		return arguments;
-	}
-
 	private enum ExpectedOption {
 
 		ACQUIRE_RETRY(PoolingConnectionFactoryProvider.ACQUIRE_RETRY, 4, "acquireRetry"),
+
+		BACKGROUND_EVICTION_INTERVAL(PoolingConnectionFactoryProvider.BACKGROUND_EVICTION_INTERVAL,
+				Duration.ofSeconds(120), "backgroundEvictionInterval"),
 
 		INITIAL_SIZE(PoolingConnectionFactoryProvider.INITIAL_SIZE, 2, "initialSize"),
 

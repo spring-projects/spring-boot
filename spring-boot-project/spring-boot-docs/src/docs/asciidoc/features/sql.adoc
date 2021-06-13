@@ -36,7 +36,7 @@ If you want to make sure that each context has a separate embedded database, you
 
 For example, the typical POM dependencies would be as follows:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -70,7 +70,7 @@ Production database connections can also be auto-configured by using a pooling `
 DataSource configuration is controlled by external configuration properties in `+spring.datasource.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  datasource:
@@ -95,7 +95,7 @@ Refer to the documentation of the connection pool implementation you are using f
 
 For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomcat connection pool], you could customize many additional settings, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  datasource:
@@ -105,7 +105,7 @@ For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomc
 	      test-on-borrow: true
 ----
 
-This will set the pool to wait 10000 ms before throwing an exception if no connection is available, limit the maximum number of connections to 50 and validate the connection before borrowing it from the pool.
+This will set the pool to wait 10000ms before throwing an exception if no connection is available, limit the maximum number of connections to 50ms and validate the connection before borrowing it from the pool.
 
 
 
@@ -145,7 +145,7 @@ If you deploy your Spring Boot application to an Application Server, you might w
 The configprop:spring.datasource.jndi-name[] property can be used as an alternative to the configprop:spring.datasource.url[], configprop:spring.datasource.username[], and configprop:spring.datasource.password[] properties to access the `DataSource` from a specific JNDI location.
 For example, the following section in `application.properties` shows how you can access a JBoss AS defined `DataSource`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  datasource:
@@ -158,14 +158,14 @@ For example, the following section in `application.properties` shows how you can
 === Using JdbcTemplate
 Spring's `JdbcTemplate` and `NamedParameterJdbcTemplate` classes are auto-configured, and you can `@Autowire` them directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/sql/jdbctemplate/MyBean.java[]
 ----
 
 You can customize some properties of the template by using the `spring.jdbc.template.*` properties, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  jdbc:
@@ -202,7 +202,7 @@ By default, all packages below your main configuration class (the one annotated 
 Any classes annotated with `@Entity`, `@Embeddable`, or `@MappedSuperclass` are considered.
 A typical entity class resembles the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/sql/jpaandspringdata/entityclasses/City.java[]
 ----
@@ -225,7 +225,7 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/sql/jpaandspringdata/repositories/CityRepository.java[]
 ----
@@ -243,7 +243,7 @@ For JPA components (such as converters) that are created as Spring beans, use `O
 ====
 
 TIP: We have barely scratched the surface of Spring Data JPA.
-For complete details, see the {spring-data-jdbc-docs}[Spring Data JPA reference documentation].
+For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference documentation].
 
 
 
@@ -253,18 +253,24 @@ By default, JPA databases are automatically created *only* if you use an embedde
 You can explicitly configure JPA settings by using `+spring.jpa.*+` properties.
 For example, to create and drop tables you can add the following line to your `application.properties`:
 
-[indent=0]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring.jpa.hibernate.ddl-auto=create-drop
+	spring:
+	  jpa:
+	    hibernate.ddl-auto: "create-drop"
 ----
 
 NOTE: Hibernate's own internal property name for this (if you happen to remember it better) is `hibernate.hbm2ddl.auto`.
 You can set it, along with other Hibernate native properties, by using `+spring.jpa.properties.*+` (the prefix is stripped before adding them to the entity manager).
 The following line shows an example of setting JPA properties for Hibernate:
 
-[indent=0]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring.jpa.properties.hibernate.globally_quoted_identifiers=true
+	spring:
+	  jpa:
+	    properties:
+	      hibernate:
+	        "globally_quoted_identifiers": "true"
 ----
 
 The line in the preceding example passes a value of `true` for the `hibernate.globally_quoted_identifiers` property to the Hibernate entity manager.
@@ -331,7 +337,7 @@ If you use the `jooq-codegen-maven` plugin and you also use the `spring-boot-sta
 You can also use Spring Boot-defined version variables (such as `h2.version`) to declare the plugin's database dependency.
 The following listing shows an example:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<plugin>
 		<groupId>org.jooq</groupId>
@@ -366,18 +372,18 @@ The fluent API offered by jOOQ is initiated through the `org.jooq.DSLContext` in
 Spring Boot auto-configures a `DSLContext` as a Spring Bean and connects it to your application `DataSource`.
 To use the `DSLContext`, you can inject it, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jooq/dslcontext/JooqExample.java[tag=!method]
+include::{docs-java}/features/sql/jooq/dslcontext/MyBean.java[tag=!method]
 ----
 
 TIP: The jOOQ manual tends to use a variable named `create` to hold the `DSLContext`.
 
 You can then use the `DSLContext` to construct your queries, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/jooq/dslcontext/JooqExample.java[tag=method]
+include::{docs-java}/features/sql/jooq/dslcontext/MyBean.java[tag=method]
 ----
 
 
@@ -409,7 +415,7 @@ Connections are provided via a `ConnectionFactory`, similar to a `DataSource` wi
 `ConnectionFactory` configuration is controlled by external configuration properties in `+spring.r2dbc.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  r2dbc:
@@ -428,16 +434,16 @@ TIP: The "`How-to`" section includes a <<howto#howto.data-initialization.using-b
 To customize the connections created by a `ConnectionFactory`, i.e., set specific parameters that you do not want (or cannot) configure in your central database configuration, you can use a `ConnectionFactoryOptionsBuilderCustomizer` `@Bean`.
 The following example shows how to manually override the database port while the rest of the options is taken from the application configuration:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/MyR2dbcPortConfiguration.java[]
+include::{docs-java}/features/sql/r2dbc/MyR2dbcConfiguration.java[]
 ----
 
 The following examples show how to set some PostgreSQL connection options:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/CustomizeR2dbcPostgresOptionsConfiguration.java[tag=*]
+include::{docs-java}/features/sql/r2dbc/MyPostgresR2dbcConfiguration.java[]
 ----
 
 When a `ConnectionFactory` bean is available, the regular JDBC `DataSource` auto-configuration backs off.
@@ -451,7 +457,7 @@ Similarly to <<features#features.sql.datasource.embedded,the JDBC support>>, Spr
 You need not provide any connection URLs.
 You need only include a build dependency to the embedded database that you want to use, as shown in the following example:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>io.r2dbc</groupId>
@@ -472,9 +478,9 @@ If you want to make sure that each context has a separate embedded database, you
 ==== Using DatabaseClient
 A `DatabaseClient` bean is auto-configured, and you can `@Autowire` it directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/usingdatabaseclient/MyBean.java[tag=*]
+include::{docs-java}/features/sql/r2dbc/usingdatabaseclient/MyBean.java[]
 ----
 
 
@@ -492,9 +498,9 @@ If you use auto-configuration, repositories are searched from the package contai
 
 The following example shows a typical Spring Data repository interface definition:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/sql/r2dbc/repositories/CityRepository.java[tag=*]
+include::{docs-java}/features/sql/r2dbc/repositories/CityRepository.java[]
 ----
 
 TIP: We have barely scratched the surface of Spring Data R2DBC. For complete details, see the {spring-data-r2dbc-docs}[Spring Data R2DBC reference documentation].

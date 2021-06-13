@@ -11,7 +11,7 @@ To use the processor, include a dependency on `spring-boot-configuration-process
 
 With Maven the dependency should be declared as optional, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -22,7 +22,7 @@ With Maven the dependency should be declared as optional, as shown in the follow
 
 With Gradle, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
 		annotationProcessor "org.springframework.boot:spring-boot-configuration-processor"
@@ -31,7 +31,7 @@ With Gradle, the dependency should be declared in the `annotationProcessor` conf
 
 If you are using an `additional-spring-configuration-metadata.json` file, the `compileJava` task should be configured to depend on the `processResources` task, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	compileJava.inputs.files(processResources)
 ----
@@ -45,7 +45,7 @@ There are several ways to do this.
 With Maven, you can configure the `maven-apt-plugin` explicitly and add the dependency to the annotation processor only there.
 You could also let the AspectJ plugin run all the processing and disable annotation processing in the `maven-compiler-plugin` configuration, as follows:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<plugin>
 		<groupId>org.apache.maven.plugins</groupId>
@@ -65,37 +65,17 @@ The processor picks up both classes and methods that are annotated with `@Config
 
 If the class is also annotated with `@ConstructorBinding`, a single constructor is expected and one property is created per constructor parameter.
 Otherwise, properties are discovered through the presence of standard getters and setters with special handling for collection and map types (that is detected even if only a getter is present).
-The annotation processor also supports the use of the `@Data`, `@Getter`, and `@Setter` lombok annotations.
+The annotation processor also supports the use of the `@Data`, `@Value`, `@Getter`, and `@Setter` lombok annotations.
 
 Consider the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@ConfigurationProperties(prefix="server")
-	public class ServerProperties {
-
-	    /**
-	    * Name of the server.
-	    */
-		private String name;
-
-		/**
-         * IP address to listen to.
-         */
-		private String ip = "127.0.0.1";
-
-		/**
-		* Port to listener to.
-		*/
-		private int port = 9797;
-
-		// ... getter and setters
-
-	}
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/MyServerProperties.java[]
 ----
 
-This exposes three properties where `server.name` has no default and `server.ip` and `server.port` defaults to `"127.0.0.1"` and `9797` respectively.
-The Javadoc on fields is used to populate the `description` attribute. For instance, the description of `server.ip` is "IP address to listen to.".
+This exposes three properties where `my.server.name` has no default and `my.server.ip` and `my.server.port` defaults to `"127.0.0.1"` and `9797` respectively.
+The Javadoc on fields is used to populate the `description` attribute. For instance, the description of `my.server.ip` is "IP address to listen to.".
 
 NOTE: You should only use plain text with `@ConfigurationProperties` field Javadoc, since they are not processed before being added to the JSON.
 
@@ -106,38 +86,22 @@ Also, the annotation processor cannot auto-detect default values for ``Enum``s a
 For cases where the default value could not be detected, <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,manual metadata>> should be provided.
 Consider the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@ConfigurationProperties(prefix = "acme.messaging")
-	public class MessagingProperties {
-
-		private List<String> addresses = new ArrayList<>(Arrays.asList("a", "b"));
-
-		private ContainerType containerType = ContainerType.SIMPLE;
-
-		// ... getter and setters
-
-		public enum ContainerType {
-
-			SIMPLE,
-			DIRECT
-
-		}
-
-	}
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/MyMessagingProperties.java[]
 ----
 
 In order to document default values for properties in the class above, you could add the following content to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"properties": [
 		{
-			"name": "acme.messaging.addresses",
+			"name": "my.messaging.addresses",
 			"defaultValue": ["a", "b"]
 		},
 		{
-			"name": "acme.messaging.container-type",
+			"name": "my.messaging.container-type",
 			"defaultValue": "simple"
 		}
 	]}
@@ -153,31 +117,12 @@ The annotation processor automatically considers inner classes as nested propert
 Rather than documenting the `ip` and `port` at the root of the namespace, we could create a sub-namespace for it.
 Consider the updated example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@ConfigurationProperties(prefix="server")
-	public class ServerProperties {
-
-		private String name;
-
-		private Host host;
-
-		// ... getter and setters
-
-		public static class Host {
-
-			private String ip;
-
-			private int port;
-
-			// ... getter and setters
-
-		}
-
-	}
+include::{docs-java}/configurationmetadata/annotationprocessor/automaticmetadatageneration/nestedproperties/MyServerProperties.java[]
 ----
 
-The preceding example produces metadata information for `server.name`, `server.host.ip`, and `server.host.port` properties.
+The preceding example produces metadata information for `my.server.name`, `my.server.host.ip`, and `my.server.host.port` properties.
 You can use the `@NestedConfigurationProperty` annotation on a field to indicate that a regular (non-inner) class should be treated as if it were nested.
 
 TIP: This has no effect on collections and maps, as those types are automatically identified, and a single metadata property is generated for each of them.

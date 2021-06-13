@@ -22,7 +22,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyBean {
 
-	private StringRedisTemplate template;
+	private final StringRedisTemplate template;
 
 	public MyBean(StringRedisTemplate template) {
 		this.template = template;

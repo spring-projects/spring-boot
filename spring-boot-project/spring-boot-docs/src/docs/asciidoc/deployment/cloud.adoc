@@ -27,7 +27,7 @@ Once you have built your application (by using, for example, `mvn clean package`
 Be sure to have https://docs.cloudfoundry.org/cf-cli/getting-started.html#login[logged in with your `cf` command line client] before pushing an application.
 The following line shows using the `cf push` command to deploy an application:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ cf push acloudyspringtime -p target/demo-0.0.1-SNAPSHOT.jar
 ----
@@ -39,7 +39,7 @@ If there is a Cloud Foundry https://docs.cloudfoundry.org/devguide/deploy-apps/m
 
 At this point, `cf` starts uploading your application, producing output similar to the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim,quotes"]
 ----
 	Uploading acloudyspringtime... *OK*
 	Preparing to start acloudyspringtime... *OK*
@@ -68,7 +68,7 @@ Congratulations! The application is now live!
 
 Once your application is live, you can verify the status of the deployed application by using the `cf apps` command, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ cf apps
 	Getting applications in ...
@@ -93,21 +93,9 @@ Process-scoped environment variables are language agnostic.
 
 Environment variables do not always make for the easiest API, so Spring Boot automatically extracts them and flattens the data into properties that can be accessed through Spring's `Environment` abstraction, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@Component
-	class MyBean implements EnvironmentAware {
-
-		private String instanceId;
-
-		@Override
-		public void setEnvironment(Environment environment) {
-			this.instanceId = environment.getProperty("vcap.application.instance_id");
-		}
-
-		// ...
-
-	}
+include::{docs-java}/deployment/cloud/cloudfoundry/bindingtoservices/MyBean.java[]
 ----
 
 All Cloud Foundry properties are prefixed with `vcap`.
@@ -136,19 +124,23 @@ You can configure a sleep execution in a preStop handler to avoid requests being
 This sleep should be long enough for new requests to stop being routed to the pod and its duration will vary from deployment to deployment.
 The preStop handler can be configured via the PodSpec in the pod's configuration file as follows:
 
-[source,yml,indent=0]
+[source,yml,indent=0,subs="verbatim"]
 ----
-spec:
-  containers:
-  - name: example-container
-    image: example-image
-    lifecycle:
-      preStop:
-        exec:
-          command: ["sh", "-c", "sleep 10"]
+	spec:
+	  containers:
+	  - name: example-container
+	    image: example-image
+	    lifecycle:
+	      preStop:
+	        exec:
+	          command: ["sh", "-c", "sleep 10"]
 ----
 
 Once the pre-stop hook has completed, SIGTERM will be sent to the container and <<features#features.graceful-shutdown,graceful shutdown>> will begin, allowing any remaining in-flight requests to complete.
+
+NOTE: When Kubernetes sends a SIGTERM signal to the pod, it waits for a specified time called the termination grace period (the default for which is 30 seconds).
+If the containers are still running after the grace period, they are sent the SIGKILL signal and forcibly removed.
+If the pod takes longer than 30 seconds to shut down, which could be because you've increased spring.lifecycle.timeout-per-shutdown-phase, make sure to increase the termination grace period by setting the `terminationGracePeriodSeconds` option in the Pod YAML.
 
 
 
@@ -173,10 +165,15 @@ The `$PORT` environment variable is assigned to us by the Heroku PaaS.
 This should be everything you need.
 The most common deployment workflow for Heroku deployments is to `git push` the code to production, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ git push heroku main
+----
 
+Which will result in the following:
+
+[indent=0,subs="verbatim,quotes"]
+----
 	Initializing repository, *done*.
 	Counting objects: 95, *done*.
 	Delta compression using up to 8 threads.
@@ -282,7 +279,7 @@ By default, Elastic Beanstalk uploads sources and compiles them in AWS.
 However, it is best to upload the binaries instead.
 To do so, add lines similar to the following to your `.elasticbeanstalk/config.yml` file:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	deploy:
 		artifact: target/demo-0.0.1-SNAPSHOT.jar
@@ -320,7 +317,7 @@ Boxfuse leverages this information both for the images it produces as well as fo
 
 Once you have created a https://console.boxfuse.com[Boxfuse account], connected it to your AWS account, installed the latest version of the Boxfuse Client, and ensured that the application has been built by Maven or Gradle (by using, for example, `mvn clean package`), you can deploy your Spring Boot application to AWS with a command similar to the following:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ boxfuse run myapp-1.0.jar -env=prod
 ----
@@ -333,7 +330,7 @@ If your executable jar or war contains an https://boxfuse.com/docs/payloads/spri
 
 At this point, `boxfuse` creates an image for your application, uploads it, and configures and starts the necessary resources on AWS, resulting in output similar to the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	Fusing Image for myapp-1.0.jar ...
 	Image fused in 00:06.838s (53937 K) -> axelfontaine/myapp:1.0
@@ -374,7 +371,7 @@ Follow https://github.com/GoogleCloudPlatform/java-docs-samples/tree/master/appe
 Alternatively, App Engine Flex requires you to create an `app.yaml` file to describe the resources your app requires.
 Normally, you put this file in `src/main/appengine`, and it should resemble the following file:
 
-[source,yaml,indent=0]
+[source,yaml,indent=0,subs="verbatim"]
 ----
 	service: default
 
@@ -400,7 +397,7 @@ Normally, you put this file in `src/main/appengine`, and it should resemble the 
 
 You can deploy the app (for example, with a Maven plugin) by adding the project ID to the build configuration, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<plugin>
 		<groupId>com.google.cloud.tools</groupId>

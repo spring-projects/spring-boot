@@ -4,7 +4,7 @@ The Spring Boot AntLib module provides basic Spring Boot support for Apache Ant.
 You can use the module to create executable jars.
 To use the module, you need to declare an additional `spring-boot` namespace in your `build.xml`, as shown in the following example:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<project xmlns:ivy="antlib:org.apache.ivy.ant"
 		xmlns:spring-boot="antlib:org.springframework.boot.ant"
@@ -15,7 +15,7 @@ To use the module, you need to declare an additional `spring-boot` namespace in 
 
 You need to remember to start Ant using the `-lib` option, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ ant -lib <directory containing spring-boot-antlib-{spring-boot-version}.jar>
 ----
@@ -75,7 +75,7 @@ The following nested elements can be used with the task:
 This section shows two examples of Ant tasks.
 
 .Specify +start-class+
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<spring-boot:exejar destfile="target/my-application.jar"
 			classes="target/classes" start-class="com.example.MyApplication">
@@ -89,7 +89,7 @@ This section shows two examples of Ant tasks.
 ----
 
 .Detect +start-class+
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<exejar destfile="target/my-application.jar" classes="target/classes">
 		<lib>
@@ -130,19 +130,19 @@ The following attributes are supported:
 This section contains three examples of using `findmainclass`.
 
 .Find and log
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<findmainclass classesroot="target/classes" />
 ----
 
 .Find and set
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<findmainclass classesroot="target/classes" property="main-class" />
 ----
 
 .Override and set
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<findmainclass mainclass="com.example.MainClass" property="main-class" />
 ----

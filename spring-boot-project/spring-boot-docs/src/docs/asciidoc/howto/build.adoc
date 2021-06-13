@@ -13,7 +13,7 @@ When such a file is present, Spring Boot auto-configures a `BuildProperties` bea
 
 To generate build information with Maven, add an execution for the `build-info` goal, as shown in the following example:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim,attributes"]
 ----
 	<build>
 		<plugins>
@@ -37,7 +37,7 @@ TIP: See the {spring-boot-maven-plugin-docs}#goals-build-info[Spring Boot Maven 
 
 The following example does the same with Gradle:
 
-[source,groovy,indent=0,subs="verbatim,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	springBoot {
 		buildInfo()
@@ -53,9 +53,9 @@ TIP: See the {spring-boot-gradle-plugin-docs}#integrating-with-actuator-build-in
 Both Maven and Gradle allow generating a `git.properties` file containing information about the state of your `git` source code repository when the project was built.
 
 For Maven users, the `spring-boot-starter-parent` POM includes a pre-configured plugin to generate a `git.properties` file.
-To use it, add the following declaration to your POM:
+To use it, add the following declaration for the https://github.com/git-commit-id/git-commit-id-maven-plugin[`Git Commit Id Plugin`] to your POM:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -69,7 +69,7 @@ To use it, add the following declaration to your POM:
 
 Gradle users can achieve the same result by using the https://plugins.gradle.org/plugin/com.gorylenko.gradle-git-properties[`gradle-git-properties`] plugin, as shown in the following example:
 
-[source,groovy,indent=0]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	plugins {
 		id "com.gorylenko.gradle-git-properties" version "2.2.4"
@@ -103,7 +103,7 @@ To override dependency versions in Gradle, see {spring-boot-gradle-plugin-docs}#
 The `spring-boot-maven-plugin` can be used to create an executable "`fat`" JAR.
 If you use the `spring-boot-starter-parent` POM, you can declare the plugin and your jars are repackaged as follows:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -118,7 +118,7 @@ If you use the `spring-boot-starter-parent` POM, you can declare the plugin and 
 If you do not use the parent POM, you can still use the plugin.
 However, you must additionally add an `<executions>` section, as follows:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -157,7 +157,7 @@ This classifier is applied to the name of the executable archive, leaving the de
 
 To configure a classifier of `exec` in Maven, you can use the following configuration:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -187,7 +187,7 @@ WARNING: Care should be taken to ensure that your operating system is configured
 
 For example, to indicate that JRuby should be flagged for unpacking by using the Maven Plugin, you would add the following configuration:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -216,7 +216,7 @@ For example, the `application.yml` configuration file might be excluded from the
 
 In Maven, the executable jar must be the main artifact and you can add a classified jar for the library, as follows:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -272,7 +272,7 @@ To make it executable, you can either use the `spring-boot-antlib` module or you
 
 The following example shows how to build an executable archive with Ant:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<target name="build" depends="compile">
 		<jar destfile="target/${ant.project.name}-${spring-boot.version}.jar" compress="false">

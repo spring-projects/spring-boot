@@ -13,7 +13,7 @@ Feel free to join the #spring channel of https://slack.kotlinlang.org/[Kotlin Sl
 
 [[features.kotlin.requirements]]
 === Requirements
-Spring Boot supports Kotlin 1.3.x.
+Spring Boot requires at least Kotlin 1.3.x and manages a suitable Kotlin version via dependency management.
 To use Kotlin, `org.jetbrains.kotlin:kotlin-stdlib` and `org.jetbrains.kotlin:kotlin-reflect` must be present on the classpath.
 The `kotlin-stdlib` variants `kotlin-stdlib-jdk7` and `kotlin-stdlib-jdk8` can also be used.
 
@@ -57,7 +57,7 @@ Also be aware that Spring Boot's own API is {github-issues}10712[not yet annotat
 ==== runApplication
 Spring Boot provides an idiomatic way to run an application with `runApplication<MyApplication>(*args)` as shown in the following example:
 
-[source,kotlin,indent=0]
+[source,kotlin,indent=0,subs="verbatim"]
 ----
 	import org.springframework.boot.autoconfigure.SpringBootApplication
 	import org.springframework.boot.runApplication
@@ -73,7 +73,7 @@ Spring Boot provides an idiomatic way to run an application with `runApplication
 This is a drop-in replacement for `SpringApplication.run(MyApplication::class.java, *args)`.
 It also allows customization of the application as shown in the following example:
 
-[source,kotlin,indent=0]
+[source,kotlin,indent=0,subs="verbatim"]
 ----
 	runApplication<MyApplication>(*args) {
 		setBannerMode(OFF)
@@ -110,7 +110,7 @@ TIP: `org.jetbrains.kotlinx:kotlinx-coroutines-reactor` dependency is provided b
 === @ConfigurationProperties
 `@ConfigurationProperties` when used in combination with <<features#features.external-config.typesafe-configuration-properties.constructor-binding,`@ConstructorBinding`>> supports classes with immutable `val` properties as shown in the following example:
 
-[source,kotlin,indent=0]
+[source,kotlin,indent=0,subs="verbatim"]
 ----
 @ConstructorBinding
 @ConfigurationProperties("example.kotlin")

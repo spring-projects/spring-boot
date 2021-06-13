@@ -9,7 +9,7 @@ If no properties file is found that matches any of the configured base names, th
 
 The basename of the resource bundle as well as several other attributes can be configured using the `spring.messages` namespace, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  messages:

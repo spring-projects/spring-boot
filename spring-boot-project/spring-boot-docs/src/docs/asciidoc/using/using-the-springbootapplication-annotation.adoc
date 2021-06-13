@@ -7,21 +7,9 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 * `@ComponentScan`: enable `@Component` scan on the package where the application is located (see <<using#using.structuring-your-code,the best practices>>)
 * `@Configuration`: allow to register extra beans in the context or import additional configuration classes
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	package com.example.myapplication;
-
-	import org.springframework.boot.SpringApplication;
-	import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
-	public class Application {
-
-		public static void main(String[] args) {
-			SpringApplication.run(Application.class, args);
-		}
-
-	}
+include::{docs-java}/using/usingthespringbootapplicationannotation/springapplication/MyApplication.java[]
 ----
 
 NOTE: `@SpringBootApplication` also provides aliases to customize the attributes of `@EnableAutoConfiguration` and `@ComponentScan`.
@@ -31,25 +19,9 @@ NOTE: `@SpringBootApplication` also provides aliases to customize the attributes
 None of these features are mandatory and you may choose to replace this single annotation by any of the features that it enables.
 For instance, you may not want to use component scan or configuration properties scan in your application:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	package com.example.myapplication;
-
-	import org.springframework.boot.SpringApplication;
-	import org.springframework.context.annotation.ComponentScan
-	import org.springframework.context.annotation.Configuration;
-	import org.springframework.context.annotation.Import;
-
-	@Configuration(proxyBeanMethods = false)
-	@EnableAutoConfiguration
-	@Import({ MyConfig.class, MyAnotherConfig.class })
-	public class Application {
-
-		public static void main(String[] args) {
-				SpringApplication.run(Application.class, args);
-		}
-
-	}
+include::{docs-java}/using/usingthespringbootapplicationannotation/individualannotations/MyApplication.java[]
 ----
 
 In this example, `Application` is just like any other Spring Boot application except that `@Component`-annotated classes and `@ConfigurationProperties`-annotated classes are not detected automatically and the user-defined beans are imported explicitly (see `@Import`).

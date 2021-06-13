@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import org.springframework.boot.configurationsample.lombok.LombokInnerClassPrope
 import org.springframework.boot.configurationsample.lombok.LombokInnerClassWithGetterProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleDataProperties;
 import org.springframework.boot.configurationsample.lombok.LombokSimpleProperties;
+import org.springframework.boot.configurationsample.lombok.LombokSimpleValueProperties;
 import org.springframework.boot.configurationsample.lombok.SimpleLombokPojo;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -44,6 +45,12 @@ class LombokMetadataGenerationTests extends AbstractMetadataGenerationTests {
 	void lombokDataProperties() {
 		ConfigurationMetadata metadata = compile(LombokSimpleDataProperties.class);
 		assertSimpleLombokProperties(metadata, LombokSimpleDataProperties.class, "data");
+	}
+
+	@Test
+	void lombokValueProperties() {
+		ConfigurationMetadata metadata = compile(LombokSimpleValueProperties.class);
+		assertSimpleLombokProperties(metadata, LombokSimpleValueProperties.class, "value");
 	}
 
 	@Test

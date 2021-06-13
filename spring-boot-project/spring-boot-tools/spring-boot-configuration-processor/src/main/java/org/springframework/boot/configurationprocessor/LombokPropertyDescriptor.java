@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -35,6 +35,8 @@ import org.springframework.boot.configurationprocessor.metadata.ItemDeprecation;
 class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 
 	private static final String LOMBOK_DATA_ANNOTATION = "lombok.Data";
+
+	private static final String LOMBOK_VALUE_ANNOTATION = "lombok.Value";
 
 	private static final String LOMBOK_GETTER_ANNOTATION = "lombok.Getter";
 
@@ -100,7 +102,8 @@ class LombokPropertyDescriptor extends PropertyDescriptor<VariableElement> {
 		if (lombokMethodAnnotationOnElement != null) {
 			return isAccessLevelPublic(env, lombokMethodAnnotationOnElement);
 		}
-		return (env.getAnnotation(getOwnerElement(), LOMBOK_DATA_ANNOTATION) != null);
+		return (env.hasAnnotation(getOwnerElement(), LOMBOK_DATA_ANNOTATION)
+				|| env.hasAnnotation(getOwnerElement(), LOMBOK_VALUE_ANNOTATION));
 	}
 
 	private boolean isAccessLevelPublic(MetadataGenerationEnvironment env, AnnotationMirror lombokAnnotation) {

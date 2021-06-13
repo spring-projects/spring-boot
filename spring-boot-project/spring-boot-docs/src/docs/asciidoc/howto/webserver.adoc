@@ -18,7 +18,7 @@ To help with this process, Spring Boot provides a separate starter for each of t
 
 The following Maven example shows how to exclude Tomcat and include Jetty for Spring MVC:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<properties>
 		<servlet-api.version>3.1.0</servlet-api.version>
@@ -44,21 +44,18 @@ The following Maven example shows how to exclude Tomcat and include Jetty for Sp
 NOTE: The version of the Servlet API has been overridden as, unlike Tomcat 9 and Undertow 2, Jetty 9.4 does not support Servlet 4.0.
 If you wish to use Jetty 10, which does support Servlet 4.0, override the `jetty.version` property rather than the `servlet-api.version` property.
 
-The following Gradle example shows how to use Undertow in place of Reactor Netty for Spring WebFlux:
+The following Gradle example configures the necessary dependencies and a {gradle-docs}/resolution_rules.html#sec:module_replacement[module replacement] to use Undertow in place of Reactor Netty for Spring WebFlux:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
-	configurations.all {
-		resolutionStrategy.dependencySubstitution.all { dependency ->
-			if (dependency.requested instanceof ModuleComponentSelector && dependency.requested.module == 'spring-boot-starter-reactor-netty') {
-				dependency.useTarget("org.springframework.boot:spring-boot-starter-undertow:$dependency.requested.version", 'Use Undertow instead of Reactor Netty')
+	dependencies {
+		implementation "org.springframework.boot:spring-boot-starter-undertow"
+		implementation "org.springframework.boot:spring-boot-starter-webflux"
+		modules {
+			module("org.springframework.boot:spring-boot-starter-reactor-netty") {
+				replacedBy("org.springframework.boot:spring-boot-starter-undertow", "Use Undertow instead of Reactor Netty")
 			}
 		}
-	}
-
-	dependencies {
-		compile 'org.springframework.boot:spring-boot-starter-webflux'
-		// ...
 	}
 ----
 
@@ -71,7 +68,7 @@ NOTE: `spring-boot-starter-reactor-netty` is required to use the `WebClient` cla
 If your classpath contains the necessary bits to start a web server, Spring Boot will automatically start it.
 To disable this behavior configure the `WebApplicationType` in your `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  main:
@@ -104,17 +101,9 @@ The best way to get that and be sure it has been initialized is to add a `@Bean`
 
 Tests that use `@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)` can also inject the actual port into a field by using the `@LocalServerPort` annotation, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@SpringBootTest(webEnvironment=WebEnvironment.RANDOM_PORT)
-	public class MyWebIntegrationTests {
-
-		@LocalServerPort
-		int port;
-
-		// ...
-
-	}
+include::{docs-java}/howto/webserver/discoverport/MyWebIntegrationTests.java[]
 ----
 
 [NOTE]
@@ -132,7 +121,7 @@ Contrary to a test, application code callbacks are processed early (before the v
 HTTP response compression is supported by Jetty, Tomcat, and Undertow.
 It can be enabled in `application.properties`, as follows:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  compression:
@@ -162,7 +151,7 @@ You can configure this behavior by setting the configprop:server.compression.mim
 SSL can be configured declaratively by setting the various `+server.ssl.*+` properties, typically in `application.properties` or `application.yml`.
 The following example shows setting SSL properties in `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  port: 8443
@@ -202,7 +191,7 @@ More on this in the https://tomcat.apache.org/tomcat-9.0-doc/apr.html[official T
 
 Starting Tomcat 9.0.x on JDK 8 with HTTP/2 and SSL enabled but without that native support logs the following error:
 
-[indent=0,subs="attributes"]
+[indent=0,subs="verbatim"]
 ----
 	ERROR 8787 --- [           main] o.a.coyote.http11.Http11NioProtocol      : The upgrade handler [org.apache.coyote.http2.Http2Protocol] for [h2] only supports upgrade via ALPN but has been configured for the ["https-jsse-nio-8443"] connector that does not support ALPN.
 ----
@@ -254,17 +243,9 @@ You can declare such a component and get access to the server factory relevant t
 
 The example below is for Tomcat with the `spring-boot-starter-web` (Servlet stack):
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@Component
-	public class MyTomcatWebServerCustomizer
-			implements WebServerFactoryCustomizer<TomcatServletWebServerFactory> {
-
-		@Override
-		public void customize(TomcatServletWebServerFactory factory) {
-			// customize the factory here
-		}
-	}
+include::{docs-java}/howto/webserver/configure/MyTomcatWebServerCustomizer.java[]
 ----
 
 NOTE: Spring Boot uses that infrastructure internally to auto-configure the server.
@@ -335,14 +316,9 @@ Like any other Spring bean, you can define the order of Servlet filter beans; pl
 As <<howto#howto.webserver.add-servlet-filter-listener.spring-bean,described earlier>>, any `Servlet` or `Filter` beans are registered with the servlet container automatically.
 To disable registration of a particular `Filter` or `Servlet` bean, create a registration bean for it and mark it as disabled, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@Bean
-	public FilterRegistrationBean registration(MyFilter filter) {
-		FilterRegistrationBean registration = new FilterRegistrationBean(filter);
-		registration.setEnabled(false);
-		return registration;
-	}
+include::{docs-java}/howto/webserver/addservletfilterlistener/springbean/disable/MyFilterConfiguration.java[]
 ----
 
 
@@ -360,7 +336,7 @@ Access logs can be configured for Tomcat, Undertow, and Jetty through their resp
 
 For instance, the following settings log access on Tomcat with a {tomcat-docs}/config/valve.html#Access_Logging[custom pattern].
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  tomcat:
@@ -376,7 +352,7 @@ In the preceding example, the logs are available in `my-tomcat/logs` relative to
 
 Access logging for Undertow can be configured in a similar fashion, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  undertow:
@@ -390,7 +366,7 @@ You can customize this location by setting the configprop:server.undertow.access
 
 Finally, access logging for Jetty can also be configured as follows:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  jetty:
@@ -431,7 +407,7 @@ In all other instances, it defaults to `NONE`.
 ==== Customize Tomcat's Proxy Configuration
 If you use Tomcat, you can additionally configure the names of the headers used to carry "`forwarded`" information, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  tomcat:
@@ -444,7 +420,7 @@ Tomcat is also configured with a default regular expression that matches interna
 By default, IP addresses in `10/8`, `192.168/16`, `169.254/16` and `127/8` are trusted.
 You can customize the valve's configuration by adding an entry to `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  tomcat:
@@ -462,9 +438,9 @@ You can take complete control of the configuration of Tomcat's `RemoteIpValve` b
 === Enable Multiple Connectors with Tomcat
 You can add an `org.apache.catalina.connector.Connector` to the `TomcatServletWebServerFactory`, which can allow multiple connectors, including HTTP and HTTPS connectors, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/webserver/enablemultipleconnectorsintomcat/TomcatMultipleConnectorsConfiguration.java[]
+include::{docs-java}/howto/webserver/enablemultipleconnectorsintomcat/MyTomcatConfiguration.java[]
 ----
 
 
@@ -482,9 +458,9 @@ If at all possible, you should consider updating your code to only store values 
 If, however, you cannot change the way that cookies are written, you can instead configure Tomcat to use a `LegacyCookieProcessor`.
 To switch to the `LegacyCookieProcessor`, use an `WebServerFactoryCustomizer` bean that adds a `TomcatContextCustomizer`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/webserver/usetomcatlegacycookieprocessor/LegacyCookieProcessorConfiguration.java[]
+include::{docs-java}/howto/webserver/usetomcatlegacycookieprocessor/MyLegacyCookieProcessorConfiguration.java[]
 ----
 
 
@@ -495,7 +471,7 @@ Embedded Tomcat's MBean registry is disabled by default.
 This minimizes Tomcat's memory footprint.
 If you want to use Tomcat's MBeans, for example so that they can be used to expose metrics via Micrometer, you must use the configprop:server.tomcat.mbeanregistry.enabled[] property to do so, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 server:
   tomcat:
@@ -509,9 +485,9 @@ server:
 === Enable Multiple Listeners with Undertow
 Add an `UndertowBuilderCustomizer` to the `UndertowServletWebServerFactory` and add a listener to the `Builder`, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/howto/webserver/enablemultiplelistenersinundertow/UndertowMultipleListenersConfiguration.java[]
+include::{docs-java}/howto/webserver/enablemultiplelistenersinundertow/MyUndertowConfiguration.java[]
 ----
 
 
@@ -520,12 +496,9 @@ include::{docs-java}/howto/webserver/enablemultiplelistenersinundertow/UndertowM
 === Create WebSocket Endpoints Using @ServerEndpoint
 If you want to use `@ServerEndpoint` in a Spring Boot application that used an embedded container, you must declare a single `ServerEndpointExporter` `@Bean`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@Bean
-	public ServerEndpointExporter serverEndpointExporter() {
-		return new ServerEndpointExporter();
-	}
+include::{docs-java}/howto/webserver/createwebsocketendpointsusingserverendpoint/MyWebSocketConfiguration.java[]
 ----
 
 The bean shown in the preceding example registers any `@ServerEndpoint` annotated beans with the underlying WebSocket container.

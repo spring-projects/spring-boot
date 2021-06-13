@@ -47,13 +47,13 @@ class MetricsHealthMicrometerExportTests {
 	private MeterRegistry registry;
 
 	@Test
-	void registryExportsHealth() throws Exception {
+	void registryExportsHealth() {
 		Gauge gauge = this.registry.get("health").gauge();
 		assertThat(gauge.value()).isEqualTo(2);
 	}
 
 	@Configuration(proxyBeanMethods = false)
-	@Import(MetricsHealthMicrometerExport.HealthMetricsConfiguration.class)
+	@Import(MyHealthMetricsExportConfiguration.class)
 	@ImportAutoConfiguration(classes = { HealthContributorAutoConfiguration.class, MetricsAutoConfiguration.class,
 			HealthEndpointAutoConfiguration.class })
 	static class Config {

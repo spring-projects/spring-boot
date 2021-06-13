@@ -15,7 +15,7 @@ You can use a configprop:spring.profiles.active[] `Environment` property to spec
 You can specify the property in any of the ways described earlier in this chapter.
 For example, you could include it in your `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  profiles:
@@ -23,6 +23,16 @@ For example, you could include it in your `application.properties`, as shown in 
 ----
 
 You could also specify it on the command line by using the following switch: `--spring.profiles.active=dev,hsqldb`.
+
+If no profile is active, a default profile is enabled.
+The name of the default profile is `default` and it can be tuned using the configprop:spring.profiles.default[] `Environment` property, as shown in the following example:
+
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
+----
+	spring:
+	  profiles:
+	    default: "none"
+----
 
 
 
@@ -48,7 +58,7 @@ A profile group allows you to define a logical name for a related group of profi
 
 For example, we can create a `production` group that consists of our `proddb` and `prodmq` profiles.
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	spring:
 	  profiles:

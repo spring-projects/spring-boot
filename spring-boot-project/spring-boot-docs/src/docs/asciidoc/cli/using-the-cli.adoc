@@ -3,7 +3,7 @@
 Once you have installed the CLI, you can run it by typing `spring` and pressing Enter at the command line.
 If you run `spring` without any arguments, a help screen is displayed, as follows:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring
 	usage: spring [--help] [--version]
@@ -19,7 +19,7 @@ If you run `spring` without any arguments, a help screen is displayed, as follow
 
 You can type `spring help` to get more details about any of the supported commands, as shown in the following example:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring help run
 	spring run - Run a spring groovy script
@@ -41,7 +41,7 @@ You can type `spring help` to get more details about any of the supported comman
 
 The `version` command provides a quick way to check which version of Spring Boot you are using, as follows:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ spring version
 	Spring CLI v{spring-boot-version}
@@ -57,36 +57,28 @@ The Spring Boot CLI is completely self-contained, so you do not need any externa
 The following example shows a "`hello world`" web application written in Groovy:
 
 .hello.groovy
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,groovy,indent=0,subs="verbatim"]
 ----
-	@RestController
-	class WebApplication {
-
-		@RequestMapping("/")
-		String home() {
-			"Hello World!"
-		}
-
-	}
+include::{docs-groovy}/cli/usingthecli/run/WebApplication.groovy[tag=*]
 ----
 
 To compile and run the application, type the following command:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring run hello.groovy
 ----
 
 To pass command-line arguments to the application, use `--` to separate the commands from the "`spring`" command arguments, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring run hello.groovy -- --server.port=9000
 ----
 
 To set JVM command line arguments, you can use the `JAVA_OPTS` environment variable, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ JAVA_OPTS=-Xmx1024m spring run hello.groovy
 ----
@@ -183,19 +175,18 @@ The annotation's value should specify the coordinates (`groupId:artifactId:versi
 
 For example, consider the following declaration:
 
-[source,groovy,indent=0]
+[source,groovy,indent=0,subs="verbatim"]
 ----
-	@DependencyManagementBom("com.example.custom-bom:1.0.0")
+include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/single/CustomDependencyManagement.groovy[tag=*]
 ----
 
 The preceding declaration picks up `custom-bom-1.0.0.pom` in a Maven repository under `com/example/custom-versions/1.0.0/`.
 
 When you specify multiple BOMs, they are applied in the order in which you declare them, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,groovy,indent=0,subs="verbatim"]
 ----
-	@DependencyManagementBom(["com.example.custom-bom:1.0.0",
-			"com.example.another-bom:1.0.0"])
+include::{docs-groovy}/cli/usingthecli/run/customdependencymanagement/multiple/CustomDependencyManagement.groovy[tag=*]
 ----
 
 The preceding example indicates that the dependency management in `another-bom` overrides the dependency management in `custom-bom`.
@@ -210,7 +201,7 @@ However, to ensure consistent ordering of the dependency management, you can use
 You can use "`shell globbing`" with all commands that accept file input.
 Doing so lets you use multiple files from a single directory, as shown in the following example:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring run *.groovy
 ----
@@ -221,7 +212,7 @@ Doing so lets you use multiple files from a single directory, as shown in the fo
 === Packaging Your Application
 You can use the `jar` command to package your application into a self-contained executable jar file, as shown in the following example:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring jar my-app.jar *.groovy
 ----
@@ -252,7 +243,7 @@ Type `spring help jar` on the command line for more information.
 === Initialize a New Project
 The `init` command lets you create a new project by using https://start.spring.io without leaving the shell, as shown in the following example:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring init --dependencies=web,data-jpa my-project
 	Using service at https://start.spring.io
@@ -262,7 +253,7 @@ The `init` command lets you create a new project by using https://start.spring.i
 The preceding example creates a `my-project` directory with a Maven-based project that uses `spring-boot-starter-web` and `spring-boot-starter-data-jpa`.
 You can list the capabilities of the service by using the `--list` flag, as shown in the following example:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring init --list
 	=======================================
@@ -291,7 +282,7 @@ The `init` command supports many options.
 See the `help` output for more details.
 For instance, the following command creates a Gradle project that uses Java 8 and `war` packaging:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring init --build=gradle --java-version=1.8 --dependencies=websocket --packaging=war sample-app.zip
 	Using service at https://start.spring.io
@@ -305,7 +296,7 @@ For instance, the following command creates a Gradle project that uses Java 8 an
 Spring Boot includes command-line completion scripts for the BASH and zsh shells.
 If you do not use either of these shells (perhaps you are a Windows user), you can use the `shell` command to launch an integrated shell, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim,quotes,attributes"]
 ----
 	$ spring shell
 	*Spring Boot* (v{spring-boot-version})
@@ -314,7 +305,7 @@ If you do not use either of these shells (perhaps you are a Windows user), you c
 
 From inside the embedded shell, you can run other commands directly:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ version
 	Spring CLI v{spring-boot-version}
@@ -331,7 +322,7 @@ To exit the embedded shell, press `ctrl-c`.
 You can add extensions to the CLI by using the `install` command.
 The command takes one or more sets of artifact coordinates in the format `group:artifact:version`, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring install com.example:spring-boot-cli-extension:1.0.0.RELEASE
 ----
@@ -341,7 +332,7 @@ In addition to installing the artifacts identified by the coordinates you supply
 To uninstall a dependency, use the `uninstall` command.
 As with the `install` command, it takes one or more sets of artifact coordinates in the format of `group:artifact:version`, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring uninstall com.example:spring-boot-cli-extension:1.0.0.RELEASE
 ----
@@ -350,7 +341,7 @@ It uninstalls the artifacts identified by the coordinates you supply and their d
 
 To uninstall all additional dependencies, you can use the `--all` option, as shown in the following example:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring uninstall --all
 ----

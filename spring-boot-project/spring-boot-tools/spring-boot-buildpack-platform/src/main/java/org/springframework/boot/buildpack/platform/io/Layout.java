@@ -33,7 +33,18 @@ public interface Layout {
 	 * @param owner the owner of the directory
 	 * @throws IOException on IO error
 	 */
-	void directory(String name, Owner owner) throws IOException;
+	default void directory(String name, Owner owner) throws IOException {
+		directory(name, owner, 0755);
+	}
+
+	/**
+	 * Add a directory to the content.
+	 * @param name the full name of the directory to add
+	 * @param owner the owner of the directory
+	 * @param mode the permissions for the file
+	 * @throws IOException on IO error
+	 */
+	void directory(String name, Owner owner, int mode) throws IOException;
 
 	/**
 	 * Write a file to the content.

@@ -1,6 +1,6 @@
 [[getting-started.system-requirements]]
 == System Requirements
-Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to Java 16 (included).
+Spring Boot {spring-boot-version} requires https://www.java.com[Java 8] and is compatible up to and including Java 16.
 {spring-framework-docs}/[Spring Framework {spring-framework-version}] or above is also required.
 
 Explicit build support is provided for the following build tools:
@@ -12,7 +12,7 @@ Explicit build support is provided for the following build tools:
 | 3.5+
 
 | Gradle
-| 6.8.x and 7.x
+| 6.8.x, 6.9.x, and 7.x
 |===
 
 

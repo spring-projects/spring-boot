@@ -458,7 +458,7 @@ class ConfigDataEnvironmentContributor implements Iterable<ConfigDataEnvironment
 		BOUND_IMPORT,
 
 		/**
-		 * A valid location that contained noething to load.
+		 * A valid location that contained nothing to load.
 		 */
 		EMPTY_LOCATION;
 

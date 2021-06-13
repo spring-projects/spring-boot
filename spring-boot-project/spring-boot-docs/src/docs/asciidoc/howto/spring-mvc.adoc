@@ -10,17 +10,9 @@ This section answers common questions about Spring MVC and Spring Boot.
 === Write a JSON REST Service
 Any Spring `@RestController` in a Spring Boot application should render JSON response by default as long as Jackson2 is on the classpath, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@RestController
-	public class MyController {
-
-		@RequestMapping("/thing")
-		public MyThing thing() {
-				return new MyThing();
-		}
-
-	}
+include::{docs-java}/howto/springmvc/writejsonrestservice/MyController.java[]
 ----
 
 As long as `MyThing` can be serialized by Jackson2 (true for a normal POJO or Groovy object), then `http://localhost:8080/thing` serves a JSON representation of it by default.
@@ -34,7 +26,7 @@ If you have the Jackson XML extension (`jackson-dataformat-xml`) on the classpat
 The previous example that we used for JSON would work.
 To use the Jackson XML renderer, add the following dependency to your project:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>com.fasterxml.jackson.dataformat</groupId>
@@ -44,19 +36,15 @@ To use the Jackson XML renderer, add the following dependency to your project:
 
 If Jackson's XML extension is not available and JAXB is available, XML can be rendered with the additional requirement of having `MyThing` annotated as `@XmlRootElement`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@XmlRootElement
-	public class MyThing {
-		private String name;
-		// .. getters and setters
-	}
+include::{docs-java}/howto/springmvc/writexmlrestservice/MyThing.java[]
 ----
 
 JAXB is only available out of the box with Java 8.
 If you're using a more recent Java generation, add the following dependency to your project:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.glassfish.jaxb</groupId>
@@ -176,7 +164,7 @@ If you would rather map to a different path, you can configure one as follows:
 	spring:
 	  mvc:
 	    servlet:
-	      path: "/acme"
+	      path: "/mypath"
 ----
 
 If you have additional servlets you can declare a `@Bean` of type `Servlet` or `ServletRegistrationBean` for each and Spring Boot will register them transparently to the container.

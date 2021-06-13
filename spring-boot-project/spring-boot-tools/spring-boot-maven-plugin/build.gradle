@@ -1,6 +1,5 @@
 plugins {
 	id "org.asciidoctor.jvm.convert"
-	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.maven-plugin"
 	id "org.springframework.boot.optional-dependencies"
@@ -11,6 +10,16 @@ description = "Spring Boot Maven Plugin"
 configurations {
 	dependenciesBom
 	documentation
+}
+
+repositories {
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+			includeGroup "io.spring.asciidoctor.backends"
+		}
+	}
 }
 
 dependencies {
@@ -74,15 +83,15 @@ asciidoctor {
 	}
 }
 
-syncDocumentationSourceForAsciidoctorPdf {
-	from(documentPluginGoals) {
-		into "asciidoc/goals"
+task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
+	sources {
+		include "index.adoc"
 	}
 }
 
-asciidoctorPdf {
-	sources {
-		include "index.adoc"
+syncDocumentationSourceForAsciidoctorPdf {
+	from(documentPluginGoals) {
+		into "asciidoc/goals"
 	}
 }
 

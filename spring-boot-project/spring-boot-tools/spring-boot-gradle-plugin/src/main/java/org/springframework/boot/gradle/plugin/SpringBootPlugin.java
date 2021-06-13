@@ -76,7 +76,10 @@ public class SpringBootPlugin implements Plugin<Project> {
 	 */
 	public static final String DEVELOPMENT_ONLY_CONFIGURATION_NAME = "developmentOnly";
 
-	static final String PRODUCTION_RUNTIME_CLASSPATH_NAME = "productionRuntimeClasspath";
+	/**
+	 * The name of the {@code productionRuntimeClasspath} configuration.
+	 */
+	public static final String PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME = "productionRuntimeClasspath";
 
 	/**
 	 * The coordinates {@code (group:name:version)} of the

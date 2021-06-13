@@ -20,7 +20,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.kafka.test.EmbeddedKafkaBroker;
 
 @SpringBootTest
-public class MyTest {
+class MyTest {
 
 	// tag::code[]
 	static {

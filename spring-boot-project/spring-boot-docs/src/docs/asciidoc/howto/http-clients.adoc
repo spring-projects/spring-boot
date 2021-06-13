@@ -20,7 +20,7 @@ When Reactor Netty is on the classpath a Reactor Netty-based `WebClient` is auto
 To customize the client's handling of network connections, provide a `ClientHttpConnector` bean.
 The following example configures a 60 second connect timeout and adds a `ReadTimeoutHandler`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/howto/httpclients/webclientreactornettycustomization/MyReactorNettyClientConfiguration.java[]
 ----

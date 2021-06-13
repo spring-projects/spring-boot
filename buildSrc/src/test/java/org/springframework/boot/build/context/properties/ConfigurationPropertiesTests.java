@@ -18,7 +18,6 @@ package org.springframework.boot.build.context.properties;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.Map;
 
 import org.junit.jupiter.api.Test;
 
@@ -33,7 +32,7 @@ class ConfigurationPropertiesTests {
 
 	@Test
 	void whenJsonHasAnIntegerDefaultValueThenItRemainsAnIntegerWhenRead() {
-		Map<String, ConfigurationProperty> properties = ConfigurationProperties
+		ConfigurationProperties properties = ConfigurationProperties
 				.fromFiles(Arrays.asList(new File("src/test/resources/spring-configuration-metadata.json")));
 		assertThat(properties.get("example.counter").getDefaultValue()).isEqualTo(0);
 	}

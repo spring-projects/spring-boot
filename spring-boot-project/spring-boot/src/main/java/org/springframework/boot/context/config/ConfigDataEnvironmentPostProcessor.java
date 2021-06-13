@@ -19,6 +19,8 @@ package org.springframework.boot.context.config;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.LinkedHashSet;
+import java.util.Set;
 import java.util.function.Supplier;
 
 import org.apache.commons.logging.Log;
@@ -34,6 +36,8 @@ import org.springframework.core.env.Environment;
 import org.springframework.core.io.DefaultResourceLoader;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.CollectionUtils;
+import org.springframework.util.StringUtils;
 
 /**
  * {@link EnvironmentPostProcessor} that loads and applies {@link ConfigData} to Spring's
@@ -41,6 +45,7 @@ import org.springframework.core.log.LogMessage;
  *
  * @author Phillip Webb
  * @author Madhura Bhave
+ * @author Nguyen Bao Sach
  * @since 2.4.0
  */
 public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProcessor, Ordered {
@@ -99,6 +104,7 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 		catch (UseLegacyConfigProcessingException ex) {
 			this.logger.debug(LogMessage.format("Switching to legacy config file processing [%s]",
 					ex.getConfigurationProperty()));
+			configureAdditionalProfiles(environment, additionalProfiles);
 			postProcessUsingLegacyApplicationListener(environment, resourceLoader);
 		}
 	}
@@ -107,6 +113,15 @@ public class ConfigDataEnvironmentPostProcessor implements EnvironmentPostProces
 			Collection<String> additionalProfiles) {
 		return new ConfigDataEnvironment(this.logFactory, this.bootstrapContext, environment, resourceLoader,
 				additionalProfiles, this.environmentUpdateListener);
+	}
+
+	private void configureAdditionalProfiles(ConfigurableEnvironment environment,
+			Collection<String> additionalProfiles) {
+		if (!CollectionUtils.isEmpty(additionalProfiles)) {
+			Set<String> profiles = new LinkedHashSet<>(additionalProfiles);
+			profiles.addAll(Arrays.asList(environment.getActiveProfiles()));
+			environment.setActiveProfiles(StringUtils.toStringArray(profiles));
+		}
 	}
 
 	private void postProcessUsingLegacyApplicationListener(ConfigurableEnvironment environment,

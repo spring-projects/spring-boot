@@ -71,10 +71,30 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	 * {@code false}
 	 */
 	public boolean initializeDatabase() {
-		ScriptLocationResolver locationResolver = new ScriptLocationResolver(this.resourceLoader);
-		boolean initialized = applySchemaScripts(locationResolver);
-		initialized = applyDataScripts(locationResolver) || initialized;
-		return initialized;
+		if (isEnabled()) {
+			ScriptLocationResolver locationResolver = new ScriptLocationResolver(this.resourceLoader);
+			boolean initialized = applySchemaScripts(locationResolver);
+			initialized = applyDataScripts(locationResolver) || initialized;
+			return initialized;
+		}
+		return false;
+	}
+
+	private boolean isEnabled() {
+		if (this.settings.getMode() == DatabaseInitializationMode.NEVER) {
+			return false;
+		}
+		return this.settings.getMode() == DatabaseInitializationMode.ALWAYS || isEmbeddedDatabase();
+	}
+
+	/**
+	 * Returns whether the database that is to be initialized is embedded.
+	 * @return {@code true} if the database is embedded, otherwise {@code false}
+	 * @since 2.5.1
+	 */
+	protected boolean isEmbeddedDatabase() {
+		throw new IllegalStateException(
+				"Database initialization mode is '" + this.settings.getMode() + "' and database type is unknown");
 	}
 
 	private boolean applySchemaScripts(ScriptLocationResolver locationResolver) {

@@ -87,10 +87,17 @@ class TestTarGzip {
 		String buildScript = "#!/usr/bin/env bash\n" + "echo \"---> build\"\n";
 		try (TarArchiveOutputStream tar = new TarArchiveOutputStream(Files.newOutputStream(archive))) {
 			writeEntry(tar, "buildpack.toml", buildpackToml.toString());
+			writeEntry(tar, "bin/");
 			writeEntry(tar, "bin/detect", detectScript);
 			writeEntry(tar, "bin/build", buildScript);
 			tar.finish();
 		}
+	}
+
+	private void writeEntry(TarArchiveOutputStream tar, String entryName) throws IOException {
+		TarArchiveEntry entry = new TarArchiveEntry(entryName);
+		tar.putArchiveEntry(entry);
+		tar.closeArchiveEntry();
 	}
 
 	private void writeEntry(TarArchiveOutputStream tar, String entryName, String content) throws IOException {
@@ -111,8 +118,13 @@ class TestTarGzip {
 		assertThat(layers).hasSize(1);
 		byte[] content = layers.get(0).toByteArray();
 		try (TarArchiveInputStream tar = new TarArchiveInputStream(new ByteArrayInputStream(content))) {
+			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/");
+			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/");
+			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/");
+			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/");
 			assertThat(tar.getNextEntry().getName())
 					.isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/buildpack.toml");
+			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/detect");
 			assertThat(tar.getNextEntry().getName()).isEqualTo("cnb/buildpacks/example_buildpack1/0.0.1/bin/build");
 			assertThat(tar.getNextEntry()).isNull();

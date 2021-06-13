@@ -31,10 +31,13 @@ public class MyReactorNettyClientConfiguration {
 
 	@Bean
 	ClientHttpConnector clientHttpConnector(ReactorResourceFactory resourceFactory) {
+		// @formatter:off
 		HttpClient httpClient = HttpClient.create(resourceFactory.getConnectionProvider())
-				.runOn(resourceFactory.getLoopResources()).option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
+				.runOn(resourceFactory.getLoopResources())
+				.option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 60000)
 				.doOnConnected((connection) -> connection.addHandlerLast(new ReadTimeoutHandler(60)));
 		return new ReactorClientHttpConnector(httpClient);
+		// @formatter:on
 	}
 
 }

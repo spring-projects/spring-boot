@@ -75,7 +75,7 @@ class ExtractCommandTests {
 	}
 
 	@Test
-	void runExtractsLayers() throws Exception {
+	void runExtractsLayers() {
 		given(this.context.getArchiveFile()).willReturn(this.jarFile);
 		given(this.context.getWorkingDir()).willReturn(this.extract);
 		this.command.run(Collections.emptyMap(), Collections.emptyList());

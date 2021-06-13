@@ -104,7 +104,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		Configuration developmentOnly = project.getConfigurations()
 				.getByName(SpringBootPlugin.DEVELOPMENT_ONLY_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
-				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+				.getByName(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		FileCollection classpath = mainSourceSet.getRuntimeClasspath()
 				.minus((developmentOnly.minus(productionRuntimeClasspath))).filter(new JarTypeFileSpec());
 		TaskProvider<ResolveMainClassName> resolveMainClassName = ResolveMainClassName
@@ -151,14 +151,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 				}
 				return Collections.emptyList();
 			});
-			try {
-				run.getMainClass().convention(resolveProvider.flatMap(ResolveMainClassName::readMainClassName));
-			}
-			catch (NoSuchMethodError ex) {
-				run.getInputs().file(resolveProvider.map((task) -> task.getOutputFile()));
-				run.conventionMapping("main",
-						() -> resolveProvider.flatMap(ResolveMainClassName::readMainClassName).get());
-			}
+			run.getMainClass().convention(resolveProvider.flatMap(ResolveMainClassName::readMainClassName));
 			configureToolchainConvention(project, run);
 		});
 	}
@@ -213,7 +206,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 		Configuration runtimeClasspath = project.getConfigurations()
 				.getByName(JavaPlugin.RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		Configuration productionRuntimeClasspath = project.getConfigurations()
-				.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_NAME);
+				.create(SpringBootPlugin.PRODUCTION_RUNTIME_CLASSPATH_CONFIGURATION_NAME);
 		AttributeContainer attributes = productionRuntimeClasspath.getAttributes();
 		ObjectFactory objectFactory = project.getObjects();
 		attributes.attribute(Usage.USAGE_ATTRIBUTE, objectFactory.named(Usage.class, Usage.JAVA_RUNTIME));
@@ -222,6 +215,8 @@ final class JavaPluginAction implements PluginApplicationAction {
 				objectFactory.named(LibraryElements.class, LibraryElements.JAR));
 		productionRuntimeClasspath.setVisible(false);
 		productionRuntimeClasspath.setExtendsFrom(runtimeClasspath.getExtendsFrom());
+		productionRuntimeClasspath.setCanBeResolved(runtimeClasspath.isCanBeResolved());
+		productionRuntimeClasspath.setCanBeConsumed(runtimeClasspath.isCanBeConsumed());
 		runtimeClasspath.extendsFrom(developmentOnly);
 	}
 

@@ -38,16 +38,16 @@ public abstract class AbstractScriptDatabaseInitializerTests {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("schema.sql"));
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
-		assertThat(numberOfRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
 	}
 
 	@Test
 	void whenContinueOnErrorIsFalseThenInitializationFailsOnError() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatExceptionOfType(DataAccessException.class).isThrownBy(() -> initializer.initializeDatabase());
 	}
 
@@ -56,7 +56,7 @@ public abstract class AbstractScriptDatabaseInitializerTests {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setContinueOnError(true);
 		settings.setDataLocations(Arrays.asList("data.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isTrue();
 	}
 
@@ -64,7 +64,7 @@ public abstract class AbstractScriptDatabaseInitializerTests {
 	void whenNoScriptsExistAtASchemaLocationThenInitializationFails() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
 				.withMessage("No schema scripts found at location 'does-not-exist.sql'");
 	}
@@ -73,7 +73,7 @@ public abstract class AbstractScriptDatabaseInitializerTests {
 	void whenNoScriptsExistAtADataLocationThenInitializationFails() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThatIllegalStateException().isThrownBy(initializer::initializeDatabase)
 				.withMessage("No data scripts found at location 'does-not-exist.sql'");
 	}
@@ -82,7 +82,7 @@ public abstract class AbstractScriptDatabaseInitializerTests {
 	void whenNoScriptsExistAtAnOptionalSchemaLocationThenInitializationSucceeds() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setSchemaLocations(Arrays.asList("optional:does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isFalse();
 	}
 
@@ -90,12 +90,81 @@ public abstract class AbstractScriptDatabaseInitializerTests {
 	void whenNoScriptsExistAtAnOptionalDataLocationThenInitializationSucceeds() {
 		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
 		settings.setDataLocations(Arrays.asList("optional:does-not-exist.sql"));
-		AbstractScriptDatabaseInitializer initializer = createInitializer(settings);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
 		assertThat(initializer.initializeDatabase()).isFalse();
 	}
 
-	protected abstract AbstractScriptDatabaseInitializer createInitializer(DatabaseInitializationSettings settings);
+	@Test
+	void whenModeIsNeverThenEmbeddedDatabaseIsNotInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.NEVER);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
+	}
 
-	protected abstract int numberOfRows(String sql);
+	@Test
+	void whenModeIsNeverThenStandaloneDatabaseIsNotInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.NEVER);
+		AbstractScriptDatabaseInitializer initializer = createStandaloneDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
+	}
+
+	@Test
+	void whenModeIsEmbeddedThenEmbeddedDatabaseIsInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.EMBEDDED);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isTrue();
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+	}
+
+	@Test
+	void whenModeIsEmbeddedThenStandaloneDatabaseIsNotInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.EMBEDDED);
+		AbstractScriptDatabaseInitializer initializer = createStandaloneDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isFalse();
+	}
+
+	@Test
+	void whenModeIsAlwaysThenEmbeddedDatabaseIsInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.ALWAYS);
+		AbstractScriptDatabaseInitializer initializer = createEmbeddedDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isTrue();
+		assertThat(numberOfEmbeddedRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+	}
+
+	@Test
+	void whenModeIsAlwaysThenStandaloneDatabaseIsInitialized() {
+		DatabaseInitializationSettings settings = new DatabaseInitializationSettings();
+		settings.setSchemaLocations(Arrays.asList("schema.sql"));
+		settings.setDataLocations(Arrays.asList("data.sql"));
+		settings.setMode(DatabaseInitializationMode.ALWAYS);
+		AbstractScriptDatabaseInitializer initializer = createStandaloneDatabaseInitializer(settings);
+		assertThat(initializer.initializeDatabase()).isTrue();
+		assertThat(numberOfStandaloneRows("SELECT COUNT(*) FROM EXAMPLE")).isEqualTo(1);
+	}
+
+	protected abstract AbstractScriptDatabaseInitializer createStandaloneDatabaseInitializer(
+			DatabaseInitializationSettings settings);
+
+	protected abstract AbstractScriptDatabaseInitializer createEmbeddedDatabaseInitializer(
+			DatabaseInitializationSettings settings);
+
+	protected abstract int numberOfEmbeddedRows(String sql);
+
+	protected abstract int numberOfStandaloneRows(String sql);
 
 }

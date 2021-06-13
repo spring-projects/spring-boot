@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,8 +17,6 @@
 package org.springframework.boot.web.embedded.undertow;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.URISyntaxException;
 import java.time.Duration;
 import java.util.Arrays;
 
@@ -98,17 +96,17 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 	}
 
 	@Test
-	void accessLogCanBeEnabled() throws IOException, URISyntaxException, InterruptedException {
+	void accessLogCanBeEnabled() {
 		testAccessLog(null, null, "access_log.log");
 	}
 
 	@Test
-	void accessLogCanBeCustomized() throws IOException, URISyntaxException, InterruptedException {
+	void accessLogCanBeCustomized() {
 		testAccessLog("my_access.", "logz", "my_access.logz");
 	}
 
 	@Test
-	void whenServerIsShuttingDownGracefullyThenNewConnectionsAreRejectedWithServiceUnavailable() throws Exception {
+	void whenServerIsShuttingDownGracefullyThenNewConnectionsAreRejectedWithServiceUnavailable() {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		factory.setShutdown(Shutdown.GRACEFUL);
 		BlockingHandler blockingHandler = new BlockingHandler();
@@ -130,8 +128,7 @@ class UndertowReactiveWebServerFactoryTests extends AbstractReactiveWebServerFac
 		this.webServer.stop();
 	}
 
-	private void testAccessLog(String prefix, String suffix, String expectedFile)
-			throws IOException, URISyntaxException, InterruptedException {
+	private void testAccessLog(String prefix, String suffix, String expectedFile) {
 		UndertowReactiveWebServerFactory factory = getFactory();
 		factory.setAccessLogEnabled(true);
 		factory.setAccessLogPrefix(prefix);

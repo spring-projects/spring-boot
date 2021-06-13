@@ -76,7 +76,7 @@ This mechanism does not apply the same way to `@Bean` methods where typically th
 
 To handle this scenario, a separate `@Configuration` class can be used to isolate the condition, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingautoconfiguration/conditionannotations/classconditions/MyAutoConfiguration.java[]
 ----
@@ -93,7 +93,7 @@ The `search` attribute lets you limit the `ApplicationContext` hierarchy that sh
 
 When placed on a `@Bean` method, the target type defaults to the return type of the method, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingautoconfiguration/conditionannotations/beanconditions/MyAutoConfiguration.java[]
 ----
@@ -152,11 +152,11 @@ Concretely, each test should create a well defined `ApplicationContext` that rep
 `ApplicationContextRunner` provides a great way to achieve that.
 
 `ApplicationContextRunner` is usually defined as a field of the test class to gather the base, common configuration.
-The following example makes sure that `UserServiceAutoConfiguration` is always invoked:
+The following example makes sure that `MyServiceAutoConfiguration` is always invoked:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=runner]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=runner]
 ----
 
 TIP: If multiple auto-configurations have to be defined, there is no need to order their declarations as they are invoked in the exact same order as when running the application.
@@ -165,25 +165,25 @@ Each test can use the runner to represent a particular use case.
 For instance, the sample below invokes a user configuration (`UserConfiguration`) and checks that the auto-configuration backs off properly.
 Invoking `run` provides a callback context that can be used with `AssertJ`.
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-user-config]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-user-config]
 ----
 
 It is also possible to easily customize the `Environment`, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-env]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-env]
 ----
 
 The runner can also be used to display the `ConditionEvaluationReport`.
 The report can be printed at `INFO` or `DEBUG` level.
 The following example shows how to use the `ConditionEvaluationReportLoggingListener` to print the report in auto-configuration tests.
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/ConditionEvaluationReportTests.java[]
+include::{docs-java}/features/developingautoconfiguration/testing/MyConditionEvaluationReportingTests.java[]
 ----
 
 
@@ -198,11 +198,11 @@ If you need to test an auto-configuration that only operates in a Servlet or Rea
 ==== Overriding the Classpath
 It is also possible to test what happens when a particular class and/or package is not present at runtime.
 Spring Boot ships with a `FilteredClassLoader` that can easily be used by the runner.
-In the following example, we assert that if `UserService` is not present, the auto-configuration is properly disabled:
+In the following example, we assert that if `MyService` is not present, the auto-configuration is properly disabled:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingautoconfiguration/testing/UserServiceAutoConfigurationTests.java[tag=test-classloader]
+include::{docs-java}/features/developingautoconfiguration/testing/MyServiceAutoConfigurationTests.java[tag=test-classloader]
 ----
 
 
@@ -220,7 +220,7 @@ Concretely, a custom starter can contain the following:
 In a nutshell, adding the starter should provide everything needed to start using that library.
 
 This separation in two modules is in no way necessary.
-If "acme" has several flavours, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
+If "acme" has several flavors, options or optional features, then it is better to separate the auto-configuration as you can clearly express the fact some features are optional.
 Besides, you have the ability to craft a starter that provides an opinion about those optional dependencies.
 At the same time, others can rely only on the `autoconfigure` module and craft their own starter with different opinions.
 
@@ -249,7 +249,7 @@ As a rule of thumb, prefix all your keys with a namespace that you own (e.g. `ac
 
 Make sure that configuration keys are documented by adding field javadoc for each property, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingautoconfiguration/customstarter/configurationkeys/AcmeProperties.java[]
 ----
@@ -282,7 +282,7 @@ Spring Boot uses an annotation processor to collect the conditions on auto-confi
 If that file is present, it is used to eagerly filter auto-configurations that do not match, which will improve startup time.
 It is recommended to add the following dependency in a module that contains auto-configurations:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
@@ -293,7 +293,7 @@ It is recommended to add the following dependency in a module that contains auto
 
 If you have defined auto-configurations directly in your application, make sure to configure the `spring-boot-maven-plugin` to prevent the `repackage` goal from adding the dependency into the fat jar:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<project>
 		<build>
@@ -317,7 +317,7 @@ If you have defined auto-configurations directly in your application, make sure 
 
 With Gradle 4.5 and earlier, the dependency should be declared in the `compileOnly` configuration, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
 		compileOnly "org.springframework.boot:spring-boot-autoconfigure-processor"
@@ -326,7 +326,7 @@ With Gradle 4.5 and earlier, the dependency should be declared in the `compileOn
 
 With Gradle 4.6 and later, the dependency should be declared in the `annotationProcessor` configuration, as shown in the following example:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
 		annotationProcessor "org.springframework.boot:spring-boot-autoconfigure-processor"

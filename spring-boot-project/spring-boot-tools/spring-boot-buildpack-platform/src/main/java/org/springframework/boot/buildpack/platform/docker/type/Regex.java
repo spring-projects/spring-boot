@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -36,7 +36,7 @@ import java.util.regex.Pattern;
  */
 final class Regex implements CharSequence {
 
-	private static final Regex DOMAIN;
+	static final Pattern DOMAIN;
 	static {
 		Regex component = Regex.oneOf("[a-zA-Z0-9]", "[a-zA-Z0-9][a-zA-Z0-9-]*[a-zA-Z0-9]");
 		Regex dotComponent = Regex.group("[.]", component);
@@ -44,7 +44,7 @@ final class Regex implements CharSequence {
 		Regex dottedDomain = Regex.group(component, dotComponent.oneOrMoreTimes());
 		Regex dottedDomainAndPort = Regex.group(component, dotComponent.oneOrMoreTimes(), colonPort);
 		Regex nameAndPort = Regex.group(component, colonPort);
-		DOMAIN = Regex.oneOf(dottedDomain, nameAndPort, dottedDomainAndPort, "localhost");
+		DOMAIN = Regex.oneOf(dottedDomain, nameAndPort, dottedDomainAndPort, "localhost").compile();
 	}
 
 	private static final Regex PATH_COMPONENT;
@@ -55,36 +55,18 @@ final class Regex implements CharSequence {
 		PATH_COMPONENT = Regex.of(segment, Regex.group(separatedSegment).zeroOrOnce());
 	}
 
-	private static final Regex PATH;
+	static final Pattern PATH;
 	static {
 		Regex component = PATH_COMPONENT;
 		Regex slashComponent = Regex.group("[/]", component);
 		Regex slashComponents = Regex.group(slashComponent.oneOrMoreTimes());
-		PATH = Regex.of(component, slashComponents.zeroOrOnce());
+		PATH = Regex.of(component, slashComponents.zeroOrOnce()).compile();
 	}
 
-	static final Regex IMAGE_NAME;
-	static {
-		Regex domain = DOMAIN.capturedAs("domain");
-		Regex domainSlash = Regex.group(domain, "[/]");
-		Regex path = PATH.capturedAs("path");
-		Regex optionalDomainSlash = domainSlash.zeroOrOnce();
-		IMAGE_NAME = Regex.of(optionalDomainSlash, path);
-	}
+	static final Pattern TAG = Regex.of("^[\\w][\\w.-]{0,127}").compile();
 
-	private static final Regex TAG_REGEX = Regex.of("[\\w][\\w.-]{0,127}");
-
-	private static final Regex DIGEST_REGEX = Regex
-			.of("[A-Za-z][A-Za-z0-9]*(?:[-_+.][A-Za-z][A-Za-z0-9]*)*[:][[A-Fa-f0-9]]{32,}");
-
-	static final Regex IMAGE_REFERENCE;
-	static {
-		Regex tag = TAG_REGEX.capturedAs("tag");
-		Regex digest = DIGEST_REGEX.capturedAs("digest");
-		Regex atDigest = Regex.group("[@]", digest);
-		Regex colonTag = Regex.group("[:]", tag);
-		IMAGE_REFERENCE = Regex.of(IMAGE_NAME, colonTag.zeroOrOnce(), atDigest.zeroOrOnce());
-	}
+	static final Pattern DIGEST = Regex.of("^[A-Za-z][A-Za-z0-9]*(?:[-_+.][A-Za-z][A-Za-z0-9]*)*[:][[A-Fa-f0-9]]{32,}")
+			.compile();
 
 	private final String value;
 
@@ -98,10 +80,6 @@ final class Regex implements CharSequence {
 
 	private Regex zeroOrOnce() {
 		return new Regex(this.value + "?");
-	}
-
-	private Regex capturedAs(String name) {
-		return new Regex("(?<" + name + ">" + this + ")");
 	}
 
 	Pattern compile() {

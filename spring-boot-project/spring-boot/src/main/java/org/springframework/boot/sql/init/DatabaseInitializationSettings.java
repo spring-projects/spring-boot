@@ -37,6 +37,8 @@ public class DatabaseInitializationSettings {
 
 	private Charset encoding;
 
+	private DatabaseInitializationMode mode = DatabaseInitializationMode.EMBEDDED;
+
 	/**
 	 * Returns the locations of the schema (DDL) scripts to apply to the database.
 	 * @return the locations of the schema scripts
@@ -121,6 +123,26 @@ public class DatabaseInitializationSettings {
 	 */
 	public void setEncoding(Charset encoding) {
 		this.encoding = encoding;
+	}
+
+	/**
+	 * Gets the mode to use when determining whether database initialization should be
+	 * performed.
+	 * @return the initialization mode
+	 * @since 2.5.1
+	 */
+	public DatabaseInitializationMode getMode() {
+		return this.mode;
+	}
+
+	/**
+	 * Sets the mode the use when determining whether database initialization should be
+	 * performed.
+	 * @param mode the initialization mode
+	 * @since 2.5.1
+	 */
+	public void setMode(DatabaseInitializationMode mode) {
+		this.mode = mode;
 	}
 
 }

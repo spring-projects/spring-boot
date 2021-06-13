@@ -1,3 +1,0 @@
-[[application-properties.cache]]
-== Cache Properties [[cache-properties]]
-include::documented-application-properties/cache.adoc[]

@@ -93,7 +93,7 @@ public class RootUriTemplateHandler implements UriTemplateHandler {
 	 * @since 2.3.10
 	 */
 	public RootUriTemplateHandler withHandlerWrapper(Function<UriTemplateHandler, UriTemplateHandler> wrapper) {
-		return new RootUriTemplateHandler(this.rootUri, wrapper.apply(this.handler));
+		return new RootUriTemplateHandler(getRootUri(), wrapper.apply(this.handler));
 	}
 
 	/**

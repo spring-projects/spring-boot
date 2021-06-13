@@ -1,5 +1,5 @@
 /*
- * Copyright 2002-2020 the original author or authors.
+ * Copyright 2002-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,15 +16,17 @@
 
 package org.springframework.boot.context.metrics.buffering;
 
+import java.time.Clock;
 import java.time.Instant;
-import java.util.ArrayDeque;
 import java.util.ArrayList;
-import java.util.Deque;
+import java.util.Iterator;
 import java.util.List;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.atomic.AtomicInteger;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Predicate;
 
+import org.springframework.boot.context.metrics.buffering.StartupTimeline.TimelineEvent;
 import org.springframework.core.metrics.ApplicationStartup;
 import org.springframework.core.metrics.StartupStep;
 import org.springframework.util.Assert;
@@ -45,21 +47,26 @@ import org.springframework.util.Assert;
  * </ul>
  *
  * @author Brian Clozel
+ * @author Phillip Webb
  * @since 2.4.0
  */
 public class BufferingApplicationStartup implements ApplicationStartup {
 
-	private Instant recordingStartTime;
+	private final int capacity;
 
-	private long recordingStartNanos;
+	private final Clock clock;
 
-	private long currentSequenceId = 0;
+	private Instant startTime;
 
-	private final Deque<Long> currentSteps;
+	private final AtomicInteger idSeq = new AtomicInteger();
 
-	private final BlockingQueue<BufferedStartupStep> recordedSteps;
+	private Predicate<StartupStep> filter = (step) -> true;
 
-	private Predicate<StartupStep> stepFilters = (step) -> true;
+	private final AtomicReference<BufferedStartupStep> current = new AtomicReference<>();
+
+	private final AtomicInteger estimatedSize = new AtomicInteger();
+
+	private final ConcurrentLinkedQueue<TimelineEvent> events = new ConcurrentLinkedQueue<>();
 
 	/**
 	 * Create a new buffered {@link ApplicationStartup} with a limited capacity and starts
@@ -67,10 +74,13 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	 * @param capacity the configured capacity; once reached, new steps are not recorded.
 	 */
 	public BufferingApplicationStartup(int capacity) {
-		this.currentSteps = new ArrayDeque<>();
-		this.currentSteps.offerFirst(this.currentSequenceId);
-		this.recordedSteps = new LinkedBlockingQueue<>(capacity);
-		startRecording();
+		this(capacity, Clock.systemDefaultZone());
+	}
+
+	BufferingApplicationStartup(int capacity, Clock clock) {
+		this.capacity = capacity;
+		this.clock = clock;
+		this.startTime = clock.instant();
 	}
 
 	/**
@@ -81,9 +91,8 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	 * already.
 	 */
 	public void startRecording() {
-		Assert.state(this.recordedSteps.isEmpty(), "Cannot restart recording once steps have been buffered.");
-		this.recordingStartTime = Instant.now();
-		this.recordingStartNanos = getCurrentTime();
+		Assert.state(this.events.isEmpty(), "Cannot restart recording once steps have been buffered.");
+		this.startTime = this.clock.instant();
 	}
 
 	/**
@@ -93,7 +102,42 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	 * @param filter the predicate filter to add.
 	 */
 	public void addFilter(Predicate<StartupStep> filter) {
-		this.stepFilters = this.stepFilters.and(filter);
+		this.filter = this.filter.and(filter);
+	}
+
+	@Override
+	public StartupStep start(String name) {
+		int id = this.idSeq.getAndIncrement();
+		Instant start = this.clock.instant();
+		while (true) {
+			BufferedStartupStep current = this.current.get();
+			BufferedStartupStep parent = getLatestActive(current);
+			BufferedStartupStep next = new BufferedStartupStep(parent, name, id, start, this::record);
+			if (this.current.compareAndSet(current, next)) {
+				return next;
+			}
+		}
+	}
+
+	private void record(BufferedStartupStep step) {
+		if (this.filter.test(step) && this.estimatedSize.get() < this.capacity) {
+			this.estimatedSize.incrementAndGet();
+			this.events.add(new TimelineEvent(step, this.clock.instant()));
+		}
+		while (true) {
+			BufferedStartupStep current = this.current.get();
+			BufferedStartupStep next = getLatestActive(current);
+			if (this.current.compareAndSet(current, next)) {
+				return;
+			}
+		}
+	}
+
+	private BufferedStartupStep getLatestActive(BufferedStartupStep step) {
+		while (step != null && step.isEnded()) {
+			step = step.getParent();
+		}
+		return step;
 	}
 
 	/**
@@ -105,7 +149,7 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	 * @return a snapshot of currently buffered steps.
 	 */
 	public StartupTimeline getBufferedTimeline() {
-		return new StartupTimeline(this.recordingStartTime, this.recordingStartNanos, this.recordedSteps);
+		return new StartupTimeline(this.startTime, new ArrayList<>(this.events));
 	}
 
 	/**
@@ -116,30 +160,14 @@ public class BufferingApplicationStartup implements ApplicationStartup {
 	 * @return buffered steps drained from the buffer.
 	 */
 	public StartupTimeline drainBufferedTimeline() {
-		List<BufferedStartupStep> steps = new ArrayList<>(this.recordedSteps.size());
-		this.recordedSteps.drainTo(steps);
-		return new StartupTimeline(this.recordingStartTime, this.recordingStartNanos, steps);
-	}
-
-	@Override
-	public StartupStep start(String name) {
-		BufferedStartupStep step = new BufferedStartupStep(++this.currentSequenceId, name,
-				this.currentSteps.peekFirst(), this::record);
-		step.recordStartTime(getCurrentTime());
-		this.currentSteps.offerFirst(this.currentSequenceId);
-		return step;
-	}
-
-	private void record(BufferedStartupStep step) {
-		step.recordEndTime(getCurrentTime());
-		if (this.stepFilters.test(step)) {
-			this.recordedSteps.offer(step);
+		List<TimelineEvent> events = new ArrayList<>();
+		Iterator<TimelineEvent> iterator = this.events.iterator();
+		while (iterator.hasNext()) {
+			events.add(iterator.next());
+			iterator.remove();
 		}
-		this.currentSteps.removeFirst();
-	}
-
-	private long getCurrentTime() {
-		return System.nanoTime();
+		this.estimatedSize.set(0);
+		return new StartupTimeline(this.startTime, events);
 	}
 
 }

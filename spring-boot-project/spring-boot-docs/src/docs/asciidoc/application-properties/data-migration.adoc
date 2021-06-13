@@ -1,3 +1,0 @@
-[[application-properties.data-migration]]
-== Data Migration Properties [[data-migration-properties]]
-include::documented-application-properties/data-migration.adoc[]

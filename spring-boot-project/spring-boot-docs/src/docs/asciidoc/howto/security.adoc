@@ -28,7 +28,7 @@ If you use Tomcat as a servlet container, then Spring Boot adds Tomcat's own `Re
 The standard behavior is determined by the presence or absence of certain request headers (`x-forwarded-for` and `x-forwarded-proto`), whose names are conventional, so it should work with most front-end proxies.
 You can switch on the valve by adding some entries to `application.properties`, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	server:
 	  tomcat:
@@ -42,12 +42,7 @@ Alternatively, you can add the `RemoteIpValve` by customizing the `TomcatServlet
 
 To configure Spring Security to require a secure channel for all (or some) requests, consider adding your own `SecurityFilterChain` bean that adds the following `HttpSecurity` configuration:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@Bean
-	public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
-		// Customize the application security
-		http.requiresChannel().anyRequest().requiresSecure();
-		return http.build();
-	}
+include::{docs-java}/howto/security/enablehttps/MySecurityConfig.java[]
 ----

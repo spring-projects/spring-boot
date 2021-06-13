@@ -60,9 +60,9 @@ Spring Boot provides convenience methods that can be used to override access rul
 
 For example, you can customize your security configuration by adding something like:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/security/springwebflux/CustomWebFluxSecurityConfiguration.java[]
+include::{docs-java}/features/security/springwebflux/MyWebFluxSecurityConfiguration.java[]
 ----
 
 
@@ -81,7 +81,7 @@ The same properties are applicable to both servlet and reactive applications.
 
 You can register multiple OAuth2 clients and providers under the `spring.security.oauth2.client` prefix, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  security:
@@ -124,7 +124,7 @@ For example, if the `issuer-uri` provided is "https://example.com", then an `Ope
 The result is expected to be an `OpenID Provider Configuration Response`.
 The following example shows how an OpenID Connect Provider can be configured with the `issuer-uri`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  security:
@@ -139,9 +139,9 @@ By default, Spring Security's `OAuth2LoginAuthenticationFilter` only processes U
 If you want to customize the `redirect-uri` to use a different pattern, you need to provide configuration to process that custom pattern.
 For example, for servlet applications, you can add your own `SecurityFilterChain` that resembles the following:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/security/oauth2/client/OAuthClientConfiguration.java[]
+include::{docs-java}/features/security/oauth2/client/MyOAuthClientConfiguration.java[]
 ----
 
 TIP: Spring Boot auto-configures an `InMemoryOAuth2AuthorizedClientService` which is used by Spring Security for the management of client registrations.
@@ -159,7 +159,7 @@ Also, if the key for the client registration matches a default supported provide
 
 In other words, the two configurations in the following example use the Google provider:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  security:
@@ -182,7 +182,7 @@ In other words, the two configurations in the following example use the Google p
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can set up an OAuth2 Resource Server.
 For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, as shown in the following examples:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  security:
@@ -192,7 +192,7 @@ For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, a
 	          jwk-set-uri: "https://example.com/oauth2/default/v1/keys"
 ----
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  security:
@@ -211,7 +211,7 @@ Alternatively, you can define your own `JwtDecoder` bean for servlet application
 
 In cases where opaque tokens are used instead of JWTs, you can configure the following properties to validate tokens via introspection:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  security:
@@ -250,7 +250,7 @@ This configuration makes use of the properties under `Saml2RelyingPartyPropertie
 A relying party registration represents a paired configuration between an Identity Provider, IDP, and a Service Provider, SP.
 You can register multiple relying parties under the `spring.security.saml2.relyingparty` prefix, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  security:
@@ -272,6 +272,7 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
 	                - certificate-location: "path-to-verification-cert"
 	              entity-id: "remote-idp-entity-id1"
 	              sso-url: "https://remoteidp1.sso.url"
+
 	          my-relying-party2:
 	            signing:
 	              credentials:

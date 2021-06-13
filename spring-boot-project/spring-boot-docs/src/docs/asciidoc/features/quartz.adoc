@@ -13,7 +13,7 @@ Beans of the following types are automatically picked up and associated with the
 By default, an in-memory `JobStore` is used.
 However, it is possible to configure a JDBC-based store if a `DataSource` bean is available in your application and if the configprop:spring.quartz.job-store-type[] property is configured accordingly, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  quartz:
@@ -22,7 +22,7 @@ However, it is possible to configure a JDBC-based store if a `DataSource` bean i
 
 When the JDBC store is used, the schema can be initialized on startup, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  quartz:
@@ -50,7 +50,7 @@ If you need to customize the task executor, consider implementing `SchedulerFact
 Jobs can define setters to inject data map properties.
 Regular beans can also be injected in a similar manner, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/quartz/SampleJob.java[]
+include::{docs-java}/features/quartz/MySampleJob.java[]
 ----

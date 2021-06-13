@@ -20,7 +20,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.context.properties.ConfigurationPropertiesScan;
 
 @SpringBootApplication
-@ConfigurationPropertiesScan({ "com.example.app", "org.acme.another" })
+@ConfigurationPropertiesScan({ "com.example.app", "com.example.another" })
 public class MyApplication {
 
 }

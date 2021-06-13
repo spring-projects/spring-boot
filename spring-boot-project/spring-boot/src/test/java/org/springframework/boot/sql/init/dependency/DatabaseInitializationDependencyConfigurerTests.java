@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
-import org.mockito.Mockito;
 
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
@@ -41,12 +40,14 @@ import org.springframework.beans.factory.support.BeanDefinitionBuilder;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.ConfigurableEnvironment;
 import org.springframework.core.env.Environment;
 import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.BDDMockito.given;
+import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.verify;
 
@@ -54,21 +55,19 @@ import static org.mockito.Mockito.verify;
  * Tests for {@link DatabaseInitializationDependencyConfigurer}.
  *
  * @author Andy Wilkinson
+ * @author Phillip Webb
  */
 class DatabaseInitializationDependencyConfigurerTests {
 
 	private final ConfigurableEnvironment environment = new MockEnvironment();
-
-	DatabaseInitializerDetector databaseInitializerDetector = MockedDatabaseInitializerDetector.mock;
-
-	DependsOnDatabaseInitializationDetector dependsOnDatabaseInitializationDetector = MockedDependsOnDatabaseInitializationDetector.mock;
 
 	@TempDir
 	File temp;
 
 	@BeforeEach
 	void resetMocks() {
-		reset(MockedDatabaseInitializerDetector.mock, MockedDependsOnDatabaseInitializationDetector.mock);
+		reset(MockDatabaseInitializerDetector.instance, OrderedMockDatabaseInitializerDetector.instance,
+				MockedDependsOnDatabaseInitializationDetector.instance);
 	}
 
 	@Test
@@ -89,21 +88,45 @@ class DatabaseInitializationDependencyConfigurerTests {
 	void whenDependenciesAreConfiguredThenBeansThatDependUponDatabaseInitializationDependUponDetectedDatabaseInitializers() {
 		BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
 		BeanDefinition bravo = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
-		performDetection(Arrays.asList(MockedDatabaseInitializerDetector.class,
+		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
 				MockedDependsOnDatabaseInitializationDetector.class), (context) -> {
 					context.registerBeanDefinition("alpha", alpha);
 					context.registerBeanDefinition("bravo", bravo);
-					given(this.databaseInitializerDetector.detect(context.getBeanFactory()))
+					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
 							.willReturn(Collections.singleton("alpha"));
-					given(this.dependsOnDatabaseInitializationDetector.detect(context.getBeanFactory()))
+					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
 							.willReturn(Collections.singleton("bravo"));
 					context.refresh();
 					assertThat(alpha.getAttribute(DatabaseInitializerDetector.class.getName()))
-							.isEqualTo(MockedDatabaseInitializerDetector.class.getName());
+							.isEqualTo(MockDatabaseInitializerDetector.class.getName());
 					assertThat(bravo.getAttribute(DatabaseInitializerDetector.class.getName())).isNull();
-					verify(this.databaseInitializerDetector).detectionComplete(context.getBeanFactory(),
+					verify(MockDatabaseInitializerDetector.instance).detectionComplete(context.getBeanFactory(),
 							Collections.singleton("alpha"));
 					assertThat(bravo.getDependsOn()).containsExactly("alpha");
+				});
+	}
+
+	@Test
+	void whenDependenciesAreConfiguredDetectedDatabaseInitializersAreInitializedInCorrectOrder() {
+		BeanDefinition alpha = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition bravo = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		BeanDefinition charlie = BeanDefinitionBuilder.genericBeanDefinition(String.class).getBeanDefinition();
+		performDetection(Arrays.asList(MockDatabaseInitializerDetector.class,
+				OrderedMockDatabaseInitializerDetector.class, MockedDependsOnDatabaseInitializationDetector.class),
+				(context) -> {
+					given(MockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(Collections.singleton("alpha"));
+					given(OrderedMockDatabaseInitializerDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(Collections.singleton("bravo"));
+					given(MockedDependsOnDatabaseInitializationDetector.instance.detect(context.getBeanFactory()))
+							.willReturn(Collections.singleton("charlie"));
+					context.registerBeanDefinition("alpha", alpha);
+					context.registerBeanDefinition("bravo", bravo);
+					context.registerBeanDefinition("charlie", charlie);
+					context.refresh();
+					assertThat(charlie.getDependsOn()).containsExactly("alpha", "bravo");
+					assertThat(bravo.getDependsOn()).containsExactly("alpha");
+					assertThat(alpha.getDependsOn()).isNullOrEmpty();
 				});
 	}
 
@@ -156,31 +179,47 @@ class DatabaseInitializationDependencyConfigurerTests {
 
 	}
 
-	static class MockedDatabaseInitializerDetector implements DatabaseInitializerDetector {
+	static class MockDatabaseInitializerDetector implements DatabaseInitializerDetector {
 
-		private static DatabaseInitializerDetector mock = Mockito.mock(DatabaseInitializerDetector.class);
+		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-			return MockedDatabaseInitializerDetector.mock.detect(beanFactory);
+			return instance.detect(beanFactory);
 		}
 
 		@Override
 		public void detectionComplete(ConfigurableListableBeanFactory beanFactory,
 				Set<String> databaseInitializerNames) {
-			mock.detectionComplete(beanFactory, databaseInitializerNames);
+			instance.detectionComplete(beanFactory, databaseInitializerNames);
+		}
+
+	}
+
+	static class OrderedMockDatabaseInitializerDetector implements DatabaseInitializerDetector {
+
+		private static DatabaseInitializerDetector instance = mock(DatabaseInitializerDetector.class);
+
+		@Override
+		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
+			return instance.detect(beanFactory);
+		}
+
+		@Override
+		public int getOrder() {
+			return Ordered.LOWEST_PRECEDENCE;
 		}
 
 	}
 
 	static class MockedDependsOnDatabaseInitializationDetector implements DependsOnDatabaseInitializationDetector {
 
-		private static DependsOnDatabaseInitializationDetector mock = Mockito
-				.mock(DependsOnDatabaseInitializationDetector.class);
+		private static DependsOnDatabaseInitializationDetector instance = mock(
+				DependsOnDatabaseInitializationDetector.class);
 
 		@Override
 		public Set<String> detect(ConfigurableListableBeanFactory beanFactory) {
-			return MockedDependsOnDatabaseInitializationDetector.mock.detect(beanFactory);
+			return instance.detect(beanFactory);
 		}
 
 	}

@@ -27,7 +27,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class MyBean {
 
-	private SolrClient solr;
+	private final SolrClient solr;
 
 	public MyBean(SolrClient solr) {
 		this.solr = solr;

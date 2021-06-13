@@ -5,7 +5,7 @@ The `spring-boot-devtools` module can be included in any project to provide addi
 To include devtools support, add the module dependency to your build, as shown in the following listings for Maven and Gradle:
 
 .Maven
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependencies>
 		<dependency>
@@ -17,7 +17,7 @@ To include devtools support, add the module dependency to your build, as shown i
 ----
 
 .Gradle
-[source,groovy,indent=0,subs="attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
 		developmentOnly("org.springframework.boot:spring-boot-devtools")
@@ -117,7 +117,7 @@ The report shows the changes to your application's auto-configuration as you mak
 
 To disable the logging of the report, set the following property:
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	spring:
 	  devtools:
@@ -135,7 +135,7 @@ By default, changing resources in `/META-INF/maven`, `/META-INF/resources`, `/re
 If you want to customize these exclusions, you can use the configprop:spring.devtools.restart.exclude[] property.
 For example, to exclude only `/static` and `/public` you would set the following property:
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	spring:
 	  devtools:
@@ -162,12 +162,9 @@ In most cases, you can set this property in your `application.properties` (doing
 
 If you need to _completely_ disable restart support (for example, because it does not work with a specific library), you need to set the configprop:spring.devtools.restart.enabled[] `System` property to `false` before calling `SpringApplication.run(...)`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	public static void main(String[] args) {
-		System.setProperty("spring.devtools.restart.enabled", "false");
-		SpringApplication.run(MyApp.class, args);
-	}
+include::{docs-java}/devtools/restart/disable/MyApplication.java[]
 ----
 
 
@@ -194,7 +191,7 @@ For example, if you have a project with the following structure:
 
 Then your `trigger-file` property would be:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  devtools:
@@ -227,7 +224,7 @@ The `spring-devtools.properties` file can contain properties prefixed with `rest
 The `include` elements are items that should be pulled up into the "`restart`" classloader, and the `exclude` elements are items that should be pushed down into the "`base`" classloader.
 The value of the property is a regex pattern that is applied to the classpath, as shown in the following example:
 
-[source,yaml,indent=0,configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	restart:
 	  exclude:
@@ -280,7 +277,7 @@ You can configure global devtools settings by adding any of the following files 
 Any properties added to these file apply to _all_ Spring Boot applications on your machine that use devtools.
 For example, to configure restart to always use a <<using#using.devtools.restart.triggerfile, trigger file>>, you would add the following property to your `spring-boot-devtools` file:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  devtools:
@@ -307,7 +304,7 @@ Profile specific filenames (of the form `spring-boot-devtools-<profile>.properti
 Since Spring Boot relies entirely on the IDE to compile and copy files into the location from where Spring Boot can read them, you might find that there are times when certain changes are not reflected when devtools restarts the application.
 If you observe such problems constantly, try increasing the `spring.devtools.restart.poll-interval` and `spring.devtools.restart.quiet-period` parameters to the values that fit your development environment:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  devtools:
@@ -331,7 +328,7 @@ You should never enable support on a production deployment.
 
 To enable it, you need to make sure that `devtools` is included in the repackaged archive, as shown in the following listing:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<build>
 		<plugins>
@@ -361,7 +358,7 @@ The remote client application is designed to be run from within your IDE.
 You need to run `org.springframework.boot.devtools.RemoteSpringApplication` with the same classpath as the remote project that you connect to.
 The application's single required argument is the remote URL to which it connects.
 
-For example, if you are using Eclipse or STS and you have a project named `my-app` that you have deployed to Cloud Foundry, you would do the following:
+For example, if you are using Eclipse or Spring Tools and you have a project named `my-app` that you have deployed to Cloud Foundry, you would do the following:
 
 * Select `Run Configurations...` from the `Run` menu.
 * Create a new `Java Application` "`launch configuration`".
@@ -371,7 +368,7 @@ For example, if you are using Eclipse or STS and you have a project named `my-ap
 
 A running remote client might resemble the following listing:
 
-[indent=0,subs="attributes"]
+[indent=0,subs="verbatim,attributes"]
 ----
 	  .   ____          _                                              __ _ _
 	 /\\ / ___'_ __ _ _(_)_ __  __ _          ___               _      \ \ \ \

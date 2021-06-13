@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -25,16 +25,21 @@ import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
+import org.assertj.core.api.InstanceOfAssertFactories;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.actuate.metrics.AutoTimer;
+import org.springframework.boot.test.web.client.LocalHostUriTemplateHandler;
+import org.springframework.boot.web.client.RestTemplateBuilder;
+import org.springframework.boot.web.client.RootUriTemplateHandler;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.HttpRequest;
 import org.springframework.http.MediaType;
 import org.springframework.http.client.ClientHttpRequestExecution;
 import org.springframework.http.client.ClientHttpRequestInterceptor;
 import org.springframework.http.client.ClientHttpResponse;
+import org.springframework.mock.env.MockEnvironment;
 import org.springframework.test.web.client.MockRestServiceServer;
 import org.springframework.test.web.client.match.MockRestRequestMatchers;
 import org.springframework.test.web.client.response.MockRestResponseCreators;
@@ -134,6 +139,18 @@ class MetricsRestTemplateCustomizerTests {
 
 		this.mockServer.verify();
 		nestedMockServer.verify();
+	}
+
+	@Test
+	void whenCustomizerAndLocalHostUriTemplateHandlerAreUsedTogetherThenRestTemplateBuilderCanBuild() {
+		MockEnvironment environment = new MockEnvironment();
+		environment.setProperty("local.server.port", "8443");
+		LocalHostUriTemplateHandler uriTemplateHandler = new LocalHostUriTemplateHandler(environment, "https");
+		RestTemplate restTemplate = new RestTemplateBuilder(this.customizer).uriTemplateHandler(uriTemplateHandler)
+				.build();
+		assertThat(restTemplate.getUriTemplateHandler())
+				.asInstanceOf(InstanceOfAssertFactories.type(RootUriTemplateHandler.class))
+				.extracting(RootUriTemplateHandler::getRootUri).isEqualTo("https://localhost:8443");
 	}
 
 	private static final class TestInterceptor implements ClientHttpRequestInterceptor {

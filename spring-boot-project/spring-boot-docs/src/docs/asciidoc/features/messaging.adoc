@@ -27,7 +27,7 @@ NOTE: If you use `spring-boot-starter-activemq`, the necessary dependencies to c
 ActiveMQ configuration is controlled by external configuration properties in `+spring.activemq.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  activemq:
@@ -38,7 +38,7 @@ For example, you might declare the following section in `application.properties`
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  jms:
@@ -48,7 +48,7 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 
 If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  activemq:
@@ -77,7 +77,7 @@ Adding `org.apache.activemq:artemis-jms-server` to your application lets you use
 ActiveMQ Artemis configuration is controlled by external configuration properties in `+spring.artemis.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  artemis:
@@ -92,7 +92,7 @@ These can be specified as a comma-separated list to create them with the default
 
 By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` with sensible settings that you can control by external configuration properties in `+spring.jms.*+`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  jms:
@@ -102,7 +102,7 @@ By default, a `CachingConnectionFactory` wraps the native `ConnectionFactory` wi
 
 If you'd rather use native pooling, you can do so by adding a dependency to `org.messaginghub:pooled-jms` and configuring the `JmsPoolConnectionFactory` accordingly, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  artemis:
@@ -123,7 +123,7 @@ If you are running your application in an application server, Spring Boot tries 
 By default, the `java:/JmsXA` and `java:/XAConnectionFactory` location are checked.
 You can use the configprop:spring.jms.jndi-name[] property if you need to specify an alternative location, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  jms:
@@ -136,7 +136,7 @@ You can use the configprop:spring.jms.jndi-name[] property if you need to specif
 ==== Sending a Message
 Spring's `JmsTemplate` is auto-configured, and you can autowire it directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/jms/sending/MyBean.java[]
 ----
@@ -161,7 +161,7 @@ This also includes sending response messages that have been performed on the sam
 
 The following component creates a listener endpoint on the `someQueue` destination:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/jms/receiving/MyBean.java[]
 ----
@@ -172,14 +172,14 @@ If you need to create more `JmsListenerContainerFactory` instances or if you wan
 
 For instance, the following example exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/jms/receiving/custom/JmsConfiguration.java[]
+include::{docs-java}/features/messaging/jms/receiving/custom/MyJmsConfiguration.java[]
 ----
 
 Then you can use the factory in any `@JmsListener`-annotated method as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/jms/receiving/custom/MyBean.java[]
 ----
@@ -202,7 +202,7 @@ Spring uses `RabbitMQ` to communicate through the AMQP protocol.
 RabbitMQ configuration is controlled by external configuration properties in `+spring.rabbitmq.*+`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  rabbitmq:
@@ -214,7 +214,7 @@ For example, you might declare the following section in `application.properties`
 
 Alternatively, you could configure the same connection using the `addresses` attribute:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  rabbitmq:
@@ -237,7 +237,7 @@ TIP: See https://spring.io/blog/2010/06/14/understanding-amqp-the-protocol-used-
 ==== Sending a Message
 Spring's `AmqpTemplate` and `AmqpAdmin` are auto-configured, and you can autowire them directly into your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/amqp/sending/MyBean.java[]
 ----
@@ -249,7 +249,7 @@ If necessary, any `org.springframework.amqp.core.Queue` that is defined as a bea
 
 To retry operations, you can enable retries on the `AmqpTemplate` (for example, in the event that the broker connection is lost):
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  rabbitmq:
@@ -274,7 +274,7 @@ If a `MessageConverter` or a `MessageRecoverer` bean is defined, it is automatic
 
 The following sample component creates a listener endpoint on the `someQueue` queue:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/amqp/receiving/MyBean.java[]
 ----
@@ -288,14 +288,14 @@ Those two beans are exposed by the auto-configuration.
 
 For instance, the following configuration class exposes another factory that uses a specific `MessageConverter`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/amqp/receiving/custom/RabbitConfiguration.java[]
+include::{docs-java}/features/messaging/amqp/receiving/custom/MyRabbitConfiguration.java[]
 ----
 
 Then you can use the factory in any `@RabbitListener`-annotated method, as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/amqp/receiving/custom/MyBean.java[]
 ----
@@ -319,7 +319,7 @@ https://kafka.apache.org/[Apache Kafka] is supported by providing auto-configura
 Kafka configuration is controlled by external configuration properties in `spring.kafka.*`.
 For example, you might declare the following section in `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  kafka:
@@ -339,7 +339,7 @@ See {spring-boot-autoconfigure-module-code}/kafka/KafkaProperties.java[`KafkaPro
 ==== Sending a Message
 Spring's `KafkaTemplate` is auto-configured, and you can autowire it directly in your own beans, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/kafka/sending/MyBean.java[]
 ----
@@ -356,7 +356,7 @@ If no `KafkaListenerContainerFactory` has been defined, a default one is automat
 
 The following component creates a listener endpoint on the `someTopic` topic:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/kafka/receiving/MyBean.java[]
 ----
@@ -385,13 +385,13 @@ See also <<features#features.messaging.kafka.additional-properties>> for more in
 
 To use the factory bean, wire `StreamsBuilder` into your `@Bean` as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/messaging/kafka/streams/KafkaStreamsConfiguration.java[]
+include::{docs-java}/features/messaging/kafka/streams/MyKafkaStreamsConfiguration.java[]
 ----
 
 By default, the streams managed by the `StreamBuilder` object it creates are started automatically.
-You can customize this behaviour using the configprop:spring.kafka.streams.auto-startup[] property.
+You can customize this behavior using the configprop:spring.kafka.streams.auto-startup[] property.
 
 
 
@@ -408,7 +408,7 @@ Spring Boot auto-configuration supports all HIGH importance properties, some sel
 Only a subset of the properties supported by Kafka are available directly through the `KafkaProperties` class.
 If you wish to configure the producer or consumer with additional properties that are not directly supported, use the following properties:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  kafka:
@@ -432,7 +432,7 @@ This sets the common `prop.one` Kafka property to `first` (applies to producers,
 
 You can also configure the Spring Kafka `JsonDeserializer` as follows:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  kafka:
@@ -440,12 +440,12 @@ You can also configure the Spring Kafka `JsonDeserializer` as follows:
 	      value-deserializer: "org.springframework.kafka.support.serializer.JsonDeserializer"
 	      properties:
 	        "[spring.json.value.default.type]": "com.example.Invoice"
-	        "[spring.json.trusted.packages]": "com.example,org.acme"
+	        "[spring.json.trusted.packages]": "com.example.main,com.example.another"
 ----
 
 Similarly, you can disable the `JsonSerializer` default behavior of sending type information in headers:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  kafka:
@@ -470,21 +470,21 @@ There are several ways to do that:
 
 * Provide a system property to map embedded broker addresses into configprop:spring.kafka.bootstrap-servers[] in the test class:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/kafka/embedded/property/MyTest.java[tag=*]
 ----
 
 * Configure a property name on the `@EmbeddedKafka` annotation:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/messaging/kafka/embedded/annotation/MyTest.java[]
 ----
 
 * Use a placeholder in configuration properties:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  kafka:

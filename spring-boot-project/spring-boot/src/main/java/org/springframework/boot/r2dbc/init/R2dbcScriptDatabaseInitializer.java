@@ -22,6 +22,7 @@ import java.util.List;
 import io.r2dbc.spi.ConnectionFactory;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.r2dbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.core.io.Resource;
@@ -49,6 +50,11 @@ public class R2dbcScriptDatabaseInitializer extends AbstractScriptDatabaseInitia
 			DatabaseInitializationSettings settings) {
 		super(settings);
 		this.connectionFactory = connectionFactory;
+	}
+
+	@Override
+	protected boolean isEmbeddedDatabase() {
+		return EmbeddedDatabaseConnection.isEmbedded(this.connectionFactory);
 	}
 
 	@Override

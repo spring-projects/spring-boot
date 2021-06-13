@@ -3,7 +3,7 @@
 Configuration metadata files are located inside jars under `META-INF/spring-configuration-metadata.json`.
 They use a JSON format with items categorized under either "`groups`" or "`properties`" and additional values hints categorized under "hints", as shown in the following example:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"groups": [
 		{
@@ -66,12 +66,13 @@ They use a JSON format with items categorized under either "`groups`" or "`prope
 ----
 
 Each "`property`" is a configuration item that the user specifies with a given value.
-For example, `server.port` and `server.address` might be specified in `application.properties`, as follows:
+For example, `server.port` and `server.address` might be specified in your `application.properties`/`application.yaml`, as follows:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	server.port=9090
-	server.address=127.0.0.1
+	server:
+	  port: 9090
+	  address: 127.0.0.1
 ----
 
 The "`groups`" are higher level items that do not themselves specify a value but instead provide a contextual grouping for properties.
@@ -142,7 +143,7 @@ The JSON object contained in the `properties` array can contain the attributes d
 
 | `type`
 | String
-| The full signature of the data type of the property (for example, `java.lang.String`) but also a full generic type (such as `java.util.Map<java.lang.String,acme.MyEnum>`).
+| The full signature of the data type of the property (for example, `java.lang.String`) but also a full generic type (such as `java.util.Map<java.lang.String,com.example.MyEnum>`).
   You can use this attribute to guide the user as to the types of values that they can enter.
   For consistency, the type of a primitive is specified by using its wrapper counterpart (for example, `boolean` becomes `java.lang.Boolean`).
   Note that this class may be a complex type that gets converted from a `String` as values are bound.
@@ -204,31 +205,12 @@ This is still supported in a deprecated fashion and should no longer be used.
 If no reason and replacement are available, an empty `deprecation` object should be set.
 
 Deprecation can also be specified declaratively in code by adding the `@DeprecatedConfigurationProperty` annotation to the getter exposing the deprecated property.
-For instance, assume that the `app.acme.target` property was confusing and was renamed to `app.acme.name`.
+For instance, assume that the `my.app.target` property was confusing and was renamed to `my.app.name`.
 The following example shows how to handle that situation:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@ConfigurationProperties("app.acme")
-	public class AcmeProperties {
-
-		private String name;
-
-		public String getName() { ... }
-
-		public void setName(String name) { ... }
-
-		@DeprecatedConfigurationProperty(replacement = "app.acme.name")
-		@Deprecated
-		public String getTarget() {
-			return getName();
-		}
-
-		@Deprecated
-		public void setTarget(String target) {
-			setName(target);
-		}
-	}
+include::{docs-java}/configurationmetadata/format/group/MyProperties.java[]
 ----
 
 NOTE: There is no way to set a `level`.

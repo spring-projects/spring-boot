@@ -28,10 +28,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-@SpringBootConfiguration
+@SpringBootConfiguration(proxyBeanMethods = false)
 @ImportAutoConfiguration({ ServletWebServerFactoryAutoConfiguration.class, DispatcherServletAutoConfiguration.class,
 		JacksonAutoConfiguration.class, HttpMessageConvertersAutoConfiguration.class })
-class MySpringBootTestsConfiguration {
+public class MySpringBootTestsConfiguration {
 
 	@RestController
 	private static class ExampleController {

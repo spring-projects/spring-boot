@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -44,7 +44,18 @@ public class ConfigDataLocationNotFoundException extends ConfigDataNotFoundExcep
 	 * @param cause the exception cause
 	 */
 	public ConfigDataLocationNotFoundException(ConfigDataLocation location, Throwable cause) {
-		super(getMessage(location), cause);
+		this(location, getMessage(location), cause);
+	}
+
+	/**
+	 * Create a new {@link ConfigDataLocationNotFoundException} instance.
+	 * @param location the location that could not be found
+	 * @param message the exception message
+	 * @param cause the exception cause
+	 * @since 2.4.7
+	 */
+	public ConfigDataLocationNotFoundException(ConfigDataLocation location, String message, Throwable cause) {
+		super(message, cause);
 		Assert.notNull(location, "Location must not be null");
 		this.location = location;
 	}

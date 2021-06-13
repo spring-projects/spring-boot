@@ -22,7 +22,7 @@ The <<using#using.using-the-springbootapplication-annotation, `@SpringBootApplic
 For example, if you are writing a JPA application, the package of the `@SpringBootApplication` annotated class is used to search for `@Entity` items.
 Using a root package also allows component scan to apply only on your project.
 
-TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` and `@ComponentScan` annotations that it imports defines that behaviour so you can also use those instead.
+TIP: If you don't want to use `@SpringBootApplication`, the `@EnableAutoConfiguration` and `@ComponentScan` annotations that it imports defines that behavior so you can also use those instead.
 
 The following listing shows a typical layout:
 
@@ -31,7 +31,7 @@ The following listing shows a typical layout:
 	com
 	 +- example
 	     +- myapplication
-	         +- Application.java
+	         +- MyApplication.java
 	         |
 	         +- customer
 	         |   +- Customer.java
@@ -46,21 +46,9 @@ The following listing shows a typical layout:
 	             +- OrderRepository.java
 ----
 
-The `Application.java` file would declare the `main` method, along with the basic `@SpringBootApplication`, as follows:
+The `MyApplication.java` file would declare the `main` method, along with the basic `@SpringBootApplication`, as follows:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	package com.example.myapplication;
-
-	import org.springframework.boot.SpringApplication;
-	import org.springframework.boot.autoconfigure.SpringBootApplication;
-
-	@SpringBootApplication
-	public class Application {
-
-		public static void main(String[] args) {
-			SpringApplication.run(Application.class, args);
-		}
-
-	}
+include::{docs-java}/using/structuringyourcode/locatingthemainclass/MyApplication.java[]
 ----

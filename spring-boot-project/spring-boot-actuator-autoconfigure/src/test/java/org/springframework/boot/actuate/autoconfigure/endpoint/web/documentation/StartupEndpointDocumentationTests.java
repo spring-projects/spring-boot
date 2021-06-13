@@ -48,11 +48,10 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 	void appendSampleStartupSteps(@Autowired BufferingApplicationStartup applicationStartup) {
 		StartupStep starting = applicationStartup.start("spring.boot.application.starting");
 		starting.tag("mainApplicationClass", "com.example.startup.StartupApplication");
-		starting.end();
-
 		StartupStep instantiate = applicationStartup.start("spring.beans.instantiate");
 		instantiate.tag("beanName", "homeController");
 		instantiate.end();
+		starting.end();
 	}
 
 	@Test
@@ -80,7 +79,7 @@ class StartupEndpointDocumentationTests extends MockMvcEndpointDocumentationTest
 				fieldWithPath("timeline.events.[].startupStep.name").description("The name of the StartupStep."),
 				fieldWithPath("timeline.events.[].startupStep.id").description("The id of this StartupStep."),
 				fieldWithPath("timeline.events.[].startupStep.parentId")
-						.description("The parent id for this StartupStep."),
+						.description("The parent id for this StartupStep.").optional(),
 				fieldWithPath("timeline.events.[].startupStep.tags")
 						.description("An array of key/value pairs with additional step info."),
 				fieldWithPath("timeline.events.[].startupStep.tags[].key")

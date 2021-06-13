@@ -9,7 +9,8 @@
 :sectnums:
 :hide-uri-scheme:
 :docinfo: shared,private
-:chomp: tags formatters headers packages
+:attribute-missing: warn
+:chomp: default headers packages
 :spring-boot-artifactory-repo: snapshot
 :github-tag: main
 :spring-boot-version: current
@@ -18,6 +19,7 @@
 :github-issues: https://github.com/{github-repo}/issues/
 :github-wiki: https://github.com/{github-repo}/wiki
 :docs-java: ../../main/java/org/springframework/boot/docs
+:docs-groovy: ../../main/groovy/org/springframework/boot/docs
 :spring-boot-code: https://github.com/{github-repo}/tree/{github-tag}
 :spring-boot-api: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/api
 :spring-boot-docs: https://docs.spring.io/spring-boot/docs/{spring-boot-version}/reference
@@ -62,6 +64,7 @@
 :spring-data-geode: https://spring.io/projects/spring-data-geode
 :spring-data-jpa: https://spring.io/projects/spring-data-jpa
 :spring-data-jpa-api: https://docs.spring.io/spring-data/jpa/docs/{spring-data-jpa-version}/api/org/springframework/data/jpa
+:spring-data-jpa-docs: https://docs.spring.io/spring-data/jpa/docs/{spring-data-jpa-version}/reference/html
 :spring-data-jdbc-docs: https://docs.spring.io/spring-data/jdbc/docs/{spring-data-jdbc-version}/reference/html/
 :spring-data-ldap: https://spring.io/projects/spring-data-ldap
 :spring-data-mongodb: https://spring.io/projects/spring-data-mongodb

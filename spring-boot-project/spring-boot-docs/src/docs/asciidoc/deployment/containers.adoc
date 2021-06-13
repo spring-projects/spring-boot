@@ -5,7 +5,7 @@ Certain PaaS implementations may also choose to unpack archives before they run.
 For example, Cloud Foundry operates this way.
 One way to run an unpacked archive is by starting the appropriate launcher, as follows:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ jar -xf myapp.jar
 	$ java org.springframework.boot.loader.JarLauncher
@@ -16,7 +16,7 @@ At runtime you shouldn't expect any differences.
 
 Once you have unpacked the jar file, you can also get an extra boost to startup time by running the app with its "natural" main method instead of the `JarLauncher`. For example:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ jar -xf myapp.jar
 	$ java -cp BOOT-INF/classes:BOOT-INF/lib/* com.example.MyApplication

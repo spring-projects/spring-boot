@@ -91,7 +91,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 	private Class<T> type;
 
-	private final T deriveFrom;
+	private final DataSource deriveFrom;
 
 	private DataSourceBuilder(ClassLoader classLoader) {
 		this.classLoader = classLoader;
@@ -168,23 +168,18 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	public T build() {
 		DataSourceProperties<T> properties = DataSourceProperties.forType(this.classLoader, this.type);
-		DataSourceProperties<T> derriveFromProperties = (this.deriveFrom != null)
-				? DataSourceProperties.forType(this.classLoader, this.type) : null;
+		DataSourceProperties<DataSource> deriveFromProperties = getDeriveFromProperties();
 		Class<? extends T> instanceType = (this.type != null) ? this.type : properties.getDataSourceInstanceType();
 		T dataSource = BeanUtils.instantiateClass(instanceType);
 		Set<DataSourceProperty> applied = new HashSet<>();
 		for (DataSourceProperty property : DataSourceProperty.values()) {
-			if (this.values.containsKey(property)) {
-				String value = this.values.get(property);
+			String value = this.values.get(property);
+			if (!this.values.containsKey(property) && deriveFromProperties != null && properties.canSet(property)) {
+				value = deriveFromProperties.get(this.deriveFrom, property);
+			}
+			if (value != null) {
 				properties.set(dataSource, property, value);
 				applied.add(property);
-			}
-			else if (derriveFromProperties != null && properties.canSet(property)) {
-				String value = derriveFromProperties.get(this.deriveFrom, property);
-				if (value != null) {
-					properties.set(dataSource, property, value);
-					applied.add(property);
-				}
 			}
 		}
 		if (!applied.contains(DataSourceProperty.DRIVER_CLASS_NAME)
@@ -195,6 +190,14 @@ public final class DataSourceBuilder<T extends DataSource> {
 			properties.set(dataSource, DataSourceProperty.DRIVER_CLASS_NAME, driver.getDriverClassName());
 		}
 		return dataSource;
+	}
+
+	@SuppressWarnings("unchecked")
+	private DataSourceProperties<DataSource> getDeriveFromProperties() {
+		if (this.deriveFrom == null) {
+			return null;
+		}
+		return DataSourceProperties.forType(this.classLoader, (Class<DataSource>) this.deriveFrom.getClass());
 	}
 
 	/**
@@ -230,7 +233,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 				dataSource = dataSource.unwrap(DataSource.class);
 			}
 			catch (SQLException ex) {
-				throw new IllegalStateException("Unable to unwap embedded database", ex);
+				throw new IllegalStateException("Unable to unwrap embedded database", ex);
 			}
 		}
 		return new DataSourceBuilder<>(dataSource);
@@ -251,31 +254,49 @@ public final class DataSourceBuilder<T extends DataSource> {
 	 */
 	private enum DataSourceProperty {
 
-		URL("url"),
+		URL(false, "url", "URL"),
 
-		DRIVER_CLASS_NAME("driverClassName"),
+		DRIVER_CLASS_NAME(true, "driverClassName"),
 
-		USERNAME("username"),
+		USERNAME(false, "username", "user"),
 
-		PASSWORD("password");
+		PASSWORD(false, "password");
 
-		private final String name;
+		private boolean optional;
 
-		DataSourceProperty(String name) {
-			this.name = name;
+		private final String[] names;
+
+		DataSourceProperty(boolean optional, String... names) {
+			this.optional = optional;
+			this.names = names;
+		}
+
+		boolean isOptional() {
+			return this.optional;
 		}
 
 		@Override
 		public String toString() {
-			return this.name;
+			return this.names[0];
 		}
 
 		Method findSetter(Class<?> type) {
-			return ReflectionUtils.findMethod(type, "set" + StringUtils.capitalize(this.name), String.class);
+			return extracted("set", type);
 		}
 
 		Method findGetter(Class<?> type) {
-			return ReflectionUtils.findMethod(type, "get" + StringUtils.capitalize(this.name), String.class);
+			return extracted("get", type);
+		}
+
+		private Method extracted(String prefix, Class<?> type) {
+			for (String candidate : this.names) {
+				Method method = ReflectionUtils.findMethod(type, prefix + StringUtils.capitalize(candidate),
+						String.class);
+				if (method != null) {
+					return method;
+				}
+			}
+			return null;
 		}
 
 	}
@@ -330,18 +351,23 @@ public final class DataSourceBuilder<T extends DataSource> {
 		@Override
 		public void set(T dataSource, DataSourceProperty property, String value) {
 			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
-			mappedProperty.set(dataSource, value);
+			if (mappedProperty != null) {
+				mappedProperty.set(dataSource, value);
+			}
 		}
 
 		@Override
 		public String get(T dataSource, DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = getMapping(property);
-			return mappedProperty.get(dataSource);
+			if (mappedProperty != null) {
+				return mappedProperty.get(dataSource);
+			}
+			return null;
 		}
 
 		private MappedDataSourceProperty<T, ?> getMapping(DataSourceProperty property) {
 			MappedDataSourceProperty<T, ?> mappedProperty = this.mappedProperties.get(property);
-			UnsupportedDataSourcePropertyException.throwIf(mappedProperty == null,
+			UnsupportedDataSourcePropertyException.throwIf(!property.isOptional() && mappedProperty == null,
 					() -> "No mapping found for " + property);
 			return mappedProperty;
 		}
@@ -426,8 +452,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		void set(T dataSource, String value) {
 			try {
-				UnsupportedDataSourcePropertyException.throwIf(this.setter == null,
-						() -> "No setter mapped for '" + this.property + "' property");
+				if (this.setter == null) {
+					UnsupportedDataSourcePropertyException.throwIf(!this.property.isOptional(),
+							() -> "No setter mapped for '" + this.property + "' property");
+					return;
+				}
 				this.setter.set(dataSource, convertFromString(value));
 			}
 			catch (SQLException ex) {
@@ -437,8 +466,11 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		String get(T dataSource) {
 			try {
-				UnsupportedDataSourcePropertyException.throwIf(this.getter == null,
-						() -> "No getter mapped for '" + this.property + "' property");
+				if (this.getter == null) {
+					UnsupportedDataSourcePropertyException.throwIf(!this.property.isOptional(),
+							() -> "No getter mapped for '" + this.property + "' property");
+					return null;
+				}
 				return convertToString(this.getter.get(dataSource));
 			}
 			catch (SQLException ex) {
@@ -475,7 +507,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 
 		private final Map<DataSourceProperty, Method> setters;
 
-		private Class<T> dataSourceType;
+		private final Class<T> dataSourceType;
 
 		ReflectionDataSourceProperties(Class<T> dataSourceType) {
 			Assert.state(dataSourceType != null, "No supported DataSource type found");
@@ -509,19 +541,27 @@ public final class DataSourceBuilder<T extends DataSource> {
 		@Override
 		public void set(T dataSource, DataSourceProperty property, String value) {
 			Method method = getMethod(property, this.setters);
-			ReflectionUtils.invokeMethod(method, dataSource, value);
+			if (method != null) {
+				ReflectionUtils.invokeMethod(method, dataSource, value);
+			}
 		}
 
 		@Override
 		public String get(T dataSource, DataSourceProperty property) {
 			Method method = getMethod(property, this.getters);
-			return (String) ReflectionUtils.invokeMethod(method, dataSource);
+			if (method != null) {
+				return (String) ReflectionUtils.invokeMethod(method, dataSource);
+			}
+			return null;
 		}
 
-		private Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> setters2) {
-			Method method = setters2.get(property);
-			UnsupportedDataSourcePropertyException.throwIf(method == null,
-					() -> "Unable to find sutable method for " + property);
+		private Method getMethod(DataSourceProperty property, Map<DataSourceProperty, Method> methods) {
+			Method method = methods.get(property);
+			if (method == null) {
+				UnsupportedDataSourcePropertyException.throwIf(!property.isOptional(),
+						() -> "Unable to find suitable method for " + property);
+				return null;
+			}
 			ReflectionUtils.makeAccessible(method);
 			return method;
 		}
@@ -543,7 +583,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Hikari.
+	 * {@link DataSourceProperties} for Hikari.
 	 */
 	private static class HikariDataSourceProperties extends MappedDataSourceProperties<HikariDataSource> {
 
@@ -558,7 +598,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Tomcat Pool.
+	 * {@link DataSourceProperties} for Tomcat Pool.
 	 */
 	private static class TomcatPoolDataSourceProperties
 			extends MappedDataSourceProperties<org.apache.tomcat.jdbc.pool.DataSource> {
@@ -577,7 +617,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for DBCP2.
+	 * {@link DataSourceProperties} for DBCP2.
 	 */
 	private static class MappedDbcp2DataSource extends MappedDataSourceProperties<BasicDataSource> {
 
@@ -592,7 +632,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Oracle Pool.
+	 * {@link DataSourceProperties} for Oracle Pool.
 	 */
 	private static class OraclePoolDataSourceProperties extends MappedDataSourceProperties<PoolDataSource> {
 
@@ -612,7 +652,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Spring's {@link SimpleDriverDataSource}.
+	 * {@link DataSourceProperties} for Spring's {@link SimpleDriverDataSource}.
 	 */
 	private static class SimpleDataSourceProperties extends MappedDataSourceProperties<SimpleDriverDataSource> {
 
@@ -628,7 +668,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Oracle.
+	 * {@link DataSourceProperties} for Oracle.
 	 */
 	private static class OracleDataSourceProperties extends MappedDataSourceProperties<OracleDataSource> {
 
@@ -641,7 +681,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for H2.
+	 * {@link DataSourceProperties} for H2.
 	 */
 	private static class H2DataSourceProperties extends MappedDataSourceProperties<JdbcDataSource> {
 
@@ -654,7 +694,7 @@ public final class DataSourceBuilder<T extends DataSource> {
 	}
 
 	/**
-	 * {@link MappedDataSource} for Postgres.
+	 * {@link DataSourceProperties} for Postgres.
 	 */
 	private static class PostgresDataSourceProperties extends MappedDataSourceProperties<PGSimpleDataSource> {
 

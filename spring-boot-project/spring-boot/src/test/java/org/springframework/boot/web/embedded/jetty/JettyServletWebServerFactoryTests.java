@@ -384,7 +384,7 @@ class JettyServletWebServerFactoryTests extends AbstractJettyServletWebServerFac
 	}
 
 	@Test
-	void faultyListenerCausesStartFailure() throws Exception {
+	void faultyListenerCausesStartFailure() {
 		JettyServletWebServerFactory factory = getFactory();
 		factory.addServerCustomizers((JettyServerCustomizer) (server) -> {
 			Collection<WebAppContext> contexts = server.getBeans(WebAppContext.class);

@@ -35,7 +35,7 @@ This depends on the type of application and its configuration.
 
 For WebFlux application (i.e. of type `WebApplicationType.REACTIVE`), the RSocket server will be plugged into the Web Server only if the following properties match:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  rsocket:
@@ -49,7 +49,7 @@ WARNING: Plugging RSocket into a web server is only supported with Reactor Netty
 Alternatively, an RSocket TCP or websocket server is started as an independent, embedded server.
 Besides the dependency requirements, the only required configuration is to define a port for that server:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  rsocket:
@@ -73,14 +73,14 @@ Once the `RSocket` channel is established between server and client, any party c
 
 As a server, you can get injected with an `RSocketRequester` instance on any handler method of an RSocket `@Controller`.
 As a client, you need to configure and establish an RSocket connection first.
-Spring Boot auto-configures an `RSocketRequester.Builder` for such cases with the expected codecs.
+Spring Boot auto-configures an `RSocketRequester.Builder` for such cases with the expected codecs and apply any `RSocketConnectorConfigurer` bean.
 
 The `RSocketRequester.Builder` instance is a prototype bean, meaning each injection point will provide you with a new instance .
 This is done on purpose since this builder is stateful and you shouldn't create requesters with different setups using the same instance.
 
 The following code shows a typical example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/rsocket//requester/MyService.java[]
 ----

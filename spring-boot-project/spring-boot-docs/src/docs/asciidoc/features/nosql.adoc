@@ -11,7 +11,7 @@ Spring Data provides additional projects that help you access a variety of NoSQL
 * {spring-data-couchbase}[Couchbase]
 * {spring-data-ldap}[LDAP]
 
-Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Elasticsearch, Solr Cassandra, Couchbase, and LDAP.
+Spring Boot provides auto-configuration for Redis, MongoDB, Neo4j, Solr, Elasticsearch, Cassandra, Couchbase, LDAP and InfluxDB.
 You can make use of the other projects, but you must configure them yourself.
 Refer to the appropriate reference documentation at {spring-data}.
 
@@ -36,7 +36,7 @@ You can inject an auto-configured `RedisConnectionFactory`, `StringRedisTemplate
 By default, the instance tries to connect to a Redis server at `localhost:6379`.
 The following listing shows an example of such a bean:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/redis/connecting/MyBean.java[]
 ----
@@ -45,7 +45,8 @@ TIP: You can also register an arbitrary number of beans that implement `LettuceC
 If you use Jedis, `JedisClientConfigurationBuilderCustomizer` is also available.
 
 If you add your own `@Bean` of any of the auto-configured types, it replaces the default (except in the case of `RedisTemplate`, when the exclusion is based on the bean name, `redisTemplate`, not its type).
-By default, if `commons-pool2` is on the classpath, you get a pooled connection factory.
+
+A pooled connection factory is auto-configured if `commons-pool2` is on the classpath and at least one `Pool` option of {spring-boot-autoconfigure-module-code}/data/redis/RedisProperties.java[`RedisProperties`] is set.
 
 
 
@@ -62,7 +63,7 @@ To access MongoDB databases, you can inject an auto-configured `org.springframew
 By default, the instance tries to connect to a MongoDB server at `mongodb://localhost/test`.
 The following example shows how to connect to a MongoDB database:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/mongodb/connecting/MyBean.java[]
 ----
@@ -77,15 +78,18 @@ Each will be called in order with the `MongoClientSettings.Builder` that is used
 
 You can set the configprop:spring.data.mongodb.uri[] property to change the URL and configure additional settings such as the _replica set_, as shown in the following example:
 
-[source,properties,indent=0,configprops]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
-	spring.data.mongodb.uri=mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test
+	spring:
+	  data:
+	    mongodb:
+	      uri: "mongodb://user:secret@mongo1.example.com:12345,mongo2.example.com:23456/test"
 ----
 
 Alternatively, you can specify connection details using discrete properties.
 For example, you might declare the following settings in your `application.properties`:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  data:
@@ -113,7 +117,7 @@ The auto-configuration configures this factory automatically if Netty is availab
 {spring-data-mongodb}[Spring Data MongoDB] provides a {spring-data-mongodb-api}/core/MongoTemplate.html[`MongoTemplate`] class that is very similar in its design to Spring's `JdbcTemplate`.
 As with `JdbcTemplate`, Spring Boot auto-configures a bean for you to inject the template, as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/mongodb/template/MyBean.java[]
 ----
@@ -130,7 +134,7 @@ As with the JPA repositories discussed earlier, the basic principle is that quer
 In fact, both Spring Data JPA and Spring Data MongoDB share the same common infrastructure.
 You could take the JPA example from earlier and, assuming that `City` is now a MongoDB data class rather than a JPA `@Entity`, it works in the same way, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/mongodb/repositories/CityRepository.java[]
 ----
@@ -172,7 +176,7 @@ To access a Neo4j server, you can inject an auto-configured `org.neo4j.driver.Dr
 By default, the instance tries to connect to a Neo4j server at `localhost:7687` using the Bolt protocol.
 The following example shows how to inject a Neo4j `Driver` that gives you access, amongst other things, to a `Session`:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/neo4j/connecting/MyBean.java[]
 ----
@@ -180,7 +184,7 @@ include::{docs-java}/features/nosql/neo4j/connecting/MyBean.java[]
 You can configure various aspects of the driver using `spring.neo4j.*` properties.
 The following example shows how to configure the uri and credentials to use:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  neo4j:
@@ -204,7 +208,7 @@ For complete details of Spring Data Neo4j, refer to the {spring-data-neo4j-docs}
 Spring Data Neo4j shares the common infrastructure with Spring Data JPA as many other Spring Data modules do.
 You could take the JPA example from earlier and define `City` as Spring Data Neo4j `@Node` rather than JPA `@Entity` and the repository abstraction works in the same way, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/neo4j/repositories/CityRepository.java[]
 ----
@@ -220,9 +224,9 @@ You can customize the locations to look for repositories and entities by using `
 In an application using the reactive style, a `ReactiveTransactionManager` is not auto-configured.
 To enable transaction management, the following bean must be defined in your configuration:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/nosql/neo4j/repositories/Neo4jReactiveTransactionManagerConfiguration.java[]
+include::{docs-java}/features/nosql/neo4j/repositories/MyNeo4jConfiguration.java[]
 ----
 ====
 
@@ -241,7 +245,7 @@ You can inject an auto-configured `SolrClient` instance as you would any other S
 By default, the instance tries to connect to a server at `http://localhost:8983/solr`.
 The following example shows how to inject a Solr bean:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/solr/connecting/MyBean.java[]
 ----
@@ -272,7 +276,7 @@ Spring Boot provides support for the "High Level" client, which ships with `org.
 If you have this dependency on the classpath, Spring Boot will auto-configure and register a `RestHighLevelClient` bean that by default targets `http://localhost:9200`.
 You can further tune how `RestHighLevelClient` is configured, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  elasticsearch:
@@ -291,7 +295,7 @@ TIP: If your application needs access to a "Low Level" `RestClient`, you can get
 Additionally, if `elasticsearch-rest-client-sniffer` is on the classpath, a `Sniffer` is auto-configured to automatically discover nodes from a running Elasticsearch cluster and set them to the `RestHighLevelClient` bean.
 You can further tune how `Sniffer` is configured, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  elasticsearch:
@@ -312,7 +316,7 @@ By default, Spring Boot will auto-configure and register a `ReactiveElasticsearc
 bean that targets `http://localhost:9200`.
 You can further tune how it is configured, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  data:
@@ -339,7 +343,7 @@ With this configuration in place, an
 `ElasticsearchRestTemplate` can be injected like any other Spring bean,
 as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/elasticsearch/connectingusingspringdata/MyBean.java[]
 ----
@@ -367,7 +371,7 @@ Same applies to `ReactiveElasticsearchTemplate` and `ReactiveElasticsearchOperat
 
 You can choose to disable the repositories support with the following property:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
     spring:
       data:
@@ -392,7 +396,7 @@ You can inject an auto-configured `CassandraTemplate` or a Cassandra `CqlSession
 The `spring.data.cassandra.*` properties can be used to customize the connection.
 Generally, you provide `keyspace-name` and `contact-points` as well the local datacenter name, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  data:
@@ -404,7 +408,7 @@ Generally, you provide `keyspace-name` and `contact-points` as well the local da
 
 If the port is the same for all your contact points you can use a shortcut and only specify the host names, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  data:
@@ -432,7 +436,7 @@ NOTE: If you're using `CqlSessionBuilder` to create multiple `CqlSession` beans,
 
 The following code listing shows how to inject a Cassandra bean:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/cassandra/connecting/MyBean.java[]
 ----
@@ -464,7 +468,7 @@ You can get a `Cluster` by adding the Couchbase SDK and some configuration.
 The `spring.couchbase.*` properties can be used to customize the connection.
 Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master/rfc/0011-connection-string.md[connection string], username, and password, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  couchbase:
@@ -476,7 +480,7 @@ Generally, you provide the https://github.com/couchbaselabs/sdk-rfcs/blob/master
 It is also possible to customize some of the `ClusterEnvironment` settings.
 For instance, the following configuration changes the timeout to use to open a new `Bucket` and enables SSL support:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  couchbase:
@@ -501,7 +505,7 @@ For complete details of Spring Data Couchbase, refer to the {spring-data-couchba
 You can inject an auto-configured `CouchbaseTemplate` instance as you would with any other Spring Bean, provided a `CouchbaseClientFactory` bean is available.
 This happens when a `Cluster` is available, as described above, and a bucket name has been specified:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  data:
@@ -511,7 +515,7 @@ This happens when a `Cluster` is available, as described above, and a bucket nam
 
 The following examples shows how to inject a `CouchbaseTemplate` bean:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/couchbase/repositories/MyBean.java[]
 ----
@@ -525,9 +529,9 @@ There are a few beans that you can define in your own configuration to override 
 To avoid hard-coding those names in your own config, you can reuse `BeanNames` provided by Spring Data Couchbase.
 For instance, you can customize the converters to use, as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/nosql/couchbase/repositories/CouchbaseConversionsConfiguration.java[]
+include::{docs-java}/features/nosql/couchbase/repositories/MyCouchbaseConfiguration.java[]
 ----
 
 
@@ -546,7 +550,7 @@ There is a `spring-boot-starter-data-ldap` "`Starter`" for collecting the depend
 ==== Connecting to an LDAP Server
 To connect to an LDAP server, make sure you declare a dependency on the `spring-boot-starter-data-ldap` "`Starter`" or `spring-ldap-core` and then declare the URLs of your server in your application.properties, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  ldap:
@@ -572,7 +576,7 @@ For complete details of Spring Data LDAP, refer to the https://docs.spring.io/sp
 You can also inject an auto-configured `LdapTemplate` instance as you would with any other Spring Bean, as shown in the following example:
 
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/nosql/ldap/repositories/MyBean.java[]
 ----
@@ -584,7 +588,7 @@ include::{docs-java}/features/nosql/ldap/repositories/MyBean.java[]
 For testing purposes, Spring Boot supports auto-configuration of an in-memory LDAP server from https://ldap.com/unboundid-ldap-sdk-for-java/[UnboundID].
 To configure the server, add a dependency to `com.unboundid:unboundid-ldapsdk` and declare a configprop:spring.ldap.embedded.base-dn[] property, as follows:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  ldap:
@@ -598,7 +602,7 @@ It is possible to define multiple base-dn values, however, since distinguished n
 
 In yaml files, you can use the yaml list notation. In properties files, you must include the index as part of the property name:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring.ldap.embedded.base-dn:
 	  - dc=spring,dc=io
@@ -628,7 +632,7 @@ https://www.influxdata.com/[InfluxDB] is an open-source time series database opt
 ==== Connecting to InfluxDB
 Spring Boot auto-configures an `InfluxDB` instance, provided the `influxdb-java` client is on the classpath and the URL of the database is set, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  influx:

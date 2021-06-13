@@ -1,3 +1,0 @@
-[[application-properties.security]]
-== Security Properties [[security-properties]]
-include::documented-application-properties/security.adoc[]

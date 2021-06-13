@@ -37,15 +37,7 @@ An exception is thrown if more than one candidate is found.
 === Example Repackage Implementation
 The following example shows a typical repackage implementation:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	Repackager repackager = new Repackager(sourceJarFile);
-	repackager.setBackupSource(false);
-	repackager.repackage(new Libraries() {
-				@Override
-				public void doWithLibraries(LibraryCallback callback) throws IOException {
-					// Build system specific implementation, callback for each dependency
-					// callback.library(new Library(nestedFile, LibraryScope.COMPILE));
-				}
-			});
+include::{docs-java}/buildtoolplugins/otherbuildsystems/examplerepackageimplementation/MyBuildTool.java[]
 ----

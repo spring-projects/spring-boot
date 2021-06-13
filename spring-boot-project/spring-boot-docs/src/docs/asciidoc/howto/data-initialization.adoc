@@ -43,7 +43,9 @@ It loads SQL from the standard root classpath locations: `schema.sql` and `data.
 In addition, Spring Boot processes the `schema-$\{platform}.sql` and `data-$\{platform}.sql` files (if present), where `platform` is the value of configprop:spring.sql.init.platform[].
 This allows you to switch to database-specific scripts if necessary.
 For example, you might choose to set it to the vendor name of the database (`hsqldb`, `h2`, `oracle`, `mysql`, `postgresql`, and so on).
-SQL database initialization can be disabled by setting configprop:spring.sql.init.enabled[] to `false`.
+By default, SQL database initialization is only performed when using an embedded in-memory database.
+To always initialize an SQL database, irrespective of its type, set configprop:spring.sql.init.mode[] to `always`.
+Similarly, to disable initialization, set configprop:spring.sql.init.mode[] to `never`.
 By default, Spring Boot enables the fail-fast feature of its script-based database initializer.
 This means that, if the scripts cause exceptions, the application fails to start.
 You can tune that behavior by setting configprop:spring.sql.init.continue-on-error[].
@@ -66,7 +68,7 @@ Spring Boot can detect your database type and execute those scripts on startup.
 If you use an embedded database, this happens by default.
 You can also enable it for any database type, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  batch:
@@ -93,7 +95,7 @@ By default, they are in a directory called `classpath:db/migration`, but you can
 This is a comma-separated list of one or more `classpath:` or `filesystem:` locations.
 For example, the following configuration would search for scripts in both the default classpath location and the `/opt/migration` directory:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  flyway:
@@ -103,7 +105,7 @@ For example, the following configuration would search for scripts in both the de
 You can also add a special `\{vendor}` placeholder to use vendor-specific scripts.
 Assume the following:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  flyway:
@@ -141,7 +143,7 @@ For example, you can place test-specific migrations in `src/test/resources` and 
 Also, you can use profile-specific configuration to customize `spring.flyway.locations` so that certain migrations run only when a particular profile is active.
 For example, in `application-dev.properties`, you might specify the following setting:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  flyway:

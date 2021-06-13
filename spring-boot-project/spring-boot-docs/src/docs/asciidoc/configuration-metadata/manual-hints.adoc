@@ -16,26 +16,21 @@ Each value may have a description as well.
 If your property is of type `Map`, you can provide hints for both the keys and the values (but not for the map itself).
 The special `.keys` and `.values` suffixes must refer to the keys and the values, respectively.
 
-Assume a `sample.contexts` maps magic `String` values to an integer, as shown in the following example:
+Assume a `my.contexts` maps magic `String` values to an integer, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@ConfigurationProperties("sample")
-	public class SampleProperties {
-
-		private Map<String,Integer> contexts;
-		// getters and setters
-	}
+include::{docs-java}/configurationmetadata/manualhints/valuehint/MyProperties.java[]
 ----
 
 The magic values are (in this example) are `sample1` and `sample2`.
 In order to offer additional content assistance for the keys, you could add the following JSON to <<configuration-metadata#configuration-metadata.annotation-processor.adding-additional-metadata,the manual metadata of the module>>:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"hints": [
 		{
-			"name": "sample.contexts.keys",
+			"name": "my.contexts.keys",
 			"values": [
 				{
 					"value": "sample1"
@@ -106,7 +101,7 @@ This provider is typically used if you have a list of values and any extra value
 
 The following example offers `on` and `off` as auto-completion values for `system.state`:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"hints": [
 		{
@@ -157,7 +152,7 @@ This provider supports the following parameters:
 
 The following metadata snippet corresponds to the standard `server.servlet.jsp.class-name` property that defines the `JspServlet` class name to use:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"hints": [
 		{
@@ -207,7 +202,7 @@ TIP: If multiple values can be provided, use a `Collection` or _Array_ type to t
 The following metadata snippet corresponds to the standard `spring.liquibase.change-log` property that defines the path to the changelog to use.
 It is actually used internally as a `org.springframework.core.io.Resource` but cannot be exposed as such, because we need to keep the original String value to pass it to the Liquibase API.
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"hints": [
 		{
@@ -251,7 +246,7 @@ The following metadata snippet corresponds to the standard `logging.level` prope
 Keys are _logger names_, and values correspond to the standard log levels or any custom level.
 As Spring Boot defines a few logger groups out-of-the-box, dedicated value hints have been added for those.
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"hints": [
 		{
@@ -331,7 +326,7 @@ This provider supports the following parameters:
 
 The following metadata snippet corresponds to the standard `spring.jmx.server` property that defines the name of the `MBeanServer` bean to use:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"hints": [
 		{
@@ -359,7 +354,7 @@ The **spring-profile-name** provider auto-completes the Spring profiles that are
 
 The following metadata snippet corresponds to the standard `spring.profiles.active` property that defines the name of the Spring profile(s) to enable:
 
-[source,json,indent=0]
+[source,json,indent=0,subs="verbatim"]
 ----
 	{"hints": [
 		{

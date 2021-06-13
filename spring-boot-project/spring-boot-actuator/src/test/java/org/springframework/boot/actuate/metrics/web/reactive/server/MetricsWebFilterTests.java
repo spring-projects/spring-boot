@@ -18,9 +18,11 @@ package org.springframework.boot.actuate.metrics.web.reactive.server;
 
 import java.io.EOFException;
 import java.time.Duration;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.micrometer.core.annotation.Timed;
 import io.micrometer.core.instrument.MockClock;
+import io.micrometer.core.instrument.Tag;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.junit.jupiter.api.BeforeEach;
@@ -35,6 +37,7 @@ import org.springframework.mock.web.server.MockServerWebExchange;
 import org.springframework.util.ReflectionUtils;
 import org.springframework.web.method.HandlerMethod;
 import org.springframework.web.reactive.HandlerMapping;
+import org.springframework.web.server.ServerWebExchange;
 import org.springframework.web.util.pattern.PathPatternParser;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -51,6 +54,8 @@ class MetricsWebFilterTests {
 
 	private static final String REQUEST_METRICS_NAME_PERCENTILE = REQUEST_METRICS_NAME + ".percentile";
 
+	private final FaultyWebFluxTagsProvider tagsProvider = new FaultyWebFluxTagsProvider();
+
 	private SimpleMeterRegistry registry;
 
 	private MetricsWebFilter webFilter;
@@ -59,7 +64,7 @@ class MetricsWebFilterTests {
 	void setup() {
 		MockClock clock = new MockClock();
 		this.registry = new SimpleMeterRegistry(SimpleConfig.DEFAULT, clock);
-		this.webFilter = new MetricsWebFilter(this.registry, new DefaultWebFluxTagsProvider(true), REQUEST_METRICS_NAME,
+		this.webFilter = new MetricsWebFilter(this.registry, this.tagsProvider, REQUEST_METRICS_NAME,
 				AutoTimer.ENABLED);
 	}
 
@@ -208,6 +213,14 @@ class MetricsWebFilterTests {
 		assertThat(this.registry.get(REQUEST_METRICS_NAME_PERCENTILE).tag("phi", "0.5").gauge().value()).isNotZero();
 	}
 
+	@Test
+	void whenMetricsRecordingFailsThenExchangeFilteringSucceeds() {
+		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
+		this.tagsProvider.failOnce();
+		this.webFilter.filter(exchange, (serverWebExchange) -> exchange.getResponse().setComplete())
+				.block(Duration.ofSeconds(30));
+	}
+
 	private MockServerWebExchange createTimedHandlerMethodExchange(String methodName) {
 		MockServerWebExchange exchange = createExchange("/projects/spring-boot", "/projects/{project}");
 		exchange.getAttributes().put(HandlerMapping.BEST_MATCHING_HANDLER_ATTRIBUTE,
@@ -241,6 +254,28 @@ class MetricsWebFilterTests {
 		@Timed(percentiles = { 0.5, 0.95 })
 		Mono<String> timedPercentiles() {
 			return Mono.just("test");
+		}
+
+	}
+
+	class FaultyWebFluxTagsProvider extends DefaultWebFluxTagsProvider {
+
+		private volatile AtomicBoolean fail = new AtomicBoolean(false);
+
+		FaultyWebFluxTagsProvider() {
+			super(true);
+		}
+
+		@Override
+		public Iterable<Tag> httpRequestTags(ServerWebExchange exchange, Throwable exception) {
+			if (this.fail.compareAndSet(true, false)) {
+				throw new RuntimeException();
+			}
+			return super.httpRequestTags(exchange, exception);
+		}
+
+		void failOnce() {
+			this.fail.set(true);
 		}
 
 	}

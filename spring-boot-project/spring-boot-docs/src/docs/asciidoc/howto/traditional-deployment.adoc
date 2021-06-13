@@ -14,34 +14,22 @@ The first step in producing a deployable war file is to provide a `SpringBootSer
 Doing so makes use of Spring Framework's Servlet 3.0 support and lets you configure your application when it is launched by the servlet container.
 Typically, you should update your application's main class to extend `SpringBootServletInitializer`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@SpringBootApplication
-	public class Application extends SpringBootServletInitializer {
-
-		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-			return application.sources(Application.class);
-		}
-
-		public static void main(String[] args) {
-			SpringApplication.run(Application.class, args);
-		}
-
-	}
+include::{docs-java}/howto/traditionaldeployment/war/MyApplication.java[]
 ----
 
 The next step is to update your build configuration such that your project produces a war file rather than a jar file.
 If you use Maven and `spring-boot-starter-parent` (which configures Maven's war plugin for you), all you need to do is to modify `pom.xml` to change the packaging to war, as follows:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<packaging>war</packaging>
 ----
 
 If you use Gradle, you need to modify `build.gradle` to apply the war plugin to the project, as follows:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	apply plugin: 'war'
 ----
@@ -51,27 +39,27 @@ To do so, you need to mark the embedded servlet container dependency as being pr
 
 If you use Maven, the following example marks the servlet container (Tomcat, in this case) as being provided:
 
-[source,xml,indent=0,subs="verbatim,quotes,attributes"]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependencies>
-		<!-- … -->
+		<!-- ... -->
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-tomcat</artifactId>
 			<scope>provided</scope>
 		</dependency>
-		<!-- … -->
+		<!-- ... -->
 	</dependencies>
 ----
 
 If you use Gradle, the following example marks the servlet container (Tomcat, in this case) as being provided:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,gradle,indent=0,subs="verbatim"]
 ----
 	dependencies {
-		// …
+		// ...
 		providedRuntime 'org.springframework.boot:spring-boot-starter-tomcat'
-		// …
+		// ...
 	}
 ----
 
@@ -91,20 +79,9 @@ See the https://spring.io/guides/gs/convert-jar-to-war/[Getting Started Guide on
 
 To create a deployable war by extending `SpringBootServletInitializer` (for example, in a class called `Application`) and adding the Spring Boot `@SpringBootApplication` annotation, use code similar to that shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@SpringBootApplication
-	public class Application extends SpringBootServletInitializer {
-
-		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
-			// Customize the application or call application.sources(...) to add sources
-			// Since our example is itself a @Configuration class (via @SpringBootApplication)
-			// we actually don't need to override this method.
-			return application;
-		}
-
-	}
+include::{docs-java}/howto/traditionaldeployment/convertexistingapplication/MyApplication.java[tag=!main]
 ----
 
 Remember that, whatever you put in the `sources` is merely a Spring `ApplicationContext`.
@@ -124,36 +101,18 @@ If you have other features in your application (for instance, using other servle
 
 Once the war file is working, you can make it executable by adding a `main` method to your `Application`, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	public static void main(String[] args) {
-		SpringApplication.run(Application.class, args);
-	}
+include::{docs-java}/howto/traditionaldeployment/convertexistingapplication/MyApplication.java[tag=main]
 ----
 
 [NOTE]
 ====
 If you intend to start your application as a war or as an executable application, you need to share the customizations of the builder in a method that is both available to the `SpringBootServletInitializer` callback and in the `main` method in a class similar to the following:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	@SpringBootApplication
-	public class Application extends SpringBootServletInitializer {
-
-		@Override
-		protected SpringApplicationBuilder configure(SpringApplicationBuilder builder) {
-			return configureApplication(builder);
-		}
-
-		public static void main(String[] args) {
-			configureApplication(new SpringApplicationBuilder()).run(args);
-		}
-
-		private static SpringApplicationBuilder configureApplication(SpringApplicationBuilder builder) {
-			return builder.sources(Application.class).bannerMode(Banner.Mode.OFF);
-		}
-
-	}
+include::{docs-java}/howto/traditionaldeployment/convertexistingapplication/both/MyApplication.java[]
 ----
 ====
 
@@ -185,22 +144,15 @@ To deploy a Spring Boot application to WebLogic, you must ensure that your servl
 
 A typical initializer for WebLogic should resemble the following example:
 
-[source,java,pending-extract=true,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-	import org.springframework.boot.autoconfigure.SpringBootApplication;
-	import org.springframework.boot.web.servlet.support.SpringBootServletInitializer;
-	import org.springframework.web.WebApplicationInitializer;
-
-	@SpringBootApplication
-	public class MyApplication extends SpringBootServletInitializer implements WebApplicationInitializer {
-
-	}
+include::{docs-java}/howto/traditionaldeployment/weblogic/MyApplication.java[]
 ----
 
 If you use Logback, you also need to tell WebLogic to prefer the packaged version rather than the version that was pre-installed with the server.
 You can do so by adding a `WEB-INF/weblogic.xml` file with the following contents:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<?xml version="1.0" encoding="UTF-8"?>
 	<wls:weblogic-web-app

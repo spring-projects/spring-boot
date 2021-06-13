@@ -25,14 +25,9 @@ Doing so enables debug logs for a selection of core loggers and logs a condition
 === Disabling Specific Auto-configuration Classes
 If you find that specific auto-configuration classes that you do not want are being applied, you can use the exclude attribute of `@SpringBootApplication` to disable them, as shown in the following example:
 
-[source,java,pending-extract=true,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-	import org.springframework.boot.autoconfigure.*;
-	import org.springframework.boot.autoconfigure.jdbc.*;
-
-	@SpringBootApplication(exclude={DataSourceAutoConfiguration.class})
-	public class MyApplication {
-	}
+include::{docs-java}/using/autoconfiguration/disablingspecific/MyApplication.java[]
 ----
 
 If the class is not on the classpath, you can use the `excludeName` attribute of the annotation and specify the fully qualified name instead.

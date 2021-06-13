@@ -32,7 +32,7 @@ public class MyBean {
 		this.amqpTemplate = amqpTemplate;
 	}
 
-	// @fold:on
+	// @fold:on // ...
 	public void someMethod() {
 		this.amqpAdmin.getQueueInfo("someQueue");
 	}

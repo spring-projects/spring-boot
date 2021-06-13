@@ -57,7 +57,7 @@ public class JerseySameManagementContextConfiguration {
 	@Configuration(proxyBeanMethods = false)
 	@Import(JerseyManagementContextConfiguration.class)
 	@ConditionalOnMissingBean(ResourceConfig.class)
-	class JerseyInfrastructureConfiguration {
+	static class JerseyInfrastructureConfiguration {
 
 		@Bean
 		@ConditionalOnMissingBean(JerseyApplicationPath.class)

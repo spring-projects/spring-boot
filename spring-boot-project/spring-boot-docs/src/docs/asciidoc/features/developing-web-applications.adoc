@@ -17,7 +17,7 @@ Methods in your controller are mapped to HTTP by using `@RequestMapping` annotat
 
 The following code shows a typical `@RestController` that serves JSON data:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingwebapplications/springmvc/MyRestController.java[]
 ----
@@ -34,7 +34,7 @@ Spring Boot provides auto-configuration for Spring MVC that works well with most
 The auto-configuration adds the following features on top of Spring's defaults:
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
-* Support for serving static resources, including support for WebJars (covered <<features#features.developing-web-applications.spring-mvc.static-content,later in this document>>)).
+* Support for serving static resources, including support for WebJars (covered <<features#features.developing-web-applications.spring-mvc.static-content,later in this document>>).
 * Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
 * Support for `HttpMessageConverters` (covered <<features#features.developing-web-applications.spring-mvc.message-converters,later in this document>>).
 * Automatic registration of `MessageCodesResolver` (covered <<features#features.developing-web-applications.spring-mvc.message-codes,later in this document>>).
@@ -67,9 +67,9 @@ By default, strings are encoded in `UTF-8`.
 
 If you need to add or customize converters, you can use Spring Boot's `HttpMessageConverters` class, as shown in the following listing:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/messageconverters/HttpMessageConvertersConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/messageconverters/MyHttpMessageConvertersConfiguration.java[]
 ----
 
 Any `HttpMessageConverter` bean that is present in the context is added to the list of converters.
@@ -85,7 +85,7 @@ Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/Ja
 You can use the `@JsonComponent` annotation directly on `JsonSerializer`, `JsonDeserializer` or `KeyDeserializer` implementations.
 You can also use it on classes that contain serializers/deserializers as inner classes, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingwebapplications/springmvc/json/MyJsonComponent.java[]
 ----
@@ -98,7 +98,7 @@ See {spring-boot-module-api}/jackson/JsonObjectSerializer.html[`JsonObjectSerial
 
 The example above can be rewritten to use `JsonObjectSerializer`/`JsonObjectDeserializer` as follows:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingwebapplications/springmvc/json/object/MyJsonComponent.java[]
 ----
@@ -123,7 +123,7 @@ Most of the time, this does not happen (unless you modify the default MVC config
 By default, resources are mapped on `+/**+`, but you can tune that with the configprop:spring.mvc.static-path-pattern[] property.
 For instance, relocating all resources to `/resources/**` can be achieved as follows:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -150,7 +150,7 @@ Otherwise, all Webjars resolve as a `404`.
 
 To use cache busting, the following configuration configures a cache busting solution for all static resources, effectively adding a content hash, such as `<link href="/css/spring-2a2d595e6ed9a0b24f027f2b63b134d6.css"/>`, in URLs:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  web:
@@ -170,7 +170,7 @@ When loading resources dynamically with, for example, a JavaScript module loader
 That is why other strategies are also supported and can be combined.
 A "fixed" strategy adds a static version string in the URL without changing the file name, as shown in the following example:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  web:
@@ -218,7 +218,7 @@ Nowadays, Content Negotiation is much more reliable.
 There are other ways to deal with HTTP clients that don't consistently send proper "Accept" request headers.
 Instead of using suffix matching, we can use a query parameter to ensure that requests like `"GET /projects/spring-boot?format=json"` will be mapped to `@GetMapping("/projects/spring-boot")`:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -228,7 +228,7 @@ Instead of using suffix matching, we can use a query parameter to ensure that re
 
 Or if you prefer to use a different parameter name:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes"]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -239,7 +239,7 @@ Or if you prefer to use a different parameter name:
 
 Most standard media types are supported out-of-the-box, but you can also define new ones:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -253,7 +253,7 @@ Most standard media types are supported out-of-the-box, but you can also define 
 Suffix pattern matching is deprecated and will be removed in a future release.
 If you understand the caveats and would still like your application to use suffix pattern matching, the following configuration is required:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	spring:
 	  mvc:
@@ -265,7 +265,7 @@ If you understand the caveats and would still like your application to use suffi
 
 Alternatively, rather than open all suffix patterns, it's more secure to only support registered suffix patterns:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configblocks]
+[source,yaml,indent=0,subs="verbatim",configblocks]
 ----
 	spring:
 	  mvc:
@@ -279,7 +279,7 @@ As of Spring Framework 5.3, Spring MVC supports several implementation strategie
 It was previously only supporting the `AntPathMatcher` strategy, but it now also offers `PathPatternParser`.
 Spring Boot now provides a configuration property to choose and opt in the new strategy:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  mvc:
@@ -347,17 +347,17 @@ To do so, extend `BasicErrorController`, add a public method with a `@RequestMap
 
 You can also define a class annotated with `@ControllerAdvice` to customize the JSON document to return for a particular controller and/or exception type, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/MyControllerAdvice.java[]
 ----
 
-In the preceding example, if `YourException` is thrown by a controller defined in the same package as `AcmeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
+In the preceding example, if `YourException` is thrown by a controller defined in the same package as `SomeController`, a JSON representation of the `CustomErrorType` POJO is used instead of the `ErrorAttributes` representation.
 
 In some cases, errors handled at the controller level are not recorded by the <<actuator#actuator.metrics.supported.spring-mvc, metrics infrastructure>>.
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/MyController.java[]
 ----
@@ -372,7 +372,7 @@ The name of the file should be the exact status code or a series mask.
 
 For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	src/
 	 +- main/
@@ -387,7 +387,7 @@ For example, to map `404` to a static HTML file, your directory structure would 
 
 To map all `5xx` errors by using a FreeMarker template, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim,quotes,attributes"]
+[indent=0,subs="verbatim"]
 ----
 	src/
 	 +- main/
@@ -402,7 +402,7 @@ To map all `5xx` errors by using a FreeMarker template, your directory structure
 
 For more complex mappings, you can also add beans that implement the `ErrorViewResolver` interface, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpages/MyErrorViewResolver.java[]
 ----
@@ -417,16 +417,16 @@ The `ErrorController` then picks up any unhandled exceptions.
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/ErrorPageConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/MyErrorPagesConfiguration.java[]
 ----
 
 NOTE: If you register an `ErrorPage` with a path that ends up being handled by a `Filter` (as is common with some non-Spring web frameworks, like Jersey and Wicket), then the `Filter` has to be explicitly registered as an `ERROR` dispatcher, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/ServletFilterConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/errorpageswithoutspringmvc/MyFilterConfiguration.java[]
 ----
 
 Note that the default `FilterRegistrationBean` does not include the `ERROR` dispatcher type.
@@ -467,9 +467,9 @@ As of version 4.2, Spring MVC {spring-framework-docs}/web.html#mvc-cors[supports
 Using {spring-framework-docs}/web.html#mvc-cors-controller[controller method CORS configuration] with {spring-framework-api}/web/bind/annotation/CrossOrigin.html[`@CrossOrigin`] annotations in your Spring Boot application does not require any specific configuration.
 {spring-framework-docs}/web.html#mvc-cors-global[Global CORS configuration] can be defined by registering a `WebMvcConfigurer` bean with a customized `addCorsMappings(CorsRegistry)` method, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springmvc/cors/CorsConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springmvc/cors/MyCorsConfiguration.java[]
 ----
 
 
@@ -482,21 +482,21 @@ Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous an
 Spring WebFlux comes in two flavors: functional and annotation-based.
 The annotation-based one is quite close to the Spring MVC model, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
 include::{docs-java}/features/developingwebapplications/springwebflux/MyRestController.java[]
 ----
 
 "`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/RoutingConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/MyRoutingConfiguration.java[]
 ----
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/UserHandler.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/MyUserHandler.java[]
 ----
 
 WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
@@ -538,9 +538,9 @@ For example, `+spring.jackson.*+` configuration keys are applied to the Jackson 
 
 If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/httpcodecs/CodecConfiguration.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/httpcodecs/MyCodecsConfiguration.java[]
 ----
 
 You can also leverage <<features#features.developing-web-applications.spring-mvc.json,Boot's custom JSON serializers and deserializers>>.
@@ -555,7 +555,7 @@ It uses the `ResourceWebHandler` from Spring WebFlux so that you can modify that
 By default, resources are mapped on `+/**+`, but you can tune that by setting the configprop:spring.webflux.static-path-pattern[] property.
 For instance, relocating all resources to `/resources/**` can be achieved as follows:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	spring:
 	  webflux:
@@ -610,11 +610,11 @@ The first step to customizing this feature often involves using the existing mec
 For that, you can add a bean of type `ErrorAttributes`.
 
 To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
-Because a `WebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
+Because a `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/CustomErrorWebExceptionHandler.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyErrorWebExceptionHandler.java[]
 ----
 
 For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
@@ -622,9 +622,9 @@ For a more complete picture, you can also subclass `DefaultErrorWebExceptionHand
 In some cases, errors handled at the controller or handler function level are not recorded by the <<actuator#actuator.metrics.supported.spring-webflux, metrics infrastructure>>.
 Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/ExceptionHandlingController.java[]
+include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyExceptionHandlingController.java[]
 ----
 
 
@@ -637,7 +637,7 @@ The name of the file should be the exact status code or a series mask.
 
 For example, to map `404` to a static HTML file, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim,quotes,attributes"]
+[source,indent=0,subs="verbatim"]
 ----
 	src/
 	 +- main/
@@ -652,7 +652,7 @@ For example, to map `404` to a static HTML file, your directory structure would 
 
 To map all `5xx` errors by using a Mustache template, your directory structure would be as follows:
 
-[source,indent=0,subs="verbatim,quotes,attributes"]
+[source,indent=0,subs="verbatim"]
 ----
 	src/
 	 +- main/
@@ -700,9 +700,9 @@ Jersey has some native Spring support, so we also provide auto-configuration sup
 
 To get started with Jersey, include the `spring-boot-starter-jersey` as a dependency and then you need one `@Bean` of type `ResourceConfig` in which you register all the endpoints, as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/jersey/JerseyConfig.java[]
+include::{docs-java}/features/developingwebapplications/jersey/MyJerseyConfig.java[]
 ----
 
 WARNING: Jersey's support for scanning executable archives is rather limited.
@@ -713,9 +713,9 @@ For more advanced customizations, you can also register an arbitrary number of b
 
 All the registered endpoints should be `@Components` with HTTP resource annotations (`@GET` and others), as shown in the following example:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/jersey/Endpoint.java[]
+include::{docs-java}/features/developingwebapplications/jersey/MyEndpoint.java[]
 ----
 
 Since the `Endpoint` is a Spring `@Component`, its lifecycle is managed by Spring and you can use the `@Autowired` annotation to inject dependencies and use the `@Value` annotation to inject external configuration.
@@ -727,6 +727,8 @@ By default, the servlet is initialized lazily, but you can customize that behavi
 You can disable or override that bean by creating one of your own with the same name.
 You can also use a filter instead of a servlet by setting `spring.jersey.type=filter` (in which case, the `@Bean` to replace or override is `jerseyFilterRegistration`).
 The filter has an `@Order`, which you can set with `spring.jersey.filter.order`.
+When using Jersey as a filter, a Servlet that will handle any requests that are not intercepted by Jersey must be present.
+If your application does not contain such a servlet, you may want to enable the default servlet by setting configprop:server.servlet.register-default-servlet[] to `true`.
 Both the servlet and the filter registrations can be given init parameters by using `spring.jersey.init.*` to specify a map of properties.
 
 
@@ -827,17 +829,17 @@ If you need to programmatically configure your embedded servlet container, you c
 `WebServerFactoryCustomizer` provides access to the `ConfigurableServletWebServerFactory`, which includes numerous customization setter methods.
 The following example shows programmatically setting the port:
 
-[source,java,indent=0]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/CustomizationBean.java[]
+include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/MyWebServerFactoryCustomizer.java[]
 ----
 
 `TomcatServletWebServerFactory`, `JettyServletWebServerFactory` and `UndertowServletWebServerFactory` are dedicated variants of `ConfigurableServletWebServerFactory` that have additional customization setter methods for Tomcat, Jetty and Undertow respectively.
 The following example shows how to customize `TomcatServletWebServerFactory` that provides access to Tomcat-specific configuration options:
 
-[source,java,indent=0,subs="verbatim,quotes,attributes"]
+[source,java,indent=0,subs="verbatim"]
 ----
-include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/TomcatServerCustomizer.java[]
+include::{docs-java}/features/developingwebapplications/embeddedcontainer/customizing/programmatic/MyTomcatWebServerFactoryCustomizer.java[]
 ----
 
 

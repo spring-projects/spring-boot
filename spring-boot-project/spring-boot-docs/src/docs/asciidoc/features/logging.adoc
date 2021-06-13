@@ -50,7 +50,7 @@ The default log configuration echoes messages to the console as they are written
 By default, `ERROR`-level, `WARN`-level, and `INFO`-level messages are logged.
 You can also enable a "`debug`" mode by starting your application with a `--debug` flag.
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -jar myapp.jar --debug
 ----
@@ -73,7 +73,7 @@ You can set `spring.output.ansi.enabled` to a {spring-boot-module-api}/ansi/Ansi
 Color coding is configured by using the `%clr` conversion word.
 In its simplest form, the converter colors the output according to the log level, as shown in the following example:
 
-[source,indent=0]
+[source,indent=0,subs="verbatim"]
 ----
 %clr(%5p)
 ----
@@ -105,9 +105,9 @@ The following table describes the mapping of log levels to colors:
 Alternatively, you can specify the color or style that should be used by providing it as an option to the conversion.
 For example, to make the text yellow, use the following setting:
 
-[source,indent=0]
+[source,indent=0,subs="verbatim"]
 ----
-%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow}
+	%clr(%d{yyyy-MM-dd HH:mm:ss.SSS}){yellow}
 ----
 
 The following colors and styles are supported:
@@ -194,7 +194,7 @@ The `root` logger can be configured by using `logging.level.root`.
 
 The following example shows potential logging settings in `application.properties`:
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",configprops,role="primary"]
+[source,properties,indent=0,subs="verbatim",configprops,role="primary"]
 .Properties
 ----
 	logging.level.root=warn
@@ -202,7 +202,7 @@ The following example shows potential logging settings in `application.propertie
 	logging.level.org.hibernate=error
 ----
 
-[source,properties,indent=0,subs="verbatim,quotes,attributes",role="secondary"]
+[source,properties,indent=0,subs="verbatim",role="secondary"]
 .Yaml
 ----
 	logging:
@@ -229,7 +229,7 @@ For example, you might commonly change the logging levels for _all_ Tomcat relat
 To help with this, Spring Boot allows you to define logging groups in your Spring `Environment`.
 For example, here's how you could define a "`tomcat`" group by adding it to your `application.properties`:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	logging:
 	  group:
@@ -238,7 +238,7 @@ For example, here's how you could define a "`tomcat`" group by adding it to your
 
 Once defined, you can change the level for all the loggers in the group with a single line:
 
-[source,yaml,indent=0,subs="verbatim,quotes,attributes",configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	logging:
 	  level:
@@ -271,7 +271,7 @@ You can use the configprop:logging.register-shutdown-hook[] property to disable 
 Setting it to `false` will disable the registration.
 You can set the property in your `application.properties` or `application.yaml` file:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 	logging:
 	  register-shutdown-hook: false
@@ -440,7 +440,7 @@ A profile expression allows for more complicated profile logic to be expressed, 
 Check the {spring-framework-docs}/core.html#beans-definition-profiles-java[reference guide] for more details.
 The following listing shows three sample profiles:
 
-[source,xml,indent=0]
+[source,xml,subs="verbatim",indent=0]
 ----
 	<springProfile name="staging">
 		<!-- configuration to be enabled when the "staging" profile is active -->
@@ -467,7 +467,7 @@ If you need to store the property somewhere other than in `local` scope, you can
 If you need a fallback value (in case the property is not set in the `Environment`), you can use the `defaultValue` attribute.
 The following example shows how to expose properties for use within Logback:
 
-[source,xml,indent=0]
+[source,xml,subs="verbatim",indent=0]
 ----
 	<springProperty scope="context" name="fluentHost" source="myapp.fluentd.host"
 			defaultValue="localhost"/>

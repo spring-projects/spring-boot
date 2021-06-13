@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.data;
 
+import java.util.function.Supplier;
+
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.config.BeanPostProcessor;
 import org.springframework.boot.actuate.metrics.data.MetricsRepositoryMethodInvocationListener;
@@ -33,8 +35,9 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessor implements Bean
 
 	private final RepositoryFactoryCustomizer customizer;
 
-	MetricsRepositoryMethodInvocationListenerBeanPostProcessor(MetricsRepositoryMethodInvocationListener listener) {
-		this.customizer = (repositoryFactory) -> repositoryFactory.addInvocationListener(listener);
+	MetricsRepositoryMethodInvocationListenerBeanPostProcessor(
+			Supplier<MetricsRepositoryMethodInvocationListener> listener) {
+		this.customizer = new MetricsRepositoryFactoryCustomizer(listener);
 	}
 
 	@Override
@@ -43,6 +46,27 @@ class MetricsRepositoryMethodInvocationListenerBeanPostProcessor implements Bean
 			((RepositoryFactoryBeanSupport<?, ?, ?>) bean).addRepositoryFactoryCustomizer(this.customizer);
 		}
 		return bean;
+	}
+
+	private static final class MetricsRepositoryFactoryCustomizer implements RepositoryFactoryCustomizer {
+
+		private final Supplier<MetricsRepositoryMethodInvocationListener> listenerSupplier;
+
+		private volatile MetricsRepositoryMethodInvocationListener listener;
+
+		private MetricsRepositoryFactoryCustomizer(
+				Supplier<MetricsRepositoryMethodInvocationListener> listenerSupplier) {
+			this.listenerSupplier = listenerSupplier;
+		}
+
+		@Override
+		public void customize(RepositoryFactorySupport repositoryFactory) {
+			if (this.listener == null) {
+				this.listener = this.listenerSupplier.get();
+			}
+			repositoryFactory.addInvocationListener(this.listener);
+		}
+
 	}
 
 }

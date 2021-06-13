@@ -22,6 +22,7 @@ import java.util.List;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.InitializingBean;
+import org.springframework.boot.jdbc.EmbeddedDatabaseConnection;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.core.io.Resource;
@@ -56,6 +57,11 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 	 */
 	protected final DataSource getDataSource() {
 		return this.dataSource;
+	}
+
+	@Override
+	protected boolean isEmbeddedDatabase() {
+		return EmbeddedDatabaseConnection.isEmbedded(this.dataSource);
 	}
 
 	@Override

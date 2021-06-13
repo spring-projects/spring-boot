@@ -11,7 +11,7 @@ NOTE: Graceful shutdown with Tomcat requires Tomcat 9.0.33 or later.
 
 To enable graceful shutdown, configure the configprop:server.shutdown[] property, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 server:
   shutdown: "graceful"
@@ -19,7 +19,7 @@ server:
 
 To configure the timeout period, configure the configprop:spring.lifecycle.timeout-per-shutdown-phase[] property, as shown in the following example:
 
-[source,yaml,indent=0,configprops,configblocks]
+[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
 ----
 spring:
   lifecycle:

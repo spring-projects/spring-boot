@@ -21,7 +21,7 @@ import org.springframework.kafka.test.context.EmbeddedKafka;
 
 @SpringBootTest
 @EmbeddedKafka(topics = "someTopic", bootstrapServersProperty = "spring.kafka.bootstrap-servers")
-public class MyTest {
+class MyTest {
 
 	// ...
 

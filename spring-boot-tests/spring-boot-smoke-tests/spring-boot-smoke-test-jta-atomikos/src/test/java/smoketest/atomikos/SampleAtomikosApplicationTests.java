@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package smoketest.atomikos;
 
+import java.io.File;
 import java.util.function.Consumer;
 
 import org.junit.jupiter.api.Test;
@@ -23,6 +24,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 
 import org.springframework.boot.test.system.CapturedOutput;
 import org.springframework.boot.test.system.OutputCaptureExtension;
+import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -37,7 +39,8 @@ class SampleAtomikosApplicationTests {
 
 	@Test
 	void testTransactionRollback(CapturedOutput output) throws Exception {
-		SampleAtomikosApplication.main(new String[] {});
+		File logDir = new File(new BuildOutput(getClass()).getRootLocation(), "atomikos-logs");
+		SampleAtomikosApplication.main(new String[] { "--spring.jta.log-dir=" + logDir });
 		assertThat(output).satisfies(numberOfOccurrences("---->", 1));
 		assertThat(output).satisfies(numberOfOccurrences("----> josh", 1));
 		assertThat(output).satisfies(numberOfOccurrences("Count is 1", 2));

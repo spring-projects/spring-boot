@@ -23,7 +23,7 @@ Out-of-the-box, the following layers are supported:
 
 The following shows an example of a `layers.idx` file:
 
-[source,yaml,indent=0]
+[source,yaml,indent=0,subs="verbatim"]
 ----
 	- "dependencies":
 	  - BOOT-INF/lib/library1.jar
@@ -66,12 +66,14 @@ Disable launch script configuration when building a jar file that is intended to
 
 Here’s how you can launch your jar with a `layertools` jar mode:
 
+[source,shell,indent=0,subs="verbatim"]
 ----
 $ java -Djarmode=layertools -jar my-app.jar
 ----
 
 This will provide the following output:
 
+[subs="verbatim"]
 ----
 Usage:
   java -Djarmode=layertools -jar my-app.jar
@@ -85,6 +87,7 @@ Available commands:
 The `extract` command can be used to easily split the application into layers to be added to the dockerfile.
 Here's an example of a Dockerfile using `jarmode`.
 
+[source,dockerfile,indent=0,subs="verbatim"]
 ----
 FROM adoptopenjdk:11-jre-hotspot as builder
 WORKDIR application
@@ -103,9 +106,9 @@ ENTRYPOINT ["java", "org.springframework.boot.loader.JarLauncher"]
 
 Assuming the above `Dockerfile` is in the current directory, your docker image can be built with `docker build .`, or optionally specifying the path to your application jar, as shown in the following example:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
-	docker build --build-arg JAR_FILE=path/to/myapp.jar .
+	$ docker build --build-arg JAR_FILE=path/to/myapp.jar .
 ----
 
 This is a multi-stage dockerfile.

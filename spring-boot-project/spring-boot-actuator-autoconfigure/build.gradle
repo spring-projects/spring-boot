@@ -1,7 +1,6 @@
 plugins {
     id "java-library"
 	id "org.asciidoctor.jvm.convert"
-	id "org.asciidoctor.jvm.pdf"
 	id "org.springframework.boot.auto-configuration"
 	id "org.springframework.boot.conventions"
 	id "org.springframework.boot.deployed"
@@ -14,8 +13,19 @@ configurations {
 	documentation
 }
 
+repositories {
+	maven {
+		url "https://repo.spring.io/release"
+		mavenContent {
+			includeGroup "io.spring.asciidoctor"
+			includeGroup "io.spring.asciidoctor.backends"
+		}
+	}
+}
+
 dependencies {
 	asciidoctorExtensions("org.springframework.restdocs:spring-restdocs-asciidoctor")
+	asciidoctorExtensions("io.spring.asciidoctor:spring-asciidoctor-extensions-section-ids")
 
 	api(project(":spring-boot-project:spring-boot-actuator"))
 
@@ -158,7 +168,6 @@ task dependencyVersions(type: org.springframework.boot.build.constraints.Extract
 
 tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	dependsOn dependencyVersions
-	baseDirFollowsSourceDir()
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
 		def integrationVersion = versionConstraints["org.springframework.integration:spring-integration-core"]
@@ -175,7 +184,7 @@ asciidoctor {
 	}
 }
 
-asciidoctorPdf {
+task asciidoctorPdf(type: org.asciidoctor.gradle.jvm.AsciidoctorTask) {
 	sources {
 		include "index.adoc"
 	}

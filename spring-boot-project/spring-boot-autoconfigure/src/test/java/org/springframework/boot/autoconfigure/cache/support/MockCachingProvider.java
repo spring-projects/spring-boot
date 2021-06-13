@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -127,8 +127,7 @@ public class MockCachingProvider implements CachingProvider {
 
 		@Override
 		@SuppressWarnings("unchecked")
-		public <K, V, C extends Configuration<K, V>> Cache<K, V> createCache(String cacheName, C configuration)
-				throws IllegalArgumentException {
+		public <K, V, C extends Configuration<K, V>> Cache<K, V> createCache(String cacheName, C configuration) {
 			this.configurations.put(cacheName, configuration);
 			Cache<K, V> cache = mock(Cache.class);
 			given(cache.getName()).willReturn(cacheName);

@@ -117,7 +117,7 @@ class LoggingApplicationListenerTests {
 	private CapturedOutput output;
 
 	@BeforeEach
-	void init(CapturedOutput output) throws SecurityException, IOException {
+	void init(CapturedOutput output) throws IOException {
 		this.systemPropertyNames = new HashSet<>(System.getProperties().keySet());
 		this.output = output;
 		this.logFile = new File(this.tempDir.toFile(), "foo.log");
@@ -129,7 +129,7 @@ class LoggingApplicationListenerTests {
 	}
 
 	@AfterEach
-	void clear() throws IOException {
+	void clear() {
 		LoggingSystem loggingSystem = LoggingSystem.get(getClass().getClassLoader());
 		loggingSystem.setLogLevel("ROOT", LogLevel.INFO);
 		loggingSystem.cleanUp();
@@ -415,12 +415,12 @@ class LoggingApplicationListenerTests {
 		multicastEvent(listener, new ApplicationStartingEvent(this.bootstrapContext, new SpringApplication(), NO_ARGS));
 		listener.initialize(this.context.getEnvironment(), this.context.getClassLoader());
 		assertThat(listener.shutdownHook).isNotNull();
-		listener.shutdownHook.start();
+		listener.shutdownHook.run();
 		assertThat(TestShutdownHandlerLoggingSystem.shutdownLatch.await(30, TimeUnit.SECONDS)).isTrue();
 	}
 
 	@Test
-	void shutdownHookRegistrationCanBeDisabled() throws Exception {
+	void shutdownHookRegistrationCanBeDisabled() {
 		TestLoggingApplicationListener listener = new TestLoggingApplicationListener();
 		Object registered = ReflectionTestUtils.getField(listener, TestLoggingApplicationListener.class,
 				"shutdownHookRegistered");
@@ -634,10 +634,10 @@ class LoggingApplicationListenerTests {
 
 	static class TestLoggingApplicationListener extends LoggingApplicationListener {
 
-		private Thread shutdownHook;
+		private Runnable shutdownHook;
 
 		@Override
-		void registerShutdownHook(Thread shutdownHook) {
+		void registerShutdownHook(Runnable shutdownHook) {
 			this.shutdownHook = shutdownHook;
 		}
 

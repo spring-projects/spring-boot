@@ -4,7 +4,7 @@ Spring Boot can be used with "`classic`" Java development tools or installed as 
 Either way, you need https://www.java.com[Java SDK v1.8] or higher.
 Before you begin, you should check your current Java installation by using the following command:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ java -version
 ----
@@ -45,7 +45,7 @@ More details on getting started with Spring Boot and Maven can be found in the {
 
 [[getting-started.installing.java.gradle]]
 ==== Gradle Installation
-Spring Boot is compatible with Gradle 6.8 and 7.x.
+Spring Boot is compatible with Gradle 6.8, 6.9, and 7.x.
 If you do not already have Gradle installed, you can follow the instructions at https://gradle.org.
 
 Spring Boot dependencies can be declared by using the `org.springframework.boot` `group`.
@@ -68,7 +68,7 @@ More details on getting started with Spring Boot and Gradle can be found in the 
 The Spring Boot CLI (Command Line Interface) is a command line tool that you can use to quickly prototype with Spring.
 It lets you run https://groovy-lang.org/[Groovy] scripts, which means that you have a familiar Java-like syntax without so much boilerplate code.
 
-You do not need to use the CLI to work with Spring Boot, but it is definitely the quickest way to get a Spring application off the ground.
+You do not need to use the CLI to work with Spring Boot, but it is a quick way to get a Spring application off the ground without an IDE.
 
 
 
@@ -93,7 +93,7 @@ Alternatively, you can use `java -jar` with the `.jar` file (the script helps yo
 SDKMAN! (The Software Development Kit Manager) can be used for managing multiple versions of various binary SDKs, including Groovy and the Spring Boot CLI.
 Get SDKMAN! from https://sdkman.io and install Spring Boot by using the following commands:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ sdk install springboot
 	$ spring --version
@@ -102,7 +102,7 @@ Get SDKMAN! from https://sdkman.io and install Spring Boot by using the followin
 
 If you develop features for the CLI and want access to the version you built, use the following commands:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ sdk install springboot dev /path/to/spring-boot/spring-boot-cli/target/spring-boot-cli-{spring-boot-version}-bin/spring-{spring-boot-version}/
 	$ sdk default springboot dev
@@ -115,7 +115,7 @@ It points at your target build location, so every time you rebuild Spring Boot, 
 
 You can see it by running the following command:
 
-[indent=0,subs="verbatim,quotes,attributes"]
+[source,shell,indent=0,subs="verbatim,attributes"]
 ----
 	$ sdk ls springboot
 
@@ -138,7 +138,7 @@ You can see it by running the following command:
 ==== OSX Homebrew Installation
 If you are on a Mac and use https://brew.sh/[Homebrew], you can install the Spring Boot CLI by using the following commands:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ brew tap spring-io/tap
 	$ brew install spring-boot
@@ -155,7 +155,7 @@ In that case, run `brew update` and try again.
 ==== MacPorts Installation
 If you are on a Mac and use https://www.macports.org/[MacPorts], you can install the Spring Boot CLI by using the following command:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ sudo port install spring-boot-cli
 ----
@@ -169,7 +169,7 @@ You can `source` the script (also named `spring`) in any shell or put it in your
 On a Debian system, the system-wide scripts are in `/shell-completion/bash` and all scripts in that directory are executed when a new shell starts.
 For example, to run the script manually if you have installed by using SDKMAN!, use the following commands:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ . ~/.sdkman/candidates/springboot/current/shell-completion/bash/spring
 	$ spring <HIT TAB HERE>
@@ -202,7 +202,7 @@ In that case, run `scoop update` and try again.
 You can use the following web application to test your installation.
 To start, create a file called `app.groovy`, as follows:
 
-[source,groovy,indent=0,subs="verbatim,quotes,attributes"]
+[source,groovy,indent=0,pending-extract=true,subs="verbatim"]
 ----
 	@RestController
 	class ThisWillActuallyRun {
@@ -217,7 +217,7 @@ To start, create a file called `app.groovy`, as follows:
 
 Then run it from a shell, as follows:
 
-[indent=0]
+[source,shell,indent=0,subs="verbatim"]
 ----
 	$ spring run app.groovy
 ----
@@ -244,7 +244,7 @@ When upgrading to a new feature release, some properties may have been renamed o
 Spring Boot provides a way to analyze your application's environment and print diagnostics at startup, but also temporarily migrate properties at runtime for you.
 To enable that feature, add the following dependency to your project:
 
-[source,xml,indent=0]
+[source,xml,indent=0,subs="verbatim"]
 ----
 	<dependency>
 		<groupId>org.springframework.boot</groupId>
