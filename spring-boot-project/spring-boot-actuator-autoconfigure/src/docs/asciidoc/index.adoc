@@ -1,5 +1,7 @@
 = Spring Boot Actuator Web API Documentation
 Andy Wilkinson
+v{gradle-project-version}
+:!version-label:
 :doctype: book
 :toc: left
 :toclevels: 4

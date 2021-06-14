@@ -1,5 +1,7 @@
 = Spring Boot Maven Plugin Documentation
 Stephane Nicoll, Andy Wilkinson, Scott Frederick
+v{gradle-project-version}
+:!version-label:
 :doctype: book
 :toc: left
 :toclevels: 4
