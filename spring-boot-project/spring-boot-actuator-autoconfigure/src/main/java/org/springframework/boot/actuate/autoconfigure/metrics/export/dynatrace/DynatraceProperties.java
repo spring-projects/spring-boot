@@ -158,7 +158,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	public Map<String, String> getDefaultDimensions() {
-		return defaultDimensions != null ? Collections.unmodifiableMap(defaultDimensions) : null;
+		return defaultDimensions;
 	}
 
 	public void setDefaultDimensions(Map<String, String> defaultDimensions) {
