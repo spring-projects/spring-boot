@@ -46,7 +46,7 @@ If you use Jedis, `JedisClientConfigurationBuilderCustomizer` is also available.
 
 If you add your own `@Bean` of any of the auto-configured types, it replaces the default (except in the case of `RedisTemplate`, when the exclusion is based on the bean name, `redisTemplate`, not its type).
 
-A pooled connection factory is auto-configured if `commons-pool2` is on the classpath and at least one `Pool` option of {spring-boot-autoconfigure-module-code}/data/redis/RedisProperties.java[`RedisProperties`] is set.
+By default, a pooled connection factory is auto-configured if `commons-pool2` is on the classpath.
 
 
 
