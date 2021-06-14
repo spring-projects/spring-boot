@@ -1,6 +1,6 @@
 [[spring-boot-actuator-web-api-documentation]]
 = Spring Boot Actuator Web API Documentation
-Andy Wilkinson, Stephane Nicoll
+Andy Wilkinson; Stephane Nicoll
 v{gradle-project-version}
 :!version-label:
 :doctype: book
