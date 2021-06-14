@@ -48,6 +48,7 @@ class FlywayPropertiesTests {
 	void defaultValuesAreConsistent() {
 		FlywayProperties properties = new FlywayProperties();
 		Configuration configuration = new FluentConfiguration();
+		assertThat(configuration.getFailOnMissingLocations()).isEqualTo(properties.isFailOnMissingLocations());
 		assertThat(properties.getLocations().stream().map(Location::new).toArray(Location[]::new))
 				.isEqualTo(configuration.getLocations());
 		assertThat(properties.getEncoding()).isEqualTo(configuration.getEncoding());
@@ -91,6 +92,7 @@ class FlywayPropertiesTests {
 		assertThat(configuration.isSkipDefaultResolvers()).isEqualTo(properties.isSkipDefaultResolvers());
 		assertThat(configuration.isValidateMigrationNaming()).isEqualTo(properties.isValidateMigrationNaming());
 		assertThat(configuration.isValidateOnMigrate()).isEqualTo(properties.isValidateOnMigrate());
+		assertThat(properties.getDetectEncoding()).isNull();
 	}
 
 	@Test
@@ -119,6 +121,8 @@ class FlywayPropertiesTests {
 		ignoreProperties(configuration, "shouldCreateSchemas");
 		// Getters for the DataSource settings rather than actual properties
 		ignoreProperties(configuration, "password", "url", "user");
+		// Properties not exposed by Flyway
+		ignoreProperties(configuration, "failOnMissingTarget");
 		List<String> configurationKeys = new ArrayList<>(configuration.keySet());
 		Collections.sort(configurationKeys);
 		List<String> propertiesKeys = new ArrayList<>(properties.keySet());
