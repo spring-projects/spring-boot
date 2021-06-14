@@ -1,11 +1,10 @@
 [[spring-boot-reference-documentation]]
 = Spring Boot Reference Documentation
 include::authors.adoc[]
+v{spring-boot-version}
 include::attributes.adoc[]
 
 
-
-*{spring-boot-version}*
 
 include::legal.adoc[leveloffset=+1]
 
