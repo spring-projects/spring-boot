@@ -1,5 +1,5 @@
 = Spring Boot Gradle Plugin Reference Guide
-Andy Wilkinson, Scott Frederick
+Andy Wilkinson; Scott Frederick
 v{gradle-project-version}
 :!version-label:
 :doctype: book
