@@ -65,8 +65,10 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 
 	@Bean(destroyMethod = "shutdown")
 	@ConditionalOnMissingBean(ClientResources.class)
-	DefaultClientResources lettuceClientResources() {
-		return DefaultClientResources.create();
+	DefaultClientResources lettuceClientResources(ObjectProvider<ClientResourcesBuilderCustomizer> customizers) {
+		DefaultClientResources.Builder builder = DefaultClientResources.builder();
+		customizers.orderedStream().forEach((customizer) -> customizer.customize(builder));
+		return builder.build();
 	}
 
 	@Bean

@@ -27,6 +27,8 @@ import io.lettuce.core.ClientOptions;
 import io.lettuce.core.cluster.ClusterClientOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions;
 import io.lettuce.core.cluster.ClusterTopologyRefreshOptions.RefreshTrigger;
+import io.lettuce.core.resource.DefaultClientResources;
+import io.lettuce.core.tracing.Tracing;
 import org.apache.commons.pool2.impl.GenericObjectPoolConfig;
 import org.junit.jupiter.api.Test;
 
@@ -53,6 +55,7 @@ import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.mockito.Mockito.mock;
 
 /**
  * Tests for {@link RedisAutoConfiguration}.
@@ -94,6 +97,16 @@ class RedisAutoConfigurationTests {
 					assertThat(cf.getPassword()).isNull();
 					assertThat(cf.isUseSsl()).isFalse();
 					assertThat(cf.getShutdownTimeout()).isEqualTo(500);
+				});
+	}
+
+	@Test
+	void testCustomizeClientResources() {
+		Tracing tracing = mock(Tracing.class);
+		this.contextRunner.withBean(ClientResourcesBuilderCustomizer.class, () -> (builder) -> builder.tracing(tracing))
+				.run((context) -> {
+					DefaultClientResources clientResources = context.getBean(DefaultClientResources.class);
+					assertThat(clientResources.tracing()).isEqualTo(tracing);
 				});
 	}
 
