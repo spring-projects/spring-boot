@@ -100,6 +100,7 @@ dependencies {
 	implementation("org.springframework.data:spring-data-cassandra")
 	implementation("org.springframework.data:spring-data-couchbase")
 	implementation("org.springframework.data:spring-data-elasticsearch")
+	implementation("org.springframework.data:spring-data-envers")
 	implementation("org.springframework.data:spring-data-jpa")
 	implementation("org.springframework.data:spring-data-ldap")
 	implementation("org.springframework.data:spring-data-mongodb")
@@ -226,6 +227,7 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 					"spring-boot-version": project.version,
 					"spring-data-commons-version": versionConstraints["org.springframework.data:spring-data-commons"],
 					"spring-data-couchbase-version": versionConstraints["org.springframework.data:spring-data-couchbase"],
+					"spring-data-envers-version": versionConstraints["org.springframework.data:spring-data-envers"],
 					"spring-data-jdbc-version": versionConstraints["org.springframework.data:spring-data-jdbc"],
 					"spring-data-jpa-version": versionConstraints["org.springframework.data:spring-data-jpa"],
 					"spring-data-mongodb-version": versionConstraints["org.springframework.data:spring-data-mongodb"],

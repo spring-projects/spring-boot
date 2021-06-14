@@ -247,6 +247,21 @@ For complete details, see the {spring-data-jpa-docs}[Spring Data JPA reference d
 
 
 
+[[features.sql.jpa-and-spring-data.envers-repositories]]
+==== Spring Data Envers Repositories
+If {spring-data-envers}[Spring Data Envers] is available, JPA repositories are auto-configured to support typical Envers queries.
+
+To use Spring Data Envers, make sure your repository extends from `RevisionRepository` as show in the following example:
+
+[source,java,indent=0,subs="verbatim"]
+----
+include::{docs-java}/features/sql/jpaandspringdata/repositories/CountryRepository.java[]
+----
+
+NOTE: For more details, check the {spring-data-envers-doc}[Spring Data Envers reference documentation].
+
+
+
 [[features.sql.jpa-and-spring-data.creating-and-dropping]]
 ==== Creating and Dropping JPA Databases
 By default, JPA databases are automatically created *only* if you use an embedded database (H2, HSQL, or Derby).

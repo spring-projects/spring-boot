@@ -27,6 +27,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.autoconfigure.data.jpa.JpaRepositoriesAutoConfiguration.JpaRepositoriesImportSelector;
 import org.springframework.boot.autoconfigure.orm.jpa.EntityManagerFactoryBuilderCustomizer;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskExecutionAutoConfiguration;
@@ -34,11 +35,17 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.ImportSelector;
 import org.springframework.core.task.AsyncTaskExecutor;
+import org.springframework.core.type.AnnotationMetadata;
+import org.springframework.data.envers.repository.config.EnableEnversRepositories;
+import org.springframework.data.envers.repository.support.EnversRevisionRepositoryFactoryBean;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.data.jpa.repository.config.JpaRepositoryConfigExtension;
 import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
+import org.springframework.data.repository.history.RevisionRepository;
+import org.springframework.util.ClassUtils;
 
 /**
  * {@link EnableAutoConfiguration Auto-configuration} for Spring Data's JPA Repositories.
@@ -50,11 +57,17 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
  * Once in effect, the auto-configuration is the equivalent of enabling JPA repositories
  * using the {@link EnableJpaRepositories @EnableJpaRepositories} annotation.
  * <p>
+ * In case {@link EnableEnversRepositories} is on the classpath,
+ * {@link EnversRevisionRepositoryFactoryBean} is used instead of
+ * {@link JpaRepositoryFactoryBean} to support {@link RevisionRepository} with Hibernate
+ * Envers.
+ * <p>
  * This configuration class will activate <em>after</em> the Hibernate auto-configuration.
  *
  * @author Phillip Webb
  * @author Josh Long
  * @author Scott Frederick
+ * @author Stefano Cordio
  * @since 1.0.0
  * @see EnableJpaRepositories
  */
@@ -64,7 +77,7 @@ import org.springframework.data.jpa.repository.support.JpaRepositoryFactoryBean;
 @ConditionalOnMissingBean({ JpaRepositoryFactoryBean.class, JpaRepositoryConfigExtension.class })
 @ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "enabled", havingValue = "true",
 		matchIfMissing = true)
-@Import(JpaRepositoriesRegistrar.class)
+@Import(JpaRepositoriesImportSelector.class)
 @AutoConfigureAfter({ HibernateJpaAutoConfiguration.class, TaskExecutionAutoConfiguration.class })
 public class JpaRepositoriesAutoConfiguration {
 
@@ -102,6 +115,24 @@ public class JpaRepositoriesAutoConfiguration {
 		@ConditionalOnProperty(prefix = "spring.data.jpa.repositories", name = "bootstrap-mode", havingValue = "lazy")
 		static class LazyBootstrapMode {
 
+		}
+
+	}
+
+	static class JpaRepositoriesImportSelector implements ImportSelector {
+
+		private static final boolean ENVERS_AVAILABLE = ClassUtils.isPresent(
+				"org.springframework.data.envers.repository.config.EnableEnversRepositories",
+				JpaRepositoriesImportSelector.class.getClassLoader());
+
+		@Override
+		public String[] selectImports(AnnotationMetadata importingClassMetadata) {
+			return new String[] { determineImport() };
+		}
+
+		private String determineImport() {
+			return ENVERS_AVAILABLE ? EnversRevisionRepositoriesRegistrar.class.getName()
+					: JpaRepositoriesRegistrar.class.getName();
 		}
 
 	}
