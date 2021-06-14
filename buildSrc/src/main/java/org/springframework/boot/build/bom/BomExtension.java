@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -51,7 +51,6 @@ import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskExecutionException;
-import org.gradle.util.ConfigureUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -77,13 +76,14 @@ public class BomExtension {
 
 	private final List<Library> libraries = new ArrayList<>();
 
-	private final UpgradeHandler upgradeHandler = new UpgradeHandler();
+	private final UpgradeHandler upgradeHandler;
 
 	private final DependencyHandler dependencyHandler;
 
 	private final Project project;
 
 	public BomExtension(DependencyHandler dependencyHandler, Project project) {
+		this.upgradeHandler = new UpgradeHandler(project);
 		this.dependencyHandler = dependencyHandler;
 		this.project = project;
 	}
@@ -93,7 +93,7 @@ public class BomExtension {
 	}
 
 	public void upgrade(Closure<?> closure) {
-		ConfigureUtil.configure(closure, this.upgradeHandler);
+		this.project.configure(this.upgradeHandler, closure);
 	}
 
 	public Upgrade getUpgrade() {
@@ -102,8 +102,8 @@ public class BomExtension {
 	}
 
 	public void library(String name, String version, Closure<?> closure) {
-		LibraryHandler libraryHandler = new LibraryHandler();
-		ConfigureUtil.configure(closure, libraryHandler);
+		LibraryHandler libraryHandler = new LibraryHandler(this.project);
+		this.project.configure(libraryHandler, closure);
 		addLibrary(new Library(name, DependencyVersion.parse(version), libraryHandler.groups,
 				libraryHandler.prohibitedVersions));
 	}
@@ -196,16 +196,22 @@ public class BomExtension {
 
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
 
+		private final Project project;
+
+		public LibraryHandler(Project project) {
+			this.project = project;
+		}
+
 		public void group(String id, Closure<?> closure) {
-			GroupHandler groupHandler = new GroupHandler(id);
-			ConfigureUtil.configure(closure, groupHandler);
+			GroupHandler groupHandler = new GroupHandler(this.project, id);
+			this.project.configure(groupHandler, closure);
 			this.groups
 					.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
 		}
 
 		public void prohibit(String range, Closure<?> closure) {
 			ProhibitedVersionHandler prohibitedVersionHandler = new ProhibitedVersionHandler();
-			ConfigureUtil.configure(closure, prohibitedVersionHandler);
+			this.project.configure(prohibitedVersionHandler, closure);
 			try {
 				this.prohibitedVersions.add(new ProhibitedVersion(VersionRange.createFromVersionSpec(range),
 						prohibitedVersionHandler.reason));
@@ -227,6 +233,8 @@ public class BomExtension {
 
 		public class GroupHandler extends GroovyObjectSupport {
 
+			private final Project project;
+
 			private final String id;
 
 			private List<Module> modules = new ArrayList<>();
@@ -235,7 +243,8 @@ public class BomExtension {
 
 			private List<String> plugins = new ArrayList<>();
 
-			public GroupHandler(String id) {
+			public GroupHandler(Project project, String id) {
+				this.project = project;
 				this.id = id;
 			}
 
@@ -258,7 +267,7 @@ public class BomExtension {
 					Object arg = ((Object[]) args)[0];
 					if (arg instanceof Closure) {
 						ExclusionHandler exclusionHandler = new ExclusionHandler();
-						ConfigureUtil.configure((Closure<?>) arg, exclusionHandler);
+						this.project.configure(exclusionHandler, (Closure<?>) arg);
 						return new Module(name, exclusionHandler.exclusions);
 					}
 				}
@@ -285,12 +294,18 @@ public class BomExtension {
 
 		private final GitHubHandler gitHub = new GitHubHandler();
 
+		private final Project project;
+
+		public UpgradeHandler(Project project) {
+			this.project = project;
+		}
+
 		public void setPolicy(UpgradePolicy upgradePolicy) {
 			this.upgradePolicy = upgradePolicy;
 		}
 
 		public void gitHub(Closure<?> closure) {
-			ConfigureUtil.configure(closure, this.gitHub);
+			this.project.configure(this.gitHub, closure);
 		}
 
 	}
