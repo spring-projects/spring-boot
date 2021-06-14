@@ -1284,20 +1284,6 @@ bom {
 			]
 		}
 	}
-	library("OAuth2 OIDC SDK", "9.3.3") {
-		group("com.nimbusds") {
-			modules = [
-				"oauth2-oidc-sdk"
-			]
-		}
-	}
-	library("Nimbus JOSE JWT", "9.8.1") {
-		group("com.nimbusds") {
-			modules = [
-				"nimbus-jose-jwt"
-			]
-		}
-	}
 	library("OJDBC", "19.3.0.0") {
 		group("com.oracle.ojdbc") {
 			modules = [
