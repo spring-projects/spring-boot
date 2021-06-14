@@ -1,3 +1,4 @@
+:!version-label:
 :doctype: book
 :idprefix:
 :idseparator: -
