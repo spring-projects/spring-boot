@@ -22,6 +22,7 @@ import java.time.Duration;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.AfterEach;
@@ -177,7 +178,7 @@ class RestarterTests {
 
 		private int count = 0;
 
-		private static volatile boolean quit = false;
+		private static final AtomicBoolean restart = new AtomicBoolean();
 
 		@Scheduled(fixedDelay = 200)
 		void tickBean() {
@@ -186,8 +187,7 @@ class RestarterTests {
 
 		@Scheduled(initialDelay = 500, fixedDelay = 500)
 		void restart() {
-			System.out.println("Restart " + Thread.currentThread());
-			if (!SampleApplication.quit) {
+			if (SampleApplication.restart.compareAndSet(false, true)) {
 				Restarter.getInstance().restart();
 			}
 		}
@@ -198,18 +198,6 @@ class RestarterTests {
 					SampleApplication.class);
 			context.addApplicationListener(new CloseCountingApplicationListener());
 			Restarter.getInstance().prepare(context);
-			System.out.println("Sleep " + Thread.currentThread());
-			sleep();
-			quit = true;
-		}
-
-		private static void sleep() {
-			try {
-				Thread.sleep(1200);
-			}
-			catch (InterruptedException ex) {
-				// Ignore
-			}
 		}
 
 	}
