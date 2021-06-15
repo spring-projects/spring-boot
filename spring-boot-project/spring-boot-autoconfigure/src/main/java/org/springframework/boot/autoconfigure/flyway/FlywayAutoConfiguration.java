@@ -103,6 +103,7 @@ public class FlywayAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(JdbcUtils.class)
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties(FlywayProperties.class)
 	public static class FlywayConfiguration {

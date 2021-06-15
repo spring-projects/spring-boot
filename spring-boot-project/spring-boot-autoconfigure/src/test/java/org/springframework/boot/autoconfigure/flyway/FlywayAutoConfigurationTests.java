@@ -50,6 +50,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.jdbc.SchemaManagement;
 import org.springframework.boot.orm.jpa.EntityManagerFactoryBuilder;
+import org.springframework.boot.test.context.FilteredClassLoader;
 import org.springframework.boot.test.context.assertj.AssertableApplicationContext;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.test.context.runner.ContextConsumer;
@@ -113,6 +114,13 @@ class FlywayAutoConfigurationTests {
 					assertThat(context).hasSingleBean(Flyway.class);
 					assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource()).isNotNull();
 				});
+	}
+
+	@Test
+	void backsOffWithFlywayUrlAndNoSpringJdbc() {
+		this.contextRunner.withPropertyValues("spring.flyway.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
+				.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
+				.run((context) -> assertThat(context).doesNotHaveBean(Flyway.class));
 	}
 
 	@Test
