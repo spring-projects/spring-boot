@@ -115,6 +115,7 @@ public class FlywayAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(JdbcUtils.class)
 	@ConditionalOnMissingBean(Flyway.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class, FlywayProperties.class })
 	@Import({ FlywayMigrationInitializerEntityManagerFactoryDependsOnPostProcessor.class,

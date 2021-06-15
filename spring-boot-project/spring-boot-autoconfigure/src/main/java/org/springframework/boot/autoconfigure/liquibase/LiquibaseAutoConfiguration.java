@@ -52,6 +52,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.jdbc.core.ConnectionCallback;
 import org.springframework.jdbc.core.JdbcOperations;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcOperations;
 import org.springframework.jdbc.datasource.SimpleDriverDataSource;
@@ -92,6 +93,7 @@ public class LiquibaseAutoConfiguration {
 	}
 
 	@Configuration(proxyBeanMethods = false)
+	@ConditionalOnClass(ConnectionCallback.class)
 	@ConditionalOnMissingBean(SpringLiquibase.class)
 	@EnableConfigurationProperties({ DataSourceProperties.class, LiquibaseProperties.class })
 	public static class LiquibaseConfiguration {

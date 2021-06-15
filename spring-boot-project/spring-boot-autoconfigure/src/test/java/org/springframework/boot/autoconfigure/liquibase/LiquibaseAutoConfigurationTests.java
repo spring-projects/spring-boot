@@ -21,6 +21,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import javax.sql.DataSource;
@@ -102,6 +103,13 @@ class LiquibaseAutoConfigurationTests {
 					assertThat(((HikariDataSource) dataSource).isClosed()).isTrue();
 					assertThat(((HikariDataSource) dataSource).getJdbcUrl()).isEqualTo("jdbc:hsqldb:mem:liquibase");
 				}));
+	}
+
+	@Test
+	void backsOffWithLiquibaseUrlAndNoSpringJdbc() {
+		this.contextRunner.withPropertyValues("spring.liquibase.url:jdbc:hsqldb:mem:" + UUID.randomUUID())
+				.withClassLoader(new FilteredClassLoader("org.springframework.jdbc"))
+				.run((context) -> assertThat(context).doesNotHaveBean(SpringLiquibase.class));
 	}
 
 	@Test
