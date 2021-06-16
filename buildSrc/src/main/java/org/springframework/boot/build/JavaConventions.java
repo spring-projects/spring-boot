@@ -43,6 +43,7 @@ import org.gradle.api.artifacts.Dependency;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.plugins.JavaBasePlugin;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.plugins.quality.Checkstyle;
 import org.gradle.api.plugins.quality.CheckstyleExtension;
 import org.gradle.api.plugins.quality.CheckstylePlugin;
@@ -64,6 +65,7 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  * plugin is applied:
  *
  * <ul>
+ * <li>The project is configered with source and target compatibility of 1.8
  * <li>{@link SpringJavaFormatPlugin Spring Java Format}, {@link CheckstylePlugin
  * Checkstyle}, {@link TestFailuresPlugin Test Failures}, and {@link TestRetryPlugin Test
  * Retry} plugins are applied
@@ -78,11 +80,7 @@ import org.springframework.boot.build.toolchain.ToolchainPlugin;
  * {@link JavaPlugin} applied
  * <li>{@link JavaCompile}, {@link Javadoc}, and {@link FormatTask} tasks are configured
  * to use UTF-8 encoding
- * <li>{@link JavaCompile} tasks are configured:
- * <ul>
- * <li>to use {@code -parameters}
- * <li>with source and target compatibility of 1.8
- * </ul>
+ * <li>{@link JavaCompile} tasks are configured to use {@code -parameters}.
  * <li>When building with Java 8, {@link JavaCompile} tasks are also configured to:
  * <ul>
  * <li>Treat warnings as errors
@@ -116,7 +114,7 @@ class JavaConventions {
 		project.getPlugins().withType(JavaBasePlugin.class, (java) -> {
 			project.getPlugins().apply(TestFailuresPlugin.class);
 			configureSpringJavaFormat(project);
-			configureJavaCompileConventions(project);
+			configureJavaConventions(project);
 			configureJavadocConventions(project);
 			configureTestConventions(project);
 			configureJarManifestConventions(project);
@@ -199,7 +197,9 @@ class JavaConventions {
 		project.getTasks().withType(Javadoc.class, (javadoc) -> javadoc.getOptions().source("1.8").encoding("UTF-8"));
 	}
 
-	private void configureJavaCompileConventions(Project project) {
+	private void configureJavaConventions(Project project) {
+		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
+		javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
 			compile.setSourceCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
