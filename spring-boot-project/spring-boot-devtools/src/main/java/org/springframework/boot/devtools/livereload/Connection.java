@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -30,18 +31,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.springframework.core.log.LogMessage;
+import org.springframework.util.Assert;
 import org.springframework.util.Base64Utils;
 
 /**
  * A {@link LiveReloadServer} connection.
  *
  * @author Phillip Webb
+ * @author Francis Lavoie
  */
 class Connection {
 
 	private static final Log logger = LogFactory.getLog(Connection.class);
 
-	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile("^Sec-WebSocket-Key:(.*)$", Pattern.MULTILINE);
+	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile("^sec-websocket-key:(.*)$", Pattern.MULTILINE);
 
 	public static final String WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
@@ -68,8 +71,9 @@ class Connection {
 		this.socket = socket;
 		this.inputStream = new ConnectionInputStream(inputStream);
 		this.outputStream = new ConnectionOutputStream(outputStream);
-		this.header = this.inputStream.readHeader();
-		logger.debug(LogMessage.format("Established livereload connection [%s]", this.header));
+		String header = this.inputStream.readHeader();
+		logger.debug(LogMessage.format("Established livereload connection [%s]", header));
+		this.header = header.toLowerCase(Locale.ENGLISH);
 	}
 
 	/**
@@ -77,10 +81,10 @@ class Connection {
 	 * @throws Exception in case of errors
 	 */
 	void run() throws Exception {
-		if (this.header.contains("Upgrade: websocket") && this.header.contains("Sec-WebSocket-Version: 13")) {
+		if (this.header.contains("upgrade: websocket") && this.header.contains("sec-websocket-version: 13")) {
 			runWebSocket();
 		}
-		if (this.header.contains("GET /livereload.js")) {
+		if (this.header.contains("get /livereload.js")) {
 			this.outputStream.writeHttp(getClass().getResourceAsStream("livereload.js"), "text/javascript");
 		}
 	}
@@ -140,9 +144,7 @@ class Connection {
 
 	private String getWebsocketAcceptResponse() throws NoSuchAlgorithmException {
 		Matcher matcher = WEBSOCKET_KEY_PATTERN.matcher(this.header);
-		if (!matcher.find()) {
-			throw new IllegalStateException("No Sec-WebSocket-Key");
-		}
+		Assert.state(matcher.find(), "No Sec-WebSocket-Key");
 		String response = matcher.group(1).trim() + WEBSOCKET_GUID;
 		MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
 		messageDigest.update(response.getBytes(), 0, response.length());
