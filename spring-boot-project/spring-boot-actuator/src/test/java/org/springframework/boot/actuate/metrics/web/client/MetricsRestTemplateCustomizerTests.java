@@ -19,10 +19,12 @@ package org.springframework.boot.actuate.metrics.web.client;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import io.micrometer.core.instrument.MeterRegistry;
 import io.micrometer.core.instrument.MockClock;
 import io.micrometer.core.instrument.Tag;
+import io.micrometer.core.instrument.Timer.Builder;
 import io.micrometer.core.instrument.simple.SimpleConfig;
 import io.micrometer.core.instrument.simple.SimpleMeterRegistry;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -151,6 +153,39 @@ class MetricsRestTemplateCustomizerTests {
 		assertThat(restTemplate.getUriTemplateHandler())
 				.asInstanceOf(InstanceOfAssertFactories.type(RootUriTemplateHandler.class))
 				.extracting(RootUriTemplateHandler::getRootUri).isEqualTo("https://localhost:8443");
+	}
+
+	@Test
+	void whenAutoTimingIsDisabledUriTemplateHandlerDoesNotCaptureUris() {
+		AtomicBoolean enabled = new AtomicBoolean(false);
+		AutoTimer autoTimer = new AutoTimer() {
+
+			@Override
+			public boolean isEnabled() {
+				return enabled.get();
+			}
+
+			@Override
+			public void apply(Builder builder) {
+			}
+
+		};
+		RestTemplate restTemplate = new RestTemplateBuilder(new MetricsRestTemplateCustomizer(this.registry,
+				new DefaultRestTemplateExchangeTagsProvider(), "http.client.requests", autoTimer)).build();
+		MockRestServiceServer mockServer = MockRestServiceServer.createServer(restTemplate);
+		mockServer.expect(MockRestRequestMatchers.requestTo("/first/123"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+		mockServer.expect(MockRestRequestMatchers.requestTo("/second/456"))
+				.andExpect(MockRestRequestMatchers.method(HttpMethod.GET))
+				.andRespond(MockRestResponseCreators.withSuccess("OK", MediaType.APPLICATION_JSON));
+		assertThat(restTemplate.getForObject("/first/{id}", String.class, 123)).isEqualTo("OK");
+		assertThat(this.registry.find("http.client.requests").timer()).isNull();
+		enabled.set(true);
+		assertThat(restTemplate.getForObject(URI.create("/second/456"), String.class)).isEqualTo("OK");
+		this.registry.get("http.client.requests").tags("uri", "/second/456").timer();
+		this.mockServer.verify();
+
 	}
 
 	private static final class TestInterceptor implements ClientHttpRequestInterceptor {
