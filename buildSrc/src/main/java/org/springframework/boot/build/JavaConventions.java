@@ -194,17 +194,21 @@ class JavaConventions {
 	}
 
 	private void configureJavaConventions(Project project) {
-		JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
-		javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
+		if (!project.hasProperty("toolchainVersion")) {
+			JavaPluginExtension javaPluginExtension = project.getExtensions().getByType(JavaPluginExtension.class);
+			javaPluginExtension.setSourceCompatibility(JavaVersion.toVersion(SOURCE_AND_TARGET_COMPATIBILITY));
+		}
 		project.getTasks().withType(JavaCompile.class, (compile) -> {
 			compile.getOptions().setEncoding("UTF-8");
-			compile.setSourceCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
-			compile.setTargetCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
 			List<String> args = compile.getOptions().getCompilerArgs();
 			if (!args.contains("-parameters")) {
 				args.add("-parameters");
 			}
-			if (buildingWithJava8(project)) {
+			if (project.hasProperty("toolchainVersion")) {
+				compile.setSourceCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
+				compile.setTargetCompatibility(SOURCE_AND_TARGET_COMPATIBILITY);
+			}
+			else if (buildingWithJava8(project)) {
 				args.addAll(Arrays.asList("-Werror", "-Xlint:unchecked", "-Xlint:deprecation", "-Xlint:rawtypes",
 						"-Xlint:varargs"));
 			}
