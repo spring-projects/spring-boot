@@ -47,11 +47,11 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.artifacts.dsl.DependencyHandler;
+import org.gradle.api.model.ObjectFactory;
 import org.gradle.api.plugins.JavaPlatformPlugin;
 import org.gradle.api.publish.maven.tasks.GenerateMavenPom;
 import org.gradle.api.tasks.Sync;
 import org.gradle.api.tasks.TaskExecutionException;
-import org.gradle.util.ConfigureUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.NodeList;
 
@@ -77,7 +77,7 @@ public class BomExtension {
 
 	private final List<Library> libraries = new ArrayList<>();
 
-	private final UpgradeHandler upgradeHandler = new UpgradeHandler();
+	private final UpgradeHandler upgradeHandler;
 
 	private final DependencyHandler dependencyHandler;
 
@@ -85,6 +85,7 @@ public class BomExtension {
 
 	public BomExtension(DependencyHandler dependencyHandler, Project project) {
 		this.dependencyHandler = dependencyHandler;
+		this.upgradeHandler = project.getObjects().newInstance(UpgradeHandler.class);
 		this.project = project;
 	}
 
@@ -92,8 +93,8 @@ public class BomExtension {
 		return this.libraries;
 	}
 
-	public void upgrade(Closure<?> closure) {
-		ConfigureUtil.configure(closure, this.upgradeHandler);
+	public void upgrade(Action<UpgradeHandler> action) {
+		action.execute(this.upgradeHandler);
 	}
 
 	public Upgrade getUpgrade() {
@@ -101,9 +102,10 @@ public class BomExtension {
 				this.upgradeHandler.gitHub.repository, this.upgradeHandler.gitHub.issueLabels));
 	}
 
-	public void library(String name, String version, Closure<?> closure) {
-		LibraryHandler libraryHandler = new LibraryHandler();
-		ConfigureUtil.configure(closure, libraryHandler);
+	public void library(String name, String version, Action<LibraryHandler> action) {
+		ObjectFactory objects = this.project.getObjects();
+		LibraryHandler libraryHandler = objects.newInstance(LibraryHandler.class);
+		action.execute(libraryHandler);
 		addLibrary(new Library(name, DependencyVersion.parse(version), libraryHandler.groups,
 				libraryHandler.prohibitedVersions));
 	}
@@ -196,16 +198,16 @@ public class BomExtension {
 
 		private final List<ProhibitedVersion> prohibitedVersions = new ArrayList<>();
 
-		public void group(String id, Closure<?> closure) {
+		public void group(String id, Action<GroupHandler> action) {
 			GroupHandler groupHandler = new GroupHandler(id);
-			ConfigureUtil.configure(closure, groupHandler);
+			action.execute(groupHandler);
 			this.groups
 					.add(new Group(groupHandler.id, groupHandler.modules, groupHandler.plugins, groupHandler.imports));
 		}
 
-		public void prohibit(String range, Closure<?> closure) {
+		public void prohibit(String range, Action<ProhibitedVersionHandler> action) {
 			ProhibitedVersionHandler prohibitedVersionHandler = new ProhibitedVersionHandler();
-			ConfigureUtil.configure(closure, prohibitedVersionHandler);
+			action.execute(prohibitedVersionHandler);
 			try {
 				this.prohibitedVersions.add(new ProhibitedVersion(VersionRange.createFromVersionSpec(range),
 						prohibitedVersionHandler.reason));
@@ -258,7 +260,10 @@ public class BomExtension {
 					Object arg = ((Object[]) args)[0];
 					if (arg instanceof Closure) {
 						ExclusionHandler exclusionHandler = new ExclusionHandler();
-						ConfigureUtil.configure((Closure<?>) arg, exclusionHandler);
+						Closure<?> closure = (Closure<?>) arg;
+						closure.setResolveStrategy(Closure.DELEGATE_FIRST);
+						closure.setDelegate(exclusionHandler);
+						closure.call(exclusionHandler);
 						return new Module(name, exclusionHandler.exclusions);
 					}
 				}
@@ -289,8 +294,8 @@ public class BomExtension {
 			this.upgradePolicy = upgradePolicy;
 		}
 
-		public void gitHub(Closure<?> closure) {
-			ConfigureUtil.configure(closure, this.gitHub);
+		public void gitHub(Action<GitHubHandler> action) {
+			action.execute(this.gitHub);
 		}
 
 	}
