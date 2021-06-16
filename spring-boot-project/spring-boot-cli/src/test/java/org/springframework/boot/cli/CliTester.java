@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,9 +22,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.lang.reflect.Field;
 import java.net.URI;
-import java.net.URL;
 import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
@@ -127,7 +125,6 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 	}
 
 	private <T extends OptionParsingCommand> Future<T> submitCommand(T command, String... args) {
-		clearUrlHandler();
 		final String[] sources = getSources(args);
 		return Executors.newSingleThreadExecutor().submit(() -> {
 			ClassLoader loader = Thread.currentThread().getContextClassLoader();
@@ -150,21 +147,6 @@ public class CliTester implements BeforeEachCallback, AfterEachCallback {
 				Thread.currentThread().setContextClassLoader(loader);
 			}
 		});
-	}
-
-	/**
-	 * The TomcatURLStreamHandlerFactory fails if the factory is already set, use
-	 * reflection to reset it.
-	 */
-	private void clearUrlHandler() {
-		try {
-			Field field = URL.class.getDeclaredField("factory");
-			field.setAccessible(true);
-			field.set(null, null);
-		}
-		catch (Exception ex) {
-			throw new IllegalStateException(ex);
-		}
 	}
 
 	protected String[] getSources(String... args) {
