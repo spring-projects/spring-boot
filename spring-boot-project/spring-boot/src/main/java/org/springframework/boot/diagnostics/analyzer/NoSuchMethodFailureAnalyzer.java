@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,25 +33,39 @@ import org.springframework.util.ClassUtils;
  *
  * @author Andy Wilkinson
  * @author Stephane Nicoll
+ * @author Scott Frederick
  */
 class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodError> {
 
 	@Override
 	protected FailureAnalysis analyze(Throwable rootFailure, NoSuchMethodError cause) {
-		NoSuchMethodDescriptor descriptor = getNoSuchMethodDescriptor(cause.getMessage());
-		if (descriptor == null) {
+		NoSuchMethodDescriptor callerDescriptor = getCallerMethodDescriptor(cause);
+		if (callerDescriptor == null) {
 			return null;
 		}
-		String description = getDescription(cause, descriptor);
-		return new FailureAnalysis(description,
-				"Correct the classpath of your application so that it contains a single, compatible version of "
-						+ descriptor.getClassName(),
-				cause);
+		NoSuchMethodDescriptor calledDescriptor = getNoSuchMethodDescriptor(cause.getMessage());
+		if (calledDescriptor == null) {
+			return null;
+		}
+		String description = getDescription(callerDescriptor, calledDescriptor);
+		String action = getAction(callerDescriptor, calledDescriptor);
+		return new FailureAnalysis(description, action, cause);
+	}
+
+	private NoSuchMethodDescriptor getCallerMethodDescriptor(NoSuchMethodError cause) {
+		StackTraceElement firstStackTraceElement = cause.getStackTrace()[0];
+		String message = firstStackTraceElement.toString();
+		String className = firstStackTraceElement.getClassName();
+		return getDescriptorForClass(message, className);
 	}
 
 	protected NoSuchMethodDescriptor getNoSuchMethodDescriptor(String cause) {
 		String message = cleanMessage(cause);
 		String className = extractClassName(message);
+		return getDescriptorForClass(message, className);
+	}
+
+	private NoSuchMethodDescriptor getDescriptorForClass(String message, String className) {
 		if (className == null) {
 			return null;
 		}
@@ -133,38 +147,62 @@ class NoSuchMethodFailureAnalyzer extends AbstractFailureAnalyzer<NoSuchMethodEr
 		}
 	}
 
-	private String getDescription(NoSuchMethodError cause, NoSuchMethodDescriptor descriptor) {
+	private String getDescription(NoSuchMethodDescriptor callerDescriptor, NoSuchMethodDescriptor calledDescriptor) {
 		StringWriter description = new StringWriter();
 		PrintWriter writer = new PrintWriter(description);
 		writer.println("An attempt was made to call a method that does not"
 				+ " exist. The attempt was made from the following location:");
 		writer.println();
-		writer.print("    ");
-		writer.println(cause.getStackTrace()[0]);
+		writer.printf("    %s%n", callerDescriptor.getErrorMessage());
 		writer.println();
 		writer.println("The following method did not exist:");
 		writer.println();
-		writer.print("    ");
-		writer.println(descriptor.getErrorMessage());
+		writer.printf("    %s%n", calledDescriptor.getErrorMessage());
 		writer.println();
-		writer.println(
-				"The method's class, " + descriptor.getClassName() + ", is available from the following locations:");
-		writer.println();
-		for (URL candidate : descriptor.getCandidateLocations()) {
-			writer.print("    ");
-			writer.println(candidate);
+		if (callerDescriptor.getCandidateLocations().size() > 1) {
+			writer.printf("The calling method's class, %s, is available from the following locations:%n",
+					callerDescriptor.getClassName());
+			writer.println();
+			for (URL candidate : callerDescriptor.getCandidateLocations()) {
+				writer.printf("    %s%n", candidate);
+			}
+			writer.println();
+			writer.println("The calling method's class was loaded from the following location:");
+			writer.println();
+			writer.printf("    %s%n", callerDescriptor.getTypeHierarchy().get(0).getLocation());
+		}
+		else {
+			writer.printf("The calling method's class, %s, was loaded from the following location:%n",
+					callerDescriptor.getClassName());
+			writer.println();
+			writer.printf("    %s%n", callerDescriptor.getCandidateLocations().get(0));
 		}
 		writer.println();
-		writer.println("The class hierarchy was loaded from the following locations:");
+		writer.printf("The called method's class, %s, is available from the following locations:%n",
+				calledDescriptor.getClassName());
 		writer.println();
-		for (ClassDescriptor type : descriptor.getTypeHierarchy()) {
-			writer.print("    ");
-			writer.print(type.getName());
-			writer.print(": ");
-			writer.println(type.getLocation());
+		for (URL candidate : calledDescriptor.getCandidateLocations()) {
+			writer.printf("    %s%n", candidate);
+		}
+		writer.println();
+		writer.println("The called method's class hierarchy was loaded from the following locations:");
+		writer.println();
+		for (ClassDescriptor type : calledDescriptor.getTypeHierarchy()) {
+			writer.printf("    %s: %s%n", type.getName(), type.getLocation());
 		}
 
 		return description.toString();
+	}
+
+	private String getAction(NoSuchMethodDescriptor callerDescriptor, NoSuchMethodDescriptor calledDescriptor) {
+		if (callerDescriptor.getClassName().equals(calledDescriptor.getClassName())) {
+			return "Correct the classpath of your application so that it contains a single, compatible version of "
+					+ calledDescriptor.getClassName();
+		}
+		else {
+			return "Correct the classpath of your application so that it contains compatible versions of the classes "
+					+ callerDescriptor.getClassName() + " and " + calledDescriptor.getClassName();
+		}
 	}
 
 	protected static class NoSuchMethodDescriptor {
