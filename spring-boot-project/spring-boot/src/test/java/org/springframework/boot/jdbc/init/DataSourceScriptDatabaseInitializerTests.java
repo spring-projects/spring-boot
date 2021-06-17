@@ -24,18 +24,20 @@ import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.AfterEach;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
-import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializer;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializerTests;
 import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.testsupport.BuildOutput;
 import org.springframework.jdbc.core.JdbcTemplate;
+
+import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * Tests for {@link DataSourceScriptDatabaseInitializer}.
  *
  * @author Andy Wilkinson
  */
-class DataSourceScriptDatabaseInitializerTests extends AbstractScriptDatabaseInitializerTests {
+class DataSourceScriptDatabaseInitializerTests
+		extends AbstractScriptDatabaseInitializerTests<DataSourceScriptDatabaseInitializer> {
 
 	private final HikariDataSource embeddedDataSource = DataSourceBuilder.create().type(HikariDataSource.class)
 			.url("jdbc:h2:mem:" + UUID.randomUUID()).build();
@@ -52,13 +54,13 @@ class DataSourceScriptDatabaseInitializerTests extends AbstractScriptDatabaseIni
 	}
 
 	@Override
-	protected AbstractScriptDatabaseInitializer createEmbeddedDatabaseInitializer(
+	protected DataSourceScriptDatabaseInitializer createEmbeddedDatabaseInitializer(
 			DatabaseInitializationSettings settings) {
 		return new DataSourceScriptDatabaseInitializer(this.embeddedDataSource, settings);
 	}
 
 	@Override
-	protected AbstractScriptDatabaseInitializer createStandaloneDatabaseInitializer(
+	protected DataSourceScriptDatabaseInitializer createStandaloneDatabaseInitializer(
 			DatabaseInitializationSettings settings) {
 		return new DataSourceScriptDatabaseInitializer(this.standloneDataSource, settings);
 	}
@@ -75,6 +77,11 @@ class DataSourceScriptDatabaseInitializerTests extends AbstractScriptDatabaseIni
 
 	private int numberOfRows(DataSource dataSource, String sql) {
 		return new JdbcTemplate(dataSource).queryForObject(sql, Integer.class);
+	}
+
+	@Override
+	protected void assertDatabaseAccessed(boolean accessed, DataSourceScriptDatabaseInitializer initializer) {
+		assertThat(((HikariDataSource) initializer.getDataSource()).isRunning()).isEqualTo(accessed);
 	}
 
 }
