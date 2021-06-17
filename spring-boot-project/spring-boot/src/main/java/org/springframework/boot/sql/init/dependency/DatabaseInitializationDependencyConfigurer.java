@@ -34,6 +34,7 @@ import org.springframework.beans.factory.support.BeanDefinitionRegistry;
 import org.springframework.boot.util.Instantiator;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.ImportBeanDefinitionRegistrar;
+import org.springframework.core.Ordered;
 import org.springframework.core.env.Environment;
 import org.springframework.core.io.support.SpringFactoriesLoader;
 import org.springframework.core.type.AnnotationMetadata;
@@ -84,12 +85,17 @@ public class DatabaseInitializationDependencyConfigurer implements ImportBeanDef
 	 * {@link BeanFactoryPostProcessor} used to configure database initialization
 	 * dependency relationships.
 	 */
-	static class DependsOnDatabaseInitializationPostProcessor implements BeanFactoryPostProcessor {
+	static class DependsOnDatabaseInitializationPostProcessor implements BeanFactoryPostProcessor, Ordered {
 
 		private final Environment environment;
 
 		DependsOnDatabaseInitializationPostProcessor(Environment environment) {
 			this.environment = environment;
+		}
+
+		@Override
+		public int getOrder() {
+			return 0;
 		}
 
 		@Override
