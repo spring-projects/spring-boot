@@ -115,6 +115,11 @@ public class ElasticsearchRestClientProperties {
 		 */
 		private Duration delayAfterFailure = Duration.ofMinutes(1);
 
+		/**
+		 * Whether to enable Sniffer support.
+		 */
+		private boolean enabled = true;
+
 		public Duration getInterval() {
 			return this.interval;
 		}
@@ -129,6 +134,14 @@ public class ElasticsearchRestClientProperties {
 
 		public void setDelayAfterFailure(Duration delayAfterFailure) {
 			this.delayAfterFailure = delayAfterFailure;
+		}
+
+		public boolean isEnabled() {
+			return this.enabled;
+		}
+
+		public void setEnabled(boolean enabled) {
+			this.enabled = enabled;
 		}
 
 	}

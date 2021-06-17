@@ -221,6 +221,13 @@ class ElasticsearchRestClientAutoConfigurationTests {
 	}
 
 	@Test
+	void configureWithDisabledSnifferShouldNotCreateSniffer() {
+		this.contextRunner.withPropertyValues("spring.elasticsearch.rest.sniffer.enabled=false")
+				.run((context) -> assertThat(context).hasSingleBean(RestHighLevelClient.class)
+						.doesNotHaveBean(Sniffer.class));
+	}
+
+	@Test
 	void configureShouldCreateSnifferUsingRestHighLevelClient() {
 		this.contextRunner.run((context) -> {
 			assertThat(context).hasSingleBean(Sniffer.class);
