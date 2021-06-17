@@ -611,13 +611,13 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(context.getEnvironment().getProperty("my.value")).isEqualTo("iwasimported");
 	}
 
-	@Test
+	@Test // gh-26858
 	void runWhenImportWithProfileVariantOrdersPropertySourcesCorrectly() {
 		this.application.setAdditionalProfiles("dev");
 		ConfigurableApplicationContext context = this.application
 				.run("--spring.config.location=classpath:application-import-with-profile-variant.properties");
 		assertThat(context.getEnvironment().getProperty("my.value"))
-				.isEqualTo("application-import-with-profile-variant-dev");
+				.isEqualTo("application-import-with-profile-variant-imported-dev");
 	}
 
 	@Test
