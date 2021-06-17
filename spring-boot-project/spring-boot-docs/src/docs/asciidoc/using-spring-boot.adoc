@@ -364,7 +364,7 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 
 * `@EnableAutoConfiguration`: enable <<using-boot-auto-configuration,Spring Boot's auto-configuration mechanism>>
 * `@ComponentScan`: enable `@Component` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
-* `@Configuration`: allow to register extra beans in the context or import additional configuration classes
+* `@SpringBootConfiguration`: an alternative to Spring's standard `@Configuration`, allow to register extra beans in the context or import additional configuration classes
 
 [source,java,indent=0]
 ----
@@ -373,7 +373,7 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 	import org.springframework.boot.SpringApplication;
 	import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-	@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+	@SpringBootApplication // same as @SpringBootConfiguration @EnableAutoConfiguration @ComponentScan
 	public class Application {
 
 		public static void main(String[] args) {
@@ -395,11 +395,11 @@ For instance, you may not want to use component scan or configuration properties
 	package com.example.myapplication;
 
 	import org.springframework.boot.SpringApplication;
+	import org.springframework.boot.SpringBootConfiguration;
 	import org.springframework.context.annotation.ComponentScan
-	import org.springframework.context.annotation.Configuration;
 	import org.springframework.context.annotation.Import;
 
-	@Configuration(proxyBeanMethods = false)
+	@SpringBootConfiguration(proxyBeanMethods = false)
 	@EnableAutoConfiguration
 	@Import({ MyConfig.class, MyAnotherConfig.class })
 	public class Application {
