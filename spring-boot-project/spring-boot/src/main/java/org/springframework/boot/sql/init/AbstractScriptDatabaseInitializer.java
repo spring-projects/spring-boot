@@ -71,13 +71,9 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	 * {@code false}
 	 */
 	public boolean initializeDatabase() {
-		if (isEnabled()) {
-			ScriptLocationResolver locationResolver = new ScriptLocationResolver(this.resourceLoader);
-			boolean initialized = applySchemaScripts(locationResolver);
-			initialized = applyDataScripts(locationResolver) || initialized;
-			return initialized;
-		}
-		return false;
+		ScriptLocationResolver locationResolver = new ScriptLocationResolver(this.resourceLoader);
+		boolean initialized = applySchemaScripts(locationResolver);
+		return applyDataScripts(locationResolver) || initialized;
 	}
 
 	private boolean isEnabled() {
@@ -107,10 +103,11 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 
 	private boolean applyScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
 		List<Resource> scripts = getScripts(locations, type, locationResolver);
-		if (!scripts.isEmpty()) {
+		if (!scripts.isEmpty() && isEnabled()) {
 			runScripts(scripts);
+			return true;
 		}
-		return !scripts.isEmpty();
+		return false;
 	}
 
 	private List<Resource> getScripts(List<String> locations, String type, ScriptLocationResolver locationResolver) {
@@ -145,9 +142,6 @@ public abstract class AbstractScriptDatabaseInitializer implements ResourceLoade
 	}
 
 	private void runScripts(List<Resource> resources) {
-		if (resources.isEmpty()) {
-			return;
-		}
 		runScripts(resources, this.settings.isContinueOnError(), this.settings.getSeparator(),
 				this.settings.getEncoding());
 	}
