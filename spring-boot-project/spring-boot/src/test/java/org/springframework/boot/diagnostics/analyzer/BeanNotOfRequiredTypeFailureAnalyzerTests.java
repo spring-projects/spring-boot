@@ -47,9 +47,11 @@ class BeanNotOfRequiredTypeFailureAnalyzerTests {
 		assertThat(analysis.getDescription()).startsWith("The bean 'asyncBean'");
 		assertThat(analysis.getDescription())
 				.containsPattern("The bean is of type '" + AsyncBean.class.getPackage().getName() + ".\\$Proxy.*'");
-		assertThat(analysis.getDescription()).contains("and implements:\n\t" + SomeInterface.class.getName());
+		assertThat(analysis.getDescription())
+				.contains(String.format("and implements:%n\t") + SomeInterface.class.getName());
 		assertThat(analysis.getDescription()).contains("Expected a bean of type '" + AsyncBean.class.getName() + "'");
-		assertThat(analysis.getDescription()).contains("which implements:\n\t" + SomeInterface.class.getName());
+		assertThat(analysis.getDescription())
+				.contains(String.format("which implements:%n\t") + SomeInterface.class.getName());
 	}
 
 	private FailureAnalysis performAnalysis(Class<?> configuration) {
