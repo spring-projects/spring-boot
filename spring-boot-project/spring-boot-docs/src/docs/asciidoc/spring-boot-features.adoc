@@ -642,7 +642,10 @@ They must be defined as an environment property (typically an OS environment var
 
 If `spring.config.location` contains directories (as opposed to files), they should end in `/`.
 At runtime they will be appended with the names generated from `spring.config.name` before being loaded.
-Files specified in `spring.config.location` are used as-is.
+Files specified in `spring.config.location` are imported directly.
+
+NOTE: Both directory and file location values are also expanded to check for <<boot-features-external-config-files-profile-specific,profile-specific files>>.
+For example, if you have a `spring.config.location` of `classpath:myconfig.properties`, you will also find appropriate `classpath:myconfig-<profile>.properties` files are loaded.
 
 In most situations, each configprop:spring.config.location[] item you add will reference a single file or directory.
 Locations are processed in the order that they are defined and later ones can override the values of earlier ones.
@@ -782,6 +785,7 @@ For example, you might have the following in your classpath `application.propert
 This will trigger the import of a `dev.properties` file in current directory (if such a file exists).
 Values from the imported `dev.properties` will take precedence over the file that triggered the import.
 In the above example, the `dev.properties` could redefine `spring.application.name` to a different value.
+
 An import will only be imported once no matter how many times it is declared.
 The order an import is defined inside a single document within the properties/yaml file doesn't matter.
 For instance, the two examples below produce the same result:
@@ -808,6 +812,9 @@ In both of the above examples, the values from the `my.properties` file will tak
 
 Several locations can be specified under a single `spring.config.import` key.
 Locations will be processed in the order that they are defined, with later imports taking precedence.
+
+NOTE: When appropriate, <<boot-features-external-config-files-profile-specific, Profile-specific variants>> are also considered for import.
+The example above would import both `my.properties` as well as any `my-<profile>.properties` variants.
 
 [TIP]
 ====
