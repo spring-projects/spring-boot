@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Test;
 
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.boot.sql.init.AbstractScriptDatabaseInitializerTests;
@@ -51,6 +52,13 @@ class DataSourceScriptDatabaseInitializerTests
 	void closeDataSource() {
 		this.embeddedDataSource.close();
 		this.standloneDataSource.close();
+	}
+
+	@Test
+	void whenDatabaseIsInaccessibleThenItIsAssumedNotToBeEmbedded() {
+		DataSourceScriptDatabaseInitializer initializer = new DataSourceScriptDatabaseInitializer(
+				new HikariDataSource(), new DatabaseInitializationSettings());
+		assertThat(initializer.isEmbeddedDatabase()).isFalse();
 	}
 
 	@Override
