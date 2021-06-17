@@ -19,7 +19,8 @@ package org.springframework.boot.docs.using.usingthespringbootapplicationannotat
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication // same as @Configuration @EnableAutoConfiguration @ComponentScan
+@SpringBootApplication // same as @SpringBootConfiguration @EnableAutoConfiguration
+						// @ComponentScan
 public class MyApplication {
 
 	public static void main(String[] args) {
