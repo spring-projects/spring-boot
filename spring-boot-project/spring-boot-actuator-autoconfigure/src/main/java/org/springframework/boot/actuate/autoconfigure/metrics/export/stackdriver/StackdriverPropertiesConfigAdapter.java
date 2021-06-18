@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver;
 
+import java.util.Map;
+
 import io.micrometer.stackdriver.StackdriverConfig;
 
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
@@ -46,6 +48,11 @@ public class StackdriverPropertiesConfigAdapter extends StepRegistryPropertiesCo
 	@Override
 	public String resourceType() {
 		return get(StackdriverProperties::getResourceType, StackdriverConfig.super::resourceType);
+	}
+
+	@Override
+	public Map<String, String> resourceLabels() {
+		return get(StackdriverProperties::getResourceLabels, StackdriverConfig.super::resourceLabels);
 	}
 
 }
