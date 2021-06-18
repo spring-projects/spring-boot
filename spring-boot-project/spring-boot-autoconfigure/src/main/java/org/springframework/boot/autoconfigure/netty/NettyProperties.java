@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.netty;
 
+import io.netty.util.ResourceLeakDetector;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
 /**
@@ -32,38 +33,13 @@ public class NettyProperties {
 	/**
 	 * Level of leak detection for reference-counted buffers.
 	 */
-	private LeakDetection leakDetection = LeakDetection.DISABLED;
+	private ResourceLeakDetector.Level leakDetection;
 
-	public LeakDetection getLeakDetection() {
+	public ResourceLeakDetector.Level getLeakDetection() {
 		return this.leakDetection;
 	}
 
-	public void setLeakDetection(LeakDetection leakDetection) {
+	public void setLeakDetection(ResourceLeakDetector.Level leakDetection) {
 		this.leakDetection = leakDetection;
 	}
-
-	public enum LeakDetection {
-
-		/**
-		 * Disable leak detection completely.
-		 */
-		DISABLED,
-
-		/**
-		 * Detect leaks for 1% of buffers.
-		 */
-		SIMPLE,
-
-		/**
-		 * Detect leaks for 1% of buffers and track where they were accessed.
-		 */
-		ADVANCED,
-
-		/**
-		 * Detect leaks for 100% of buffers and track where they were accessed.
-		 */
-		PARANOID
-
-	}
-
 }

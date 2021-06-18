@@ -36,11 +36,18 @@ class NettyAutoConfigurationTests {
 
 	@Test
 	void leakDetectionShouldBeConfigured() {
+		ResourceLeakDetector.Level originLevel = ResourceLeakDetector.getLevel();
 		this.contextRunner.withPropertyValues("spring.netty.leak-detection=paranoid").run((context) -> {
 			assertThat(ResourceLeakDetector.getLevel()).isEqualTo(ResourceLeakDetector.Level.PARANOID);
 			// reset configuration for the following tests.
-			ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.DISABLED);
+			ResourceLeakDetector.setLevel(originLevel);
 		});
+	}
+
+	@Test
+	void leakDetectionNotBeConfigured() {
+		ResourceLeakDetector.Level originLevel = ResourceLeakDetector.getLevel();
+		this.contextRunner.run((context) -> assertThat(ResourceLeakDetector.getLevel()).isEqualTo(originLevel));
 	}
 
 }

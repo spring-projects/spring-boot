@@ -1784,8 +1784,7 @@
       "description": "Comma-separated list of locations of WSDLs and accompanying XSDs to be exposed as beans."
     },
     {
-      "name": "spring.netty.leak-detection",
-      "defaultValue": "disabled"
+      "name": "spring.netty.leak-detection"
     }
   ],
   "hints": [

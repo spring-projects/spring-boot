@@ -37,8 +37,7 @@ public class NettyAutoConfiguration {
 
 	public NettyAutoConfiguration(NettyProperties properties) {
 		if (properties.getLeakDetection() != null) {
-			NettyProperties.LeakDetection leakDetection = properties.getLeakDetection();
-			ResourceLeakDetector.setLevel(ResourceLeakDetector.Level.valueOf(leakDetection.name()));
+			ResourceLeakDetector.setLevel(properties.getLeakDetection());
 		}
 	}
 
