@@ -16,6 +16,8 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver;
 
+import java.util.Map;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
@@ -40,6 +42,11 @@ public class StackdriverProperties extends StepRegistryProperties {
 	 */
 	private String resourceType = "global";
 
+	/**
+	 * Monitored resource's labels.
+	 */
+	private Map<String, String> resourceLabels;
+
 	public String getProjectId() {
 		return this.projectId;
 	}
@@ -54,6 +61,14 @@ public class StackdriverProperties extends StepRegistryProperties {
 
 	public void setResourceType(String resourceType) {
 		this.resourceType = resourceType;
+	}
+
+	public Map<String, String> getResourceLabels() {
+		return this.resourceLabels;
+	}
+
+	public void setResourceLabels(Map<String, String> resourceLabels) {
+		this.resourceLabels = resourceLabels;
 	}
 
 }

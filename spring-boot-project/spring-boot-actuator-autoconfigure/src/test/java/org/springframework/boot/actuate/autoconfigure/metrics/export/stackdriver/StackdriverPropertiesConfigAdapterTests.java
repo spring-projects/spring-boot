@@ -16,6 +16,9 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.stackdriver;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -39,6 +42,17 @@ class StackdriverPropertiesConfigAdapterTests {
 		StackdriverProperties properties = new StackdriverProperties();
 		properties.setResourceType("my-resource-type");
 		assertThat(new StackdriverPropertiesConfigAdapter(properties).resourceType()).isEqualTo("my-resource-type");
+	}
+
+	@Test
+	void whenPropertiesResourceLabelsAreSetAdapterResourceTypeReturnsThem() {
+		final Map<String, String> labels = new HashMap<>();
+		labels.put("labelOne", "valueOne");
+		labels.put("labelTwo", "valueTwo");
+		StackdriverProperties properties = new StackdriverProperties();
+		properties.setResourceLabels(labels);
+		assertThat(new StackdriverPropertiesConfigAdapter(properties).resourceLabels())
+				.containsExactlyInAnyOrderEntriesOf(labels);
 	}
 
 }
