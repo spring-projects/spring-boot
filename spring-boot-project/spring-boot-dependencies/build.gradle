@@ -1631,7 +1631,7 @@ bom {
 			]
 		}
 	}
-	library("Spring Session Bom", "2020.0.4") {
+	library("Spring Session Bom", "2020.0.5-SNAPSHOT") {
 		group("org.springframework.session") {
 			imports = [
 				"spring-session-bom"
