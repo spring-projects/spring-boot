@@ -135,9 +135,9 @@ Given the examples above, if we have the following configuration:
 The actual application will show the banner (as overridden by configuration) and uses three sources for the `ApplicationContext`.
 The application sources are:
 
-.`MyApplication` (from the code)
-.`MyDatabaseConfig` (from the external config)
-.`MyJmsConfig`(from the external config)
+. `MyApplication` (from the code)
+. `MyDatabaseConfig` (from the external config)
+. `MyJmsConfig`(from the external config)
 
 
 
