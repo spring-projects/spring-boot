@@ -301,7 +301,14 @@ public class Log4J2LoggingSystem extends Slf4JLoggingSystem {
 
 	@Override
 	public Runnable getShutdownHandler() {
-		return () -> getLoggerContext().stop();
+		return () -> {
+			try {
+				getLoggerContext().stop();
+			}
+			catch (ClassCastException ex) {
+				// Ignore
+			}
+		};
 	}
 
 	@Override
