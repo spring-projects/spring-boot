@@ -19,7 +19,6 @@ package org.springframework.boot.gradle.plugin;
 import java.io.File;
 import java.util.Collections;
 import java.util.List;
-import java.util.Optional;
 import java.util.Set;
 
 import org.gradle.api.Action;
@@ -41,6 +40,7 @@ import org.gradle.api.plugins.JavaPluginConvention;
 import org.gradle.api.plugins.JavaPluginExtension;
 import org.gradle.api.provider.Provider;
 import org.gradle.api.tasks.SourceSet;
+import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.TaskProvider;
 import org.gradle.api.tasks.bundling.Jar;
 import org.gradle.api.tasks.compile.JavaCompile;
@@ -195,7 +195,11 @@ final class JavaPluginAction implements PluginApplicationAction {
 	}
 
 	private void configureAdditionalMetadataLocations(JavaCompile compile) {
-		compile.doFirst(new AdditionalMetadataLocationsConfigurer());
+		SourceSetContainer sourceSets = compile.getProject().getConvention().getPlugin(JavaPluginConvention.class)
+				.getSourceSets();
+		sourceSets.stream().filter((candidate) -> candidate.getCompileJavaTaskName().equals(compile.getName()))
+				.map((match) -> match.getResources().getSrcDirs()).findFirst()
+				.ifPresent((locations) -> compile.doFirst(new AdditionalMetadataLocationsConfigurer(locations)));
 	}
 
 	private void configureDevelopmentOnlyConfiguration(Project project) {
@@ -225,7 +229,13 @@ final class JavaPluginAction implements PluginApplicationAction {
 	 * inner-class rather than a lambda due to
 	 * https://github.com/gradle/gradle/issues/5510.
 	 */
-	private static class AdditionalMetadataLocationsConfigurer implements Action<Task> {
+	private static final class AdditionalMetadataLocationsConfigurer implements Action<Task> {
+
+		private final Set<File> locations;
+
+		private AdditionalMetadataLocationsConfigurer(Set<File> locations) {
+			this.locations = locations;
+		}
 
 		@Override
 		public void execute(Task task) {
@@ -234,8 +244,7 @@ final class JavaPluginAction implements PluginApplicationAction {
 			}
 			JavaCompile compile = (JavaCompile) task;
 			if (hasConfigurationProcessorOnClasspath(compile)) {
-				findMatchingSourceSet(compile)
-						.ifPresent((sourceSet) -> configureAdditionalMetadataLocations(compile, sourceSet));
+				configureAdditionalMetadataLocations(compile);
 			}
 		}
 
@@ -246,15 +255,10 @@ final class JavaPluginAction implements PluginApplicationAction {
 					.anyMatch((name) -> name.startsWith("spring-boot-configuration-processor"));
 		}
 
-		private Optional<SourceSet> findMatchingSourceSet(JavaCompile compile) {
-			return compile.getProject().getConvention().getPlugin(JavaPluginConvention.class).getSourceSets().stream()
-					.filter((sourceSet) -> sourceSet.getCompileJavaTaskName().equals(compile.getName())).findFirst();
-		}
-
-		private void configureAdditionalMetadataLocations(JavaCompile compile, SourceSet sourceSet) {
-			String locations = StringUtils.collectionToCommaDelimitedString(sourceSet.getResources().getSrcDirs());
+		private void configureAdditionalMetadataLocations(JavaCompile compile) {
 			compile.getOptions().getCompilerArgs()
-					.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations=" + locations);
+					.add("-Aorg.springframework.boot.configurationprocessor.additionalMetadataLocations="
+							+ StringUtils.collectionToCommaDelimitedString(this.locations));
 		}
 
 	}
