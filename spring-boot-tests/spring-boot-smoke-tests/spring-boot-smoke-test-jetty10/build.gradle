@@ -14,6 +14,24 @@ dependencies {
 	implementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-web")) {
 		exclude module: "spring-boot-starter-tomcat"
 	}
+	
+	runtimeOnly("org.eclipse.jetty:jetty-alpn-java-server")
+	runtimeOnly("org.eclipse.jetty.http2:http2-server")
 
 	testImplementation(project(":spring-boot-project:spring-boot-starters:spring-boot-starter-test"))
+	testImplementation("org.eclipse.jetty:jetty-client")
+	testImplementation("org.eclipse.jetty.http2:http2-client")
+	testImplementation("org.eclipse.jetty.http2:http2-http-client-transport")
+}
+
+def buildingWithJava11OrLater() {
+	return project.hasProperty("toolchainVersion") || JavaVersion.current().java11Compatible
+}
+
+compileTestJava {
+	enabled = buildingWithJava11OrLater()
+}
+
+test {
+	enabled = buildingWithJava11OrLater()
 }
