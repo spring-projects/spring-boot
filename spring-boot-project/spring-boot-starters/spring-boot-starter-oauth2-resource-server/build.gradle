@@ -7,16 +7,9 @@ description = "Starter for using Spring Security's OAuth2 resource server featur
 dependencies {
 	api(project(":spring-boot-project:spring-boot-starters:spring-boot-starter"))
 	api("org.springframework.security:spring-security-config") {
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
         exclude group: "org.jetbrains.kotlin", module: "kotlin-stdlib-jdk8"
 	}
-	api("org.springframework.security:spring-security-core") {
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
-	}
-	api("org.springframework.security:spring-security-oauth2-resource-server") {
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
-	}
-	api("org.springframework.security:spring-security-oauth2-jose") {
-		exclude group: "org.springframework.security", module: "spring-security-crypto"
-	}
+	api("org.springframework.security:spring-security-core")
+	api("org.springframework.security:spring-security-oauth2-resource-server")
+	api("org.springframework.security:spring-security-oauth2-jose")
 }
