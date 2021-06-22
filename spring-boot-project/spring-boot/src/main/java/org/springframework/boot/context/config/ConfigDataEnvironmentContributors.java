@@ -117,10 +117,9 @@ class ConfigDataEnvironmentContributors implements Iterable<ConfigDataEnvironmen
 					result, contributor, activationContext);
 			ConfigDataLoaderContext loaderContext = new ContributorDataLoaderContext(this);
 			List<ConfigDataLocation> imports = contributor.getImports();
-			boolean resolveProfileSpecific = !contributor.isFromProfileSpecificImport();
 			this.logger.trace(LogMessage.format("Processing imports %s", imports));
 			Map<ConfigDataResolutionResult, ConfigData> imported = importer.resolveAndLoad(activationContext,
-					locationResolverContext, loaderContext, imports, resolveProfileSpecific);
+					locationResolverContext, loaderContext, imports);
 			this.logger.trace(LogMessage.of(() -> getImportedMessage(imported.keySet())));
 			ConfigDataEnvironmentContributor contributorAndChildren = contributor.withChildren(importPhase,
 					asContributors(imported));
