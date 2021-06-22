@@ -364,7 +364,8 @@ A single `@SpringBootApplication` annotation can be used to enable those three f
 
 * `@EnableAutoConfiguration`: enable <<using-boot-auto-configuration,Spring Boot's auto-configuration mechanism>>
 * `@ComponentScan`: enable `@Component` scan on the package where the application is located (see <<using-boot-structuring-your-code,the best practices>>)
-* `@SpringBootConfiguration`: an alternative to Spring's standard `@Configuration`, allow to register extra beans in the context or import additional configuration classes
+* `@SpringBootConfiguration`: enable registration of extra beans in the context or the import of additional configuration classes.
+An alternative to Spring's standard `@Configuration` that aids <<spring-boot-features#boot-features-testing-spring-boot-applications-detecting-config,configuration detection>> in your integration tests.
 
 [source,java,indent=0]
 ----
