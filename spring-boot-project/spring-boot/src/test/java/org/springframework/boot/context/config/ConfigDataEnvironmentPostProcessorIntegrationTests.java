@@ -750,8 +750,8 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(environment.getProperty("test2")).isEqualTo("test2");
 	}
 
-	@Test // gh-26752
-	void runWhenHasProfileSpecificImportWithImportDoesNotImportSecondProfileSpecificFile() {
+	@Test // gh-26960
+	void runWhenHasProfileSpecificImportWithImportImportsSecondProfileSpecificFile() {
 		ConfigurableApplicationContext context = this.application
 				.run("--spring.config.name=application-profile-specific-import-with-import");
 		ConfigurableEnvironment environment = context.getEnvironment();
@@ -759,17 +759,17 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p1")).isTrue();
 		assertThat(environment.containsProperty("application-profile-specific-import-with-import-p2")).isFalse();
 		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import")).isTrue();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p1")).isFalse();
-		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p2")).isFalse();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p1")).isTrue();
+		assertThat(environment.containsProperty("application-profile-specific-import-with-import-import-p2")).isTrue();
 	}
 
-	@Test // gh-26753
-	void runWhenHasProfileSpecificImportWithCustomImportDoesNotResolveProfileSpecific() {
+	@Test // gh-26960
+	void runWhenHasProfileSpecificImportWithCustomImportResolvesProfileSpecific() {
 		ConfigurableApplicationContext context = this.application
 				.run("--spring.config.name=application-profile-specific-import-with-custom-import");
 		ConfigurableEnvironment environment = context.getEnvironment();
 		assertThat(environment.containsProperty("test:boot")).isTrue();
-		assertThat(environment.containsProperty("test:boot:ps")).isFalse();
+		assertThat(environment.containsProperty("test:boot:ps")).isTrue();
 	}
 
 	@Test // gh-26593
