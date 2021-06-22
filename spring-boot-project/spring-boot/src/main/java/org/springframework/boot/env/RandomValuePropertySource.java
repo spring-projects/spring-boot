@@ -44,6 +44,7 @@ import org.springframework.util.StringUtils;
  * specified range.</li>
  * <li>When {@literal "long"}, a random {@link Long} value, restricted by an optionally
  * specified range.</li>
+ * <li>When {@literal "uuid"}, a random {@link UUID} value.</li>
  * <li>Otherwise, a {@code byte[]}.</li>
  * </ul>
  * The {@literal "random.int"} and {@literal "random.long"} properties supports a range
