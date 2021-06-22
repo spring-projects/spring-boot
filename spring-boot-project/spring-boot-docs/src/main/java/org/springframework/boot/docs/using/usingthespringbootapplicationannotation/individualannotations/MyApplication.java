@@ -17,11 +17,11 @@
 package org.springframework.boot.docs.using.usingthespringbootapplicationannotation.individualannotations;
 
 import org.springframework.boot.SpringApplication;
+import org.springframework.boot.SpringBootConfiguration;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 
-@Configuration(proxyBeanMethods = false)
+@SpringBootConfiguration(proxyBeanMethods = false)
 @EnableAutoConfiguration
 @Import({ SomeConfiguration.class, AnotherConfiguration.class })
 public class MyApplication {
