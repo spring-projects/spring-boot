@@ -162,7 +162,7 @@ class ConfigDataPropertiesTests {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
 		source.put("spring.config.import", "one,two,three");
 		source.put("spring.config.activate.on-cloud-platform", "kubernetes");
-		source.put("spring.config.activate.on-profiles", "a | b");
+		source.put("spring.config.activate.on-profile", "a | b");
 		Binder binder = new Binder(source);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		ConfigDataActivationContext context = new ConfigDataActivationContext(CloudPlatform.KUBERNETES,
