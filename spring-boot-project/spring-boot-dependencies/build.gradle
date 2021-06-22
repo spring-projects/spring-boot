@@ -1572,7 +1572,7 @@ bom {
 			]
 		}
 	}
-	library("Spring HATEOAS", "1.2.6") {
+	library("Spring HATEOAS", "1.2.7-SNAPSHOT") {
 		group("org.springframework.hateoas") {
 			modules = [
 				"spring-hateoas"
