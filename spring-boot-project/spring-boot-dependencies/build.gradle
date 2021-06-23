@@ -1196,14 +1196,20 @@ bom {
 			]
 		}
 	}
-	library("OAuth2 OIDC SDK", "8.36.2") {
+	library("OAuth2 OIDC SDK") {
+		version("8.36.1") {
+			shouldAlignWithVersionFrom("Spring Security")
+		}
 		group("com.nimbusds") {
 			modules = [
 				"oauth2-oidc-sdk"
 			]
 		}
 	}
-	library("Nimbus JOSE JWT", "8.20.2") {
+	library("Nimbus JOSE JWT") {
+		version("8.20.2") {
+			shouldAlignWithVersionFrom("Spring Security")
+		}
 		group("com.nimbusds") {
 			modules = [
 				"nimbus-jose-jwt"
@@ -1629,6 +1635,11 @@ bom {
 			imports = [
 				"spring-security-bom"
 			]
+		}
+		dependencyVersions {
+			extractFrom {
+				dependencyLock("https://raw.githubusercontent.com/spring-projects/spring-security/<libraryVersion>/config/gradle/dependency-locks/optional.lockfile")
+			}
 		}
 	}
 	library("Spring Session Bom", "2020.0.5") {
