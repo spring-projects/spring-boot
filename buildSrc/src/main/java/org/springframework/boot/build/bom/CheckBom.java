@@ -50,7 +50,7 @@ public class CheckBom extends DefaultTask {
 			for (Group group : library.getGroups()) {
 				for (Module module : group.getModules()) {
 					if (!module.getExclusions().isEmpty()) {
-						checkExclusions(group.getId(), module, library.getVersion());
+						checkExclusions(group.getId(), module, library.getVersion().getVersion());
 					}
 				}
 			}

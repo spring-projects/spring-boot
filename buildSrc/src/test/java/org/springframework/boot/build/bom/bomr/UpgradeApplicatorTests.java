@@ -28,6 +28,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.io.TempDir;
 
 import org.springframework.boot.build.bom.Library;
+import org.springframework.boot.build.bom.Library.LibraryVersion;
 import org.springframework.boot.build.bom.bomr.version.DependencyVersion;
 import org.springframework.util.FileCopyUtils;
 
@@ -51,11 +52,26 @@ class UpgradeApplicatorTests {
 		String originalContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
-		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath())
-				.apply(new Upgrade(new Library("ActiveMQ", DependencyVersion.parse("5.15.11"), null, null),
-						DependencyVersion.parse("5.16")));
+		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath()).apply(new Upgrade(
+				new Library("ActiveMQ", new LibraryVersion(DependencyVersion.parse("5.15.11"), null), null, null, null),
+				DependencyVersion.parse("5.16")));
 		String bomContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
 		assertThat(bomContents.length()).isEqualTo(originalContents.length() - 3);
+	}
+
+	@Test
+	void whenUpgradeIsAppliedToLibraryWithAlignedVersionThenBomIsUpdated() throws IOException {
+		File bom = new File(this.temp, "bom.gradle");
+		FileCopyUtils.copy(new File("src/test/resources/bom.gradle"), bom);
+		String originalContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
+		File gradleProperties = new File(this.temp, "gradle.properties");
+		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
+		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath()).apply(
+				new Upgrade(new Library("OAuth2 OIDC SDK", new LibraryVersion(DependencyVersion.parse("8.36.1"), null),
+						null, null, null), DependencyVersion.parse("8.36.2")));
+		String bomContents = new String(Files.readAllBytes(bom.toPath()), StandardCharsets.UTF_8);
+		assertThat(bomContents.length()).isEqualTo(originalContents.length());
+		assertThat(bomContents).contains("version(\"8.36.2\")");
 	}
 
 	@Test
@@ -65,7 +81,8 @@ class UpgradeApplicatorTests {
 		File gradleProperties = new File(this.temp, "gradle.properties");
 		FileCopyUtils.copy(new File("src/test/resources/gradle.properties"), gradleProperties);
 		new UpgradeApplicator(bom.toPath(), gradleProperties.toPath()).apply(new Upgrade(
-				new Library("Kotlin", DependencyVersion.parse("1.3.70"), null, null), DependencyVersion.parse("1.4")));
+				new Library("Kotlin", new LibraryVersion(DependencyVersion.parse("1.3.70"), null), null, null, null),
+				DependencyVersion.parse("1.4")));
 		Properties properties = new Properties();
 		try (InputStream in = new FileInputStream(gradleProperties)) {
 			properties.load(in);

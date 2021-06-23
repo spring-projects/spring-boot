@@ -197,6 +197,34 @@ public class BomPluginIntegrationTests {
 		});
 	}
 
+	// @Test
+	// void versionAlignmentIsVerified() throws IOException {
+	// try (PrintWriter out = new PrintWriter(new FileWriter(this.buildFile))) {
+	// out.println("plugins {");
+	// out.println(" id 'org.springframework.boot.bom'");
+	// out.println("}");
+	// out.println("bom {");
+	// out.println(" library('OAuth2 OIDC SDK', '8.36.1') {");
+	// out.println(" alignedWith('Spring Security') {");
+	// out.println(
+	// "
+	// source('https://github.com/spring-projects/spring-security/blob/${libraryVersion}/config/gradle/dependency-locks/optional.lockfile')");
+	// out.println(" pattern('com.nimbusds:oauth2-oidc-sdk:(.+)')");
+	// out.println(" }");
+	// out.println(" group('com.nimbusds') {");
+	// out.println(" modules = [");
+	// out.println(" 'oauth2-oidc-sdk'");
+	// out.println(" ]");
+	// out.println(" }");
+	// out.println(" }");
+	// out.println(" library('Spring Security', '5.4.7') {");
+	// out.println(" }");
+	// out.println("}");
+	// }
+	// System.out.println(runGradle(DeployedPlugin.GENERATE_POM_TASK_NAME,
+	// "-s").getOutput());
+	// }
+
 	private BuildResult runGradle(String... args) {
 		return GradleRunner.create().withDebug(true).withProjectDir(this.projectDir).withArguments(args)
 				.withPluginClasspath().build();
