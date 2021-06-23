@@ -43,11 +43,16 @@ public class Library {
 
 	private final boolean local;
 
+	private final boolean included;
+
 	/**
 	 * Create a new {@link Library}.
 	 * @param file the source file
 	 * @param scope the scope of the library
+	 * @deprecated since 2.4.8 for removal in 2.6.0 in favor of
+	 * {@link #Library(String, File, LibraryScope, LibraryCoordinates, boolean, boolean, boolean)}
 	 */
+	@Deprecated
 	public Library(File file, LibraryScope scope) {
 		this(file, scope, false);
 	}
@@ -57,7 +62,10 @@ public class Library {
 	 * @param file the source file
 	 * @param scope the scope of the library
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 * @deprecated since 2.4.8 for removal in 2.6.0 in favor of
+	 * {@link #Library(String, File, LibraryScope, LibraryCoordinates, boolean, boolean, boolean)}
 	 */
+	@Deprecated
 	public Library(File file, LibraryScope scope, boolean unpackRequired) {
 		this(null, file, scope, unpackRequired);
 	}
@@ -69,7 +77,10 @@ public class Library {
 	 * @param file the source file
 	 * @param scope the scope of the library
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 * @deprecated since 2.4.8 for removal in 2.6.0 in favor of
+	 * {@link #Library(String, File, LibraryScope, LibraryCoordinates, boolean, boolean, boolean)}
 	 */
+	@Deprecated
 	public Library(String name, File file, LibraryScope scope, boolean unpackRequired) {
 		this(name, file, scope, null, unpackRequired);
 	}
@@ -82,7 +93,10 @@ public class Library {
 	 * @param scope the scope of the library
 	 * @param coordinates the library coordinates or {@code null}
 	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 * @deprecated since 2.4.8 for removal in 2.6.0 in favor of
+	 * {@link #Library(String, File, LibraryScope, LibraryCoordinates, boolean, boolean, boolean)}
 	 */
+	@Deprecated
 	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired) {
 		this(name, file, scope, coordinates, unpackRequired, false);
 	}
@@ -98,15 +112,37 @@ public class Library {
 	 * @param local if the library is local (part of the same build) to the application
 	 * that is being packaged
 	 * @since 2.4.0
+	 * @deprecated since 2.4.8 for removal in 2.6.0 in favor of
+	 * {@link #Library(String, File, LibraryScope, LibraryCoordinates, boolean, boolean, boolean)}
 	 */
+	@Deprecated
 	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired,
 			boolean local) {
+		this(name, file, scope, coordinates, unpackRequired, local, true);
+	}
+
+	/**
+	 * Create a new {@link Library}.
+	 * @param name the name of the library as it should be written or {@code null} to use
+	 * the file name
+	 * @param file the source file
+	 * @param scope the scope of the library
+	 * @param coordinates the library coordinates or {@code null}
+	 * @param unpackRequired if the library needs to be unpacked before it can be used
+	 * @param local if the library is local (part of the same build) to the application
+	 * that is being packaged
+	 * @param included if the library is included in the fat jar
+	 * @since 2.4.8
+	 */
+	public Library(String name, File file, LibraryScope scope, LibraryCoordinates coordinates, boolean unpackRequired,
+			boolean local, boolean included) {
 		this.name = (name != null) ? name : file.getName();
 		this.file = file;
 		this.scope = scope;
 		this.coordinates = coordinates;
 		this.unpackRequired = unpackRequired;
 		this.local = local;
+		this.included = included;
 	}
 
 	/**
@@ -170,6 +206,14 @@ public class Library {
 	 */
 	public boolean isLocal() {
 		return this.local;
+	}
+
+	/**
+	 * Return if the library is included in the fat jar.
+	 * @return if the library is included
+	 */
+	public boolean isIncluded() {
+		return this.included;
 	}
 
 }

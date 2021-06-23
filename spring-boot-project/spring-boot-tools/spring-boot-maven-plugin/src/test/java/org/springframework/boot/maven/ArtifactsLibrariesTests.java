@@ -144,6 +144,7 @@ class ArtifactsLibrariesTests {
 		this.artifacts = Collections.singleton(snapshotArtifact);
 		new ArtifactsLibraries(this.artifacts, Collections.emptyList(), null, mock(Log.class))
 				.doWithLibraries((library) -> {
+					assertThat(library.isIncluded()).isTrue();
 					assertThat(library.isLocal()).isFalse();
 					assertThat(library.getCoordinates().getVersion()).isEqualTo("1.0-SNAPSHOT");
 				});
@@ -179,6 +180,21 @@ class ArtifactsLibrariesTests {
 		this.artifacts = Collections.singleton(attachedArtifact);
 		new ArtifactsLibraries(this.artifacts, Collections.singleton(mavenProject), null, mock(Log.class))
 				.doWithLibraries((library) -> assertThat(library.isLocal()).isTrue());
+	}
+
+	@Test
+	void nonIncludedArtifact() throws IOException {
+		Artifact artifact = mock(Artifact.class);
+		given(artifact.getScope()).willReturn("compile");
+		given(artifact.getArtifactId()).willReturn("artifact");
+		given(artifact.getBaseVersion()).willReturn("1.0-SNAPSHOT");
+		given(artifact.getFile()).willReturn(new File("a"));
+		given(artifact.getArtifactHandler()).willReturn(this.artifactHandler);
+		MavenProject mavenProject = mock(MavenProject.class);
+		given(mavenProject.getArtifact()).willReturn(artifact);
+		this.artifacts = Collections.singleton(artifact);
+		new ArtifactsLibraries(this.artifacts, Collections.emptySet(), Collections.singleton(mavenProject), null,
+				mock(Log.class)).doWithLibraries((library) -> assertThat(library.isIncluded()).isFalse());
 	}
 
 }

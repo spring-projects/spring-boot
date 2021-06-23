@@ -37,7 +37,7 @@ public class MyBuildTool {
 	private void getLibraries(LibraryCallback callback) throws IOException {
 		// Build system specific implementation, callback for each dependency
 		for (File nestedJar : getCompileScopeJars()) {
-			callback.library(new Library(nestedJar, LibraryScope.COMPILE));
+			callback.library(new Library(null, nestedJar, LibraryScope.COMPILE, null, false, false, true));
 		}
 		// ...
 	}

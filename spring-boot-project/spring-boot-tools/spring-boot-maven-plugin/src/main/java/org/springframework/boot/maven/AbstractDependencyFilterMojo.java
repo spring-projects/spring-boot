@@ -76,7 +76,7 @@ public abstract class AbstractDependencyFilterMojo extends AbstractMojo {
 		this.excludeGroupIds = excludeGroupIds;
 	}
 
-	protected Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
+	protected final Set<Artifact> filterDependencies(Set<Artifact> dependencies, FilterArtifacts filters)
 			throws MojoExecutionException {
 		try {
 			Set<Artifact> filtered = new LinkedHashSet<>(dependencies);

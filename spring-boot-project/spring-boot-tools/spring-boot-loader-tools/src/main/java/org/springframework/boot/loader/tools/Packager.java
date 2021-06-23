@@ -25,7 +25,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.jar.Attributes;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.jar.Manifest;
 import java.util.stream.Collectors;
@@ -191,14 +193,18 @@ public abstract class Packager {
 
 	protected final void write(JarFile sourceJar, Libraries libraries, AbstractJarWriter writer) throws IOException {
 		Assert.notNull(libraries, "Libraries must not be null");
-		WritableLibraries writeableLibraries = new WritableLibraries(libraries);
+		write(sourceJar, writer, new PackagedLibraries(libraries));
+	}
+
+	private void write(JarFile sourceJar, AbstractJarWriter writer, PackagedLibraries libraries) throws IOException {
 		if (isLayered()) {
 			writer.useLayers(this.layers, this.layersIndex);
 		}
 		writer.writeManifest(buildManifest(sourceJar));
 		writeLoaderClasses(writer);
-		writer.writeEntries(sourceJar, getEntityTransformer(), writeableLibraries, writeableLibraries::containsEntry);
-		writeableLibraries.write(writer);
+		writer.writeEntries(sourceJar, getEntityTransformer(), libraries.getUnpackHandler(),
+				libraries.getLibraryLookup());
+		libraries.write(writer);
 		if (isLayered()) {
 			writeLayerIndex(writer);
 		}
@@ -451,11 +457,15 @@ public abstract class Packager {
 	 * An {@link UnpackHandler} that determines that an entry needs to be unpacked if a
 	 * library that requires unpacking has a matching entry name.
 	 */
-	private final class WritableLibraries implements UnpackHandler {
+	private final class PackagedLibraries {
 
 		private final Map<String, Library> libraries = new LinkedHashMap<>();
 
-		WritableLibraries(Libraries libraries) throws IOException {
+		private final UnpackHandler unpackHandler;
+
+		private final Function<JarEntry, Library> libraryLookup;
+
+		PackagedLibraries(Libraries libraries) throws IOException {
 			libraries.doWithLibraries((library) -> {
 				if (isZip(library::openStream)) {
 					addLibrary(library);
@@ -464,6 +474,8 @@ public abstract class Packager {
 			if (isLayered() && Packager.this.includeRelevantJarModeJars) {
 				addLibrary(JarModeLibrary.LAYER_TOOLS);
 			}
+			this.unpackHandler = new PackagedLibrariesUnpackHandler();
+			this.libraryLookup = this::lookup;
 		}
 
 		private void addLibrary(Library library) {
@@ -475,39 +487,55 @@ public abstract class Packager {
 			}
 		}
 
-		@Override
-		public boolean requiresUnpack(String name) {
-			Library library = this.libraries.get(name);
-			return library != null && library.isUnpackRequired();
+		private Library lookup(JarEntry entry) {
+			return this.libraries.get(entry.getName());
 		}
 
-		@Override
-		public String sha1Hash(String name) throws IOException {
-			Library library = this.libraries.get(name);
-			Assert.notNull(library, () -> "No library found for entry name '" + name + "'");
-			return Digest.sha1(library::openStream);
+		UnpackHandler getUnpackHandler() {
+			return this.unpackHandler;
 		}
 
-		boolean containsEntry(String name) {
-			return this.libraries.containsKey(name);
+		Function<JarEntry, Library> getLibraryLookup() {
+			return this.libraryLookup;
 		}
 
-		private void write(AbstractJarWriter writer) throws IOException {
+		void write(AbstractJarWriter writer) throws IOException {
+			List<String> writtenPaths = new ArrayList<>();
 			for (Entry<String, Library> entry : this.libraries.entrySet()) {
 				String path = entry.getKey();
 				Library library = entry.getValue();
-				String location = path.substring(0, path.lastIndexOf('/') + 1);
-				writer.writeNestedLibrary(location, library);
+				if (library.isIncluded()) {
+					String location = path.substring(0, path.lastIndexOf('/') + 1);
+					writer.writeNestedLibrary(location, library);
+					writtenPaths.add(path);
+				}
 			}
-			if (Packager.this.layout instanceof RepackagingLayout) {
-				writeClasspathIndex(getLayout(), writer);
+			if (getLayout() instanceof RepackagingLayout) {
+				writeClasspathIndex(writtenPaths, (RepackagingLayout) getLayout(), writer);
 			}
 		}
 
-		private void writeClasspathIndex(Layout layout, AbstractJarWriter writer) throws IOException {
-			List<String> names = this.libraries.keySet().stream().map((path) -> "- \"" + path + "\"")
-					.collect(Collectors.toList());
+		private void writeClasspathIndex(List<String> paths, RepackagingLayout layout, AbstractJarWriter writer)
+				throws IOException {
+			List<String> names = paths.stream().map((path) -> "- \"" + path + "\"").collect(Collectors.toList());
 			writer.writeIndexFile(layout.getClasspathIndexFileLocation(), names);
+		}
+
+		private class PackagedLibrariesUnpackHandler implements UnpackHandler {
+
+			@Override
+			public boolean requiresUnpack(String name) {
+				Library library = PackagedLibraries.this.libraries.get(name);
+				return library != null && library.isUnpackRequired();
+			}
+
+			@Override
+			public String sha1Hash(String name) throws IOException {
+				Library library = PackagedLibraries.this.libraries.get(name);
+				Assert.notNull(library, () -> "No library found for entry name '" + name + "'");
+				return Digest.sha1(library::openStream);
+			}
+
 		}
 
 	}
