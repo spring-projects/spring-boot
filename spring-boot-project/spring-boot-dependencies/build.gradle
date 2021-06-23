@@ -1284,7 +1284,7 @@ bom {
 			]
 		}
 	}
-	library("OAuth2 OIDC SDK", "9.3.3") {
+	library("OAuth2 OIDC SDK", "9.9") {
 		group("com.nimbusds") {
 			modules = [
 				"oauth2-oidc-sdk"
