@@ -1,5 +1,5 @@
-[[features.graceful-shutdown]]
-== Graceful shutdown
+[[web.graceful-shutdown]]
+== Graceful Shutdown
 Graceful shutdown is supported with all four embedded web servers (Jetty, Reactor Netty, Tomcat, and Undertow) and with both reactive and Servlet-based web applications.
 It occurs as part of closing the application context and is performed in the earliest phase of stopping `SmartLifecycle` beans.
 This stop processing uses a timeout which provides a grace period during which existing requests will be allowed to complete but no new requests will be permitted.

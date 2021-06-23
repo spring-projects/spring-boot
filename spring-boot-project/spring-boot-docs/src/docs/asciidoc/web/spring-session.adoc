@@ -1,4 +1,4 @@
-[[features.spring-session]]
+[[web.spring-session]]
 == Spring Session
 Spring Boot provides {spring-session}[Spring Session] auto-configuration for a wide range of data stores.
 When building a Servlet web application, the following stores can be auto-configured:

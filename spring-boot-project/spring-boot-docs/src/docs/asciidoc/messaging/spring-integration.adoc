@@ -1,4 +1,4 @@
-[[features.spring-integration]]
+[[messaging.spring-integration]]
 == Spring Integration
 Spring Boot offers several conveniences for working with {spring-integration}[Spring Integration], including the `spring-boot-starter-integration` "`Starter`".
 Spring Integration provides abstractions over messaging and also other transports such as HTTP, TCP, and others.

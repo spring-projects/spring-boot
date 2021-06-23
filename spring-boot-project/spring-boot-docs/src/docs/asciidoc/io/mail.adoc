@@ -1,4 +1,4 @@
-[[features.email]]
+[[io.email]]
 == Sending Email
 The Spring Framework provides an abstraction for sending email by using the `JavaMailSender` interface, and Spring Boot provides auto-configuration for it as well as a starter module.
 

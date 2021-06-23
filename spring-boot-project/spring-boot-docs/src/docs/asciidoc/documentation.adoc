@@ -22,6 +22,14 @@ include::documentation/using.adoc[]
 
 include::documentation/features.adoc[]
 
-include::documentation/actuator.adoc[]
+include::documentation/web.adoc[]
+
+include::documentation/data.adoc[]
+
+include::documentation/messaging.adoc[]
+
+include::documentation/io.adoc[]
+
+include::documentation/container-images.adoc[]
 
 include::documentation/advanced.adoc[]

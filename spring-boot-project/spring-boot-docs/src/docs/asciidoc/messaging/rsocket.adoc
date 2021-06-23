@@ -1,4 +1,4 @@
-[[features.rsocket]]
+[[messaging.rsocket]]
 == RSocket
 https://rsocket.io[RSocket] is a binary protocol for use on byte stream transports.
 It enables symmetric interaction models via async message passing over a single connection.
@@ -9,7 +9,7 @@ See the {spring-framework-docs}/web-reactive.html#rsocket-spring[RSocket section
 
 
 
-[[features.rsocket.strategies-auto-configuration]]
+[[messaging.rsocket.strategies-auto-configuration]]
 === RSocket Strategies Auto-configuration
 Spring Boot auto-configures an `RSocketStrategies` bean that provides all the required infrastructure for encoding and decoding RSocket payloads.
 By default, the auto-configuration will try to configure the following (in order):
@@ -25,7 +25,7 @@ Note that their `@Order` is important, as it determines the order of codecs.
 
 
 
-[[features.rsocket.server-auto-configuration]]
+[[messaging.rsocket.server-auto-configuration]]
 === RSocket server Auto-configuration
 Spring Boot provides RSocket server auto-configuration.
 The required dependencies are provided by the `spring-boot-starter-rsocket`.
@@ -59,7 +59,7 @@ Besides the dependency requirements, the only required configuration is to defin
 
 
 
-[[features.rsocket.messaging]]
+[[messaging.rsocket.messaging]]
 === Spring Messaging RSocket support
 Spring Boot will auto-configure the Spring Messaging infrastructure for RSocket.
 
@@ -67,7 +67,7 @@ This means that Spring Boot will create a `RSocketMessageHandler` bean that will
 
 
 
-[[features.rsocket.requester]]
+[[messaging.rsocket.requester]]
 === Calling RSocket Services with RSocketRequester
 Once the `RSocket` channel is established between server and client, any party can send or receive requests to the other.
 

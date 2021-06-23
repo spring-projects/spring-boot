@@ -1,4 +1,4 @@
-[[features.caching]]
+[[io.caching]]
 == Caching
 The Spring Framework provides support for transparently adding caching to an application.
 At its core, the abstraction applies caching to methods, thus reducing the number of executions based on the information available in the cache.
@@ -22,7 +22,7 @@ Otherwise, the method is invoked, and the cache is updated before returning the 
 CAUTION: You can also use the standard JSR-107 (JCache) annotations (such as `@CacheResult`) transparently.
 However, we strongly advise you to not mix and match the Spring Cache and JCache annotations.
 
-If you do not add any specific cache library, Spring Boot auto-configures a <<features#features.caching.provider.simple,simple provider>> that uses concurrent maps in memory.
+If you do not add any specific cache library, Spring Boot auto-configures a <<caching#io.caching.provider.simple,simple provider>> that uses concurrent maps in memory.
 When a cache is required (such as `piDecimals` in the preceding example), this provider creates it for you.
 The simple provider is not really recommended for production usage, but it is great for getting started and making sure that you understand the features.
 When you have made up your mind about the cache provider to use, please make sure to read its documentation to figure out how to configure the caches that your application uses.
@@ -33,24 +33,24 @@ TIP: It is also possible to transparently {spring-framework-docs}/integration.ht
 
 
 
-[[features.caching.provider]]
+[[io.caching.provider]]
 === Supported Cache Providers
 The cache abstraction does not provide an actual store and relies on abstraction materialized by the `org.springframework.cache.Cache` and `org.springframework.cache.CacheManager` interfaces.
 
 If you have not defined a bean of type `CacheManager` or a `CacheResolver` named `cacheResolver` (see {spring-framework-api}/cache/annotation/CachingConfigurer.html[`CachingConfigurer`]), Spring Boot tries to detect the following providers (in the indicated order):
 
-. <<features#features.caching.provider.generic,Generic>>
-. <<features#features.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
-. <<features#features.caching.provider.ehcache2,EhCache 2.x>>
-. <<features#features.caching.provider.hazelcast,Hazelcast>>
-. <<features#features.caching.provider.infinispan,Infinispan>>
-. <<features#features.caching.provider.couchbase,Couchbase>>
-. <<features#features.caching.provider.redis,Redis>>
-. <<features#features.caching.provider.caffeine,Caffeine>>
-. <<features#features.caching.provider.simple,Simple>>
+. <<caching#io.caching.provider.generic,Generic>>
+. <<caching#io.caching.provider.jcache,JCache (JSR-107)>> (EhCache 3, Hazelcast, Infinispan, and others)
+. <<caching#io.caching.provider.ehcache2,EhCache 2.x>>
+. <<caching#io.caching.provider.hazelcast,Hazelcast>>
+. <<caching#io.caching.provider.infinispan,Infinispan>>
+. <<caching#io.caching.provider.couchbase,Couchbase>>
+. <<caching#io.caching.provider.redis,Redis>>
+. <<caching#io.caching.provider.caffeine,Caffeine>>
+. <<caching#io.caching.provider.simple,Simple>>
 
 TIP: It is also possible to _force_ a particular cache provider by setting the configprop:spring.cache.type[] property.
-Use this property if you need to <<features#features.caching.provider.none,disable caching altogether>> in certain environment (such as tests).
+Use this property if you need to <<caching#io.caching.provider.none,disable caching altogether>> in certain environment (such as tests).
 
 TIP: Use the `spring-boot-starter-cache` "`Starter`" to quickly add basic caching dependencies.
 The starter brings in `spring-context-support`.
@@ -70,14 +70,14 @@ You can have as many customizers as you want, and you can also order them by usi
 
 
 
-[[features.caching.provider.generic]]
+[[io.caching.provider.generic]]
 ==== Generic
 Generic caching is used if the context defines _at least_ one `org.springframework.cache.Cache` bean.
 A `CacheManager` wrapping all beans of that type is created.
 
 
 
-[[features.caching.provider.jcache]]
+[[io.caching.provider.jcache]]
 ==== JCache (JSR-107)
 https://jcp.org/en/jsr/detail?id=107[JCache] is bootstrapped through the presence of a `javax.cache.spi.CachingProvider` on the classpath (that is, a JSR-107 compliant caching library exists on the classpath), and the `JCacheCacheManager` is provided by the `spring-boot-starter-cache` "`Starter`".
 Various compliant libraries are available, and Spring Boot provides dependency management for Ehcache 3, Hazelcast, and Infinispan.
@@ -104,7 +104,7 @@ If a single `HazelcastInstance` is available, it is automatically reused for the
 There are two ways to customize the underlying `javax.cache.cacheManager`:
 
 * Caches can be created on startup by setting the configprop:spring.cache.cache-names[] property.
-  If a custom `javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
+If a custom `javax.cache.configuration.Configuration` bean is defined, it is used to customize them.
 * `org.springframework.boot.autoconfigure.cache.JCacheManagerCustomizer` beans are invoked with the reference of the `CacheManager` for full customization.
 
 TIP: If a standard `javax.cache.CacheManager` bean is defined, it is wrapped automatically in an `org.springframework.cache.CacheManager` implementation that the abstraction expects.
@@ -112,7 +112,7 @@ No further customization is applied to it.
 
 
 
-[[features.caching.provider.ehcache2]]
+[[io.caching.provider.ehcache2]]
 ==== EhCache 2.x
 https://www.ehcache.org/[EhCache] 2.x is used if a file named `ehcache.xml` can be found at the root of the classpath.
 If EhCache 2.x is found, the `EhCacheCacheManager` provided by the `spring-boot-starter-cache` "`Starter`" is used to bootstrap the cache manager.
@@ -128,14 +128,14 @@ An alternate configuration file can be provided as well, as shown in the followi
 
 
 
-[[features.caching.provider.hazelcast]]
+[[io.caching.provider.hazelcast]]
 ==== Hazelcast
 Spring Boot has <<features#features.hazelcast,general support for Hazelcast>>.
 If a `HazelcastInstance` has been auto-configured, it is automatically wrapped in a `CacheManager`.
 
 
 
-[[features.caching.provider.infinispan]]
+[[io.caching.provider.infinispan]]
 ==== Infinispan
 https://infinispan.org/[Infinispan] has no default configuration file location, so it must be specified explicitly.
 Otherwise, the default bootstrap is used.
@@ -157,9 +157,9 @@ See https://github.com/infinispan/infinispan-spring-boot[Infinispan's documentat
 
 
 
-[[features.caching.provider.couchbase]]
+[[io.caching.provider.couchbase]]
 ==== Couchbase
-If Spring Data Couchbase is available and Couchbase is <<features#features.nosql.couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
+If Spring Data Couchbase is available and Couchbase is <<data#data.nosql.couchbase,configured>>, a `CouchbaseCacheManager` is auto-configured.
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.couchbase.*` properties.
 For instance, the following configuration creates `cache1` and `cache2` caches with an entry _expiration_ of 10 minutes:
 
@@ -182,7 +182,7 @@ include::{docs-java}/features/caching/provider/couchbase/MyCouchbaseCacheManager
 
 
 
-[[features.caching.provider.redis]]
+[[io.caching.provider.redis]]
 ==== Redis
 If https://redis.io/[Redis] is available and configured, a `RedisCacheManager` is auto-configured.
 It is possible to create additional caches on startup by setting the configprop:spring.cache.cache-names[] property and cache defaults can be configured by using `spring.cache.redis.*` properties.
@@ -213,7 +213,7 @@ include::{docs-java}/features/caching/provider/redis/MyRedisCacheManagerConfigur
 
 
 
-[[features.caching.provider.caffeine]]
+[[io.caching.provider.caffeine]]
 ==== Caffeine
 https://github.com/ben-manes/caffeine[Caffeine] is a Java 8 rewrite of Guava's cache that supersedes support for Guava.
 If Caffeine is present, a `CaffeineCacheManager` (provided by the `spring-boot-starter-cache` "`Starter`") is auto-configured.
@@ -240,7 +240,7 @@ The auto-configuration ignores any other generic type.
 
 
 
-[[features.caching.provider.simple]]
+[[io.caching.provider.simple]]
 ==== Simple
 If none of the other providers can be found, a simple implementation using a `ConcurrentHashMap` as the cache store is configured.
 This is the default if no caching library is present in your application.
@@ -259,7 +259,7 @@ This is similar to the way the "real" cache providers behave if you use an undec
 
 
 
-[[features.caching.provider.none]]
+[[io.caching.provider.none]]
 ==== None
 When `@EnableCaching` is present in your configuration, a suitable cache configuration is expected as well.
 If you need to disable caching altogether in certain environments, force the cache type to `none` to use a no-op implementation, as shown in the following example:

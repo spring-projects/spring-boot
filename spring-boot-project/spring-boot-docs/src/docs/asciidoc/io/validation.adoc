@@ -1,4 +1,4 @@
-[[features.validation]]
+[[io.validation]]
 == Validation
 The method validation feature supported by Bean Validation 1.1 is automatically enabled as long as a JSR-303 implementation (such as Hibernate validator) is on the classpath.
 This lets bean methods be annotated with `javax.validation` constraints on their parameters and/or on their return value.

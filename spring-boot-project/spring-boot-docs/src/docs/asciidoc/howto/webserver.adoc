@@ -84,7 +84,7 @@ Thanks to relaxed binding of `Environment` values, you can also use configprop:s
 
 To switch off the HTTP endpoints completely but still create a `WebApplicationContext`, use `server.port=-1` (doing so is sometimes useful for testing).
 
-For more details, see "`<<features#features.developing-web-applications.embedded-container.customizing>>`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
+For more details, see "`<<web#web.servlet.embedded-container.customizing>>`" in the '`Spring Boot Features`' section, or the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`ServerProperties`] source code.
 
 
 
@@ -307,7 +307,7 @@ If no `dispatcherType` is specified on a filter registration, `REQUEST` is used.
 This aligns with the Servlet Specification's default dispatcher type.
 ====
 
-Like any other Spring bean, you can define the order of Servlet filter beans; please make sure to check the "`<<features#features.developing-web-applications.embedded-container.servlets-filters-listeners.beans>>`" section.
+Like any other Spring bean, you can define the order of Servlet filter beans; please make sure to check the "`<<web#web.servlet.embedded-container.servlets-filters-listeners.beans>>`" section.
 
 
 

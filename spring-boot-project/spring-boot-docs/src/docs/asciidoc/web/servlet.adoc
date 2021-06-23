@@ -1,15 +1,8 @@
-[[features.developing-web-applications]]
-== Developing Web Applications
-Spring Boot is well suited for web application development.
-You can create a self-contained HTTP server by using embedded Tomcat, Jetty, Undertow, or Netty.
-Most web applications use the `spring-boot-starter-web` module to get up and running quickly.
-You can also choose to build reactive web applications by using the `spring-boot-starter-webflux` module.
+[[web.servlet]]
+== Servlet Web Applications
+If you're looking to build servlet-based web applications, you can take advantange of Spring Boot's auto-configuration for Spring MVC or Jersey.
 
-If you have not yet developed a Spring Boot web application, you can follow the "Hello World!" example in the _<<getting-started#getting-started.first-application, Getting started>>_ section.
-
-
-
-[[features.developing-web-applications.spring-mvc]]
+[[web.servlet.spring-mvc]]
 === The "`Spring Web MVC Framework`"
 The {spring-framework-docs}/web.html#mvc[Spring Web MVC framework] (often referred to as "`Spring MVC`") is a rich "`model view controller`" web framework.
 Spring MVC lets you create special `@Controller` or `@RestController` beans to handle incoming HTTP requests.
@@ -27,19 +20,19 @@ There are also several guides that cover Spring MVC available at https://spring.
 
 
 
-[[features.developing-web-applications.spring-mvc.auto-configuration]]
+[[web.servlet.spring-mvc.auto-configuration]]
 ==== Spring MVC Auto-configuration
 Spring Boot provides auto-configuration for Spring MVC that works well with most applications.
 
 The auto-configuration adds the following features on top of Spring's defaults:
 
 * Inclusion of `ContentNegotiatingViewResolver` and `BeanNameViewResolver` beans.
-* Support for serving static resources, including support for WebJars (covered <<features#features.developing-web-applications.spring-mvc.static-content,later in this document>>).
+* Support for serving static resources, including support for WebJars (covered <<features#web.servlet.spring-mvc.static-content,later in this document>>).
 * Automatic registration of `Converter`, `GenericConverter`, and `Formatter` beans.
-* Support for `HttpMessageConverters` (covered <<features#features.developing-web-applications.spring-mvc.message-converters,later in this document>>).
-* Automatic registration of `MessageCodesResolver` (covered <<features#features.developing-web-applications.spring-mvc.message-codes,later in this document>>).
+* Support for `HttpMessageConverters` (covered <<features#web.servlet.spring-mvc.message-converters,later in this document>>).
+* Automatic registration of `MessageCodesResolver` (covered <<features#web.servlet.spring-mvc.message-codes,later in this document>>).
 * Static `index.html` support.
-* Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<features#features.developing-web-applications.spring-mvc.binding-initializer,later in this document>>).
+* Automatic use of a `ConfigurableWebBindingInitializer` bean (covered <<features#web.servlet.spring-mvc.binding-initializer,later in this document>>).
 
 If you want to keep those Spring Boot MVC customizations and make more {spring-framework-docs}/web.html#mvc[MVC customizations] (interceptors, formatters, view controllers, and other features), you can add your own `@Configuration` class of type `WebMvcConfigurer` but *without* `@EnableWebMvc`.
 
@@ -58,7 +51,7 @@ From this method you can register any converter that you like, or you can delega
 
 
 
-[[features.developing-web-applications.spring-mvc.message-converters]]
+[[web.servlet.spring-mvc.message-converters]]
 ==== HttpMessageConverters
 Spring MVC uses the `HttpMessageConverter` interface to convert HTTP requests and responses.
 Sensible defaults are included out of the box.
@@ -77,7 +70,7 @@ You can also override default converters in the same way.
 
 
 
-[[features.developing-web-applications.spring-mvc.json]]
+[[web.servlet.spring-mvc.json]]
 ==== Custom JSON Serializers and Deserializers
 If you use Jackson to serialize and deserialize JSON data, you might want to write your own `JsonSerializer` and `JsonDeserializer` classes.
 Custom serializers are usually https://github.com/FasterXML/jackson-docs/wiki/JacksonHowToCustomSerializers[registered with Jackson through a module], but Spring Boot provides an alternative `@JsonComponent` annotation that makes it easier to directly register Spring Beans.
@@ -105,14 +98,14 @@ include::{docs-java}/features/developingwebapplications/springmvc/json/object/My
 
 
 
-[[features.developing-web-applications.spring-mvc.message-codes]]
+[[web.servlet.spring-mvc.message-codes]]
 ==== MessageCodesResolver
 Spring MVC has a strategy for generating error codes for rendering error messages from binding errors: `MessageCodesResolver`.
 If you set the configprop:spring.mvc.message-codes-resolver-format[] property `PREFIX_ERROR_CODE` or `POSTFIX_ERROR_CODE`, Spring Boot creates one for you (see the enumeration in {spring-framework-api}/validation/DefaultMessageCodesResolver.Format.html[`DefaultMessageCodesResolver.Format`]).
 
 
 
-[[features.developing-web-applications.spring-mvc.static-content]]
+[[web.servlet.spring-mvc.static-content]]
 ==== Static Content
 By default, Spring Boot serves static content from a directory called `/static` (or `/public` or `/resources` or `/META-INF/resources`) in the classpath or from the root of the `ServletContext`.
 It uses the `ResourceHttpRequestHandler` from Spring MVC so that you can modify that behavior by adding your own `WebMvcConfigurer` and overriding the `addResourceHandlers` method.
@@ -197,7 +190,7 @@ This feature has been thoroughly described in a dedicated https://spring.io/blog
 
 
 
-[[features.developing-web-applications.spring-mvc.welcome-page]]
+[[web.servlet.spring-mvc.welcome-page]]
 ==== Welcome Page
 Spring Boot supports both static and templated welcome pages.
 It first looks for an `index.html` file in the configured static content locations.
@@ -206,7 +199,7 @@ If either is found, it is automatically used as the welcome page of the applicat
 
 
 
-[[features.developing-web-applications.spring-mvc.content-negotiation]]
+[[web.servlet.spring-mvc.content-negotiation]]
 ==== Path Matching and Content Negotiation
 Spring MVC can map incoming HTTP requests to handlers by looking at the request path and matching it to the mappings defined in your application (for example, `@GetMapping` annotations on Controller methods).
 
@@ -298,14 +291,14 @@ with a Servlet prefix (configprop:spring.mvc.servlet.path[]).
 
 
 
-[[features.developing-web-applications.spring-mvc.binding-initializer]]
+[[web.servlet.spring-mvc.binding-initializer]]
 ==== ConfigurableWebBindingInitializer
 Spring MVC uses a `WebBindingInitializer` to initialize a `WebDataBinder` for a particular request.
 If you create your own `ConfigurableWebBindingInitializer` `@Bean`, Spring Boot automatically configures Spring MVC to use it.
 
 
 
-[[features.developing-web-applications.spring-mvc.template-engines]]
+[[web.servlet.spring-mvc.template-engines]]
 ==== Template Engines
 As well as REST web services, you can also use Spring MVC to serve dynamic HTML content.
 Spring MVC supports a variety of templating technologies, including Thymeleaf, FreeMarker, and JSPs.
@@ -313,13 +306,13 @@ Also, many other templating engines include their own Spring MVC integrations.
 
 Spring Boot includes auto-configuration support for the following templating engines:
 
- * https://freemarker.apache.org/docs/[FreeMarker]
- * https://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
- * https://www.thymeleaf.org[Thymeleaf]
- * https://mustache.github.io/[Mustache]
+* https://freemarker.apache.org/docs/[FreeMarker]
+* https://docs.groovy-lang.org/docs/next/html/documentation/template-engines.html#_the_markuptemplateengine[Groovy]
+* https://www.thymeleaf.org[Thymeleaf]
+* https://mustache.github.io/[Mustache]
 
 TIP: If possible, JSPs should be avoided.
-There are several <<features#features.developing-web-applications.embedded-container.jsp-limitations, known limitations>> when using them with embedded servlet containers.
+There are several <<web#web.servlet.embedded-container.jsp-limitations, known limitations>> when using them with embedded servlet containers.
 
 When you use one of these templating engines with the default configuration, your templates are picked up automatically from `src/main/resources/templates`.
 
@@ -330,7 +323,7 @@ If you have this problem, you can reorder the classpath in the IDE to place the 
 
 
 
-[[features.developing-web-applications.spring-mvc.error-handling]]
+[[web.servlet.spring-mvc.error-handling]]
 ==== Error Handling
 By default, Spring Boot provides an `/error` mapping that handles all errors in a sensible way, and it is registered as a "`global`" error page in the servlet container.
 For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message.
@@ -364,7 +357,7 @@ include::{docs-java}/features/developingwebapplications/springmvc/errorhandling/
 
 
 
-[[features.developing-web-applications.spring-mvc.error-handling.error-pages]]
+[[web.servlet.spring-mvc.error-handling.error-pages]]
 ===== Custom Error Pages
 If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
 Error pages can either be static HTML (that is, added under any of the static resource directories) or be built by using templates.
@@ -412,7 +405,7 @@ The `ErrorController` then picks up any unhandled exceptions.
 
 
 
-[[features.developing-web-applications.spring-mvc.error-handling.error-pages-without-spring-mvc]]
+[[web.servlet.spring-mvc.error-handling.error-pages-without-spring-mvc]]
 ===== Mapping Error Pages outside of Spring MVC
 For applications that do not use Spring MVC, you can use the `ErrorPageRegistrar` interface to directly register `ErrorPages`.
 This abstraction works directly with the underlying embedded servlet container and works even if you do not have a Spring MVC `DispatcherServlet`.
@@ -433,7 +426,7 @@ Note that the default `FilterRegistrationBean` does not include the `ERROR` disp
 
 
 
-[[features.developing-web-applications.spring-mvc.error-handling.in-a-war-deployment]]
+[[web.servlet.spring-mvc.error-handling.in-a-war-deployment]]
 ===== Error handling in a war deployment
 When deployed to a servlet container, Spring Boot uses its error page filter to forward a request with an error status to the appropriate error page.
 This is necessary as the Servlet specification does not provide an API for registering error pages.
@@ -448,18 +441,7 @@ To do so, set the `spring.security.filter.dispatcher-types` property to `async, 
 
 
 
-[[features.developing-web-applications.spring-mvc.spring-hateoas]]
-==== Spring HATEOAS
-If you develop a RESTful API that makes use of hypermedia, Spring Boot provides auto-configuration for Spring HATEOAS that works well with most applications.
-The auto-configuration replaces the need to use `@EnableHypermediaSupport` and registers a number of beans to ease building hypermedia-based applications, including a `LinkDiscoverers` (for client side support) and an `ObjectMapper` configured to correctly marshal responses into the desired representation.
-The `ObjectMapper` is customized by setting the various `spring.jackson.*` properties or, if one exists, by a `Jackson2ObjectMapperBuilder` bean.
-
-You can take control of Spring HATEOAS's configuration by using `@EnableHypermediaSupport`.
-Note that doing so disables the `ObjectMapper` customization described earlier.
-
-
-
-[[features.developing-web-applications.spring-mvc.cors]]
+[[web.servlet.spring-mvc.cors]]
 ==== CORS Support
 https://en.wikipedia.org/wiki/Cross-origin_resource_sharing[Cross-origin resource sharing] (CORS) is a https://www.w3.org/TR/cors/[W3C specification] implemented by https://caniuse.com/#feat=cors[most browsers] that lets you specify in a flexible way what kind of cross-domain requests are authorized., instead of using some less secure and less powerful approaches such as IFRAME or JSONP.
 
@@ -474,224 +456,7 @@ include::{docs-java}/features/developingwebapplications/springmvc/cors/MyCorsCon
 
 
 
-[[features.developing-web-applications.spring-webflux]]
-=== The "`Spring WebFlux Framework`"
-Spring WebFlux is the new reactive web framework introduced in Spring Framework 5.0.
-Unlike Spring MVC, it does not require the Servlet API, is fully asynchronous and non-blocking, and implements the https://www.reactive-streams.org/[Reactive Streams] specification through https://projectreactor.io/[the Reactor project].
-
-Spring WebFlux comes in two flavors: functional and annotation-based.
-The annotation-based one is quite close to the Spring MVC model, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyRestController.java[]
-----
-
-"`WebFlux.fn`", the functional variant, separates the routing configuration from the actual handling of the requests, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyRoutingConfiguration.java[]
-----
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/developingwebapplications/springwebflux/MyUserHandler.java[]
-----
-
-WebFlux is part of the Spring Framework and detailed information is available in its {spring-framework-docs}/web-reactive.html#webflux-fn[reference documentation].
-
-TIP: You can define as many `RouterFunction` beans as you like to modularize the definition of the router.
-Beans can be ordered if you need to apply a precedence.
-
-To get started, add the `spring-boot-starter-webflux` module to your application.
-
-NOTE: Adding both `spring-boot-starter-web` and `spring-boot-starter-webflux` modules in your application results in Spring Boot auto-configuring Spring MVC, not WebFlux.
-This behavior has been chosen because many Spring developers add `spring-boot-starter-webflux` to their Spring MVC application to use the reactive `WebClient`.
-You can still enforce your choice by setting the chosen application type to `SpringApplication.setWebApplicationType(WebApplicationType.REACTIVE)`.
-
-
-
-[[features.developing-web-applications.spring-webflux.auto-configuration]]
-==== Spring WebFlux Auto-configuration
-Spring Boot provides auto-configuration for Spring WebFlux that works well with most applications.
-
-The auto-configuration adds the following features on top of Spring's defaults:
-
-* Configuring codecs for `HttpMessageReader` and `HttpMessageWriter` instances (described <<features#features.developing-web-applications.spring-webflux.httpcodecs,later in this document>>).
-* Support for serving static resources, including support for WebJars (described <<features#features.developing-web-applications.spring-mvc.static-content,later in this document>>).
-
-If you want to keep Spring Boot WebFlux features and you want to add additional {spring-framework-docs}/web-reactive.html#webflux-config[WebFlux configuration], you can add your own `@Configuration` class of type `WebFluxConfigurer` but *without* `@EnableWebFlux`.
-
-If you want to take complete control of Spring WebFlux, you can add your own `@Configuration` annotated with `@EnableWebFlux`.
-
-
-
-[[features.developing-web-applications.spring-webflux.httpcodecs]]
-==== HTTP Codecs with HttpMessageReaders and HttpMessageWriters
-Spring WebFlux uses the `HttpMessageReader` and `HttpMessageWriter` interfaces to convert HTTP requests and responses.
-They are configured with `CodecConfigurer` to have sensible defaults by looking at the libraries available in your classpath.
-
-Spring Boot provides dedicated configuration properties for codecs, `+spring.codec.*+`.
-It also applies further customization by using `CodecCustomizer` instances.
-For example, `+spring.jackson.*+` configuration keys are applied to the Jackson codec.
-
-If you need to add or customize codecs, you can create a custom `CodecCustomizer` component, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/developingwebapplications/springwebflux/httpcodecs/MyCodecsConfiguration.java[]
-----
-
-You can also leverage <<features#features.developing-web-applications.spring-mvc.json,Boot's custom JSON serializers and deserializers>>.
-
-
-
-[[features.developing-web-applications.spring-webflux.static-content]]
-==== Static Content
-By default, Spring Boot serves static content from a directory called `/static` (or `/public` or `/resources` or `/META-INF/resources`) in the classpath.
-It uses the `ResourceWebHandler` from Spring WebFlux so that you can modify that behavior by adding your own `WebFluxConfigurer` and overriding the `addResourceHandlers` method.
-
-By default, resources are mapped on `+/**+`, but you can tune that by setting the configprop:spring.webflux.static-path-pattern[] property.
-For instance, relocating all resources to `/resources/**` can be achieved as follows:
-
-[source,yaml,indent=0,subs="verbatim",configprops,configblocks]
-----
-	spring:
-	  webflux:
-	    static-path-pattern: "/resources/**"
-----
-
-You can also customize the static resource locations by using `spring.web.resources.static-locations`.
-Doing so replaces the default values with a list of directory locations.
-If you do so, the default welcome page detection switches to your custom locations.
-So, if there is an `index.html` in any of your locations on startup, it is the home page of the application.
-
-In addition to the "`standard`" static resource locations listed earlier, a special case is made for https://www.webjars.org/[Webjars content].
-Any resources with a path in `+/webjars/**+` are served from jar files if they are packaged in the Webjars format.
-
-TIP: Spring WebFlux applications do not strictly depend on the Servlet API, so they cannot be deployed as war files and do not use the `src/main/webapp` directory.
-
-
-
-[[features.developing-web-applications.spring-webflux.welcome-page]]
-==== Welcome Page
-Spring Boot supports both static and templated welcome pages.
-It first looks for an `index.html` file in the configured static content locations.
-If one is not found, it then looks for an `index` template.
-If either is found, it is automatically used as the welcome page of the application.
-
-
-
-[[features.developing-web-applications.spring-webflux.template-engines]]
-==== Template Engines
-As well as REST web services, you can also use Spring WebFlux to serve dynamic HTML content.
-Spring WebFlux supports a variety of templating technologies, including Thymeleaf, FreeMarker, and Mustache.
-
-Spring Boot includes auto-configuration support for the following templating engines:
-
- * https://freemarker.apache.org/docs/[FreeMarker]
- * https://www.thymeleaf.org[Thymeleaf]
- * https://mustache.github.io/[Mustache]
-
-When you use one of these templating engines with the default configuration, your templates are picked up automatically from `src/main/resources/templates`.
-
-
-
-[[features.developing-web-applications.spring-webflux.error-handling]]
-==== Error Handling
-Spring Boot provides a `WebExceptionHandler` that handles all errors in a sensible way.
-Its position in the processing order is immediately before the handlers provided by WebFlux, which are considered last.
-For machine clients, it produces a JSON response with details of the error, the HTTP status, and the exception message.
-For browser clients, there is a "`whitelabel`" error handler that renders the same data in HTML format.
-You can also provide your own HTML templates to display errors (see the <<features#features.developing-web-applications.spring-webflux.error-handling.error-pages,next section>>).
-
-The first step to customizing this feature often involves using the existing mechanism but replacing or augmenting the error contents.
-For that, you can add a bean of type `ErrorAttributes`.
-
-To change the error handling behavior, you can implement `ErrorWebExceptionHandler` and register a bean definition of that type.
-Because a `ErrorWebExceptionHandler` is quite low-level, Spring Boot also provides a convenient `AbstractErrorWebExceptionHandler` to let you handle errors in a WebFlux functional way, as shown in the following example:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyErrorWebExceptionHandler.java[]
-----
-
-For a more complete picture, you can also subclass `DefaultErrorWebExceptionHandler` directly and override specific methods.
-
-In some cases, errors handled at the controller or handler function level are not recorded by the <<actuator#actuator.metrics.supported.spring-webflux, metrics infrastructure>>.
-Applications can ensure that such exceptions are recorded with the request metrics by setting the handled exception as a request attribute:
-
-[source,java,indent=0,subs="verbatim"]
-----
-include::{docs-java}/features/developingwebapplications/springwebflux/errorhandling/MyExceptionHandlingController.java[]
-----
-
-
-
-[[features.developing-web-applications.spring-webflux.error-handling.error-pages]]
-===== Custom Error Pages
-If you want to display a custom HTML error page for a given status code, you can add a file to an `/error` directory.
-Error pages can either be static HTML (that is, added under any of the static resource directories) or built with templates.
-The name of the file should be the exact status code or a series mask.
-
-For example, to map `404` to a static HTML file, your directory structure would be as follows:
-
-[source,indent=0,subs="verbatim"]
-----
-	src/
-	 +- main/
-	     +- java/
-	     |   + <source code>
-	     +- resources/
-	         +- public/
-	             +- error/
-	             |   +- 404.html
-	             +- <other public assets>
-----
-
-To map all `5xx` errors by using a Mustache template, your directory structure would be as follows:
-
-[source,indent=0,subs="verbatim"]
-----
-	src/
-	 +- main/
-	     +- java/
-	     |   + <source code>
-	     +- resources/
-	         +- templates/
-	             +- error/
-	             |   +- 5xx.mustache
-	             +- <other templates>
-----
-
-
-
-[[features.developing-web-applications.spring-webflux.web-filters]]
-==== Web Filters
-Spring WebFlux provides a `WebFilter` interface that can be implemented to filter HTTP request-response exchanges.
-`WebFilter` beans found in the application context will be automatically used to filter each exchange.
-
-Where the order of the filters is important they can implement `Ordered` or be annotated with `@Order`.
-Spring Boot auto-configuration may configure web filters for you.
-When it does so, the orders shown in the following table will be used:
-
-|===
-| Web Filter | Order
-
-| `MetricsWebFilter`
-| `Ordered.HIGHEST_PRECEDENCE + 1`
-
-| `WebFilterChainProxy` (Spring Security)
-| `-100`
-
-| `HttpTraceWebFilter`
-| `Ordered.LOWEST_PRECEDENCE - 10`
-|===
-
-
-
-[[features.developing-web-applications.jersey]]
+[[web.servlet.jersey]]
 === JAX-RS and Jersey
 If you prefer the JAX-RS programming model for REST endpoints, you can use one of the available implementations instead of Spring MVC.
 https://jersey.github.io/[Jersey] and https://cxf.apache.org/[Apache CXF] work quite well out of the box.
@@ -733,21 +498,21 @@ Both the servlet and the filter registrations can be given init parameters by us
 
 
 
-[[features.developing-web-applications.embedded-container]]
+[[web.servlet.embedded-container]]
 === Embedded Servlet Container Support
-Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
+For servlet application, Spring Boot includes support for embedded https://tomcat.apache.org/[Tomcat], https://www.eclipse.org/jetty/[Jetty], and https://github.com/undertow-io/undertow[Undertow] servers.
 Most developers use the appropriate "`Starter`" to obtain a fully configured instance.
 By default, the embedded server listens for HTTP requests on port `8080`.
 
 
 
-[[features.developing-web-applications.embedded-container.servlets-filters-listeners]]
+[[web.servlet.embedded-container.servlets-filters-listeners]]
 ==== Servlets, Filters, and listeners
 When using an embedded servlet container, you can register servlets, filters, and all the listeners (such as `HttpSessionListener`) from the Servlet spec, either by using Spring beans or by scanning for Servlet components.
 
 
 
-[[features.developing-web-applications.embedded-container.servlets-filters-listeners.beans]]
+[[web.servlet.embedded-container.servlets-filters-listeners.beans]]
 ===== Registering Servlets, Filters, and Listeners as Spring Beans
 Any `Servlet`, `Filter`, or servlet `*Listener` instance that is a Spring bean is registered with the embedded container.
 This can be particularly convenient if you want to refer to a value from your `application.properties` during configuration.
@@ -773,7 +538,7 @@ If you need to register a `Filter` that interacts with other beans, consider usi
 
 
 
-[[features.developing-web-applications.embedded-container.context-initializer]]
+[[web.servlet.embedded-container.context-initializer]]
 ==== Servlet Context Initialization
 Embedded servlet containers do not directly execute the Servlet 3.0+ `javax.servlet.ServletContainerInitializer` interface or Spring's `org.springframework.web.WebApplicationInitializer` interface.
 This is an intentional design decision intended to reduce the risk that third party libraries designed to run inside a war may break Spring Boot applications.
@@ -783,7 +548,7 @@ The single `onStartup` method provides access to the `ServletContext` and, if ne
 
 
 
-[[features.developing-web-applications.embedded-container.context-initializer.scanning]]
+[[web.servlet.embedded-container.context-initializer.scanning]]
 ===== Scanning for Servlets, Filters, and listeners
 When using an embedded container, automatic registration of classes annotated with `@WebServlet`, `@WebFilter`, and `@WebListener` can be enabled by using `@ServletComponentScan`.
 
@@ -791,7 +556,7 @@ TIP: `@ServletComponentScan` has no effect in a standalone container, where the 
 
 
 
-[[features.developing-web-applications.embedded-container.application-context]]
+[[web.servlet.embedded-container.application-context]]
 ==== The ServletWebServerApplicationContext
 Under the hood, Spring Boot uses a different type of `ApplicationContext` for embedded servlet container support.
 The `ServletWebServerApplicationContext` is a special type of `WebApplicationContext` that bootstraps itself by searching for a single `ServletWebServerFactory` bean.
@@ -802,7 +567,7 @@ Most applications are auto-configured, and the appropriate `ApplicationContext` 
 
 
 
-[[features.developing-web-applications.embedded-container.customizing]]
+[[web.servlet.embedded-container.customizing]]
 ==== Customizing Embedded Servlet Containers
 Common servlet container settings can be configured by using Spring `Environment` properties.
 Usually, you would define the properties in your `application.properties` or `application.yaml` file.
@@ -823,7 +588,7 @@ TIP: See the {spring-boot-autoconfigure-module-code}/web/ServerProperties.java[`
 
 
 
-[[features.developing-web-applications.embedded-container.customizing.programmatic]]
+[[web.servlet.embedded-container.customizing.programmatic]]
 ===== Programmatic Customization
 If you need to programmatically configure your embedded servlet container, you can register a Spring bean that implements the `WebServerFactoryCustomizer` interface.
 `WebServerFactoryCustomizer` provides access to the `ConfigurableServletWebServerFactory`, which includes numerous customization setter methods.
@@ -844,7 +609,7 @@ include::{docs-java}/features/developingwebapplications/embeddedcontainer/custom
 
 
 
-[[features.developing-web-applications.embedded-container.customizing.direct]]
+[[web.servlet.embedded-container.customizing.direct]]
 ===== Customizing ConfigurableServletWebServerFactory Directly
 For more advanced use cases that require you to extend from `ServletWebServerFactory`, you can expose a bean of such type yourself.
 
@@ -856,38 +621,17 @@ NOTE: Auto-configured customizers are still applied on your custom factory, so u
 
 
 
-[[features.developing-web-applications.embedded-container.jsp-limitations]]
+[[web.servlet.embedded-container.jsp-limitations]]
 ==== JSP Limitations
 When running a Spring Boot application that uses an embedded servlet container (and is packaged as an executable archive), there are some limitations in the JSP support.
 
 * With Jetty and Tomcat, it should work if you use war packaging.
-  An executable war will work when launched with `java -jar`, and will also be deployable to any standard container.
-  JSPs are not supported when using an executable jar.
+An executable war will work when launched with `java -jar`, and will also be deployable to any standard container.
+JSPs are not supported when using an executable jar.
 
 * Undertow does not support JSPs.
 
-* Creating a custom `error.jsp` page does not override the default view for <<features#features.developing-web-applications.spring-mvc.error-handling,error handling>>.
-  <<features#features.developing-web-applications.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
+* Creating a custom `error.jsp` page does not override the default view for <<servlet#web.servlet.spring-mvc.error-handling,error handling>>.
+  <<servlet#web.servlet.spring-mvc.error-handling.error-pages,Custom error pages>> should be used instead.
 
 
-
-[[features.developing-web-applications.reactive-server]]
-=== Embedded Reactive Server Support
-Spring Boot includes support for the following embedded reactive web servers: Reactor Netty, Tomcat, Jetty, and Undertow.
-Most developers use the appropriate “Starter” to obtain a fully configured instance.
-By default, the embedded server listens for HTTP requests on port 8080.
-
-
-
-[[features.developing-web-applications.reactive-server-resources-configuration]]
-=== Reactive Server Resources Configuration
-When auto-configuring a Reactor Netty or Jetty server, Spring Boot will create specific beans that will provide HTTP resources to the server instance: `ReactorResourceFactory` or `JettyResourceFactory`.
-
-By default, those resources will be also shared with the Reactor Netty and Jetty clients for optimal performances, given:
-
-* the same technology is used for server and client
-* the client instance is built using the `WebClient.Builder` bean auto-configured by Spring Boot
-
-Developers can override the resource configuration for Jetty and Reactor Netty by providing a custom `ReactorResourceFactory` or `JettyResourceFactory` bean - this will be applied to both clients and servers.
-
-You can learn more about the resource configuration on the client side in the <<features#features.webclient.runtime, WebClient Runtime section>>.

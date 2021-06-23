@@ -1,5 +1,5 @@
-[[features.security]]
-== Security
+[[web.security]]
+== Spring Security
 If {spring-security}[Spring Security] is on the classpath, then web applications are secured by default.
 Spring Boot relies on Spring Security’s content-negotiation strategy to determine whether to use `httpBasic` or `formLogin`.
 To add method-level security to a web application, you can also add `@EnableGlobalMethodSecurity` with your desired settings.
@@ -28,7 +28,7 @@ You can provide a different `AuthenticationEventPublisher` by adding a bean for 
 
 
 
-[[features.security.spring-mvc]]
+[[web.security.spring-mvc]]
 === MVC Security
 The default security configuration is implemented in `SecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
 `SecurityAutoConfiguration` imports `SpringBootWebSecurityConfiguration` for web security and `UserDetailsServiceAutoConfiguration` configures authentication, which is also relevant in non-web applications.
@@ -43,7 +43,7 @@ Spring Boot provides convenience methods that can be used to override access rul
 
 
 
-[[features.security.spring-webflux]]
+[[web.security.spring-webflux]]
 === WebFlux Security
 Similar to Spring MVC applications, you can secure your WebFlux applications by adding the `spring-boot-starter-security` dependency.
 The default security configuration is implemented in `ReactiveSecurityAutoConfiguration` and `UserDetailsServiceAutoConfiguration`.
@@ -67,13 +67,13 @@ include::{docs-java}/features/security/springwebflux/MyWebFluxSecurityConfigurat
 
 
 
-[[features.security.oauth2]]
+[[web.security.oauth2]]
 === OAuth2
 https://oauth.net/2/[OAuth2] is a widely used authorization framework that is supported by Spring.
 
 
 
-[[features.security.oauth2.client]]
+[[web.security.oauth2.client]]
 ==== Client
 If you have `spring-security-oauth2-client` on your classpath, you can take advantage of some auto-configuration to set up an OAuth2/Open ID Connect clients.
 This configuration makes use of the properties under `OAuth2ClientProperties`.
@@ -150,7 +150,7 @@ For production environments, consider using a `JdbcOAuth2AuthorizedClientService
 
 
 
-[[features.security.oauth2.client.common-providers]]
+[[web.security.oauth2.client.common-providers]]
 ===== OAuth2 client registration for common providers
 For common OAuth2 and OpenID providers, including Google, Github, Facebook, and Okta, we provide a set of provider defaults (`google`, `github`, `facebook`, and `okta`, respectively).
 
@@ -177,7 +177,7 @@ In other words, the two configurations in the following example use the Google p
 
 
 
-[[features.security.oauth2.server]]
+[[web.security.oauth2.server]]
 ==== Resource Server
 If you have `spring-security-oauth2-resource-server` on your classpath, Spring Boot can set up an OAuth2 Resource Server.
 For JWT configuration, a JWK Set URI or OIDC Issuer URI needs to be specified, as shown in the following examples:
@@ -229,7 +229,7 @@ Alternatively, you can define your own `OpaqueTokenIntrospector` bean for servle
 
 
 
-[[features.security.oauth2.authorization-server]]
+[[web.security.oauth2.authorization-server]]
 ==== Authorization Server
 Currently, Spring Security does not provide support for implementing an OAuth 2.0 Authorization Server.
 However, this functionality is available from the {spring-security-oauth2}[Spring Security OAuth] project, which will eventually be superseded by Spring Security completely.
@@ -237,12 +237,12 @@ Until then, you can use the `spring-security-oauth2-autoconfigure` module to eas
 
 
 
-[[features.security.saml2]]
+[[web.security.saml2]]
 === SAML 2.0
 
 
 
-[[features.security.saml2.relying-party]]
+[[web.security.saml2.relying-party]]
 ==== Relying Party
 If you have `spring-security-saml2-service-provider` on your classpath, you can take advantage of some auto-configuration to set up a SAML 2.0 Relying Party.
 This configuration makes use of the properties under `Saml2RelyingPartyProperties`.
@@ -289,26 +289,3 @@ You can register multiple relying parties under the `spring.security.saml2.relyi
                   entity-id: "remote-idp-entity-id2"
                   sso-url: "https://remoteidp2.sso.url"
 ----
-
-
-
-[[features.security.actuator]]
-=== Actuator Security
-For security purposes, all actuators other than `/health` are disabled by default.
-The configprop:management.endpoints.web.exposure.include[] property can be used to enable the actuators.
-
-If Spring Security is on the classpath and no other `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean is present, all actuators other than `/health` are secured by Spring Boot auto-configuration.
-If you define a custom `WebSecurityConfigurerAdapter` or `SecurityFilterChain` bean, Spring Boot auto-configuration will back off and you will be in full control of actuator access rules.
-
-NOTE: Before setting the `management.endpoints.web.exposure.include`, ensure that the exposed actuators do not contain sensitive information and/or are secured by placing them behind a firewall or by something like Spring Security.
-
-
-
-[[features.security.actuator.csrf]]
-==== Cross Site Request Forgery Protection
-Since Spring Boot relies on Spring Security's defaults, CSRF protection is turned on by default.
-This means that the actuator endpoints that require a `POST` (shutdown and loggers endpoints), `PUT` or `DELETE` will get a 403 forbidden error when the default security configuration is in use.
-
-NOTE: We recommend disabling CSRF protection completely only if you are creating a service that is used by non-browser clients.
-
-Additional information about CSRF protection can be found in the {spring-security-docs}#csrf[Spring Security Reference Guide].

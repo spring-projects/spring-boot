@@ -1,5 +1,5 @@
 [[actuator]]
-= Spring Boot Actuator: Production-ready Features
+= Production-ready Features
 include::attributes.adoc[]
 
 

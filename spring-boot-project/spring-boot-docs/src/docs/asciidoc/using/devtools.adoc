@@ -43,7 +43,7 @@ When using the Gradle plugin, {spring-boot-gradle-plugin-docs}#packaging-executa
 [[using.devtools.property-defaults]]
 === Property Defaults
 Several of the libraries supported by Spring Boot use caches to improve performance.
-For example, <<features#features.developing-web-applications.spring-mvc.template-engines,template engines>> cache compiled templates to avoid repeatedly parsing template files.
+For example, <<web#web.servlet.spring-mvc.template-engines,template engines>> cache compiled templates to avoid repeatedly parsing template files.
 Also, Spring MVC can add HTTP caching headers to responses when serving static resources.
 
 While caching is very beneficial in production, it can be counter-productive during development, preventing you from seeing the changes you just made in your application.

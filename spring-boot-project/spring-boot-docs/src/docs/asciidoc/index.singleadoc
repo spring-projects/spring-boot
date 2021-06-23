@@ -21,6 +21,16 @@ include::using.adoc[leveloffset=+1]
 
 include::features.adoc[leveloffset=+1]
 
+include::web.adoc[leveloffset=+1]
+
+include::data.adoc[leveloffset=+1]
+
+include::messaging.adoc[leveloffset=+1]
+
+include::io.adoc[leveloffset=+1]
+
+include::container-images.adoc[leveloffset=+1]
+
 include::actuator.adoc[leveloffset=+1]
 
 include::deployment.adoc[leveloffset=+1]

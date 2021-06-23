@@ -1,4 +1,4 @@
-[[features.quartz]]
+[[io.quartz]]
 == Quartz Scheduler
 Spring Boot offers several conveniences for working with the https://www.quartz-scheduler.org/[Quartz scheduler], including the `spring-boot-starter-quartz` "`Starter`".
 If Quartz is available, a `Scheduler` is auto-configured (through the `SchedulerFactoryBean` abstraction).
