@@ -125,6 +125,9 @@ class SpringApplicationShutdownHook implements Runnable {
 	 * @param context the context to clean
 	 */
 	private void closeAndWait(ConfigurableApplicationContext context) {
+		if (!context.isActive()) {
+			return;
+		}
 		context.close();
 		try {
 			int waited = 0;
