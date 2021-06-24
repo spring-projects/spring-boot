@@ -49,12 +49,9 @@ public class Library {
 	 * Create a new {@link Library}.
 	 * @param file the source file
 	 * @param scope the scope of the library
-	 * @deprecated since 2.4.8 for removal in 2.6.0 in favor of
-	 * {@link #Library(String, File, LibraryScope, LibraryCoordinates, boolean, boolean, boolean)}
 	 */
-	@Deprecated
 	public Library(File file, LibraryScope scope) {
-		this(file, scope, false);
+		this(null, file, scope, null, false, false, true);
 	}
 
 	/**
