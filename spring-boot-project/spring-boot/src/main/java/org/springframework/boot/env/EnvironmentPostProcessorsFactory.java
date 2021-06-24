@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -48,7 +48,7 @@ public interface EnvironmentPostProcessorsFactory {
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
 	 */
 	static EnvironmentPostProcessorsFactory fromSpringFactories(ClassLoader classLoader) {
-		return new ReflectionEnvironmentPostProcessorsFactory(
+		return new ReflectionEnvironmentPostProcessorsFactory(classLoader,
 				SpringFactoriesLoader.loadFactoryNames(EnvironmentPostProcessor.class, classLoader));
 	}
 
@@ -69,7 +69,19 @@ public interface EnvironmentPostProcessorsFactory {
 	 * @return an {@link EnvironmentPostProcessorsFactory} instance
 	 */
 	static EnvironmentPostProcessorsFactory of(String... classNames) {
-		return new ReflectionEnvironmentPostProcessorsFactory(classNames);
+		return of(null, classNames);
+	}
+
+	/**
+	 * Return a {@link EnvironmentPostProcessorsFactory} that reflectively creates post
+	 * processors from the given class names.
+	 * @param classLoader the source class loader
+	 * @param classNames the post processor class names
+	 * @return an {@link EnvironmentPostProcessorsFactory} instance
+	 * @since 2.4.8
+	 */
+	static EnvironmentPostProcessorsFactory of(ClassLoader classLoader, String... classNames) {
+		return new ReflectionEnvironmentPostProcessorsFactory(classLoader, classNames);
 	}
 
 }

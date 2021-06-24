@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -17,7 +17,6 @@
 package org.springframework.boot.util;
 
 import java.lang.reflect.Constructor;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
@@ -27,6 +26,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.springframework.core.annotation.AnnotationAwareOrderComparator;
 import org.springframework.util.Assert;
@@ -85,22 +87,48 @@ public class Instantiator<T> {
 	 * @return a list of instantiated instances
 	 */
 	public List<T> instantiate(Collection<String> names) {
-		List<T> instances = new ArrayList<>(names.size());
-		for (String name : names) {
-			instances.add(instantiate(name));
-		}
+		return instantiate((ClassLoader) null, names);
+	}
+
+	/**
+	 * Instantiate the given set of class name, injecting constructor arguments as
+	 * necessary.
+	 * @param classLoader the source classloader
+	 * @param names the class names to instantiate
+	 * @return a list of instantiated instances
+	 * @since 2.4.8
+	 */
+	public List<T> instantiate(ClassLoader classLoader, Collection<String> names) {
+		Assert.notNull(names, "Names must not be null");
+		return instantiate(names.stream().map((name) -> TypeSupplier.forName(classLoader, name)));
+	}
+
+	/**
+	 * Instantiate the given set of classes, injecting constructor arguments as necessary.
+	 * @param types the types to instantiate
+	 * @return a list of instantiated instances
+	 * @since 2.4.8
+	 */
+	public List<T> instantiateTypes(Collection<Class<?>> types) {
+		Assert.notNull(types, "Types must not be null");
+		return instantiate(types.stream().map((type) -> TypeSupplier.forType(type)));
+	}
+
+	public List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
+		List<T> instances = typeSuppliers.map(this::instantiate).collect(Collectors.toList());
 		AnnotationAwareOrderComparator.sort(instances);
 		return Collections.unmodifiableList(instances);
 	}
 
-	private T instantiate(String name) {
+	private T instantiate(TypeSupplier typeSupplier) {
 		try {
-			Class<?> type = ClassUtils.forName(name, null);
+			Class<?> type = typeSupplier.get();
 			Assert.isAssignable(this.type, type);
 			return instantiate(type);
 		}
 		catch (Throwable ex) {
-			throw new IllegalArgumentException("Unable to instantiate " + this.type.getName() + " [" + name + "]", ex);
+			throw new IllegalArgumentException(
+					"Unable to instantiate " + this.type.getName() + " [" + typeSupplier.getName() + "]", ex);
 		}
 	}
 
@@ -157,6 +185,49 @@ public class Instantiator<T> {
 		 * @param factory the factory used to create the instance that should be injected
 		 */
 		void add(Class<?> type, Function<Class<?>, Object> factory);
+
+	}
+
+	/**
+	 * {@link Supplier} that provides a class type.
+	 */
+	private interface TypeSupplier {
+
+		String getName();
+
+		Class<?> get() throws ClassNotFoundException;
+
+		static TypeSupplier forName(ClassLoader classLoader, String name) {
+			return new TypeSupplier() {
+
+				@Override
+				public String getName() {
+					return name;
+				}
+
+				@Override
+				public Class<?> get() throws ClassNotFoundException {
+					return ClassUtils.forName(name, classLoader);
+				}
+
+			};
+		}
+
+		static TypeSupplier forType(Class<?> type) {
+			return new TypeSupplier() {
+
+				@Override
+				public String getName() {
+					return type.getName();
+				}
+
+				@Override
+				public Class<?> get() throws ClassNotFoundException {
+					return type;
+				}
+
+			};
+		}
 
 	}
 
