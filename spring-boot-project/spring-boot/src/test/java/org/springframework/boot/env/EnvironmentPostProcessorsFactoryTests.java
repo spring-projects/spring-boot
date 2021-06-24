@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.boot.DefaultBootstrapContext;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.logging.DeferredLogFactory;
+import org.springframework.core.OverridingClassLoader;
 import org.springframework.core.env.ConfigurableEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -65,6 +66,25 @@ class EnvironmentPostProcessorsFactoryTests {
 				this.bootstrapContext);
 		assertThat(processors).hasSize(1);
 		assertThat(processors.get(0)).isInstanceOf(TestEnvironmentPostProcessor.class);
+	}
+
+	@Test
+	void ofClassNamesWithClassLoaderReturnsFactory() {
+		OverridingClassLoader classLoader = new OverridingClassLoader(getClass().getClassLoader()) {
+
+			@Override
+			protected boolean isEligibleForOverriding(String className) {
+				return super.isEligibleForOverriding(className)
+						&& className.equals(TestEnvironmentPostProcessor.class.getName());
+			}
+
+		};
+		EnvironmentPostProcessorsFactory factory = EnvironmentPostProcessorsFactory.of(classLoader,
+				TestEnvironmentPostProcessor.class.getName());
+		List<EnvironmentPostProcessor> processors = factory.getEnvironmentPostProcessors(this.logFactory,
+				this.bootstrapContext);
+		assertThat(processors).hasSize(1);
+		assertThat(processors.get(0).getClass().getClassLoader()).isSameAs(classLoader);
 	}
 
 	static class TestEnvironmentPostProcessor implements EnvironmentPostProcessor {
