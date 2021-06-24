@@ -50,6 +50,7 @@ import org.jetbrains.kotlin.daemon.client.KotlinCompilerClient;
 import org.jetbrains.kotlin.gradle.model.KotlinProject;
 import org.jetbrains.kotlin.gradle.plugin.KotlinCompilerPluginSupportPlugin;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPlugin;
+import org.jetbrains.kotlin.project.model.LanguageSettings;
 import org.tomlj.Toml;
 
 import org.springframework.asm.ClassVisitor;
@@ -113,6 +114,7 @@ public class GradleBuild {
 				new File(pathOfJarContaining(KotlinPlugin.class)), new File(pathOfJarContaining(KotlinProject.class)),
 				new File(pathOfJarContaining(KotlinCompilerClient.class)),
 				new File(pathOfJarContaining(KotlinCompilerPluginSupportPlugin.class)),
+				new File(pathOfJarContaining(LanguageSettings.class)),
 				new File(pathOfJarContaining(ArchiveEntry.class)), new File(pathOfJarContaining(BuildRequest.class)),
 				new File(pathOfJarContaining(HttpClientConnectionManager.class)),
 				new File(pathOfJarContaining(HttpRequest.class)), new File(pathOfJarContaining(Module.class)),
