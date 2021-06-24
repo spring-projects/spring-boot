@@ -1207,7 +1207,7 @@ bom {
 		}
 	}
 	library("Nimbus JOSE JWT") {
-		version("8.20.2") {
+		version("8.22") {
 			shouldAlignWithVersionFrom("Spring Security")
 		}
 		group("com.nimbusds") {
