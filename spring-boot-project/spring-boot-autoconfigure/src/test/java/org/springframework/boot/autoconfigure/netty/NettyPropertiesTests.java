@@ -17,7 +17,10 @@
 package org.springframework.boot.autoconfigure.netty;
 
 import io.netty.util.ResourceLeakDetector;
+import io.netty.util.ResourceLeakDetector.Level;
 import org.junit.jupiter.api.Test;
+
+import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -31,8 +34,9 @@ class NettyPropertiesTests {
 	@Test
 	void defaultValueShouldMatchNettys() {
 		NettyProperties properties = new NettyProperties();
-		assertThat(ResourceLeakDetector.Level.valueOf(properties.getLeakDetection().name()))
-				.isEqualTo(ResourceLeakDetector.getLevel());
+		ResourceLeakDetector.Level defaultLevel = (Level) ReflectionTestUtils.getField(ResourceLeakDetector.class,
+				"DEFAULT_LEVEL");
+		assertThat(ResourceLeakDetector.Level.valueOf(properties.getLeakDetection().name())).isEqualTo(defaultLevel);
 	}
 
 }
