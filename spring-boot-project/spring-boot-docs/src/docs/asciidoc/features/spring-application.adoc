@@ -418,4 +418,4 @@ Once configured, you can record data by running the application with the Flight 
 Spring Boot ships with the `BufferingApplicationStartup` variant; this implementation is meant for buffering the startup steps and draining them into an external metrics system.
 Applications can ask for the bean of type `BufferingApplicationStartup` in any component.
 
-Spring Boot can also be configured to expose a {spring-boot-actuator-restapi-docs}/#startup[`startup` endpoint] that provide this information as a JSON document.
+Spring Boot can also be configured to expose a {spring-boot-actuator-restapi-docs}/#startup[`startup` endpoint] that provides this information as a JSON document.
