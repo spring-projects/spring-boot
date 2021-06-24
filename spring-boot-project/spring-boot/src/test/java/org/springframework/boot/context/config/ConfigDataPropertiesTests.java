@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -160,16 +160,37 @@ class ConfigDataPropertiesTests {
 	@Test
 	void isActiveAgainstBoundData() {
 		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
-		source.put("spring.config.import", "one,two,three");
 		source.put("spring.config.activate.on-cloud-platform", "kubernetes");
 		source.put("spring.config.activate.on-profile", "a | b");
 		Binder binder = new Binder(source);
 		ConfigDataProperties properties = ConfigDataProperties.get(binder);
 		ConfigDataActivationContext context = new ConfigDataActivationContext(CloudPlatform.KUBERNETES,
 				createTestProfiles());
-		assertThat(properties.getImports()).containsExactly(ConfigDataLocation.of("one"), ConfigDataLocation.of("two"),
-				ConfigDataLocation.of("three"));
 		assertThat(properties.isActive(context)).isTrue();
+	}
+
+	@Test
+	void isActiveAgainstBoundDataWhenProfilesDontMatch() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("spring.config.activate.on-cloud-platform", "kubernetes");
+		source.put("spring.config.activate.on-profile", "x | z");
+		Binder binder = new Binder(source);
+		ConfigDataProperties properties = ConfigDataProperties.get(binder);
+		ConfigDataActivationContext context = new ConfigDataActivationContext(CloudPlatform.KUBERNETES,
+				createTestProfiles());
+		assertThat(properties.isActive(context)).isFalse();
+	}
+
+	@Test
+	void isActiveAgainstBoundDataWhenCloudPlatformDoesntMatch() {
+		MapConfigurationPropertySource source = new MapConfigurationPropertySource();
+		source.put("spring.config.activate.on-cloud-platform", "cloud-foundry");
+		source.put("spring.config.activate.on-profile", "a | b");
+		Binder binder = new Binder(source);
+		ConfigDataProperties properties = ConfigDataProperties.get(binder);
+		ConfigDataActivationContext context = new ConfigDataActivationContext(CloudPlatform.KUBERNETES,
+				createTestProfiles());
+		assertThat(properties.isActive(context)).isFalse();
 	}
 
 	@Test
