@@ -26,10 +26,12 @@ import java.util.concurrent.CountDownLatch;
 import org.awaitility.Awaitility;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import org.springframework.context.support.AbstractApplicationContext;
+import org.springframework.context.support.GenericApplicationContext;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalArgumentException;
@@ -89,6 +91,15 @@ class SpringApplicationShutdownHookTests {
 		shutdownThread.join();
 		// Context should have been closed before handler action was run
 		assertThat(finished).containsExactly(context, handlerAction);
+	}
+
+	@Test
+	void runDueToExitDuringRefreshWhenContextHasBeenClosedDoesNotDeadlock() throws InterruptedException {
+		GenericApplicationContext context = new GenericApplicationContext();
+		TestSpringApplicationShutdownHook shutdownHook = new TestSpringApplicationShutdownHook();
+		shutdownHook.registerApplicationContext(context);
+		context.registerBean(CloseContextAndExit.class, context, shutdownHook);
+		context.refresh();
 	}
 
 	@Test
@@ -217,6 +228,30 @@ class SpringApplicationShutdownHookTests {
 		@Override
 		public void run() {
 			this.finished.add(this);
+		}
+
+	}
+
+	static class CloseContextAndExit implements InitializingBean {
+
+		private final ConfigurableApplicationContext context;
+
+		private final Runnable shutdownHook;
+
+		CloseContextAndExit(ConfigurableApplicationContext context, SpringApplicationShutdownHook shutdownHook) {
+			this.context = context;
+			this.shutdownHook = shutdownHook;
+		}
+
+		@Override
+		public void afterPropertiesSet() throws Exception {
+			this.context.close();
+			// Simulate System.exit by running the hook on a separate thread and waiting
+			// for it to complete
+			Thread thread = new Thread(this.shutdownHook);
+			thread.start();
+			thread.join(15000);
+			assertThat(thread.isAlive()).isFalse();
 		}
 
 	}
