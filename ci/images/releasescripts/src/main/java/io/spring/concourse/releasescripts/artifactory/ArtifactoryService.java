@@ -93,7 +93,7 @@ public class ArtifactoryService {
 
 	private boolean isAlreadyPromoted(String buildName, String buildNumber, String targetRepo) {
 		try {
-			logger.debug("Checking if alreay promoted");
+			logger.debug("Checking if already promoted");
 			ResponseEntity<BuildInfoResponse> entity = this.restTemplate
 					.getForEntity(BUILD_INFO_URL + buildName + "/" + buildNumber, BuildInfoResponse.class);
 			BuildInfoResponse.Status status = entity.getBody().getBuildInfo().getStatuses()[0];
