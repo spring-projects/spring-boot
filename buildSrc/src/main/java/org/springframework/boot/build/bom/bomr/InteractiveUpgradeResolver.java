@@ -86,13 +86,12 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 
 	private List<VersionOption> getVersionOptions(Library library, Map<String, Library> libraries) {
 		if (library.getVersion().getVersionAlignment() != null) {
-			VersionOption alignedVersionOption = alignedVersionOption(library, libraries);
-			if (!isPermitted(alignedVersionOption.version, library.getProhibitedVersions())) {
-				throw new InvalidUserDataException("Version alignment failed. Version " + alignedVersionOption.version
-						+ " from " + library.getName() + " is prohibited");
-			}
-			return Collections.singletonList(alignedVersionOption);
+			return determineAlignedVersionOption(library, libraries);
 		}
+		return determineResolvedVersionOptions(library);
+	}
+
+	private List<VersionOption> determineResolvedVersionOptions(Library library) {
 		Map<String, SortedSet<DependencyVersion>> moduleVersions = new LinkedHashMap<>();
 		DependencyVersion libraryVersion = library.getVersion().getVersion();
 		for (Group group : library.getGroups()) {
@@ -118,6 +117,18 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 		return allVersions.stream()
 				.map((version) -> new ResolvedVersionOption(version, getMissingModules(moduleVersions, version)))
 				.collect(Collectors.toList());
+	}
+
+	private List<VersionOption> determineAlignedVersionOption(Library library, Map<String, Library> libraries) {
+		VersionOption alignedVersionOption = alignedVersionOption(library, libraries);
+		if (alignedVersionOption == null) {
+			return Collections.emptyList();
+		}
+		if (!isPermitted(alignedVersionOption.version, library.getProhibitedVersions())) {
+			throw new InvalidUserDataException("Version alignment failed. Version " + alignedVersionOption.version
+					+ " from " + library.getName() + " is prohibited");
+		}
+		return Collections.singletonList(alignedVersionOption);
 	}
 
 	private VersionOption alignedVersionOption(Library library, Map<String, Library> libraries) {
@@ -148,8 +159,9 @@ public final class InteractiveUpgradeResolver implements UpgradeResolver {
 			throw new InvalidUserDataException("Cannot align with library '" + versionAlignment.getLibraryName()
 					+ "' as it uses multiple different versions of this library's modules");
 		}
-		String requiredVersion = versions.iterator().next();
-		return new AlignedVersionOption(DependencyVersion.parse(requiredVersion), alignmentLibrary);
+		DependencyVersion version = DependencyVersion.parse(versions.iterator().next());
+		return library.getVersion().getVersion().equals(version) ? null
+				: new AlignedVersionOption(version, alignmentLibrary);
 	}
 
 	private boolean isPermitted(DependencyVersion dependencyVersion, List<ProhibitedVersion> prohibitedVersions) {
