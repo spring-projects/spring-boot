@@ -183,8 +183,8 @@ public class RepackageMojo extends AbstractPackagerMojo {
 	}
 
 	/**
-	 * Return the layout factory that will be used to determine the {@link LayoutType} if
-	 * no explicit layout is set.
+	 * Return the layout factory that will be used to determine the
+	 * {@link AbstractPackagerMojo.LayoutType} if no explicit layout is set.
 	 * @return the value of the {@code layoutFactory} parameter, or {@code null} if the
 	 * parameter is not provided
 	 */

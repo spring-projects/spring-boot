@@ -182,11 +182,9 @@ public abstract class AbstractPackagerMojo extends AbstractDependencyFilterMojo 
 	 * @throws MojoExecutionException on execution error
 	 */
 	protected final Libraries getLibraries(Collection<Dependency> unpacks) throws MojoExecutionException {
-		String packaging = this.project.getPackaging();
-		Set<Artifact> projectArtifacts = this.project.getArtifacts();
-		Set<Artifact> artifacts = ("war".equals(packaging)) ? projectArtifacts
-				: filterDependencies(projectArtifacts, getFilters(getAdditionalFilters()));
-		return new ArtifactsLibraries(artifacts, this.session.getProjects(), unpacks, getLog());
+		Set<Artifact> artifacts = this.project.getArtifacts();
+		Set<Artifact> includedArtifacts = filterDependencies(artifacts, getFilters(getAdditionalFilters()));
+		return new ArtifactsLibraries(artifacts, includedArtifacts, this.session.getProjects(), unpacks, getLog());
 	}
 
 	private ArtifactsFilter[] getAdditionalFilters() {
