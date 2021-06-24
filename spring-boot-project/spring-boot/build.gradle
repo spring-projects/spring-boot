@@ -9,6 +9,10 @@ plugins {
 
 description = "Spring Boot"
 
+toolchain {
+	testJvmArgs.add("--add-opens=java.base/java.net=ALL-UNNAMED")
+}
+
 def tomcatConfigProperties = "$buildDir/tomcat-config-properties"
 
 configurations {
