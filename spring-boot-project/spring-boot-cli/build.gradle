@@ -56,6 +56,7 @@ dependencies {
 
 	loader(project(":spring-boot-project:spring-boot-tools:spring-boot-loader"))
 
+	testCompileOnly("org.apache.tomcat.embed:tomcat-embed-core")
 	testImplementation(project(":spring-boot-project:spring-boot"))
 	testImplementation(project(":spring-boot-project:spring-boot-tools:spring-boot-test-support"))
 	testImplementation(project(":spring-boot-project:spring-boot-test"))

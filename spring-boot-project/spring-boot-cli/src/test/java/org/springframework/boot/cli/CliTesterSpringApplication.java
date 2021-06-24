@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,9 +16,12 @@
 
 package org.springframework.boot.cli;
 
+import org.apache.catalina.webresources.TomcatURLStreamHandlerFactory;
+
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.web.context.WebServerPortFileWriter;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.util.ClassUtils;
 
 /**
  * Custom {@link SpringApplication} used by {@link CliTester}.
@@ -26,6 +29,13 @@ import org.springframework.context.ConfigurableApplicationContext;
  * @author Andy Wilkinson
  */
 public class CliTesterSpringApplication extends SpringApplication {
+
+	static {
+		if (ClassUtils.isPresent("org.apache.catalina.webresources.TomcatURLStreamHandlerFactory",
+				CliTesterSpringApplication.class.getClassLoader())) {
+			TomcatURLStreamHandlerFactory.disable();
+		}
+	}
 
 	public CliTesterSpringApplication(Class<?>... sources) {
 		super(sources);
