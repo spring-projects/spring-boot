@@ -114,7 +114,7 @@ public class Instantiator<T> {
 		return instantiate(types.stream().map((type) -> TypeSupplier.forType(type)));
 	}
 
-	public List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
+	private List<T> instantiate(Stream<TypeSupplier> typeSuppliers) {
 		List<T> instances = typeSuppliers.map(this::instantiate).collect(Collectors.toList());
 		AnnotationAwareOrderComparator.sort(instances);
 		return Collections.unmodifiableList(instances);
