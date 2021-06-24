@@ -30,6 +30,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import org.springframework.beans.PropertyEditorRegistry;
 import org.springframework.core.ResolvableType;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
 import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
@@ -176,6 +177,15 @@ class BindConverterTests {
 				null);
 		Duration result = bindConverter.convert("10s", ResolvableType.forClass(Duration.class));
 		assertThat(result.getSeconds()).isEqualTo(10);
+	}
+
+	@Test // gh-27028
+	void convertWhenConversionFailsThrowsConversionFailedExceptionRatherThanConverterNotFoundException() {
+		BindConverter bindConverter = BindConverter.get(Collections.singletonList(new GenericConversionService()),
+				null);
+		assertThatExceptionOfType(ConversionFailedException.class)
+				.isThrownBy(() -> bindConverter.convert("com.example.Missing", ResolvableType.forClass(Class.class)))
+				.withRootCauseInstanceOf(ClassNotFoundException.class);
 	}
 
 	private BindConverter getPropertyEditorOnlyBindConverter(
