@@ -399,7 +399,7 @@ class RedisAutoConfigurationTests {
 	}
 
 	private LettucePoolingClientConfiguration getPoolingClientConfiguration(LettuceConnectionFactory factory) {
-		return (LettucePoolingClientConfiguration) ReflectionTestUtils.getField(factory, "clientConfiguration");
+		return (LettucePoolingClientConfiguration) factory.getClientConfiguration();
 	}
 
 	private String getUserName(LettuceConnectionFactory factory) {
