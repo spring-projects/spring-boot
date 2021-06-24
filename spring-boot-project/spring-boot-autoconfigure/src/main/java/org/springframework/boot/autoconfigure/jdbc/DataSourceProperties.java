@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,14 +53,15 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 	private ClassLoader classLoader;
 
 	/**
-	 * Name of the datasource. Default to "testdb" when using an embedded database.
-	 */
-	private String name;
-
-	/**
 	 * Whether to generate a random datasource name.
 	 */
 	private boolean generateUniqueName = true;
+
+	/**
+	 * Datasource name to use if "generate-unique-name" is false. Defaults to "testdb"
+	 * when using an embedded database, otherwise null.
+	 */
+	private String name;
 
 	/**
 	 * Fully qualified name of the connection pool implementation to use. By default, it
@@ -177,20 +178,20 @@ public class DataSourceProperties implements BeanClassLoaderAware, InitializingB
 				.url(determineUrl()).username(determineUsername()).password(determinePassword());
 	}
 
-	public String getName() {
-		return this.name;
-	}
-
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public boolean isGenerateUniqueName() {
 		return this.generateUniqueName;
 	}
 
 	public void setGenerateUniqueName(boolean generateUniqueName) {
 		this.generateUniqueName = generateUniqueName;
+	}
+
+	public String getName() {
+		return this.name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public Class<? extends DataSource> getType() {
