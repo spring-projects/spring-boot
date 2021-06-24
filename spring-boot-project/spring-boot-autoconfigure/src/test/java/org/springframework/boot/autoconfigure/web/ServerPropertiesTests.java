@@ -422,7 +422,7 @@ class ServerPropertiesTests {
 	void tomcatMaxKeepAliveRequestsDefault() throws Exception {
 		AbstractEndpoint<?, ?> endpoint = (AbstractEndpoint<?, ?>) ReflectionTestUtils.getField(getDefaultProtocol(),
 				"endpoint");
-		int defaultMaxKeepAliveRequests = endpoint.getMaxKeepAliveRequests();
+		int defaultMaxKeepAliveRequests = (int) ReflectionTestUtils.getField(endpoint, "maxKeepAliveRequests");
 		assertThat(this.properties.getTomcat().getMaxKeepAliveRequests()).isEqualTo(defaultMaxKeepAliveRequests);
 	}
 
