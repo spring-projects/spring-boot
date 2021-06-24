@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -34,7 +34,9 @@ import org.springframework.beans.propertyeditors.FileEditor;
 import org.springframework.boot.convert.ApplicationConversionService;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.convert.ConversionException;
+import org.springframework.core.convert.ConversionFailedException;
 import org.springframework.core.convert.ConversionService;
+import org.springframework.core.convert.ConverterNotFoundException;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.ConditionalGenericConverter;
 import org.springframework.core.convert.support.GenericConversionService;
@@ -157,17 +159,20 @@ final class BindConverter {
 
 		@Override
 		public Object convert(Object source, TypeDescriptor sourceType, TypeDescriptor targetType) {
-			for (int i = 0; i < this.delegates.size() - 1; i++) {
+			ConversionException failure = null;
+			for (ConversionService delegate : this.delegates) {
 				try {
-					ConversionService delegate = this.delegates.get(i);
 					if (delegate.canConvert(sourceType, targetType)) {
 						return delegate.convert(source, sourceType, targetType);
 					}
 				}
 				catch (ConversionException ex) {
+					if (failure == null && ex instanceof ConversionFailedException) {
+						failure = ex;
+					}
 				}
 			}
-			return this.delegates.get(this.delegates.size() - 1).convert(source, sourceType, targetType);
+			throw (failure != null) ? failure : new ConverterNotFoundException(sourceType, targetType);
 		}
 
 	}
