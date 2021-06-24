@@ -72,8 +72,9 @@ public class PublishToCentralCommand implements Command {
 		byte[] content = Files.readAllBytes(new File(buildInfoLocation).toPath());
 		BuildInfoResponse buildInfoResponse = this.objectMapper.readValue(content, BuildInfoResponse.class);
 		BuildInfo buildInfo = buildInfoResponse.getBuildInfo();
+		ReleaseInfo releaseInfo = ReleaseInfo.from(buildInfo);
 		String artifactsLocation = nonOptionArgs.get(3);
-		this.sonatype.publish(ReleaseInfo.from(buildInfo), new File(artifactsLocation).toPath());
+		this.sonatype.publish(releaseInfo, new File(artifactsLocation).toPath());
 	}
 
 }
