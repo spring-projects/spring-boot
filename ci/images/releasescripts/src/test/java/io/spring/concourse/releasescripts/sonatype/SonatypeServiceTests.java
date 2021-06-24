@@ -74,29 +74,23 @@ class SonatypeServiceTests {
 	}
 
 	@Test
-	void artifactsPublishedWhenPublishedShouldReturnTrue() {
+	void publishWhenAlreadyPublishedShouldNotPublish() {
 		this.server.expect(requestTo(String.format(
 				"/service/local/repositories/releases/content/org/springframework/boot/spring-boot/%s/spring-boot-%s.jar.sha1",
 				"1.1.0.RELEASE", "1.1.0.RELEASE"))).andExpect(method(HttpMethod.GET))
 				.andRespond(withSuccess().body("ce8d8b6838ecceb68962b9150b18682f4237ccf71".getBytes()));
-		boolean published = this.service.artifactsPublished(getReleaseInfo());
-		assertThat(published).isTrue();
-		this.server.verify();
-	}
-
-	@Test
-	void artifactsPublishedWhenNotPublishedShouldReturnFalse() {
-		this.server.expect(requestTo(String.format(
-				"/service/local/repositories/releases/content/org/springframework/boot/spring-boot/%s/spring-boot-%s.jar.sha1",
-				"1.1.0.RELEASE", "1.1.0.RELEASE"))).andExpect(method(HttpMethod.GET))
-				.andRespond(withStatus(HttpStatus.NOT_FOUND));
-		boolean published = this.service.artifactsPublished(getReleaseInfo());
-		assertThat(published).isFalse();
+		Path artifactsRoot = new File("src/test/resources/io/spring/concourse/releasescripts/sonatype/artifactory-repo")
+				.toPath();
+		this.service.publish(getReleaseInfo(), artifactsRoot);
 		this.server.verify();
 	}
 
 	@Test
 	void publishWithSuccessfulClose() throws IOException {
+		this.server.expect(requestTo(String.format(
+				"/service/local/repositories/releases/content/org/springframework/boot/spring-boot/%s/spring-boot-%s.jar.sha1",
+				"1.1.0.RELEASE", "1.1.0.RELEASE"))).andExpect(method(HttpMethod.GET))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.server.expect(requestTo("/service/local/staging/profiles/1a2b3c4d/start"))
 				.andExpect(method(HttpMethod.POST)).andExpect(header("Content-Type", "application/json"))
 				.andExpect(header("Accept", "application/json, application/*+json"))
@@ -145,6 +139,10 @@ class SonatypeServiceTests {
 
 	@Test
 	void publishWithCloseFailureDueToRuleViolations() throws IOException {
+		this.server.expect(requestTo(String.format(
+				"/service/local/repositories/releases/content/org/springframework/boot/spring-boot/%s/spring-boot-%s.jar.sha1",
+				"1.1.0.RELEASE", "1.1.0.RELEASE"))).andExpect(method(HttpMethod.GET))
+				.andRespond(withStatus(HttpStatus.NOT_FOUND));
 		this.server.expect(requestTo("/service/local/staging/profiles/1a2b3c4d/start"))
 				.andExpect(method(HttpMethod.POST)).andExpect(header("Content-Type", "application/json"))
 				.andExpect(header("Accept", "application/json, application/*+json"))

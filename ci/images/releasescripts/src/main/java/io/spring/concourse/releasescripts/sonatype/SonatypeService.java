@@ -89,11 +89,30 @@ public class SonatypeService {
 	}
 
 	/**
-	 * Checks if artifacts are already published to Maven Central.
-	 * @return true if artifacts are published
+	 * Publishes the release by creating a staging repository and deploying to it the
+	 * artifacts at the given {@code artifactsRoot}. The repository is then closed and,
+	 * upon successfully closure, it is released.
 	 * @param releaseInfo the release information
+	 * @param artifactsRoot the root directory of the artifacts to stage
 	 */
-	public boolean artifactsPublished(ReleaseInfo releaseInfo) {
+	public void publish(ReleaseInfo releaseInfo, Path artifactsRoot) {
+		if (artifactsPublished(releaseInfo)) {
+			return;
+		}
+		logger.info("Creating staging repository");
+		String buildId = releaseInfo.getBuildNumber();
+		String repositoryId = createStagingRepository(buildId);
+		Collection<DeployableArtifact> artifacts = this.artifactCollector.collectArtifacts(artifactsRoot);
+		logger.info("Staging repository {} created. Deploying {} artifacts", repositoryId, artifacts.size());
+		deploy(artifacts, repositoryId);
+		logger.info("Deploy complete. Closing staging repository");
+		close(repositoryId);
+		logger.info("Staging repository closed");
+		release(repositoryId, buildId);
+		logger.info("Staging repository released");
+	}
+
+	private boolean artifactsPublished(ReleaseInfo releaseInfo) {
 		try {
 			ResponseEntity<?> entity = this.restTemplate
 					.getForEntity(String.format(NEXUS_REPOSITORY_PATH + "%s/spring-boot-%s.jar.sha1",
@@ -107,27 +126,6 @@ public class SonatypeService {
 
 		}
 		return false;
-	}
-
-	/**
-	 * Publishes the release by creating a staging repository and deploying to it the
-	 * artifacts at the given {@code artifactsRoot}. The repository is then closed and,
-	 * upon successfully closure, it is released.
-	 * @param releaseInfo the release information
-	 * @param artifactsRoot the root directory of the artifacts to stage
-	 */
-	public void publish(ReleaseInfo releaseInfo, Path artifactsRoot) {
-		logger.info("Creating staging repository");
-		String buildId = releaseInfo.getBuildNumber();
-		String repositoryId = createStagingRepository(buildId);
-		Collection<DeployableArtifact> artifacts = this.artifactCollector.collectArtifacts(artifactsRoot);
-		logger.info("Staging repository {} created. Deploying {} artifacts", repositoryId, artifacts.size());
-		deploy(artifacts, repositoryId);
-		logger.info("Deploy complete. Closing staging repository");
-		close(repositoryId);
-		logger.info("Staging repository closed");
-		release(repositoryId, buildId);
-		logger.info("Staging repository released");
 	}
 
 	private String createStagingRepository(String buildId) {
