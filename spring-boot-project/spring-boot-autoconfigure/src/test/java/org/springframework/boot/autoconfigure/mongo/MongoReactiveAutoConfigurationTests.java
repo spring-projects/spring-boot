@@ -26,6 +26,7 @@ import com.mongodb.connection.StreamFactory;
 import com.mongodb.connection.StreamFactoryFactory;
 import com.mongodb.connection.netty.NettyStreamFactoryFactory;
 import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
 import io.netty.channel.EventLoopGroup;
 import org.junit.jupiter.api.Test;
 
@@ -111,8 +112,8 @@ class MongoReactiveAutoConfigurationTests {
 	}
 
 	private MongoClientSettings getSettings(ApplicationContext context) {
-		MongoClient client = context.getBean(MongoClient.class);
-		return (MongoClientSettings) ReflectionTestUtils.getField(client, "settings");
+		MongoClientImpl client = (MongoClientImpl) context.getBean(MongoClient.class);
+		return client.getSettings();
 	}
 
 	@Configuration(proxyBeanMethods = false)

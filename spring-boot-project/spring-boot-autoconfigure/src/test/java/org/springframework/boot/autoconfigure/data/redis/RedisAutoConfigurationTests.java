@@ -207,8 +207,7 @@ class RedisAutoConfigurationTests {
 				.run((context) -> {
 					LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 					assertThat(cf.getHostName()).isEqualTo("foo");
-					assertThat(ReflectionTestUtils.getField(cf, "clientConfiguration"))
-							.isNotInstanceOf(LettucePoolingClientConfiguration.class);
+					assertThat(cf.getClientConfiguration()).isNotInstanceOf(LettucePoolingClientConfiguration.class);
 				});
 	}
 
@@ -439,7 +438,7 @@ class RedisAutoConfigurationTests {
 	}
 
 	private LettucePoolingClientConfiguration getPoolingClientConfiguration(LettuceConnectionFactory factory) {
-		return (LettucePoolingClientConfiguration) ReflectionTestUtils.getField(factory, "clientConfiguration");
+		return (LettucePoolingClientConfiguration) factory.getClientConfiguration();
 	}
 
 	private String getUserName(LettuceConnectionFactory factory) {

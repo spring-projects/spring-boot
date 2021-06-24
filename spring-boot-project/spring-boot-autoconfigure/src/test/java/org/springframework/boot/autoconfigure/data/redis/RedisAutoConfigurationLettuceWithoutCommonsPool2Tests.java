@@ -23,7 +23,6 @@ import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.boot.testsupport.classpath.ClassPathExclusions;
 import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
 import org.springframework.data.redis.connection.lettuce.LettucePoolingClientConfiguration;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -43,8 +42,7 @@ public class RedisAutoConfigurationLettuceWithoutCommonsPool2Tests {
 		this.contextRunner.withPropertyValues("spring.redis.host:foo").run((context) -> {
 			LettuceConnectionFactory cf = context.getBean(LettuceConnectionFactory.class);
 			assertThat(cf.getHostName()).isEqualTo("foo");
-			assertThat(ReflectionTestUtils.getField(cf, "clientConfiguration"))
-					.isNotInstanceOf(LettucePoolingClientConfiguration.class);
+			assertThat(cf.getClientConfiguration()).isNotInstanceOf(LettucePoolingClientConfiguration.class);
 		});
 	}
 

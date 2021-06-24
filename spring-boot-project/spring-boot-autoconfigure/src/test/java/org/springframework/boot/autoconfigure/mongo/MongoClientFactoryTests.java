@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,8 +20,7 @@ import java.util.List;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.client.MongoClient;
-
-import org.springframework.test.util.ReflectionTestUtils;
+import com.mongodb.client.internal.MongoClientImpl;
 
 /**
  * Tests for {@link MongoClientFactory}.
@@ -42,7 +41,7 @@ class MongoClientFactoryTests extends MongoClientFactorySupportTests<MongoClient
 
 	@Override
 	protected MongoClientSettings getClientSettings(MongoClient client) {
-		return (MongoClientSettings) ReflectionTestUtils.getField(client, "settings");
+		return ((MongoClientImpl) client).getSettings();
 	}
 
 }
