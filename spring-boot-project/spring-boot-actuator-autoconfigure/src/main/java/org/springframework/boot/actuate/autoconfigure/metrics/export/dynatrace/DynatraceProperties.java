@@ -16,12 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
+import java.util.Map;
+
 import io.micrometer.dynatrace.DynatraceApiVersion;
+
 import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryProperties;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-
-import java.util.Collections;
-import java.util.Map;
 
 /**
  * {@link ConfigurationProperties @ConfigurationProperties} for configuring Dynatrace
@@ -142,7 +142,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	public String getMetricKeyPrefix() {
-		return metricKeyPrefix;
+		return this.metricKeyPrefix;
 	}
 
 	public void setMetricKeyPrefix(String metricKeyPrefix) {
@@ -150,7 +150,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	public Boolean getEnrichWithOneAgentMetadata() {
-		return enrichWithOneAgentMetadata;
+		return this.enrichWithOneAgentMetadata;
 	}
 
 	public void setEnrichWithOneAgentMetadata(Boolean enrichWithOneAgentMetadata) {
@@ -158,7 +158,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	public Map<String, String> getDefaultDimensions() {
-		return defaultDimensions;
+		return this.defaultDimensions;
 	}
 
 	public void setDefaultDimensions(Map<String, String> defaultDimensions) {
@@ -166,7 +166,7 @@ public class DynatraceProperties extends StepRegistryProperties {
 	}
 
 	public DynatraceApiVersion getApiVersion() {
-		return apiVersion;
+		return this.apiVersion;
 	}
 
 	public void setApiVersion(DynatraceApiVersion apiVersion) {

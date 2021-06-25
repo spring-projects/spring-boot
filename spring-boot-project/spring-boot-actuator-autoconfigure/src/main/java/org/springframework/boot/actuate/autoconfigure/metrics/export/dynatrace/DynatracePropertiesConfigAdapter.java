@@ -16,11 +16,12 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
+import java.util.Map;
+
 import io.micrometer.dynatrace.DynatraceApiVersion;
 import io.micrometer.dynatrace.DynatraceConfig;
-import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
-import java.util.Map;
+import org.springframework.boot.actuate.autoconfigure.metrics.export.properties.StepRegistryPropertiesConfigAdapter;
 
 /**
  * Adapter to convert {@link DynatraceProperties} to a {@link DynatraceConfig}.

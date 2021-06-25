@@ -16,12 +16,10 @@
 
 package org.springframework.boot.actuate.autoconfigure.metrics.export.dynatrace;
 
-import io.micrometer.dynatrace.DynatraceApiVersion;
-import io.micrometer.dynatrace.DynatraceConfig;
-import org.junit.jupiter.api.Test;
-
 import java.util.HashMap;
-import java.util.Map;
+
+import io.micrometer.dynatrace.DynatraceApiVersion;
+import org.junit.jupiter.api.Test;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
