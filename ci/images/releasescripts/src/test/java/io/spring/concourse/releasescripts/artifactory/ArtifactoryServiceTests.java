@@ -98,6 +98,17 @@ class ArtifactoryServiceTests {
 	}
 
 	@Test
+	void promoteWhenCheckForArtifactsAlreadyPromotedReturnsNoStatus() {
+		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
+				.andRespond(withStatus(HttpStatus.CONFLICT));
+		this.server.expect(requestTo("https://repo.spring.io/api/build/example-build/example-build-1"))
+				.andRespond(withJsonFrom("no-status-build-info-response.json"));
+		assertThatExceptionOfType(HttpClientErrorException.class)
+				.isThrownBy(() -> this.service.promote("libs-milestone-local", getReleaseInfo()));
+		this.server.verify();
+	}
+
+	@Test
 	void promoteWhenPromotionFails() {
 		this.server.expect(requestTo("https://repo.spring.io/api/build/promote/example-build/example-build-1"))
 				.andRespond(withStatus(HttpStatus.CONFLICT));
