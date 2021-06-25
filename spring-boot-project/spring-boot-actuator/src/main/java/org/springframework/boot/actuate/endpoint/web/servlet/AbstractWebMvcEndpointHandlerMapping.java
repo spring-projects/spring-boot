@@ -372,7 +372,7 @@ public abstract class AbstractWebMvcEndpointHandlerMapping extends RequestMappin
 		}
 
 		@ResponseBody
-		Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, String> body) {
+		Object handle(HttpServletRequest request, @RequestBody(required = false) Map<String, Object> body) {
 			return this.operation.handle(request, body);
 		}
 
