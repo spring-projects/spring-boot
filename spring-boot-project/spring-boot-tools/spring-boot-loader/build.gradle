@@ -6,10 +6,6 @@ plugins {
 
 description = "Spring Boot Loader"
 
-toolchain {
-	testJvmArgs.add("--add-opens=java.base/java.util.zip=ALL-UNNAMED")
-}
-
 dependencies {
 	compileOnly("org.springframework:spring-core")
 
