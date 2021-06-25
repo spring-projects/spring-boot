@@ -81,7 +81,7 @@ class DynatracePropertiesConfigAdapter extends StepRegistryPropertiesConfigAdapt
 	}
 
 	@Override
-	public Boolean enrichWithOneAgentMetadata() {
+	public boolean enrichWithOneAgentMetadata() {
 		return get(DynatraceProperties::getEnrichWithOneAgentMetadata,
 				DynatraceConfig.super::enrichWithOneAgentMetadata);
 	}

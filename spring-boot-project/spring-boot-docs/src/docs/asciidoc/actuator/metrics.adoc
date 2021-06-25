@@ -150,6 +150,7 @@ You can also change the interval at which metrics are sent to Datadog:
 
 Dynatrace offers two metrics ingest APIs, both of which are implemented for {micrometer-registry-docs}/dynatrace[Micrometer]:
 
+[[actuator.metrics.export.dynatrace.api-v2]]
 ===== API v2
 
 The API v2 can be used in two ways:
@@ -204,6 +205,7 @@ If tags with the same key are specified using Micrometer, they overwrite the def
 	          key2: "value2"
 ----
 
+[[actuator.metrics.export.dynatrace.api-v1]]
 ===== API v1 (Legacy)
 
 The Dynatrace API v1 registry pushes metrics to the configured URI periodically using the https://www.dynatrace.com/support/help/dynatrace-api/environment-api/metric-v1/[Timeseries API v1].
@@ -224,6 +226,7 @@ The API v1 endpoint path will be added automatically.
 	        api-token: "YOUR_TOKEN" # should be read from a secure property source
 ----
 
+[[actuator.metrics.export.dynatrace.version-independent-settings]]
 ===== Version-independent settings
 
 You can also change the interval at which metrics are sent to Dynatrace (works for both API versions).
