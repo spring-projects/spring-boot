@@ -1785,7 +1785,7 @@
     },
     {
       "name": "spring.netty.leak-detection",
-      "defaultValue": "disabled"
+      "defaultValue": "simple"
     }
   ],
   "hints": [
