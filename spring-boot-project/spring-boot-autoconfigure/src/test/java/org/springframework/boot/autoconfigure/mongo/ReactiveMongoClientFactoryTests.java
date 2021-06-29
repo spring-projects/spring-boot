@@ -20,8 +20,7 @@ import java.util.List;
 
 import com.mongodb.MongoClientSettings;
 import com.mongodb.reactivestreams.client.MongoClient;
-
-import org.springframework.test.util.ReflectionTestUtils;
+import com.mongodb.reactivestreams.client.internal.MongoClientImpl;
 
 /**
  * Tests for {@link ReactiveMongoClientFactory}.
@@ -40,7 +39,7 @@ class ReactiveMongoClientFactoryTests extends MongoClientFactorySupportTests<Mon
 
 	@Override
 	protected MongoClientSettings getClientSettings(MongoClient client) {
-		return (MongoClientSettings) ReflectionTestUtils.getField(client, "settings");
+		return ((MongoClientImpl) client).getSettings();
 	}
 
 }
