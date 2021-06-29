@@ -105,7 +105,7 @@ For instance, if you use the {tomcat-docs}/jdbc-pool.html#Common_Attributes[Tomc
 	      test-on-borrow: true
 ----
 
-This will set the pool to wait 10000ms before throwing an exception if no connection is available, limit the maximum number of connections to 50ms and validate the connection before borrowing it from the pool.
+This will set the pool to wait 10000ms before throwing an exception if no connection is available, limit the maximum number of connections to 50 and validate the connection before borrowing it from the pool.
 
 
 
