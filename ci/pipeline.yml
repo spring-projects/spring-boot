@@ -77,6 +77,9 @@ anchors:
     username: ((github-username))
     password: ((github-password))
     branch: main
+  gradle-publish-params: &gradle-publish-params
+    gradle_publish_key: ((gradle-publish-key))
+    gradle_publish_secret: ((gradle-publish-secret))
 resource_types:
 - name: artifactory-resource
   type: registry-image
@@ -591,6 +594,21 @@ jobs:
       RELEASE_TYPE: RELEASE
       <<: *artifactory-task-params
       <<: *sonatype-task-params
+- name: publish-gradle-plugin
+  serial: true
+  plan:
+    - get: ci-image
+    - get: git-repo
+    - get: artifactory-repo
+      passed: [promote-release]
+      params:
+        download_artifacts: false
+        save_build_info: true
+    - task: publish-gradle-plugin
+      image: ci-image
+      file: git-repo/ci/tasks/publish-gradle-plugin.yml
+      params:
+        <<: *gradle-publish-params
 - name: create-github-release
   serial: true
   plan:
@@ -654,7 +672,7 @@ groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk16-build", "windows-build"]
 - name: "releases"
-  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-to-sdkman", "update-homebrew-tap"]
+  jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-gradle-plugin", "publish-to-sdkman", "update-homebrew-tap"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
