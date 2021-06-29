@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -33,7 +33,6 @@ import org.springframework.http.converter.smile.MappingJackson2SmileHttpMessageC
 import org.springframework.http.converter.support.AllEncompassingFormHttpMessageConverter;
 import org.springframework.http.converter.xml.MappingJackson2XmlHttpMessageConverter;
 import org.springframework.http.converter.xml.SourceHttpMessageConverter;
-import org.springframework.test.util.ReflectionTestUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.Mockito.mock;
@@ -143,10 +142,9 @@ class HttpMessageConvertersTests {
 				MappingJackson2HttpMessageConverter.class, MappingJackson2SmileHttpMessageConverter.class);
 	}
 
-	@SuppressWarnings("unchecked")
 	private List<HttpMessageConverter<?>> extractFormPartConverters(List<HttpMessageConverter<?>> converters) {
 		AllEncompassingFormHttpMessageConverter formConverter = findFormConverter(converters);
-		return (List<HttpMessageConverter<?>>) ReflectionTestUtils.getField(formConverter, "partConverters");
+		return formConverter.getPartConverters();
 	}
 
 	private AllEncompassingFormHttpMessageConverter findFormConverter(Collection<HttpMessageConverter<?>> converters) {

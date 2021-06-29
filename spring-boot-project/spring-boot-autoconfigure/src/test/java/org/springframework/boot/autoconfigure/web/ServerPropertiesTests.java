@@ -42,7 +42,7 @@ import org.apache.tomcat.util.net.AbstractEndpoint;
 import org.eclipse.jetty.server.HttpChannel;
 import org.eclipse.jetty.server.Request;
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.util.thread.ThreadPool;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 import org.junit.jupiter.api.Test;
 import reactor.netty.http.HttpDecoderSpec;
 import reactor.netty.http.server.HttpRequestDecoderSpec;
@@ -422,11 +422,11 @@ class ServerPropertiesTests {
 	void jettyThreadPoolPropertyDefaultsShouldMatchServerDefault() {
 		JettyServletWebServerFactory jettyFactory = new JettyServletWebServerFactory(0);
 		JettyWebServer jetty = (JettyWebServer) jettyFactory.getWebServer();
-		Server server = (Server) ReflectionTestUtils.getField(jetty, "server");
-		ThreadPool threadPool = (ThreadPool) ReflectionTestUtils.getField(server, "_threadPool");
-		int idleTimeout = (int) ReflectionTestUtils.getField(threadPool, "_idleTimeout");
-		int maxThreads = (int) ReflectionTestUtils.getField(threadPool, "_maxThreads");
-		int minThreads = (int) ReflectionTestUtils.getField(threadPool, "_minThreads");
+		Server server = jetty.getServer();
+		QueuedThreadPool threadPool = (QueuedThreadPool) server.getThreadPool();
+		int idleTimeout = threadPool.getIdleTimeout();
+		int maxThreads = threadPool.getMaxThreads();
+		int minThreads = threadPool.getMinThreads();
 		assertThat(this.properties.getJetty().getThreads().getIdleTimeout().toMillis()).isEqualTo(idleTimeout);
 		assertThat(this.properties.getJetty().getThreads().getMax()).isEqualTo(maxThreads);
 		assertThat(this.properties.getJetty().getThreads().getMin()).isEqualTo(minThreads);
