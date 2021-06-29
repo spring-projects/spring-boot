@@ -53,7 +53,7 @@ Also be aware that Spring Boot's own API is {github-issues}10712[not yet annotat
 
 
 
-[[features.kotlin.api.?run-application]]
+[[features.kotlin.api.run-application]]
 ==== runApplication
 Spring Boot provides an idiomatic way to run an application with `runApplication<MyApplication>(*args)` as shown in the following example:
 
