@@ -6,6 +6,7 @@ pipeline{
             steps {
                 sh 'mvn --version'
                 sh 'mvn --version'
+                https://github.com/Gurureddy8297/spring-boot-1.git
             }
         }
     }
