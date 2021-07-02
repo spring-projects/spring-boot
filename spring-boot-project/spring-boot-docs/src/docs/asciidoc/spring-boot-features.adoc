@@ -3099,8 +3099,8 @@ The `ObjectMapper` is customized by setting the various `spring.jackson.*` prope
 You can take control of Spring HATEOAS's configuration by using `@EnableHypermediaSupport`.
 Note that doing so disables the `ObjectMapper` customization described earlier.
 
-NOTE: Spring Boot only supports Spring HATEOAS with Spring MVC.
-Adding Spring HATEOAS to a Spring Boot application with Spring WebFlux can cause the application to fail.
+WARNING: `spring-boot-starter-hateoas` is specific to Spring MVC and should not be combined with Spring WebFlux.
+In order to use Spring HATEOAS with Spring WebFlux, you can add a direct dependency on `org.springframework.hateoas:spring-hateoas` along with `spring-boot-starter-webflux`.
 
 
 
