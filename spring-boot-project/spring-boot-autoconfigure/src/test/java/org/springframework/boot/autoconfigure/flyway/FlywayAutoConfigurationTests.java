@@ -43,6 +43,7 @@ import org.mockito.InOrder;
 
 import org.springframework.beans.factory.BeanCreationException;
 import org.springframework.beans.factory.config.BeanDefinition;
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceProperties;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -210,6 +211,15 @@ class FlywayAutoConfigurationTests {
 			assertThat(context.getBean(Flyway.class).getConfiguration().getDataSource())
 					.isEqualTo(context.getBean("flywayDataSource"));
 		});
+	}
+
+	@Test
+	void flywayMigrationWithLazyInitialization() {
+		this.contextRunner
+				.withUserConfiguration(EmbeddedDataSourceConfiguration.class, MockFlywayMigrationStrategy.class)
+				.withInitializer((context) -> context
+						.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
+				.run((context) -> context.getBean(MockFlywayMigrationStrategy.class).assertCalled());
 	}
 
 	@Test

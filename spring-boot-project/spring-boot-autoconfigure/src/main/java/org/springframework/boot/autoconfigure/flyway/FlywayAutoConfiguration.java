@@ -55,6 +55,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Conditional;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.convert.TypeDescriptor;
 import org.springframework.core.convert.converter.GenericConverter;
 import org.springframework.core.io.ResourceLoader;
@@ -329,6 +330,7 @@ public class FlywayAutoConfiguration {
 		}
 
 		@Bean
+		@Lazy(false)
 		@ConditionalOnMissingBean
 		public FlywayMigrationInitializer flywayInitializer(Flyway flyway,
 				ObjectProvider<FlywayMigrationStrategy> migrationStrategy) {
