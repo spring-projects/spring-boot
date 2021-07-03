@@ -38,6 +38,7 @@ import org.springframework.boot.context.properties.EnableConfigurationProperties
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.jdbc.datasource.init.DatabasePopulator;
 import org.springframework.util.StringUtils;
@@ -106,6 +107,7 @@ public class BatchAutoConfiguration {
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
+		@Lazy(false)
 		@ConditionalOnMissingBean
 		BatchDataSourceInitializer batchDataSourceInitializer(DataSource dataSource,
 				@BatchDataSource ObjectProvider<DataSource> batchDataSource, ResourceLoader resourceLoader,

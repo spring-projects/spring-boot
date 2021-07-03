@@ -41,6 +41,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.DefaultApplicationArguments;
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -89,6 +90,15 @@ class BatchAutoConfigurationTests {
 					assertThat(new JdbcTemplate(context.getBean(DataSource.class))
 							.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty();
 				});
+	}
+
+	@Test
+	void testDataSourceIsInitializedWithLazyInitialization() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withInitializer((context) -> context
+						.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
+				.run((context) -> assertThat(new JdbcTemplate(context.getBean(DataSource.class))
+						.queryForList("select * from BATCH_JOB_EXECUTION")).isEmpty());
 	}
 
 	@Test
