@@ -234,6 +234,7 @@ class DurationStyleTests {
 	void printSimpleWithUnitShouldPrintInUnit() {
 		Duration duration = Duration.ofMillis(1000);
 		assertThat(DurationStyle.SIMPLE.print(duration, ChronoUnit.SECONDS)).isEqualTo("1s");
+		assertThat(DurationStyle.SIMPLE.print(Duration.ofNanos(2000), ChronoUnit.MICROS)).isEqualTo("2us");
 	}
 
 }
