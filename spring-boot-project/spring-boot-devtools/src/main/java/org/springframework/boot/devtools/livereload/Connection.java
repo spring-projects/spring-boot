@@ -23,7 +23,6 @@ import java.net.Socket;
 import java.net.SocketTimeoutException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,7 +43,8 @@ class Connection {
 
 	private static final Log logger = LogFactory.getLog(Connection.class);
 
-	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile("^sec-websocket-key:(.*)$", Pattern.MULTILINE);
+	private static final Pattern WEBSOCKET_KEY_PATTERN = Pattern.compile("^sec-websocket-key:(.*)$",
+			Pattern.MULTILINE | Pattern.CASE_INSENSITIVE);
 
 	public static final String WEBSOCKET_GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
@@ -73,7 +73,7 @@ class Connection {
 		this.outputStream = new ConnectionOutputStream(outputStream);
 		String header = this.inputStream.readHeader();
 		logger.debug(LogMessage.format("Established livereload connection [%s]", header));
-		this.header = header.toLowerCase(Locale.ENGLISH);
+		this.header = header;
 	}
 
 	/**
@@ -81,10 +81,11 @@ class Connection {
 	 * @throws Exception in case of errors
 	 */
 	void run() throws Exception {
-		if (this.header.contains("upgrade: websocket") && this.header.contains("sec-websocket-version: 13")) {
+		String lowerCaseHeader = this.header.toLowerCase();
+		if (lowerCaseHeader.contains("upgrade: websocket") && lowerCaseHeader.contains("sec-websocket-version: 13")) {
 			runWebSocket();
 		}
-		if (this.header.contains("get /livereload.js")) {
+		if (lowerCaseHeader.contains("get /livereload.js")) {
 			this.outputStream.writeHttp(getClass().getResourceAsStream("livereload.js"), "text/javascript");
 		}
 	}
