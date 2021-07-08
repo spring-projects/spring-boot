@@ -34,6 +34,7 @@ import org.springframework.mock.env.MockEnvironment;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatIllegalStateException;
+import static org.assertj.core.api.Assertions.assertThatNoException;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 
@@ -149,6 +150,12 @@ public class StandardConfigDataLocationResolverTests {
 				filePath("src", "test", "resources", "config", "0-empty", "testproperties.properties"),
 				filePath("src", "test", "resources", "config", "1-first", "testproperties.properties"),
 				filePath("src", "test", "resources", "config", "2-second", "testproperties.properties"));
+	}
+
+	@Test
+	void resolveWhenLocationIsWildcardAndMatchingFilePresentShouldNotFail() {
+		ConfigDataLocation location = ConfigDataLocation.of("optional:file:src/test/resources/a-file/*/");
+		assertThatNoException().isThrownBy(() -> this.resolver.resolve(this.context, location));
 	}
 
 	@Test

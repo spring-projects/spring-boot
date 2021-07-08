@@ -710,6 +710,18 @@ class ConfigDataEnvironmentPostProcessorIntegrationTests {
 	}
 
 	@Test
+	void runWhenOptionalWildcardLocationDoesNotExistDoesNotThrowException() {
+		assertThatNoException().isThrownBy(() -> this.application.run(
+				"--spring.config.location=optional:file:src/test/resources/nonexistent/*/testproperties.properties"));
+	}
+
+	@Test
+	void runWhenMandatoryWildcardLocationDoesNotExistThrowsException() {
+		assertThatExceptionOfType(ConfigDataLocationNotFoundException.class).isThrownBy(() -> this.application
+				.run("--spring.config.location=file:src/test/resources/nonexistent/*/testproperties.properties"));
+	}
+
+	@Test
 	void runWhenMandatoryWildcardLocationHasEmptyFileDirectory() {
 		assertThatNoException()
 				.isThrownBy(() -> this.application.run("--spring.config.location=file:src/test/resources/config/*/"));
