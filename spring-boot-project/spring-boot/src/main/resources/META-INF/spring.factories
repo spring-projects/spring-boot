@@ -85,7 +85,8 @@ org.springframework.boot.flyway.FlywayDatabaseInitializerDetector,\
 org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializerDetector,\
 org.springframework.boot.liquibase.LiquibaseDatabaseInitializerDetector,\
 org.springframework.boot.orm.jpa.JpaDatabaseInitializerDetector,\
-org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector
+org.springframework.boot.r2dbc.init.R2dbcScriptDatabaseInitializerDetector,\
+org.springframework.boot.jdbc.AbstractDataSourceInitializerDatabaseInitializerDetector
 
 # Depends On Database Initialization Detectors
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
