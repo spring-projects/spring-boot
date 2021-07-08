@@ -40,10 +40,10 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.springframework.boot.buildpack.platform.docker.DockerApi;
 import org.springframework.boot.buildpack.platform.docker.type.ImageName;
 import org.springframework.boot.buildpack.platform.docker.type.ImageReference;
-import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
-import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
 import org.springframework.boot.image.assertions.ImageAssertions;
 import org.springframework.boot.image.junit.GradleBuildInjectionExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
 import org.springframework.util.StringUtils;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -253,7 +253,7 @@ class PaketoBuilderTests {
 		}
 	}
 
-	public BuildResult buildImage(String imageName, String... arguments) {
+	private BuildResult buildImage(String imageName, String... arguments) {
 		String[] buildImageArgs = { "bootBuildImage", "--imageName=" + imageName, "--pullPolicy=IF_NOT_PRESENT" };
 		String[] args = StringUtils.concatenateStringArrays(arguments, buildImageArgs);
 		return this.gradleBuild.build(args);
