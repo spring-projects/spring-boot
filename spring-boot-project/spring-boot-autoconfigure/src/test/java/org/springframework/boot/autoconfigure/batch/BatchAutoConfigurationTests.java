@@ -41,6 +41,7 @@ import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.DefaultApplicationArguments;
+import org.springframework.boot.LazyInitializationBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
@@ -145,6 +146,21 @@ class BatchAutoConfigurationTests {
 		this.contextRunner
 				.withUserConfiguration(NamedJobConfigurationWithRegisteredJob.class,
 						EmbeddedDataSourceConfiguration.class)
+				.withPropertyValues("spring.batch.job.names:discreteRegisteredJob").run((context) -> {
+					assertThat(context).hasSingleBean(JobLauncher.class);
+					context.getBean(JobLauncherApplicationRunner.class).run();
+					assertThat(context.getBean(JobRepository.class).getLastJobExecution("discreteRegisteredJob",
+							new JobParameters())).isNotNull();
+				});
+	}
+
+	@Test
+	void testDefinesAndLaunchesNamedJobWithLazyInitialization() {
+		this.contextRunner
+				.withUserConfiguration(NamedJobConfigurationWithRegisteredJob.class,
+						EmbeddedDataSourceConfiguration.class)
+				.withInitializer((context) -> context
+						.addBeanFactoryPostProcessor(new LazyInitializationBeanFactoryPostProcessor()))
 				.withPropertyValues("spring.batch.job.names:discreteRegisteredJob").run((context) -> {
 					assertThat(context).hasSingleBean(JobLauncher.class);
 					context.getBean(JobLauncherApplicationRunner.class).run();
