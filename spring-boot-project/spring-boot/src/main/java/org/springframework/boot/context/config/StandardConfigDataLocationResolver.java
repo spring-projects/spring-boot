@@ -258,7 +258,9 @@ public class StandardConfigDataLocationResolver
 			Set<StandardConfigDataReference> references) {
 		Set<StandardConfigDataResource> empty = new LinkedHashSet<>();
 		for (StandardConfigDataReference reference : references) {
-			empty.addAll(resolveEmptyDirectories(reference));
+			if (reference.getDirectory() != null) {
+				empty.addAll(resolveEmptyDirectories(reference));
+			}
 		}
 		return empty;
 	}
