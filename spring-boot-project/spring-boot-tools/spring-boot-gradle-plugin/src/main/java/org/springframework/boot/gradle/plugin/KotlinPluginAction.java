@@ -20,6 +20,7 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.plugins.ExtraPropertiesExtension;
 import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapper;
+import org.jetbrains.kotlin.gradle.plugin.KotlinPluginWrapperKt;
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile;
 
 /**
@@ -41,9 +42,8 @@ class KotlinPluginAction implements PluginApplicationAction {
 		enableJavaParametersOption(project);
 	}
 
-	@SuppressWarnings("deprecation")
 	private String getKotlinVersion(Project project) {
-		return project.getPlugins().getPlugin(KotlinPluginWrapper.class).getKotlinPluginVersion();
+		return KotlinPluginWrapperKt.getKotlinPluginVersion(project);
 	}
 
 	private void enableJavaParametersOption(Project project) {
