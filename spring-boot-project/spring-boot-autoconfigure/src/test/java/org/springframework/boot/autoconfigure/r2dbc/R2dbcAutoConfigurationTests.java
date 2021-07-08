@@ -28,6 +28,7 @@ import io.r2dbc.h2.H2ConnectionFactory;
 import io.r2dbc.pool.ConnectionPool;
 import io.r2dbc.pool.PoolMetrics;
 import io.r2dbc.spi.ConnectionFactory;
+import io.r2dbc.spi.ConnectionFactoryProvider;
 import io.r2dbc.spi.Option;
 import io.r2dbc.spi.Wrapped;
 import org.assertj.core.api.InstanceOfAssertFactories;
@@ -253,6 +254,14 @@ class R2dbcAutoConfigurationTests {
 			assertThat(context).getFailure().isInstanceOf(BeanCreationException.class)
 					.hasMessageContaining("Failed to determine a suitable R2DBC Connection URL");
 		});
+	}
+
+	@Test
+	void configureWithoutUrlAndNoConnectionFactoryProviderBacksOff() {
+		this.contextRunner
+				.withClassLoader(new FilteredClassLoader(
+						("META-INF/services/" + ConnectionFactoryProvider.class.getName())::equals))
+				.run((context) -> assertThat(context).doesNotHaveBean(R2dbcAutoConfiguration.class));
 	}
 
 	@Test

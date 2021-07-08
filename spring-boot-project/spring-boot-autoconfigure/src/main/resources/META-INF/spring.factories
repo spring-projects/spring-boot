@@ -165,6 +165,7 @@ org.springframework.boot.autoconfigure.jdbc.DataSourceBeanCreationFailureAnalyze
 org.springframework.boot.autoconfigure.jdbc.HikariDriverConfigurationFailureAnalyzer,\
 org.springframework.boot.autoconfigure.jooq.NoDslContextBeanFailureAnalyzer,\
 org.springframework.boot.autoconfigure.r2dbc.ConnectionFactoryBeanCreationFailureAnalyzer,\
+org.springframework.boot.autoconfigure.r2dbc.NoConnectionFactoryBeanFailureAnalyzer,\
 org.springframework.boot.autoconfigure.session.NonUniqueSessionRepositoryFailureAnalyzer
 
 # Template availability providers
