@@ -89,7 +89,9 @@ class EmbeddedDatabaseConnectionTests {
 		assertThatIllegalArgumentException()
 				.isThrownBy(() -> EmbeddedDatabaseConnection
 						.isEmbedded(ConnectionFactories.get("r2dbc:pool:h2:mem:///" + UUID.randomUUID())))
-				.withMessage("Cannot determine database's type as ConnectionFactory is not options-capable");
+				.withMessage("Cannot determine database's type as ConnectionFactory is not options-capable. To be "
+						+ "options-capable, a ConnectionFactory should be created with "
+						+ "org.springframework.boot.r2dbc.ConnectionFactoryBuilder");
 	}
 
 	static Stream<Arguments> urlParameters() {
