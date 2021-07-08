@@ -101,7 +101,9 @@ public enum EmbeddedDatabaseConnection {
 		OptionsCapableConnectionFactory optionsCapable = OptionsCapableConnectionFactory.unwrapFrom(connectionFactory);
 		if (optionsCapable == null) {
 			throw new IllegalArgumentException(
-					"Cannot determine database's type as ConnectionFactory is not options-capable");
+					"Cannot determine database's type as ConnectionFactory is not options-capable. To be "
+							+ "options-capable, a ConnectionFactory should be created with "
+							+ ConnectionFactoryBuilder.class.getName());
 		}
 		ConnectionFactoryOptions options = optionsCapable.getOptions();
 		for (EmbeddedDatabaseConnection candidate : values()) {
