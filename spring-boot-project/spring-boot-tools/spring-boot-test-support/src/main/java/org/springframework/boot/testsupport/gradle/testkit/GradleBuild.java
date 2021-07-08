@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.testkit;
+package org.springframework.boot.testsupport.gradle.testkit;
 
 import java.io.File;
 import java.io.FileReader;
@@ -74,7 +74,11 @@ public class GradleBuild {
 
 	private String script;
 
+	private String settings;
+
 	private String gradleVersion;
+
+	private String springBootVersion = "TEST-SNAPSHOT";
 
 	private GradleVersion expectDeprecationWarnings;
 
@@ -84,8 +88,6 @@ public class GradleBuild {
 
 	public GradleBuild() {
 		this(Dsl.GROOVY);
-		this.scriptProperties.put("bootVersion", getBootVersion());
-		this.scriptProperties.put("dependencyManagementPluginVersion", getDependencyManagementPluginVersion());
 	}
 
 	public GradleBuild(Dsl dsl) {
@@ -133,6 +135,10 @@ public class GradleBuild {
 		return this;
 	}
 
+	public void settings(String settings) {
+		this.settings = settings;
+	}
+
 	public GradleBuild expectDeprecationWarningsWithAtLeastVersion(String gradleVersion) {
 		this.expectDeprecationWarnings = GradleVersion.version(gradleVersion);
 		return this;
@@ -173,12 +179,20 @@ public class GradleBuild {
 
 	public GradleRunner prepareRunner(String... arguments) throws IOException {
 		String scriptContent = FileCopyUtils.copyToString(new FileReader(this.script));
+		this.scriptProperties.put("bootVersion", getBootVersion());
+		this.scriptProperties.put("dependencyManagementPluginVersion", getDependencyManagementPluginVersion());
 		for (Entry<String, String> property : this.scriptProperties.entrySet()) {
 			scriptContent = scriptContent.replace("{" + property.getKey() + "}", property.getValue());
 		}
 		FileCopyUtils.copy(scriptContent, new FileWriter(new File(this.projectDir, "build" + this.dsl.getExtension())));
-		FileSystemUtils.copyRecursively(new File("src/test/resources/repository"),
-				new File(this.projectDir, "repository"));
+		if (this.settings != null) {
+			FileCopyUtils.copy(new FileReader(this.settings),
+					new FileWriter(new File(this.projectDir, "settings.gradle")));
+		}
+		File repository = new File("src/test/resources/repository");
+		if (repository.exists()) {
+			FileSystemUtils.copyRecursively(repository, new File(this.projectDir, "repository"));
+		}
 		GradleRunner gradleRunner = GradleRunner.create().withProjectDir(this.projectDir)
 				.withPluginClasspath(pluginClasspath());
 		if (this.dsl != Dsl.KOTLIN && !this.configurationCache) {
@@ -225,8 +239,13 @@ public class GradleBuild {
 		return this.gradleVersion;
 	}
 
-	private static String getBootVersion() {
-		return "TEST-SNAPSHOT";
+	public GradleBuild bootVersion(String version) {
+		this.springBootVersion = version;
+		return this;
+	}
+
+	private String getBootVersion() {
+		return this.springBootVersion;
 	}
 
 	private static String getDependencyManagementPluginVersion() {

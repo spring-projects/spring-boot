@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.testkit;
+package org.springframework.boot.testsupport.gradle.testkit;
 
 import java.lang.reflect.Field;
 import java.net.URL;
@@ -32,6 +32,7 @@ import org.springframework.util.ReflectionUtils;
  * field named {@code gradleBuild}.
  *
  * @author Andy Wilkinson
+ * @author Scott Frederick
  */
 public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallback {
 
@@ -45,6 +46,10 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 		URL scriptUrl = findDefaultScript(context);
 		if (scriptUrl != null) {
 			gradleBuild.script(scriptUrl.getFile());
+		}
+		URL settingsUrl = getSettings(context);
+		if (settingsUrl != null) {
+			gradleBuild.settings(settingsUrl.getFile());
 		}
 		gradleBuild.before();
 	}
@@ -78,6 +83,11 @@ public class GradleBuildExtension implements BeforeEachCallback, AfterEachCallba
 
 	private URL getScriptForTestClass(Class<?> testClass) {
 		return testClass.getResource(testClass.getSimpleName() + this.dsl.getExtension());
+	}
+
+	private URL getSettings(ExtensionContext context) {
+		Class<?> testClass = context.getRequiredTestClass();
+		return testClass.getResource("settings.gradle");
 	}
 
 	@Override

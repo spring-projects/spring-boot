@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package org.springframework.boot.gradle.testkit;
+package org.springframework.boot.testsupport.gradle.testkit;
 
 /**
- * The DSLs supported by Gradle and demonstrated in the documentation samples
+ * The DSLs supported by Gradle and demonstrated in the documentation samples.
+ *
+ * @author Andy Wilkinson
  */
 public enum Dsl {
 
+	/**
+	 * Supported DSL variants.
+	 */
 	GROOVY("Groovy", ".gradle"), KOTLIN("Kotlin", ".gradle.kts");
 
 	private final String name;

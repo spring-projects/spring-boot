@@ -20,16 +20,16 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Stream;
 
-import org.gradle.api.JavaVersion;
 import org.junit.jupiter.api.TestTemplate;
 import org.junit.jupiter.api.extension.Extension;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContext;
 import org.junit.jupiter.api.extension.TestTemplateInvocationContextProvider;
 
-import org.springframework.boot.gradle.testkit.Dsl;
-import org.springframework.boot.gradle.testkit.GradleBuild;
-import org.springframework.boot.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.Dsl;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuild;
+import org.springframework.boot.testsupport.gradle.testkit.GradleBuildExtension;
+import org.springframework.boot.testsupport.gradle.testkit.GradleVersions;
 
 /**
  * {@link Extension} that runs {@link TestTemplate templated tests} against the Groovy and
@@ -61,10 +61,7 @@ public class GradleMultiDslExtension implements TestTemplateInvocationContextPro
 		@Override
 		public List<Extension> getAdditionalExtensions() {
 			GradleBuild gradleBuild = new GradleBuild(this.dsl);
-			JavaVersion javaVersion = JavaVersion.current();
-			if (javaVersion.isCompatibleWith(JavaVersion.VERSION_16)) {
-				gradleBuild.gradleVersion("7.0.2");
-			}
+			gradleBuild.gradleVersion(GradleVersions.currentOrMinimumCompatible());
 			return Arrays.asList(new GradleBuildFieldSetter(gradleBuild), new GradleBuildExtension());
 		}
 

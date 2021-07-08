@@ -20,6 +20,16 @@ dependencies {
 	compileOnly("org.springframework.data:spring-data-redis")
 	compileOnly("org.testcontainers:testcontainers")
 
+	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-buildpack-platform"))
+	compileOnly(project(":spring-boot-project:spring-boot-tools:spring-boot-loader-tools"))
+	compileOnly("io.spring.gradle:dependency-management-plugin")
+	compileOnly(gradleTestKit())
+	compileOnly("org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion")
+	compileOnly("org.jetbrains.kotlin:kotlin-compiler-embeddable:$kotlinVersion")
+	compileOnly("org.jetbrains.kotlin:kotlin-compiler-runner:$kotlinVersion")
+	compileOnly("org.jetbrains.kotlin:kotlin-daemon-client:$kotlinVersion")
+	compileOnly("org.apache.commons:commons-compress")
+
 	implementation("org.apache.maven.resolver:maven-resolver-connector-basic")
 	implementation("org.apache.maven.resolver:maven-resolver-impl")
 	implementation("org.apache.maven:maven-resolver-provider")

@@ -41,6 +41,14 @@ anchors:
       BRANCH: ((branch))
       <<: *gradle-enterprise-task-params
       <<: *docker-hub-task-params
+  run-system-tests-task-params: &run-system-tests-task-params
+    privileged: true
+    timeout: ((task-timeout))
+    file: git-repo/ci/tasks/run-system-tests.yml
+    params:
+      BRANCH: ((branch))
+      <<: *gradle-enterprise-task-params
+      <<: *docker-hub-task-params
   artifactory-repo-put-params: &artifactory-repo-put-params
     signing_key: ((signing-key))
     signing_passphrase: ((signing-passphrase))
@@ -165,6 +173,12 @@ resources:
   source:
     <<: *registry-image-resource-source
     repository: ((docker-hub-organization))/spring-boot-ci-jdk16
+- name: paketo-builder-base-image
+  type: registry-image
+  icon: docker
+  source:
+    repository: paketobuildpacks/builder
+    tag: base
 - name: artifactory-repo
   type: artifactory-resource
   icon: package-variant
@@ -668,11 +682,86 @@ jobs:
     - put: homebrew-tap-repo
       params:
         repository: updated-homebrew-tap-repo
+- name: run-system-tests
+  serial: true
+  public: true
+  plan:
+    - get: ci-image
+    - get: git-repo
+    - get: paketo-builder-base-image
+      trigger: true
+    - get: daily
+      trigger: true
+    - do:
+        - task: run-system-tests
+          image: ci-image
+          <<: *run-system-tests-task-params
+      on_failure:
+        do:
+          - put: slack-alert
+            params:
+              <<: *slack-fail-params
+    - put: slack-alert
+      params:
+        <<: *slack-success-params
+- name: jdk11-run-system-tests
+  serial: true
+  public: true
+  plan:
+    - get: ci-image-jdk11
+    - get: git-repo
+    - get: paketo-builder-base-image
+      trigger: true
+    - get: daily
+      trigger: true
+    - do:
+        - task: run-system-tests
+          image: ci-image-jdk11
+          <<: *run-system-tests-task-params
+      on_failure:
+        do:
+          - put: slack-alert
+            params:
+              <<: *slack-fail-params
+    - put: slack-alert
+      params:
+        <<: *slack-success-params
+- name: jdk16-run-system-tests
+  serial: true
+  public: true
+  plan:
+    - get: ci-image-jdk16
+    - get: git-repo
+    - get: paketo-builder-base-image
+      trigger: true
+    - get: daily
+      trigger: true
+    - do:
+        - task: run-system-tests
+          image: ci-image-jdk16
+          privileged: true
+          timeout: ((task-timeout))
+          file: git-repo/ci/tasks/run-system-tests.yml
+          params:
+            BRANCH: ((branch))
+            TOOLCHAIN_JAVA_VERSION: 16
+            <<: *gradle-enterprise-task-params
+            <<: *docker-hub-task-params
+      on_failure:
+        do:
+          - put: slack-alert
+            params:
+              <<: *slack-fail-params
+    - put: slack-alert
+      params:
+        <<: *slack-success-params
 groups:
 - name: "builds"
   jobs: ["build", "jdk11-build", "jdk16-build", "windows-build"]
 - name: "releases"
   jobs: ["stage-milestone", "stage-rc", "stage-release", "promote-milestone", "promote-rc", "promote-release", "create-github-release", "publish-gradle-plugin", "publish-to-sdkman", "update-homebrew-tap"]
+- name: "system-tests"
+  jobs: ["run-system-tests", "jdk11-run-system-tests", "jdk16-run-system-tests"]
 - name: "ci-images"
   jobs: ["build-ci-images", "detect-docker-updates", "detect-jdk-updates", "detect-ubuntu-image-updates"]
 - name: "pull-requests"
