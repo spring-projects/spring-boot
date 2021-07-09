@@ -180,4 +180,5 @@ org.springframework.boot.autoconfigure.flyway.FlywayMigrationInitializerDatabase
 # Depends on database initialization detectors
 org.springframework.boot.sql.init.dependency.DependsOnDatabaseInitializationDetector=\
 org.springframework.boot.autoconfigure.batch.JobRepositoryDependsOnDatabaseInitializationDetector,\
+org.springframework.boot.autoconfigure.quartz.SchedulerDependsOnDatabaseInitializationDetector,\
 org.springframework.boot.autoconfigure.session.JdbcIndexedSessionRepositoryDependsOnDatabaseInitializationDetector
