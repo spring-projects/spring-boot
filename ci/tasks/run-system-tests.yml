@@ -2,6 +2,8 @@
 platform: linux
 inputs:
 - name: git-repo
+outputs:
+- name: git-repo
 caches:
 - path: gradle
 params:
