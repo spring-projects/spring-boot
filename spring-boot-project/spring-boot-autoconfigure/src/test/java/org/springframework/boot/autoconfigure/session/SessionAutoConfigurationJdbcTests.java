@@ -21,10 +21,13 @@ import javax.sql.DataSource;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.junit.jupiter.api.Test;
 
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.session.JdbcSessionConfiguration.SpringBootJdbcHttpSessionConfiguration;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.jdbc.DataSourceInitializationMode;
@@ -187,6 +190,51 @@ class SessionAutoConfigurationJdbcTests extends AbstractSessionAutoConfiguration
 							.isEqualTo(context.getBean("sessionDataSource"));
 					assertThatExceptionOfType(BadSqlGrammarException.class).isThrownBy(
 							() -> context.getBean(JdbcOperations.class).queryForList("select * from SPRING_SESSION"));
+				});
+	}
+
+	@Test
+	void sessionRepositoryBeansDependOnJdbcSessionDataSourceInitializer() {
+		this.contextRunner.withPropertyValues("spring.session.store-type=jdbc").run((context) -> {
+			ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+			String[] sessionRepositoryNames = beanFactory.getBeanNamesForType(JdbcIndexedSessionRepository.class);
+			assertThat(sessionRepositoryNames).isNotEmpty();
+			for (String sessionRepositoryName : sessionRepositoryNames) {
+				assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn())
+						.contains("jdbcSessionDataSourceInitializer");
+			}
+		});
+	}
+
+	@Test
+	void sessionRepositoryBeansDependOnFlyway() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(FlywayAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.initialize-schema=never")
+				.run((context) -> {
+					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+					String[] sessionRepositoryNames = beanFactory
+							.getBeanNamesForType(JdbcIndexedSessionRepository.class);
+					assertThat(sessionRepositoryNames).isNotEmpty();
+					for (String sessionRepositoryName : sessionRepositoryNames) {
+						assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn())
+								.contains("flyway", "flywayInitializer");
+					}
+				});
+	}
+
+	@Test
+	void sessionRepositoryBeansDependOnLiquibase() {
+		this.contextRunner.withConfiguration(AutoConfigurations.of(LiquibaseAutoConfiguration.class))
+				.withPropertyValues("spring.session.store-type=jdbc", "spring.session.jdbc.initialize-schema=never")
+				.run((context) -> {
+					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+					String[] sessionRepositoryNames = beanFactory
+							.getBeanNamesForType(JdbcIndexedSessionRepository.class);
+					assertThat(sessionRepositoryNames).isNotEmpty();
+					for (String sessionRepositoryName : sessionRepositoryNames) {
+						assertThat(beanFactory.getBeanDefinition(sessionRepositoryName).getDependsOn())
+								.contains("liquibase");
+					}
 				});
 	}
 
