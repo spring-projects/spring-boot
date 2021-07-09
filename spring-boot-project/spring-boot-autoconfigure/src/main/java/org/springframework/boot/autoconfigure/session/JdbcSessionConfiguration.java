@@ -22,6 +22,7 @@ import javax.sql.DataSource;
 
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -76,6 +77,19 @@ class JdbcSessionConfiguration {
 			setCleanupCron(jdbcSessionProperties.getCleanupCron());
 			setFlushMode(jdbcSessionProperties.getFlushMode());
 			setSaveMode(jdbcSessionProperties.getSaveMode());
+		}
+
+	}
+
+	/**
+	 * Post processor to ensure that {@link JdbcIndexedSessionRepository} beans depend on
+	 * any {@link JdbcSessionDataSourceInitializer} beans.
+	 */
+	static class DataSourceInitializationJdbcIndexedSessionRepositoryDependencyConfiguration
+			extends AbstractDependsOnBeanFactoryPostProcessor {
+
+		DataSourceInitializationJdbcIndexedSessionRepositoryDependencyConfiguration() {
+			super(JdbcIndexedSessionRepository.class, JdbcSessionDataSourceInitializer.class);
 		}
 
 	}
