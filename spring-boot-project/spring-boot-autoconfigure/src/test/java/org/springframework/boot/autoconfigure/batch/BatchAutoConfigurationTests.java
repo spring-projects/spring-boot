@@ -39,11 +39,14 @@ import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.TestAutoConfigurationPackage;
+import org.springframework.boot.autoconfigure.flyway.FlywayAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
+import org.springframework.boot.autoconfigure.liquibase.LiquibaseAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.test.City;
 import org.springframework.boot.autoconfigure.transaction.TransactionAutoConfiguration;
@@ -296,6 +299,50 @@ class BatchAutoConfigurationTests {
 							batchDataSource);
 					assertThat(context.getBean(BatchDataSourceInitializer.class))
 							.hasFieldOrPropertyWithValue("dataSource", batchDataSource);
+				});
+	}
+
+	@Test
+	void jobRepositoryBeansDependOnBatchDataSourceInitializer() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+					String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
+					assertThat(jobRepositoryNames).isNotEmpty();
+					for (String jobRepositoryName : jobRepositoryNames) {
+						assertThat(beanFactory.getBeanDefinition(jobRepositoryName).getDependsOn())
+								.contains("batchDataSourceInitializer");
+					}
+				});
+	}
+
+	@Test
+	void jobRepositoryBeansDependOnFlyway() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withUserConfiguration(FlywayAutoConfiguration.class)
+				.withPropertyValues("spring.batch.initialize-schema=never").run((context) -> {
+					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+					String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
+					assertThat(jobRepositoryNames).isNotEmpty();
+					for (String jobRepositoryName : jobRepositoryNames) {
+						assertThat(beanFactory.getBeanDefinition(jobRepositoryName).getDependsOn()).contains("flyway",
+								"flywayInitializer");
+					}
+				});
+	}
+
+	@Test
+	void jobRepositoryBeansDependOnLiquibase() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.withUserConfiguration(LiquibaseAutoConfiguration.class)
+				.withPropertyValues("spring.batch.initialize-schema=never").run((context) -> {
+					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+					String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
+					assertThat(jobRepositoryNames).isNotEmpty();
+					for (String jobRepositoryName : jobRepositoryNames) {
+						assertThat(beanFactory.getBeanDefinition(jobRepositoryName).getDependsOn())
+								.contains("liquibase");
+					}
 				});
 	}
 
