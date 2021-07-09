@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,7 @@ import org.springframework.batch.core.job.AbstractJob;
 import org.springframework.batch.core.launch.JobLauncher;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.DefaultApplicationArguments;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
@@ -265,6 +266,20 @@ class BatchAutoConfigurationTests {
 							batchDataSource);
 					assertThat(context.getBean(BatchDataSourceInitializer.class))
 							.hasFieldOrPropertyWithValue("dataSource", batchDataSource);
+				});
+	}
+
+	@Test
+	void jobRepositoryBeansDependOnBatchDataSourceInitializer() {
+		this.contextRunner.withUserConfiguration(TestConfiguration.class, EmbeddedDataSourceConfiguration.class)
+				.run((context) -> {
+					ConfigurableListableBeanFactory beanFactory = context.getBeanFactory();
+					String[] jobRepositoryNames = beanFactory.getBeanNamesForType(JobRepository.class);
+					assertThat(jobRepositoryNames).isNotEmpty();
+					for (String jobRepositoryName : jobRepositoryNames) {
+						assertThat(beanFactory.getBeanDefinition(jobRepositoryName).getDependsOn())
+								.contains("batchDataSourceInitializer");
+					}
 				});
 	}
 

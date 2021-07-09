@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2019 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -27,8 +27,10 @@ import org.springframework.batch.core.launch.support.SimpleJobOperator;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.boot.ExitCodeGenerator;
+import org.springframework.boot.autoconfigure.AbstractDependsOnBeanFactoryPostProcessor;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.boot.autoconfigure.batch.BatchAutoConfiguration.DataSourceInitializerConfiguration.DataSourceInitializationJobRepositoryDependencyConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnClass;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -100,9 +102,11 @@ public class BatchAutoConfiguration {
 		return factory;
 	}
 
-	@Configuration(proxyBeanMethods = false)
-	@ConditionalOnBean(DataSource.class)
-	@ConditionalOnClass(DatabasePopulator.class)
+	// Fully-qualified to work around javac bug
+	@org.springframework.context.annotation.Configuration(proxyBeanMethods = false)
+	@org.springframework.boot.autoconfigure.condition.ConditionalOnBean(DataSource.class)
+	@org.springframework.boot.autoconfigure.condition.ConditionalOnClass(DatabasePopulator.class)
+	@org.springframework.context.annotation.Import(DataSourceInitializationJobRepositoryDependencyConfiguration.class)
 	static class DataSourceInitializerConfiguration {
 
 		@Bean
@@ -112,6 +116,19 @@ public class BatchAutoConfiguration {
 				BatchProperties properties) {
 			return new BatchDataSourceInitializer(batchDataSource.getIfAvailable(() -> dataSource), resourceLoader,
 					properties);
+		}
+
+		/**
+		 * Post processor to ensure that {@link JobRepository} beans depend on any
+		 * {@link BatchDataSourceInitializer} beans.
+		 */
+		static class DataSourceInitializationJobRepositoryDependencyConfiguration
+				extends AbstractDependsOnBeanFactoryPostProcessor {
+
+			DataSourceInitializationJobRepositoryDependencyConfiguration() {
+				super(JobRepository.class, BatchDataSourceInitializer.class);
+			}
+
 		}
 
 	}
