@@ -1369,16 +1369,29 @@ bom {
 			]
 		}
 	}
-	library("QueryDSL", "4.4.0") {
+	library("QueryDSL", "5.0.0.M1") {
 		group("com.querydsl") {
 			modules = [
 				"querydsl-apt",
+				"querydsl-codegen",
+				"querydsl-codegen-utils",
 				"querydsl-collections",
 				"querydsl-core",
+				"querydsl-hibernate-search",
+				"querydsl-jdo",
 				"querydsl-jpa",
-				"querydsl-mongodb" {
-					exclude group: "org.mongodb", module: "mongo-java-driver"
-				}
+				"querydsl-jpa-codegen",
+				"querydsl-kotlin",
+				"querydsl-lucene3",
+				"querydsl-lucene4",
+				"querydsl-lucene5",
+				"querydsl-mongodb",
+				"querydsl-scala",
+				"querydsl-spatial",
+				"querydsl-sql",
+				"querydsl-sql-codegen",
+				"querydsl-sql-spatial",
+				"querydsl-sql-spring"
 			]
 		}
 	}
