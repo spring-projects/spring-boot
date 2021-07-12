@@ -30,7 +30,6 @@ import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 final class SettingsCreator {
 
 	private SettingsCreator() {
-
 	}
 
 	static DatabaseInitializationSettings createFrom(SqlInitializationProperties properties) {

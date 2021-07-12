@@ -18,7 +18,7 @@ package org.springframework.boot.autoconfigure.batch;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.DeprecatedConfigurationProperty;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
 
 /**
  * Configuration properties for Spring Batch.
@@ -77,12 +77,12 @@ public class BatchProperties {
 	 */
 	@Deprecated
 	@DeprecatedConfigurationProperty(replacement = "spring.batch.jdbc.initialize-schema")
-	public DataSourceInitializationMode getInitializeSchema() {
+	public DatabaseInitializationMode getInitializeSchema() {
 		return this.jdbc.getInitializeSchema();
 	}
 
 	@Deprecated
-	public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
+	public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 		this.jdbc.setInitializeSchema(initializeSchema);
 	}
 
@@ -130,7 +130,7 @@ public class BatchProperties {
 		/**
 		 * Database schema initialization mode.
 		 */
-		private DataSourceInitializationMode initializeSchema = DataSourceInitializationMode.EMBEDDED;
+		private DatabaseInitializationMode initializeSchema = DatabaseInitializationMode.EMBEDDED;
 
 		public String getSchema() {
 			return this.schema;
@@ -148,11 +148,11 @@ public class BatchProperties {
 			this.tablePrefix = tablePrefix;
 		}
 
-		public DataSourceInitializationMode getInitializeSchema() {
+		public DatabaseInitializationMode getInitializeSchema() {
 			return this.initializeSchema;
 		}
 
-		public void setInitializeSchema(DataSourceInitializationMode initializeSchema) {
+		public void setInitializeSchema(DatabaseInitializationMode initializeSchema) {
 			this.initializeSchema = initializeSchema;
 		}
 

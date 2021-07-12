@@ -19,8 +19,7 @@ package org.springframework.boot.autoconfigure.batch;
 import javax.sql.DataSource;
 
 import org.springframework.boot.autoconfigure.batch.BatchProperties.Jdbc;
-import org.springframework.boot.jdbc.AbstractDataSourceInitializer;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.util.Assert;
 
@@ -30,8 +29,11 @@ import org.springframework.util.Assert;
  * @author Dave Syer
  * @author Vedran Pavic
  * @since 1.0.0
+ * @deprecated since 2.6.0 for removal in 2.8.0 in favor of
+ * {@link BatchDataSourceScriptDatabaseInitializer}
  */
-public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
+@Deprecated
+public class BatchDataSourceInitializer extends org.springframework.boot.jdbc.AbstractDataSourceInitializer {
 
 	private final Jdbc jdbcProperties;
 
@@ -43,8 +45,17 @@ public class BatchDataSourceInitializer extends AbstractDataSourceInitializer {
 	}
 
 	@Override
-	protected DataSourceInitializationMode getMode() {
-		return this.jdbcProperties.getInitializeSchema();
+	protected org.springframework.boot.jdbc.DataSourceInitializationMode getMode() {
+		DatabaseInitializationMode mode = this.jdbcProperties.getInitializeSchema();
+		switch (mode) {
+		case ALWAYS:
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.ALWAYS;
+		case EMBEDDED:
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.EMBEDDED;
+		case NEVER:
+		default:
+			return org.springframework.boot.jdbc.DataSourceInitializationMode.NEVER;
+		}
 	}
 
 	@Override

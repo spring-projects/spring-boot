@@ -17,6 +17,7 @@
 package org.springframework.boot.autoconfigure.integration;
 
 import javax.management.MBeanServer;
+import javax.sql.DataSource;
 
 import io.rsocket.transport.ClientTransport;
 import io.rsocket.transport.netty.client.TcpClientTransport;
@@ -26,6 +27,7 @@ import reactor.core.publisher.Mono;
 import org.springframework.beans.DirectFieldAccessor;
 import org.springframework.boot.autoconfigure.AutoConfigurations;
 import org.springframework.boot.autoconfigure.integration.IntegrationAutoConfiguration.IntegrationComponentScanConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.EmbeddedDataSourceConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.JdbcTemplateAutoConfiguration;
@@ -35,11 +37,14 @@ import org.springframework.boot.autoconfigure.rsocket.RSocketRequesterAutoConfig
 import org.springframework.boot.autoconfigure.rsocket.RSocketServerAutoConfiguration;
 import org.springframework.boot.autoconfigure.rsocket.RSocketStrategiesAutoConfiguration;
 import org.springframework.boot.autoconfigure.task.TaskSchedulingAutoConfiguration;
-import org.springframework.boot.jdbc.DataSourceInitializationMode;
+import org.springframework.boot.jdbc.init.DataSourceScriptDatabaseInitializer;
+import org.springframework.boot.sql.init.DatabaseInitializationMode;
+import org.springframework.boot.sql.init.DatabaseInitializationSettings;
 import org.springframework.boot.test.context.runner.ApplicationContextRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
+import org.springframework.core.io.ResourceLoader;
 import org.springframework.integration.annotation.IntegrationComponentScan;
 import org.springframework.integration.annotation.MessagingGateway;
 import org.springframework.integration.config.IntegrationManagementConfigurer;
@@ -155,8 +160,7 @@ class IntegrationAutoConfigurationTests {
 						"spring.integration.jdbc.initialize-schema=always")
 				.run((context) -> {
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-					assertThat(properties.getJdbc().getInitializeSchema())
-							.isEqualTo(DataSourceInitializationMode.ALWAYS);
+					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.ALWAYS);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 					assertThat(jdbc.queryForList("select * from INT_GROUP_TO_MESSAGE")).isEmpty();
@@ -175,8 +179,7 @@ class IntegrationAutoConfigurationTests {
 						"spring.integration.jdbc.initialize-schema=never")
 				.run((context) -> {
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
-					assertThat(properties.getJdbc().getInitializeSchema())
-							.isEqualTo(DataSourceInitializationMode.NEVER);
+					assertThat(properties.getJdbc().getInitializeSchema()).isEqualTo(DatabaseInitializationMode.NEVER);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 					assertThatExceptionOfType(BadSqlGrammarException.class)
 							.isThrownBy(() -> jdbc.queryForList("select * from INT_MESSAGE"));
@@ -191,7 +194,7 @@ class IntegrationAutoConfigurationTests {
 				.withPropertyValues("spring.datasource.generate-unique-name=true").run((context) -> {
 					IntegrationProperties properties = context.getBean(IntegrationProperties.class);
 					assertThat(properties.getJdbc().getInitializeSchema())
-							.isEqualTo(DataSourceInitializationMode.EMBEDDED);
+							.isEqualTo(DatabaseInitializationMode.EMBEDDED);
 					JdbcOperations jdbc = context.getBean(JdbcOperations.class);
 					assertThat(jdbc.queryForList("select * from INT_MESSAGE")).isEmpty();
 				});
@@ -336,6 +339,39 @@ class IntegrationAutoConfigurationTests {
 				});
 	}
 
+	@Test
+	void whenTheUserDefinesTheirOwnIntegrationDatabaseInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner.withUserConfiguration(CustomIntegrationDatabaseInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+						.doesNotHaveBean("integrationDataSourceScriptDatabaseInitializer")
+						.hasBean("customInitializer"));
+	}
+
+	@Test
+	@Deprecated
+	@SuppressWarnings("deprecation")
+	void whenTheUserDefinesTheirOwnIntegrationDataSourceInitializerThenTheAutoConfiguredInitializerBacksOff() {
+		this.contextRunner.withUserConfiguration(CustomIntegrationDataSourceInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.doesNotHaveBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+						.hasSingleBean(IntegrationDataSourceInitializer.class).hasBean("customInitializer"));
+	}
+
+	@Test
+	void whenTheUserDefinesTheirOwnDatabaseInitializerThenTheAutoConfiguredIntegrationInitializerRemains() {
+		this.contextRunner.withUserConfiguration(CustomDatabaseInitializerConfiguration.class)
+				.withConfiguration(AutoConfigurations.of(DataSourceAutoConfiguration.class,
+						DataSourceTransactionManagerAutoConfiguration.class))
+				.run((context) -> assertThat(context)
+						.hasSingleBean(IntegrationDataSourceScriptDatabaseInitializer.class)
+						.hasBean("customInitializer"));
+	}
+
 	@Configuration(proxyBeanMethods = false)
 	static class CustomMBeanExporter {
 
@@ -386,6 +422,39 @@ class IntegrationAutoConfigurationTests {
 				}
 
 			};
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomIntegrationDatabaseInitializerConfiguration {
+
+		@Bean
+		IntegrationDataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource,
+				IntegrationProperties properties) {
+			return new IntegrationDataSourceScriptDatabaseInitializer(dataSource, properties.getJdbc());
+		}
+
+	}
+
+	@Configuration(proxyBeanMethods = false)
+	static class CustomDatabaseInitializerConfiguration {
+
+		@Bean
+		DataSourceScriptDatabaseInitializer customInitializer(DataSource dataSource) {
+			return new DataSourceScriptDatabaseInitializer(dataSource, new DatabaseInitializationSettings());
+		}
+
+	}
+
+	@Deprecated
+	@Configuration(proxyBeanMethods = false)
+	static class CustomIntegrationDataSourceInitializerConfiguration {
+
+		@Bean
+		IntegrationDataSourceInitializer customInitializer(DataSource dataSource, ResourceLoader resourceLoader,
+				IntegrationProperties properties) {
+			return new IntegrationDataSourceInitializer(dataSource, resourceLoader, properties);
 		}
 
 	}

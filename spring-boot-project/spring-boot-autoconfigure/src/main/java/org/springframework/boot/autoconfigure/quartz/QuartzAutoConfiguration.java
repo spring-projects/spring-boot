@@ -44,7 +44,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Import;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.ResourceLoader;
 import org.springframework.scheduling.quartz.SchedulerFactoryBean;
 import org.springframework.scheduling.quartz.SpringBeanJobFactory;
 import org.springframework.transaction.PlatformTransactionManager;
@@ -132,12 +131,14 @@ public class QuartzAutoConfiguration {
 		}
 
 		@Bean
-		@ConditionalOnMissingBean
-		public QuartzDataSourceInitializer quartzDataSourceInitializer(DataSource dataSource,
-				@QuartzDataSource ObjectProvider<DataSource> quartzDataSource, ResourceLoader resourceLoader,
+		@SuppressWarnings("deprecation")
+		@ConditionalOnMissingBean({ QuartzDataSourceScriptDatabaseInitializer.class,
+				QuartzDataSourceInitializer.class })
+		public QuartzDataSourceScriptDatabaseInitializer quartzDataSourceScriptDatabaseInitializer(
+				DataSource dataSource, @QuartzDataSource ObjectProvider<DataSource> quartzDataSource,
 				QuartzProperties properties) {
 			DataSource dataSourceToUse = getDataSource(dataSource, quartzDataSource);
-			return new QuartzDataSourceInitializer(dataSourceToUse, resourceLoader, properties);
+			return new QuartzDataSourceScriptDatabaseInitializer(dataSourceToUse, properties);
 		}
 
 	}

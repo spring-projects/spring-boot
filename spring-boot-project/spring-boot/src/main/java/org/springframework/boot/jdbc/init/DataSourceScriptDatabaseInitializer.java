@@ -49,7 +49,7 @@ public class DataSourceScriptDatabaseInitializer extends AbstractScriptDatabaseI
 	 * Creates a new {@link DataSourceScriptDatabaseInitializer} that will initialize the
 	 * given {@code DataSource} using the given settings.
 	 * @param dataSource data source to initialize
-	 * @param settings initialization settings
+	 * @param settings the initialization settings
 	 */
 	public DataSourceScriptDatabaseInitializer(DataSource dataSource, DatabaseInitializationSettings settings) {
 		super(settings);

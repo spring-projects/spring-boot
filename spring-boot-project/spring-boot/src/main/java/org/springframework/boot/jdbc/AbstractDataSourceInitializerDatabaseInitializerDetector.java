@@ -27,6 +27,7 @@ import org.springframework.boot.sql.init.dependency.DatabaseInitializerDetector;
  *
  * @author Henning Pöttker
  */
+@Deprecated
 class AbstractDataSourceInitializerDatabaseInitializerDetector extends AbstractBeansOfTypeDatabaseInitializerDetector {
 
 	@Override
