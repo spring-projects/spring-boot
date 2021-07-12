@@ -150,6 +150,9 @@ bom {
 		}
 	}
 	library("Caffeine", "2.9.2") {
+		prohibit("[3.0.0,)") {
+			because "it requires Java 11"
+		}
 		group("com.github.ben-manes.caffeine") {
 			modules = [
 				"caffeine",
@@ -166,9 +169,9 @@ bom {
 			]
 			modules = [
 				"java-driver-core" {
- 					exclude group: "org.slf4j", module: "jcl-over-slf4j"
- 				}
- 			]
+					exclude group: "org.slf4j", module: "jcl-over-slf4j"
+				}
+			]
 		}
 	}
 	library("Classmate", "1.5.1") {
@@ -324,6 +327,9 @@ bom {
 		}
 	}
 	library("Git Commit ID Plugin", "4.0.5") {
+		prohibit("[5.0.0,)") {
+			because "it requires Java 11"
+		}
 		group("pl.project13.maven") {
 			plugins = [
 				"git-commit-id-plugin"
@@ -867,6 +873,9 @@ bom {
 		}
 	}
 	library("Jetty EL", "9.0.48") {
+		prohibit("[10.0.0-M1,)") {
+			because "it requires Java 11"
+		}
 		group("org.mortbay.jasper") {
 			modules = [
 				"apache-el"
@@ -891,6 +900,9 @@ bom {
 		}
 	}
 	library("Jetty", "9.4.43.v20210629") {
+		prohibit("[10.0.0-alpha0,)") {
+			because "it requires Java 11"
+		}
 		prohibit("[11.0.0-alpha0,)") {
 			because "it uses the jakarta.* namespace"
 		}
@@ -931,6 +943,9 @@ bom {
 		}
 	}
 	library("jOOQ", "3.14.12") {
+		prohibit("[3.15.0,)") {
+			because "it requires Java 11"
+		}
 		group("org.jooq") {
 			modules = [
 				"jooq",
@@ -1316,6 +1331,9 @@ bom {
 		}
 	}
 	library("OkHttp3", "3.14.9") {
+		prohibit("[4.0.0-alpha01,)") {
+			because "it requires Kotlin"
+		}
 		group("com.squareup.okhttp3") {
 			modules = [
 				"logging-interceptor",
@@ -1338,9 +1356,9 @@ bom {
 		}
 	}
 	library("Pooled JMS", "1.2.2") {
-        prohibit("[2.0.0,)") {
-            because "it requires Java 11"
-        }
+		prohibit("[2.0.0,)") {
+			because "it requires Java 11"
+		}
 		group("org.messaginghub") {
 			modules = [
 				"pooled-jms"
@@ -1614,6 +1632,9 @@ bom {
 		}
 	}
 	library("Solr", "8.8.2") {
+		prohibit("8.9.0") {
+			because "it depends on an artifact that is not on Maven Central"
+		}
 		group("org.apache.solr") {
 			modules = [
 				"solr-analysis-extras",
