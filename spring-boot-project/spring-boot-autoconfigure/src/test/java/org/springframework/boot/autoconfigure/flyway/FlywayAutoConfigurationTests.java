@@ -527,8 +527,9 @@ class FlywayAutoConfigurationTests {
 	@Test
 	void licenseKeyIsCorrectlyMapped(CapturedOutput output) {
 		this.contextRunner.withUserConfiguration(EmbeddedDataSourceConfiguration.class)
-				.withPropertyValues("spring.flyway.license-key=<<secret>>").run((context) -> assertThat(output)
-						.contains("<<secret>> is not supported by Flyway Community Edition"));
+				.withPropertyValues("spring.flyway.license-key=<<secret>>")
+				.run((context) -> assertThat(output).contains(
+						"Flyway Teams Edition upgrade required: licenseKey is not supported by Flyway Community Edition."));
 	}
 
 	@Test
