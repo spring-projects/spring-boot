@@ -890,7 +890,7 @@ bom {
 			]
 		}
 	}
-	library("Jetty", "9.4.42.v20210604") {
+	library("Jetty", "9.4.43.v20210629") {
 		prohibit("[11.0.0-alpha0,)") {
 			because "it uses the jakarta.* namespace"
 		}
