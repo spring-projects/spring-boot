@@ -46,7 +46,7 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 	/**
 	 * The Cypher statement used to verify Neo4j is up.
 	 */
-	static final String CYPHER = "CALL dbms.components() YIELD name, edition WHERE name = 'Neo4j Kernel' RETURN edition";
+	static final String CYPHER = "CALL dbms.components() YIELD versions, name, edition WHERE name = 'Neo4j Kernel' RETURN edition, versions[0] as version";
 
 	/**
 	 * Message logged before retrying a health check.
@@ -92,8 +92,9 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 		try (Session session = this.driver.session(DEFAULT_SESSION_CONFIG)) {
 			Result result = session.run(CYPHER);
 			String edition = result.single().get("edition").asString();
+			String version = result.single().get("version").asString();
 			ResultSummary resultSummary = result.consume();
-			this.healthDetailsHandler.addHealthDetails(builder, edition, resultSummary);
+			this.healthDetailsHandler.addHealthDetails(builder, version, edition, resultSummary);
 		}
 	}
 

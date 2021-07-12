@@ -25,6 +25,7 @@ import org.neo4j.driver.reactive.RxSession;
 import org.neo4j.driver.summary.ResultSummary;
 import reactor.core.publisher.Mono;
 import reactor.util.function.Tuple2;
+import reactor.util.function.Tuples;
 import reactor.util.retry.Retry;
 
 import org.springframework.boot.actuate.health.AbstractReactiveHealthIndicator;
@@ -58,18 +59,21 @@ public final class Neo4jReactiveHealthIndicator extends AbstractReactiveHealthIn
 				.doOnError(SessionExpiredException.class,
 						(e) -> logger.warn(Neo4jHealthIndicator.MESSAGE_SESSION_EXPIRED))
 				.retryWhen(Retry.max(1).filter(SessionExpiredException.class::isInstance)).map((result) -> {
-					this.healthDetailsHandler.addHealthDetails(builder, result.getT1(), result.getT2());
+					this.healthDetailsHandler.addHealthDetails(builder, result.getT1().getT1(), result.getT1().getT2(),
+							result.getT2());
 					return builder.build();
 				});
 	}
 
-	Mono<Tuple2<String, ResultSummary>> runHealthCheckQuery() {
+	Mono<Tuple2<Tuple2<String, String>, ResultSummary>> runHealthCheckQuery() {
 		// We use WRITE here to make sure UP is returned for a server that supports
 		// all possible workloads
 		return Mono.using(() -> this.driver.rxSession(Neo4jHealthIndicator.DEFAULT_SESSION_CONFIG), (session) -> {
 			RxResult result = session.run(Neo4jHealthIndicator.CYPHER);
-			return Mono.from(result.records()).map((record) -> record.get("edition").asString())
-					.zipWhen((edition) -> Mono.from(result.consume()));
+			return Mono.from(result.records())
+					.flatMap((record) -> Mono
+							.just(Tuples.of(record.get("version").asString(), record.get("edition").asString()))
+							.zipWhen((edition) -> Mono.from(result.consume())));
 		}, RxSession::close);
 	}
 

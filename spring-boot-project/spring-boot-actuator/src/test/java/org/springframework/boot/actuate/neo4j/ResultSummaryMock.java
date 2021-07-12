@@ -33,10 +33,8 @@ final class ResultSummaryMock {
 	private ResultSummaryMock() {
 	}
 
-	@SuppressWarnings("deprecation")
-	static ResultSummary createResultSummary(String serverVersion, String serverAddress, String databaseName) {
+	static ResultSummary createResultSummary(String serverAddress, String databaseName) {
 		ServerInfo serverInfo = mock(ServerInfo.class);
-		given(serverInfo.version()).willReturn(serverVersion);
 		given(serverInfo.address()).willReturn(serverAddress);
 		DatabaseInfo databaseInfo = mock(DatabaseInfo.class);
 		given(databaseInfo.name()).willReturn(databaseName);
