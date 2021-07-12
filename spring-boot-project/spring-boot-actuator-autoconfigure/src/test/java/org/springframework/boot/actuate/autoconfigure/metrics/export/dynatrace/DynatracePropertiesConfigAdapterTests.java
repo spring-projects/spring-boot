@@ -83,8 +83,8 @@ class DynatracePropertiesConfigAdapterTests {
 	@Test
 	void whenPropertiesEnrichWithOneAgentMetadataIsSetAdapterGroupReturnsIt() {
 		DynatraceProperties properties = new DynatraceProperties();
-		properties.setEnrichWithOneAgentMetadata(true);
-		assertThat(new DynatracePropertiesConfigAdapter(properties).enrichWithOneAgentMetadata()).isTrue();
+		properties.setEnrichWithDynatraceMetadata(true);
+		assertThat(new DynatracePropertiesConfigAdapter(properties).enrichWithDynatraceMetadata()).isTrue();
 	}
 
 	@Test
@@ -112,7 +112,7 @@ class DynatracePropertiesConfigAdapterTests {
 		assertThat(properties.getGroup()).isNull();
 		assertThat(properties.getApiVersion()).isSameAs(DynatraceApiVersion.V1);
 		assertThat(properties.getMetricKeyPrefix()).isNull();
-		assertThat(properties.getEnrichWithOneAgentMetadata()).isTrue();
+		assertThat(properties.getEnrichWithDynatraceMetadata()).isTrue();
 		assertThat(properties.getDefaultDimensions()).isNull();
 	}
 

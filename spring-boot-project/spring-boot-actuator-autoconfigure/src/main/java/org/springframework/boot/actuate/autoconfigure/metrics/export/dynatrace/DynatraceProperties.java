@@ -86,12 +86,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 	private String metricKeyPrefix;
 
 	/**
-	 * An optional Boolean that allows enabling of the OneAgent metadata export. On by
+	 * An optional Boolean that allows enabling of the Dynatrace metadata export. On by
 	 * default.
 	 *
 	 * API v1: not applicable (ignored), API v2: optional
 	 */
-	private Boolean enrichWithOneAgentMetadata = true;
+	private Boolean enrichWithDynatraceMetadata = true;
 
 	/**
 	 * Optional default dimensions that are added to all metrics in the form of key-value
@@ -149,12 +149,12 @@ public class DynatraceProperties extends StepRegistryProperties {
 		this.metricKeyPrefix = metricKeyPrefix;
 	}
 
-	public Boolean getEnrichWithOneAgentMetadata() {
-		return this.enrichWithOneAgentMetadata;
+	public Boolean getEnrichWithDynatraceMetadata() {
+		return this.enrichWithDynatraceMetadata;
 	}
 
-	public void setEnrichWithOneAgentMetadata(Boolean enrichWithOneAgentMetadata) {
-		this.enrichWithOneAgentMetadata = enrichWithOneAgentMetadata;
+	public void setEnrichWithDynatraceMetadata(Boolean enrichWithDynatraceMetadata) {
+		this.enrichWithDynatraceMetadata = enrichWithDynatraceMetadata;
 	}
 
 	public Map<String, String> getDefaultDimensions() {

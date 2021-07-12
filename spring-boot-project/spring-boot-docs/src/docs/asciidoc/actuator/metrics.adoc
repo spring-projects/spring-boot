@@ -186,7 +186,7 @@ Please ensure that the endpoint URI contains the path (e.g. `/api/v2/metrics/ing
 When using the Dynatrace v2 API, the following optional features are available:
 
 * Metric key prefix: Sets a prefix that will be prepended to all exported metric keys.
-* Enrich with OneAgent metadata: If a OneAgent is running, enrich metrics with information about the host and the process.
+* Enrich with Dynatrace metadata: If a OneAgent or Dynatrace operator is running, enrich metrics with additional metadata (e.g. about the host, process or pod).
 * Default dimensions: Specify key-value pairs that are added to all exported metrics.
 If tags with the same key are specified using Micrometer, they overwrite the default dimensions.
 
@@ -198,8 +198,8 @@ If tags with the same key are specified using Micrometer, they overwrite the def
 	      dynatrace:
 	        # specify token and uri or leave blank for OneAgent export
 	        api-version: "v2"
-            metric-key-prefix: "your.key.prefix"
-	        enrich-with-one-agent-metadata: true
+	        metric-key-prefix: "your.key.prefix"
+	        enrich-with-dynatrace-metadata: true
 	        default-dimensions:
 	          key1: "value1"
 	          key2: "value2"
