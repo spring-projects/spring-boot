@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package sample;
+package org.springframework.boot.deployment;
 
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Deployment integration tests for Tomcat.
+ * Deployment tests for Wildfly.
  *
  * @author Christoph Dreis
+ * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-class TomcatDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
+class WildflyDeploymentTests extends AbstractDeploymentTests {
 
 	@Container
-	static WarDeploymentContainer container = new WarDeploymentContainer("tomcat:9.0.37-jdk8-openjdk",
-			"/usr/local/tomcat/webapps", DEFAULT_PORT);
+	static WarDeploymentContainer container = new WarDeploymentContainer("jboss/wildfly:latest",
+			"/opt/jboss/wildfly/standalone/deployments", DEFAULT_PORT);
 
 	@Override
 	WarDeploymentContainer getContainer() {

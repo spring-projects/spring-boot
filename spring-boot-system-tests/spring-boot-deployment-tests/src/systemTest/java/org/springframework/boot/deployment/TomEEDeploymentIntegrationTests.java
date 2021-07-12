@@ -14,33 +14,27 @@
  * limitations under the License.
  */
 
-package sample;
+package org.springframework.boot.deployment;
 
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Deployment integration tests for Open Liberty.
+ * Deployment tests for TomEE.
  *
  * @author Christoph Dreis
+ * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-class OpenLibertyDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
-
-	private static final int PORT = 9080;
+class TomEEDeploymentTests extends AbstractDeploymentTests {
 
 	@Container
-	static WarDeploymentContainer container = new WarDeploymentContainer(
-			"openliberty/open-liberty:20.0.0.9-kernel-java8-openj9-ubi", "/config/dropins", PORT);
+	static WarDeploymentContainer container = new WarDeploymentContainer("tomee:8", "/usr/local/tomee/webapps",
+			DEFAULT_PORT);
 
 	@Override
 	WarDeploymentContainer getContainer() {
 		return container;
-	}
-
-	@Override
-	protected int getPort() {
-		return PORT;
 	}
 
 }

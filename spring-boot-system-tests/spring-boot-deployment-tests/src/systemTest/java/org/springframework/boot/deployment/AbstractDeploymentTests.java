@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package sample;
+package org.springframework.boot.deployment;
 
 import java.io.File;
 import java.time.Duration;
@@ -37,9 +37,9 @@ import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
- * Abstract class for deployment integration tests.
+ * Abstract class for deployment tests.
  */
-abstract class AbstractDeploymentIntegrationTests {
+abstract class AbstractDeploymentTests {
 
 	protected static final int DEFAULT_PORT = 8080;
 

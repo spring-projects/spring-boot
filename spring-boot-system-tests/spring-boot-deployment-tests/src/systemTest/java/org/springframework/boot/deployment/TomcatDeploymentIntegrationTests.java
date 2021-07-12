@@ -14,22 +14,23 @@
  * limitations under the License.
  */
 
-package sample;
+package org.springframework.boot.deployment;
 
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Deployment integration tests for TomEE.
+ * Deployment tests for Tomcat.
  *
  * @author Christoph Dreis
+ * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-class TomEEDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
+class TomcatDeploymentTests extends AbstractDeploymentTests {
 
 	@Container
-	static WarDeploymentContainer container = new WarDeploymentContainer("tomee:8-jre-8.0.2-webprofile",
-			"/usr/local/tomee/webapps", DEFAULT_PORT);
+	static WarDeploymentContainer container = new WarDeploymentContainer("tomcat:9-jdk8-openjdk",
+			"/usr/local/tomcat/webapps", DEFAULT_PORT);
 
 	@Override
 	WarDeploymentContainer getContainer() {

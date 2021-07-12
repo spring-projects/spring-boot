@@ -14,26 +14,34 @@
  * limitations under the License.
  */
 
-package sample;
+package org.springframework.boot.deployment;
 
 import org.testcontainers.junit.jupiter.Container;
 import org.testcontainers.junit.jupiter.Testcontainers;
 
 /**
- * Deployment integration tests for Wildfly.
+ * Deployment tests for Open Liberty.
  *
  * @author Christoph Dreis
+ * @author Scott Frederick
  */
 @Testcontainers(disabledWithoutDocker = true)
-class WildflyDeploymentIntegrationTests extends AbstractDeploymentIntegrationTests {
+class OpenLibertyDeploymentTests extends AbstractDeploymentTests {
+
+	private static final int PORT = 9080;
 
 	@Container
-	static WarDeploymentContainer container = new WarDeploymentContainer("jboss/wildfly:20.0.1.Final",
-			"/opt/jboss/wildfly/standalone/deployments", DEFAULT_PORT);
+	static WarDeploymentContainer container = new WarDeploymentContainer(
+			"openliberty/open-liberty:full-java8-openj9-ubi", "/config/dropins", PORT);
 
 	@Override
 	WarDeploymentContainer getContainer() {
 		return container;
+	}
+
+	@Override
+	protected int getPort() {
+		return PORT;
 	}
 
 }
