@@ -1587,7 +1587,7 @@ bom {
 			]
 		}
 	}
-	library("SLF4J", "1.7.30") {
+	library("SLF4J", "1.7.31") {
 		group("org.slf4j") {
 			modules = [
 				"jcl-over-slf4j",
