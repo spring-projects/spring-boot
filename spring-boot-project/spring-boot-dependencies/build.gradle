@@ -943,7 +943,7 @@ bom {
 			]
 		}
 	}
-	library("Json Path", "2.5.0") {
+	library("Json Path", "2.6.0") {
 		group("com.jayway.jsonpath") {
 			modules = [
 				"json-path",
