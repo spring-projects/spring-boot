@@ -16,6 +16,8 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.time.Duration;
+
 import org.junit.jupiter.api.Test;
 
 import org.springframework.beans.factory.config.BeanPostProcessor;
@@ -139,7 +141,7 @@ class RedisAutoConfigurationJedisTests {
 					assertThat(cf.getPoolConfig().getMaxIdle()).isEqualTo(4);
 					assertThat(cf.getPoolConfig().getMaxTotal()).isEqualTo(16);
 					assertThat(cf.getPoolConfig().getMaxWaitMillis()).isEqualTo(2000);
-					assertThat(cf.getPoolConfig().getTimeBetweenEvictionRunsMillis()).isEqualTo(30000);
+					assertThat(cf.getPoolConfig().getTimeBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
 				});
 	}
 

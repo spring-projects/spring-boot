@@ -180,7 +180,7 @@ class LettuceConnectionConfiguration extends RedisConnectionConfiguration {
 			config.setMaxIdle(properties.getMaxIdle());
 			config.setMinIdle(properties.getMinIdle());
 			if (properties.getTimeBetweenEvictionRuns() != null) {
-				config.setTimeBetweenEvictionRunsMillis(properties.getTimeBetweenEvictionRuns().toMillis());
+				config.setTimeBetweenEvictionRuns(properties.getTimeBetweenEvictionRuns());
 			}
 			if (properties.getMaxWait() != null) {
 				config.setMaxWaitMillis(properties.getMaxWait().toMillis());

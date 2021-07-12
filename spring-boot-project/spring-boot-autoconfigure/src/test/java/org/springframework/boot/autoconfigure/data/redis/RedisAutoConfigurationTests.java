@@ -16,6 +16,7 @@
 
 package org.springframework.boot.autoconfigure.data.redis;
 
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.EnumSet;
 import java.util.List;
@@ -196,7 +197,7 @@ class RedisAutoConfigurationTests {
 					assertThat(poolConfig.getMaxIdle()).isEqualTo(4);
 					assertThat(poolConfig.getMaxTotal()).isEqualTo(16);
 					assertThat(poolConfig.getMaxWaitMillis()).isEqualTo(2000);
-					assertThat(poolConfig.getTimeBetweenEvictionRunsMillis()).isEqualTo(30000);
+					assertThat(poolConfig.getTimeBetweenEvictionRuns()).isEqualTo(Duration.ofSeconds(30));
 					assertThat(cf.getShutdownTimeout()).isEqualTo(1000);
 				});
 	}
