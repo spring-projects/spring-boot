@@ -1843,7 +1843,7 @@ bom {
 			]
 		}
 	}
-	library("WebJars Locator Core", "0.46") {
+	library("WebJars Locator Core", "0.47") {
 		group("org.webjars") {
 			modules = [
 				"webjars-locator-core"
