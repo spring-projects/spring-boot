@@ -81,7 +81,8 @@ class EmbeddedMongoAutoConfigurationTests {
 		this.context.register(MongoAutoConfiguration.class, MongoDataAutoConfiguration.class,
 				EmbeddedMongoAutoConfiguration.class);
 		assertThatThrownBy(() -> this.context.refresh()).hasRootCauseExactlyInstanceOf(IllegalStateException.class)
-				.hasRootCauseMessage("Version must be set to use Embedded MongoDB.");
+				.hasRootCauseMessage("Set the spring.mongodb.embedded.version property or define your own MongodConfig "
+						+ "bean to use embedded MongoDB");
 	}
 
 	@Test

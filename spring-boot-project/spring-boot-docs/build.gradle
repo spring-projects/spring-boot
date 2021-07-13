@@ -220,7 +220,8 @@ tasks.withType(org.asciidoctor.gradle.jvm.AbstractAsciidoctorTask) {
 	}
 	doFirst {
 		def versionConstraints = dependencyVersions.versionConstraints
-		attributes	"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
+		attributes	"embedded-mongo-version": versionConstraints["de.flapdoodle.embed:de.flapdoodle.embed.mongo"],
+					"jetty-version": versionConstraints["org.eclipse.jetty:jetty-server"],
 					"jooq-version": versionConstraints["org.jooq:jooq"],
 					"spring-amqp-version": versionConstraints["org.springframework.amqp:spring-amqp"],
 					"spring-batch-version": versionConstraints["org.springframework.batch:spring-batch-core"],

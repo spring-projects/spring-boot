@@ -149,14 +149,11 @@ TIP: For complete details of Spring Data MongoDB, including its rich object mapp
 [[data.nosql.mongodb.embedded]]
 ==== Embedded Mongo
 Spring Boot offers auto-configuration for https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo[Embedded Mongo].
-To use it in your Spring Boot application, add a dependency on `de.flapdoodle.embed:de.flapdoodle.embed.mongo`.
+To use it in your Spring Boot application, add a dependency on `de.flapdoodle.embed:de.flapdoodle.embed.mongo` and set the configprop:spring.mongodb.embedded.version[] property to match the version of MongoDB that your application will use in production.
 
-The version of the MongoDB server **must** be configured by setting the configprop:spring.data.mongodb.embedded.version property.
-
-NOTE: The default download configuration allows access to most of the versions listed in https://github.com/flapdoodle-oss/de.flapdoodle.embed.mongo/blob/de.flapdoodle.embed.mongo-3.0.0/src/main/java/de/flapdoodle/embed/mongo/distribution/Version.java[Version.java]
-as well as some others. Inaccessible versions result in error when attempting to download the server. The download configuration may be adjusted to handle the desired version.
-
-The download configuration can be customized by declaring a `DownloadConfigBuilderCustomizer` bean.
+NOTE: The default download configuration allows access to most of the versions listed in {embedded-mongo-code}/src/main/java/de/flapdoodle/embed/mongo/distribution/Version.java[Embedded Mongo's `Version` class] as well as some others.
+Configuring an inaccessible version will result in an error when attempting to download the server.
+Such an error can be corrected by defining an appropriately configured `DownloadConfigBuilderCustomizer` bean.
 
 The port that Mongo listens on can be configured by setting the configprop:spring.data.mongodb.port[] property.
 To use a randomly allocated free port, use a value of 0.
@@ -167,6 +164,7 @@ NOTE: If you do not configure a custom port, the embedded support uses a random 
 If you have SLF4J on the classpath, the output produced by Mongo is automatically routed to a logger named `org.springframework.boot.autoconfigure.mongo.embedded.EmbeddedMongo`.
 
 You can declare your own `IMongodConfig` and `IRuntimeConfig` beans to take control of the Mongo instance's configuration and logging routing.
+The download configuration can be customized by declaring a `DownloadConfigBuilderCustomizer` bean.
 
 
 [[data.nosql.neo4j]]

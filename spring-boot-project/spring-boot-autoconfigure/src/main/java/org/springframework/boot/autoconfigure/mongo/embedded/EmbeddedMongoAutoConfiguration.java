@@ -145,7 +145,8 @@ public class EmbeddedMongoAutoConfiguration {
 	}
 
 	private IFeatureAwareVersion determineVersion(EmbeddedMongoProperties embeddedProperties) {
-		Assert.state(embeddedProperties.getVersion() != null, "Version must be set to use Embedded MongoDB.");
+		Assert.state(embeddedProperties.getVersion() != null, "Set the spring.mongodb.embedded.version property or "
+				+ "define your own MongodConfig bean to use embedded MongoDB");
 		if (embeddedProperties.getFeatures() == null) {
 			for (Version version : Version.values()) {
 				if (version.asInDownloadPath().equals(embeddedProperties.getVersion())) {
