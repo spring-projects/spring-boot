@@ -20,6 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.neo4j.driver.AccessMode;
 import org.neo4j.driver.Driver;
+import org.neo4j.driver.Record;
 import org.neo4j.driver.Result;
 import org.neo4j.driver.Session;
 import org.neo4j.driver.SessionConfig;
@@ -91,8 +92,9 @@ public class Neo4jHealthIndicator extends AbstractHealthIndicator {
 		// all possible workloads
 		try (Session session = this.driver.session(DEFAULT_SESSION_CONFIG)) {
 			Result result = session.run(CYPHER);
-			String edition = result.single().get("edition").asString();
-			String version = result.single().get("version").asString();
+			Record record = result.single();
+			String edition = record.get("edition").asString();
+			String version = record.get("version").asString();
 			ResultSummary resultSummary = result.consume();
 			this.healthDetailsHandler.addHealthDetails(builder, version, edition, resultSummary);
 		}
