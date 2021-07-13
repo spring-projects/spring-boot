@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2020 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.boot.autoconfigure.amqp;
 
 import java.time.Duration;
@@ -18,40 +34,21 @@ import org.springframework.util.Assert;
  */
 public class RabbitConnectionFactoryBeanConfigurer {
 
-	private RabbitProperties rabbitProperties;
+	private final RabbitProperties rabbitProperties;
 
-	private ResourceLoader resourceLoader;
+	private final ResourceLoader resourceLoader;
 
 	private CredentialsProvider credentialsProvider;
 
 	private CredentialsRefreshService credentialsRefreshService;
 
-	public RabbitProperties getRabbitProperties() {
-		return rabbitProperties;
-	}
-
-	public void setRabbitProperties(RabbitProperties rabbitProperties) {
-		this.rabbitProperties = rabbitProperties;
-	}
-
-	public ResourceLoader getResourceLoader() {
-		return resourceLoader;
-	}
-
-	public void setResourceLoader(ResourceLoader resourceLoader) {
+	public RabbitConnectionFactoryBeanConfigurer(ResourceLoader resourceLoader, RabbitProperties properties) {
 		this.resourceLoader = resourceLoader;
-	}
-
-	public CredentialsProvider getCredentialsProvider() {
-		return credentialsProvider;
+		this.rabbitProperties = properties;
 	}
 
 	public void setCredentialsProvider(CredentialsProvider credentialsProvider) {
 		this.credentialsProvider = credentialsProvider;
-	}
-
-	public CredentialsRefreshService getCredentialsRefreshService() {
-		return credentialsRefreshService;
 	}
 
 	public void setCredentialsRefreshService(CredentialsRefreshService credentialsRefreshService) {
@@ -67,7 +64,7 @@ public class RabbitConnectionFactoryBeanConfigurer {
 	 */
 	public void configure(RabbitConnectionFactoryBean factory) {
 		Assert.notNull(factory, "RabbitConnectionFactoryBean must not be null");
-		factory.setResourceLoader(resourceLoader);
+		factory.setResourceLoader(this.resourceLoader);
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.rabbitProperties::determineHost).whenNonNull().to(factory::setHost);
 		map.from(this.rabbitProperties::determinePort).to(factory::setPort);
@@ -97,8 +94,8 @@ public class RabbitConnectionFactoryBeanConfigurer {
 				.to(factory::setConnectionTimeout);
 		map.from(this.rabbitProperties::getChannelRpcTimeout).whenNonNull().asInt(Duration::toMillis)
 				.to(factory::setChannelRpcTimeout);
-		map.from(credentialsProvider).whenNonNull().to(factory::setCredentialsProvider);
-		map.from(credentialsRefreshService).whenNonNull().to(factory::setCredentialsRefreshService);
+		map.from(this.credentialsProvider).whenNonNull().to(factory::setCredentialsProvider);
+		map.from(this.credentialsRefreshService).whenNonNull().to(factory::setCredentialsRefreshService);
 	}
 
 }

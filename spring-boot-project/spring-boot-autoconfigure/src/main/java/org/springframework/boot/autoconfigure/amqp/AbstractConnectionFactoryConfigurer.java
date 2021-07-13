@@ -1,3 +1,19 @@
+/*
+ * Copyright 2012-2021 the original author or authors.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *      https://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.springframework.boot.autoconfigure.amqp;
 
 import org.springframework.amqp.rabbit.connection.AbstractConnectionFactory;
@@ -15,47 +31,43 @@ import org.springframework.util.Assert;
  */
 public abstract class AbstractConnectionFactoryConfigurer<T extends AbstractConnectionFactory> {
 
-	private RabbitProperties rabbitProperties;
+	private final RabbitProperties rabbitProperties;
 
 	private ConnectionNameStrategy connectionNameStrategy;
 
-	public RabbitProperties getRabbitProperties() {
-		return rabbitProperties;
+	protected AbstractConnectionFactoryConfigurer(RabbitProperties properties) {
+		Assert.notNull(properties, "RabbitProperties must not be null");
+		this.rabbitProperties = properties;
 	}
 
-	public void setRabbitProperties(RabbitProperties rabbitProperties) {
-		this.rabbitProperties = rabbitProperties;
+	protected final ConnectionNameStrategy getConnectionNameStrategy() {
+		return this.connectionNameStrategy;
 	}
 
-	public ConnectionNameStrategy getConnectionNameStrategy() {
-		return connectionNameStrategy;
-	}
-
-	public void setConnectionNameStrategy(ConnectionNameStrategy connectionNameStrategy) {
+	protected final void setConnectionNameStrategy(ConnectionNameStrategy connectionNameStrategy) {
 		this.connectionNameStrategy = connectionNameStrategy;
 	}
 
 	/**
-	 * Configure the specified Rabbit connection factory - delegating to
-	 * {@link #configureSpecific} for the connection factory implementation specific
-	 * settings. The factory can be further tuned and default settings can be overridden.
-	 * @param connectionFactory the connection factory instance to configure
+	 * Configures the given {@code connectionFactory} with sensible defaults.
+	 * @param connectionFactory connection factory to configure
 	 */
-	public void configure(T connectionFactory) {
+	public final void configure(T connectionFactory) {
 		Assert.notNull(connectionFactory, "ConnectionFactory must not be null");
 		PropertyMapper map = PropertyMapper.get();
 		map.from(this.rabbitProperties::determineAddresses).to(connectionFactory::setAddresses);
 		map.from(this.rabbitProperties::getAddressShuffleMode).whenNonNull()
 				.to(connectionFactory::setAddressShuffleMode);
-		map.from(connectionNameStrategy).whenNonNull().to(connectionFactory::setConnectionNameStrategy);
-		configureSpecific(connectionFactory);
+		map.from(this.connectionNameStrategy).whenNonNull().to(connectionFactory::setConnectionNameStrategy);
+		configure(connectionFactory, this.rabbitProperties);
 	}
 
 	/**
-	 * Configure the specified Rabbit connection factory with implementation specific
-	 * settings.
-	 * @param connectionFactory the connection factory instance to configure
+	 * Configures the given {@code connectionFactory} using the given
+	 * {@code rabbitProperties}.
+	 * @param connectionFactory connection factory to configure
+	 * @param rabbitProperties properties to use for the configuration
 	 */
-	protected abstract void configureSpecific(T connectionFactory);
+	protected abstract void configure(T connectionFactory, RabbitProperties rabbitProperties);
 
 }
