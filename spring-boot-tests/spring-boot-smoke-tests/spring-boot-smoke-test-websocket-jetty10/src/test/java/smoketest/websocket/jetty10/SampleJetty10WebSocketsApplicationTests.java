@@ -45,8 +45,7 @@ import org.springframework.web.socket.client.standard.StandardWebSocketClient;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @EnabledForJreRange(min = JRE.JAVA_11)
-@SpringBootTest(classes = SampleJetty10WebSocketsApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT,
-		properties = "debug: true")
+@SpringBootTest(classes = SampleJetty10WebSocketsApplication.class, webEnvironment = WebEnvironment.RANDOM_PORT)
 class SampleJetty10WebSocketsApplicationTests {
 
 	private static Log logger = LogFactory.getLog(SampleJetty10WebSocketsApplicationTests.class);
