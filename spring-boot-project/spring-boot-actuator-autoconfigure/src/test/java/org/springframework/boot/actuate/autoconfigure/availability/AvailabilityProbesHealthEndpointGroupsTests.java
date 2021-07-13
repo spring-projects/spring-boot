@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,46 +50,46 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 
 	@Test
 	void createWhenGroupsIsNullThrowsException() {
-		assertThatIllegalArgumentException().isThrownBy(() -> new AvailabilityProbesHealthEndpointGroups(null))
+		assertThatIllegalArgumentException().isThrownBy(() -> new AvailabilityProbesHealthEndpointGroups(null, false))
 				.withMessage("Groups must not be null");
 	}
 
 	@Test
 	void getPrimaryDelegatesToGroups() {
 		given(this.delegate.getPrimary()).willReturn(this.group);
-		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
+		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		assertThat(availabilityProbes.getPrimary()).isEqualTo(this.group);
 	}
 
 	@Test
 	void getNamesIncludesAvailabilityProbeGroups() {
 		given(this.delegate.getNames()).willReturn(Collections.singleton("test"));
-		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
+		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		assertThat(availabilityProbes.getNames()).containsExactly("test", "liveness", "readiness");
 	}
 
 	@Test
 	void getWhenProbeInDelegateReturnsGroupFromDelegate() {
 		given(this.delegate.get("liveness")).willReturn(this.group);
-		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
+		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		assertThat(availabilityProbes.get("liveness")).isEqualTo(this.group);
 	}
 
 	@Test
 	void getWhenProbeNotInDelegateReturnsProbeGroup() {
-		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
+		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		assertThat(availabilityProbes.get("liveness")).isInstanceOf(AvailabilityProbesHealthEndpointGroup.class);
 	}
 
 	@Test
 	void getWhenNotProbeAndNotInDelegateReturnsNull() {
-		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
+		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		assertThat(availabilityProbes.get("mygroup")).isNull();
 	}
 
 	@Test
 	void getLivenessProbeHasOnlyLivenessStateAsMember() {
-		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
+		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		HealthEndpointGroup probeGroup = availabilityProbes.get("liveness");
 		assertThat(probeGroup.isMember("livenessState")).isTrue();
 		assertThat(probeGroup.isMember("readinessState")).isFalse();
@@ -97,7 +97,7 @@ class AvailabilityProbesHealthEndpointGroupsTests {
 
 	@Test
 	void getReadinessProbeHasOnlyReadinessStateAsMember() {
-		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate);
+		HealthEndpointGroups availabilityProbes = new AvailabilityProbesHealthEndpointGroups(this.delegate, false);
 		HealthEndpointGroup probeGroup = availabilityProbes.get("readiness");
 		assertThat(probeGroup.isMember("livenessState")).isFalse();
 		assertThat(probeGroup.isMember("readinessState")).isTrue();

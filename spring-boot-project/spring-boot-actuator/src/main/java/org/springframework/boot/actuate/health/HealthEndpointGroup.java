@@ -1,5 +1,5 @@
 /*
- * Copyright 2012-2020 the original author or authors.
+ * Copyright 2012-2021 the original author or authors.
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,6 +23,7 @@ import org.springframework.boot.actuate.endpoint.SecurityContext;
  * by the {@link HealthEndpoint}.
  *
  * @author Phillip Webb
+ * @author Madhura Bhave
  * @since 2.2.0
  */
 public interface HealthEndpointGroup {
@@ -61,5 +62,13 @@ public interface HealthEndpointGroup {
 	 * @return the HTTP code status mapper
 	 */
 	HttpCodeStatusMapper getHttpCodeStatusMapper();
+
+	/**
+	 * Return an additional path that can be used to map the health group to an
+	 * alternative location.
+	 * @return the additional health path or {@code null}
+	 * @since 2.6.0
+	 */
+	AdditionalHealthEndpointPath getAdditionalPath();
 
 }
